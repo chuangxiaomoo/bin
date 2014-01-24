@@ -491,8 +491,10 @@ function fn_shell()                     { cat make_shell ;}
 function fn_git()                       { 
 function fn_base()                      { cat git_base ;}
 function fn_github()                    { cat git_github ;}
+function fn_svndiff()                   { cat git_svndiff ;}
     local opts=(
         base                            # 入门
+        svndiff                         # 与svn比较
         github                          # 使用 github.com
         init                            # 按遇到的先后顺序
     )

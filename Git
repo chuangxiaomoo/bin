@@ -4,7 +4,7 @@ function fn_main()
 {
     # add commit push
     # commit了但没有push的内容：git diff HEAD^ HEAD 
-    if [ -z "$@" ] ; then
+    if [ -z "$*" ] ; then
         echo "Usage: $0 file..." && exit
     fi  
 

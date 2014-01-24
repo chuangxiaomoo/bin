@@ -1,0 +1,10 @@
+# svndiff
+
+              svn        git
+
+下载        checkout    clone
+更新        update      pull 
+提交        commit      commit+push
+revert      revert      git checkout -- <filename>
+revertAll   rm+update   git fetch origin; git reset --hard origin/master
+
