@@ -1,0 +1,22 @@
+#! /bin/bash
+
+function fn_main() 
+{
+    # add commit push
+    if [ -z "$@" ] ; then
+        echo "Usage: $0 file..." && exit
+    fi  
+
+    local i=
+    for i in $@; do
+        [ ! -f "$i" ] && { echo "Error: $i not exist"; exit ;}
+    done
+
+    read -p "    Please input comment: "
+
+    git add $@
+    git commit -m "$REPLY" $@
+    git push origin
+}
+
+fn_main $@
