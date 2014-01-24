@@ -1,12 +1,13 @@
 # github
 
-# 建自已的第一个项目
+## 建自已的第一个项目
 
   * 在github上create并README.md
 
   * git clone https://github.com/chuangxiaomoo/bin.git
 
   * commit and hide file is ok
+  `git add 自动add所有，包括隐藏，git add *则不包括隐藏文件`
 
    2038  mkdir dir
    2039  ls
@@ -25,27 +26,17 @@
    2052  git push origin master
    2053  ls
 
-  * del
+  * del, del dir
 
-  * 
+   2160  git rm    file 
+   2161  git rm -r dir
+   2162  git commit -m "del dir"
+   2163  git push
 
-# del dir
+## github ssh profile
 
-# git add * 会自动add所有，包括隐藏
-
-# git ssh profile
-
-
-
-## 
-
-# 
-
-# 
-
-# 
-
-# 
-
-# 
+   2225  cd ~/.ssh/
+   2226  ls
+   2227  ssh-keygen         *# 一路回车*
+   2228  cat id_rsa.pub     *# 点击头像，SSH Keys -- Add SSH key*
 
