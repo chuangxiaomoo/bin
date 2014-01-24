@@ -44,7 +44,11 @@
 
   * local
 
-   [Git里的SSH key该如何使用](http://segmentfault.com/q/1010000000133596)
+  [Git里的SSH key该如何使用](http://segmentfault.com/q/1010000000133596)
+
+  git clone git://github.com:chuangxiaomoo/bin.git  不支持 git push
+  git clone git@github.com:chuangxiaomoo/bin.git    可以用 git push
+
 
   1. 通过命令，将HTTPS分支改为SSH分支
 
@@ -65,4 +69,3 @@
         url =git@github.com:chuangxiaomoo/bin.git
         fetch = +refs/heads/*:refs/remotes/origin/*
   ```
-
