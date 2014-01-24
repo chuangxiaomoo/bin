@@ -1,0 +1,29 @@
+# huawei
+
+
+Python执行系统命令的方法 os.system()，os.popen()，commands http://blog.chinaunix.net/u3/103690/showart_2326101.html
+
+security = user [my_home] path = %H writeable = yes browseable = yes valid users = %U #guest_ok mean the others can read # chmod 777 /public [public] path = /public writeable = yes browseable = yes #guest ok = yes [home] path = /home writeable = yes browseable = yes valid users = root [deny_rt] path = /public/deny_rt writeable = yes browseable = yes invalid users = root 
+
+正则 http://www.cnblogs.com/dragon/archive/2006/05/09/394923.html
+幸运的是，tiny找到了完美的解决办法（我因此被批评看文档不仔细，汗啊……）s.decode(‘gbk’, ‘ignore’).encode(‘utf-8′)
+
+http://blog.csdn.net/mydriverc/archive/2008/01/16/2047152.aspx DOS命令说明
+
+Auto CHN From: http://autoit-cn.googlecode.com/files/AUTOIT_3.3.1.1-2.exe
+
+python 编码 http://www.javaeye.com/topic/66558
+
+# -*- coding: cp936 -*- #! C:Python26\python.exe a = "我" b = unicode(a,"cp936") print a.__class__ print b.__class__ print a print b 
+
+Python 循环引用导致内存泄漏的内存管理 http://www.blogjava.net/yglwxl/archive/2009/11/30/304229.html
+
+python_tutorial http://bbs.chinaunix.net/thread-1668860-1-1.html
+
+python_guide http://bbs.chinaunix.net/thread-1668860-1-1.html
+
+python 对象理解 http://blog.chinaunix.net/u1/54760/showart_708746.html 
+
+http://blog.chinaunix.net/u1/54760/showart_708746.html
+
+

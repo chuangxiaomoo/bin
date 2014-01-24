@@ -1,0 +1,104 @@
+http://www.cnblogs.com/kenkofox/archive/2009/11/05/1597003.html
+
+拂晓风起
+    从代码可以得知，C调用C++链接库的关键在于cpp.h中的函数声明方式，其直接影响g++
+    生成symbol name的格式。
+
+C调用C++链接库：
+
+　　1.编写C++代码，编写函数的时候，需要加入对C的接口，也就是extern “c"
+
+　　2.由于C不能直接用"class.function”的形式调用函数，所以C++中需要为C写一个接口
+函数。例如本来要调用student类的talk函数，就另外写一个cfun()，专门建一个student
+类，并调用talk函数。而cfun()要有extern声明
+
+　　3.我在练习中就使用在C++头文件中加extern ”c”的方法。而C文件要只需要加入对
+cpp.h的引用
+
+　　4.详细见如下代码：
+
+　　　　student是一个类，里边有talk函数，就输出一句话而已
+
+　　　　cpp.cpp与cpp.h是两个C++代码，包含对C的接口
+
+　　　　最后用C代码：helloC.c来测试结果
+
+
+    student.cpp:                                         
+  ┌──────────────────────────────────────────────────────┐
+  │ #include <iostream>                                  │
+  │ using namespace std;                                 │
+  │ #include "student.h"                                 │
+  │ void student::talk(){                                │
+  │     cout<<"I am Kenko"<<endl;                        │
+  │ }                                                    │
+  └──────────────────────────────────────────────────────┘
+
+    student.h:
+  ┌──────────────────────────────────────────────────────┐
+  │ #ifndef _STUDENT_                                    │ 
+  │ #define _STUDENT_                                    │ 
+  │                                                      │ 
+  │ class student{                                       │ 
+  │  public:                                             │ 
+  │    void talk();                                      │ 
+  │ };                                                   │ 
+  │                                                      │ 
+  │ #endif                                               │ 
+  └──────────────────────────────────────────────────────┘
+
+    cpp.h:
+  ┌──────────────────────────────────────────────────────┐
+  │ #ifndef _CPP_                                        │
+  │ #define _CPP_                                        │
+  │                                                      │
+  │ #include "student.h"                                 │
+  │ #ifdef __cplusplus                                   │
+  │ extern "C" {                                         │
+  │ #endif                                               │
+  │     void helloCplusplus();                           │
+  │ #ifdef __cplusplus                                   │
+  │ }                                                    │
+  │ #endif                                               │
+  │                                                      │
+  │ #endif                                               │
+  └──────────────────────────────────────────────────────┘
+
+　　cpp.cpp:
+  ┌──────────────────────────────────────────────────────┐
+  │ #include <iostream>                                  │
+  │ using namespace std;                                 │
+  │                                                      │
+  │ #include "cpp.h"                                     │
+  │ student stu;                                         │
+  │ void helloCplusplus(){                               │
+  │     cout<<"helloC++"<<endl;                          │
+  │     stu.talk();                                      │
+  │ }                                                    │
+  │                                                      │
+  │ void helloCplusplus2(){                              │
+  │     cout<<"helloC++"<<endl;                          │
+  │ }                                                    │
+  └──────────────────────────────────────────────────────┘
+
+　　helloC.c:
+  ┌──────────────────────────────────────────────────────┐
+  │ #include <stdio.h>                                   │
+  │ #include "cpp.h"                                     │
+  │                                                      │
+  │ int main(){                                          │
+  │     helloCplusplus();                                │
+  │     return 0;                                        │
+  │ }                                                    │
+  └──────────────────────────────────────────────────────┘
+
+　　我这次练习是直接在xp环境下，在CMD命令行方式用gcc,g++来编译的。
+
+1.编译C++代码，成为链接库
+
+　　g++ -shared -o libccall.so cpp.cpp student.cpp  （libccall.so为库名）
+
+2.编译C代码：g++ helloC.c ./libccall.so。这里一定要用g++，如果用gcc会出错，因为
+gcc编译C++文件才会自动调用g++，但如果对象直接就是C文件就不会调用g++了。
+
+[gcc]

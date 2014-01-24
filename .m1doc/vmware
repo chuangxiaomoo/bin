@@ -1,0 +1,12 @@
+
+
+*5.1* repair
+/* to repair the vmware, [it depend on snapshot, no permission]
+ * this is a problem of filesystem, you need to do as below:
+ * a. del the .lck files and directories;
+ * b. if the attr of the .vmdk and .vmx are readonly, please change it to rd/wr
+ */
+
+*5.2* repair 2
+copy a vmware from other's PC, you need to del the lock files of vm;
+

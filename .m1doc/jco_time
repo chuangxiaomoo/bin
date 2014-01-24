@@ -1,0 +1,32 @@
+/* time */
+
+一、策略
+
+    1. 系统时间
+
+        视频OSD叠加的时间 == date命令输出时间 == 本地时间
+        date +"%F %T %z"
+        2013-08-05 16:15:08 +0000
+
+    2. 对外输出 UTC时间 + 时区信息
+        timecfg -act list
+        time=1375687019
+        timezone=30
+
+        date -u -d  @1375687019 +"%F %T %z"           
+        2013-08-05 07:16:59 +0000
+
+    3. ini配置
+        时区（timezone）信息保存在ini文件中，并维护一个相对应的秒数offset数组
+        iTzOffset[]
+
+        inner.offset = iTzOffset[inner.timezone];
+        timecfg->time = time(NULL) - inner.offset;
+
+二、缘何
+
+    如此设计带来益处：UTC时间就是本地时间
+    
+    各个进程直接 time(NULL); 即可以得到时间。减少不必要的内部沟通与设置。
+
+    

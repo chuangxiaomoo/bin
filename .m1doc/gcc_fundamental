@@ -1,0 +1,14 @@
+#! /bin/bash
+
+
+. OPTION -static
+    -static参数是指定使用静态库，编译目标文件
+
+
+. GCC初窥    
+    http://www.lingcc.com/2009/12/29/10503/
+
+    这是gcc maillist中某国际友人 laurent@guerby.net 做的2个小时报告的ppt，报告题
+    目为GCC Toulibre 20091216。最近一直想深入了解gcc，而这个ppt基本包含本博想了
+    解的内容，所以将其翻译并分享到这里。翻译过程中，很多地方可能有错，请大家不吝
+    赐教。原版的ppt见文末。

@@ -1,0 +1,77 @@
+/* w3m */
+int w3m()
+{
+        lynx();
+        w3m();
+shortut:
+        c       // Peek current URL (PEEK) 
+        u       // Peek link URL (PEEK_LINK)
+        
+        m       // active mouse, copy 
+        !       // active shell cmd, just like vi
+
+        C-c     //      Close menu
+
+
+        /       //      Search foreward,  ? backward
+        n       //      Search next regexp
+        N       //      Search previous regexp
+
+        R       //      Refresh
+        Q       //      exit
+
+internal:
+        ESC-c   //      Execute w3m command(s) (COMMAND)
+
+movecursor:
+        j       //      Move to next item
+        k       //      Move to previous item
+        K       //             Scroll down one line (DOWN)
+        J       //             Scroll up one line (UP)
+        <       //             Shift screen left (SHIFT_LEFT)
+        >       //             Shift screen right (SHIFT_RIGHT)
+        
+
+jump:
+        C-a     //      Go to top item head of line
+        C-e     //      Go to last item
+        Z                    // Move to th  center lin  (CENTER_H)
+        z                    // Move to the center column (CENTER_V)
+        ESC-g                // Go to specified line (GOTO_LINE)
+        w                    // Move to next word (NEXT_WORD)
+        W                    // Move to previous word (PREV_WORD)
+        [                    // Go to the first link (LINK_BEGIN)
+        ]                    // Go to the last link (LINK_END)
+        C-u,ESC-TAB          // Move to previous link (PREV_LINK)
+        ESC-m                // Popup link list menu and move cursor to selected link 
+                                    (MOVE_LIST_MENU)
+        (                    // Cancel the last cursor movement (UNDO)
+        )                    // Cancel the last undo (REDO)
+
+Hyperlink_operation:
+
+        C-m,C-j              Go to current link (GOTO_LINK)
+        C-t                  Open current link on new tab (TAB_LINK)
+        <NOT ASSIGNED>       Submit form (SUBMIT)
+        c                    Peek current URL (PEEK)
+        u                    Peek link URL (PEEK_LINK)
+        i                    Peek image URL (PEEK_IMG)
+        C-g                  Show current line number (LINE_INFO)
+        :                    Mark URL-like strings as anchors (MARK_URL)
+        ";"                  Mark current word as anchor (MARK_WORD)
+        ESC-:                Mark Message-ID-like strings as anchors (MARK_MID)
+
+buffer:
+        ESC-k                Define a binding between a key stroke and a user command 
+                                    (DEFINE_KEY)
+        B                    Back to previous buffer (BACK)
+        <NOT ASSIGNED>       Move to next buffer (NEXT)
+        <NOT ASSIGNED>       Move to previous buffer (PREV)
+key_customize:
+        ~/.w3m/keymap           
+
+        keymap ,, PREV
+        keymap .. NEXT
+
+}
+

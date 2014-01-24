@@ -1,0 +1,17 @@
+/* clang_complete */
+
+. help 
+    :h clang_complete
+
+. comment avoid warnning    
+    ~/.vim/plugin/clang_complete.vim|140|
+    let b:clang_parameters = ''
+
+. config file 
+    -> .clang_complete
+
+    If you've got special flags for a project (especially -I and -D ones), clang may
+    be unable to complete your code. To overcome this limitation put the flags insi
+    de the file .clang_complete at the root of your project.
+
+    

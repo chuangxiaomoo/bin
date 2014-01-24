@@ -1,0 +1,109 @@
+
+CREATE TABLE min2 (
+    code INT(6) ZEROFILL NOT NULL, 
+    trade DECIMAL(6,2) NOT NULL,
+    rise_pct DECIMAL(6,2) NOT NULL,
+    close DECIMAL(6,2) NOT NULL,
+    open DECIMAL(6,2) NOT NULL,
+    high DECIMAL(6,2) NOT NULL,
+    low DECIMAL(6,2) NOT NULL,
+    volume DECIMAL(10,2) NOT NULL,
+    amount DECIMAL(12) NOT NULL,
+    swing_pct DECIMAL(6,2) NOT NULL,
+    tnov_rate DECIMAL(6,2) NOT NULL,
+    vol_ratio DECIMAL(6,2) NOT NULL,
+    date DATE NOT NULL,
+    time TIME NOT NULL, INDEX(code,date,time)
+);
+
+CREATE TABLE cap (
+    code    INT(6)  ZEROFILL, 
+    cap     INT(14),
+    nmc     INT(14), 
+    name    CHAR(16)
+);
+
+-- 对于AUTO_INCREMENT，可以用DEFAULT
+--  INSERT INTO stamp_min values(DEFAULT, '2008-08-08', '08:08:08')
+
+-- 清空后归0
+--  DELETE FROM stamp_min;
+--  ALTER TABLE stamp_min SET AUTO_INCREMENT = 0 ;
+
+CREATE TABLE stamp_min (
+    id   int(4) ZEROFILL PRIMARY key AUTO_INCREMENT NOT NULL,
+    date DATE NOT NULL,
+    time TIME NOT NULL
+);
+
+CREATE TABLE test (
+code INT(6) ZEROFILL, 
+name CHAR(10)
+);
+
+
+-- 重建索引并复制表 
+
+INSERT INTO min2 SELECT  
+    code, trade, rise_pct, close, open, high, low, volume, amount, 
+    tnov_rate, swing_pct, vol_ratio, date, SUBTIME(time, SECOND(time)) from min;
+
+-- yesclose    DECIMAL(6,2) NOT NULL,    
+
+CREATE TABLE day (
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    date        date NOT NULL, 
+    yesc        DECIMAL(6,2) NOT NULL,
+    open        DECIMAL(6,2) NOT NULL,
+    high        DECIMAL(6,2) NOT NULL,
+    low         DECIMAL(6,2) NOT NULL,
+    close       DECIMAL(6,2) NOT NULL,
+    volume      DECIMAL(12,2) NOT NULL,
+    amount      DECIMAL(12,2) NOT NULL,
+    INDEX(code,date),
+    INDEX(date,amount)
+);
+
+-- LOAD DATA LOCAL INFILE '/winc/relay/sz000002.txt' INTO TABLE macd FIELDS TERMINATED BY ',';
+
+DROP TABLE IF EXISTS macd;
+CREATE TABLE macd (
+    id          INT(6) PRIMARY key AUTO_INCREMENT NOT NULL,
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    date        date NOT NULL, 
+    close       DECIMAL(6,2) NOT NULL DEFAULT 0,
+    short_ema   DECIMAL(7,3) NOT NULL DEFAULT 0,
+    long_ema    DECIMAL(7,3) NOT NULL DEFAULT 0,
+    dif         DECIMAL(7,3) NOT NULL DEFAULT 0,
+    dea         DECIMAL(7,3) NOT NULL DEFAULT 0,
+    macd        DECIMAL(7,3) NOT NULL DEFAULT 0,
+    INDEX(date)
+);
+
+DROP TABLE IF EXISTS kdj;
+CREATE TABLE kdj (
+    id          INT(6) PRIMARY key AUTO_INCREMENT NOT NULL,
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    date        date NOT NULL, 
+    open        DECIMAL(6,2) NOT NULL DEFAULT 0,
+    close       DECIMAL(6,2) NOT NULL DEFAULT 0,
+    high        DECIMAL(6,2) NOT NULL DEFAULT 0,
+    low         DECIMAL(6,2) NOT NULL DEFAULT 0,
+    rsv         DECIMAL(7,3) NOT NULL DEFAULT 0,
+    k           DECIMAL(7,3) NOT NULL DEFAULT 0,
+    d           DECIMAL(7,3) NOT NULL DEFAULT 0,
+    j           DECIMAL(7,3) NOT NULL DEFAULT 0,
+    INDEX(date)
+);
+
+INSERT INTO kdj(code,date,close,high,low) SELECT code,date,open,close,high,low FROM day WHERE code = 2 and date > '2013-08-08';
+
+DROP TABLE IF EXISTS tempday;
+CREATE TABLE tempday (
+    date        date NOT NULL, 
+    open        DECIMAL(6,2) NOT NULL,
+    high        DECIMAL(6,2) NOT NULL,
+    low         DECIMAL(6,2) NOT NULL,
+    close       DECIMAL(6,2) NOT NULL,
+    INDEX(date)
+);

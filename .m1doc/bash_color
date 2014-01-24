@@ -1,0 +1,22 @@
+
+    cat <<-"HERE"
+    彩色的命令行
+    http://home.lupaworld.com/home-space-uid-24545-do-blog-id-27712.html
+    没有#!的bash脚本的执行
+    http://blog.csdn.net/dog250/article/details/5719609
+	HERE
+
+
+    C 语言示例
+
+    用绿色打印“Hello Word”： 
+    ＃i nclude <stdio.h>
+    int main(void){
+      const char *const green = "\033[0;40;32m";
+      const char *const normal = "\033[0m";
+      printf("%sHello World%s\n", green, normal);
+      return 0;
+    }
+    另外一个有用的转义序列是 printf("\033[2J")，它和 system(clear) 完成的功能一样。但是可以不需要头文件 unistd.h。
+
+    使用printf("\033[1K") 可以删除一行。  

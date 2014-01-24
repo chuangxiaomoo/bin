@@ -1,0 +1,93 @@
+/* signal */
+
+void sigterm(int dummy)
+{
+	JCO_DBG("caught SIGTERM: shutting down\n");
+    s_watchVariable = 1;
+}
+
+void sigint(int dummy)
+{
+	JCO_DBG("caught SIGINT: shutting down\n");
+	s_watchVariable = 1;
+}
+
+/*
+    参考APUE
+    从DRY的角度，因为不知其所以然。init_signal()函数有两个不足之处：
+    (1) 信号集的出现，首先是 sigprocmask 进行SIG_BLOCK的需要，这里没有
+        调用 sigprocmask()，因此也就无必要 sigaddset()
+    (2) sigaction() 参数 &sa.sa_mask 是为了解决在响应一个信号时被
+        其它信号抢断而设计的，这里没有必要mask SIGTERM SIGINT
+        signal()是用sigaction()实现时就没有说mask其它信号。(APUE p265)
+ **/
+
+void init_signal()
+{
+	struct sigaction sa;
+
+	sa.sa_flags = 0;
+
+	sigemptyset(&sa.sa_mask);       /* 清空信号集 */
+	sigaddset(&sa.sa_mask, SIGTERM);
+	sigaddset(&sa.sa_mask, SIGINT);
+
+	sa.sa_handler = sigterm;        /* Term 信号 */
+	sigaction(SIGTERM, &sa, NULL);
+
+	sa.sa_handler = sigint;         /* 键盘 Interrupt */
+	sigaction(SIGINT, &sa, NULL);
+
+    /* socket编程时, write之前，对方socket中断，发送端write时，
+     * 会先调用SIGPIPE响应函数（默认是Term），
+     * 然后write返回-1,errno号为EPIPE(32) */
+
+	sa.sa_handler = SIG_IGN;        
+	sigaction(SIGPIPE, &sa, NULL);
+}
+
+int main()
+{
+    init_signal();
+    return 0;
+}
+
+/* ------------------------------ core dump ------------------------------ */
+
+. man 7 signal
+
+    Core   Default action is to terminate the process and dump core.
+
+. killall 无core产生
+
+    killall默认发送 SIGTERM，其行为是 Term 
+    可以用 killall -SIGSEGV 或其它产生 Core的信号替代
+
+. 查看及启用coredump
+
+    /* /etc/profile 是个好地方，与环境变量相关的都可以在这里设置 */
+    /* 是系统环境变量，因此需要在程序运行之前设置 */
+    ulimit -c                       // 可以查看是否打开此选项，若为0则为关闭；
+    ulimit -c 0                     // 可手动关闭
+    ulimit -c 1000                  // 为设置core文件大小最大为1000k
+    ulimit -c unlimited             // 设置core文件大小为不限制大小
+
+    /proc/sys/kernel/core_uses_pid  //文件名加pid扩展，添加则1，否则0
+    /proc/sys/kernel/core_pattern   //core文件保存位置或文件名，如core-%e
+    kill -s SIGSEGV $$              // gen core
+    kill -s SIGSEGV 931             // killall didn't gen a core file
+
+. GDB coredump
+
+    gdb -c corefile elffile     
+
+    This GDB was configured as "armv5tl-montavista-linux-gnueabi"...
+    Using host libthread_db library "/lib/libthread_db.so.1".
+    (gdb) run
+    Starting program: /app/vs/jco_server
+
+    // 文件被破坏了... sometimes: gcc, but not arm_v5t_le-gcc 
+    This GDB was configured as "armv5tl-montavista-linux-gnueabi"...
+    "/app/vs/jco_server": not in executable format: File format not recognized
+    (gdb) q
+

@@ -1,0 +1,234 @@
+/* msg */
+
+. 消息基础知识
+. 数据 -- key, id, type, cmd 
+. 原理
+. server举例
+. ALARM是个特例
+. 消息阻塞分类
+. 解决消息阻塞
+
+/*
+ * BODY, show me the data struct
+ */
+
+. 消息基础知识
+    msgsnd(int msqid, void *msgp, size_t msgsz, int msgflg);
+    msgrcv(int msqid, void *msgp, size_t msgsz, long msgtyp, int msgflg);
+
+    参数msgtyp是msgrcv()所独有的，用于指定收取msgtyp.
+    配合MSG_EXCEPT 指定不收取msgtyp.
+
+. 数据 -- key, id, type, cmd 
+
+    . 主要的三个key, 对应3个msqid (msg_common.h)
+        SYS_MSG_KEY = 0x6666,    
+        ALARM_MSG_KEY = 0x7777,  
+        STREAM_MSG_KEY = 0x12345,
+
+    . 对应的三类msg type
+        enum        MSG_TYPE_       //        MSG_TYPE_SYSTEM_SVR
+        enum  ALARM_MSG_TYPE_       //  ALARM_MSG_TYPE_SYSTEM_PROC
+        enum STREAM_MSG_TYPE_       // STREAM_MSG_TYPE_SERVER_PROC
+
+    . 分路器 CMD (sys_msg_drv.h)
+        enum {
+            SYS_MSG_CMD_GET_
+            SYS_MSG_CMD_SET_
+            SYS_MSG_CMD_EVENT_
+        } SYS_MSG_CMD_E;
+
+    . 数据封装 = type + cmd
+        #define MSG_BUF_MAX_LEN     8000
+        typedef struct {
+            int des;        // MSG_TYPE_SYSTEM_SVR
+            int src;        // 
+            int cmd;        // SYS_MSG_CMD_E
+            int ret;        // 
+            int len;        // length of buf
+            char buf[0];    // buf[MSG_BUF_MAX_LEN]
+        } MSG_BUF_S;
+
+
+. 原理
+
+    复用(MUX)：
+        用于获取配置的消息队列，所有APP共用一个msqid。
+        多个低速信道整合到一个高速信道进行传输，从而有效地利用了高速信道。
+
+    分路(DEMUX):
+        使用 SYS_MSG_CMD_E 分路
+        MSG_BUF_S.cmd  <---> SYS_MSG_CMD_E
+
+    分路之后：
+
+        消息队列复用后，如果只有一个msgtyp _SVR，那么
+        msgrcv()不再具备指定收取msg的能力，只能从上到下收取。
+
+        多线程时，_SVR的通信完整性会被破坏，线程间会抢msg.
+        为了满足多线程、多任务的需求，至少还需要一个msgtyp，_PROC应运而生。
+
+        有了_PROC，在while()中处理一个msg时，可在回复此msg前用_PROC来获取
+        其它信息供转发。
+
+    双路实现：
+
+        . _SVR "接受型"
+            MSG_TYPE_SYSTEM_SVR  等以_SVR结尾的 msgtyp 在 sys_msg_thread() 
+            的循环while()中使用。
+
+            EXAMPLE: proc_sys_msg() 处理 JCOHeartbeatUpdate
+
+        . _PROC "请求型"
+
+            MSG_TYPE_SYSTEM_PROC等以 _PROC结尾的 msgtyp 常量用来初始化 g_whoami;
+            e.g. sys_msg_drv_init(MSG_TYPE_SYSTEM_PROC);
+                int sys_msg_drv_init(int whoami) { g_whoami = whoami; };
+
+            EXAMPLE: JCOVerInit
+
+. server举例
+
+    . recv first (_SVR)
+
+        每个APP都使用一个线程来响应消息，有的需要回复，有的则不要
+        notify    "无"回复    =》心跳
+        request   "有"回复    =》配置获取
+
+        sys_msg_thread() 
+        {
+            while() { 
+                msgrcv(msgtyp.mtype = MSG_TYPE_SYSTEM_SVR)      
+                proc_sys_msg(pMsgbufSend, pMsgbufRecv, &bReply);
+            }
+        }
+        proc_sys_msg() {
+            switch() { case ...;} 
+        } 
+
+    . send first (_PROC)
+
+        notify     "无"回复    =》配置变更
+        request    "有"回复    =》版本信息
+
+
+    . 配置部署(以osd为例)
+
+                jco_encode                      jco_server        
+
+        ┌────────────────────────────────────────────────────────┐
+        │       startup request   ------->                       │
+        │                         <-------      response         │
+        └────────────────────────────────────────────────────────┘
+        ┌────────────────────────────────────────────────────────┐
+        │                         <-------      change           │    
+        │       request           ------->                       │
+        │                         <-------      response         │
+        └────────────────────────────────────────────────────────┘
+
+
+. ALARM是个特例
+
+    server中使用到两个不同队列：
+        g_sys_msg_id 和 g_alarm_msg_id 
+
+    通知函数对应为：
+        sys_msg_event_chng_cfg(SYS_MSG_CMD_GET_SPARKDETECT)
+        alarm_msg_event_chng_cfg(SYS_MSG_CMD_GET_SPARKDETECT)
+
+    因为使用了g_whoami，所以
+    encode和alarm取的时候使用同一个函数发送请求：
+        sys_msg_cmd_get_sparkdetect(SPARK_DETECT_S *spark);
+
+    server处理时按原路返回：
+        case SYS_MSG_CMD_GET_SPARKDETECT:
+
+    SUMMERY:
+        g_alarm_msg_id 对于 server来说只是单工的，只往里面塞msg，从来不取。
+
+    
+. 消息阻塞分类
+
+    /* only msgrcv() on _PROC block */
+    . 因消息是串行处理，request 时 msgrcv() 会导致阻塞。
+
+        结构体增成员 && no MSG_NOERROR -> peer msgrcv()失败 -> self msgrcv() locked
+        SYS_MSG_CMD_E change -> peer msgrcv() unkown command -> self msgrcv() locked
+
+    . 如alarm消息过多，处理不过来
+
+    
+. 模拟消息阻塞      
+
+    . 如以SERVER为requester时，CMD改变：
+
+        int sys_msg_event_get_precent()
+        {
+            pMsgbuf->cmd = 2052; // SYS_MSG_CMD_GET_MD_PRE;
+        }
+
+        辅之以JCP命令触发：
+        j2box mdarea -act list
+
+        查看：
+        ipcs -q
+
+. SDK的线程安全                                   
+
+    当.so被多个线程调用时whoami这个全局变量相同。
+    如果此时两个线程msgsnd不同的cmd，后面的msgrcv极有可能出现调包。
+
+. 解决消息阻塞 /* 从现象(金字塔顶端)入手 */
+
+    . 准备日志messages
+        msgrcv()失败都应该打日志 messages
+        msgrcv()不明SYS_MSG_CMD_E 也应该打印 messages
+
+    . 谁在阻
+         如果有，表明是SERVER没有收，是SERVER的问题
+         如果无，表明是APP没有发，APP的问题
+
+    . 阻在哪里  
+        char *getLastRecvMsg() { return g_bufRecv; } // last processing msg
+        --------------------last recv msg--------------
+        --------------------last send msg--------------
+
+           ┌────────────────────────────────────┐
+           │        MSG_TYPE_SYSTEM_SVR         │
+           │心跳丢失 "heartbeat loss .* times"  │
+           └────────────────┬───────────────────┘
+                            │
+     ┌──────────────────────┴─────────────────────────┐
+     │  tail -100 messages  | grep 'cmd: *4' | sort   │
+     └──────────┬─────────────────────────┬───────────┘
+                │                         │
+                │ no cmd:4                │ with cmd:4
+           ┌────┴─────┐            ┌──────┴─────┐
+           │  jco_xxx │            │ jco_server │
+           └────┬─────┘            └──────┬─────┘
+                │                         │
+      ┌─────────┴──────────┐       ┌──────┴────────┐
+      │ 找相关人员处理     │       │ last msg 跟踪 │
+      └────────────────────┘       └──────┬────────┘
+                                          │
+                                   ┌──────┴────────┐
+                                   │ SYS_MSG_CMD_E │
+                                   └───────────────┘
+        
+    . 特例 -- msq撑满
+    des:   2, src: 100, cmd: 100
+        cmd: 100 (SYS_MSG_EVENT_PTZREQ)
+        解码器不断向1080p半球发送此消息，导致msq撑满而无 "heartbeat loss" 信息
+
+  ----------------------------------------------------------------------------
+    /* src: MSG_TYPE_SYSTEM_SVR                  
+     * cmd: SYS_MSG_CMD_BEGIN   SYS_MSG_EVENT_STRGSCAN
+     */      
+    --- --------------------sys msg--------------------
+    --- des:   1, src: 102, cmd:1001, ret:0, msgsize:224
+
+    /* src: ALARM_MSG_TYPE_ALARM_SVR
+     * cmd: SYS_MSG_CMD_SET_SVALARM
+     */
+    --- --------------------alarm msg------------------
+    --- des:   1, src: 100, cmd:5000, ret:0, msgsize:16

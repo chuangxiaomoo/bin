@@ -1,0 +1,52 @@
+/* calltree */
+
+Ref:
+    利用calltree查看工程代码中的函数调用关系
+    http://chenqin.blog.51cto.com/2356777/977113
+
+    Calltree工具使用手记
+    http://www.3null.org/?p=439
+
+Download:
+    http://down1.chinaunix.net/distfiles/calltree-2.3.tar.bz2
+
+Insatll:    
+    make
+    需要改名(搜索所有的都改掉)，因为与当前的libc有冲突， 如
+    fexecve -> fexecve2    
+
+Usage:    
+
+    calltree -gb -np -m *.c        
+
+        -b  就是那个竖线了，很直观地显示缩进层次。 
+        -g  打印内部函数的所属文件名及行号，外部函数所属文件名和行号也是可打印的，详man 
+
+        -np 不要调用c预处理器，这样打印出的界面不会很杂乱，但也可能会产生错误哦，
+            如果我们只看函数的调用关系的话，不会有大问题。 
+        -m  告诉程序从main开始 
+
+        还有一个重要的选项是 listfunction ，缩写是lf，用来只打印某个函数中的调用，用法是： 
+        #calltree -gb -np lf=send_query *.c 
+
+
+Dot:
+
+    apt-get install graphviz
+    // 不要用 graphviz*，会下载太多的东西了
+
+    /usr/bin/calltree -gb -np -m *.c -dot > test.dot
+    /usr/bin/dot -Tjpg test.dot -o calltree.jpg
+
+
+点评：
+
+    不是经过编译的内容，不是很准确
+
+    各类分析函数调用关系图的工具
+    http://blog.csdn.net/unbutun/article/details/6564695
+
+    KFT[7]的工具可以用来分析linux内核。作为linux内核的一个补丁，它能够跟踪内核中
+    某个系统调用的函数调用关系图，通过KFT提供的一个kd工具，可以得到一个文本格式
+    的函数调用关系图，结合我上面用到的tree2dot.sh（建议用资料[5]中的tree2dot.sh
+    ），可以得到一个图形输出。

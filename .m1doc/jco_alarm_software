@@ -1,0 +1,95 @@
+/* alarm process */
+
+. 数据 （三个结构分别对应3个JCP命令）
+. 配置                        
+. 处理流程    
+. 总结
+
+. 数据 （三个结构分别对应3个JCP命令）
+
+    ALARM_MSG_CMD_E     
+        -- testalarm -alarmtype 
+
+    SPARK_DETECT_S
+        -- sparkdetect
+
+    typedef struct
+    {
+        int cameraId;           //camera ID 号
+        long alarmId;           //报警的流水号
+        time_t last;            //最后更新报警信息的时间
+        char szAlarm[128];      //alarm 信息字符串
+    } SYS_ALARM_MSG;
+    static SYS_ALARM_MSG alarmMsg[SYS_ALARM_END];
+    typedef enum { , SYS_ALARM_END } SYS_ALARM_TYPE;
+        -- getalarmmsg
+
+
+. 配置                        
+
+    sys_msg_cmd_get_sparkdetect
+        ^
+        |
+        |
+        JCPCmdSparkdetect
+        sparkdetect
+
+. 处理流程    
+
+    WEB每3秒种刷新一次报警状态
+        ^
+        |
+        |
+        getalarmmsg
+            ^
+            |
+            |
+
+            JCPCmdGetAlarmMsgCfg() 
+            {
+                for () {
+                    JCOGetAlarmMsg() 
+                        -- static SYS_ALARM_MSG alarmMsg[SYS_ALARM_END];
+                        -- 从静态数组中获取一条报警数据，时效为 +- 5秒
+                }
+            }
+                ^
+                |
+                |
+                JCOSetAlarmMsg()
+                    -- 往静态数组中填充报警数据
+                    ^
+                    |
+                    |
+                    SYS_MSG_EVENT_ALARM 消息处理
+                        ^
+                        |
+                        |
+                        sys_msg_event_alarm()
+                        alarm_msg_build_buf()   // 构建消息               
+                            ^
+                            |
+                            |
+                            ENCODE检测到报警 
+                            JCP命令模拟报警 testalarm
+
+. Platform & SDK
+
+    alarm信息由jco_alarm主动推送，alarm_msg_event_platform()，
+    因此，其不会漏掉信息。
+
+    并不通过 server转发。
+
+. 探头输入(alarmin) 
+    枪机 报警由365 gpio 驱动 alarm.ko 处理
+    球机 由MCU用485上报给jco_server，jco_server通过消息发送给jco_alarm.
+    
+. 总结
+
+    使用大量的 switch case 导致维护成本大大增长
+    如 alarm_msg_build_buf()
+
+    更有效的方法是使用如 appMng 这样的结构体进行绑定，使用 for() 处理。
+    每次添加一个新类型，在结构体数组中增加一条记录即可，不要满世界去改代码。
+    一次编写，终生使用。
+

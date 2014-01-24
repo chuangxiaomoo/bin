@@ -1,0 +1,50 @@
+#! /bin/bash
+
+H264()
+
+    所谓的H264，只是对从前端出来的数据进行一种有损压缩。
+
+    新一代视频压缩编码标准。
+
+    码率、帧率和I B P帧
+    http://bbs.chinaunix.net/thread-1619779-1-1.html
+
+    一帧1080P数据大小：
+    RAW:     每个像素1个字节(插值法, 取邻近)
+    YUV-422: 每个像素2个字节(插值法)
+    YUV-420: 每个像素1.5个字节(插值法)
+
+COUNT_DATARATE()
+
+    http://stackoverflow.com/questions/5024114/suggested-compression-ratio-with-h-264
+
+    In a quite interesting document called H.264 Primer, a simple formula is given
+    as an hint to compute the `ideal' output file bitrate, based on the video's
+    characteristics:
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │ [width] x [height] x [framerate] x [motion rank] x 0.07 = [desired bitrate] │
+  └─────────────────────────────────────────────────────────────────────────────┘
+    where the image width and height is expressed in pixels, and the motion rank
+    is an integer between 1 and 4, 1 being low motion, 2 being medium motion, and
+    4 being high motion (motion being the amount of image data that is changing
+    between frames, see the linked document for more information).
+
+    So for instance, if we take a 1280x720 video at 24 FPS, with medium motion
+    (movie with slow camera movements, not many scene changes...), the expected
+    ideal bitrate would be:
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │ 1280 x 720 x 24 x 2 x 0.07 = 3,096,576 bps => approximatively 3000 kbps     │
+  └─────────────────────────────────────────────────────────────────────────────┘
+    This is purely a hint, and in my opinion, the only way to accurately find the
+    ideal bitrate is trial by error :)
+
+COUNT_DATARATE_EXAMPLE()
+
+    1920 * 1080 * 24 * 2 *  31 s = 3085,516,800 b (realsize: 24,553,239 Byte)
+    rate = 
+        24 * 8 /3085
+        .0622366288
+
+    最大I帧 266635 Byte
+
+

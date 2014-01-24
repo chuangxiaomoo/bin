@@ -1,0 +1,37 @@
+-- MySQL prepare语句的SQL语法
+-- http://www.cnblogs.com/gklsy/archive/2012/01/10/2317934.html
+
+. MySQL prepare语法：
+
+    PREPARE statement_name FROM preparable_SQL_statement; /*定义*/
+
+    EXECUTE statement_name [USING @var_name [, @var_name] ...]; /*执行预处理语句*/
+
+    {DEALLOCATE | DROP} PREPARE statement_name /*删除定义*/ ;
+
+-- 使用 prepare execute 的几点感悟
+
+. DECLARE 声明语句必须在 SELECT 执行语句之前
+
+    ERROR 1064 (42000): You have an error in your SQL syntax; 
+
+. (?) USING 只给函数的参数通用
+    mysql> DEALLOCATE PREPARE stmt1;
+
+    mysql> SET @s = 'SELECT SQRT(POW(?,2) + POW(?,2)) AS hypotenuse';
+    mysql> PREPARE stmt2 FROM @s;
+    mysql> SET @a = 6;
+    mysql> SET @b = 8;
+    mysql> EXECUTE stmt2 USING @a, @b;
+    +------------+
+    | hypotenuse |
+    +------------+
+    | 10         |
+    +------------+
+
+. tbl_name col_name 只能通过 CONCAT() 进行组装
+
+. SELECT INTO 变量只接受 会话变量 @var
+
+    SET @sqls = CONCAT('SELECT close FROM ', tbl_name, ' LIMIT 1 INTO @myclose');
+

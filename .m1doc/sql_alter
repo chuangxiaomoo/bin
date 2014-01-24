@@ -1,0 +1,33 @@
+
+. 重命名表
+
+    RENAME TABLE tbl_name TO new_tbl_name
+
+    ALTER TABLE tbl_name RENAME TO new_tbl_name;
+
+. 添加列    
+    ALTER TABLE table_name ADD col_name  int(4) not null;
+
+. 删除列
+    ALTER TABLE table_name DROP COLUMN column_name
+
+. 改变列名
+    ALTER TABLE table_name 
+        CHANGE [COLUMN] old_col_name new_col_name column_definition
+            [FIRST|AFTER col_name]
+
+    ALTER TABLE tbl_name CHANGE col_old col_new char(4) not null;
+    -- 曾经把 ALTER 写成了 ALERT，捣鼓了半天。
+
+. 改变列的数据类型
+    alter table tbl_name change id id1 varchar(10) not null;
+
+. 改变列属性    
+    ALTER TABLE min2 MODIFY code INT(6) ZEROFILL;
+
+
+. 创建索引
+    alter table test add index (cn,id);
+
+. 删除索引
+    alter table test drop index cn

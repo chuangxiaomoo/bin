@@ -1,0 +1,14 @@
+*0* lcov
+
+*0.1* lcov 1.9's bug
+3672 foreach $testname (%{$testfncdata}) { 
+3673 my $fnccount = $testfncdata->{$testname}; 
+3674 print $fnccount, "This is ----------------Top1\n"; # zj 
+3675 
+3676 foreach $func (%{$fnccount}) { 
+3677 #print $funcdata->{$func}, "____func----------------\n"; # zj 
+3678 if (defined($funcdata)) { # zj 
+3679 if (!defined($funcdata->{$func})) { 
+3680 print "__do_del__\n"; 
+3681 delete($fnccount->{$func}); 
+

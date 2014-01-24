@@ -1,0 +1,74 @@
+function fn_0_函数bg时main挂住了()  { cat bash_0_函数bg时main挂住了 ;}
+function fn_1_PIPE会使变量为空()    { cat bash_1_PIPE会使变量为空 ;}
+function fn_2_quoted_*_会被扩展()   { cat bash_2_quoted_*_会被扩展 ;}
+function fn_3_upquot_去两边空格()   { cat bash_3_upquot_去两边空格 ;}
+function fn_color()                     { cat bash_color ;}
+function fn_echo_last_cmd()             { cat bash_echo_last_cmd ;}
+function fn_faq()                       { cat bash_faq ;}
+function fn_getopts()                   { cat bash_getopts ;}
+function fn_kill_trap()                 { cat bash_kill_trap ;}
+function fn_net()                       { cat bash_net ;}
+function fn_readline()                  { cat bash_readline ;}
+function fn_redirection()               { cat bash_redirection ;}
+function fn_tmo_getopts()               { cat bash_tmo_getopts ;}
+function fn_tmo_trap()                  { cat bash_tmo_trap ;}
+
+function fn_01_SSL_CTX_free段错误()     { cat case_01_SSL_CTX_free段错误 ;}
+function fn_02_文件不能删除升级失败()   { cat case_02_文件不能删除升级失败 ;}
+function fn_03_FACEBOOK中无ftpclient()  { cat case_03_FACEBOOK中无ftpclient ;}
+function fn_04_红外夜视只有8m()         { cat case_04_红外夜视只有8m ;}
+
+function fn_01_C调用C++链接库()         { cat c_01_C调用C++链接库 ;}
+function fn_cdecl()                     { cat c_cdecl ;}
+function fn_const()                     { cat c_const ;}
+function fn_operator_predcedence()      { cat c_operator_predcedence ;}
+function fn_string()                    { cat c_string ;}
+function fn_syslog()                    { cat c_syslog ;}
+function fn_time()                      { cat c_time ;}
+function fn_typedef()                   { cat c_typedef ;}
+function fn_warning()                   { cat c_warning ;}
+
+function fn_alphabet_list()             { cat coreutils_alphabet_list ;}
+function fn_class_list()                { cat coreutils_class_list ;}
+function fn_example()                   { cat coreutils_example ;}
+function fn_manual()                    { cat coreutils_manual ;}
+
+function fn_operator_predcedence()      { cat cxx_operator_predcedence ;}
+function fn_op_names()                  { cat cxx_op_names ;}
+
+function fn_01_配置()                   { cat design_01_配置 ;}
+
+function fn_nfs()                       { cat etc_nfs ;}
+function fn_samba()                     { cat etc_samba ;}
+function fn_vsftpd()                    { cat etc_vsftpd ;}
+
+function fn_0_haoel()                   { cat gdb_0_haoel ;}
+function fn_4_查看源程序()              { cat gdb_4_查看源程序 ;}
+function fn_5_查看运行时数据()          { cat gdb_5_查看运行时数据 ;}
+function fn_7_改变程序的执行()          { cat gdb_7_改变程序的执行 ;}
+function fn_breakpoints()               { cat gdb_breakpoints ;}
+function fn_convention()                { cat gdb_convention ;}
+function fn_most_freq_cmds()            { cat gdb_most_freq_cmds ;}
+function fn_print_exp()                 { cat gdb_print_exp ;}
+function fn_reverse_debug()             { cat gdb_reverse_debug ;}
+function fn_run()                       { cat gdb_run ;}
+function fn_SIGSEGV()                   { cat gdb_SIGSEGV ;}
+function fn_source()                    { cat gdb_source ;}
+
+function fn_dynamic_lib()               { cat make_dynamic_lib ;}
+function fn_func()                      { cat make_func ;}
+function fn_inner_var()                 { cat make_inner_var ;}
+function fn_skeleton()                  { cat make_skeleton ;}
+function fn_static_lib()                { cat make_static_lib ;}
+function fn_watch_var()                 { cat make_watch_var ;}
+
+function fn_server()                    { cat svn_server ;}
+
+function fn_align()                     { cat vim_align ;}
+function fn_hotkey()                    { cat vim_hotkey ;}
+function fn_install()                   { cat vim_install ;}
+function fn_plugin()                    { cat vim_plugin ;}
+
+function fn_dump()                      { cat w3m_dump ;}
+function fn_hotkey()                    { cat w3m_hotkey ;}
+

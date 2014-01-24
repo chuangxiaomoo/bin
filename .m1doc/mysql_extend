@@ -1,0 +1,23 @@
+
+. 查看当前自己登录的数据库
+
+    SELECT DATABASE();
+
+. 选择你所创建的数据库
+
+    USE MYSQLDATA; (按回车键出现Database changed 时说明操作成功！)
+
+
+. 导入.sql文件命令（例如D:/mysql.sql）
+
+    use database;
+    source d:/mysql.sql;
+
+. 变量
+
+    SET @y='Goodbye Cruel World'; 
+    select @y;
+
+    SHOW VARIABLES LIKE '%size%';
+    SHOW VARIABLES WHERE VALUE > 0;
+

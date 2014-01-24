@@ -1,0 +1,24 @@
+#! /bin/bash
+
+#
+# 任何与摄像机相关配置都需要考虑“恢复出厂默认”相关操作。 
+#
+
+preset()
+    E:\winc\qdoc\ptz_preset.jpg
+
+    95  摄像机菜单      # 只有索尼摄像机可95调出菜单
+    130 左限位
+    131 右限位
+    243 恢复出厂默认
+
+
+cmd()
+	Up_Start = 1,		// 云台上
+	Down_Start = 3,		// 云台下
+	Left_Start = 5,		// 云台左
+	Right_Start = 7,	// 云台右
+    /winc/svn3/JCO_CENTER/LIB/TRUCK/IPCam_dm365/include/ptz.h|16|
+
+
+入档日期: 2013-02-26

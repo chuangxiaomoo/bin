@@ -1,0 +1,89 @@
+/* callback */
+
+多态实际上就是泛型。
+
+    所谓泛型，即我们不为特定的类型进行专门编码，而采用对不同类型进行
+    通用编码的方式。无论是数据结果还是算法。
+
+/*
+ * one operand is a pointer to an object or incomplete type and the other is a 
+ * pointer to a qualified or unqualified version ofvoid, and the type pointed 
+ * to by the left has all the qualifiers of the type pointed to by the right;
+ * NOTE: incomplete types, such as char arr[] = "mygod"; 
+ * (types that describe objects but lack info needed to determine their sizes)
+ */
+    对于C语言，理论支持来自 (void *)类型的指针与任意(type *)指针可以自由赋值，
+    因此类似下面的大量 switch case，可以用结构体数组或结构体链表表进行组织。
+
+    case SYS_MSG_CMD_GET_RTSPIGMP: {
+        MSG_RTSPIGMP_S *igmp = (MSG_RTSPIGMP_S *)pDst->buf;
+
+        if (SUCCESS == SysConfRtspigmgCfg(CONF_ACT_GET, NULL, igmp)) {
+            pDst->len = sizeof(MSG_RTSPIGMP_S);
+        } else {
+            pDst->len = 0;
+            ret = FAILURE;
+        }
+        *bReply = TRUE;
+        break;
+    }
+
+    typedef int (*getconf_t)(int , void *, void *);
+
+    struct msg_info {
+        int msgid;
+        int msglen;
+        getconf_t callback;
+    }
+
+    数组：
+        for(; i < ARRAR_SIZE(arr_handler);) {
+            if (arr_handler[i].msgid == msgid) {
+                arr_handler[i].callback(CONF_ACT_GET, NULL, pDst->buf);
+                pDst->len = arr_handler[i].msglen;
+            }
+        }
+
+    链表：list_for_each() {}
+
+/* ----------------- void 赋值测试 ----------------------- */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+
+struct callback {
+    char *arr_name;
+    int num;
+};
+
+typedef int (*callback_t)(int , void *);
+
+int print_callback(int method, void *ptr)
+{
+    struct callback *ptr_cb = ptr;
+
+    printf("%s\n", ((struct callback *)ptr)->arr_name);
+    printf("%d\n", ptr_cb->num);
+
+    return 0;
+}
+
+int print_callback2(int method, struct callback *ptr)
+{
+    printf("%d\n", ptr->num);
+    return 0;
+}
+
+int main(int argc, char *argv[])
+{
+    struct callback st_callback = {"chuangxiaomoo", 5};
+    print_callback(0, &st_callback);
+
+    callback_t funcptr = (callback_t)print_callback2;   /* need cast */
+    funcptr(0, &st_callback);                           /* No warnning */
+        
+    return 0;
+}
+

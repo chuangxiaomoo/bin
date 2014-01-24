@@ -1,0 +1,14 @@
+
+. 语法
+
+    UPDATE 表名称 SET 列名称 = 新值 WHERE 列名称 = 某值
+
+. 更新单列
+
+    我们为 lastname 是 "Wilson" 的人添加 firstname：
+    UPDATE Person SET FirstName = 'Fred' WHERE LastName = 'Wilson' 
+
+. 更新多列
+
+    UPDATE Person SET Address = 'Zhongshan 23', City = 'Nanjing' WHERE LastName = 'Wilson'
+

@@ -1,0 +1,23 @@
+
+. 从文本装入数据库表中（例如D:/mysql.txt）
+
+    LOAD DATA LOCAL INFILE '/file' INTO TABLE tbl_name
+
+        -- 分界同 SELECT，默认如下
+        FIELDS TERMINATED BY '\t' 
+        ENCLOSED BY '' 
+        ESCAPED BY '\\'
+        LINES TERMINATED BY '\n' 
+        ;
+
+. 定制列 
+
+    -- SET子句可以被用于提供不是来源于输入文件的值。把column3设置为当前日期和时间
+    LOAD DATA INFILE 'file.txt' INTO TABLE t1 (column1, column2)
+        SET column3 = CURRENT_TIMESTAMP;
+
+. 丢弃列
+
+    LOAD DATA INFILE 'file.txt' INTO TABLE t1 
+        (column1, @dummy, column2, @dummy, column3);
+

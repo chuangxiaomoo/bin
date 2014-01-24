@@ -1,0 +1,32 @@
+/* merge */
+
+. 对于merge的惧怕
+    
+    弄清楚4个文件的定义，你就知道手动merge其实也很容易。
+
+    我是否已经不愿意再接受新事物了。
+
+. 关于svn merge部分的详细说明－－－带详图
+    http://ylq365.iteye.com/blog/1763856
+
+
+. 一次Merge经历 -- 不应该所有分支都共用最新的 qpack.sh
+    // 对于增删文件，特别需要注意，从此，各用各的qpack.sh，互不相干
+
+    自7月以来的版本共8个，package内主要变化有：
+
+        1. 新增文件只有3g 4g相关的3个文件
+            reset_3gmoudle 这个文件已经处理过
+            cdc_eem.ko inno_com.ko 这两个ko是8月9日添加进文件系统的
+
+        2. 7月的版本全部同步到 trunk 1329，标志性特性是：support local_package
+
+        3. 8月ZXW版本在文件系统中新增 jco_zxw.cfg.bak 
+
+        4. 在normal平台下对bin/common/osdfont进行定制，但已经在qpack.sh中做了区分。
+
+    对现有打包，如果没有文件增删(打包时会对package中文件与文件系统中文件进行diff)，
+    打包是统一的。所以，对现有几个分支，全部可以同步到truck中的package. 
+
+    8月9日前的版本做一下处理：在文件系统中删除两个.ko即可，否则打包不过。
+

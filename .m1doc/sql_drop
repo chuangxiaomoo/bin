@@ -1,0 +1,6 @@
+
+. 删除
+
+    drop DATABASE MYSQLDATA;
+    drop TABLE MYTABLE;
+

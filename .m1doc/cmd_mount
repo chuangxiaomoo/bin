@@ -1,0 +1,14 @@
+#! /bin/bash
+Usage: mount -t type device mount_dir 
+
+    mount -t cifs -o username=zj,password=* //192.168.86.254/public /public/ 
+	mount -t tmpfs tmpfs /tmp 
+    mount -a # all in /etc/fstab
+	mount -t nfs -o nolock 192.168.86.159:/Nfsout /mnt
+
+    # usb
+	mount -t vfat /dev/scsi/host1/bus0/target0/lun0/part1 /mnt/
+	mount --bind olddir mnt_point
+
+    # use lsof when can not umount
+	umount /tmp 

@@ -1,0 +1,33 @@
+/* socket */
+
+总结网络编程中一些常用的方法及经验
+
+
+. ip地址 unsigned int 和 点分十进制的转换
+
+    #define _BSD_SOURCE
+    #include <arpa/inet.h>
+    #include <stdio.h>
+    #include <stdlib.h>
+
+    int
+    main(int argc, char *argv[])
+    {
+        struct in_addr addr;
+
+        if (argc != 2) {
+            fprintf(stderr, "%s <dotted-address>\n", argv[0]);
+            exit(EXIT_FAILURE);
+        }
+
+        // inet_addr() 有相同的功能，但 inet_aton()的返回值意义更加明确
+        // addr.sin_addr.s_addr = inet_addr("192.168.2.41");
+        if (inet_aton(argv[1], &addr) == 0) {
+            perror("inet_aton");
+            exit(EXIT_FAILURE);
+        }
+
+        printf("%s\n", inet_ntoa(addr));
+        exit(EXIT_SUCCESS);
+    }
+

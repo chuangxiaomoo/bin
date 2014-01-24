@@ -1,0 +1,78 @@
+
+. 带长度创建
+
+    DELIMITER ;
+    DROP DATABASE IF EXISTS PRO;
+    USE MYSQL
+    CREATE DATABASE PRO;
+    USE PRO
+    DROP TABLE IF EXISTS TEMP;
+
+    CREATE TABLE TEMP (
+        ID              INT(8) NOT NULL AUTO_INCREMENT,
+        FOREIGN_KEY     INT(8) NOT NULL,
+        PRIMARY KEY (ID)
+        ) TYPE=MyISAM AUTO_INCREMENT=1 COMMENT='测试';
+
+    DELIMITER //
+
+    DROP PROCEDURE IF EXISTS DNA  //
+
+    CREATE PROCEDURE DNA (IN THE_CNT INT(8), IN THE_STR VARCHAR(10000))
+
+    BEGIN
+        DECLARE i INT(8) DEFAULT 0;
+        REPEAT SET i = i + 1; 
+        -- SUBSTRING_INDEX(str,delim,count) 返回前count个field. -1时返回最后一个 
+        INSERT INTO TEMP VALUES (NULL, SUBSTRING_INDEX(SUBSTRING_INDEX(THE_STR, ',', i), ',', -1));
+        UNTIL i >= THE_CNT END REPEAT;
+    END
+    //
+
+    INSERT INTO TEMP VALUES (NULL, SUBSTRING_INDEX( SUBSTRING_INDEX(v_str, ',', i), ',', -1 ) );
+
+    DELIMITER ;
+
+    CALL DNA(7, '231,24,1114,151,7831241,9134,989');
+    SELECT * FROM TEMP;
+    +----+-------------+
+    | ID | FOREIGN_KEY |
+    +----+-------------+
+    |  1 |         231 |
+    |  2 |          24 |
+    |  3 |        1114 |
+    |  4 |         151 |
+    |  5 |     7831241 |
+    |  6 |        9134 |
+    |  7 |         989 |
+    +----+-------------+
+
+. 自动变长创建
+
+    看了一下他的代码，觉得改方法不是很灵活，比如需要每次输入要轮询的次数，
+    如这里输入了7，这个让我看起来很不舒服。于是自己动手修改了一下，特地也把代码贴出了，如下：
+
+    DELIMITER $$
+    DROP PROCEDURE IF EXISTS `Pr_Rand_insert`$$
+    CREATE PROCEDURE `Pr_Rand_insert`(
+            IN insert_string VARCHAR(10000) -- 定义输入
+            )
+    BEGIN
+        DECLARE I INT(8) DEFAULT 1;
+        DECLARE J INT(8) DEFAULT 0;
+
+        -- 计算共有多少位为",",则再加上1就表示共有多少个数值需要插入
+        SET J = CHAR_LENGTH(insert_string)-CHAR_LENGTH(REPLACE(insert_string,',','')) + 1; 
+
+        WHILE (I <= J) DO
+            -- 用到了substring_index()函数
+            INSERT INTO num VALUES (SUBSTRING_INDEX(SUBSTRING_INDEX(insert_string,',',I),',',-1)); 
+            SET I = I + 1;
+        END WHILE;
+        SELECT CONCAT('共插入了',J,'个值，请确认');
+    END$$
+
+    DELIMITER ;
+
+    希望对各位有帮助，有问题的可以和我交流交流
+

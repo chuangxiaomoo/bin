@@ -1,0 +1,41 @@
+#! /bin/bash
+
+. rcconf们也无能为力
+
+    http://blog.csdn.net/zhangxg8776/article/details/7790118
+
+    ubuntu下的服务的启动脚本放在/etc/init.d/下面，而它们的启动权限即启动方式和启
+    动时间点的配置在/etc/init/下面，一般情况下我们自己安装的服务如mysql的启动权限
+    配置在/etc/init/mysql.conf中，如下:
+
+        description "SMB/CIFS File Server"
+        author      "Steve Langasek <steve.langasek@ubuntu.com>"
+
+        start on (local-filesystems and net-device-up)
+        stop on runlevel [!2345]
+
+    这是samba服务器的中的文件服务smbd，将其改为：
+
+        start on (runlevel [016] and
+                  local-filesystems and net-device-up IFACE!=lo)
+        stop on runlevel [!2345]
+
+    效果顶呱呱的，这些服务不再开机启动了。
+
+. sysv-rc-conf
+
+    # sysv-rc-conf 与 chkconfig 一样，但是在Ubt上，其体验比chkconfig要好
+    sysv-rc-conf --list
+    sysv-rc-conf --list ntp
+    sysv-rc-conf ntp on
+    sysv-rc-conf ntp off
+
+. rcconf    
+
+    # 在Ubt上，rcconf 也差不多，同样有字符界面
+
+    rcconf --list
+    rcconf --list ntp
+    rcconf --on service[,service,...]
+
+

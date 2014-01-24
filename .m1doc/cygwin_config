@@ -1,0 +1,29 @@
+Config
+
+(0) vim
+    function vi() {
+        if [[ "$@" =~ /.* ]]; then
+            echo "--------  VIM -----------"
+            (cd / && gvim ${@#/})
+        else
+            gvim $@
+        fi
+    }
+
+(1) /etc/profile
+    # add /usr/sbin
+    export HOME=/root
+    PATH="/usr/local/bin:/usr/bin:/usr/sbin:${PATH}"
+
+(2) /etc/bash.bashrc
+    alias vi=
+    alias ll
+
+(3) tftpd-config
+    # 查看tftpd的启动方式
+
+(4) expect
+
+
+(5) Options
+    Window 80 x 46

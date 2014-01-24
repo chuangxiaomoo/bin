@@ -1,0 +1,15 @@
+#! /bin/bash
+
+   /**    convention    **/
+   (1) default value
+       lots of commands are variable parameter commands, so default come along
+
+       e.g.
+       commands [bnum]         # when no <bnum>, commands the last b
+       ... command-list ...
+       end
+
+   (2) pair command
+       set  listsize <count>
+       show listsize
+

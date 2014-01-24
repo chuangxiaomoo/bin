@@ -1,0 +1,84 @@
+/* gprof */
+linux 下分析程序运行时间的工具：gprof 和 gcov
+
+ 
+一、安装
+    apt-get install binutils binutils-doc
+
+    grpof在binutils包(包括 ar, nm, c++filt, readelf等)中，gcov在gcc包中。
+    以c程序为例，gcc编译。
+
+  . gprof
+
+    gcc -pg  xxx.c -o xxx
+    ./xxx   #执行完之后会产生一个 gmon.out 文件
+    gprof -b ./xxx   #便会给出程序中各函数调用的时间分析
+
+    gcc -g -pg -lc_p  memset_time.c
+    ./a.out
+    gprof -b -p -q  a.out gmon.out 
+
+
+. 常用的Gprof 命令选项解释： 
+  ┌──────────────────────────────────────────────────────────────────────────────┐
+  │ -b 不再输出统计图表中每个字段的详细描述。                                    │
+  │                                                                              │
+  │ -p 只输出函数的调用图（Call graph 的那部分信息）。                           │
+  │                                                                              │
+  │ -q 只输出函数的时间消耗列表。                                                │
+  │                                                                              │
+  │ -E Name不再输出函数Name 及其子函数的调用图，此标志类似于 -e                  │
+  │     标志，但它在总时间和百分比时间的计算中排除了由函数Name 及其子函数所用时间│
+  │                                                                              │
+  │ -e Name 不再输出函数Name                                                     │
+  │     及其子函数的调用图（除非它们有未被限制的其它父函数）。可以给定多个 -e    │
+  │     标志。一个 -e 标志只能指定一个函数。                                     │
+  │                                                                              │
+  │ -F Name 输出函数Name 及其子函数的调用图，它类似于 -f                         │
+  │     标志，但它在总时间和百分比时间计算中仅使用所打印的例程的时间。           │
+  │     可以指定多个-F 标志。一个 -F 标志只能指定一个函数。                      │
+  │     -F 标志覆盖 -E 标志。                                                    │
+  │                                                                              │
+  │ -f Name输出函数Name 及其子函数的调用图。可以指定多个 -f 标志。一个 -f        │
+  │     标志只能指定一个函数。                                                   │
+  │                                                                              │
+  │ -z 显示使用次数为零的例程（按照调用计数和累积时间计算）。                    │
+  └──────────────────────────────────────────────────────────────────────────────┘
+ 
+
+二、详细使用
+    使用Gnu gprof进行Linux平台下的程序分析
+    http://os.51cto.com/art/200703/41426_1.htm
+
+    gprof2dot.py
+    http://jrfonseca.googlecode.com/svn/trunk/gprof2dot/gprof2dot.py
+
+    http://www.cnblogs.com/rocketfan/archive/2009/11/15/1603465.html
+    http://www.cnblogs.com/rocketfan/archive/2009/10/02/1577361.html
+    http://blog.csdn.net/to_utopia/article/details/5820943
+
+
+三、Bus error 
+
+    root@192.168.2.44:~# ./a.out 
+    Alignment trap: a.out (849) PC=0x00015268 Instr=0x15100004 Address=0xfffffffd FSR 0x001
+    Bus error
+    ┌───────────────────────────────────────────────────────────┐
+    │echo 1 > /proc/sys/debug/alignment                         │
+    └───────────────────────────────────────────────────────────┘
+
+    /* Linux PC run ok, buf arm fail */
+    int main(int argc, char *argv[])
+    {
+        char packet[256] = "12345";
+        char *p = "34-";
+
+        *((int *)(packet+5)) = 124;                     // bus error
+
+        if (1 == sscanf(p, "%d", (int *)(packet+5))) {  // bus error
+            printf("success\n");
+        } 
+
+        return 0;
+    }
+

@@ -1,0 +1,76 @@
+/* kernel */
+
+        KERNEL
+
+KERNEL记录内核及驱动相关信息
+
+
+一、驱动调试信息
+    insmod drv.ko
+    lsmod
+    rmmod -f drv
+
+    dmsg
+    dmsg  -c
+
+
+1. entry(
+	arch/arm/kernel/setup.c:setup_arch();
+
+2. uImage
+
+	// make ARCH=arm CROSS_COMPILE=arm_v5t_le- davinci_dm365_defconfig
+	// cp arch/arm/configs/davinci_dm365_defconfig .config	
+	/* type '/' to search what you want */
+
+	make menuconfig
+	// make ARCH=arm CROSS_COMPILE=arm_v5t_le- uImage
+	make uImage
+
+3. modules
+	make ARCH=arm CROSS_COMPILE=arm_v5t_le- modules
+	make ARCH=arm CROSS_COMPILE=arm_v5t_le-	INSTALL_MOD_PATH="$modules_path" modules_install
+
+
+4. disp_&_modi_loadaddr
+	make distclean
+	make davinci_dm365_evm_config
+
+	vi u-boot.map	// search .text, you'll get the addr
+	vi board/davinci/dm365_evm/config.mk 	// TEXT_BASE = 0x81080000
+	hexdump u-boot.img			// after mkimage
+	objdump u-boot				// ELF file
+
+	/* go and bootm 
+     *
+	 * go binfile_exeaddr, so when tftp, the memo addr is important, 
+	 * always we need to 'vi board/davinci/dm365_evm/config.mk'
+	 *
+	 * bootm imgfile_loadaddr, bootm will move the file to the exeaddr,
+	 * So tftp anywhere in the memo is OK
+	 */
+	# grep "T _start" ./System.map | awk '{ printf "%s\n", $1}' // on Linux 81380000
+	GXV365 >tftp 0x81380000 u-boot.bin; go 0x81380000	        // on the U-boot
+
+5. mtd
+    cat /proc/mtd	# with this to check the partition of you flash
+    cat /proc/cmdline 
+    cat /proc/tty/driver/serial
+
+    int entrypoint {
+        //	cpu/arm926ejs/start.S
+        //	lib_arm/board.c
+        //	common/main.c
+    }
+
+7. grub
+    /* to have full screan, you should to edit the file "grub.conf"
+     */
+    default=0
+    timeout=5
+    splashimage=(hd0,0)/grub/splash.xpm.gz
+    hiddenmenu
+    title CentOS (2.6.18-92.el5)
+        root (hd0,0)
+        kernel /vmlinuz-2.6.18-92.el5 ro root=/dev/VolGroup00/LogVol00 vga=794 rhgb quiet
+        initrd /initrd-2.6.18-92.el5.img

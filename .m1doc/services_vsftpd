@@ -1,0 +1,92 @@
+*5.2* vsftpd
+
+/* when many users:
+ *
+ * a. after install $vsftpd, the default setting is allow anonymous and 
+ *    user exclude root; 
+ *    when login in, anonymous into /var/ftp and the others home dirs;
+ *
+ *    [enable root] from /etc/pam and vsftpd
+ *    /etc/vsftpd/ftpusers      
+ *    /etc/vsftpd/user_list
+ *    
+ * b. to enable localtime;
+ *    vi /etc/vsftpd/vsftpd.conf
+ *    use_localtime=YES 
+ *
+ * c. belows are also deny setting / blacklist:
+ *
+ *    /etc/vsftpd/ftpusers
+ *
+ *    userlist_enable=YES 
+ *    userlist_deny=YES 
+ *    userlist_file=/etc/vsftpd.user_list
+ *
+ *    chroot_list_enable=YES
+ *    chroot_list_file=/etc/vsftpd/chroot_list
+ *    
+ * d. belows are allow, the others are denied;
+ *    chroot_local_user=YES 
+ *    chroot_list_enable=YES 
+ *    chroot_list_file=/etc/vsftpd/chroot_list
+ * 
+ * e. change local_root, take coder for example;
+ *
+ *    mount --bind [src dir] [dst dir]
+ *
+ *    vi vsftpd.conf
+ *    user_config_dir=/etc/vsftpd_user_config
+ *    mkdir /etc/vsftpd_user_config
+ *    cd /etc/vsftpd_user_config 
+ *    vi coder
+ *    local_root=/Nfsout/ftpdirs/coder
+ *
+ *    # when a lot of users
+ *    # guest_enable=YES, this's a power barrier when use local user;
+ *    user_config_dir=/etc/vsftpd_user_config 
+ *    user_sub_token=$USER
+ *    vi /etc/vsftpd_user_config/username
+ *    local_root=/Nfsout/ftpdirs/$USER
+ *    cd /Nfsout/ftpdirs/; mkdir user1 user2 user3 ...
+ *    
+ *    when many users, can use "mount --bind" to share a public dir;
+ *
+ *
+ * f. set authority;
+ *    mkdir download upload pub;
+ *    chown root:root download upload pub;
+ *    
+ *    chmod 755 download;
+ *    chmod 753 upload; 
+ *    chmod 757 pub;
+ *
+ * g. creat virtual users -- no passwd;
+ *    useradd -d [home dir]    -s [bash of usr] -g [group] [usrname]
+ *    useradd -d /var/www/html -s /sbin/nologin -g root    virtual
+ *    [root]# yum install db4-utils*
+ *  
+ */
+    int vsftpd_conf() {
+        // "/etc/vsftpd/vsftpd.conf"
+        # below are DIY args
+        use_localtime=YES
+
+        # declare the denies
+        # change local_root;
+        # guest_username=/Nfsout/ftp_dirs/$USER
+        # guest_enable=YES
+        user_config_dir=/etc/vsftpd_user_config
+        user_sub_token=$USER
+    }
+
+    int file_in_dir_vsftpd_user_config() {
+        [root@localhost vsftpd_user_config]# pwd
+        /etc/vsftpd_user_config
+        [root@localhost vsftpd_user_config]# ls
+        cent  coder  ftptest
+        [root@localhost vsftpd_user_config]# cat *
+        local_root=/Nfsout/ftp_dirs/$USER
+        local_root=/Nfsout/ftp_dirs/$USER
+        local_root=/Nfsout/ftp_dirs/$USER
+    }
+

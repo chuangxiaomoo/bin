@@ -1,0 +1,184 @@
+#! /bin/bash
+
+. NTP报文
+
+    NTP的报文格式
+    http://www.cnblogs.com/TianFang/archive/2011/12/20/2294603.html
+
+    5.1.2.3. How is Time encoded in NTP?
+    http://www.ntp.org/ntpfaq/NTP-s-algo.htm
+
+. ntpq –p -n 
+    ┌────────────────────────┐
+    │ 选项-n使得查询命令更快 │ 
+    └────────────────────────┘
+
+. NTP on VM vbox
+
+    # /etc/crontab
+    # 防止多次mount ->  umount /media/sf_*
+    10    9   * * 1-5   root    /etc/init.d/vboxadd-service restart; umount /media/sf_*
+    10   12   * * 1-5   root    /etc/init.d/vboxadd-service restart; umount /media/sf_*
+
+    # timesync设置
+    opt_start="--timesync-set-start --timesync-set-threshold 3000"
+    opt_start="$opt_start --timesync-interval 5000 --timesync-set-threshold 2000"
+    binary=/usr/sbin/VBoxService
+
+    ┌──────────────────────────────────────────────────────────────────────┐
+    │ vi /etc/init.d/vboxadd-service                                       │
+    │ /usr/sbin/VBoxService --help                                         │
+    │                                                                      │
+    │ start() {                                                            │
+    │     testbinary                                                       │
+    │     daemon $binary $opt_start > /dev/null                            │
+    │ }                                                                    │
+    └──────────────────────────────────────────────────────────────────────┘
+                                                                            
+    9.13. Fine-tuning timers and time synchronization
+
+    ┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+    │ 9.13.3. Tuning the Guest Additions time synchronization parameters                                     │
+    │                                                                                                        │
+    │ cd C:\Program Files\Oracle\VirtualBox                                                                  │
+    │                                                                                                        │
+    │ VBoxManage guestproperty set VM_NAME ...                                                               │
+    │                                                                                                        │
+    │ VBoxManage.exe guestproperty get Ubt                                                                   │
+    │     "/Virt ualBox/GuestAdd/VBoxService/--timesync-interval"                                            │
+    │                                                                                                        │
+    │ VBoxManage.exe guestproperty set Ubt "/VirtualBox/GuestAdd/VBoxService/--timesync-interval"      3000  │
+    │ VBoxManage.exe guestproperty set Ubt "/VirtualBox/GuestAdd/VBoxService/--timesync-min-adjust"    100   │
+    │ VBoxManage.exe guestproperty set Ubt "/VirtualBox/GuestAdd/VBoxService/--timesync-latency-factor" 4    │
+    │ VBoxManage.exe guestproperty set Ubt "/VirtualBox/GuestAdd/VBoxService/--timesync-max-latency"   250   │
+    │ VBoxManage.exe guestproperty set Ubt "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold" 3000  │
+    │ VBoxManage.exe guestproperty set Ubt "/VirtualBox/GuestAdd/VBoxService/--timesync-set-on-restore" 1    │
+    └────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+. NTP on Windows
+    1. 安装Meinberg_ntp
+
+        下载 Driver 及 NTP Time Server Monitor program
+        http://www.meinbergglobal.com/english/sw/ntp.htm
+
+        安装后的效果
+        E:\winc\qdoc\Meinberg_ntp.jpg
+
+    2. 配置
+       ┌──────────────────────────────────────────────────────────┐
+       │ 文件编码必须为UTF-8                                      │
+       │     C:\Program Files\NTP\etc\ntp.conf                    │
+       │ fudge之                                                  │
+       │     driftfile "C:\Program Files\NTP\etc\ntp.drift"       │
+       │     # server 127.127.1.0     # 在外网不连通时不管用      │
+       │     fudge 127.127.1.0 stratum 3                          │
+       └──────────────────────────────────────────────────────────┘
+         定制 fudge IP，而不是默认的 127.127.0.1
+         fudge 192.168.2.79 stratum 3 
+
+
+. NTPClient -- 修改xp时间同步更新周期 
+    http://blog.chinaunix.net/uid-25385953-id-273272.html
+
+    [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\
+        W32Time\TimeProviders\NtpClient] 分支，
+    并双击 SpecialPollInterval 键值，将对话框中的“基数栏”选择到“十进制”上，
+    将数值数据改为86400，即1天...
+
+. NTP on JCO
+    joc ntp do request in while(1) {sleep(1);}
+    so 1 second more is needed.
+
+. FAQ on Linux
+
+  1. 没有上级NTP服务器时，ntpd不能提供服务
+    ┌──────────────────────────────────────────────────────────────────────────┐
+    │ 参考: http://www.51testing.com/?uid-130600-action-viewspace-itemid-122930│
+    │ server  127.127.1.0     # local clock                                    │
+    │ fudge   127.127.1.0 stratum 10                                           │
+    └──────────────────────────────────────────────────────────────────────────┘
+
+  2. 嵌入式上ntpdate不成功
+
+     ntpdate时间会稍稍有点长，因为其会请求多次求平均值。
+    ┌───────────────────────────────────────────────────────────────┐
+    │ ntpdate 207.5.137.134                                         │
+    │ Error : Servname not supported for ai_socktype                │
+    │ 4 Sep 03:25:49 ntpdate[27474]: can not find host 207.5.137.134│
+    └───────────────────────────────────────────────────────────────┘
+
+    solution:
+    Added the following lines to /etc/services
+    ┌──────────────────────────────────────────┐
+    │ ntp             123/tcp                  │
+    │ ntp             123/udp                  │
+    └──────────────────────────────────────────┘
+
+  3. ntpq –p   参数详解
+  ╔══════════════════════════════════════════════════════════════════════════════╗
+  ║ ntpq -p                                                                      ║
+  ║     remote   refid     st  t   when  poll  reach   delay   offset  jitter    ║
+  ║ ==================================================================           ║
+  ║ *10.247..  10.240.241.  4  u   53    64    377     0.240    0.374   0.240    ║
+  ║                                                                              ║
+  ║ remote之前                                                                   ║
+  ║     * 响应的NTP服务器和最精确的服务器                                        ║
+  ║     + 响应这个查询请求的NTP服务器                                            ║
+  ║     blank(空格) 没有响应的NTP服务器                                          ║
+  ║ remote ：                                                                    ║
+  ║     响应这个请求的NTP服务器的名称。                                          ║
+  ║ refid ：                                                                     ║
+  ║     NTP服务器使用的上一级ntp服务器。                                         ║
+  ║ st  ：                                                                       ║
+  ║     remote远程服务器的级别. 由于NTP是层型结构,有顶端的服务器,多层的Relay     ║
+  ║     Server再到客户端. 所以服务器从高到低级别可以设定为1-16. 为了减缓负荷和网 ║
+  ║     络堵塞,原则上应该避免直接连接到级别为1的服务器的.                        ║
+  ║ when:                                                                        ║
+  ║     上一次成功请求之后到现在的秒数。                                         ║
+  ║ poll :                                                                       ║
+  ║     本地机和远程服务器多少时间进行一次同步(单位为秒). 在一开始运行NTP的时候  ║
+  ║     这个poll值会比较小,那样和服务器同步的频率也就增加了,可以尽快调整到正确的 ║
+  ║     时间范围，之后poll值会逐渐增大,同步的频率也就会相应减小                  ║
+  ║ reach:                                                                       ║
+  ║     这是一个八进制值,用来测试能否和服务器连接.每成功连接一次它的值就会增加   ║
+  ║ delay:                                                                       ║
+  ║     从本地机发送同步要求到ntp服务器的round trip time                         ║
+  ║                                                                              ║
+  ║ offset ：                                                                    ║
+  ║    ┌───────────────────────────────────────────────────────────────────────┐ ║
+  ║    │主机通过NTP时钟同步与所同步时间源的时间偏移量，单位为毫秒（ms）。offset│ ║
+  ║    │越接近于0,主机和ntp服务器的时间越接近                                  │ ║
+  ║    └───────────────────────────────────────────────────────────────────────┘ ║
+  ║ jitter:                                                                      ║
+  ║     这是一个用来做统计的值. 它统计了在特定个连续的连接数里offset的分         ║
+  ║     布情况. 简单地说这个数值的绝对值越小，主机的时间就越精确                 ║
+  ║ t ：                                                                         ║
+  ║     T=types available                                                        ║
+  ║     l local (such as 127.127.1.0)                                            ║
+  ║     u unicast (this is the common type)                                      ║
+  ║     m multicast                                                              ║
+  ║     b broadcast                                                              ║
+  ╚══════════════════════════════════════════════════════════════════════════════╝
+
+. 服务启动时同步
+
+  1.
+    sysv-rc-conf ntp on
+
+  2.
+
+    /etc/init.d/ntp restart -f
+
+    case $1 in
+        start)
+            if [ '-f' = "$2" ]; then
+                echo "    ntpdate, please wait..."  
+                /root/bin/__ntp.sh
+            fi
+            ;;
+
+        restart|force-reload)
+            $0 stop && sleep 2 && $0 start $2
+            ;;
+    esac
+

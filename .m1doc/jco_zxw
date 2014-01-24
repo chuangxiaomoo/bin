@@ -1,0 +1,23 @@
+/* zxw */
+
+(1) 接单
+
+    a. 大单
+    b. 核心合作伙伴
+    c. 具有普遍意义
+
+(2) 按合约办事 -- 施总工程师
+
+    销售需要给出产品成本的 baseline  
+
+    要求给出销售预测 
+    但 销售预测 != 订单
+
+(3)    
+
+            get_stream_data
+            /           \
+    get_video_data  get_audio_frame_data
+            |           
+        get_frame_data  
+

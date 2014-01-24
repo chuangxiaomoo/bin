@@ -1,0 +1,90 @@
+/* 26_设备CPU占用率过高 */
+
+1. 真正原因
+    /* True causes */
+    NTP这个线程cpu占用过高，调用system("ping ntp_server")过于频繁
+
+2. 问题描述
+    /* from R&D or Tester */
+    WEB无视频，WEB正常工作，从系统信息得知CPU占用过高。
+    在WEB上点击“重启设备”按键无效
+
+3. 现象分析
+    /* log or details */    "ATTENTION: err or fail"
+    对于现象，我一点思路都没有，只是采用了重启设备的方法，但问题还是没有解决。
+    Luo接手后的第一件事就是看网页中的"systemstatus.asp"这个页面。
+
+5. 解决方案
+    /* 包括对未来的防御 */
+
+6. Introspection
+    /* 解决问题，首先要从整体把握，而系统状态信息是一个大概，进而细分之 
+     * cpu + memory + diskusage + uptime */
+    ┌───────────────────────────────────────────────────────────────────────────┐
+    │序号    状态信息                                                           │
+    │1    Temperature_Info=61C                                                  │
+    │2    Cpu_Usage=CPU-29.54%                                                  │
+    │3    Clock_Info=CPU-432MHz                                                 │
+    │4    Memory_Info=Total-87060KB, Used-76732KB, Free-10328KB                 │
+    │5    System_Uptime=1 days 06:33:52                                         │
+    │6    NvsApp_Uptime=1 days 06:33:33                                         │
+    │7    UPNP_Status=, web:80, ftp-21:21, rtsp-554:554, voice:8004, update:8006│
+    │8    Route_Info=Gateway-192.168.2.1, Iface=eth0                            │
+    │9    Dns_Server=202.96.128.86                                              │
+    │10   Video_link=Total-1, 0-192.168.2.7:1080P                               │
+    └───────────────────────────────────────────────────────────────────────────┘
+
+/* ----------- 原因猜想，目标分解，process to true causes ------- */
+. 对进程与线程的理解
+
+    http://space.itpub.net/16856446/viewspace-663818
+    从资源角度来理解线程与进程间的区别：
+        拥有独立的进程表项(TCB)，及独立的栈。
+
+    Linux的线程实现是在核外进行的，核内提供的是创建进程的接口do_fork()。
+    内核提供了两个系统调用__clone()和fork()
+
+    do_fork() 提供了很多参数，包括：
+        CLONE_VM（共享内存空间）、
+        CLONE_FS（共享文件系统信息）、
+        CLONE_FILES（共享文件描述符表）、 
+        CLONE_SIGHAND（共享信号句柄表，当前不适用于真正的SMP切换）、
+        CLONE_PID（共享进程ID，仅对核内进程，即0号进程有效）。
+
+    当使用fork系统调用产生多进程时，内核调用do_fork()不使用任何共享属性，
+    进程拥有独立的运行环境。
+
+    当使用pthread_create()来创建线程时,则最终设置了所有这些属性来调用__clone()，
+    而这些参数又全部传给核内的do_fork()，从而创建的"进程"拥有共享的运行环境，
+    只有栈是独立的，由 __clone()传入。
+    由此而说：Linux 线程在核内是以轻量级进程的形式存在地!
+
+
+    http://blog.sina.com.cn/s/blog_5dc7bbf80100wren.html
+    http://www.cnblogs.com/BreakMind/archive/2012/04/05/2433242.html
+    进程中的线程共享的资源有哪些？
+
+    通过'case_26_thread_share_test.c'得出的结论：
+        线程间的栈地址彼此可见。
+        但在线程退出后销毁以作它用。
+
+. Linux 的线程跟踪
+    ┌────────────────────────────────────────────────┐
+    │root@(none):~# ps                               │
+    │  PID  Uid     VmSize Stat Command              │
+    │    1 root        648 S   init                  │
+    │  789            3272 S   /app/vs/jco_server    │
+    │  797            3272 S   /app/vs/jco_server    │
+    │  798            3272 S   /app/vs/jco_server    │
+    └────────────────────────────────────────────────┘
+
+    busybox中的PID实际是tid, 使用gettid()来获得之，
+    现有的代码生成线程时使用了线程代理来管理所有的线程，在启动时做打印。
+
+    static void* PthreadMng_PthreadProc(void* pvArg);
+
+    int lnx_gettid(void)
+    {
+        return syscall(SYS_gettid);
+    }
+

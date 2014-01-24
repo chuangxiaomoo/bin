@@ -1,0 +1,35 @@
+#! /bin/bash
+
+一、使用命令模拟升级包文件上传
+  (1) html
+    <form action="/webs/updateCfg" method="post" enctype="multipart/form-data"
+         name="frmUpdate" id="frmUpdate">
+
+  (2) 触发
+    class="button" onclick="IframeUpdate()"
+    $("#frmUpdate").submit();
+
+  (3) curl对应的命令
+    curl -F "file=@normal.d.2013_01_28.tgz;" 192.168.2.45/webs/updateCfg
+
+二、关于POST
+
+                 
+  (1) 应付空格，使用%20代替之 --> 
+    # 在浏览器中复制执行过的JCP命令时，空格等特殊字符会自动转换成%ascii
+    audiotestcfg -chn 1/d1 -act set -start 1
+    curl http://192.168.2.168/?jcpcmd=audiotestcfg%20-chn%201/d1%20-act%20set%20-start%200
+
+参考：
+    curl 网站开发指南
+    http://kb.cnblogs.com/page/114034/
+
+    curl命令总结-一灯大师
+    http://wenku.baidu.com/view/76df1049c850ad02de804184.html
+
+    curl手册
+    http://wenku.baidu.com/view/e02c69f4f61fb7360b4c65e9.html
+
+    CURL的使用 (应用总结，函数库介绍)
+    http://wenku.baidu.com/view/0360b3bdf121dd36a32d8242.html
+

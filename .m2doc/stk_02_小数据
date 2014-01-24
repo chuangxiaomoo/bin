@@ -1,0 +1,22 @@
+#! /bin/bash 03_小数据
+
+. 东方财富网 > 行情中心 > 平安银行 > 主力控盘程度
+    http://quotef10.eastmoney.com/F10_zlkp/sz000001.html
+
+    东方财富网 > 数据中心 > 主力数据 > 基金持仓
+    http://data.eastmoney.com/zlsj/jj/201306/jgsl.html
+
+    万科A 
+    贵州茅台
+
+. 东方财富选股器 V1.0    
+
+    http://data.eastmoney.com/xuangu/#def    
+
+. google 大连港
+
+    w3m -dump 'https://www.google.com.hk/finance/match?matchtype=matchall&hl=zh-CN&ei=K6cmUpCpNomukgWYzgE&q=wka'
+
+. 实时行情    
+    http://hq.sinajs.cn/list=sh601006
+

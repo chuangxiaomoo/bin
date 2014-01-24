@@ -1,0 +1,19 @@
+#! /bin/bash
+
+function fn_main() {
+    # set -x 
+
+    var=" abcd
+            bcde " 
+    var2="`echo $var`"  # 不要 "$var"
+    [ "${var2}" == "abcd bcde" ] && echo -e "unquot var trim spaces \n" 
+
+    set +x
+
+    var=" abcd
+            bcde " 
+
+    echo $var           # 同样是没有换行的
+}
+
+fn_main

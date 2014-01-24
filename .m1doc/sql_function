@@ -1,0 +1,190 @@
+# ? FUNCTIONS
+# ? INSERT FUNCTION
+                         abs(-1) # 绝对值
+                            pi() # pi值
+                         sqrt(2) # 平方根
+                       mod(-5,3) # 取余-2
+# MATH
+                      ceil(10.6) # 进位+1 结果11 ceil(10.0)结果10
+                     floor(10.6) # 取整 10
+                      round(2.5) # 四舍五入到整数 结果3
+                    round(2.5,2) # 保留两位小数 结果2.50
+              truncate(2.5234,3) # 取小数后3位不四舍五入 2.523
+
+                       sign(-2); # 符号函数 返回-1 0还是0 正数返回1
+                pow(2,3),exp(2); # 2的3次幂 或e的2次幂
+                log(2),log10(2); # 求对数
+    radians(180),degrees(0.618); # 角度弧度转换
+              sin(0.5),asin(0.5) # 正弦和反正弦 类似cos acos tan atan
+
+# 字符
+                    length('hi') # 计算字符长度
+              concat('1',1,'hi') # 合并字符串
+      INSERT(str,pos,len,newstr) # 从第pos个字符开始，替换len个字符，len=0表示插入
+           ucase('a'),lcase('A') # 转成大写和小写
+ left('abcd',2),right('abcd',2); # 返回前两个字符和后两个字符
+ltrim(''),rtrim(''),trim(' 0 ')  # 删除空格
+replace('12345678','34567','0'); # 替换输出1208
+          substring('12345',1,2) # 取字符 输出12 1是位置 2是长度
+            instr('1234','234'); # 取得234位置是2
+                reverse('1234'); # 反序输出4321
+# 日期
+                  CURRENT_DATE() # 返回日期
+                  CURRENT_TIME() # 返回时间
+                           now() # 返回日期时间
+                    month(now()) # 当前月份 monthname 英文月份
+                  dayname(now()) # 星期英文 dayofweek()1是星期天 weekday()1是星期二
+                     week(now()) # 本年第多少周
+                                 # 今天是本年第多少天 今天是本月第多少天
+                dayofyear(now())
+               dayofmonth(now()) 
+                                 # 返回年月日 时分秒
+year(now()),month(now()),day(now()),
+hour(now()),minute(now()),second(now()) 
+                                 # 转换时间为秒和还原
+time_to_sec(now()),sec_to_time(3600*8); 
+
+                       version() # mysql版本
+                      database() # 当前连接的数据库 没有为null
+                          user() # 获取用户名
+                        md5('a') # 加密字符串
+                      ascii('a') # ascii值97
+      bin(100),hex(100),oct(100) # 返回二进制 十六进制 八进制
+                conv(10001,2,8); # 各种进制相互转换
+                          rand() # 生成0到1之间随机数
+                     sleep(0.02) # 暂停秒数
+
+
+#
+
+mysq存储过程中常用的函数，字符串类型操作，数学类，日期时间类。
+
+一.字符串类 
+CHARSET(str) //返回字串字符集
+CONCAT (string2  [,... ]) //连接字串
+INSTR (string ,substring ) //返回substring首次在string中出现的位置,不存在返回
+0
+LCASE (string2 ) //转换成小写
+LEFT (string2 ,length ) //从string2中的左边起取length个字符
+LENGTH (string ) //string长度
+LOAD_FILE (file_name ) //从文件读取内容
+LOCATE (substring , string  [,start_position ] ) 同INSTR,但可指定开始位置
+LPAD (string2 ,length ,pad ) //重复用pad加在string开头,直到字串长度为length
+LTRIM (string2 ) //去除前端空格
+REPEAT (string2 ,count ) //重复count次
+REPLACE (str ,search_str ,replace_str ) //在str中用replace_str替换search_str
+RPAD (string2 ,length ,pad) //在str后用pad补充,直到长度为length
+RTRIM (string2 ) //去除后端空格
+STRCMP (string1 ,string2 ) //逐字符比较两字串大小,
+SUBSTRING (str , position  [,length ]) //从str的position开始,取length个字符,
+注：mysql中处理字符串时，默认第一个字符下标为1，即参数position必须大于等于1
+mysql> select substring('abcd',0,2);
++-----------------------+
+| substring('abcd',0,2) |
++-----------------------+
+|                       |
++-----------------------+
+1 row in set (0.00 sec)
+
+
+mysql> select substring('abcd',1,2);
++-----------------------+
+| substring('abcd',1,2) |
++-----------------------+
+| ab                    |
++-----------------------+
+1 row in set (0.02 sec)
+
+TRIM([[BOTH|LEADING|TRAILING] [padding] FROM]string2) //去除指定位置的指定字
+符
+UCASE (string2 ) //转换成大写
+RIGHT(string2,length) //取string2最后length个字符
+SPACE(count) //生成count个空格 
+
+二.数学类
+
+ABS (number2 ) //绝对值
+BIN (decimal_number ) //十进制转二进制
+CEILING (number2 ) //向上取整
+CONV(number2,from_base,to_base) //进制转换
+FLOOR (number2 ) //向下取整
+FORMAT (number,decimal_places ) //保留小数位数
+HEX (DecimalNumber ) //转十六进制
+注：HEX()中可传入字符串，则返回其ASC-11码，如HEX('DEF')返回4142143
+也可以传入十进制整数，返回其十六进制编码，如HEX(25)返回19
+LEAST (number , number2  [,..]) //求最小值
+MOD (numerator ,denominator ) //求余
+POWER (number ,power ) //求指数
+RAND([seed]) //随机数
+ROUND (number  [,decimals ]) //四舍五入,decimals为小数位数]
+注：返回类型并非均为整数，如：
+(1)默认变为整形值
+mysql> select round(1.23);
++-------------+
+| round(1.23) |
++-------------+
+|           1 |
++-------------+
+1 row in set (0.00 sec)
+
+mysql> select round(1.56);
++-------------+
+| round(1.56) |
++-------------+
+|           2 |
++-------------+
+1 row in set (0.00 sec)
+
+(2)可以设定小数位数，返回浮点型数据
+mysql> select round(1.567,2);
++----------------+
+| round(1.567,2) |
++----------------+
+|           1.57 |
++----------------+
+1 row in set (0.00 sec)
+
+SIGN (number2 ) //返回符号,正负或0
+SQRT(number2) //开平方
+
+ 
+三.日期时间类
+ 
+ADDTIME (date2 ,time_interval ) //将time_interval加到date2
+CONVERT_TZ (datetime2 ,fromTZ ,toTZ ) //转换时区
+CURRENT_DATE (  ) //当前日期
+CURRENT_TIME (  ) //当前时间
+CURRENT_TIMESTAMP (  ) //当前时间戳
+DATE (datetime ) //返回datetime的日期部分
+DATE_ADD (date2 , INTERVAL d_value d_type ) //在date2中加上日期或时间
+DATE_FORMAT (datetime ,FormatCodes ) //使用formatcodes格式显示datetime
+DATE_SUB (date2 , INTERVAL d_value d_type ) //在date2上减去一个时间
+DATEDIFF (date1 ,date2 ) //两个日期差
+DAY (date ) //返回日期的天
+DAYNAME (date ) //英文星期
+DAYOFWEEK (date ) //星期(1-7) ,1为星期天
+DAYOFYEAR (date ) //一年中的第几天
+EXTRACT (interval_name  FROM date ) //从date中提取日期的指定部分
+MAKEDATE (year ,day ) //给出年及年中的第几天,生成日期串
+MAKETIME (hour ,minute ,second ) //生成时间串
+MONTHNAME (date ) //英文月份名
+NOW (  ) //当前时间
+SEC_TO_TIME (seconds ) //秒数转成时间
+STR_TO_DATE (string ,format ) //字串转成时间,以format格式显示
+TIMEDIFF (datetime1 ,datetime2 ) //两个时间差
+TIME_TO_SEC (time ) //时间转秒数]
+WEEK (date_time [,start_of_week ]) //第几周
+YEAR (datetime ) //年份
+DAYOFMONTH(datetime) //月的第几天
+HOUR(datetime) //小时
+LAST_DAY(date) //date的月的最后日期
+MICROSECOND(datetime) //微秒
+MONTH(datetime) //月
+MINUTE(datetime) //分
+
+ 
+附:可用在INTERVAL中的类型
+DAY ,DAY_HOUR ,DAY_MINUTE ,DAY_SECOND ,HOUR ,HOUR_MINUTE ,HOUR_SECOND ,MINUTE
+,MINUTE_SECOND,MONTH ,SECOND ,YEAR 
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

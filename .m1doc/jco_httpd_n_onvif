@@ -1,0 +1,6 @@
+/* httpd_n_onvif */
+
+ssize_t recv(int sockfd, void *buf, size_t len, int flags);
+                                                      ^
+                                                      |
+                                                    MSG_PEEK

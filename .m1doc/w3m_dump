@@ -1,0 +1,17 @@
+
+    # 递归下载 并指明深度
+
+    wget -r -l 1 http://wiki.ubuntu.org.cn/UbuntuSkills
+
+    w3m -dump 
+
+    w3m -cols 78 -dump
+
+    w3m -cols 78 -dump http://baike.baidu.com/view/1065598.htm 
+
+    or cooperate with wget:
+
+    wget http://coolshell.cn/articles/3643.html
+    cat 3643.html | w3m -cols 78 -dump -T text/html
+
+

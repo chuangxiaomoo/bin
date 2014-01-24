@@ -1,0 +1,62 @@
+/* align */
+
+    :help align
+    http://www.drchip.org/astronaut/vim/vbafiles/Align.vba.gz
+    http://www.drchip.org/astronaut/vim/align.html#Examples
+
+    let maplocalleader='\'
+    "~/.vim/plugin/AlignMapsPlugin.vim|168|" 
+
+    Align 可以与 vis.vim 完美结合地工作
+    Align 可以添加辅助字符，再删除之来完成Align:
+         int a;
+        char b;
+
+(1) C-stype
+    \adec   declare 
+    \acom   re-formats comments:
+    \t=
+    \T=
+
+
+(2) EXAMPLE of Align & AlignCtrl
+
+    2D array>
+        :AlignCtrl p0P0 }
+        :AlignCtrl p0P1 ,
+        '<,'>Align ,
+        '<,'>Align }
+
+        {"?"      , NULL                 , 0           } ,
+        {"act"    , NULL                 , 0           } ,
+        {"enable" , (void*)&zxw.bEnable  , sizeof(int) } ,
+
+    Multi delim>
+        :AlignCtrl p0P0 "))"
+        :AlignCtrl ,
+        memset(szName  , 0, sizeof(szName  ));
+        memset(szIP    , 0, sizeof(szIP    ));
+
+    Macro> 
+        :AlignCtrl Wp1P0 \\
+        :'<,'>Align      \\
+
+                     +---------------+-------------------+-----------------+
+                     |AlignCtrl w= :=|  AlignCtrl W= :=  | AlignCtrl I= := |
+    +----------------+---------------+-------------------+-----------------+
+    |     Original   |   w option    |     W option      |     I option    |
+    +----------------+---------------+-------------------+-----------------+
+    |   a := baaa    |a     := baaa  |   a      := baaa  |   a     := baaa |
+    | caaaa := deeee |caaaa := deeee | caaaa    := deeee |   caaaa := deeee|
+    |       ee := f  |ee    := f     |       ee := f     |   ee    := f    |
+    +----------------+---------------+-------------------+-----------------+
+
+    w : ignore all selected lines' initial white space
+    W : retain all selected lines' initial white space
+    I : preserve and apply the first line's leading white space to all lines
+    
+    = : all separators are equivalent 
+    l : fields will be left-justified 
+    p1: pad one space before each separator 
+    P1: pad one space after each separator 
+

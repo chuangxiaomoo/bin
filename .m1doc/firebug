@@ -1,0 +1,28 @@
+#! /bin/bash
+
+. 安装
+
+    工具 -> 附加组件 -> 搜索框中输入“firebug”
+
+    点击“安装”
+
+. firebug Chrome
+
+    firebug Chrome版本很多功能不能用。
+
+    Chrome新扩展：Firebug Chrome版
+    http://www.chromi.org/archives/2971
+
+
+. 360极速浏览器的调试器 （选择极速模式）
+
+    <F12>进入console
+
+    选择Tab页Network
+
+    XHR -> 可以看到相应方法 PUT or GET 就出来了。
+    ●   -> 下工具图标栏中的这个图标清楚 XHR
+
+    
+. 360的手式也很好玩    
+

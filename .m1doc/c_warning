@@ -1,0 +1,9 @@
+
+error: expected expression before ‘int’
+    `case`字句中不可以定义变量，一定要定义，必须用{}将整个case块括起来
+
+error: expected specifier-qualifier-list before `identifer`
+    在使用GCC时经常会遇到expected specifier-qualifier-list before sth之类的错
+    误。specifiers是指void、char、struct Foo等词汇；qualifiers是指像const和
+    volatile一类的关键字。一个词汇再未定义之前就使用就会出项这种错误，可以通过
+    typedef进行定义以后再使用。

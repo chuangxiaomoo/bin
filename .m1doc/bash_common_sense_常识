@@ -1,0 +1,14 @@
+#! /bin/bash
+
+. * expand
+
+    var="This is * my god"
+    echo ${var}  
+    echo "This is `ls` my god"
+
+. highlight
+    if true;then
+    elif [ $types[$i] == "BOOL" ]; then     # a array ${types[$i]}
+    fi
+
+

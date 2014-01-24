@@ -1,0 +1,40 @@
+/* $top */
+
+. load average
+
+    top，uptime等命令分别记录了一分钟、五分钟、以及十五分钟的系统平均负载……
+    我们以哪个数字为准?一分钟?五分钟?还是十五分钟?
+    应该着眼于五分钟或者十五分钟的平均数值
+
+    一只单核的处理器可以形象得比喻成一条单车道。
+    1.00 表示刚好是在这座桥的承受范围内。
+    2.00 的情况说明车流已经超出了桥所能承受的一倍
+
+    如果你有四个处理器的主机?那么它的负载均值在 3.00 是很正常的。每个核load = 0.75
+
+    查看系统装备了多少核心的处理器?
+    cat /proc/cpuinfo
+    grep "model name" /proc/cpuinfo | wc -l
+
+. busybox top
+
+    can't find udhcpc $top
+	because the display scope is limited, os sort it, you can find it.
+    command   sorted field                  supported
+      A         start time (non-display)      No
+      M         %MEM                          Yes
+      N         PID                           Yes
+      P         %CPU                          Yes
+      T         TIME+                         Yes
+
+      
+. montavista top
+    pc:
+        tar -ztf /root/bin/.warehouse/terminfo.tgz      
+
+    dev:
+        cd /
+        tftp -r terminfo.tgz -g 192.168.2.41; chmod +x terminfo.tgz;
+        cd 
+        ./top -n 1
+

@@ -1,0 +1,16 @@
+    function fn_echo_last_cmd() {
+    cat <<-"HERE"
+    BASH: echoing the last command run
+        http://stackoverflow.com/questions/6109225/bash-echoing-the-last-command-run
+
+        run() { PREVCMD=$*;$*; }
+
+        $_
+
+        $ find . -iname '*.cpp' -print
+        ./foo.cpp
+        ./bar.cpp
+        $ vi -p `!!`
+        2 files to edit
+	HERE
+    }

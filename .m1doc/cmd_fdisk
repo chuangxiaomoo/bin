@@ -1,0 +1,36 @@
+# !/bin/bash
+
+# *3* fdisk
+# *3.2* fsck
+# *3.1* add_a_new_disc_sh()
+
+
+dev_disc="/dev/sdc"
+mount_path="/b_disc"
+fdisk $dev_disc
+
+# n to add a new logical disk
+# p to primay partition
+# Partition number (1-4): 1
+# First cylinder (1-2610, default 1): 1
+# Last cylinder or +size or +sizeM or +sizeK (1-2610, default 2610):
+# w to write it in!
+
+mkfs.ext3 $dev_disc
+
+fdisk -l | grep "$dev_disc"
+
+if [ ! -d "$mount_path" ]; then
+    mkdir $mount_path
+fi
+
+mount $dev_disc $mount_path
+
+df -h
+echo "add the start up conf to /etc/fstab"
+sleep 2
+
+dev_not_in_conf=`grep "$dev_disc"  /etc/fstab`
+if [ -z $dev_not_in_conf ]; then
+    echo "$dev_disc     $mount_path     ext3    defaults    1 2" >> "/etc/fstab"
+fi

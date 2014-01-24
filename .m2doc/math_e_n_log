@@ -1,0 +1,45 @@
+/* e_n_log */
+
+. e -- 数学常数
+    http://zh.wikipedia.org/wiki/E_(%E6%95%B0%E5%AD%A6%E5%B8%B8%E6%95%B0)
+    google or baidu 'e' 可以得到一个网页版的计算器
+
+    e   = sum(1/n!); (n >= 0, 0的阶乘为1)
+        = 1 + 1 + 1/2 + 1/6  + 1/24
+        =         2.5 + .166 + .041
+        = 2.71828182846
+
+    很多增长或衰减过程都可以用指数函数模拟。
+        
+
+. log
+
+    欧拉首先使用y=a^x来定义x=log (a) y，他指出：“对数源于指数”。
+
+    以10为底的对数叫做常用对数（common logarithm），并把记为lg。
+    以e为底的对数称为自然对数（natural logarithm），并把记为ln。
+
+    e (x)           The exponential function of raising e to the value x.
+    l (x)           The natural logarithm of x.
+    e (l(2)/3)      2开3次方 1.259921049
+
+. 对数恒等式 a^log(a) N=N 
+
+    证：设log(a) N=t，（t∈R）
+    则有a^t=N
+    a^(log(a)N)=a^t=N.
+    即证.[2]
+
+. 开方运算 (n 的多少次幂为1？)
+    参考wiki-> log 运算公式
+    http://zh.wikipedia.org/wiki/%E5%B0%8D%E6%95%B8
+    求证：e (l(2)/3)  == 2^(1/3) == x
+    证：
+        同取l() -> l(e) = 1 及 "指系运算" =>
+        l(2)/3 == l(x) 
+        再作指系运算 =>
+        l(2^(1/3)) == l(x) 
+
+        即证：2^(1/3) == x
+        
+

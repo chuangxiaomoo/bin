@@ -1,0 +1,19 @@
+/* tftp */
+
+tftp [ options... ] [host [port]] [-c command]
+
+EXAMPLE
+
+    tftp localhost -c get RELEASE
+
+    tftp localhost -c put RELEASE
+
+FAQ    
+
+ 1> Error code 0: Permission denied
+    
+    http://bbs.chinaunix.net/thread-2089826-1-1.html
+    Due to the lack of authentication information.
+    Files may be written only if they already exist and are publicly writable
+    chmod 777 /tftpboot/ 
+

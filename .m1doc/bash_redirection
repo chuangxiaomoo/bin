@@ -1,0 +1,46 @@
+#! /bin/bash
+
+    REDIRECTION
+        File descriptor 5 is held open often, always we use FD start from 6 
+        File descriptor in BASH is like a pointer var as FILE *fp, FILE handler
+        File descriptor inherit from parenet
+
+        EXAMPLE
+            exec 6>&1                       # FILE *fp = STDOUT;
+            exec 1> $LOGFILE
+            echo '----start of log----'
+            date
+            echo '----end   of log----'
+            exec 1>&6 6>&-
+        
+        REDIRECT-STDOUT
+            [:]> FILE     truncate FILE len to 0
+              &> FILE     also >& FILE, STDOUT and STDERR both redirect to FILE
+
+        REDIRECT-STDIN
+            cat <FILE
+            cat <<-FILE
+
+            [dmtsai@linux ~]$ find /home -name testing > list 2> list  <==错误写法
+            [dmtsai@linux ~]$ find /home -name testing > list 2>&1     <==正确写法
+            FILE
+
+        OPEN
+            exec [n]< FILE      read, U can't write
+            exec [n]> FILE      write, U can't read 
+            exec [n]>>FILE      append, U can't read 
+            exec [n]<> FILE     read/write, no need close twice except /dev/tcp
+            exec {logfd}>g.log  write, var logfd will be a fd >= 10
+        
+        CLOSE
+            exec [n]<&-         close FD ___input and output___
+            exec [n]>&-         close FD ___input and output___
+            exec [0]<&-         close STDIN
+            exec [1]>&-         close STDOUT
+
+        FD-OPERATE
+            open(file, O_RDWR)        exec fd<> FILe
+            read(fd, len)             read -n len <& fd
+            write(fd)                 echo -n "Hello world!" >& fd
+            close(fd)                 exec fd>&-
+                                      exec fd<&-

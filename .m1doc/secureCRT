@@ -1,0 +1,47 @@
+/* secureCRT */
+
+. 输入中文
+
+    更新到6.5版本就可以了
+
+    http://blog.sina.com.cn/s/blog_40e1ba640100igcx.html
+    更改自己目录下的.bashrc文件，新加一句：
+    export LANG= zh_CN.GBK
+    再检查下secureCRT下Session Option->Appearance->character:default
+    OK啦！可以输入中文啦！ 
+
+. 6.5版本
+
+    解决SecureCRT中文版“数据库里没找到防火墙‘无’”的错误提示
+    http://blog.csdn.net/jk110333/article/details/8953455
+
+. 密钥
+
+    使用Windows下的SecureCRT进行SSH连接 
+    SecureCRT生成密钥对后Identity.pub 上传 
+    localhost:~/.ssh # ssh-keygen -i >authorized_keys
+    Enter file in which the key is (/root/.ssh/id_rsa): /root/.ssh/Identity.pub 
+    localhost:~/.ssh # vi /etc/ssh/sshd_config 
+    41 RSAAuthentication yes 
+    42 PubkeyAuthentication yes 
+    43 AuthorizedKeysFile .ssh/authorized_keys 
+
+. map
+    sort can't process the strings after sed and awk, sort -n
+    # how can I get the ascii of Alt (033), I use ga
+    secureCRT key
+     A        VK_A                        "/|[0-9]*|\n"
+     A        VK_B                        "\033b"
+     A        VK_D                        "\033d"
+     A        VK_F                        "\033f"
+     A        VK_I                        "192.168.128.1"
+     A        VK_J                        "hares -state | grep -E '(dg|ip|app|nic)' | sort -k3"
+     A        VK_K                        "kill -9 "
+     A        VK_O                        "chmod o-w *;ls\n"
+     A        VK_P                        "ps -ef | grep "
+     A        VK_S                        ":syntax on\n:set ft=sh hls is\n"
+     A        VK_T                        "vi /var/bash.trc\n"
+     A        VK_X                        "export p_s=/opt/osmu/script;export p_sa=/opt/osmu_agent/script;\n cd $p_s"
+     AE       VK_UP                       "export HISTFILESIZE=100; export HISTSIZE=100;clear\n"
+
+

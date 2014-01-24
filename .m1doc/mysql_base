@@ -1,0 +1,106 @@
+/* mysql */
+
+. HELP：
+    MySQL 5.1参考手册
+    http://dev.mysql.com/doc/refman/5.1/zh/index.html
+
+    mysql> help SELECT
+
+    Mysql命令大全
+    http://see.xidian.edu.cn/cpp/u/mysql_ml/
+
+. Startup
+    startup /etc/init.d/mysql
+    config  /etc/mysql/my.cnf
+
+    mysql --help | less
+
+. Auto_complete 
+
+    vi /etc/mysql/my.cnf
+    [mysql]
+    auto-rehash
+
+    mysql --auto-rehash 
+
+    NOTE:
+        1 修改my.cnf后不需要重启服务
+        2 USE DBNAME后才能使用补全
+        3 SELECT 等SQL命令补全要使用大写，否则不能补全
+
+. 修改MySQL默认数据库存放路径 及 权限        
+    
+    -- MySQL只对/tmp目录有写权限，其它都只有读权限，可以通过下面两个文件修改之。
+
+    service mysql stop
+    cp -a /var/lib/mysql/ /opt/mdata/
+
+    vi /etc/mysql/my.cnf
+    [mysqld]
+    datadir = /opt/mdata/mysql
+
+    vi /etc/apparmor.d/usr.sbin.mysqld
+    /var/lib/mysql/ r,
+    /var/lib/mysql/** rwk,
+
+    -- 修改结束 */
+
+. Access denied
+    /* 如 -u root不指定mysql，系统亦默认为mysql 
+     * 下面这条命令等同于什么参数也不加的命令： mysql 
+     * */
+    mysql -u root mysql
+    Access denied for user 'mysql'@'localhost' (using password: NO)
+
+    /* 1. start mysqld_safe */
+    service mysql stop
+    mysqld_safe --user=mysql --skip-grant-tables --skip-networking&
+    mysql -u root mysql
+
+    /* 2. 访问表mysql.user，只留一个用户，其它的都删除，防止为空NULL的出现 */
+    mysql> DELETE FROM mysql.user WHERE host = '127.0.0.1';
+    mysql> update mysql.user set password='' where user='root';
+    mysql> SELECT USER, HOST, PASSWORD FROM mysql.user;
+    +------+-----------+----------+
+    | USER | HOST      | PASSWORD |
+    +------+-----------+----------+
+    | root | localhost |          |
+    +------+-----------+----------+
+
+    FLUSH PRIVILEGES;
+    quit
+
+    /* 3. restart */
+
+    // ps -ef  | grep mysqld | awk '{print $2}' | xargs kill -9
+    ps -ef  | grep mysqld_safe | awk '{print $2}' | xargs kill -9
+
+    service mysql start
+
+    // 因为密码是空，直接登陆。否则需要 -p passwd
+    mysql -u root
+
+. 两种重定向方式：
+    root@Ubt:~/bin# mysql -u root <<-HERE
+    > SELECT USER, HOST, PASSWORD FROM mysql.user;
+    > HERE
+    USER    HOST    PASSWORD
+    root    localhost
+
+    root@Ubt:~/bin$ echo "
+    > SELECT USER, HOST, PASSWORD FROM mysql.user;
+    > " | mysql -u root
+    USER    HOST    PASSWORD
+    root    localhost
+
+. 输出格式选择
+
+    -t --table              强制输出表格边框(ASCII boxes +-|) 
+    -B --batch              禁用输出表格边框
+    -X xml
+    -E 每行一列
+    -N --skip-column-names 不输出列名
+
+. ?
+    \c Clear the current input statement
+

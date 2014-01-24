@@ -1,0 +1,30 @@
+/* branches */
+
+/*
+ * 看上去 pschn_multiOSDText_set(1, msgbuf, 100, 100); 的输入只有
+ * 一个msgbuf的字符串输入，但是以行为单位来看，则共有下面3个方面。
+ */
+
+#define XO_1 "11111"
+#define XO_2 "22222"
+#define XO_3 "33333"
+#define EMPTY "\r\n"
+
+
+TEST(video_param, multiosd_000)
+{
+    char msgbuf[128] = EMPTY EMPTY;
+    pschn_multiOSDText_enable(1);
+    pschn_multiOSDText_set(1, msgbuf, 100, 100);
+}
+
+/* 000 - 111 8 test-cases */
+
+TEST(video_param, multiosd_111)
+{
+    char msgbuf[128] = XO_1 EMPTY XO_2 EMPTY XO_3;
+    pschn_multiOSDText_enable(1);
+    pschn_multiOSDText_set(1, msgbuf, 100, 100);
+}
+
+

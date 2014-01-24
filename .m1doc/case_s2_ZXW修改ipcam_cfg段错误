@@ -1,0 +1,60 @@
+
+            case_s2_ZXW修改ipcam_cfg段错误
+                    2013-01-11
+
+一、触发
+    j2box zxwcfg -act set -hbeatperiod 99
+
+二、
+    Program received signal SIGSEGV, Segmentation fault.
+    [Switching to Thread 0x40cdb490 (LWP 885)]
+    0x402c66d4 in strlen () from /lib/libc.so.6
+    (gdb) bt
+    #0  0x402c66d4 in strlen () from /lib/libc.so.6
+    #1  0x0005dde4 in strtrimr (pstr=0x2b9 <Address 0x2b9 out of bounds>)
+        at misc/jco_key_value.c:39
+    #2  0x0005de40 in strtrim (pstr=0x2b9 <Address 0x2b9 out of bounds>)
+        at misc/jco_key_value.c:66
+    #3  0x0005e30c in write_conf_value (key=0xe2820 "VS_HeartBeatTime", 
+        value=0x40cd6284 "99", file=0xdcab8 "/app/vs/conf/ipcam.cfg")
+        at misc/jco_key_value.c:242
+    #4  0x001e23a0 in ?? ()
+
+
+三、代码
+    jco_key_value.c
+
+    int write_conf_value(const char *key,char *value,const char *file)
+    {
+        ITEM items[MAX_ITEM_NUM];// 配置项最多有 MAX_ITEM_NUM 个
+        int num;//存储从文件读取的有效数目
+        file_to_items(file, items, &num);
+        int length = 0;
+        int i=0;
+        //查找要修改的项
+        for(i=0;i<num;i++){
+            if(NULL == items[i].key)
+                continue;
+
+            strtrim(items[i].key);
+
+
+四、原因
+    file_to_items()没有进行返回值检查
+    file_to_items(file, items, &num); 没有对num的值是否大于MAX_ITEM_NUM进行检查。
+
+
+五、关键点
+    <Address 0x2b9 out of bounds> 数据越界，首先查的就是数组的下标。
+
+    printf是调试第一利器
+    在调试时，num与i都被优化了，这时在编译时要去-O2
+
+
+六、考虑最近的变化
+    ZXW上次发包是2012-11-27，如张印辉所说，如果有错，测试早就开始叫了。
+    如此推测，此错不是张印辉的问题。
+
+    越近的改变、犯错的机率越高，从新增的文件开始怀疑应该是不会有错的了。
+
+

@@ -1,0 +1,60 @@
+/* */
+
+. %n$
+
+    An  optional  '*' assignment-suppression character 会丢弃相应匹配。
+
+. []    
+
+    匹配组合
+
+. scanf EXAMPLE 1 
+
+    #include <stdio.h>
+
+    int main(int argc, char *argv[])
+    {
+        int i;
+        unsigned int j;
+        char s[20];
+        float f;
+        scanf("%d %x %5[a-z] %*s %f", &i, &j, s, &f);
+        printf("%d %d %s %f\n", i, j, s, f);
+        return 0;
+    }
+
+    +--------------------------------------------------+
+    | /* 操作输出 */                                   |
+    | root@Moo:~/S/stdio# ./scanf                      |
+    | 123 0x16 aaaaaaabcdd 33.5                        |
+    | 123 22 aaaaa 33.500000                           |
+    +--------------------------------------------------+
+
+. scanf EXAMPLE 2
+
+    SEARCH * HDS/1.0 LOCALIP=192.168.0.34#LOCALPORT=0#
+
+    // 取=与#之间的内容(即192.168.0.34)
+    sscanf(bufRecv, "%*[^=]=%[^#]#%s", szDstIP, szDstRemain);
+    // 取=与#之间的内容(即0)
+    sscanf(szDstRemain, "%*[^=]=%d#", iDstPort);
+
+
+. 打印16进制(强转为 unsigned char)
+
+    int main(int argc, char *argv[])
+    {
+        // char zh[] = "\u7403";
+        char zh[] = "球";
+        int i;
+        int temp;
+        for (i = 0; i < strlen(zh); i++) {
+            temp = (unsigned char)zh[i];
+            printf("0x%02x ", temp);
+        }
+        printf("\n");
+
+        return 0;
+    }
+
+. 

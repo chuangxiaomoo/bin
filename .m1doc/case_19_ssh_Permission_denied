@@ -1,0 +1,49 @@
+/* 19_ssh_Permission_denied smb access fail */
+
+1. 真正原因
+    /* True causes */
+    IP地址冲突了
+
+2. 问题描述
+    /* from R&D or Tester */
+   ┌────────────────────┐
+   │Permission denied   │
+   └────────────────────┘
+   ┌───────────────────────────────────────────────────────────────────────────────┐
+   │@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                    │
+   │@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @                    │
+   │@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                    │
+   │IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!                          │
+   │Someone could be eavesdropping on you right now (man-in-the-middle attack)!    │
+   │It is also possible that the RSA host key has just been changed.               │
+   │The fingerprint for the RSA key sent by the remote host is                     │
+   │xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx.                               │
+   │Please contact your system administrator.                                      │
+   │Add correct host key in /home/demo/.ssh/known_hosts to get rid of this message.│
+   │Offending key in /home/demo/.ssh/known_hosts:15                                │
+   │RSA host key for 1.2.3.4 has changed and you have requested strict checking.   │
+   │Host key verification failed.                                                  │
+   └───────────────────────────────────────────────────────────────────────────────┘
+
+
+3. 现象分析
+    /* log or details */
+
+4. 原因分析
+    /* 原因猜想，process to true causes */
+    突发奇想改个IP试一下。
+
+5. 解决方案
+    /* 包括对未来的防御 */
+
+    弱小和无知不是生存的障碍，傲慢才是。
+
+    对于系统提示的任何信息都不能轻放过。"IDENTIFICATION HAS CHANGED" 可表明系统改变。
+    SMB与SSH同时不能使用，怎么抓住不变量解决问题。
+
+    (1) 整个问题过程花费的时间
+
+    (2) 问题引入、发现、解决
+        解决引入                2013-05-09.16:04:16
+        解决日期                2013-05-09.21:34:16
+

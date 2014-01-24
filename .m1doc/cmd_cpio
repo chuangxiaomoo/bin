@@ -1,0 +1,12 @@
+#! /bin/bash
+
+
+# cpio只带选项及参数，从 stdin 输入文件列表，把格式化好的内容输出到 stdout
+echo 123 > tfile
+ls tfile | cpio -o
+
+
+# 结合gzip zcat进行解压，压缩
+find . -name "*" | grep -v virtualos | cpio -o | gzip > myos
+zcat virtualos | cpio -i
+

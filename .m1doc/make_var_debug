@@ -1,0 +1,15 @@
+#! /usr/bin/make
+#
+# Usage: 
+#		@-include ~/bin/.m1doc/make_watch_var
+#		make VARNAME
+#
+
+%:
+	@echo '$*=$($*)'
+ 
+d-%:
+	@echo '$*=$($*)'
+	@echo '  origin = $(origin $*)'
+	@echo '   value = $(value  $*)'
+	@echo '  flavor = $(flavor $*)'

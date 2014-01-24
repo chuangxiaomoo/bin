@@ -1,0 +1,58 @@
+/* codingstyle */
+
+. <Linux内核代码风格>
+
+    其是一篇非常有价值的文章，同时也是一篇非常有争议的地方。我们的口号，求同存异。
+
+    与当前团队风格差异最大的3个特性
+    8空格缩进
+    { 放在行尾巴上
+    完全小写与下划线命名
+
+. no warning please
+
+    gcc -Wall
+
+. 千万不要把 bool 设计成函数参数, 定义成枚举类型是最好的选择
+
+    http://coolshell.cn/articles/5444.html
+
+. 一些陈皓的文章
+
+    [程序命名的一些提示](http://coolshell.cn/articles/1990.html)
+    [编程命名中的7+1个提示](http://coolshell.cn/articles/1038.html)
+
+. DRY
+    好的代码肯定是可利用性高的，JCP命令中的3种参数如何进行归一设置，
+    如果老是这样，出错的概率大大增加了，特别是在后续维护时。
+    guobiaocfg -act set -devsysname
+    char _devsysname[]
+    guobiao:devsysname
+
+. Readable    
+
+    don't save ()
+
+        #define MAX_SCHEDULER_GRANULARITY 10000
+        #define MAX_SCHEDULER_GRANULARITY (10 * 1000)
+
+    don't write implicitely code 
+        (NULL != ret)
+
+    no magic digits and magic strings, espacially in statement return.
+        SUCCESS FAILURE RUNNING STOPPED
+
+. 高度抽象
+
+    control global variables(how to package use C)
+    static
+    就是要实现4个函数 （1）申请标志 （2）读取标志 （3）更改标志 （4）删除标志
+
+. Reference
+
+    http://qt-project.org/wiki/API-Design-Principles
+    /usr/src/linux-2.6.38/include/linux/kernel.h
+    CodingStyle        
+    CodingStyle.zh_CN
+    CodingStyle.jco
+

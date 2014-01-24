@@ -1,0 +1,29 @@
+/* codecomplexity */
+
+. 代码度量工具——SourceMonitor的学习和使用
+
+    http://www.cnblogs.com/bangerlee/archive/2011/09/18/2178172.html
+
+. Download
+
+    http://www.campwoodsw.com/sourcemonitor.html
+
+. Usage     
+
+    双击进入视图
+    通过右上角的 ‘X’ 回到上一层视图
+
+    check 单个文件方法
+
+        view -> Display Method Metrics... -> double click to get in
+
+    check 整个工程并可排序查看
+
+        打开工程 -> 在 Checkpoint Name (Baseline) 上右键
+                    -> Display Function Metrics... 
+
+        打开工程 -> 在 Checkpoint Name (Baseline) 上右键
+                    -> New Checkpoint... 新建新的 Checkpoint 
+
+.                    
+

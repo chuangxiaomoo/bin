@@ -1,0 +1,62 @@
+9. PRINT    
+ (1) ::
+    在GDB中，你可以随时查看以下三种变量的值：
+    1、全局变量（所有文件可见的）
+    2、静态全局变量（当前文件可见的）
+    3、局部变量（当前Scope可见的）
+
+        file::variable
+    function::variable
+
+    通过这种形式指定你所想查看的变量(在栈中及全局), 如:
+        gdb) p 'f2.c'::x
+    
+ (2) @
+    如果是静态数组的话，print数组名，就可以显示数组中所有数据的内容了。
+    (gdb) set print elements 0      # causes there to be no limit
+
+    “@”的左边是第一个内存的地址的值，“@”的右边则你你想查看内存的长度。
+    int *array = (int *) malloc (len * sizeof (int));
+    (gdb) p *array@len
+    $1 = {2, 4, 6, 8, 10, 12, 14, 16...}
+
+ (3) {<type>} <addr>
+    表示一个指向内存地址<addr>的类型为type的一个对象.
+
+ (4) variable & format
+  a/x  按十六进制格式显示变量。
+    u  按十六进制格式显示无符号整型。
+    d  按十进制格式显示变量。
+    o  按八进制格式显示变量。
+    t  按二进制格式显示变量。 
+    c  按字符格式显示变量。
+    f  按浮点数格式显示变量。
+
+        (gdb) p i
+        $21 = 101    
+        
+        (gdb) p/a i
+        $22 = 0x65
+        
+        (gdb) p/c i
+        $23 = 101 'e'
+
+ (5) Examine memory: x/FMT <addr>
+    FMT  repeat count -- format letter -- size letter
+    Format  o(octal), x(hex), d(decimal), u(unsigned decimal), t(binary), 
+            f(float), a(address), i(instruction), c(char) and s(string).
+    Size    b(byte), h(halfword), w(word), g(giant, 8 bytes).
+
+        (gdb) x/3uh 0x54320 
+        从内存地址0x54320读取内容，
+        h表示以双字节为一个单位，3表示三个单位，u表示按十六进制显示。
+
+ (6) Auto print
+    info display
+    display/<fmt> <expr> 
+    display/<fmt> <addr>
+    undisplay <dnums...>
+    delete display <dnums...>
+    disable display <dnums...>
+    enable display <dnums...>
+

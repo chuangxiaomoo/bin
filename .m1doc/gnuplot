@@ -1,0 +1,12 @@
+#! /bin/bash -- gnuplot
+
+gnuplot 让您的数据可视化
+http://www.ibm.com/developerworks/cn/linux/l-gnuplot/index.html
+
+
+GNUPLOT使用手册
+http://dsec.pku.edu.cn/dsectest/dsec_cn/gnuplot/
+
+GNUPLOT使用手册 -> Chapter 8. Examples
+http://dsec.pku.edu.cn/dsectest/dsec_cn/gnuplot/plot-8.html#examples
+

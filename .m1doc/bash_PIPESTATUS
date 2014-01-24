@@ -1,0 +1,41 @@
+#! /bin/bash
+
+function fn_main() 
+{
+    echo ------------- START: ${PIPESTATUS[@]}
+
+    { echo "mygodYY" && return 1;} | grep mygodY | grep --color mygod
+
+    echo FIRST: ${PIPESTATUS[@]} 
+    echo SECON: ${PIPESTATUS[@]}
+}
+
+function fn_main2() 
+{
+    echo ------------- START: ${PIPESTATUS[@]}
+
+    { echo "mygodYY" && return 1;} | grep mygodY | grep --color mygod
+
+    # 因为只能被提取一次，所以在命令执行完之后，紧跟如下命令
+    RETURNS=(${PIPESTATUS[@]})
+    echo ${RETURNS[@]}
+    echo ${RETURNS[@]}
+}
+
+function fn_main3() 
+{
+    echo ------------- START: ${PIPESTATUS[@]}
+
+    # 赋值语句会清 $PIPESTATUS
+    out=`{ echo "mygodYY" && return 1;} | grep mygodY | grep --color mygod`
+    echo FIRST: ${PIPESTATUS[@]} 
+
+    # 赋值语句会不会清 $?
+    out=`{ echo "mygodYY" && return 1;}`
+    echo $?
+}
+
+fn_main
+fn_main2
+fn_main3
+

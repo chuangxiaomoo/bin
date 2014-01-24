@@ -1,0 +1,57 @@
+/* 28_汉字UTF8串尾乱码 */
+
+2. 问题描述
+    /* from R&D or Tester */
+
+    在做字符串处理时，若缓冲区的长度固定，在向缓冲区copy字符串时会出现被截断的情况。
+    strncpy
+    memcpy
+
+    若出现截断则缓冲区的内容结尾可能会出现乱码。此问题会引发向DB导入数据发生异常
+    WEB解析出错等问题。
+
+3. 现象分析
+    /* log or details */    "ATTENTION: err or fail"
+
+4. 解决方案
+
+    使用 snprintf() strncpy() 等函数进行处理。
+
+    ● UTF-8    
+
+    表示一个非ASCII字符的多字节序列中的第一个字节总是位于0XC0至0XFD之间，它能
+    指出该字符由几个字节表示。多字节序列中的所有后续字节都位于0X80至0XBF。这
+    使得重新同步变得容易，编码变得无状态化，对于字节的丢失具备健壮性。
+
+    参考 'c_wchar_utf-8|229|'
+
+    U-00000800 – U-0000FFFF: 1110xxxx 10xxxxxx 10xxxxxx     (汉字编码头 0xe0~0xef)
+
+5. 算法及实现    
+
+    找出字串的最后两个字节(UTF8汉字是3个字节)，看有没有头信息，
+    如果有，则替换为 '\0'
+
+    void trim_utf8_tail(char *buf_utf8)
+    {
+        return_if_fail(buf_utf8 != NULL);
+
+        int len = strlen(buf_utf8);
+        unsigned char *p = (unsigned char *)buf_utf8;
+
+        if (len < 2) {
+            return;
+        }
+
+        const unsigned char cn_header_start = 0xe0; 
+        const unsigned char cn_header_end = 0xef; 
+
+        if (p[len-1] >= cn_header_start && p[len-1] <= cn_header_end) {
+            p[len-1] = '\0';
+        } 
+        if (p[len-2] >= cn_header_start && p[len-2] <= cn_header_end) {
+            p[len-2] = '\0';
+        } 
+        return;
+    }
+

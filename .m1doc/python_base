@@ -1,0 +1,9 @@
+*8* python
+# python file open mode 
+#
+# will truncate the file env.sh, be careful 
+fd=open('./env.sh', 'w')  
+# will not truncate, and if write will from the begin 
+fd=open('./env.sh', 'r+') 
+# will not truncate, and if write will append to the end 
+fd=open('./env.sh', 'a+') print fd.readline() 

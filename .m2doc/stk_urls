@@ -1,0 +1,83 @@
+/* urls */
+
+. sina 日线数据
+
+    w3m -dump 'http://money.finance.sina.com.cn/quotes_service/view/vMS_tradehistory.php?symbol=sz000002&date=2013-9-25' > abc
+
+. 指南针 日线数据
+    w3m -dump 'http://yahoo.compass.cn/stock/frames/frmHistoryDetail.php?start_year=2013&start_month=2&start_day=2&end_year=2013&end_month=10&end_day=1&code=sh000001&his_type=day&page=1'
+
+
+. 主页
+
+    http://yahoo.compass.cn/stock/history.php?code=sh000001&type=history
+
+/* ---------------------------------------------------------------------- */
+
+. 大富翁数据中心
+    大富翁数据中心 现在能提供股票逐笔历史数据了，不错！！！
+
+. 淘宝上搜实时行情接口
+    这是一个可接收并导出实时数据的全推实时行情接口软件,掌柜的快乐2010，人不错.
+
+. 找到了一个知己 -- 一个程序员的股票之路
+    "新浪可靠性?通过内外盘数可得？只是粒度不同而已"
+    "提供了实时数据，直接 w3m -dump 可以获得"
+    每三秒一条明细，每条明细有成交笔数,
+
+    Level-2的逐笔成交数据是缓存在dzh2\data\sh\TEMP目录下
+
+
+    春夏秋冬
+    http://www.cnblogs.com/chuncn/category/178974.html
+
+    Sina stock data interface 
+    http://www.cnblogs.com/chuncn/archive/2009/06/26/1400997.html
+
+    买盘、卖盘、中性盘、内盘、外盘、委比 
+    http://www.cnblogs.com/chuncn/archive/2009/03/10/1407753.html
+
+
+. Firefox 追踪行情
+
+    F12 open firebug Console -> XHR or 所有
+    将Mouse置于Console URL 中 GET 记录上，变蓝色后，右键“复制地址”
+
+    行情中心 -> 沪深A股
+    http://vip.stock.finance.sina.com.cn/mkt/#hs_a
+
+. Trace sina data
+    local url='http://vip.stock.finance.sina.com.cn'
+    local page='/quotes_service/api/json_v2.php/Market_Center.getHQNodeData'
+    local all='?page=1&num=2480&sort=symbol&asc=1&node=hs_a&_s_r_a=page'
+    local  sh='?page=1&num=1000&sort=symbol&asc=1&node=sh_a&_s_r_a=page'
+    local  sz='?page=1&num=1500&sort=symbol&asc=1&node=sz_a&_s_r_a=page'
+
+    link=$url$page$sh
+    w3m -dump $link > $door_org
+
+
+. Trace hexun data
+    sorttype:
+    0       1       2       3       4    5    6    7
+    代码    名称    最新价  涨跌幅  昨收 今开 最高 最低
+    成交量  成交额  换手    振幅    量比
+
+    沪A 1000
+    深A 1500
+
+    # sorttype {origin 0} updown {up从大到小}
+    local host='http://quote.tool.hexun.com/hqzx/quote.aspx'
+    local sh='?type=2&market=1&sorttype=3&updown=up&page=1&count=1000'
+    local sz='?type=2&market=2&sorttype=3&updown=up&page=1&count=1500'
+
+    link=$host$sz
+    # w3m -dump $link > $door_org_hx 2>/dev/null
+
+. 自选
+    chuangxiaomoo:18xxxxx7
+    有短信价格提醒功能，非常好用。
+
+. screener
+    http://screener.finance.sina.com.cn/index.html
+

@@ -1,0 +1,40 @@
+/* measure time */
+
+ptz命令执行时间不一
+
+1.  jcp命令是可重入的，但是外部JCP命令都是通过消息来操作的，
+    只有一个消息处理完成，才执行另外一个消息，即另一个JCP命令。
+    所以JCP命令的执行是串行的。
+
+    case SYS_MSG_CMD_JCP:
+    {
+        JCPCmdHandle()
+    }
+
+2.  串行发送完后，PTZ执行时间长度不一
+
+
+#define MS_COUNT_START()                                                \
+    struct timeval _tv1, _tv2;                                          \
+    int _sec, _msec;                                                    \
+    gettimeofday(&_tv1, NULL);
+
+#define MS_COUNT_END()                                                  \
+    gettimeofday(&_tv2, NULL);                                          \
+                                                                        \
+    if (_tv2.tv_usec < _tv1.tv_usec) {                                  \
+    _tv2.tv_sec--;                                                      \
+    _tv2.tv_usec+=1000*1000;                                            \
+    }                                                                   \
+    _sec = _tv2.tv_sec - _tv1.tv_sec;                                   \
+    _msec = (_tv2.tv_usec - _tv1.tv_usec)/1000;                         \
+    printf("spend %d.%03d @%s|%d|\n", _sec, _msec, __func__,__LINE__);
+
+int main(int argc, char *argv[])
+{
+    MS_COUNT_START();
+    usleep(300*1000);
+    MS_COUNT_END();
+
+    return 0;
+}

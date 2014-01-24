@@ -1,0 +1,389 @@
+http://www.quora.com/Software-Engineering/What-makes-a-good-engineering-culture
+
+Software Engineering: What makes a good engineering culture?
+
+
+24 Answers
+Ask to AnswerAsk to Answer
+
+  
+Edmond Lau, Quora EngineerQuora Engineer
+1863 votes by
+Tracy Chou,
+Joe Tyson,
+Anon User, (more)Loading...
+
+One of my favorite interview questions for engineering candidates is to
+tell me about one thing they liked and one thing they disliked about the
+engineering culture at their previous company. Over the course of a few
+hundred interviews, this interview question has given me a sense of what
+good engineers look for and what they're trying to avoid. I also reflected
+back on my own experiences from the past six years working across Google,
+Ooyala, and Quora and distilled some things that a team can do to build a
+good engineering culture:
+
+1. Optimize for iteration speed.
+
+Quick iteration speed increases work motivation and excitement.
+Infrastructural and bureaucratic barriers to deploying code and launching
+features are some of the most common and frustrating reasons that engineers
+cite during interviews for why they're leaving their current companies.
+
+Organizationally, quick iteration speed means giving engineers and
+designers flexibility and autonomy to make day-to-day decisions without
+asking for permission. While I was at Google, any user-visible change to
+search results, even for low-traffic experiments, required Marissa Mayer's
+approval at a weekly UI review. Needless to say, while this allowed Google
+to protect its search brand, it significantly hampered innovation.
+Optimizing for iteration speed also means that there are well-defined
+processes for launching products, so that cancellations don't happen
+unexpectedly after significant time investment.
+
+Infrastructurally, optimizing for iteration speed means building out
+continuous deployment with a fast deployment process, high test coverage to
+reduce build and site breakages, fast unit tests so that people run them,
+and fast and incremental compiles and reloads to reduce development time.
+Continuous deployment, where commits go immediately to production, deserves
+a special mention. Prior to using it at Quora, it would've been hard for me
+to internalize that the benefits it provides toward iteration speed
+outweigh the risks of site breakages, at least for small engineering teams.
+People are more excited about features and incentivized to fix bugs because
+changes see live traffic quickly. It's also significantly easier to reason
+about and pinpoint the source of errors for a narrow window of committed
+code rather a week or more's worth of batched changes.
+
+Team-wise, fast iteration speed means having a set of strong leaders to
+help coordinate and drive team efforts. Key stakeholders in a decision need
+to decide effectively and commit to their choices. To borrow a phrase from
+Bill Walsh, a leader who coached the 49ers to 3 Super Bowls, strong leaders
+need to "commit, explode, recover," which means committing to a plan of
+attack, executing it, and then reacting to the results.  A team crippled
+with indecisiveness will just cause individual efforts to flounder. [1]
+
+2. Push relentlessly toward automation.
+
+In his tech talk "Scaling Instagram", Instagram co-founder Mike Krieger
+cited "optimize for minimal operational burden" as a key lesson his
+13-person team learned in scaling the product to tens of millions of users.
+[2] As a product grows, so does the operational burden per engineer, as
+measured by the ratio of users to engineers or of features to engineers. 
+Facebook, for example, is well-known for touting scaling metrics like
+supporting over 1 million users per engineer. [3]
+
+Automating solutions and scripting repetitive tasks are important because
+they free up the engineering team to work on the actual product. Ensuring
+that services restart automatically if possible when they fail and that
+services are easily and quickly replicated at peak traffic is the only sane
+way to manage complexity at scale. In the short-term, there's always the
+tempting tradeoff of applying a quick band-aid manually rather than
+automating and testing a long-term fix.
+
+Etsy's motto of "measure anything, measure everything" [4] and its support
+of open-source monitoring and charting tools like graphite [5] and statsd
+[6] highlight an important aspect of automation -- that automation must be
+driven by data and monitoring. Without monitoring and logs to know what,
+how, or why something is going wrong, automation is difficult. A good
+follow-up motto would be to "measure anything, measure everything, and
+automate as much as possible."
+
+3. Build the right software abstractions.
+
+MIT Professor Daniel Jackson captures the importance of software
+abstractions well [7]:
+
+
+    "Pick the right ones, and programming will flow naturally from design;
+    modules will have small and simple interfaces; and new functionality
+    will more likely fit in without extensive reorganization. Pick the
+    wrong ones, and programming will be a series of nasty surprises:
+    interfaces will become baroque and clumsy as they are forced to
+    accommodate unanticipated interactions, and even the simplest of
+    changes will be hard to make."
+
+
+Part of what allowed thousands of engineers to build scalable systems at
+Google is that really smart engineers like Jeff Dean and Sanjay Ghemawat
+built simple but versatile abstractions like MapReduce [8], SSTable [9],
+protocol buffers [10], and the like. Part of what allowed Facebook
+engineering to scale up is the focus on similarly core abstractions like
+Thrift [11], Scribe [12], and Hive [13].  And part of what allows designers
+to build products effectively at Quora is that Webnode and Livenode [14]
+are fairly easy to understand and build on top of.
+
+Keeping core abstractions simple and general reduces the need for custom
+solutions and increases the team's familiarity and expertise with the
+common abstractions. The growing popularity and reliability of systems like
+Memcached, Redis, MongoDB, etc. have reduced the need to build custom
+storage and caching systems. Funneling the team's focus onto a small number
+of core abstractions rather than fragmenting it over many ad-hoc solutions
+means that common libraries get more robust, monitoring gets more
+intelligent, performance characteristics get better understood, and tests
+get more comprehensive. All of this helps contribute to a simpler system
+with reduced operational burden.
+
+4. Develop a focus on high code quality with code reviews.
+
+Maintaining a high-quality code base increases the productivity of the
+entire engineering team. Cleaner code is easier to reason about, quicker to
+develop on, more amenable to changes, and less susceptible to bugs. A
+healthy code review process makes this possible.
+
+Establishing a process for timely code reviews, whether pre-commit or
+post-commit, improves code quality in a few ways.  First, the peer pressure
+of knowing that someone will be reviewing your code and that committing
+poorly written code will likely let down your teammates is a strong
+deterrent against hacky, unmaintainable, or untested code. Second, code
+reviews provide opportunities for the code reviewer and author to learn
+from each other to write better code.
+
+If the code reviews are easily accessible to other members of the
+engineering team, then the reviews also bring along the benefits of a)
+increasing accountability for reviewing code in a timely manner, b)
+allowing team members -- particularly, newer ones -- to model off of
+others' good code reviews, and c) speeding up the dissemination of best
+coding practices.
+
+Counter-arguments that nimble teams don't have time to spend on code
+reviews ignore the technical debt that can easily accumulate from poorly
+written code. Ooyala, in its very early startup days, used to optimize for
+cranking out as many features as possible, with an absence of code reviews;
+the result was that while the initial product may have gone to market more
+quickly, the resultant code became painful to modify, and we spent over a
+year just rewriting brittle code to eliminate technical debt.
+
+Google, at its size, does pre-commit code reviews for all code, but smaller
+teams don't need to be as comprehensive or strict, and not all code needs
+to be reviewed with the same rigor. Ooyala later adopted post-commit
+reviews over email for core or risky changes while I was there. At Quora,
+we currently conduct all code reviews in Phabricator [15], mostly
+post-commit, and apply different standards for model or controller code and
+view code; for sensitive code or for code from newer engineers, we'll
+either do pre-commit reviews or try to review them within a few hours of
+the code being submitted.
+
+5. Maintain a respectful work environment.
+
+Respect among peers forms the foundation for any type of open
+communication. A place where people feel comfortable challenging each
+other's ideas is one where sound ideas get forged through debate. A place
+where people easily get offended is one where crucial feedback gets
+withheld.
+
+In 1948, Alex Osborn outlined the familiar brainstorming approach that's
+been popular in work environments for the past few decades, where
+participants come together, set aside criticism and negative feedback, and
+collectively pool together creative ideas without fear of being judged.
+[16] Respectful deferment of judgment is key to this type of brainstorming
+session. Recent psychology research has started to overturn Osborn's
+approach, suggesting that encouraging debate in brainstorming sessions
+actually helps to avoid groupthink and generates more effective ideas. In
+light of this research, a respectful environment becomes even more critical
+so that attacks are directed toward ideas rather than being ad-hominem.
+[17]
+
+Engineering often spans a wide range of areas (systems, machine learning,
+product, etc.) and not everyone has the same expertise in each area. A
+strong team in fact probably ought to have individuals who are uniquely
+strong in certain areas even if they end up being deficient in others. This
+sometimes makes it tricky for say, a systems engineer to evaluate the
+proficiency of a product engineer, but it's important in a healthy
+engineering culture to respect those differences and to not judge solely
+based on your own strengths.
+
+6. Build shared ownership of code.
+
+While it's natural for individuals to become proficient in various parts of
+the code base or infrastructure, no one person should feel that they own or
+are the sole maintainer of any one piece. While having individuals become
+experts that own certain areas for a year or more might increase
+effectiveness in the short run, this approach ends up hurting in the long
+run.
+
+Organizationally, shared code ownership provides three benefits. First,
+keeping the bus factor [18] greater than one relieves stress from the
+maintainer and reduces risk for the team in case the maintainer leaves. It
+also makes it difficult for that one person to take worry-free time off. I
+sure don't miss the days when I was the sole maintainer of Ooyala's logs
+processor and got texted by pager alerts while hiking on volcanoes in
+Hawaii.
+
+Second, shared ownership empowers engineers who aren't knee-deep in the
+particular area to contribute fresh insights. It frees engineers from the
+sense that they're stuck on certain projects and encourages them to work on
+a diversity of projects, which helps to keep work interesting and boosts
+employee learning and motivation. In the long run, it reduces
+organizational risk that some engineer feels stagnated and decides to
+leave. [19]
+
+Third, shared ownership also sets the foundation for having multiple team
+members swarm (a technique from agile development) together on a
+high-priority problem when necessary to finish a strategic goal more
+quickly. With siloed ownership, the burden typically falls on one or two
+people.
+
+One mistake that many engineering organizations make too early on is
+dividing the entire team into subteams with tech leads when the team's
+still small. Subteams build walls of ownership that reduce incentive to
+cross those walls, since individuals will likely be assessed by their
+subteam's objectives. Ooyala had subteams while I was there, and one thing
+I missed out on was the opportunity to work with some folks on other teams;
+they've since adopted an agile development process with a much larger focus
+on shared code ownership that I've heard has made large strides in work
+happiness and productivity. One aspect of Quora that I've loved is that
+we've emphasized projects over teams, and I've had an opportunity to work
+on projects ranging from user growth, machine learning, moderation tools,
+recommendations, analytics, site speed, and spam detection.
+
+7. Invest in automated testing.
+
+Unit test coverage and some degree of integration test coverage is the only
+scalable way of managing a large codebase with a large group of people
+without constantly breaking the build or the product. Automated testing
+provides confidence in and meaningful protection against large-scale
+refactorings that are required to improve code quality. In the absence of
+rigorous automated testing, the time required for manual testing either by
+the engineering team or by an outsourced testing team easily becomes
+prohibitive, and it's easy to fall into a culture of fear for improving a
+piece of code just because it might break.
+
+In practice, automated testing is a requirement for making continuous
+deployment work as the team grows. Codebase size grows over time as the
+product grows, but average familiarity with the codebase by team members
+decreases as new people join. Testing and validation are most easily done
+by the original code authors when the code is fresh in their minds than by
+those who try to modify the code months or years later. Encouraging a
+strong unit testing culture shifts the validation responsibility toward the
+authors.
+
+8. Allot 20% time.
+
+Gmail found its roots in Paul Buchheit's 20% project, and he hacked
+together the first version in a single day. [20] Google News, Google
+Transit, and Google Suggest also started and launched as 20% projects. I
+used 20% time while at Google to write a python framework that made it
+significantly easier to build search page demos.  While Google's 20% time
+may be less productive now than during the early days of the company [21],
+the notion of letting engineers spend 20% of their time working on
+something not on their product map remains a cradle of innovation for
+smaller engineering organizations.
+
+Ooyala didn't officially have 20% time while I was there, but I took some
+anyway and wrote a command-line build tool for Flex and Actionscript that
+sped up the team's build times, just as Adobe's Flex Builder tool chain
+started to degrade, and the tool's still in use today even though the
+engineering team has nearly tripled in size. Atlassian adopted 20% time
+after experimenting it for year. [22] A variation of 20% time that
+Facebook's fond of and that Ooyala added later is periodic hackathons --
+all-night events where the rule is that you can work on anything except
+your normal project. [23]
+
+Top-down approaches to product planning, while necessary for focusing the
+overall direction of the company, can't account to for the multitude of
+ideas that might arise from engineers closer to the ground. As long as
+engineers are accountable for their 20% time and focus on what can be
+high-impact changes, these projects can lead to large steps forward in
+progress. Without official 20% time, it's still possible but much more
+difficult for engineers and designers to try out crazy ideas -- the
+dedicated ones basically have to find weekends or vacation days to do it.
+
+9. Build a culture of learning and continuous improvement.
+
+Learning and being sufficiently challenged are requirements for what
+psychology professor Mihaly Csikszentmihalyi calls a state of "flow", where
+someone is so completely focused and motivated by what they're doing that
+they even lose track of time. [24] The direct and immediate feedback loop
+provided by faster iteration cycles is another requirement.
+
+Weekly tech talks provide forums for engineers to share their designs or
+what they've built, creating an opportunity for engineers to take pride in
+their work and for the team to learn more outside their immediate scope of
+work.  Documenting processes internally like how a email service works or
+how to make ranking changes to a search service also empowers engineers to
+learn and explore new things on their own, nicely complementing 20% time. 
+At Quora, we do this by running an internal instance of Quora where we ask
+product- and development-related questions.
+
+A corollary of building a culture of learning is focusing on mentoring and
+training to make sure that everyone has the basic algorithms, systems, and
+product skills necessary for success.  The more an engineering organization
+grows and the more effort gets spent on recruiting (particularly college
+recruiting), the more effort needs to be invested into mentoring and
+training. It might seem burdensome for a single mentor to spend an hour per
+day for a new hire's first 4 weeks on the job, but that investment
+represents less than 1% of the total time that hire will spend in a year
+and has significantly high leverage in determining whether the person is
+set up for success.
+
+10. Hire the best.
+
+Hiring the best is the foundation for many of the other philosophies
+listed. It's hard to respect someone if you think they're a B-level
+engineer. It's hard to give someone autonomy in product development if you
+don't trust their product instincts. It's hard to recognize the right
+abstraction to build without enough engineering experience. It's easy to
+fall into a trap of building something complex without other smart people
+to challenge your ideas and drive you toward simplicity.
+
+There's a saying around Silicon Valley, coined by Steve Jobs, that "A
+players hire A players. B players hire C players." [25,26]  Focusing on
+recruiting and hiring the right people is hard but critical to effectively
+growing an engineering organization.  Yishan Wong, who previously was an
+engineering manager and director at Facebook, argued that hiring has to be
+the number one priority for everyone in the engineering organization, not
+just for managers, but for engineers as well. [27]  He also quite rightly
+points out the difference between "hiring the best" and "hiring the best
+candidate that you've interviewed."
+
+In the early days of Ooyala, we were so overwhelmed with the queue of
+inbound customer work that we nearly caved in to lowering our hiring bar so
+that we could hire enough people to get all our work done.  I'm glad that
+we didn't, as the technical debt from lower quality code and weaker
+engineers on the team would've ended up hurting the team and the product.
+
+Building a good engineering culture is certainly a lot of work, but the
+resulting work environment is well worth it.
+
+For more posts like this, follow Habits for Effective Engineering and
+Learning.
+
+----------
+
+[1] Bill Walsh. The Score Takes Care of Itself: My Philosophy of Leadership
+http://books.google.com/books?id...
+[2] Scaling Instagram.
+http://www.scribd.com/doc/890250...
+[3] Scaling Facebook to 500 Million Users and Beyond. https://
+www.facebook.com/note.ph...
+[4] Measure Anything, Measure Everything. http://codeascraft.etsy.com/
+2011...
+[5] http://graphite.wikidot.com/
+[6] https://github.com/etsy/statsd
+[7] Daniel Jackson. Software Abstractions: Logic, Language, and Analysis 
+http://mitpress.mit.edu/catalog/...
+[8] http://research.google.com/archi...
+[9] What is an SSTable in Google's internal infrastructure?
+[10] http://code.google.com/p/protobuf/
+[11] https://thrift.apache.org/
+[12] https://github.com/facebook/scribe
+[13] http://hive.apache.org/
+[14] http://www.quora.com/Shreyes-Ses...
+[15] http://phabricator.org/
+[16] Alex Osborn. Your Creative Power. http://www.amazon.com/Your-Creat...
+[17] Groupthink. http://www.newyorker.com/reporti...
+[18] What is "bus number" and why do you want it to be greater than 1?
+[19] How do experienced engineers at startups avoid stagnation due to the
+overabundance of operational issues?
+[20] Communicating with Code. http://paulbuchheit.blogspot.com...
+[21] Engineering in Silicon Valley: How does Google’s Innovation Time Off
+policy work in practice?
+[22] http://www.atlassian.com/company...
+[23] Inside Facebook’s final Palo Alto Hackathon. http://gigaom.com/2011/12
+/16/exc...
+[24] http://en.wikipedia.org/wiki/Flo...
+[25] What is an "A Player"?
+[26] What I learned from Steve Jobs. http://blog.guykawasaki.com/2011...
+[27] http://algeri-wong.com/yishan/en...
+Embed Quote
+28+ Comments Loading... • Insert a dynamic date here
+Edmond Lau
+  

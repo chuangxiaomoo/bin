@@ -1,0 +1,28 @@
+# rightclick
+
+[gvim在64bit win7无法添加右键启动的解决办法](
+  http://www.2cto.com/os/201302/189674.html)
+
+
+问题描述：
+
+  一般在gvim安装完之后，选中文件点击右键会有一个使用gvim
+  打开的选项，但这个在vista上面没有，对我们经常使用gvim编辑
+  文件来说极为不便。
+    www.2cto.com  
+  解决办法：
+  通过修改regedit来添加一个gvim项.
+
+  HKEY_LOCAL_MACHINE\SOFTWARE\Classes\*\shell\
+
+  1.右键点击shell，在弹出对话框选择新建项，取名为gvim,建好
+  之后在右边默认里面键入gvim。
+    www.2cto.com  
+  2.选中新建项gvim,在此下面再建一项,取名为Command，在Command
+  的右边默认值里面输入:
+
+  C:\Program Files (x86)\Vim\vim72\gvim.exe "%1" 确定即可，
+  注意，路径为gvim安装路径，%1会替换为要打开的文件名。
+
+  此方法也可添加别的文本编辑器。
+

@@ -1,0 +1,49 @@
+#! /usr/bin/make
+
+# Run with a .so
+#
+# LD_LIBRARY_PATH=$(pwd) ./a.out
+# ln -s $(OBJLIB_VERSION) /lib/$(OBJLIB); ./a.out
+
+CROSS_COMPILE :=    # compile on pc
+CC  = $(CROSS_COMPILE)gcc       # gcc
+
+DEBUG   = -g -Wall
+CFLAGS  = $(DEBUG) -fPIC        # with -fPIC, for lib*.so obj
+
+# INC    = -I.. -I./include      
+# LDFLAGS= -L ./lib/arm -lsqlite3    
+
+OBJ     = main
+DEPEND_FILES= main.o
+
+# this $(OBJLIB) is only a linker to libxx, dont put the below line
+# with this line together.
+OBJLIB  = libxx.so
+Nickname= $(subst lib,,$(basename $(OBJLIB)))
+SO_DEPEND_FILES= lib.o
+OBJLIB_VERSION = $(OBJLIB).1.0.0
+LINK_4_SONAME= $(OBJLIB).1
+
+SO_CFLAGS = $(DEBUG) -shared -Wl,-soname,
+
+all: $(OBJ)
+$(OBJ): $(DEPEND_FILES) $(OBJLIB) $(LINK_4_LD) $(LINK_4_SONAME)
+    $(CC) $(DEBUG) $(DEPEND_FILES) -o $(OBJ) -L. -l$(Nickname)
+#   ln -s $(OBJLIB_VERSION) /lib/$(OBJLIB)
+
+$(OBJLIB): $(SO_DEPEND_FILES)
+    $(CC) $(SO_CFLAGS)$(OBJLIB) -o $(OBJLIB_VERSION) $(SO_DEPEND_FILES) -lc
+
+
+$(LINK_4_SONAME): $(OBJLIB_VERSION)
+    ln -s $(OBJLIB_VERSION) $(OBJLIB)
+    ln -s $(OBJLIB_VERSION) $(LINK_4_SONAME)
+    
+clean:
+	@rm -f $(DEPEND_FILES) a.out
+	@rm -f $(OBJLIB_VERSION) $(SO_DEPEND_FILES) 
+	@rm -f $(OBJLIB) $(LINK_4_SONAME)
+
+%.o : %.c
+    $(CC) $(CFLAGS) $(INC) -o $@ -c $< 

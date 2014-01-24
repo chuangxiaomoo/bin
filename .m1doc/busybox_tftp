@@ -1,0 +1,19 @@
+#! /bin/bash
+    echo "
+    #
+    # tcopy.sh
+    # whatever get or put, make sure: chmod 777 /tftpboot/
+    #
+
+    get
+        tftp -r                  -g ${ubt}
+        tftp -r   modi_uboot_env -g ${ubt}
+
+    put
+        tftp -l                  -p ${ubt} 
+        tftp -l   modi_uboot_env -p ${ubt}
+
+    EXAMPLE
+
+        tftp -r feed.sh -g ${ubt}; chmod +x feed.sh; # /root/sh/tools/feed.sh
+    "

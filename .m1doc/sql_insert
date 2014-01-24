@@ -1,0 +1,27 @@
+
+
+. 往表中加入记录
+
+    INSERT INTO MYTABLE VALUES ('hyq','M');
+
+. 往表中加入n条记录
+
+    INSERT INTO tablename (column1,column2) VALUES (value1,value2),(value1,value2);
+
+. 表达式expr可以引用在值清单中已设置的所有列
+
+    -- 你可以任意安排 col1 col2 的顺序
+    INSERT INTO tbl_name (col1,col2) VALUES(15,col1*2); 
+
+. INSERT ... SELECT语法  
+
+    -- 明确地指定IGNORE，用于忽略会导致重复关键字错误的记录。
+    INSERT [LOW_PRIORITY | HIGH_PRIORITY] [IGNORE]
+        [INTO] tbl_name [(col_name,...)]
+        SELECT ...
+        [ ON DUPLICATE KEY UPDATE col_name=expr, ... ]
+
+    INSERT INTO tbl_temp2 (fld_id)
+        SELECT tbl_temp1.fld_order_id
+        FROM tbl_temp1 WHERE tbl_temp1.fld_order_id > 100;    
+

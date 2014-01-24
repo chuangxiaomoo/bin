@@ -1,0 +1,207 @@
+/* iconv */
+
+wchar.h - wide-character handling
+#include <wchar.h>
+
+. 参考：
+
+    字节码问题--wchar和char的区别及 iconv函数库使用
+    http://www.cnblogs.com/MichaelOwen/articles/2128771.html
+        iconv_open
+        iconv
+        iconv_close
+
+    GBK编码中防止串尾乱码的问题
+    http://blog.csdn.net/delphiwcdj/article/details/7746446
+
+    UTF-8 and Unicode FAQ for Unix/Linux
+    保存至 'c_wchar_utf-8|229|'
+    http://blog.csdn.net/lovekatherine/article/details/1765903
+
+/* ---------------------------------------------------------------------- */
+
+. GBK
+    双字节表示，总体编码范围为8140-FEFE，首字节在81-FE 之间，尾字节在40-FE 之间
+
+. UTF-8    
+  ● 表示一个非ASCII字符的多字节序列中的第一个字节总是位于0XC0至0XFD之间，它能
+    指出该字符由几个字节表示。多字节序列中的所有后续字节都位于0X80至0XBF。这
+    使得重新同步变得容易，编码变得无状态化，对于字节的丢失具备健壮性。
+
+    参考 'c_wchar_utf-8|229|'
+
+    U-00000800 – U-0000FFFF: 1110xxxx 10xxxxxx 10xxxxxx     (汉字编码头 0xe0~0xef)
+
+utf8_2_gbk()
+gbk_2_utf8()
+
+. 命令iconv
+
+    /* ------------------------------ iconv command ---------------------------- */
+
+    cp936
+        # iconv -f encoding [-t encoding] [inputfile]...
+        # iconv --list
+        # locale -a to check encoding
+
+        # iconv between utf8 and cp936(gb2312)
+
+        iconv -f cp936 -t utf-8     // success 
+        iconv -f gbk -t utf-8       // fail 
+
+    utf8-cat
+        cat $@ | iconv -f cp936 -t utf8
+
+    wimax-man-fail
+        老的iconv和库对man会有影响。
+
+    /* ------------------------------ iconv test ---------------------------- */
+
+. 接口        
+
+/* 
+ *       Filename:  iconv.c
+ *    Description:  
+ *        Version:  1.0
+ *        Created:  Thursday, August 08, 2013 06:20:28 CST
+ *       Revision:  none
+ *       Compiler:  gcc
+ *         Author:  chuangxiaomoo (), 
+ *   Organization:  
+ */
+
+/*
+    iconv函数族有三个函数,原型如下:
+    (1) iconv_t iconv_open(const char *tocode, const char *fromcode);
+
+    (2) size_t iconv(iconv_t cd,char **inbuf, size_t *inbytesleft,
+                                char **outbuf,size_t *outbytesleft);
+
+    (3) int iconv_close(iconv_t cd);
+
+    outbuf 需要人为清0，否则会节外生枝
+    inbytesleft 和 outbytesleft 需要初始化为相应buf的长度。
+    否则提示：Argument list too long
+
+    iconv() 返回不可逆的计数，utf8 gbk 通常是可逆的，所以返回一般是0
+
+    (4) Run
+    export LD_PRELOAD=/lib/preloadable_libiconv.so
+
+    设置环境变量 LD_PRELOAD 之后，才可以在设备上运行成功。原来，LD_PRELOAD 指定
+    的共享库被预先加载，如果出现重名的函数，预先加载的函数将会被调用。通过这种方
+    法，我们可以在不需要修改源代码(有时候可能没有源代码)的情况下，来改变一个程序
+    的行为
+*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <iconv.h>
+#include <string.h>
+#include <errno.h>
+#include </usr/include/xt_macro.h>
+
+/*  wont modify in */
+int icode(char *in, char *out, size_t outlen, const char *to, const char *from)
+{
+    size_t inleft = strlen(in);
+    size_t outleft = outlen-1;
+
+    /* iconv_open(to, from) */
+    iconv_t hdlr = iconv_open(to, from);       
+    if ((iconv_t)-1 == hdlr) {
+        printf("%s:%d [%d] %s\n", __func__, __LINE__, errno, strerror(errno));
+        return -1;
+    }
+
+    /* in case */
+    memset(out, 0, outlen);
+
+    int ret = iconv(hdlr, &in, &inleft, &out, &outleft); 
+
+    if (ret < 0) {
+        printf("%s:%d [%d] %s\n", __func__, __LINE__, errno, strerror(errno));
+        printf("inleft %d \n", inleft);
+    }
+   
+    iconv_close(hdlr); /* 执行清理 */
+
+    return (ret < 0) ? -1 : 0;
+}
+
+int utf8_2_gbk(char *in, char *out, size_t outlen)
+{
+    return icode(in, out, outlen, "gb2312", "utf-8");
+
+}
+
+int gbk_2_utf8(char *in, char *out, size_t outlen)
+{
+    return icode(in, out, outlen, "utf-8", "gb2312");
+}
+
+int main(void)
+{
+    // int arr[] = {E2BIG  , EILSEQ , EINVAL};
+       
+    char *src = "我们的abc"; 
+    char dst[256]; 
+    char utfagain[256];
+    int ret = 0;
+
+    printf("src: %s\n", src);
+
+     int i;
+     for (i = 0; i < strlen(src); i++) {
+         printf("0x%02x ", (unsigned char)src[i]);
+     }
+     printf("\n");
+
+    ret = utf8_2_gbk(src, dst, sizeof(dst));
+    return_val_if_fail(ret != -1, -1);
+
+    printf("dst: %s\n", dst);
+
+     for (i = 0; i < strlen(dst); i++) {
+         printf("0x%02x ", (unsigned char)dst[i]);
+     }
+     printf("\n");
+
+
+    ret = gbk_2_utf8(dst, utfagain, sizeof(utfagain));
+    return_val_if_fail(ret != -1, -1);
+
+    printf("%s\n", utfagain);
+
+    return 0;
+
+}
+
+. 打印
+
+    int main(int argc, char *argv[])
+    {
+        printf("\u7403\n");
+        return 0;
+    }
+
+. bash打印很特殊
+
+    // 一次只能打印一个，且汉字前要加单引号'
+    var='我'
+
+    ascii=`printf "%x" "'$var"`
+    echo $ascii
+
+. echo -e 打印8进制 16进制    
+
+    // echo -e 输出的大于0x7f的字符在
+    // Linux vim用ga无法正确显示出正确的 Print the ascii value, 但在gvim可以
+    // 可以使用 hexdump xxd hd 等打印
+
+    \0NNN  byte with octal value NNN (1 to 3 digits)
+    \xHH   byte with hexadecimal value HH (1 to 2 digits)
+    \uXXXX uni-code, echo -e "\u7403\n"
+
+. GBK在线查询
+
+    http://bm.kdd.cc/index.asp

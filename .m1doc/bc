@@ -1,0 +1,36 @@
+/* bc */
+
+0. base
+    /** obase=16; ibase=16; scale=10 **/
+
+
+1. /* set the bc variable such as scale permanently */
+
+     [root@xm src]# echo scale=10 > ~/.bc
+
+2. /* command line */
+    echo "scale = 10; 0.2 * 0.1" | bc
+
+3. /* -l, --mathlib 
+    * scale 自动被设置为 20，scale(3/2) = 20
+    * % 在 -l参数下不能正常工作 
+    */ 
+
+    bc -l
+
+    + - * /         
+    ^               幂次
+    sqrt()          square root
+    l(expression)   指定 expression 的自然对数。
+    e(expression)   指定 expression 的幂。
+    e(l(2)/3)       2开3次方 1.259921049 -> 不同于计算器的多次方根
+
+4. google or baidu 'e' 可以得到一个网页版的计算器
+    计算多次方根
+    2^(1/3) 即是2的立方根
+
+5. 用  【Alt+小键盘】输入ascii 
+    alt+97 -> a
+    178² 179³ 
+    √ 41420 gb2312
+    √ 8730  unicode

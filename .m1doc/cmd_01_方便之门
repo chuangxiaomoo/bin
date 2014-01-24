@@ -1,0 +1,20 @@
+#! /bin/bash
+
+(2) 在bash 脚本中，subshells (写在圆括号里的) 可以很方便的方式来组合一些命令
+    一个常用的例子是临时地到另一个目录中
+        pwd
+        (cd /opt/; pwd)
+        pwd
+
+(3) BASH有变量展开的功能
+    echo  ls{1..10}     # 注意，不能把{}引起来
+
+(4) 通过 <(some command) 可以把某命令当成一个文件。
+    示例：
+    比较一个本地文件和远程文件 /etc/hosts：
+    diff /etc/hosts <(ssh somehost cat /etc/hosts) 
+
+(5) debug Web
+    试试curl 和 curl -I 或是 wget 。我觉得debug Web的利器是firebug，curl和
+    wget是用来抓网页的，呵呵。
+

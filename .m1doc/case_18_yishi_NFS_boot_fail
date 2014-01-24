@@ -1,0 +1,40 @@
+/* 18_yishi_NFS_boot_fail */
+
+/* fundamental */
+
+1. 真正原因
+    /* True causes */
+    bootargs 设置失败
+    在非vi编辑器中编辑后，console 被分离了 -> "c onsole=ttyS0,115200n8" 
+
+2. 问题描述
+    /* from R&D or Tester */
+    boot kernel失败
+    
+
+3. 现象分析
+    /* log or details */
+
+    Starting kernel ...
+
+    [ModeType]:0x0000000D
+    Uncompressing 
+    linux......................................................................
+    ...........................................................................
+    ...........................................................................
+    done, booting the kernel.
+
+4. 原因分析
+    /* 原因猜想，process to true causes */
+
+5. 解决方案
+    /* 包括对未来的防御 */
+    "EDITOR is important!"
+
+    set bootargs video=davincifb:vid0=OFF:vid1=OFF:osd0=720x576x16,2025K davinci_enc_mngr.ch0_output=COMPOSITE davinci_enc_mngr.ch0_mode=pal dm365_imp.oper_mode=1 console=ttyS0,115200n8 noinitrd rw ip=192.168.2.127 root=/dev/nfs nfsroot=192.168.2.126:/1/svn/filesys,nolock mem=84M eth=00:00:AA:C3:23:44 mode_type=13 cpu=368 debugsys=1 audio=0 audio_chn=1 stdin=serial
+
+6. Thinking
+    
+    使用diff, 有选择的忽略可以快速解决问题。
+    2013-05-08
+

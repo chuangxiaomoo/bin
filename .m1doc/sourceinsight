@@ -1,0 +1,47 @@
+
+. 映射网络驱动器
+    right click the fileclip icon [public], choose [map network drive], 
+    then you can use source insight to add the files to create a project.
+
+    每次重新开机，先打开网络驱动器，SI don't open it automatically;
+  
+. 映射快捷键 
+    Options > key assignment
+    可以在command中模糊搜索相关命令描述
+
+    ┌────────────┬────────────────────────────────────────────────────────────┐
+    │   move     │  [ctrl + arrow <] move a word left;                        │
+    │            │  [ctrl + arrow >] move a word right;                       │
+    │            │  [ctrl + { ] match previous  {, e.g. function head         │
+    │            │  [ctrl + } ] match next  },     e.g. function end          │
+    ├────────────┼────────────────────────────────────────────────────────────┤
+    │   mark     │  [ctrl + M] set a mark                                     │
+    │  quickfix  │  [ctrl + L] to jump to result panel;                       │
+    │            │  [S-F9]     to jump to next mark                           │
+    │            │  [F9]       to jump to previous mark                       │
+    ├────────────┼────────────────────────────────────────────────────────────┤
+    │   select   │  [ctrl + k] select all line;                               │
+    │            │  [ctrl + K] select left part of line;                      │
+    │            │  [shift + F5 ] to select the word;                         │
+    │            │  [Alt + mouse] column select                               │
+    ├────────────┼────────────────────────────────────────────────────────────┤
+    │   edit     │  [ctrl + i] to insert a new line above;                    │
+    │            │  [ctrl + u] del current line;                              │
+    │            │  [ctrl + e] auto complete                                  │
+    ├────────────┼────────────────────────────────────────────────────────────┤
+    │   window   │  [<F7>] to symbol of prj;                                  │
+    │            │  [<F8>] to symbol of local;                                │
+    │            │  [alt + L] to activate symbol window;                      │
+    │            │  [ctrl + o] to activate project window, and [Esc] to back; │
+    ├────────────┼────────────────────────────────────────────────────────────┤
+    │   symbol   │  [ctrl + alt + o] move to the caller;                      │
+    │            │  [ctrl + = ]      move to define;                          │
+    ├────────────┼────────────────────────────────────────────────────────────┤
+    │   view     │  [Alt + F12] Equal-Width                                   │
+    │            │  [S-F8] highlight the word                                 │
+    │            │  [C-;]  cancel all highlight                               │
+    ├────────────┼────────────────────────────────────────────────────────────┤
+    │   search   │  [C-F]     text search                                     │
+    │            │  [C-Alt-F] grep search                                     │
+    └────────────┴────────────────────────────────────────────────────────────┘
+

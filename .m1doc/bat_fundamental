@@ -1,0 +1,49 @@
+::
+:: 命令输出给变量 临时文件
+::
+@echo off
+hostname>aa
+set/p a=<AA
+del aa
+echo %a%
+
+::
+:: 命令输出给变量 FOR, tokens=*将所有列都赋给变量%%i
+::
+for /f "tokens=*" %%i in ('hostname') do set yourvar=%%i
+
+::
+:: 字符串替换 详见：set /?
+::
+set mydate=%date:~0,10%
+
+::
+:: 打包所有 .bin 为 .tgz
+:: 可以用& 符号连接多个命令
+::
+
+@echo off
+%~d0
+cd %~p0
+
+set mydate=%date:~0,10%
+
+for /f "tokens=*" %%i in ('dir /b *.bin') do (
+   IF EXIST %%i (
+       echo tar -cf %%~ni.%mydate%.tgz %%i
+       tar -cf %%~ni.%mydate%.tar %%i
+       echo gzip %%~ni.%mydate%.tar
+       gzip %%~ni.%mydate%.tar
+   ) ELSE (
+       echo filename. missing.
+   )
+)
+
+echo 
+echo --------------------------------
+echo         TAR SUCCESS, ENJOY IT!  
+echo -------------------------------- 
+echo 
+  
+pause
+

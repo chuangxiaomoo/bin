@@ -1,0 +1,81 @@
+/* errno */
+
+. errno is thread-safe
+    int * __errno_location();
+    #define errno (*__errno_location())
+
+. 一个简单的实现 -- 线程私有数据
+
+/*
+ * 说明：make_key()函数仅执行一次，且究竟在哪个线程中执行是不定的，
+ * 尽管pthread_once(&once,make_key)出现在两个线程中。 
+ **/
+
+/* 在linux 下，thread_function 最后return NULL引起core dump，
+ * 用pthread_exit(0)比较保险
+ **/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <pthread.h>
+
+// 三、exxno的实现
+#define exxno (*_exxno())
+
+/* 'cause pthread_once, key should be a non-local variable */
+static pthread_key_t key;
+
+static void make_key()
+{
+    /* multi-thread can share a key, the 1st key is init to 0 */
+    /* destructor NULL will result in memory leak */
+    pthread_key_create(&key, NULL);  
+    // printf("key is %x\n", key);
+}
+
+int *_exxno()
+{
+    int *ptr ;
+    static pthread_once_t key_once = PTHREAD_ONCE_INIT;
+
+    /* make sure make_key only once in process */
+    pthread_once(&key_once, make_key);
+
+    if ((ptr = pthread_getspecific(key)) == NULL) { /* get */
+        ptr = malloc(sizeof(int));        
+        pthread_setspecific(key, ptr);              /* binding */
+        // printf("specific key %x at %p\n", key, ptr);
+    }
+
+    return ptr ;
+}
+
+/* test */
+void *thread_func(void *arg)
+{
+    printf("%d\n", exxno);
+    exxno = *(int *)arg;
+    printf("%d\n", exxno);
+    pthread_exit(0);
+}
+
+
+int main ()
+{
+    int i;
+    const int t_num = 8;
+    pthread_t threads[t_num];
+
+    /* Create threads to do the work. */
+    for (i = 5; i < t_num; ++i) {
+        pthread_create (&(threads[i]), NULL, thread_func, &i);
+        sleep(1);
+    }
+    /* Wait for all threads to finish. */
+    for (i = 5; i < t_num; ++i)
+        pthread_join (threads[i], NULL);
+    return 0;
+}
+

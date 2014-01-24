@@ -1,0 +1,136 @@
+/* Oracle */
+
+// select name from v$datafile;
+// select name from v$tablespace;
+// select TABLE_NAME , TABLESPACE_NAME from dba_tables;
+// DB就等同于实例，一次只有一个实例运行。这两个表中的NAME有一一对应的关系
+
+10.
+    表空间信息:
+     DBA_TABLESPACES
+     V$TABLESPACE
+    数据文件信息:
+     DBA_DATA_FILES
+     V$DATAFILE
+    临时文件信息:
+     DBA_TEMP_FILES
+     V$TEMPFILE
+    Create_User:
+    CREATE USER aaron
+    IDENTIFIED BY soccer
+    DEFAULT TABLESPACE data
+    TEMPORARY TABLESPACE temp
+    QUOTA 15m ON data
+    PASSWORD EXPIRE;
+    User:
+    DBA_USERS
+    DBA_TS_QUOTAS
+    User_ts_quotas
+    Obtaining_Privileges_Information:
+    DBA_SYS_PRIVS lists system privileges granted to users and roles
+    SESSION_PRIVS lists the privileges that are currently available to the user
+    DBA_TAB_PRIVS lists all grants on all objects in the database
+    DBA_COL_PRIVS describes all object column grants in the database.
+    Select * from user_role_privs;查询某用户具备哪些角色
+    Select * from user_sys_privs;查询某用户具备哪些权限
+    Role_sys_privs查询某个角色包含哪些权限
+
+    Instance:
+    shutdown nomount mount 
+     open:
+     Opening the online data files
+     Opening the online redo log files
+
+    PFILE: 
+    CREATE SPFILE [='SPFILE-NAME'] FROM PFILE[='PFILE-NAME']
+    CREATE PFILE='/tmp/pfile.xm' FROM SPFILE;
+
+(15) passwd
+    alter user system identified by Changeme_123;
+
+(13)
+    describe v$instance;
+
+
+(11)
+
+users:
+    SQL> select USERNAME from dba_users;
+    SQL> select name from v$tablespace;
+// alias
+    select file_name from dba_tablespaces t, dba_data_files d 
+        where t.tablespace_name = d.tablespace_name and 
+              t.tablespace_name='${TABLESPACE_NAME}';
+// func sum()
+//
+    select sum(bytes)/1024/1024 Total_Size_M from dba_data_files 
+        where tablespace_name='${TABLESPACE_NAME}' group by tablespace_name;
+// create tablespace
+    CREATE BIGFILE TABLESPACE ${TABLESPACE_NAME} DATAFILE '${RAW_DEVICE}' 
+        size ${TABLESPACE_DES_SIZE}m;
+
+(7) files
+    ssh 192.168.128.161 "su - oracle -c 'sqlplus system/Changeme_123@OSSDB'"
+    sqlplus system/Changeme_123@OSSDB
+    sqlplus system/Changeme123@OSSDB
+
+port: 
+     $ORACLE_HOME/network/admin/listener.ora
+     $ORACLE_HOME/network/admin/tnsnames.ora
+     // os certificate
+     lsnrctl status LISTENER_SR5S5
+     lsnrctl services LISTENER_SR5S5
+     lsnrctl stop LISTENER_SR5S5
+     lsnrctl start LISTENER_SR5S5
+     sqlplus / as sysdba
+     show parameter LOCAL_LISTENER;
+     ALTER SYSTEM SET LOCAL_LISTENER='' SCOPE=BOTH;
+     ALTER SYSTEM SET LOCAL_LISTENER='OSSDB' SCOPE=BOTH;
+     // ALTER SYSTEM SET LOCAL_LISTENER='LISTENER_SR5S5' SCOPE=BOTH;
+
+LOCAL_LISTENER:
+     $ORACLE_HOME/network/admin/tnsnames.ora
+
+stop_start:
+     sqlplus / as sysdba
+     shutdown immediate
+     startup
+
+init:
+    $ORACLE_BASE/admin/OSSDB/pfile/init.*
+
+spfile:
+    $ORACLE_HOME/dbs/initOSSDB.ora
+    show parameter spfile;
+
+    SQL> show parameter db_block // show cmd is useful
+
+(6) term /* oracle database reference -- oracle.com it */
+
+    TNS transparent Network substrate
+    SID site identifie
+    SGA system global area
+    NLS national language support
+
+(5) arch
+    ipcs -a
+    // 
+    !ps -ef | grep $USER | grep '(' | grep -v grep
+    !ps -ef | grep $USER
+    !(ps -ef | grep "\(.*\)")
+
+    // sql
+    select name from v$datafile;
+    select member from v$logfile;
+    select name from v$controlfile;
+
+(3)
+    SQL> select status from v$instance;
+
+(2) archive
+    /*
+    SR5S6:~ # vxprint
+    SQL> archive log list;
+    SQL> alter database open;
+     **/
+

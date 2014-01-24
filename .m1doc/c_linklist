@@ -1,0 +1,96 @@
+/* linklist */
+
+一、引子
+    'c_callback'中所说到的注册问题，如果只是给自己用，使用一个大的
+    静态结构体数组即可以完成。
+
+    但如果要把灵活删减，并提供出接口，这时，就不得不使用链表来处理了。
+
+二、链表的基本抽象    
+    如同 .avi格式是一个容器一样，其内可以有h264数据帧，mpg4数据帧，linux内核中
+    的list也是一个容器。
+
+    具体实现，参考 'linux_list.h'
+    这个文件是wu整理过的，是list操作的一个基本子集，可能是其在IBM工作的经历，
+    一篇IBM上的文档详细进行了解说：
+
+    '深入分析 Linux 内核链表'
+    http://www.ibm.com/developerworks/cn/linux/kernel/l-chain/
+
+三、自己的一点理解
+
+    函数命名风格：以对象为中心，"主语+谓语"的形式
+
+    __list_add()为内部使用的，底层的函数，对外提供多个定制接口
+
+    static + INLINE 使用提高效率
+
+    此.h文件经过wu的简化，更加便于理解，符合"先固化，再优化"的思想
+
+. 初始化
+    struct list_head {
+        struct list_head *next, *prev;
+    };
+
+    /* 定义时初始化 */
+    #define LIST_HEAD_INIT(name) { &(name), &(name) }
+    
+    /* 定义 + 初始化 */
+    #define LIST_HEAD(name) struct list_head name = LIST_HEAD_INIT(name)
+    
+    /* 定义后初始化，使用的最频繁 */
+    #define INIT_LIST_HEAD(ptr) do { \
+        (ptr)->next = (ptr); (ptr)->prev = (ptr); \
+    } while (0)
+
+. 操作API
+    所有的API，都考量3个变量：prev entry next
+
+    __list_add          
+    list_add            /* 表头插入，good for implementing栈 */
+    list_add_tail       /* 表尾插入，good for implementing堆 */
+    __list_del
+    list_del
+    list_del_init
+    list_move
+    list_move_tail
+    list_empty          /* assert if empty */
+    __list_splice
+    list_splice         /* 合并后node会不会少? */
+    list_splice_init
+
+. 遍历    
+
+    list_entry
+    list_for_each
+    list_for_each_prev
+    list_for_each_safe          /* against del 时的断链 */
+    list_for_each_entry         /* 合并 list_entry & list_for_each */
+    list_for_each_entry_safe
+
+四、测试
+    最好的理解方法就是自己写一套测试用例来测试之
+    'test_linux_list.c'
+
+五、JCP命令是怎么做的？    
+
+    typedef struct JcpRegCmd {           
+        struct list_head RegCmd_list;	// 用于维护链表
+        char strCmd[MAX_CMD_LEN + 4];
+        JCP_CMD_CmdProc pfunCmdProc;
+    } RegCmd_S;
+
+	INIT_LIST_HEAD(&(RegCmdWorkList.RegCmd_list));
+
+	JCP_CMD_REG("tick", JCPCmdTick, &(RegCmdWorkList.RegCmd_list));
+
+	JCPCmdExe(bufBody, &(RegCmdWorkList.RegCmd_list), argc, argv, jcp)
+    {
+        RegCmd_S  *pRegCmd= NULL;
+        struct list_head *pSessPoss = NULL;
+
+        list_for_each(pSessPoss, pRegCmd_list) {
+            pRegCmd = list_entry(pSessPoss, RegCmd_S, RegCmd_list);
+        }
+    }
+

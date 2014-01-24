@@ -1,0 +1,48 @@
+#! /bin/bash
+
+                  cygwin,在win中开发linux程序
+
+一、cygwin是什么？
+    http://cygwin.com/cygwin-ug-net/highlights.html
+
+二、cygwin的安装。
+    http://cygwin.com/install.html
+
+    step1. 下载后，点击安装文件(setup.exe)进行安装
+
+    step2. 安装模式有
+        "Install from Internet"、
+        "Download form Internet"、
+        "Install from Local Directory" 三种。
+        "Install form Internet"就是直接从internet上装，适用于网速较快的情况。 
+        请选择"Download form Internet"、
+        + All  Default
+           + Admin Default
+            ....
+           + Devel   Default
+           + Editors Default
+           ....
+        #
+        # 左上角有个搜索框，非常方便
+        #
+        # 着重选择 make gcc expect tftp ssh
+        # 记得选择 man xterm
+
+    step3. 接下来是选择安装目的路径和安装源文件所在的路径.
+        如上图所示，你在这个TreeView的某个节点上双击，就可以改变它的状态，如
+        Default、Install、Uninstall、Reinstall四种状态。
+        默认的都是Default状态，很多工具的默认状态都是不安装。
+        在这里我选择了在All这一行上后面的Default上点Install，全部安装，以免后患
+        。（注意：这里的树形控件和win下面的不同，你试试点在All上点和在All这一行
+        后面的Default上点，会有不同的响应）
+
+    step4. 点下一步，安装成功。它会自动在你的桌面上建立一个快捷方式。
+
+三、配置 
+    http://baike.baidu.com/view/3968.htm
+    Windows下的Linux开发环境 Cygwin
+    http://www.oschina.net/p/cygwin
+
+四、更新
+    apt-cyg
+

@@ -1,0 +1,53 @@
+/*  */
+
+. 前言
+
+    程序代码是别人写的，只有原作者才真的了解程序代码的用途及涵义。许多程序员心里
+    都有一种不自觉的恐惧感，深怕被迫去碰触其他人所写的程序代码。这是来自于人类内
+    心深处对于陌生事物的原始恐惧。但是，与其抗拒接收别人的程序代码，不如彻底了解
+    相关的语言和惯例，当成是培养自我实力的基石。
+
+
+. Build and Run the Program
+
+
+. 我不要看你的程序，让我看一看你的数据结构！
+
+    C++时先看类的定义
+
+. Find the High-Level Logic
+
+    看live555相关的代码有感：忽略错误处理，只看主干。
+    Most programs have a main loop--find it. （显示的、或隐式的loop）
+
+. 举一反三
+
+    望文生义，进而推敲组件的作用。 /* 如果让你来完成相同的功能？ */
+    总结设计模式，应用模式。
+
+. Draw Some Flowcharts
+
+    军哥如此做过
+
+. Write UnitTests
+
+    实践出真知
+
+
+. 参考    
+
+    http://c2.com/cgi/wiki?TipsForReadingCode
+
+    如何阅读他人的程序代码
+    http://blog.csdn.net/huangxinfeng/article/details/5374611
+
+    如何阅读别人的代码---c、c++程序学习
+    http://blog.csdn.net/guoxiaojie_415/article/details/7376365
+
+. 走读mxml
+
+    ./configure && make 
+    读README对框架有个大致的了解，无非就就是读写
+    运行testmxml对其有更深认识
+    读testmxml.c了解细节
+

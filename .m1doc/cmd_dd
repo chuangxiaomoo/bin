@@ -1,0 +1,10 @@
+#! /bin/bash
+
+# dd 创建空文件, bs可以有单位，count也可以有单位
+
+# 创建20M的文件
+dd if=/dev/zero of=FILE_U_WANT bs=1M count=20
+dd if=/dev/zero of=FILE_U_WANT bs=512K count=40
+
+# 创建4G的文件
+dd if=/dev/zero of=FILE_U_WANT bs=4K count=1M

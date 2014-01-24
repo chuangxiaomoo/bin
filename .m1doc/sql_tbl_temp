@@ -1,0 +1,46 @@
+
+. 考虑到会进行大量的MACD查询，为提高效率，特建立临时表。
+
+    临时表只对当前会话可见，连接断开时，自动删除！
+
+    不必担心所创建的临时表的名称会和其他会话建立的临时表、或非临时表冲突！注意如
+    果你的临时表和正常表名称相同，正常表会被隐藏——如同全局变量和局部变量那样 
+
+. MySQL内存表的弊端
+
+    http://database.51cto.com/art/201011/234538.htm
+
+. 创建
+    CREATE TEMPORARY TABLE tmp_table 
+        (name VARCHAR(10) NOT NULL,value INTEGER NOT NULL);
+
+    CREATE TEMPORARY TABLE tmp_table_mem 
+        (name VARCHAR(10) NOT NULL,value INTEGER NOT NULL) TYPE = HEAP;
+
+. 改名(只能使用ALTER)
+
+    ALTER TABLE tbl_name RENAME TO new_tbl_name;
+
+. 查看
+
+    show session status like '%tmp%'; -- HEAP类型的无法查看到
+
+    Temporary tables will be stored in your mysqld's designated temp directory 
+    (usually /tmp) and you'll see a set of tables something like:
+
+    -rw-rw---- 1 mysql mysql     8724 Nov 29 18:09 #sqldba_5fa70c_12f1.frm
+    -rw-rw---- 1 mysql mysql   188408 Nov 29 18:09 #sqldba_5fa70c_12f1.MYD
+    -rw-rw---- 1 mysql mysql     1024 Nov 29 18:09 #sqldba_5fa70c_12f1.MYI
+
+. 删除
+
+    DROP TABLE tmp_table
+
+    频繁的创建和删除临时表会影响吞吐。
+    如出现大量的 "waiting for table"，
+    以及大量的 create temporary table 和 drop table 的线程在等待
+
+    建议使用 TRUNCATE TABLE tbl_name
+
+. TRUNCATE
+

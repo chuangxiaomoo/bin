@@ -1,0 +1,30 @@
+/* 02_header_file_inc_path */
+
+. 搜索路径
+
+    http://stackoverflow.com/questions/344317/where-does-gcc-look-for-c-and-c-header-files
+
+    C++
+
+        `gcc -print-prog-name=cc1plus` -v
+
+    C    
+                   `gcc -print-prog-name=cc1` -v
+
+        /* arm_v5t_le */
+        `arm_v5t_le-gcc -print-prog-name=cc1` -v
+         arm_v5t_le-gcc -print-search-dirs
+
+
+
+. 头文件搜索顺序
+
+    header files search sequence
+     1. 当前工作路径. 
+     2. -I 指定路径 
+     3. 系统默认 /usr/include 
+
+     注意：/usr/include 只是被默认加到-I的后面，很人性化的东东，
+    #include "head.h"       依次搜索    1 2 3
+    #include <head.h>         只搜索      2 3
+

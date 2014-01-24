@@ -1,0 +1,16 @@
+/* java */
+
+
+. install
+
+    http://www.ubuntugeek.com/how-to-install-oracle-java-7-in-ubuntu-12-04.html
+
+    Install oracle java 7 in ubuntu 12.04
+    Open the terminal and run the following commands
+
+    sudo add-apt-repository ppa:webupd8team/java
+    sudo apt-get update
+    sudo apt-get install oracle-java7-installer
+
+. $JAVA_HOME
+    /usr/lib/jvm/java-7-oracle

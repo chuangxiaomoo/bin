@@ -1,0 +1,7 @@
+#! /bin/bash -- xinetd
+
+# 启动基于xinetd的服务，需要先开启，再重启xinetd
+chkconfig daytime on
+/etc/init.d/xinetd restart
+
+

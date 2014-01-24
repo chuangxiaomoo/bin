@@ -1,0 +1,14 @@
+/* 31_REBOOT_LINUX_fail */
+
+    int JCODelayExec(DELAY_CMD_E cmd, void *param, int len)
+    {
+        delayCmd->param = malloc(len)
+
+        if (delayCmd->param == NULL) {
+            return FAILURE;
+        }
+    }
+
+如此，__LINE__ 比较大时必然会失败，重启无效。
+
+    JCODelayExec(DELAY_CMD_REBOOT, (void *)__FUNCTION__, __LINE__);

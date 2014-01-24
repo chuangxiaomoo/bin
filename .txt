@@ -1,0 +1,3 @@
+    "dec2hex <dec>          # xslt dec2hex 2 hex, dec list are seperated by ' '"  # 10
+    "hex2dec <hex>          # xslt hex 2 decimal, hex list are seperated by ' '"
+    "conv from to <data>    # use mysql to conv between binary decimal heximal"

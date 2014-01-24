@@ -1,0 +1,18 @@
+
+. 数据库：
+    SHOW DATABASES;
+
+. 查看当前自己登录的数据库：
+    SELECT DATABASE();
+
+. 数据库中存在什么表
+    SHOW TABLES;
+
+. 查看表创建语句
+    SHOW CREATE TABLE tbl_name;
+
+. 列出所有的存储过程
+    SHOW PROCEDURE STATUS
+
+. 查看过程创建语句
+    SHOW CREATE PROCEDURE proc_name;

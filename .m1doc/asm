@@ -1,0 +1,22 @@
+
+. gas数据方向，非unix字符拷贝方向(记忆为 mov src to dst)
+
+    char p[] = "123456789";
+	.loc 1 22 0
+	movl	$875770417, 34(%esp)
+	movl	$943142453, 38(%esp)
+	movw	$57, 42(%esp)
+
+. 数据大小
+    Intel 80x86 16 bit [2 byte] word; 32 bit [4 byte] doubleword
+    http://www.osdata.com/topic/language/asm/datarep.htm
+
+. gas instruction set
+    . x86 instruction listings
+        http://en.wikipedia.org/wiki/X86_instruction_listings
+
+        可以点击表格中的箭头进行排序。
+
+    . google gas instruction set
+        E:\winc\qdoc\Intel_Gas_InstructionSet.pdf
+    

@@ -1,0 +1,40 @@
+   MANWIDTH=76 man gdb | grep -B50 "^OPTIONS" | grep -v "^OPTIONS"  \
+                       | grep --color -A40 "most frequently needed"
+
+   Here are some of the most frequently needed GDB commands:
+
+   break [file:]function
+           Set a breakpoint at function (in file).
+
+   run [arglist]
+          Start your program (with arglist, if specified).
+
+   bt     Backtrace: display the program stack.
+
+   print expr
+           Display the value of an expression.
+
+   c      Continue running your program (after  stopping,  e.g.  at  a
+          breakpoint).
+
+   next   Execute  next  program  line (after stopping); step over any
+          function calls in the line.
+
+   edit [file:]function
+          look at the program line where it is presently stopped.
+
+   list [file:]function
+          type the text of the program in the vicinity of where it  is
+          presently stopped.
+
+   step   Execute  next  program  line (after stopping); step into any
+          function calls in the line.
+
+   make
+   shell  run a shell command
+   help [name]
+   quit   Exit from GDB.
+
+   For  full details on GDB, see Using GDB: A Guide to the GNU Source-
+   Level Debugger, by Richard M. Stallman and Roland  H.  Pesch.   The
+   same text is available online as the gdb entry in the info program.

@@ -1,0 +1,75 @@
+/* glibc */
+
+. Check 版本
+
+    root@Moo:/opt/dm365/montavista/pro/devkit/arm/v5t_le/target/lib# which arm_v5t_le-gcc    
+    /opt/dm365/montavista/pro/devkit/arm/v5t_le/bin/arm_v5t_le-gcc
+
+    root@Moo:/opt/dm365/montavista/pro/devkit/arm/v5t_le/target/lib# ldd /opt/dm365/montavista/pro/devkit/arm/v5t_le/bin/arm_v5t_le-gcc
+            linux-gate.so.1 =>  (0x005d4000)
+            libc.so.6 => /lib/i386-linux-gnu/libc.so.6 (0x00110000)
+            /lib/ld-linux.so.2 (0x00d01000)
+
+    root@Moo:/opt/dm365/montavista/pro/devkit/arm/v5t_le/target/lib# ll  /lib/i386-linux-gnu/libc.so.6
+    lrwxrwxrwx 1 root root 12 2012-05-16 12:03 /lib/i386-linux-gnu/libc.so.6 -> libc-2.13.so*
+
+    root@Moo:/opt/dm365/montavista/pro/devkit/arm/v5t_le/target/lib# cd  /lib/i386-linux-gnu/
+    root@Moo:/lib/i386-linux-gnu# du -sh libc-2.13.so 
+    1.4M    libc-2.13.so
+    root@Moo:/lib/i386-linux-gnu# cd /opt/
+
+
+
+. 交叉编译：最后也没有成功
+
+
+1.configure: error: you must configure in a separate build directory
+
+自己在该代码的外面建一个新的目录：假设名字为：glic_compile（与glibc -2.9为同级目录），cd到glic_compile，然后执行：
+
+          CXX=arm_v5t_le-g++ CC=arm_v5t_le-gcc  ../glibc-2.13/configure --prefix=/usr/local/glibc  
+ ARCH=arm CXX=arm_v5t_le-g++ CC=arm_v5t_le-gcc  ../glibc-2.13/configure --prefix=/usr/local/glibc
+
+
+2.  
+
+    configure: error: 
+    *** LD_LIBRARY_PATH shouldn't contain the current directory when
+    *** building glibc. Please change the environment variable
+    *** and run configure again.
+    root@Moo:/opt/glibc_compile# 
+    root@Moo:/opt/glibc_compile# 
+    root@Moo:/opt/glibc_compile# 
+    root@Moo:/opt/glibc_compile# echo $LD_LIBRARY_PATH
+    /usr/local/lib:
+
+    修改 LD_LIBRARY_PATH，不能 ':' 打头或打尾
+
+3.     
+    checking for cpuid.h... no
+    configure: error: gcc must provide the <cpuid.h> header
+
+    直接 grep 后跳过
+
+
+4.     
+    mawk: scripts/gen-sorted.awk: line 19: regular expression compile failed
+
+    解决方法：
+
+    vi scripts/gen-sorted.awk，到19行，将sub(/\/[^/]+$/, "", subdir);---->sub(/\/[^\/]+$/, "", subdir);即每个中括号的
+
+    前面应该是\/而不是一个/。接下来报的59，65的错误也是同样的问题，解决方法相同
+
+
+5. 直接注释掉    
+
+ error: #error "TLS support is required."
+In file included from nptl/sysdeps/i386/i686/tls.h:34,
+                 from include/tls.h:6,
+                 from sysdeps/unix/sysv/linux/i386/sysdep.h:30,
+                 from <stdin>:1:
+nptl/sysdeps/i386/i686/../tls.h:75:3: error: #error "TLS support is required."
+In file included from nptl/sysdeps/i386/i686/tls.h:34,
+
+

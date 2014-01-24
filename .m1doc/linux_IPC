@@ -1,0 +1,24 @@
+二、IPC
+    # http://baike.baidu.com/view/1492468.htm
+    # http://blog.csdn.net/wqf363/article/details/1538492
+
+  1. 消息队列
+
+    # 消息队列数 
+    cat /proc/sys/kernel/msgmni 
+    16
+
+    # 单个消息大小限制
+    cat /proc/sys/kernel/msgmax
+    8192
+
+    # 所有消息占用空间限制
+    cat /proc/sys/kernel/msgmnb 
+    16384
+
+    # 
+    # 超过限制 msgmni 时msgget() 失败
+    # 超过限制 msgmax 时msgsnd() msgrcv()失败 EINVAL
+    # 超过限制 msgmnb 时msgsnd() msgrcv() block until space becomes available
+    # 
+

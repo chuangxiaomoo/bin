@@ -1,0 +1,40 @@
+Linux Time
+
+
+一、HZ / USER 
+
+    绝大多数ARCH的HZ都是100，ARM也是。
+
+    对于ARM体系结构，HZ = USR_HZ。
+
+    在arm架构中，它是定义在arch/arm/include/asm/param.h中，定义如下：
+
+    #ifdef __KERNEL__
+    # define HZ         CONFIG_HZ   /* Internal kernel timer frequency */
+    # define USER_HZ    100         /* User interfaces are in "ticks" */
+    # define            CLOCKS_PER_SEC   (USER_HZ)   /* like times() */
+    #else
+    # define HZ         100
+    #endif
+
+二、中断
+    时钟频率越高，系统的负担就越重，为什么这么说呢，因为高的时钟频率意味着高的
+    时钟中断，也就意味着系统需要花更多地时间在中断处理上。
+
+三、jiffes
+    jiffes=seconds*HZ
+    jiffies变量总是无符号长整数（unsigned long），在时钟频率为100的情况下，
+    497天后会溢出。
+
+参考：
+
+    Linux时间管理(推荐)
+    http://www.cnblogs.com/iceocean/articles/1650929.html
+
+    linux中的jiffies变量 
+    http://www.cnblogs.com/simonshi/archive/2010/12/13/1694819.html
+
+    linux中定时器和时间管理的探究
+    http://hi.baidu.com/xdyang1986/item/2d55ef1f24872cf865eabfc6
+
+

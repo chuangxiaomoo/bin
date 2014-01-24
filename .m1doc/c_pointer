@@ -1,0 +1,47 @@
+/* pointer */
+
+1. 函数定义时，数组名即指针 
+
+    int func(char *p)
+    int func(char p[])
+
+2. p[n] 等价于 *(p+n)
+
+
+3. 指针对齐
+
+    Alignment trap: stdio (1615) 
+    PC=0x400ab98c Instr=0xe5820000 Address=0xbee07c15 FSR 0x813
+    Bus error
+
+    /* Linux PC run ok, buf arm fail */
+    int main(int argc, char *argv[])
+    {
+        char packet[256] = "12345";
+        char *p = "34-";
+
+        *((int *)(packet+5)) = 124;                     // bus error
+
+        if (1 == sscanf(p, "%d", (int *)(packet+5))) {  // bus error
+            printf("success\n");
+        } 
+
+        return 0;
+    }
+
+    int a2char(const char *str, char *ch)
+    {
+        int temp;
+        if (1 == sscanf(str, "%d", &temp)) {
+            *ch = temp;
+            return 0;
+        }
+        return -1;
+    }
+
+4. free
+    free(NULL); /* valid */ 
+
+5. strchr 
+    warnning: when path 是(const char *)时，p 与 path 必须是一个类型
+    const char *p = strrchr(__FILE__, '/');

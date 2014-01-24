@@ -1,0 +1,15 @@
+#! /bin/bash
+
+tcpdump用法例子 
+http://blog.chinaunix.net/uid-21768364-id-186124.html
+
+
+# 保存
+tcpdump -i eth5  host 192.168.2.45 and tcp port 80  -w a.cap
+
+# verbose
+tcpdump -v -i eth5  host 192.168.2.45 and tcp port 80  -w a.cap
+
+# src dst
+tcpdump –i eth0 host    192.168.0.1 port 80
+tcpdump –i eth0 dst     192.168.0.1 and dst port 80

@@ -1,0 +1,34 @@
+
+. IF FUNCTION
+
+    相当C语言的条件表达式
+    IF(expr1,expr2,expr3)
+    
+  Examples:
+    mysql> SELECT IF(1>2,2,3);
+            -> 3
+    mysql> SELECT IF(1<2,'yes','no');
+            -> 'yes'
+    mysql> SELECT IF(STRCMP('test','test1'),'no','yes');
+            -> 'no'
+
+. IF 语句
+
+    -- END IF后一定要有分号
+    IF search_condition THEN statement_list
+        [ELSEIF search_condition THEN statement_list] ...
+        [ELSE statement_list]
+    END IF;
+
+  Examples:
+    IF (v_i > 60) THEN
+        LEAVE loop_visit;
+        SELECT "leaveing with 60";
+    END IF;
+
+. 与CREATE DROP结合
+
+    CREATE DATABASE [IF NOT EXISTS] db_name
+    DROP DATABASE [IF EXISTS] db_name
+    DROP TABLE
+    DROP VIEW

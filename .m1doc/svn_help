@@ -1,0 +1,87 @@
+#  svn help 
+
+# revision
+  http://blog.csdn.net/cmatch/article/details/2988061
+  版本号是递增的, A revision argument can be one of:
+      NUMBER       revision number
+      '{' DATE '}' revision at start of the date
+      'HEAD'       latest in repository
+      'COMMITTED'  last commit
+      'BASE'       up前 == COMMITTED, up后 == HEAD
+      'PREV'       == COMMITTED - 1
+      HEAD 这些关键字可以不用'引起来
+
+# -v 详细信息
+  svn stat -v
+  svn log -v
+
+----------------------------------------------------------------------
+
+# diff
+
+  **N old-rev and M new-rev**
+
+    diff [-c M | -r N[:M]]  // M 默认为 WORKINGCOPY
+
+  svn diff <不带参数>     //（最常用）等价于 -r BASE:WORKINGCOPY 
+  svn diff -r 'PREV'      //（最常用）等价于 -r 'PREV':WORKINGCOPY
+  svn diff -c 3 rules.txt //          等价于-r 3:PREV
+  svn diff -r 3   FILE    //          等价于-r 3:WORKINGCOPY
+  svn diff -r N:M FILE    //          N and M 不分大小顺序
+
+# revert    
+
+  恢复原始（pristine）的WORKINGCOPY文件：
+
+    使 add del 回退，文件名状态可以通过 svn stat 获得
+    使错误提交的文件回退
+
+
+  revert 已经 del 过的文件夹时要先 revert 其下的文件
+  svn: E155038: Can't revert 'upgrade/updateStep1' without reverting children
+  Reverted 'updateStep1/GobiNet3.ko'
+
+    svn revert 文件名
+    svn stat | grep '^A' | awk '{print $2}' | sort -r | xargs -I{} svn revert {}
+
+# add    
+
+  svn add 文件夹时会自动add其下的文件, 使用 --force 可以避免 worning
+
+    root@Moo:/1/svn/package/upgrade# svn add updateStep9
+    A         updateStep9
+    A         updateStep9/readme.txt
+
+    find ! -name '.' -a -name '*' | xargs -I{} svn add --force {}  | cat -n
+
+# ls
+
+  Support wildcard
+
+    svn ls *
+
+# log   
+
+  在svn ci的目录 svn log，必须先 svn up，否则无最新日志
+
+    svn log -l 5                                # --limit ARG, head 5 record 
+    svn log -v                                  # show changed files
+    svn log app -r {2012-12-18}                 # log on   {2012-12-18}
+    svn log app -r {2012-12-18}:{2038-01-01}    # log from {2012-12-18}
+
+# cleanup
+
+    svn info
+    Working Copy Root Path: /sourcecode/IPCam_dm365
+
+    svn cleanup /sourcecode/IPCam_dm365
+
+# rm changed file
+
+    svn stat | awk '{print $2}' | xargs rm -f 
+
+# 统一提交
+
+    ls -d package.* | grep -v 'package\.t' | xargs -I{} find {} -name updateExt.sh  \
+    | xargs -I{} svn ci --message "avoid-md5-fail" {}
+

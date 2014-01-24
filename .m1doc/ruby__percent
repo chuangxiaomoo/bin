@@ -1,0 +1,110 @@
+# /bin/ruby 
+
+Ruby中的%表示法（百分号表示法）
+
+在Ruby语言中到处充斥着语法糖衣，有很多的惯用表示法，对于初学者来说，往往被这
+些技巧搞得晕头转向。
+
+这两天看Rails源码中的Rakefile时，遇到一句代码：%x( mysqladmin --user=#
+{MYSQL_DB_USER} create activerecord_unittest )，虽然大概能猜到这句话是干什么
+的，但是Ruby中到底还有多少种以这样的%开头的表示呢？
+相信大家看到最多的应该是：%w,%，%q...下面是我收集的一些%表示法，希望对大家有
+帮助。
+
+  %{String}  用于创建一个使用双引号括起来的字符串
+  %Q{String} 用于创建一个使用双引号括起来的字符串
+  %q{String} 用于创建一个使用单引号括起来的字符串
+  %r{String} 用于创建一个正则表达式字面值
+  %w{String} 用于将一个字符串以空白字符切分成一个字符串数组，进行较少替换
+  %W{String} 用于将一个字符串以空白字符切分成一个字符串数组，进行较多替换
+  %s{String} 用于生成一个符号对象
+  %x{String} 用于执行String所代表的命令
+
+PS：上面几个%表示法中用{}扩住了String，其实这个{} 只是一种分割符，可以换成别
+的字符，比如()，那么%表示法就是%(String)，当然还可以是别的字符，对于非括号类
+型的分割符，左右两边要相同，如%!String! -- 如同： sed 's#old#new#g'
+
+下面我对这些表示法简单举几个例子：
+
+%{String}用于创建一个使用双引号括起来的字符串
+这个表示法与%Q{String}完全一样，这边直接句个例子看结果：
+
+ 1. result = %{hello}  
+ 2. puts "result is: #{result}, Type is:#{result.class}" 
+
+结果： result is: hello, Type is:String
+
+%Q{String}用于创建一个使用双引号括起来的字符串
+%q{String}用于创建一个使用单引号括起来的字符串
+
+从说明中可以看出这两个表示法的区别就是一个使用双引号，一个使用单引号。使用双
+引号的字符串会对字符串中的变量做较多替换，而单引号则做较少的替换，具体看例子
+。先看%Q{String}：
+
+
+ 1. world = "world"  
+ 2. result = %Q{hello #{world}}  
+ 3. puts "result is: #{result}, Type is:#{result.class}" 
+
+结果： result is: hello world, Type is:String
+
+换成%q{String}：
+
+
+ 1. world = "world"  
+ 2. result = %q{hello #{world}}  
+ 3. puts "result is: #{result}, Type is:#{result.class}" 
+
+结果：
+  result is: hello #{world}, Type is:String
+
+从上面的结果可以看出，较少替换的情况下，#{world}被解析成了字符串，而不会去计
+算这个变量中的值。
+
+%r{String}用于创建一个正则表达式字面值
+就像使用/reg/方式一样，看代码：
+
+
+ 1. result = %r{world}  
+ 2. puts result =~ "hello world"  
+ 3. puts "result is: #{result}, Type is:#{result.class}" 
+
+结果： 
+  6
+  result is: (?-mix:world), Type is:Regexp
+
+可以看出，world从第6个字符开始匹配
+
+%w{String}用于将一个字符串以空白字符切分成一个字符串数组，进行较少替换
+%W{String}用于将一个字符串以空白字符切分成一个字符串数组，进行较多替换
+这两个应该是大家见过最多的，用这个方式构造数组，可以省下一些逗号，Ruby真是会
+惯坏大家，以后大家都不用标点符号了。
+同样给一个简单的例子：
+
+
+ 1. result = %w{hello world}  
+ 2. puts "result is: #{result}, Type is:#{result.class}, length is:#
+    {result.length}" 
+
+结果： result is: helloworld, Type is:Array, length is:2
+
+%s{String}用于生成一个符号对象
+直接先上代码：
+
+ 1. result = %s{hello world}  
+ 2. puts "result is: #{result}, Type is:#{result.class}"  
+ 3. sym = :"hello world"  
+ 4. puts "the two symbol is the same: #{sym == result}" 
+
+结果：
+result is: hello world, Type is:Symbol
+the two symbol is the same: true
+
+可以看出，这两中方式生成的symbol对象完全一样
+
+%x{String}用于执行String所代表的命令
+比如：
+%x{notepad.exe}可以启动windows下的记事本，这里我就不列结果了（那是一个大家熟
+悉的窗口）。
+
+#Ruby On Rails

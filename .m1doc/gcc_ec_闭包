@@ -1,0 +1,176 @@
+/* 这些个文章《从实例出发了解C语言闭包》 */
+
+C/C++语言中闭包的探究及比较
+http://coolshell.cn/articles/8309.html
+
+从实例出发了解C语言闭包
+http://blog.chinaunix.net/uid-26537702-id-3040145.html
+http://blog.chinaunix.net/uid-26537702-id-3040275.html
+
+GCC 的花招: 嵌套函数
+http://blog.bitfoc.us/?p=82
+
+Posted at Sun, 18 Apr 2010 08:12:32
+
+    这里所说的 GCC 不是 GNU Compiler Collection, 而是单单指代 GNU C
+Compiler. 这篇文章并不打算讲标准 C 中的任何东西, 而是要聊聊一个 GCC 的特性:
+嵌套函数.
+    先来个例子, C 版的 for_each 结合嵌套函数 (必须存为 .c 文件, 使用 gcc 编
+译才能通过, g++ 压力大)
+
+    #include <stdio.h>
+
+    void for_each(int* begin, int const* end, void (* fn)(int*))
+    {
+        while (begin < end) {
+            fn(begin++);
+        }
+    }
+
+    #define ARRAY_SIZE 5
+
+    int main(void)
+    {
+        int a[ARRAY_SIZE];
+        int n;
+        void read(int* x)
+        {
+            scanf("%d", x);
+        }
+        for_each(a, a + ARRAY_SIZE, read);
+        scanf("%d", &n);
+
+        void add(int* x)
+        {
+            *x = *x + n;
+        }
+        for_each(a, a + ARRAY_SIZE, add);
+
+        void print(int* x)
+        {
+            printf("%d ", *x);
+        }
+        for_each(a, a + ARRAY_SIZE, print);
+        printf("end\n");
+        return 0;
+    }
+
+    这代码的紧凑程度虽然跟闭包没得比, 但是使用与定义能放在一起, 就算是一大
+进步了. 另一个福利在 add 函数, 它引用了一个局部变量 n, 是在外层函数 main 中
+定义的. 而 n 的使用并不在 main 的可控范围内, 也许它绕过 for_each 的栈帧, 再
+继续向上被 add 引用. 这听起来像魔法一样, 幸而 gcc 是个开源软件, 不必担心使
+用这个特性时会让自己的灵魂落入某个兼职程序员的邪恶巫师手中. 但是这到底是如
+何实现的呢? 要我讲解 gcc 源码我还没有这个能力, 不过 gcc 有个功能可以让我们
+比较方便地窥探出其中的技术内幕
+$ gcc 源文件 -S -o 目标文件
+这样源文件会被编译成汇编指令, 接着分析汇编指令好了.
+    上面那个例子情况比较复杂, 不妨分析下面这段简短的代码
+
+    void func(int a, int* b, int c)
+    {
+        int nested(void)
+        {
+            return a + c;
+        }
+        *b = nested();
+    }
+
+    这段代码在我机器上 (环境: x86 / Ubuntu 9.10 / GCC 4.4.1) 编译得到的汇编
+代码如下
+
+    .file "nf.c"
+        .text
+        .type nested.1251, @function
+    nested.1251:
+        pushl %ebp
+        movl %esp, %ebp
+        movl %ecx, %eax
+        movl 4(%eax), %edx
+        movl (%eax), %eax
+        leal (%edx,%eax), %eax
+        popl %ebp
+        ret
+        .size nested.1251, .-nested.1251
+    .globl func
+        .type func, @function
+    func:
+        pushl %ebp
+        movl %esp, %ebp
+        subl $16, %esp
+        movl 8(%ebp), %eax
+        movl %eax, -4(%ebp)
+        movl 16(%ebp), %eax
+        movl %eax, -8(%ebp)
+        leal -8(%ebp), %eax
+        movl %eax, %ecx
+        call nested.1251
+        movl 12(%ebp), %edx
+        movl %eax, (%edx)
+        leave
+        ret
+        .size func, .-func
+        .ident "GCC: (Ubuntu 4.4.1-4ubuntu9) 4.4.1"
+        .section .note.GNU-stack,"",@progbits
+
+    首先看 nested 的汇编代码.
+leal (%edx,%eax), %eax
+一句是 x86 指令集的著名挫技巧之一, 相当于将 edx 加上 eax 再塞入 eax. 这对应
+的是 nested 中
+return a + c;
+这条语句. 而这两个寄存器中数据的来源是这样的
+
+    movl %ecx, %eax
+    movl 4(%eax), %edx
+    movl (%eax), %eax
+
+    线索聚焦在 ecx 身上. 它的值在函数调用前就被设定了, 指向某个存放数据的地
+址, 那里有两个排排坐的整数. 注意, 原来的 C 代码中变量 a 和 c 的地址是不连续
+的, 也就是说, 这里引用的很可能已经不是原来的变量, 而是某个副本了.
+    接着再来看看 func 在调用 nested 之前做了什么. 从后往前看
+
+    leal -8(%ebp), %eax
+    movl %eax, %ecx
+
+这两句指明了, ecx 在调用前被设为 func 栈帧中的某个地址. 现在已经非常接近真
+相了. 很明显
+
+    movl 8(%ebp), %eax
+    movl %eax, -4(%ebp)
+    movl 16(%ebp), %eax
+    movl %eax, -8(%ebp)
+
+这个序列将 a 和 c 复制到那个地址, 以供接下来 nested 使用.
+    嵌套函数的实现是让局部变量驻留在定义嵌套函数的外函数的栈帧中 (这也造成
+一个限制, 调用栈中必须有外函数, 换句话说, 如果把内部函数指针返回, 在某个其
+它时机调用, 则会导致无法预计的行为: 总之, 这并非闭包), 通过某种方法让内嵌函
+数知道这些变量的藏身处, 在 x86 机器上, 完成此任务的是 ecx.
+
+#
+# gcc的nested function是支持闭包的。把你的程序稍微改一下即可：
+#
+
+    #include <stdio.h>
+
+    typedef int (*tf1)(void);
+
+    tf1 func(int a, int* b, int c)
+    {
+        int nested(void)
+        {
+            return a + c;
+        }
+        *b =100;
+        return nested;
+    }
+
+    int main()
+    {
+        int i;
+        tf1 pf=func(1, &i, 2);
+        printf("%d\n", (*pf)());
+        return 1;
+    }
+
+程序运行结果输出为3。
+
+结论是nested function不仅仅是个syntax sugar，其实它的目的是为了实现闭包这种语义机制。

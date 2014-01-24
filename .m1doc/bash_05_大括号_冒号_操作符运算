@@ -1,0 +1,18 @@
+#! /bin/bash
+
+# 要记住的只有一个大点:
+# 如同在Makefile中，:= 这样的操作符
+# 下面所有的操作符都是以 : 打头。
+
+${parameter:-word}
+       Use  Default  Values.
+${parameter:=word}
+       Assign Default Values. 
+${parameter:?Error}
+       Display  Error if Null or Unset.  
+${parameter:+word}
+       Use Alternate Value.
+
+${parameter:offset}
+${parameter:offset:length}
+

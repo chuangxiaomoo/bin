@@ -1,0 +1,14 @@
+/* cppcheck */
+
+. Intro
+    cppcheck的简单介绍
+    http://www.cnblogs.com/beifei/archive/2011/08/13/2137474.html
+
+. Install
+    apt-get install cppcheck
+
+    latest: 1.59 2013-03-29
+    http://sourceforge.net/projects/cppcheck/files/cppcheck/
+
+. EXAMPLE
+

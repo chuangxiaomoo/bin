@@ -1,0 +1,77 @@
+/* capture */
+
+. 抓拍依赖于外部存储
+
+    若无，可如下设置以使用samba or NFS
+
+    系统设置 -> 远程录制 -> SAMBA设置 -> "不要使用\\ but //做为网络路径"
+
+    NFS:
+        exportfs
+
+    SAMBA:
+        smbclient -N -L 127.0.0.1
+
+        //192.168.2.41/home
+        user: root
+        pass: xxxx
+
+. 手动触发
+
+    系统设置 -> 前端录制 -> 抓拍图片
+
+. 消息
+
+    rcrd_msg_event_req_capture(-1, ALARM_MSG_EVENT_MD);
+
+
+. 模式    
+    
+    IR NTP AutoUpgrade 抓拍延时 
+ 
+    这些服务有一个共同特点：
+        常驻服务                register_time_call_func() 
+        配置可以动态修改        web->jcpcmd
+        与另一个服务互动        msg
+        
+    C语言是一个过程语言，其基于数据结构。在这类问题时，一定要抽象好数据结构，
+    在动态配置时，reset() 数据结构就好了。
+
+    也就是可以在两个地方 reset(): 一个是在init()时，另一个是配置时，即jcpcmd() 
+
+
+. 抓拍延时
+    /**  capture prolong **/
+    def_stru(struct md_prolong, md_prolong); // trigger stat 
+
+                               +----+
+                               |init|
+                               +--+-+
+                                  |
+              +----------+        |
+  +---------> | while(1) |        |
+  |           +----|-----+        |
+  |                |              |
+  |                |              |
+  |                |          +---v----------------+         +------+   +---+
+  |                +<---------+ reset trigger stat | <-------|jcpcmd|<--|web|
+  |                |          +--------------------+         +------+   +---+
+  |                |
+  |                |
+  |        +-------v---------+      +----------------+     +-----+
+  |        |read trigger stat| <----|set trigger stat| <---|alarm|
+  |        +-------|---------+      +----------------+     +-----+
+  |                |
+  |                |
+  |        +-------v----------+
+  |        |prolong enable ?  |
+  |        |overtime ?        |
+  |        |!(tick++ % interv)|
+  |        +-------+----------+
+  |                |
+  |        +-------v--------+                          +------+
+  |        |send cmd capture| -----------------------> |record|
+  |        +----------------+                          +------+
+  |                |
+  +----------------+
+

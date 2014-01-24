@@ -1,0 +1,108 @@
+/* jcp */
+
+. Refactory
+
+    保证重构前后输入输出一致
+
+    // jco_jcp.sh 
+
+    grep -B20 "MAP_OPT_ARG_S *maps" jcp_cmd.c  | grep "int *JCPCmd" | \
+        awk -F"[ \(]" '{print $3}'
+
+                    |
+                    |
+                    v
+
+    grep -E "(JCPCmdHaidouCfg|||)" | awk -F'"' '/JCP_CMD_REG/ { print $2}'
+
+. Run:
+
+    http://192.168.2.24/?jcpcmd=xkcd cat /etc/init.d/rcS | grep telnet
+
+    curl 'http://192.168.2.45/?jcpcmd=xkcd%20/sbin/debugsys.sh%20force'
+
+    j2box xkcd telnetd -p 24
+
+. 实现机制
+
+
+. 封装
+
+    一、以下3个函数做为一组功能提供： 
+
+    read_conf_file      // 读取文件中的key值并组装到szMsgBuf
+    write_conf_file     // 将key val 对写入到文件中
+    asm_list_string     // 组装 jcp -act list 时的返回字符串
+
+
+    二、特殊函数 
+    asm_hybr_struct()   // 将命令行中数据插入已有数据结构体中
+
+    1. NTP AutoUpdate 等SERVER中的线程中数据通知 -- 参考 JCPCmdAutoUpdate()
+        asm_hybr_struct 依赖于 SysConf_xxx(CONF_ACT_GET, &org)在 {set|list}判断之外执行。
+        以得到旧有数据与新数据的结合体。
+
+        有以下福利：
+            数据结构指针可直接使用，而无需用消息通信及额外调用 SysConf_xxx(CONF_ACT_GET,)
+
+            避免SysConf_xxx() 常常带多个参数的麻烦，如SysConfAutoRebootCfg()
+            如此一来，数据是整存整取的。系统消耗并不在ini读取（从内存中），而在于文件的读写.
+
+    2. 其它应用数据配置时，asm_hybr_struct()不是必须的 --  参考 JCPCmdProduct()
+
+    三、改造 SysConf_xxx(CONF_ACT_ACT, ...)
+
+        复用opts[]中的类型信息，可以用for()来大大简化ini的读取流程。
+        写入时可以用下面的条件:
+            if (TRUE == opts[i].s8Isset)
+
+        为保证SysConf_xxx(CONF_ACT_GET,)的独立性，ini映射关系 maps[] 就必须是在SysConf_xxx()中定义了。
+        此时 access_ini()的第3个参数和第四个参数可以为 NULL 和 0，如：
+        SysConfMultiPlatform(CONF_ACT_GET, NULL, 0, &inner);
+
+    注意：
+    1.
+        四个函数中opts和maps都必须在同一个文件内，因为四个函数都用到了“字串”的地址比较。
+        if(opts[i].pszOpt != maps[i].opt)
+
+    2.
+        JCP流程 (格式参考JCPCmdAutoUpdate opts[])
+                               +-------+          +----------------------------------------------+
+                               |jcpcmd |  ------> |关键数组 MAP_OPT_KEY_S maps[]                 |
+                               +---+---+          |         MAP_OPT_ARG_S maps[]                 |
+                                   |              |         opts[]                               |
+                    +--------------+-----------+  +------------------------+---------------------+
+                    |                          |                           |
+              +-----+-----+               +----+-----+                     |    
+              | -act list |               | -act set |                     |    
+              +-----+-----+               +-------+--+                     |    
+                    |                             |                        |
+      +-------------+-------------+     +---------+-------------------+    |    
+      | read_conf_file()  or      |     |   write_conf_file() or      |    |    
+      |                           |     |                             |    |    
+      | SysConf_xxx(CONF_ACT_GET) |     |   asm_hybr_struct() -> 可选 |  ->|  e.g. JCPCmdAutoUpdate() // 无asm_hybr_struct()
+      | asm_list_string()         |     |   SysConf_xxx(CONF_ACT_SET) |  ->|  e.g. JCPCmdProduct()    // 有asm_hybr_struct()
+      +---------------------------+     +-------------+---------------+    |    
+                                                      |                    |
+                                        +-------------+---------------+    |   
+                                        |  sys_msg_event_chng_cfg() or|    |   
+                                        |  JCODelayExec()             |    |   
+                                        +-----------------------------+    |   
+                                                                           |
+      +-------------------------------------+                              |
+      | e.g.                                |                              |    
+      |                                     |                              |    
+      | JCPCmdZXWCfg                // .cfg |                              |   
+      | JCPCmdAutoUpdate            // .ini |                              |    
+      +-------------------------------------+                              |
+                                                                           |
+    3. SysConf_xxx() 考虑保存到 .def， 使用 save2def                       v
+                                                +----------------------------------------------+
+            参考 SysConfAutoUpdate() -------->  | 关键数组 MAP_OPT_INIKEY_S maps[]             |  
+                                                +----------------------------------------------+
+    4. 助记
+    opt -- 选项 
+    arg -- 参数
+    key -- ini cfg 文件中的键值
+
+

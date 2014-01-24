@@ -1,0 +1,39 @@
+/* 03_看雪 */
+
+ ┌─────────────────────────────────────────────────────────────────────┐
+ │  在破解银江时，最后想到肯定是把一定的信息写到文件或是注册表里了。   │
+ │  那么用diff找出这个文件就可以了。如果注册表里的东西跟“机器码”无关， │
+ │  那就大功告成了。                                                   │
+ │                                                                     │
+ │  保存 .reg时，一定要先选全部导出。默认只导出分支的                  │
+ └─────────────────────────────────────────────────────────────────────┘
+http://afericazebra.blog.163.com/blog/static/3005040820108108730522/
+
+
+pc6-PEiD0.95
+
+高版本的PEiD V0.93，再次检测破解程序文件，这次发现提示信息为“Nothing found *”
+
+
+    http://blog.sina.com.cn/s/blog_7082605301012vlf.html
+    常见壳的EP(entry point)区段名称
+
+        PEncrypt 4.0 Gamma / 4.0 Phi -> junkcode [Overlay]   .text
+
+    
+
+
+W32DASM黄金版中文版.rar
+
+没有串参考
+
+
+脱壳入门初级教学
+http://bbs.pediy.com/showthread.php?p=138589#post138589
+
+
+PEncrypt 4.0 Gamma / 4.0 Phi -> junkcode脱壳手记
+http://www.lilu.name/Html/heikexuetang/2009-05/0709544.html
+
+
+http://bbs.pediy.com/showthread.php?s=&threadid=769

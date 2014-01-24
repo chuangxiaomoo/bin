@@ -1,0 +1,13 @@
+#! /bin/bash -- todo
+
+趋势就是价格对一个有确定意义的市场影响因素所做的持续反应，该持续反应
+表现为具有统计相关特征的价格序列。
+
+易经卦解
+
+DIFF : EMA(CLOSE,SHORT) - EMA(CLOSE,LONG);
+DEA  : EMA(DIFF,M);
+MACD : 2*(DIFF-DEA), COLORSTICK;
+
+http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:moving_averages
+

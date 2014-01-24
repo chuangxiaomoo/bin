@@ -1,0 +1,12 @@
+
+一、清空缓存
+    1、设置 -> 删除私人数据 (点详细选项，注意选择要清空的内容)
+    2、<Ctrl-F12> -> 高级 -> 历史 -> 立即清空
+
+
+二、设置opera cache目录
+	opera:config  
+	User Prefs,
+	Cache Directory4
+    to input new path E:＼OperaTemp 
+

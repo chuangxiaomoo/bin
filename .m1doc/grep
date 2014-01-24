@@ -1,0 +1,28 @@
+# grep
+
+## opt
+
+   -A NUM,          --after-context=NUM
+
+   -B NUM,          --before-context=NUM
+
+   -C NUM, -NUM,    --context=NUM
+
+   -m NUM,          --max-count=NUM
+      Stop reading a file after NUM matching lines.
+
+## filter grep
+
+    ps | grep -v [j]co_server
+
+## expression
+
+    date RegExp
+	patterns_date = "/^\d{4}-(0?[1-9]|1[0-2])-(0?[1-9]|[1-2]\d|3[0-1])$/"; 
+    patterns_time = "/^(0?\d|1\d|2[0-3]):(0?\d|[1-5]\d):(0?\d|[1-5]\d)$/";
+
+## 非贪婪
+
+    echo 'asfs callback=12345&abcde&sfd' | sed 's/callback=.*&//g'
+    echo 'asfs callback=12345&abcde&sfd' | sed 's/callback=[^&]*&//g'
+

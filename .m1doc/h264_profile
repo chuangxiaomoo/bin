@@ -1,0 +1,12 @@
+#! /bin/bash
+
+. 查看 profile level idr
+
+    ESEyE -> info -> tab File
+
+    profile:level      :            Baseline:3.1
+
+    ESEyE -> info -> tab Headers    -> Slice_header()
+                                    -> I slice 
+                                    -> nal_unit_type == 5
+

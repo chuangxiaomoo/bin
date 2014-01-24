@@ -1,0 +1,32 @@
+#! /bin/bash
+
+*5.1* 配置文件及格式
+
+    # /etc/exports     
+    # no space between '*' and '(rw,...'
+
+    /nfsroot *(rw,no_root_squash,sync)
+    ^        ^
+    |        |
+    export   client_IP(*时则可被任意IP挂载访问) 
+
+    # 子目录检查
+    /opt                *(rw,no_subtree_check,no_root_squash)
+                                 ^
+                                 |
+                            /opt/子目录同样可被挂载
+
+*5.2* 查看nfs输出目录 
+
+    # exportfs 
+    # showmount -e 127.0.0.1
+
+
+*5.3* showmount -a 
+
+    showmount -a 显示未被主动unmount的挂载点。
+
+    客户端挂载后，在服务器端删除挂载点，清除/etc/exports下的相关信息，用showmount
+    -a 查看依然能查看到客户端的挂载信息。但是如果客户端先unmount的话，showmount -a
+    就查看不到了。 
+

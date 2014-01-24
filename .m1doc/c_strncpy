@@ -1,0 +1,23 @@
+/*  */
+
+. strncpy
+
+    /* 参数dest必须要足够长，比n长，否则会有数组越界，破坏调用栈的风险 */
+        
+    If the length of src is less than n, strncpy() pads the remainder of dest with
+    null bytes.
+
+    A simple implementation of strncpy() might be:
+
+        char*
+        strncpy(char *dest, const char *src, size_t n){
+            size_t i;
+
+            for (i = 0 ; i < n && src[i] != '\0' ; i++)
+                dest[i] = src[i];
+            for ( ; i < n ; i++)
+                dest[i] = '\0';
+
+            return dest;
+        }
+

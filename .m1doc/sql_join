@@ -1,0 +1,18 @@
+. JOIN 语法
+
+    INNER JOIN tbl_name
+    ON conditional_expr
+
+. 通过引用两个表的方式，从两个表中获取数据
+
+    SELECT Persons.LastName, Persons.FirstName, Orders.OrderNo
+    FROM Persons, Orders
+    WHERE Persons.Id_P = Orders.Id_P; 
+
+. 使用 JOIN
+
+    SELECT Persons.LastName, Persons.FirstName, Orders.OrderNo
+    FROM Persons
+    INNER JOIN Orders
+    ON Persons.Id_P = Orders.Id_P
+    ORDER BY Persons.LastName;

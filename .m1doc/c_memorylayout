@@ -1,0 +1,41 @@
+/* memorylayout */
+
+/* 2014-01-13 */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+
+/*
+ Linux虚拟内存管理 
+ http://blog.163.com/xychenbaihu@yeah/blog/static/132229655201311884819764/
+
+    地址从高到低
+
+    0xffffffff  内核最高地址
+    0xc0000000+ 内核最低地址
+
+    0xc0000000- 栈顶，栈往下生长
+    0x40000000  动态库、共享内存等映射区 
+                堆底，堆往上生长
+                .data .bss
+    0x08048000+ .init .text .rodata
+
+    0x08048000- 未使用
+*/
+
+    
+int main(int argc, char *argv[])
+{
+    int dig = 0;
+    char arr[100] = {0};
+    char *string = "I love china";
+    char *p = malloc(1024);
+
+    printf("stack: %p stack: %p rodata: %p heap: %p\n",
+            &dig, arr, string, p);
+
+    return 0;
+}
+

@@ -1,0 +1,25 @@
+/* in fact, it's not a bug, just a discovery
+ * if can ignore the signal by use the continue of a for(;;);,
+ * which was run one time
+ */
+
+int non_signal_select(int num_probes)
+{                               /* num_probes is 1 always */
+    for (;;) {
+        FD_ZERO(&fds);
+        FD_SET(usd, &fds);      /* Wait on read or error */
+        i = select(usd + 1, &fds, NULL, NULL, &to);
+        if ((i != 1) || (!FD_ISSET(usd, &fds))) {       /* no fd set */
+            if (i == EINTR)
+                continue;
+            if (i < 0)
+                perror("select");
+            if (to.tv_sec == 0) {       /* time out */
+                if (probes_sent >= num_probes && num_probes != 0) {
+                    return -1;          /* try times run out */
+                }
+                send_packet(usd);
+            }
+        }
+    }
+}

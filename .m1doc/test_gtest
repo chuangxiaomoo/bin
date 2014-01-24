@@ -1,0 +1,155 @@
+/* ---------- 单元测试框架 gtest ----------- */
+
+Google C++单元测试框架(Gtest)系列教程之一——入门
+http://www.cnblogs.com/bangerlee/archive/2011/10/02/2197879.html
+
+玩转Google开源C++单元测试框架Google Test系列(gtest)(总)
+http://www.cnblogs.com/coderzh/archive/2009/04/06/1426755.html
+
+. README 
+    ### Generic Build Instructions ###
+
+    Makefile分析：
+    gtest_main.cc   -- 可以仿照以写自己的main()
+
+    ┌─────────────────────────────────────────────────────────┐
+    │ #include <iostream>                                     │
+    │                                                         │
+    │ #include "gtest/gtest.h"                                │
+    │                                                         │
+    │ GTEST_API_ int main(int argc, char **argv) {            │
+    │   std::cout << "Running main() from gtest_main.cc\n";   │
+    │                                                         │
+    │   testing::InitGoogleTest(&argc, argv);                 │
+    │   return RUN_ALL_TESTS();                               │
+    │ }                                                       │
+    └─────────────────────────────────────────────────────────┘
+
+    gtest-all.cc    -- 生成 libgtest.a
+
+. make
+    # x86
+    ./configure
+    make
+
+    # 交叉编译
+    ./configure --host arm_v5t_le
+
+    checking host system type... Invalid configuration arm_v5t_le: 
+                                 machine arm_v5t_le not recognized
+
+    # 注释相关 case $ac_cv_host
+    # 4316  as_fn_error
+    # 4324  as_fn_error
+    vi ./configure
+
+. 起点
+    cd make
+    make 
+
+/**********************************************************************/
+
+. 断言
+    参考 'test_gtest_assert'
+    http://www.cnblogs.com/coderzh/archive/2009/04/06/1430364.html
+
+    // TEST [TestSuiteName，TestCaseName] --> SuiteName CaseName 可以随便起 
+    TEST(MyFistCase, Aho) {
+        int     x[] = { 1, 2, 3 };
+        int     y[] = { 1, 2, 3 };
+
+        for (int i = 0; i < 3; ++i) {
+            EXPECT_EQ(x[i], y[i]) << "oh my god" << i;
+        }
+
+        // 0. EXPECT_*() ASSERT_*() 对应一个检查点(预期值，实际值)
+        // 1. EXPECT_* 失败时，案例继续往下执行。
+        // 2. ASSERT_* 失败时，TestCaseName返回，当前函数中ASSERT_*后面的语句将不会执行。
+        // 3. << 可以在失败时打印相关信息，且可以定制
+        //      http://www.cnblogs.com/coderzh/archive/2009/04/06/1430364.html
+        
+        EXPECT_EQ(5, 2*3); 
+        EXPECT_EQ(8, 3*3);
+    }
+
+. 事件机制
+    http://www.cnblogs.com/coderzh/archive/2009/04/06/1430396.html
+
+    事件机制(前置及后置条件，提供共享资源)。总结一下gtest的事件一共有3种：
+
+    1. 全局的，所有案例执行前后。
+    2. TestSuite级别的，在某一批案例中第一个案例前，最后一个案例执行后。
+    3. TestCase级别的，每个TestCase前后。
+
+    GlobalTest
+    TestSuite事件
+
+    class FooTest:public testing::Test {
+      protected:
+        static void SetUpTestCase() {
+            shared_resource_ = new;
+        } static void TearDownTestCase() {
+            delete shared_resource_;
+
+            shared_resource_ = NULL;
+        }
+        // Some expensive resource shared by all tests.
+        static T *shared_resource_;
+    };
+
+    // 使用TEST_F时，SuiteName 必须是衍生的类名
+    TEST_F(FooTest, Test2) {
+        // you can refer to shared_resource here 
+    }
+
+
+. 参数化
+    http://www.cnblogs.com/coderzh/archive/2009/04/08/1431297.html
+
+    参数化 -- DRY
+
+. 死亡测试 
+
+    简单来说，
+    通过*_DEATH(statement, regex`)和*_EXIT(statement, predicate, regex`)，
+    我们可以非常方便的编写导致崩溃的测试案例，并且在不影响其他案例执行的情况下，
+    对崩溃案例的结果进行检查。
+
+    void Foo() {
+        int *pInt = 0;
+        *pInt = 42 ;
+    }
+    // 重要：编写死亡测试案例时，TEST的第一个参数，请使用DeathTest后缀。
+    // 原因是gtest会优先运行死亡测试案例，应该是为线程安全考虑。
+    TEST(FooDeathTest, Demo) {
+        EXPECT_DEATH(Foo(), "");
+    }
+
+. 运行参数
+    http://www.cnblogs.com/coderzh/archive/2009/04/10/1432789.html
+    ./sample1_unittest --help | grep -- --gtest
+
+    gtest 提供了三种途径
+    
+    1. 系统环境变量     // 设置 export GTEST_FILTER=... 清除 unset GTEST_FILTER
+    2. 命令行参数       // 
+    3. 代码中指定FLAG   // GTEST_FLAG() 的参数即：选项不需要加--gtest前缀
+
+    int main(int argc, _TCHAR* argv[])
+    {
+        testing::GTEST_FLAG(output) = "xml:"; // --gtest_output -> output
+        testing::GTEST_FLAG(filter) = "";     // --gtest_filter -> filter
+
+        testing::InitGoogleTest(&argc, argv);
+        return RUN_ALL_TESTS();
+    }
+
+ ./foo_test 没有指定过滤条件，运行所有案例
+ ./foo_test --gtest_filter=* 使用通配符*，表示运行所有案例
+ ./foo_test --gtest_filter=FooTest.* 运行所有“测试案例名称(testcase_name)”为FooTest的案例
+ ./foo_test --gtest_filter=*Null*:*Constructor* 运行所有“测试案例名称(testcase_name)”或“测试名称(test_name)”包含
+                                                 Null或Constructor的案例。
+ ./foo_test --gtest_filter=-*DeathTest.* 运行所有非死亡测试案例。
+ ./foo_test --gtest_filter=FooTest.*-FooTest.Bar 运行所有“测试案例名称(testcase_name)”为FooTest的案例，但是除了
+ FooTest.Bar这个案例
+

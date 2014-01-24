@@ -1,0 +1,106 @@
+/* fundamental */
+
+. install
+
+    C:\WINDOWS\system32\drivers\etc\hosts // windows hosts
+
+    192.168.1.254   mail.cnjabsco.com
+    192.168.2.254   jabscodevsvn
+
+    安装svn时失败了，最后发现是因为suse中的相关的开发头文件没有安装，
+
+    /* source install subversion svn */
+    0.0 apr
+    cd apr 
+    ./configure --enable-shared --prefix=/usr/local/
+    make && make install
+
+    cd ../apr-util 
+    ./configure --enable-shared --with-expat=builtin --with-apr=/usr/local
+    --without-berlekey-db 
+    make && make install
+
+    必要时使用apt-get install neon
+    1.2 neon configure // --with-ssl默认是openssl, 请指定
+    ./configure --with-libs=/usr/local/lib --enable-shared --with-ssl=openssl
+    make && make install
+    neon-config --libs // if -lssl exist in output, you success
+
+    2.make
+    ./configure --with-apr=/opt/subversion-1.7.5/apr \
+                --with-apr-util=/opt/subversion-1.7.5/apr-util \
+                --with-ssl --with-neon=/usr/local && \
+    make -j 4 && make install
+
+    3. 
+    ldd `which svn` | grep -i ssl
+    ldd `which svn` | grep -i neo
+
+
+. configure
+    更换svn diff为vimdiff
+    http://www.ccvita.com/445.html
+
+
+. Visual SVN Server on Windows
+
+    0. services.msc to Start the service
+
+    1. Repositories -> RightClick -> New -> Repository -> Input Name \ 
+        -> Remember tick [Create default structure]
+
+    2. After create, RightClick on the Repository Name, you can get URL
+
+    3. In a file clip, RightClick on blank, TortoiseSVN-> Import -> \ 
+        Input the URL get in Step 2.
+
+    4. It's OK
+
+    5. In the Visual SVN Server, RightClick on the trunck -> Properties
+        -> you can add a user.
+
+    6. If you want to modify the case of a filename, you need to del it 
+        modify name and add in the list of svn opration. 
+
+. 清除svn保存的username用户名和paasword密码
+
+    windows下
+    对于TortoiseSVN软件,右键出TortoiseSVN菜单
+    Settings->Saved Data->Authentication data,Clear
+
+    linux下
+    [root@localhost ~]# rm -rf ~/.subversion/auth
+
+. check 单个文件
+
+ 1> 检出文件所在的目录trunk,加--depth=empty参数则不会检出目录下的其他内容
+    这样就在本地形成了一个工作拷贝目录trunk
+
+    svn co --depth=empty http://www.iusesvn.com/project1/trunk
+
+    进入trunk目录，单独更新build.sh
+    这样trunk目录下只有build.sh文件，而且你可以修改build.sh文件并提交到svn库
+
+    svn up build.sh
+
+ 2> 也许你也会需要另一种情况：只checkout单个文件，单并不需要修改文件并提交回svn
+    那么用命令 
+
+    svn cat http://www.iusesvn.com/project1/trunk/build.sh>build.sh
+
+. unversion    
+
+    /* 感谢BAIDU */
+
+    windows图形界面右键可以，但Linux上的命令却怎么也搞不定
+
+    SVN实现在更新本地版本库时忽略指定目录
+    http://scmbob.org/exclude-dirs-when-svn-up.html
+
+. SVN可执行权限丢失报告
+
+    svn没有执行权限的主要问题在于我们使用了smb, 
+   (1) 在smb上svn checkout update, 所有的文件都会添加上可执行权限。
+   (2) 在linux上svn checkout update, 不会自动添加可执行权限。
+   (3) 只有在linux上svn add 时，才可保持权限
+

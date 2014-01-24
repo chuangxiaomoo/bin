@@ -1,0 +1,59 @@
+/* API 设计原则 */
+
+
+进程互斥与竞态
+http://www.cnblogs.com/zhenjing/archive/2011/07/15/process_mutex_race.html
+
+http://www.cnblogs.com/zhenjing/archive/2011/07/04/filelock.html
+
+/*
+ * 永远不要在注释里解释你的代码是如何运作的：更好
+ * 的做法是让别人一看你的代码就可以明白，解释写的很差的代码是浪费时间。
+ */
+
+1. 不要让用户思考(Don't make user think)
+
+    在进程资源中添加进程锁来严重警告，而不是使用注释。
+
+    static int get_pid_lock(const char *pid_file)
+    {
+        int         fd;
+        char        buf[MAX_PID_SIZE] = {0};
+
+        return_val_if_fail(pid_file != NULL, FAILURE);
+
+        fd = open(pid_file, O_RDWR | O_CREAT);
+        return_val_if_fail(fd != -1, FAILURE);
+
+        int flags = fcntl(fd, F_GETFD);         /* Fetch flags */
+        return_val_if_fail(flags != -1, FAILURE);
+
+        flags |= FD_CLOEXEC;                    /* Turn on FD_CLOEXEC */
+        return_val_if_fail(fcntl(fd, F_SETFD, flags) != -1, FAILURE);
+
+        return_val_if_fail(flock(fd, LOCK_EX|LOCK_NB) != -1, 
+                (pif("lock %s fail\n", pid_file), FAILURE));
+
+        return_val_if_fail(ftruncate(fd, 0) != -1, FAILURE);
+
+        snprintf(buf, MAX_PID_SIZE, "%ld\n", (long)getpid());
+        return_val_if_fail(write(fd, buf, strlen(buf)) == strlen(buf), FAILURE);
+
+        return SUCCESS;
+    }
+
+    if (SUCCESS != get_pid_lock("/tmp/startHBTthread")) {
+        system("ps -ef");
+        JCO_LOG("pid %ld get_pid_lock fail!!!\n", (long)getpid());
+        // 直接exit()，在开发阶段让程序员引起重视。
+        exit(0);
+    }
+
+
+2. 日志动态开关，如同内核之中 echo 1 > /sys/scsi  
+
+    为了使用 pif 
+    封装 if (openpif) printf(); 为一个函数。
+
+3. 
+

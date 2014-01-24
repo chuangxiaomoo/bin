@@ -1,0 +1,15 @@
+
+. 删除某行
+
+    DELETE FROM Person WHERE LastName = 'Wilson' 
+
+. 删除所有行
+
+    DELETE from tbl_name;
+
+. 清空表
+
+    -- AUTO_INCREMENT 重新从 1 开始计数，DELETE 则不会。
+
+    TRUNCATE tbl_name;
+

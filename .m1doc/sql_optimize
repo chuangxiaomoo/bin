@@ -1,0 +1,38 @@
+
+对于 min 数据，能够快速索引到指定 code date time
+
+-- 当前索引 -> KEY `code` (`code`,`date`,`time`)
+
+
+    +--------+--------+
+      ...        ....
+    | 600155 |   3.33 |
+    | 600860 |   9.91 |
+    +--------+--------+
+    22002 rows in set (1.06 sec)
+
+    mysql> SELECT code,trade FROM min where  date = '2013-09-30' and time < '09:40:00';
+
+    +--------+--------+
+      ...        ....
+    | 600386 |   8.62 |
+    | 600155 |   3.33 |
+    | 600860 |   9.94 |
+    +--------+--------+
+    2363 rows in set (1.06 sec)
+
+    mysql> SELECT code,trade FROM min where  date = '2013-09-30' and time = '09:40:00';
+
+-- 以上两条的结论，单点时间时，速度很慢 
+
+    +--------+-------+
+      ...        ....
+    | 000498 |  4.54 |
+    | 000498 |  4.54 |
+    | 000498 |  4.54 |
+    +--------+-------+
+    23174 rows in set (0.40 sec)
+
+    mysql> SELECT code,trade FROM min where  code < 500 and date = '2013-09-30';
+
+

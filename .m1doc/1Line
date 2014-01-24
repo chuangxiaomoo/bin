@@ -1,0 +1,24 @@
+#! /bin/bash
+
+# join lines
+cat test | xargs
+cat test | paste -s
+cat test | tr '\n' ' '; echo
+cat test | sed ':a;N;$!ba;s/\n/ /g'
+cat test | awk '{ ORS=" "; print; } END{printf("\n")}'
+
+# sum of files, du -s use K by dufault 
+find -size +10k | xargs du -s | awk '{print $1}' | sed '$!s/$/+/' | xargs | bc
+find -type f    | xargs du -s | awk '{print $1}' | xargs | sed 's/ /+/g'| bc
+
+
+# 统计最常用的10条命令
+history|awk '{print $2}'|awk 'BEGIN {FS="|"} {print $1}'|sort|uniq -c|sort -rn|head
+history |awk '{print $2}'|awk '{print $1}' |sort|uniq -c|sort -rn|head
+
+# 统计每个单词的出现频率，并排序
+awk '{arr[$1]+=1 }END{for(i in arr){print arr[i]"\t"i}}' FILE_NAME | sort -rn
+
+# 统计80端口的连接个数并按照从大到小排列
+netstat -na|grep :80|awk '{print $5}'|awk -F: '{print $1}'|sort|uniq -c|sort -r -n
+

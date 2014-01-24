@@ -1,0 +1,59 @@
+/* syslog */
+
+/* a simple example of syslog();
+ * LOG_UPTO(LOG_ERR) means the level < LOG_ERR will print;
+ */
+
+/*
+ * openlog() 不是必须的，当调用 syslog() 时，syslog 会自动打开。 
+ */
+
+#define  GS_TRACE(level, fmt, args...) \
+do { \
+    syslog(level, "%s():%i: " fmt, __FUNCTION__, __LINE__, args); \
+} while (0)
+
+int main(int argc, char *argv[])
+{
+    // setlogmask (LOG_UPTO (LOG_DEBUG));
+    setlogmask (LOG_MASK (LOG_ERR));    // only 1 level be effective;
+    openlog ("test",  LOG_PID | LOG_NDELAY | LOG_PERROR  , LOG_LOCAL1);
+
+    while (1) {
+        GS_TRACE(LOG_INFO, "test \n");
+        sleep(1);
+    }
+
+    return 0;
+}
+
+/* jco log */
+
+void JCOLogInit()
+{
+	char szPath[128] = {0};
+    char ident[64] = {0};
+	
+	sprintf(szPath, "/proc/%d/stat", getpid());
+	// get caller process name to ident
+	int fd = -1;
+	if (0 < (fd = open(szPath, O_RDONLY))) {
+		int ret = read(fd, szPath, sizeof(szPath) - 1);
+		if (0 < ret) {
+			szPath[ret] = '\0';
+			sscanf(szPath, "%*[^(](%[^)]", ident);
+		}
+		close(fd);
+	}
+
+	if (0 >= strlen(ident)) {
+		strcpy(ident, "unknown");
+	}
+	openlog(ident, LOG_PID, LOG_LOCAL0);
+}
+
+void JCOLogUnInit(void)
+{
+	closelog();	
+}
+

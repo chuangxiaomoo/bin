@@ -1,0 +1,42 @@
+-- mysql拷贝表的几种方式
+-- http://database.51cto.com/art/201011/234776.htm
+
+1  下面这个语句会拷贝表结构到新表newadmin中。（不会拷贝表中的数据）
+
+    CREATE TABLE newadmin LIKE admin
+
+2  下面这个语句会拷贝数据到新表中。注意：这个语句其实只是把select语句的结果建
+    一个表。所以newadmin这个表不会有主键，索引。
+
+    CREATE TABLE newadmin AS ( SELECT *  FROM admin )
+
+3  如果你要真正的复制一个表。可以用下面的语句。
+
+    CREATE TABLE newadmin LIKE admin;
+    INSERT INTO newadmin SELECT * FROM admin;
+
+4  我们可以操作不同的数据库。
+
+    CREATE TABLE newadmin LIKE shop.admin;
+    CREATE TABLE newshop.newadmin LIKE shop.admin;
+
+
+5  我们也可以拷贝一个表中其中的一些字段。
+
+    CREATE TABLE newadmin AS ( SELECT username, password FROM admin )
+
+6  我们也可以将新建的表的字段改名。
+
+    CREATE TABLE newadmin AS
+    ( SELECT id, username AS uname, password AS pass FROM admin )
+
+7  我们也可以拷贝一部分数据。
+
+    CREATE TABLE newadmin AS
+    ( SELECT * FROM admin WHERE LEFT(username,1) = 's' )
+
+8  我们也可以在创建表的同时定义表中的字段信息。
+
+    CREATE TABLE newadmin
+    (id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY) AS 
+    ( SELECT * FROM admin )

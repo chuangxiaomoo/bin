@@ -1,0 +1,65 @@
+/* net debug */
+
+1. when cannott ping through
+
+    1. soft check   -> ifconfig
+
+    2. hard check   -> ethtool eth0       
+                      Link detected: yes
+                      在u-boot中ping
+                      把设备直连到PC，看网卡指示灯是否闪烁
+
+    3. route check  -> route -n
+
+    4. app check    -> like vmware, create a virtual network adapter
+
+    5. switch check -> MAC & IP bound
+
+    6. fireware
+
+    7. IP confilct
+
+2. MAC of unicast(MAC地址最高字节低8位为0打头的单播地址)
+
+    /*
+	the vedio was tiled together.
+	Invalid HW-MAC Address: 00:00:00:00:00:00
+	Set Random MAC address: 3A:1F:5E:20:BD:86
+
+	when the HW-mac is not begin with 00:..., it is multicast,
+
+	in order to have clear qulity, unicast(00) is needed, 
+    jsut like 00:60:6e:83:b3:97
+    */
+
+    char _ethmac[32] = "00:12:34:56:78:9A";
+    int dig = 0;
+
+    sscanf(_ethmac, "%x", &dig);
+
+    // lowest bit of head 8 bit of MAC must be "0"
+    if ( (!(dig & 0x01))) {
+        JCODelayExec(DELAY_CMD_SETETHMAC, _ethmac, sizeof(_ethmac));
+    }
+
+	
+3. MAC地址冲突，导致telnet操作很慢
+
+    (1)
+        设备出厂默认的MAC, 保存在FLASH中。
+        ethaddr=00:00:01:02:03:04
+
+    (2)
+        ARP缓存MAC  -> arp -d
+
+4. Port
+    (1) 升级时端口无连接
+        netstat     // 在内查看是否已监听
+        telnet      // PC是telnet检测是否可连接
+
+
+5. ifconfig 默认是没有设置网关的,如此则不能回应广播
+
+    root@(none):~# route
+    Destination     Gateway     Genmask         Flags Metric Ref    Use Iface
+    192.168.2.0     *           255.255.255.0   U     0      0        0 eth0

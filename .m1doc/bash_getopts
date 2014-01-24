@@ -1,0 +1,29 @@
+    function fn_getopts() {
+    cat <<-"HERE"
+
+    #
+    # ahead colon:, silent error reporting is used.
+    # bug of getopts-> if -t -i, -i will be treat as the value of -t, so xt_opt
+    #
+    OPTIND=1
+    xt_opt() { 
+        [ "${OPTARG:0:1}" == '-' ] && 
+            echo '-'$option argument ${OPTARG} ahead of '-' && exit 1
+    }
+
+    while getopts ":t:i:d:" option; do
+        case "$option" in
+            t) xt_opt; local timeout=$OPTARG ;;
+            i) xt_opt; local interval=$OPTARG ;;
+            d) xt_opt; local delay=$OPTARG ;;
+            *) echo "$FUNCNAME [-t timeout] [-i interval] [-d delay] command"
+               exit 1 
+               ;;
+        esac
+    done
+
+    local command=${@:${OPTIND}}
+    test -z "$command" && echo "<$FUNCNAME $@>with no command" && exit 1
+
+	HERE
+    }

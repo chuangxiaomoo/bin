@@ -1,0 +1,65 @@
+        SIGSEGV
+
+ . SIGSEGV的根本原因不一定是在触发 SIGSEGV 或 SIGABORT 的语句，由于不检查
+    返回值等坏味代码，错误会延时爆发，分析问题时一定要有全局观，切不可
+    一叶障目不见泰山。详见 <case_s1_SSL_CTX_free段错误>
+
+ . 写只读的内存段, 如:
+    free两次, free只读内存段. 如字符串的地址.
+
+ . 缓冲溢出
+       ┌────────────────────┬──────────────────────────┐
+       │       high_addr--> │       .                  │
+       │    caller's frame  │       .                  │
+       │                    ├──────────────────────────┤
+       │                    │   return_addr            │
+       ├────────────────────┼──────────────────────────┤
+       │                    │   %ebp                   │
+       │                    ├──────────────────────────┤
+       │                    │   buf[3][2][1][0]        │
+       │                    │       .                  │
+       │    echo's frame    │       .                  │
+       │        low_addr--> │       .                  │
+       └────────────────────┴──────────────────────────┘
+
+    (1) 使用watch. 如下面代码:
+
+        void echo()
+        {
+            char buf[4]; /* why too small! */
+            gets(buf);
+            puts(buf);
+        }
+
+        int main(int argc, char *argv[])
+        {
+            echo();
+            printf("oh, yeah!\n");
+            return 0;
+        }
+
+        我们可以通过watch比数组buf中的“最高的地址”来侦测stackoverflow.
+        如 watch
+
+        (gdb) p &buf
+              0x60084c
+        (gdb) watch *(int *) 0x600850
+
+        如果可以, 可以watch函数的参数, 一些指针参数通常是只读的.
+        如果可以, 可以在buf前pad来watch, valgrind就是这样来检测非法操作的.
+        char pad[8]; /* pad for stack overflow */
+        char buf[4];
+        (gdb) p &pad
+
+    (2) 使用条件断点, 断点自动命令与自动打印
+        在所有可能连续操作内存的库函数打上断点, 之后就可以顺藤摸瓜了.
+        memcpy
+        strcpy
+        strncpy
+        sprintf
+
+        commands [bnum]
+            bt          # stack frame
+            c           # continue
+        end
+

@@ -1,0 +1,53 @@
+base-arch
+    entry   do      exit 
+    Load    Process Unload 
+    Open    Process Close 
+
+    http://www.cnblogs.com/xiehy/archive/2010/02/04/1663825.html
+    
+    Level  Opera           Description                 Associativity
+    -----------------------------------------------------------------
+
+prime
+    17     ::              global scope (unary)        right-to-left 
+    17     ::              class scope (binary)        left-to-right 
+    16     -> .            member selectors            left-to-right 
+    16     [ ]             array index                 left-to-right 
+    16     ( )             function call               left-to-right 
+    16     ( )             type construction           left-to-right 
+
+single
+    16     sizeof          size in bytes               left-to-right 
+    15     ++ --           increment, decrement        right-to-left 
+    15     ~               bitwise NOT                 right-to-left 
+    15     !               logical NOT                 right-to-left 
+    15     + -             unary plus, minus           right-to-left 
+    15     * &             dereference, address-of     right-to-left 
+    15     ( )             cast                        right-to-left 
+    15     new delete free store management            right-to-left 
+
+arith    
+    14     ->* .*          member pointer selectors    left-to-right 
+    13     * / %           multiplicative operators    left-to-right 
+    12     + -             arithmetic operators        left-to-right 
+
+shift    
+    11     << >>           bitwise shift               left-to-right 
+
+relational    
+    10     < <= > >=       relational operators        left-to-right 
+    9      == !=           equality, inequality        left-to-right 
+
+bit    
+    8      &               bitwise AND                 left-to-right 
+    7      ^               bitwise exclusive OR        left-to-right 
+    6      |               bitwise inclusive OR        left-to-right 
+
+logic    
+    5      &&              logical AND                 left-to-right 
+    4      ||              logical OR                  left-to-right 
+    3      ? :             arithmetic if               left-to-right 
+    2      = *= /= %= 
+           += -= <<= >>=         
+           &= |= ^=        assignment operators        right-to-left 
+    1      ,               comma operator              left-to-right

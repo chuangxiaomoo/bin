@@ -1,0 +1,102 @@
+#! /bin/bash
+                        top_of_the_INFO_tree
+                               /      \             
+                             File    File
+                            /    \             
+                        InfoPage InfoPage
+                           |
+                      +----+----+         
+                      |         |
+                    Pages     Nodes(Layer top) 
+                                |
+                                v
+                               Node(Layers 2) 
+
+(0) Node-within
+    Enter                               Enter node
+    u                                   Move "up" from this node.  向上移动一层
+    TAB                                 Skip to next hypertext link within this node.
+    M-TAB                               Skip to previous hypertext link within this node.
+    b       (beginning-of-node)         Move to the start of this node
+    e       (end-of-node)               Move to the end of this node
+
+    n       (next-node)                 Select the Next node
+    p       (previous-node)             Move to the "previous" node of this node.
+
+(1) Node-(Layer top)
+    <       (first-node)                Select the first node in this file(menu always)
+    >       (last-node)                 Select the last node in this file
+    [       (global-prev-node)          Move backwards or up through node structure
+    ]       (global-next-node)          Move forwards or down through node structure
+
+    m       (menu-item)                 Read a menu item and select its node
+    l       (history-node)              Move to the last node seen in this window.
+    O       (goto-invocation-node)      Find the node describing program invocation
+
+    0       (last-menu-item)            Select the last item in this node's menu
+    1 .. 9  (menu-digit)                Select this menu item
+
+(2) Page
+    C-a     (beginning-of-line)         Move to the start of the line
+    C-e     (end-of-line)               Move to the end of the line
+    C-b     (backward-char)             Move backward a character
+    C-f     (forward-char)              Move forward a character
+    M-b     (backward-word)             Move backward a word
+    M-f     (forward-word)              Move forward a word
+    DEL     (scroll-backward)           Scroll backward in this window【Page Up】
+    SPC     (scroll-forward)            Scroll forward in this window 【Page Down】  
+
+(3) search
+    ,       (next-index-match)
+    /       (search)                    Read a string and search for it
+    S       (search-case-sensitively)
+
+(4) Help
+         ?              Help
+         <C-x>0         退出Help
+
+(5) Window
+        C-x o   (next-window)           Select the next window
+
+(6)
+/**
+    spc (空格)：向下滚屏，至末尾后进入下一个文档节点
+    backspace (退格): 和空格相反，向上滚屏，至顶端后进入上一个文档节点
+    l : 回朔浏览历史，等同于浏览器中的回退。
+    n : 进入文档节点数中同级别的下一个节点 (*如果该节点包含子节点，n 会略过他们)
+    p : 和 n 相反，进入文档节点数中同级别的上一个节点
+    t：进入顶层结点
+    u : 进入上一层节点
+    b : 移动到本节点的顶端
+    m : 如果节点包含目录 (往往是下一层节点的索引)。给出提示让你选择进入
+    f : 如果节点包含交叉链接给出提示让你选择进入。(用 l 可以返回原节点)
+    i : 列出正在看的文档的所有索引标题让你选择进入
+    s : 对文档以你键入的词进行搜索。
+**/
+
+# compare
+                                                            
+    Action              info                    pinfo           
+                                                                
+    help                ?                       man pinfo
+    
+    进入节点            Enter                   Enter →右       
+    返回上层节点        u                       h     →左       
+    浏览器回退          l                       h     →左
+    下一个link          Tab                     j     →上
+    上一个link          Esc-Tab                 k     →下         
+    
+    节点头              b                       H               
+    节点尾              e                       e               
+    节点next            n                       n
+    节点prev            p                       p
+    
+    向下滚屏            Space                   Space PageDown        
+    向上滚屏            Backspace               b     PageUp          
+    
+    本页搜索            / s                     /               
+    全局搜索                                    s               
+    搜索下一个          /<CR>                   f
+    
+    shell                                       !
+                                                            

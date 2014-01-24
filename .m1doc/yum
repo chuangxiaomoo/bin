@@ -1,0 +1,7 @@
+*9* yum
+int how_to_yum_compatible_software_mini() {
+    $ yum whatprovides libstdc++.so.5
+    $ yum install compat-libstdc++-33.i386
+    $ yum list "*ftpd*"
+}
+

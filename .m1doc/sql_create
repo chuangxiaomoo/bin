@@ -1,0 +1,28 @@
+
+. 创建一个数据库MYSQLDATA
+    CREATE DATABASE MYSQLDATA;
+
+. 创建一个数据库表
+    CREATE TABLE MYTABLE (name VARCHAR(20), sex CHAR(1));
+
+. 创建数据库并设置编码utf-8 多语言
+    create database `examples` default character set utf8 collate utf8_general_ci;
+
+. 创建表
+    create table test(
+        id int(10) unsigned zerofill not null auto_increment,
+        email varchar(40) not null,
+        ip varchar(15) not null,
+        state int(10) not null default '-1',
+        primary key (id)
+    )engine=InnoDB;
+
+. 拷贝表
+    -- mysql拷贝表的几种方式
+    -- http://database.51cto.com/art/201011/234776.htm
+
+    CREATE TABLE newadmin LIKE admin;   
+    INSERT INTO newadmin SELECT * FROM admin;  
+
+    -- 跨数据库
+    CREATE TABLE newshop.newadmin LIKE shop.admin;

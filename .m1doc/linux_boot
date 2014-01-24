@@ -1,0 +1,14 @@
+#! /bin/bash
+
+LINUX记录系统级别的信息。
+
+一、 rcS rc.local
+
+    (1)
+        不要在rcS rc.local中直接运行脚本，其极有可能block系统的启动。
+        可以用 '&' 在后台运行。
+    
+    (2)
+        /etc/rc.d/rc.local But in Suse, Below instead: 
+        /etc/init.d/boot.local 
+

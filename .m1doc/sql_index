@@ -1,0 +1,92 @@
+
+. 一个提问引发的思考
+
+    -- MySQL单列索引和组合索引的区别
+    -- http://database.ctocio.com.cn/353/11664853.shtml
+
+    ALTER TABLE myIndex ADD INDEX name_city_age (vc_Name(10),vc_City,i_Age);
+
+    肯定有人要问了，如果分别在 vc_Name,vc_City，i_Age 上建立单列索引，让该表有 3 
+    个单列索引，查询时和上述的组合索引效率一样吗？大不一样，远远低于我们的组合索
+    引。虽然此时有了三个索引，但 MySQL 只能用到其中的那个它认为似乎是最有效率的
+    单列索引。
+
+    -- 不知道如何建高效没关系，先把表建好，我们再慢慢优化。
+
+. 更多信息    
+
+    -- MySQL索引使用方法和性能优化
+    -- http://www.feiyan.info/16.html
+
+. 优化
+
+    . 索引不会包含有NULL值的列
+
+    . 使用短索引
+        有长度的数据类型时可用: vc_Name CHAR(50) -> vc_Name(10)
+
+    . 索引列排序
+
+        MySQL查询只使用一个索引，因此如果where子句中已经使用了索引的话，那么order by
+        中的列是不会使用索引的。因此数据库默认排序可以符合要求的情况下不要使用排序操
+        作；尽量不要包含多个列的排序，如果需要最好给这些列创建复合索引。
+
+    . like语句操作
+
+        一般情况下不鼓励使用like操作，如果非使用不可，如何使用也是一个问题。like
+        “%aaa%” 不会使用索引而like “aaa%”可以使用索引。
+
+    . 不要在列上进行运算
+
+        例如：select * from users where YEAR(adddate)<2007，将在每个行上进行运算，这
+        将导致索引失效而进行全表扫描，因此我们可以改成：select * from users where
+        adddate<’2007-01-01′。关于这一点可以围观：一个单引号引发的MYSQL性能损失。
+
+    . 操作符        
+
+        MySQL只对以下操作符才使用索引：<,<=,=,>,>=,between,in,以及某些时候的like(不
+        以通配符%或_开头的情形)。而理论上每张表里面最多可创建16个索引，不过除非是数
+        据量真的很多。
+
+. 唯一索引
+
+    与普通索引类似，不同的就是：索引列的值必须唯一，但允许有空值（注意和主键不同）。
+    如果是组合索引，则列值的组合必须唯一，创建方法和普通索引类似。
+
+    -- 创建唯一索引
+    CREATE UNIQUE INDEX indexName ON table(column(length))
+
+    -- 修改表结构
+    ALTER TABLE table_name ADD UNIQUE indexName ON (column(length))
+
+    -- 创建表的时候直接指定
+    CREATE TABLE `table` (
+    `id` int(11) NOT NULL AUTO_INCREMENT ,
+    `title` char(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+    `content` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL ,
+    `time` int(10) NULL DEFAULT NULL ,
+    PRIMARY KEY (`id`),
+    UNIQUE indexName (title(length))
+    );
+
+. 普通索引操作
+
+    -- 创建表的时候同时创建索引
+    CREATE TABLE `table` (
+    `id` int(11) NOT NULL AUTO_INCREMENT ,
+    `title` char(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+    `content` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL ,
+    `time` int(10) NULL DEFAULT NULL ,
+    PRIMARY KEY (`id`),
+    INDEX index_name (title(length))        -- length不必是255
+    )
+
+    -- 直接创建索引，tbl_name后必须有空格
+    CREATE INDEX index_name ON table_name (col,col2,...)
+
+    -- 修改表结构的方式添加索引
+    ALTER TABLE table_name ADD INDEX index_name (col,col2,...)
+
+    -- 删除索引
+    DROP INDEX index_name ON table_name;
+

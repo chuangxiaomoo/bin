@@ -1,0 +1,67 @@
+/* declare */
+
+(1) 声明解析步骤   
+    A. 找identifier
+    B. ()中内容看成一个整体
+       根据操作符优先级结合(参见 fn_operator_precedence) 
+    C. const & volatile 等qualifier
+
+    Example:
+    char * const *(*next)();
+    (*next)     -> next is a pointer
+    (*next)()   -> function pointer
+                -> return value type: char * const *
+
+(2)                
+
+    指令数组
+    int *p1[10];
+    
+    数组指针
+    int (*p2)[10];
+
+
+    int main(int argc, char *argv[])
+    {
+        int *p1[16];
+        int (*p2)[16];
+
+        printf("%p, %p\n", p1, p2);
+        printf("%p, %p\n", p1+1, p2+1);
+
+        // 0xbfd3161c, 0xde1ff4
+        // 0xbfd31620, 0xde2034
+
+        return 0;
+    }
+
+(3) cdecl
+    apt-get install cdecl
+
+    Example:
+    root@Ubt:~# cdecl
+    cdecl>
+    cdecl> explain char  *const  *p
+    declare p as pointer to const pointer to char
+    cdecl>
+    cdecl> declare p as pointer to const pointer to char
+    char * const *p
+    cdecl>
+    Type `help' or `?' for help
+    cdecl>
+    cdecl> set
+    Valid set options (and command line equivalents) are:
+            options
+            create (-c), nocreate
+            prompt, noprompt (-q)
+            ritchie (-r), preansi (-p), ansi (-a) or cplusplus (-+)
+
+    Current set values are:
+             nocreate
+               prompt
+               interactive
+            (noritchie)
+            (nopreansi)
+               ansi
+            (nocplusplus)
+    cdecl>

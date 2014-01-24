@@ -1,0 +1,36 @@
+/* tty */
+
+HOWTO
+    serial-programming-howto/x115.html
+    http://www.tldp.org/HOWTO/Serial-Programming-HOWTO/x115.html
+
+测试 RS232
+    连结 T & R together
+
+    [root]# cat /dev/ttyAMA2
+    [root]# echo "test" > /dev/ttyAMA2
+
+测试 RS485
+
+    RS485接口组成的半双工网络，一般是两线制
+    在我们现有的设备上，不能同时能写。这是由硬件设计及驱动所决定的。
+
+    所以必须借助ioctl()来设置方向
+
+    /* 常备为 GPIO_DIRIN，回复时设置为 GPIO_DIROUT */
+
+    ioctl (fd, TIOCSETDIR, GPIO_DIROUT);
+    sendlen = write (fd, buf, len);
+    waitReg();
+    ioctl (fd, TIOCSETDIR, GPIO_DIRIN);
+
+
+read fgets error    
+    /* Resource temporarily unavailable */
+
+    方法1：
+    newtio.c_cc[VMIN]     = 1;     /* blocking read until 1 character arrives */
+
+    方法2：
+    select -> blockUntilReadable
+

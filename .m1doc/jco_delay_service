@@ -1,0 +1,76 @@
+/* delay service */
+
+老版没有"Delay service"，每个DelayExec都创建一个线程，消耗资源巨大。
+现在，Delay service 以队列为中介，消费者与生产者模型实现。
+
+. Data 
+    DELAY_CMD_E
+
+. 消费者
+
+JCODelayExec
+    ^
+    |
+    |
+    if( !sDealyExecInitFlag ) 
+    init_delay_exec_env         
+        ^
+        |
+        |
+        sDelayExecQueue = jco_create_queue();   // 用时创建队列
+        pthread_create(delay_exec_service);     // 用时创建线程，只一次
+            ^
+            |
+            |
+            while() {                           // pop cmd
+                delayCmd = (DELAY_EXEC_S *)jco_queue_pop(sDelayExecQueue);
+                handle_delay_exec(delayCmd);
+            }
+
+. 生产者            
+
+JCODelayExec
+    ^
+    |
+    |
+    DELAY_EXEC_S *delayCmd = malloc(sizeof(DELAY_EXEC_S));
+        ^
+        |
+        |
+        jco_queue_push(sDelayExecQueue, (void *) delayCmd); // push
+            ^
+            |
+            +--> 消费者在 while() pop
+
+. 跟踪
+
+[delay_exec.c: 59] --- delay execute cmd=0 system reboot!
+    ^
+    |
+    |
+    DELAY_CMD_E -> "DELAY_CMD_REBOOT = 0"
+        ^
+        |
+        |
+        JCODelayExec(DELAY_CMD_REBOOT
+            ^
+            |
+            |
+            grep -n -i 'JCODelayExec(DELAY_CMD_REBOOT'
+                ^
+                |
+                |
+                在每个JCODelayExec() 调用 DBG() 跟踪
+
+
+
+. 总结
+    上面这个问题是由于TF卡不可写导致，有很多时候，我们只有SERVER的日志，
+    这时，使用串口调试，可以很快得到答案：
+
+[-DBG-] [storage_manage.cpp:  158] --- check readonly device:/media/mmcblk0p1
+[-DBG-] [storage_manage.cpp:  195] --- count:-1 mkdir error:/media/mmcblk0p1/__tmpfile2 errmsg:File exists
+[-DBG-] [storage_manage.cpp:  200] --- ========device error and reboot:/media/mmcblk0p1========
+[-SERV] [sysctrl/delay_exec.c:  693] --- JCODelayExec cmd:0
+[-SERV] [sysctrl/delay_exec.c:  700] --- init_delay_exec_env success!
+

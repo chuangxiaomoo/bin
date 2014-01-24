@@ -1,0 +1,12 @@
+
+问自己一个问题，你如何证明你的观点？
+
+一、光哥的执着
+
+  1. C语言全局变量声明无需要extern，但光哥声称必须
+
+  2. 升级时http_cgi.c中光哥找不到宏定义 PATCH_DECODE
+     我是用 find Makefile | xargs grep PATCH_DECODE 找到的:
+     ./video_server/Makefile:CFG_PATCH += -DPATCH_JMWC=1 -DPATCH_DECODE=1
+
+

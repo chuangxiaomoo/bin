@@ -1,0 +1,138 @@
+/*  */
+
+. 3问之前
+
+    XML与HTML的设计区别是：
+    XML被设计为传输和存储数据，其焦点是数据的内容。
+    而HTML被设计用来显示数据，其焦点是数据的外观。
+    HTML旨在显示信息，而 XML旨在传输信息。
+
+    MXML Document
+    http://blog.csdn.net/bluesonic/article/details/3887143
+
+    Download mxml 2.x 
+    http://www.msweet.org/downloads.php?L+Z3+I0+Q
+
+. mxml本质：
+
+    从 mini-xml 的抽象（文本也是一个节点）：
+
+    元素由标签和属性组成
+    元素和文本都称为节点，只有元素能嵌套子节点
+    ┌───────┬─────────────┐
+    │ 元    │ 文本        │  <------- 树形结构 
+    │ 素    │ 子元素      │
+    └───────┴─────────────┘
+
+. 代码抽象(节点)
+
+    每一块XML文件中的信息片断(元素、文本、数字)是一个存储在内存中的"节点(nodes)" 
+    .节点使用 mxml_node_t 结构进行定义. 它的type 成员变量定义了节点类型(element, 
+    integer, opaque, real, or text) 决定了需要从联合(union)类型的成员变量 value 
+    中获取的值. 
+
+    mxmlLoadFile() 和 mxmlLoadString() 的第3个参数是回调函数指针，
+    回调函数会填充返回指针的type字段：node->child->type
+
+      MXML_INTEGER_CALLBACK   - 所有的数据节点包含以空格分割的整数。
+      MXML_OPAQUE_CALLBACK    - 所有的数据节点包含"不透明"字符串（CDATA）。
+      MXML_REAL_CALLBACK      - 所有的数据节点包含以空格分割的浮点数。
+      MXML_TEXT_CALLBACK      - 所有的数据节点包含以空格分割的文本字符串。
+
+    typedef struct mxml_node_s              /**** An XML node. ****/
+    {
+      mxml_type_t           type;           /* Node type */
+      struct mxml_node_s    *next;          /* Next node under same parent */
+      struct mxml_node_s    *prev;          /* Previous node under same parent */
+      struct mxml_node_s    *parent;        /* Parent node */
+      struct mxml_node_s    *child;         /* First child node */
+      struct mxml_node_s    *last_child;    /* Last child node */
+      mxml_value_t          value;          /* Node value */
+      int                   ref_count;      /* Use count */
+      void                  *user_data;     /* User data */
+    } mxml_node_t;
+
+
+    typedef enum mxml_type_e		/**** The XML node type. ****/
+    {
+      MXML_IGNORE = -1,			/* Ignore/throw away node @since Mini-XML 2.3@ */
+      MXML_ELEMENT,				/* XML element with attributes */
+      MXML_INTEGER,				/* Integer value */
+      MXML_OPAQUE,				/* Opaque string */
+      MXML_REAL,				/* Real value */
+      MXML_TEXT,				/* Text fragment */
+      MXML_CUSTOM				/* Custom data @since Mini-XML 2.1@ */
+    } mxml_type_t;
+
+. mxml结构：
+
+    每个节点都有一些关联节点的指针，上(parent), 下( child), 左(prev), and 右(next)
+    相对应于当前节点. 如果你有一个XML文件如下所示:
+
+    <?xml version="1.0"?>
+    <data>
+        <node>val1</node>
+        <node>val2</node>
+        <node>val3</node>
+        <group>
+            <node>val4</node>
+            <node>val5</node>
+            <node>val6</node>
+        </group>
+        <node>val7</node>
+        <node>val8</node>
+    </data>
+
+    那么在内存中的文件节点树看上去如下所示:
+    ("文本与元素都是结点，因此group有7个子节点，忽略空文本节点，便得下图")
+
+    ?xml
+      |
+    data
+      |
+    node - node - node - group - node - node
+      |      |      |      |       |      |
+    val1   val2   val3     |     val7   val8
+                           |
+                         node - node - node
+                           |      |      |
+                         val4   val5   val6
+
+    /* mxmlFindElement() call mxmlWalkNext()
+     * 节点树是一棵二叉树，左节点是child，右节点是sibling
+     * 遍历采用的是“先序遍历”
+     **/                         
+
+. 第一原则：
+
+    /* 关键：元素和文本都称为节点，文本不是元素的附带物 */
+    如同学习C++，不要过分迷恋细节，结出基本的操作Demo
+
+    LOAD
+    SAVE 
+
+    FIND
+    ADD
+    DEL
+
+    SAVE时注意格式化输出
+
+. api设计
+
+    /* 充分理解树型结构，一般的xml只有一个root */
+
+    xmlmap_t map_lv1[] = {
+        {"node"  , NTYPE_STR , "vaL1"      },
+        {"node"  , NTYPE_REAL, &real       },
+        {"node"  , NTYPE_INT , &dig        },
+        {0       ,                         },
+    };
+
+    xmlmap_t maps[] = {
+        {"data", NTYPE_TREE, map_lv1},
+        {0     ,                    },
+    };
+
+    mxml_node_t *tree = mxmlLoadString(NULL, XML_HEAD, MXML_NO_CALLBACK);   
+    asmbl_xml(tree, tree, maps);
+

@@ -1,0 +1,68 @@
+# test 
+
+## 为什么先测试
+
+  刘未鹏———怎样学习C++
+  http://bbs.byr.cn/#!article/CPP/786
+
+  刘未鹏———学习C++ 实践者的方法
+  http://hi.baidu.com/bailiangcn/item/fbc1bc883d722854e63d1900
+
+  I suspect that people think too little about what they want to build,
+  too little about what would make it correct, and too much about
+  "efficiency" and following fashions of programming style. The key
+  questions are always: "what do I want to do?" and "how do I know that I
+  have done if?". Strategies for testing enters into my concerns from well
+  before I write the first line of code, and that despite my view that you
+  have to write code very early - rather than wait until a design is
+  complete. 
+
+  译：
+
+  我感觉人们过多关注了所谓“效率”以及跟随编程风格的潮流，
+
+  却严重忽视了本不该被忽视的问题:
+  如“我究竟想要构建什么样的系统”、“怎样才能使它正确”。
+
+  最关键的问题永远是：
+  “我究竟想要做什么？”和“如何才能知道我的系统是否已经完成了呢？”
+
+  就拿我来说吧，我会在编写第一行代码之前就:
+  考虑测试方案，而且这还是在我关于应当早于设计完成之前就进行编码的观点的前提之下。
+
+
+## 我们要什么
+  
+  功能需求
+  http://zh.wikipedia.org/wiki/%E5%8A%9F%E8%83%BD%E9%9C%80%E6%B1%82
+
+  非功能性需求
+  http://zh.wikipedia.org/wiki/%E9%9D%9E%E5%8A%9F%E8%83%BD%E6%80%A7%E9%9C%80%E6%B1%82
+
+    稳定性（stability）及可移植性（portability）
+    可测试性、可维护性、可扩展性、可伸缩性（scalability）
+
+  鲁棒性
+  http://softtest.chinaitlab.com/qtjs/907318.html
+
+    ● 成熟性：  终端软件为避免由软件中错误而导致失效的能力
+    ● 容错性：  终端软件在错误数据或者违规操作的情况下，软件维持规定的性能级别的能力
+    ● 易恢复性：在发生故障的情况下，终端软件重建规定的性能级别并恢复受直接影响的
+                数据的能力
+
+
+## 如何做到    
+
+  测试
+
+
+## 测试就是写方程
+
+  http://c2.com/cgi/wiki?TestDrivenProgramming
+
+  I think of this programming style as a programmer's version of the
+  Dijkstra/Hoare/Gries (EwDijkstra,CarHoare) development technique. The
+  scaffolding is the "pre-condition", and the test is the "post-condition".
+  Good tests look a lot like formulae: everything is reduced to equality.
+  Refactoring feels like rearranging formulae.
+

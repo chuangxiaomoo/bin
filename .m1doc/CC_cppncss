@@ -1,0 +1,18 @@
+/* cppncss */
+
+. Download
+    http://zh.sourceforge.jp/projects/sfnet_cppncss/releases/
+    https://github.com/harveyt/cppncss
+
+. Install
+    install java first
+
+    cp bin/* /usr/bin
+    cp lib/* /usr/lib
+
+. Example    
+    
+    cppncss 需要自己处理宏，因此一点也不实用, hfcca.py 是更好的选择。
+
+    -D<symbol>[=[<value>]]  replace define <symbol> with <value>
+    -M<symbol>[=[<value>]]  replace macro <symbol> with <value>

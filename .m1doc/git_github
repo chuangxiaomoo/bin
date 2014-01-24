@@ -1,0 +1,51 @@
+# github
+
+# 建自已的第一个项目
+
+  * 在github上create并README.md
+
+  * git clone https://github.com/chuangxiaomoo/bin.git
+
+  * commit and hide file is ok
+
+   2038  mkdir dir
+   2039  ls
+   2040  cd dir/
+   2041  ls
+   2042  echo 123 > .hidefile
+   2043  ls
+   2044  la
+   2045  ls
+   2046  echo 2 > .hidedir/hidefile2
+   2047  ls
+   2048  cd ..
+   2049  ls
+   2050  git add dir
+   2051  git commit -m "dir with hide"
+   2052  git push origin master
+   2053  ls
+
+  * del
+
+  * 
+
+# del dir
+
+# git add * 会自动add所有，包括隐藏
+
+# git ssh profile
+
+
+
+## 
+
+# 
+
+# 
+
+# 
+
+# 
+
+# 
+

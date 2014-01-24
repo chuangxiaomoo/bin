@@ -1,0 +1,55 @@
+#!/bin/bash 
+
+一、挂住了
+
+    因为fn_sub也使用了 /var/upgrade.log，重定向相当于管道，使用了waitpid()
+    或者是使用了线程?
+
+    #!/bin/bash - 
+
+    function fn_sub() {
+        sleep 40
+    }
+
+    function fn_main() {
+        fn_sub &
+    }
+
+    fn_main >> /var/upgrade.log  2>&1
+
+
+二、后台执行文件不会挂住
+
+    #!/bin/bash - 
+
+    cat <<-"HERE" > /var/sub
+    #!/bin/bash - 
+    function fn_sub() {
+        while :; do
+            echo "I am going to sleep 40"
+            sleep 40
+        done
+    }
+
+    fn_sub
+    HERE
+
+    chmod +x /var/sub
+
+    function fn_main() {
+        /var/sub &
+        bgpid=$!
+        echo "I am going out with bgpid $bgpid"
+    }
+
+    fn_main >> /var/upgrade.log  2>&1
+
+
+三、消失的CMD
+
+    如果没有“#!/bin/bash -”，那么ps -ef 时，这个脚本文件的CMD列将会是其
+    父进程的名字。
+
+    cat <<-"HERE" > /var/sub
+    #!/bin/bash - 
+	HERE

@@ -1,0 +1,19 @@
+/* Splint */
+
+. 代码静态分析工具——splint的学习与使用
+    http://www.cnblogs.com/bangerlee/archive/2011/09/07/2166593.html
+
+. http://www.splint.org/
+    Secure Programming Lint
+    SPecifications Lint
+
+
+    软件测试实验学习笔记系列2 -- lint,splint的使用
+    http://www.blogjava.net/qileilove/archive/2013/08/06/402425.html
+
+
+    开源的代码静态分析工具SP-lint
+
+    Splint(原来的LCLint)是一个有GNU免费授权的Lint程序,只支持c,而不支持c++.
+    官方地址:http://www.splint.org/
+

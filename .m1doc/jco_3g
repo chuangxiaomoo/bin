@@ -1,0 +1,37 @@
+/* 3g */
+
+JCO_ML_ScanDev()
+
+
+入口1：启动扫描
+    int main()
+        init_hm_service();
+        JCO_ML_ScanDev(NULL);
+
+
+入口2：热挺拔事件侦听处理
+    void JHMService::doIncomingHMhandle()
+
+    read msg:
+    subsystem:usb;action:add;interface:;devpath:/devices/platform/musb_hdrc/usb1/1-1;
+    subsystem:usb action:add interface: devpath:/devices/platform/musb_hdrc/usb1/1-1
+    
+    handle_hm_msg_usb()
+        scan_usb_device_again()
+            JCO_ML_ScanDev()
+                JCO_ML_LoadDrv()        // iVendor, iProduct -> 
+                DrvLoad_HUAWEI()
+                    JcoGet3gDevFromAT()
+                    Jco3gSetSerialName()
+                    JCODelayExec()
+                        delay_cmd_handle__init_3G_4G_Module()
+                            delay_cmd_handle__init3gModule()
+                                Jco3gHWInit()
+                                创建线程
+                                Jco3GInstance();// 创建3G实例
+
+
+
+    handle_hm_msg_net() // 处理ppp0
+
+

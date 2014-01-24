@@ -1,0 +1,38 @@
+/* 21_对讲时_PC端有_echo */
+
+/* fundamental */
+
+1. 真正原因
+    /* True causes */
+
+2. 问题描述
+    /* from R&D or Tester */
+
+3. 现象分析
+    /* log or details */
+
+4. 原因分析
+    /* 原因猜想，process to true causes */
+
+5. 解决方案
+    /* 包括对未来的防御 */
+
+6. Thinking
+    (1) 整个问题过程花费的时间
+
+    (2) 问题引入、发现、解决
+        解决引入                2013-05-17
+        解决日期                
+        总结日期                2013-05-17
+
+    (3)
+                    PC in         DEV in
+                          \     /        \ 
+                           \   /          \ 
+                            \ /            \ 
+                             X              X 这里连结了，PC就有了延时的echo
+                            / \            /  
+                           /   \          /    
+                          /     \        /      
+                    PC out        DEV out 
+

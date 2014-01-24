@@ -1,0 +1,60 @@
+(1) Set
+    b +offset 
+    b functon
+    b file:line
+    break ... if <condition>
+
+(2) Watchpoints
+    watch       # write
+    rwatch      # read
+    awatch      # access/wr
+    (gdb) watch *(int *) 0x600850
+
+    Watchpoints与Breakpoints一起编号, info b可以查看所有points
+    可以watch一个地址
+
+(3) Maintain
+    (1) maintain b
+        clear
+        delete
+        disable 
+        enable
+        enable once
+        enable delete
+
+    (2) maintain condi         
+        condition <bnum> <expression>
+        ignore    <bnum> <count>
+
+    (3) maintain commands 
+        commands [bnum]
+        ... command-list ...
+        end
+
+(4) Flow control
+    next
+    step
+    until           out of loop
+    finish          out of the current funciton
+
+    out_of_order    7_改变程序的执行
+
+(5) 查看栈信息
+    当程序被停住了，你需要做的第一件事就是查看程序是在哪里停住的。
+    你可以用GDB命令来查看所有frame中的信息。
+    note: 如果使用了优化, 一些参数可能被GDB优化掉, info locals得不到相应的信息.
+
+    # 可以通过frame命令切换frame, 并查看其中的变量与参数
+    info frame
+      ? bt
+      ? frame   <n>     select-frame  <n>       
+      ? up      <n>     up-silently   <n> 
+      ? down    <n>     down-silently <n> 
+    info args
+    info locals
+    info catch
+    info stack          # show where you stopped
+
+(6) 查看源程序
+Ref:
+    infoPage gdb/Stopping/Breakpoints/ (Breakpoints, Watchpoints, and Catchpoints)

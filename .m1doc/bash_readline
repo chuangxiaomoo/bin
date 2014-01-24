@@ -1,0 +1,29 @@
+#! /bin/bash
+
+    READLINE
+        ARG-COMPLETE
+            Alt-#       comment a command line
+            Alt-.       yank-last-arg. REPEAT Alt-. to count back 
+            Alt--       yank-2nd-to-last-arg
+            Alt-n Alt-. yank-nth-arg, REPEAT Alt-. to count back 
+
+        OTHER-COMPLETE
+            bind -p     | grep complete
+            "TAB":      complete 
+            "Alt-!":    complete-command 
+            "Alt-/":    complete-filename 
+
+            "Alt-@":    complete-hostname 
+            "Alt-~":    complete-username 
+
+
+            -- complete-variable --
+            "Alt-$":           # work on Putty
+            "Esc-Tab":         # work on SecureCRT
+
+            -- complete-path --
+            "Esc-<C-E>" 
+
+        COMMAND-LINE-EXPAND
+            bind -p     | grep 'C-x' 
+        

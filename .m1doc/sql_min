@@ -1,0 +1,14 @@
+
+-- Fast 最新涨幅排名 100
+SELECT * from min where date=CURDATE() && time>SUBTIME(CURTIME(), "00:01:00") ORDER by rise_pct ASC LIMIT 100;
+
+-- 最新涨幅排名 100
+SELECT * from min where date=CURDATE() && time=(SELECT MAX(time) from min where date=CURDATE() and code=000002) ORDER by rise_pct ASC LIMIT 100;
+
+-- Fast 最新跌幅排名 100
+SELECT * from min where date=CURDATE() && time>SUBTIME(CURTIME(), "00:01:00") ORDER by rise_pct DESC LIMIT 100;
+
+-- 最新跌幅排名 100
+SELECT * from min where date=CURDATE() && time=(SELECT MAX(time) from min where date=CURDATE() and code=000002) ORDER by rise_pct DESC LIMIT 100;
+
+

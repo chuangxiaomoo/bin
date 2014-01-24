@@ -1,0 +1,16 @@
+/* patterns */
+
+
+. 敏捷开发中的分析与设计
+http://terryyin.blogbus.com/logs/121558164.html
+
+
+. 解耦合手段之八：命令－查询分离原则
+http://terryyin.blogbus.com/logs/84454234.html
+
+    cmd & query
+    do & get
+
+    系统中消息可分为：命令 - 查询，如此一来，概念就都清晰了。
+    CMD_CHANGE(osd)     // 如此一来，抽象了，代码量就可以大幅减少了
+    GET(osd)

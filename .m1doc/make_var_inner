@@ -1,0 +1,50 @@
+#! /usr/bin/make
+
+# *4.3* auto_var_in_Makefile
+#     $@  the target
+#     $^  all dependent files, (trim the repeated ones)
+#     $<  the 1st dependent file in $^
+#     "$?"    dependent files Newer than $@, used when $@ is static lib
+#     $*  is the $@ trim the suffix. ( e.g. $@ is name.c and $* is name ) 
+# 
+# *4.4*
+#     '-' b4 the cmd, don't exit when error 
+#     '@' b4 the cmd, means don't show the cmd itself one the console;
+#    "$$" call shell variable
+# 
+# 
+# *4.2* 2_kinds_of_define_var
+#     =   recursively and can call the var defined before it
+#     :=  simply unfold and can't call the var before it(+=, -=)
+
+
+# *4.4* {
+    # and statement
+    and_1=1
+    and_2=2
+    ifeq ($(and_1)_$(and_2), 1_2)
+        @echo "and"
+    else
+        @echo and not OK 
+    endif
+
+    # or statement 
+    ifneq ($(and_1)_$(and_2), 0_0)
+        @echo "or"
+    else
+        @echo or not OK 
+    endif
+# }
+
+# *4.5* 
+# Makefile have 2 step to work, the shell cmd must in a Target
+# step1: text interpret
+# step2: execute the 1st Target
+
+# wrong, echo must in a Target 
+ifeq ($(KERNELRELEASE), )
+    echo "in the console" 
+    KERNELDIR ?= /lib/modules/$(shell uname -r)/build
+    PWD := $(shell pwd)
+endif
+

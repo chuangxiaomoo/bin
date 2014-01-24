@@ -1,0 +1,31 @@
+#! /bin/bash
+#
+
+function fn_main()
+{
+    wildcard="*"
+    wildcard2='*sh'
+
+    echo "$wildcard"        # quoted 变量 不会被pathname expression扩展
+    echo "$wildcard2"       # 
+    echo "*"
+    ls "*"  >& /dev/null
+
+    ls $wildcard            # un-quoted 变量 将被 pathname expression扩展
+    
+    for face in $face; do   # un-quoted 变量 亦被 pathname expression扩展
+        echo $face
+    done
+}
+
+function fn_sed_之殇()
+{
+    _sla='/'         # slash
+    _dsl='//'        # double slash
+    _bsl='\'         # backslash
+    _dbs='\\'        # double backslash
+    _nl='\n'
+}
+
+fn_main 1 2 3
+

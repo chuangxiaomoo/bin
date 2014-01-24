@@ -1,0 +1,16 @@
+#! /bin/bash
+
+    SYNOPSIS
+           ln [OPTION]... [-T] TARGET LINK_NAME   (1st form)
+           ln [OPTION]... TARGET                  (2nd form)
+           ln [OPTION]... TARGET... DIRECTORY     (3rd form)
+           ln [OPTION]... -t DIRECTORY TARGET...  (4th form)
+
+    记忆：
+        可以只接一个参数<TARGET>，把<TARGET>在${PWD}下建个同名链接。
+        因此，第一个参数就是<TARGET>
+
+        Create hard links by default
+        Create symbolic links -s, --symbolic
+
+

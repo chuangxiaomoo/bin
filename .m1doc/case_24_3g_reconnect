@@ -1,0 +1,92 @@
+/* 24_3g_reconnect */
+
+1. 真正原因
+    /* True causes */
+    信号弱时，3g会加大功率，电源功率不够时，设备会断电。
+
+2. 问题描述
+    /* from R&D or Tester */
+    重连不成功
+
+3. 现象分析
+    /* log or details */
+
+    /* 千万不要放过任何error信息 */
+
+    close()函数提前返回了。
+    "[-SERV] [net3g_service.cpp:  273] --- tcsetattr fail, error = 5 Input/output error"
+      ┌───────────────────────────────────────────────────────────────────────────┐
+      │ int JNet3GService::CloseTTYUsbSerial(int fd)                              │
+      │ {                                                                         │
+      │     if (fd <= 0) {                                                        │
+      │         DBG("fd is not availability\n");                                  │
+      │         return SUCCESS;                                                   │
+      │     }                                                                     │
+      │                                                                           │
+      │     int nReturn = 0;                                                      │
+      │     nReturn = tcsetattr(fd, TCSANOW, &fOldTerm);                          │
+      │     if (nReturn < 0) {                                                    │
+      │         DBG("tcsetattr fail, error = %d %s\n", errno, strerror(errno));   │
+      │         return FAILURE;                                                   │
+      │     }                                                                     │
+      │                                                                           │
+      │     nReturn = close(fd);                                                  │
+      │     if (nReturn < 0) {                                                    │
+      │         DBG("close fail, error = %d %s\n", errno, strerror(errno));       │
+      │         return FAILURE;                                                   │
+      │     }                                                                     │
+      │                                                                           │
+      │     return SUCCESS;                                                       │
+      │ }                                                                         │
+      └───────────────────────────────────────────────────────────────────────────┘
+    
+
+4. 原因分析
+    /* 原因猜想，process to true causes */
+
+    文件描述符FD以至于进程资源，进程内所有线程共享FD，并可由任一线程close()
+    system()后的子进程会copy()一份FD.
+      ┌─────────────────────────────────────────────────────────────────┐
+      │ root@Moo:~/c/file# lsof myfile                                  │
+      │ COMMAND    PID USER   FD   TYPE DEVICE SIZE/OFF   NODE NAME     │
+      │ open_2tim 8025 root    7u   REG    8,1      162 558320 myfile   │
+      │ open_2tim 8025 root    8u   REG    8,1      162 558320 myfile   │
+      │ sleep     8028 root    7u   REG    8,1      162 558320 myfile   │
+      │ sleep     8028 root    8u   REG    8,1      162 558320 myfile   │
+      └─────────────────────────────────────────────────────────────────┘
+
+      ┌─────────────────────────────────────────────────────────────────┐
+      │ root@(none):/dev# ls ttyUSB*                                    │
+      │ ttyUSB0  ttyUSB1  ttyUSB2                                       │
+      │                                                                 │
+      │ [-SERV] [hm_api.cpp:  110] --- rmmod usbserial option           │
+      │ rmmod: usbserial: Resource temporarily unavailable              │
+      │ rmmod: option: Resource temporarily unavailable                 │
+      │                                                                 │
+      │ root@(none):/dev# ls ttyUSB*                                    │
+      │ ttyUSB0  ttyUSB1  ttyUSB2 ttyUSB3                               │
+      └─────────────────────────────────────────────────────────────────┘
+
+    由于ttyUSB2无法rmmod，重新上电时，自举探测设备名变为 ttyUSB3，
+    而server代码中写死为ttyUSB2。
+
+
+5. 解决方案
+    /* 包括对未来的防御 */
+    (1)
+    killallapp 可以解决 (不推荐)
+
+    (2)
+    在检测到热插拔事件时，关闭所有打开资源（Resource temporarily unavailable）
+    进行rmmod.
+
+    可以利用 lsof + tick + 全局指针 命令进行变量的动态查询
+
+6. Thinking
+    (1) 整个问题过程花费的时间
+
+    (2) 问题引入、发现、解决
+        解决引入                2013-06-18
+        解决日期                2013-06-18
+        总结日期                2013-06-18
+

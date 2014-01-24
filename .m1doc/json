@@ -1,0 +1,66 @@
+# json
+
+# 介绍 JSON
+http://www.json.org/json-zh.html
+
+JSON建构于两种结构：
+
+  “名称/值”对的集合（A collection of name/value pairs）。不同的语言中，它被理
+  解为对象（object），纪录（record），结构（struct），字典（dictionary），哈希
+  表（hash table），有键列表（keyed list），或者关联数组（associative array）。
+
+  值的有序列表（An ordered list of values）。在大部分语言中，它被理解为数组（
+  array）。
+  这些都是常见的数据结构。事实上大部分现代计算机语言都以某种形式支持它们。这使
+  得一种数据格式在同样基于这些结构的编程语言之间交换成为可能。
+
+
+# JSON 语法
+http://www.w3school.com.cn/json/json_syntax.asp
+字段名称（在双引号中）
+
+
+# 最快的学习方法（站在顶层，学习其微妙）
+
+  [JSON 在线编辑器](http://tools.jb51.net/tools/json/json_editor.htm)
+
+  1. 下载bash解析器（JSON.sh-master），运行
+    
+  2. 再思考本质
+
+    结构体
+        { 
+            "name": "JSON.sh", 
+            "version": "0.1.8", 
+            "description": "JSON parser written in bash"
+        }
+    
+    数组
+        [1, 2, 3, 4, 5]
+    
+    成员是结构体的数组
+        [
+            { "firstName":"Bill" , "lastName":"Gates" },
+            { "firstName":"George" , "lastName":"Bush" },
+            { "firstName":"Thomas" , "lastName": "Carter" }
+        ];
+    
+    值是数组的结构体
+        {
+            "employees": [
+                { "firstName":"John" , "lastName":"Doe" },
+                { "firstName":"Anna" , "lastName":"Smith" },
+                { "firstName":"Peter" , "lastName":"Jones" }
+            ]
+      }
+
+# 关于学习的思考
+
+  高晓松 
+  1. 学习元知识，搭建框架（哲学、数学、计算机基础）
+  2. 往框架里塞砖头（用元知识（已经验物）来描述此刻经验的事物）
+
+  json只是一种表示法，如同xml
+  最根本的，在学习C语言的操作符优先级时，就得到过的知识：
+  数组的本质是成员类型一样的结构体。
+

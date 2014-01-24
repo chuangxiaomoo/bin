@@ -1,0 +1,31 @@
+
+*8* himm
+	to make the $gpio high level (gpio5_6 for example)
+	1. SC_PERCTRL1 	 0x101e0020
+		himm 0x101e0020
+		0x101e0020: 0x0009C220
+		NewValue:0x0009c270	(to make gpio fun, 6th LSB must be '1')
+
+	when relative　corresponding bit (LSB 6, count from 0) is 1, output
+	2. GPIO_DIR	(BASE_GPIO_GROUP + 0X400)
+		himm 0x101F_8000 + 0x400
+		0x101f8400: 0x00000040
+		NewValue:		(the value is ok, keep default)
+
+	output or input the value you want: 1, high level; 0, low level.
+
+	3. addr_gpio_group_num = BASE_GPIO_GROUP + (0b0100 << group_num)
+		himm 0x101f8100
+		0x101f8100: 0x00000040
+		NewValue:		(gpio5_6 is high now, OK)
+
+    4. appendix
+        hi3511_gpio_base:
+        GPIO0 0x101E_4000
+        GPIO1 0x101E_5000
+        GPIO2 0x101E_6000
+        GPIO3 0x101E_7000
+        GPIO4 0x101F_7000
+        GPIO5 0x101F_8000
+        GPIO6 0x101F_9000
+        GPIO7 0x101F_A000

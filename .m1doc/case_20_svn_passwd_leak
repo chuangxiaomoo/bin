@@ -1,0 +1,38 @@
+/* 20_svn_passwd_leak */
+
+1. 真正原因
+    /* True causes */
+    For convenient, open my svn pass to zhangyh
+    New pass: jco_name_0f0f
+
+    Till today, he commit 2 files in libs
+
+3. 现象分析
+
+    // check commit 可以发现这样的垃圾代码
+ 
+    static void SysRecoryDefEth()
+    {
+        char eth[3][8] = {"", "sv", "keda"};
+        char ethp[5][12] = {"nic", "ipaddr", "submask", "gateway", "dhcpen"};
+        char val[5][20] = {"eth0", "192.168.1.217", "255.255.255.0", "192.168.1.1", "0"};
+        char key[20] = {0};
+        int i,j;
+
+        for(i=0; i<3; i++) {
+        }
+    }
+
+5. 解决方案
+    /* 包括对未来的防御 */
+    有多少爱可以重来。System cost 有时不能省。
+
+6. Thinking
+    (1) 整个问题过程花费的时间
+
+    (2) 问题引入、发现、解决
+        解决引入                2012-11-28
+        解决日期                2012-11-28
+        总结日期                2012-12-01 10:10:00 ~ 10:30:00
+
+    (3)

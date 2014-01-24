@@ -1,0 +1,44 @@
+/*  */
+
+1. 真正原因
+    /* True causes */
+    case SYS_MSG_CMD_GET_TUTK:
+    {
+     // C-X C-V 的危害
+     // MSG_TUTK_S *tutk = (MSG_TUTK_S *)pSrc->buf;
+        MSG_TUTK_S *tutk = (MSG_TUTK_S *)pDst->buf;
+        if (SUCCESS == SysConfTUTKCfg(CONF_ACT_GET, NULL, tutk)) {
+            pDst->len = sizeof(MSG_TUTK_S);
+        } else {
+            pDst->len = 0;
+            ret = FAILURE;
+        }
+        *bReply = TRUE;
+        break;
+    }
+
+2. 问题描述
+    /* from R&D or Tester */
+
+    获取不到配置
+
+3. 现象分析
+    /* log or details */    "ATTENTION: err or fail"
+
+4. Time
+    (1) 整个问题过程花费的时间
+
+    (2) 问题引入、发现、解决
+        解决引入                2013-10-26
+
+5. Introspection
+
+    No test, no release
+    无测试，不发布
+
+    罗说得对，面试这些个问题，已经出错过多次。
+    其实，自己早就该写个脚手架来对这些API进行测试：
+
+    int sys_msg_cmd_get_tutk(MSG_TUTK_S *tutk);
+
+6.

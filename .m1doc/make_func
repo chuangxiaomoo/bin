@@ -1,0 +1,38 @@
+#! /bin/make
+
+# infopage -> info make/Implicit Rules/Catalogue of Rules
+# infopage -> info make/Funciton
+#
+
+* Menu:
+*
+* * Syntax of Functions::         How to write a function call.
+* * Text Functions::              General-purpose text manipulation functions.
+* * File Name Functions::         Functions for manipulating file names.
+* * Conditional Functions::       Functions that implement conditions.
+* * Foreach Function::            Repeat some text with controlled variation.
+* * Call Function::               Expand a user-defined function.
+* * Value Function::              Return the un-expanded value of a variable.
+* * Eval Function::               Evaluate the arguments as makefile syntax.
+* * Origin Function::             Find where a variable got its value.
+* * Flavor Function::             Find out the flavor of a variable.
+* * Shell Function::              Substitute the output of a shell command.
+* * Make Control Functions::      Functions that control how make runs.
+
+
+. File Name Functions(路径相关)
+
+	. dir 
+		$(dir src/foo.c hacks)
+		produces the result `src/ ./'.
+
+	. notdir
+		$(notdir src/foo.c hacks)
+		 produces the result `foo.c hacks'.
+
+
+. foreach 
+	# INCFLAGS=`for dir in $dirs; echo "-I${dir}"; done`
+	INCFLAGS := $(foreach dir, $(dirs), -I$(dir))
+
+. 

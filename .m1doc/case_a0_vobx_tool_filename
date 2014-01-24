@@ -1,0 +1,33 @@
+/*  */
+
+1. 真正原因
+    /* True causes */
+    虚拟机存储映射后WINDOWS文件系统时，filename不区别大小写
+
+2. 问题描述
+    /* from R&D or Tester */
+
+3. 现象分析
+    /* log or details */    "ATTENTION: err or fail"
+    onvif/security/locale.h|42| 
+        error: ‘LC_ALL’ was not declared in this scope
+
+
+4. 原因分析
+    /* 原因猜想，目标分解，process to true causes */
+    一定是自已的环境问题，因为只有自已一个人有这种情况。
+
+5. 解决方案
+    /* 包括对未来的防御 */
+    在Linux中重新DL一份代码解决。
+
+6. Time
+    (1) 整个问题过程花费的时间
+
+    (2) 问题引入、发现、解决
+        解决引入                2013-12-25
+        解决日期                2013-12-25
+        总结日期                2013-12-25
+
+7. Introspection
+

@@ -1,0 +1,7 @@
+/* gcov */
+
+  . gcov
+
+     gcc -pg -fprofile-arcs  -ftest-coverage xxx.c -o xxx
+     ./xxx
+     gcov xxx.c  # 之后产生一个文件 xxx.f90.gcov，里面各行代码执行的次数

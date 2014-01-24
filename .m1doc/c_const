@@ -1,0 +1,130 @@
+/* cxx_const_char
+ * const is something like Qualifier, Name mangling or Decorated Name, 
+ * readonly is more catchy
+ **/
+
+在C中最常用的是, 以const限定函数的形参(formal parameter)
+
+(1) const修饰是属于编译层面的限制.
+    只有直接对const变量进行修改，编译时才会报错, 间接写memset操作是可以的.
+    反汇编后，有const修饰的变量和没有const修饰的变量的汇编代码结果是一样的.
+
+    int main_const()
+    {
+        const char arr[100]="oh my god";
+        memset((void *)arr, 0, sizeof(arr));
+
+        const int ro = 0xDEADBEEF;
+        int *wr = (int *)&ro;
+        *wr = 0xBADF00D;
+
+        return 0;
+    }
+
+(2) const & 指针
+    http://baike.baidu.com/view/1065598.htm
+
+    1. const只限定其后的`* 与变量的声明内容(详情见 m1 c cdecl)`
+        问两个问题: (a) 是几级指针; (b) const 后的内容是指针还是内容
+        const char *p           -> const 后是(*p), 是一级指针的内容
+        char *const *p          -> const 后是(*p), 是二级指针的内容, 即一级指针
+        const char* const* p    -> (*p)一级指针 和 (**p) 字符都只读
+                                   // a pointer to const pointer to const char
+
+        http://blog.csdn.net/redpetallsg/article/details/4044205
+        沿着*号划一条线， 
+        如果const位于*的左侧，则const就是用来修饰指针所指向的内容，即指针指向为常量
+        如果const位于*的右侧，const就是修饰指针本身，即指针本身是常量。
+
+        Example:
+        1）const在前面              
+        /* identify by cdecl */ 
+        const int nValue;           // nValue是const
+        const char *pContent;       // *pContent是const, pContent可变
+        const char* const pContent; // pContent和*pContent都是const
+        const char **p;             // decl p as pointer to pointer to const char
+
+        2）const在后，与上面声明对等
+        int const nValue;           // nValue是const
+        char const *pContent;       // *pContent是const, pContent可变
+        char const* const pContent; // pContent和*pContent都是const
+        char const **p;             // decl p as pointer to pointer to const char
+
+        3）
+        char *const *p              // decl p as pointer to const pointer to char
+
+
+    2. 指针运算符* 是从右到左结合的
+        char const * pContent，可以理解为char const (* pContent)，
+        即* pContent为const，而pContent则是可变的。
+
+    3. 多变量定义时, `*`挟持其与变量之间的const
+        int const * p1,p2;          <==> { 
+            int const (*p1); 
+            int const p2;
+        }
+        int const * const p1,p2;    <==> {
+            int const (* const p1); 
+            int const p2;
+        }
+        int * const p1,p2;          <==> {
+            int *const p1;
+            int p2;
+        }
+
+(3) Trace
+    1. 对于指针赋值，满足 <C99-std-6.5.16.1 Constraints> 第三条
+        both operands are pointers to qualified or unqualified versions
+        of compatible types, and the type pointed to by the left has all 
+        the qualifiers of the type pointed to by the right;
+
+        A: 本身: 两个操作数都是指向有限定符或无限定符的相容类型的指针，
+        B: 指向: 左边指针所指向的类型必须具有右边指针所指向类型的全部限定符。
+
+        注：
+            C99-std-6.2.7  Compatible type and composite type
+            Two types have compatible type if their types are the same.
+
+            void 类型是个例外
+
+    2. 自我理解 // 限定符(const)与类型(char)分离
+        A: 
+            void foo() {
+                char *p;        // p指向char,   no qualifier 
+                const char *q;  // q指向char, with qualifier const
+
+                q = p;          // q hsa qualifier const, fit B, no warning.
+            }
+
+        B: 
+            void bar() {
+                char **p;       // p指向      char *, no qualifier 
+                const char **q; // q指向const char *, no qualifier
+                                // Constraints.A 
+                                // p & q, both no qualifier，但类型不相容
+                p = q;          // warning
+                q = p;          // warning
+            }
+
+        C:
+        int main(int argc, char **p)     // point to char *
+        { 
+            char *const *q = p;          // point to char *, qualifier const
+            char const* *r = p;          // point to char const*, error, 不相容的类型
+            return 0; 
+        }
+
+    3. Url
+        http://blog.csdn.net/shihaijiang1987/article/details/5770993
+        http://www.parashift.com/c++-faq/constptrptr-conversion.html
+        http://stackoverflow.com/
+               questions/13554354/const-char-parameter-warning-about-char-argument
+
+    4. warning: dereferencing type-punned pointer will break strict-aliasing rules
+        case SOAP_TYPE_string:                      //    add a *
+        {                                           //       ↓
+        const char *cast_p = (const char *)ptr;     //   char const *cast_p 
+        soap_serialize_string(soap, (char*const*)&cast_p);
+        break;
+        }
+

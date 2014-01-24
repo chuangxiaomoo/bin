@@ -1,0 +1,44 @@
+#! /bin/bash
+
+socket(46), bind (port:8006) error[2] :No such file or directory
+
+
+# bind 
+    
+    那么多端口bind().
+    为什么554 80 等端口没有失败，偏偏只有8006这个升级端口有这样的问题。
+
+
+# xt_log() 之殇
+
+    这个问题还不足矣导致设备瘫痪，xt_log()才是最后把日志文件塞满的黑手。
+
+# 不要重新发明内核宏 
+
+    代码的生命是复用，就如同货币的生命是流通。
+    
+
+
+# 解决方案
+
+    删除了xt_log(), 同时调整了 socket() setsockopt() bind() 的顺序。
+
+    fSockFd = socket(AF_INET, SOCK_STREAM, 0);
+
+    sock_addr.sin_family = AF_INET;
+    sock_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    sock_addr.sin_port = htons(up_port);
+
+    err = setsockopt(fSockFd, SOL_SOCKET, SO_REUSEADDR, (char*)&opt, sizeof(int));
+	
+    sock_addrlen = sizeof(struct sockaddr);
+    err = bind(fSockFd, (struct sockaddr *)&sock_addr, sock_addrlen);
+	if(err < 0) {
+        JCOLogMsg(LOG_NOTICE, "socket(%d), bind (port:%d) error[%d] :%s\n", fSockFd, up_port, errno, strerror(errno));
+        DELAY_REBOOT_LINUX();
+        goto cleanup;
+    }
+
+# 反省
+
+    将常用的socket()操作封装成API，如此重用才是最安全的。

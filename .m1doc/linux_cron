@@ -1,0 +1,10 @@
+#! /bin/bash -- cron
+
+. ubuntu中 cron 服务的默认日志存放位置 
+
+    修改rsyslog文件，将/etc/rsyslog.d/50-default.conf 文件中的#cron.*前的#删掉；
+    重启rsyslog服务service rsyslog restart；
+    重启cron服务service cron restart；
+    more /var/log/cron.log； 
+
+.

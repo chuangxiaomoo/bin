@@ -1,0 +1,28 @@
+/*  */
+
+. Markdown: Basics （快速入门）
+
+    http://wowubuntu.com/markdown/basic.html
+
+. VIM编写markdown文档 
+
+    http://www.vim.org/scripts/script.php?script_id=2882
+
+. md2html生成器 Markdown.pl
+
+    http://blog.aboutc.net/linux/7/vim-markdown
+
+. 在线Markdown    
+    http://mahua.jser.me/
+
+. 怎样使用Markdown
+
+    http://www.ituring.com.cn/article/23
+
+. pandoc实验室
+
+    http://johnmacfarlane.net/pandoc/try/
+
+
+/* BELOW IS A EXAMPLE FROM https://raw.github.com/rails/rails/master/README.md */
+

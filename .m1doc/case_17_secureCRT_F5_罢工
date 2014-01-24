@@ -1,0 +1,43 @@
+/* 17_secureCRT_F5_罢工 */
+
+/* fundamental */
+
+1. 真正原因
+    /* True causes */
+    .vimrc 
+    set term=xterm " F5
+
+2. 问题描述
+    /* from R&D or Tester */
+    F1 ~ F5 都不能工作
+
+3. 现象分析
+    /* log or details */
+
+4. 原因分析
+    /* 原因猜想，process to true causes */
+    在 google 上搜了很多相关资料，但都不可以
+
+5. 解决方案
+    /* 包括对未来的防御 */
+    在家里，secureCRT 打开vim，一切都是可以正常工作的。
+    应该就是 xterm 的问题了。
+
+    "Abstract"
+
+6. Thinking
+    (1) 整个问题过程花费的时间
+        2013-05-06 办公室2个小时
+        2013-05-06 澡堂2分钟
+
+    (2) 问题引入、发现、解决
+        解决引入                2013-05-06
+        解决日期                2013-05-07.09:05:54
+        总结日期                2013-05-07.09:05:54
+
+    (3)
+        抽象是有选择性的忽略。 
+        关注差异，diff 思想是 Abstract 的好帮手。
+
+        本地的 diff 有时比 google 更有效。
+

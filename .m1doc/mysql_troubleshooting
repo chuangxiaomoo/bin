@@ -1,0 +1,18 @@
+# troubleshooting
+
+1. 
+    mysql table is marked as crashed and last (automatic?) repair failed
+
+    解决办法.
+
+    找到mysql的数据库存放的文件夹,这个可以去mysql的配置文件 my.cnf (linux)  
+    my.ini(windows)里面找datadir 关键字,后面的就是路径找到对应的数据库文件夹,进
+    去后.在该数据库文件夹下执行, <table_name> 是你想要修复的表名,
+
+    #myisamchk -r <table_name>
+
+    如果这样还是不能解决, 停掉mysql,然后
+
+    #myisamchk -r -v -f <table_name>
+
+

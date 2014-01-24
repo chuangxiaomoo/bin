@@ -1,0 +1,78 @@
+
+零、GAS
+
+    我这里讲的是GAS，
+    使用的是AT&T的语法而不是Intel的语法，AT&T语法是Unix世界的标准.
+
+    apt-get install binutils
+    info gas
+
+一、C程序大致来讲可以分为四个数据区：常量区，静态去，堆区，栈区。
+
+    另外，
+    .section .text ：这个节包含程序的代码，它是只读节，而.data 和.bss是读／写节。 
+    if g_arr[len] was init as 0, it will not put in the .data but the .bss. 
+
+    ┌────────────┬───────────────────────────────────────────────────┐
+    │   常量区   │  .rodata 字串, const全局变量                      │
+    │            │                                                   │
+    ├────────────┼───────────────────────────────────────────────────┤
+    │   静态区   │  .bss    未初始化的内存块，如全局数组变量         │
+    │            │          load时初始化。                           │
+    │            │  .data   编译时确定大小及数据                     │
+    │            │          全局变量                                 │
+    │            │          static变量(只初始化一次)                 │
+    ├────────────┼───────────────────────────────────────────────────┤
+    │   堆区     │  malloc()                                         │
+    ├────────────┼───────────────────────────────────────────────────┤
+    │   栈区     │  函数本地变量                                     │
+    └────────────┴───────────────────────────────────────────────────┘
+
+        +---------------+ <--   highest addr <-- stack top
+        |       stack   |
+        |---------------|
+        |       heap    |
+        |---------------| <--   heap top
+        |       bbs(raw)|
+        |---------------|
+        |       data    |
+        |---------------|
+        |       text    |
+        |---------------|
+        |       NULL    |
+        +---------------+ <--   0
+
+Reference:
+    浅谈C语言的数据存储（一）
+    http://www.embedu.org/Column/Column540.htm
+
+    浅谈C语言的数据存储（二）
+    http://www.embedu.org/Column/Column558.htm
+
+
+二、工欲善其事必先利其器
+
+    gcc -g -E a.c -o a.s
+
+    有了-g, 就如同在汇编的海洋里有了指南针。在查看汇编时其会有对应的行号指示。
+
+三、
+
+
+Reference:
+
+    taek ASM文章列表
+    http://www.cnblogs.com/taek/category/352075.html
+
+    taek AT&T汇编与GCC内嵌汇编语法
+    http://www.cnblogs.com/taek/archive/2012/02/04/2338241.html
+
+    Linux_汇编语言(GNU_GAS汇编)开发指南
+    http://wenku.it168.com/d_000440550.shtml
+
+    Linux汇编语法简介（GNU GAS）
+    http://linux.chinaunix.net/techdoc/beginner/2009/12/25/1150852.shtml
+
+    Blackfin汇编语言之GAS伪指令
+    http://blog.csdn.net/kpgood/article/details/4049495
+

@@ -1,0 +1,107 @@
+# ptz20
+
+## 报文
+
+  字节 Byte1 Byte2 Byte3 Byte4 Byte5 Byte6 Byte7
+  定义 首标  地址  命令1 命令2 数据1 数据2 校验码
+  数据 FFH   1-FFH 0-FFH 0-FFH 0-FFH 0-FFH 00H-FFH
+
+ >[校验码]：校验码=（Byte2 + Byte3 + Byte4 + Byte5 + Byte6 ）%256
+
+   ┌────┬─────┬─────┬─────┬─────┬────────┬──────┬───────┬───────┬────────┐
+   │字节│Byte1│Byte2│Byte3│Byte4│Byte5   │Byte6 │Byte...│Byte5+N│Byte6+N │
+   │定义│首标 │地址 │命令1│命令2│数据长度│数据1 │数据...│数据N  │校验码  │
+   │数据│FFH  │1-255│0-255│0-255│LEN     │0-255 │0-255  │0-255  │0-255   │
+   └────┴─────┴─────┴─────┴─────┴────────┴──────┴───────┴───────┴────────┘
+
+ >[校验码]：校验码=（Byte2 +…+Byte5+N）%256
+
+
+## 设计思路：
+
+  -cmdtype xx -cmd xx 决定了命令的格式，
+
+  如果是标准命令，Byte3+Byte4 确定了，信令就确定了。
+  如果是变长命令，由(struct mcu_cmd_desc).option 描述，信令也确定了。
+
+  因此，每个命令用一个结构体描述其约束条件，且可以自动处理，可大大提高
+  可维护性与可扩展性。
+
+    enum mcu_cmd_opt {
+        O_USE_D1,   // 使用 DATA1, int
+        O_USE_D2,   // 使用 DATA2, int
+        O_USE_WD,   // 使用 WDATA, int, 填充 DATA1及DATA2 以满足标准协议
+
+        O_RESPON,   // 需要回复
+
+        O_VARSTR,   // 所谓变长指令，即指令数据不止DATA1和DATA2,
+                    // 变长指令，必选PACKET，可选DATA1, DATA2, 
+                    // 如“数据包(1)”，“预置位标题”
+        O_VARHEX,   // 变长指令，可选DATA1, DATA2, 必选PACKET 如“预置位标题”
+                    // 必初始化 pkt_len
+    };
+
+    struct mcu_cmd_desc {
+        char *name;         // jcp help信息 -- 命令名，与 enum mcu_cmd_desc对应
+        char cmd1;          // Byte3
+        char cmd2;          // Byte4
+        char option;        // enum mcu_cmd_desc
+        char *d1_desc;      // jcp help信息 -- 数据描述
+        char *d1_scope;     // jcp自动范围判断
+        char *d2_desc;
+        char *d2_scope;
+        char *pkt_desc;     // jcp help信息 -- 数据描述
+        char *pkt_scope;    // 数组首址。非数据包(1)时，O_VARHEX 的范围判断
+         int  pkt_len;      // 非数据包(1)时，O_VARHEX 长度
+    };
+
+## pelcod20ctrl
+
+    -cmdtype 1~63 -cmd 1~255 -data1 0~255 -data2 0~255 -packet
+    {string|dec1-...-decn}
+    -cmdtype  
+    -cmd 1~255 -d1 0~255 -d2 0~255 -packet {string|dec1-...-decn}
+
+## 设计原则：
+
+  以高效、可维护、可扩展为设计原则。
+  特别在信息的可读性上更是如此，对于packet的可读性考虑, 使用十进制字串而
+  不是16进制。
+
+
+## 遗留问题：
+
+  1. 有交叉：
+      查询指令集(cmdtype=13) 没有必要再配一个变长度指令集(cmdtype=14) 
+      如下，可以去掉任一其一：
+          13-3 InqPanPosion
+          14-3 GetPanPosion
+
+  2. 关于返回解析：        
+      (1) use dec1-...-decn 的字串返回
+          可以help信息中给出说明（8位-8位为单位），以弥补可读性缺陷。
+          作为通用性考虑（优先选择此种方式）
+      (2) use "k1=v1;...;k3=v3"的形式返回，此种情况可读性高但需要21个数据包
+          命名，需要给每个数据包一个回调解析函数，比较麻烦。
+
+  3. 关于中文编码：
+      需要进一步进行验证
+
+  4. MCU升级
+      与之前的升级有所不同。需要考虑相应接口的DRY
+
+  5. 能力获取
+      整体所有协议是否完全实现。此部分需要在会上再进行讨论。
+
+  x. 注意事项：
+      对packet进行解析，sscanf()不可自动组装变长; 使用strchr()循环进行处理。
+
+  y. 将来    
+      2.0与原有版本兼容，但升级不兼容。
+      网页相关是必须要改的。
+      是否要拉分支来实现？
+
+      由于与前版本兼容，so可以不在原有的上面继承 
+      从网页上决定接口是否对外开放
+
+

@@ -1,0 +1,43 @@
+/*  */
+
+
+
+typedef struct
+{
+	int fd;
+
+	BOOL bEnLight;		// 红外灯使能，0表示禁用
+	BOOL bEnColor;		// 彩转黑使能，0表示禁用
+	BOOL bEnCut;		// 红外滤光片使能，0表示禁用
+
+	int iDay;			// 0表示晚上，1表示白天，-1表示没有初始化
+	int iTurnOnLux;		// 打开红外灯的光照条件，单位lux
+	time_t tm;
+} SYSTEM_IR_MNG_S;
+
+
+	BOOL bEnColor;		// ENCODE去掉颜色分量，SERVER通过MSG通知ENCODE
+                        // sys_msg_cmd_set_irmng_info(&irMng,MSG_TYPE_ENCODE_SVR);
+
+	BOOL bEnCut;		// SERVER开关IRCUT，白天灯关时过滤，晚上灯开全透
+	BOOL bEnLight;		// SERVER开关红外灯
+                        // 当前默认：有红外灯时必有光敏
+
+
+
+        INIT STATUS
+            |                                 
+            |                                 
+            v                                 
+        
+        白天，灯关，滤光片过滤红光    <------+
+                                             |
+            |                                |
+            | LUX降低                        |
+            |                                |
+            v                                |
+        黑夜，灯开，滤光片全透               |
+            |                                |
+            +--------------------------------+
+
+

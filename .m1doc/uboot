@@ -1,0 +1,88 @@
+# nand
+
+## modi_uboot_env
+
+  modi_uboot_env --action get --key ipaddr
+  modi_uboot_env --action get --key bootargs
+  modi_uboot_env --action set --key bootargs --value ""
+
+## nand
+
+  ? nand
+  nand erase start_addr size
+  nand write memo_addr  flash_ofs size
+  nand read  memo_addr  flash_ofs size
+  
+  setenv updatecore  'nand erase 0x00400000 0x00400000; 
+                      tftp 0x82000000 uImage;
+                      nand write 0x82000000 0x00400000 0x00400000'
+
+  setenv bootcmd     'nand read 0x80700000 0x400000 0x300000; 
+                      bootm 0x80700000'
+
+## nand 写保护
+
+  ? tftpboot
+  tftpboot [loadAddress] [[hostIPaddr:]bootfilename]
+  ? bootm
+  ? nandwrite
+
+Example:
+
+  拔掉外网网线，保证下列命令运行成功
+
+    se serverip 192.168.2.41;se ipaddr 192.168.2.44
+    set bootargs 从nfs启动
+
+    tftp 0x80700000 uImage
+    bootm 0x80700000
+
+  把文件上传到设备/root/
+
+    cp flash_eraseall nandwrite uboot.bin /root/
+
+  进入设备/root执行命令
+
+    chmod +x flash_eraseall
+    chmod +x nandwrite
+    ./flash_eraseall /dev/mtd0
+    ./nandwrite -p /dev/mtd0 uboot.bin
+    rebootd
+
+  进入uboot重烧设备文件系统
+
+    se serverip 192.168.2.41;se ipaddr 192.168.2.44;downi;re
+
+
+## mtd
+
+  写东西，不要闭门造车，站在巨人的肩膀上更加可取
+
+  在应用空间修改U-boot的参数，如bootargs, 在无串口时特别有用
+  思路: 通过open(/dev/mtdblock1)对U-boot进行读写。
+
+  (1) 
+
+    uboot环境变量与内核MTD分区关系
+    http://blog.163.com/rain_mcu/blog/static/18334931220122383124190/
+
+    一般我们只需要分3-4个区，第一个为boot区，一个为boot参数区(传递给内核的
+    参数),一个为内核区，一个为文件系统区。
+
+  (2) 可以查看
+
+    root@192.168.2.80:~# cat /proc/mtd 
+
+      dev:    size   erasesize  name
+      mtd0: 00120000 00020000 "bootloader"
+      mtd1: 00040000 00020000 "params"
+      mtd2: 00300000 00020000 "kernel"
+      mtd3: 07ba0000 00020000 "filesystem"
+      mtd4: 00002000 00000010 "spi_eeprom"
+
+  (3) 关于nand读写的一些细节
+      erase以块为单位，write/read以页为单位, write前要先erase
+      int blockTotal = mtdInfo.size / mtdInfo.erasesize;
+      int pagesPerBlock = mtdInfo.erasesize / mtdInfo.writesize;
+
+      NandWritePages(data, oob, blockStart, 0, pagesPerBlock))

@@ -1,0 +1,128 @@
+/* 22_feed_watchdog_fail */
+
+1. 真正原因
+    /* True causes */
+    fork() execl() system() 会 inherit 父进程打开的 fd
+
+2. 问题描述
+    /* from R&D or Tester */
+
+    root@(none):~# echo 1 >/dev/watchdog 
+    -bash: /dev/watchdog: Device or resource busy
+
+3. 现象分析
+    /* log or details */
+    肯定是有进程还在打开 fd. 可以用 lsof 命令查看。
+
+4. 原因分析
+    /* 原因猜想，process to true causes */
+    
+    a. whatever close or not, kill 或者是进程正常 exit()，Linux 都会
+       回收 fd 资源。
+
+    b. 是测试子进程的时候了，问题就出在子进程上。 
+
+5. 解决方案
+    /* 包括对未来的防御 */
+
+    fcntl(fd, F_SETFD, FD_CLOEXEC);
+
+    /* note 
+
+     F_GETFD (void)                                        
+          Read the file descriptor flags; arg is ignored.
+
+     F_GETFL (void)
+          Read the file status flags; arg is ignored.
+    */
+
+    int val=fcntl(fd, F_GETFL, 0);  // 
+    printf("before FD_CLOEXEC is %d\n", val);
+
+    fcntl(fd, F_SETFD, FD_CLOEXEC); // 
+    printf("after FD_CLOEXEC is %d\n", val);
+    
+6. Thinking
+    (1) 整个问题过程花费的时间
+
+    (2) 问题引入、发现、解决
+        解决引入                2011-xx-xx
+        解决日期                2013-05-21
+        总结日期                2013-05-21
+
+    (3) -- bugfix & task 分离 --
+        task时，我们清楚知道需求，因此task第一要义是，
+        知道在做什么，并如何测试。
+
+        而bugfix时则不然，存在一定未知及不确定性，因此其第一要义是，
+        复现bug，并清楚明白客户的期望。
+
+    (4) 沟通
+        让 chebiyou 复述问题，复述task细节。
+
+        一个问题的细节，请不要问我。
+        除非我自己去重做一遍，若是如此，你的价值在何处呢。
+
+        你可以问我业务，但是技术细节，请问 google 
+
+P.S. 测试用例
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/ioctl.h>
+#include <linux/watchdog.h>
+
+#define WATCH_DOG_DEVICE		"/dev/watchdog"
+#define WATCH_DOG_TIME_INTERVAL 10
+
+static void watch_dog_func()
+{
+    int fd;
+    
+    fd = open(WATCH_DOG_DEVICE, O_WRONLY);
+    if (fd < 0)
+    {       
+        printf("open %s error\n", WATCH_DOG_DEVICE);
+        return ;
+    }
+    
+    // fcntl(fd, F_SETFD, FD_CLOEXEC);
+    ioctl(fd, WDIOC_KEEPALIVE);
+
+    system("sleep 300 &");
+
+#define _TEST_CLOSE_IN_PAPA     // comment this MACRO to test execl
+#ifdef  _TEST_CLOSE_IN_PAPA
+    close(fd);
+    return;     
+#endif
+
+    int ret = execl("/root/wdt.sleep300", "wdt.sleep300", NULL);
+
+    if (ret != 0) {
+        printf("ret is %d: %s\n", ret, strerror(errno));
+        return;
+    }
+
+    int i;
+    for (i = 0; i < 10; i++) {
+        printf("%d 30s left\n", 10 - i);
+        sleep(30);
+    }
+
+    printf("we are going exit wdt\n");
+}
+
+
+int main(int argc, char *argv[])
+{
+    watch_dog_func();
+    return 0;
+}
+

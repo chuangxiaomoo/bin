@@ -1,0 +1,33 @@
+
+一、搭建环境
+  1. dot -Tgif -o a.gif a.dot
+
+    VIM mspaint浏览
+    nnoremap <F9> :!dot -Tgif -o a.gif <C-R>% && mspaint a.gif<CR>
+
+    IE OPERA浏览
+    C:\> "C:\Program Files\Opera\opera.exe" D:\root\root\a.gif
+         "C:\Program Files\Internet Explorer\iexplore.exe" D:\root\root\a.gif
+
+二、模仿才是最快
+    graphviz Gallery
+    http://www.graphviz.org/Gallery.php
+
+    使用graphviz绘制流程图
+    http://icodeit.org/2012/01/使用graphviz绘制流程图
+
+    使用 Graphviz 生成自动化系统图
+    http://www.ibm.com/developerworks/cn/aix/library/au-aix-graphviz/
+
+三、
+
+    22 个免费的图表、流程图工具
+    http://www.oschina.net/news/28942/22-free-tools-for-charts-diagrams-and-flowcharts
+
+    超爱 DIY Chart 
+
+
+四、另一个选择
+
+    gnuplot
+

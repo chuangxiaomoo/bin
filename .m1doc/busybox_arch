@@ -1,0 +1,22 @@
+
+(1) busybox 代码的高超之处 applets.h 中对于宏的运用可谓是炉火纯青：
+        applets.c include applets.h twice, 
+
+        1st time in busybox.h and 
+        2nd time in applets.c. 
+        The 1st time is when PROTOTYPES definde, so it's just PROTOTYPES declare, 
+        and the 2nd time is construct the array -> 
+                const struct BB_applet applets[] it's amazing. 
+
+(2) busybox 简化嵌入式 Linux 系统 
+    http://blog.csdn.net/taina2008/archive/2007/06/14/1652845.aspx 
+    原文：
+    http://www-128.ibm.com/developerworks/cn/linux/l-busybox/index.html 
+    /*
+     * $busybox
+     *
+     * the cmd is only the first parameter of executable file busybox
+     * (busybox ls) == (ls)
+     * and cmds are all linker
+     */
+

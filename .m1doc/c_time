@@ -1,0 +1,162 @@
+/* time */
+
+1.
+    The val of &tz don't influence the behaviour of time() and command date.
+    It just change global TZ which can be set and get by this 3 API.
+
+    (&tv, &tz) &tz is obsolete and is a global kernel variable.
+
+    settimeofday(NULL,&tz); // take effect at startup, influence time();
+    settimeofday(&tv, &tz); 
+    gettimeofday(&tv, &tz); 
+
+*2* time_related
+*2.6* TZ format
+#if 0
+    std offset dst [offset],start[/time],end[/time]
+    time fmt: Mm.w.d
+    The initial std and offset specify the standard time zone, as described 
+    above. The dst string and offset specify the name and offset for the 
+    corresponding daylight saving time time zone; if the offset is omitted, 
+    it defaults to one hour ahead of standard time.
+#endif
+
+/* when in the interzone of [start, end], use std time, or use dst time.
+ */
+int to_support_dst()
+{
+    /etc # date
+    Mon Aug 24 05:04:34 MTZ 2009
+    /etc # cat TZ 
+    MTZ+6
+
+    /etc # cp atz TZ 
+    /etc # date
+    Mon Aug 24 06:04:59 MDT 2009
+    /etc # cat TZ 
+    MTZ+6MDT+5,M4.1.0,M11.1.0
+
+    /etc # date
+    Mon Aug 24 06:09:01 MDT 2009
+    /etc # cat TZ 
+    MTZ+6MDT,M4.1.0,M11.1.0     // dst offset omitted, is equal to MDT+5
+}
+
+/*  
+ * localtime() and gmtime() return the same value, it make the time_page
+ * broken down. but the truth is :
+ * 1.the pointer of a struct which gmtime() and localtime() return are the 
+ *   same. so when you call localtime() after gmtime(), the result of 
+ *   gmtime() will be covered. So, to Understand the Linux kernel is good
+ *   choice.
+ *
+ * 2.anther discovery is the /etc/TZ not only change the behavior of 
+ *   localtime(), but change mktime() also. it make the mktime() change
+ *   local time in the struct tm into gmtime as the format of time_t.
+ *
+ *   about the "dst part" in the /etc/TZ, mktime() support GMT time, but
+ *   not support dst time. but localtime() support GMT time and dst time.
+ *
+ *
+ *   so the time I set in the hardware clock is not gmtime, but the local 
+ *   time, but what we need is only the right operation time. and with 
+ *   /etc/TZ, we can do it easily. It's so skillfully.
+ *
+ * 3.p = asctime(gmtime(&var));     
+ *   q = asctime(localtime(&var));
+ *   to check which is wrong, it's so unsafe, if you want ot check, please
+ *   do one step once, e.g. get a consonant to pass to the func, it will 
+ *   save you a lot of time as a matter of fact.
+ */
+
+int main() {
+        char *p;
+        char *q;
+        time_t var;
+
+        var = time((time_t *)NULL);
+        p = asctime(gmtime(&var));
+        q = asctime(localtime(&var));
+
+    mktime();
+}
+
+*2.5* TZ
+    /* check_whether_support_TZ
+     * TZ file are supported whatever which libc you choosed */
+    cd /opt/mv_pro_5.0/uclibc-toolchain/gcc-3.4.6/toolchain-mipsel/usr/lib
+    arm_v5t_le-strings libc.a|grep "etc"
+
+    /* tag: $dst $DST $TZ
+     * TZ This variable shall represent timezone information. The contents of the
+     * environment variable named TZ shall be used by the ctime(), localtime(), 
+     * strftime(), mktime(), [TSF]  ctime_r(), and localtime_r()  functions. 
+     *
+     * to support it, do below
+     *
+     * echo 'export TZ="CST-8"' >> /etc/profile
+     */
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <sys/stat.h>
+
+#define TZ_max_len  32
+int main(int argc, char *argv[])
+{
+    int ret;
+    char TZ_buf[TZ_max_len] = "";
+    char *p;
+
+    p = getenv("TZ");
+    printf("this what is %s\n",p);
+
+    ret = access("/etc/TZ", F_OK)
+    if (ret < 0) {
+        printf("access /etc/TZ err ...\n");
+        return -1;
+    }
+
+    p = getenv("TZ");
+    printf("this what b4 is %s\n",p);
+    system("date");
+    system("hwclock");
+
+    system("hwclock --systohc");
+    printf("after\n");
+    system("hwclock");
+
+    setenv("TZ", (const char*) TZ_buf, 1);
+
+    p = getenv("TZ");
+    printf("this what after is %s\n",p);
+    system("date");
+
+    return 0;
+}
+
+*2.1* summarize the func of $time:
+    time_t time(time_t *t);
+    
+    char *asctime(const struct tm *tm);
+    char *ctime(const time_t *timep);
+    
+    struct tm *gmtime(const time_t *timep);
+    struct tm *localtime(const time_t *timep);
+    
+    time_t mktime(struct tm *tm);
+    int settimeofday(const struct timeval *tv , const struct timezone *tz);
+
+
+*2.2* sys2hc
+    time()--gmtime()--ioctl(Settime)
+
+*2.3* hc2sys
+    ioctl(Gettime) -> mktime() -> settimeofday()
+

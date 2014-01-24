@@ -1,0 +1,18 @@
+/*  */
+
+. GROUP BY
+
+    http://www.cnblogs.com/error404/archive/2012/09/20/2695439.html
+
+    SELECT region, SUM(population), SUM(area) FROM bbc GROUP BY region
+
+    ---> 先分组，再聚合的
+    SELECT region FROM bbc GROUP BY region | SUM(population), SUM(area)
+
+
+. WHERE and HAVING
+
+    SELECT *,(close-yesc)/yesc as rise FROM day WHERE 
+        date=(SELECT max(date) FROM day) HAVING rise > 0.08  ORDER by rise DESC ;
+
+    WHERE 子句中不能有函数及计算引用，但是 HAVING 可以有。

@@ -1,0 +1,53 @@
+#!/bin/bash 
+#---------------------------------------------------------------------------
+#       CREATED: 2012-12-24 10:17:09 CST
+#---------------------------------------------------------------------------
+
+一、管道右边部分改变的变量是不能回传的
+
+    function fn_main() {
+        bootargs="k1=1 k2=2 k3=3"
+        key_val="k1 a k2 b k3 c"
+        newargs=
+
+        { echo $key_val | xargs -n 2 ;} |  
+        while read key val; do
+            let a++
+            echo $a
+            # bootargs=${bootargs/k1/mygod}
+            bootargs=${bootargs/$key/mygod}
+            newargs=$bootargs
+            echo $bootargs
+        done 
+
+        echo $bootargs
+        echo $newargs       # U can't get val of newargs, it's NULL cause PIPE
+    }
+
+    fn_main $@
+
+
+二、还是使用临时文件吧
+
+    function fn_main() {
+        bootargs="k1=1 k2=2 k3=3"
+        tmpfile=/tmp/bootargs.tmp
+        echo $@ | xargs -n 2 > $tmpfile
+
+        while read key val; do
+            # echo kv: $key $val
+            if echo $bootargs | grep "$key=" >& /dev/null; then
+                bootargs=`echo $bootargs | sed "s/$key=[a-zA-Z0-9_]*/$key=$val/g"`
+                # echo bootargs: $bootargs
+            else
+                bootargs="$bootargs $key=$val" 
+            fi
+            # echo $bootargs
+        done < $tmpfile
+
+        rm -f $tmpfile
+        echo $bootargs
+    }
+
+    key_val="k1 a k2 b k3 c"
+    fn_main $key_val

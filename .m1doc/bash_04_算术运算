@@ -1,0 +1,69 @@
+/* 04_算术运算 */
+
+#! /bin/bash
+
+http://my.oschina.net/aiguozhe/blog/41516
+
+阅读排行
+
+ 1. 1. [原创]cygwin安装top, free，wget，curl,clear等命令
+ 2. 2. SSH免密码登录
+ 3. 3. Bash Shell字符串操作小结
+
+[b1] [原创]Linux Bash Shell 中的算术运算
+
+
+    首先这里所说的算术运算是指加法(+), 减法(-)，乘法（*），整除(/), 求余(%)四种
+    运算，可以通过添加括号改变优先级，并且只能对整数进行运算(Linux Bash Shell默认不
+    支持浮点数运算）
+
+    要在Linux Bash Shell中进行算术运算，有三种写法
+
+一、使用let命令
+
+    let sum=3+5    # sum <- 8
+    let sum=3*5    # sum <- 15
+    let sum=2/5    # sum <- 0
+    let sum=11/5   # sum <- 2
+    let sum=11%5   # sum <- 1
+    let sum=-6-9   # sum <- -15
+    let sum=(-6-9)*5  # sum <- -75
+
+    注意, 等号右边以及运算符和括号的两边都不能有空格
+
+     
+
+二、使用expr命令
+
+    sum=`expr 2 - 5`     # sum <- -3
+    sum=`expr 2 + 5`     # sum <- 7
+    sum=`expr 3 \* 5`    # sum <- 15
+    sum=`expr 3 / 5`     # sum <- 0
+    sum=`expr 7 / 5`     # sum <- 1
+    sum=`expr \( 2 - 3 \) \* 6`   # sum <- -6
+
+    sum=`expr 2+4`       # sum <- 2+4
+    sum=`expr 2-4*6·     # sum <- 2-4*6
+    sum=`expr 1-(5-8)`   # sum <- 1-(5-8)
+
+    注意：乘号(*), 左括号（（） , 右括号( ) )必须使用反斜杠(\)转义。expr右边以及运
+    算符和括号的两边必须有空格; 如果采用紧凑的写法（紧凑格式可以不对*, (, )进行转义
+    ），则返回算术表达式.
+
+三、使用(( ... )) 的形式 
+
+    sum=$((3+5))           # sum <- 8
+    sum=$(( 3 - 5 ))       # sum <- -2
+    sum=$(( 3 * 5 ))       # sum <- 15
+    sum=$(( 7 / 5 ))       # sum <- 1
+    sum=$(( 7 % 5 ))       # sum <- 2
+    sum=$(( (1 - 2 )  * 4 ))   # sum <- -4
+
+    这种写法比较自由，无需对运算符和括号做转义处理，也可以采用松散或紧凑的格式.
+
+ 
+四、使用 bc
+
+    echo 0.5^2 | bc -l      # 运算结果是.25，没有-l选项，则结果是.2
+
+关键字： expr (( )) let

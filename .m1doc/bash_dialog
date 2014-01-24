@@ -1,0 +1,50 @@
+#! /bin/bash
+
+. Download
+    CHINAUNIX.net -> Download
+
+. Example
+
+    http://www.unixcl.com/2009/12/linux-dialog-utility-short-tutorial.html
+
+    中文man
+    http://huangyandong.blog.51cto.com/1396940/1264940
+
+. multiple inputbox -- form
+
+    Example:
+    http://bash.cyberciti.biz/guide/The_form_dialog_for_input
+
+    #! /bin/bash
+    # dialog form输出到stderr，再对其进行解析。
+
+    export TERM=linux
+    dia_form='/tmp/dialog.form'
+
+    function fn_eval_lables() {
+        local i=0
+        while read value; do
+            eval ${lables[$i]}=$value
+            let i++
+        done < $dia_form
+    }
+
+    function fn_main() {
+        lables=(key1 key2 key3 key4)
+        deflts=(1       2    3    4)
+
+        dialog --backtitle "Dialog Form Example" --title "Dialog - Form" \
+        --form "\nDialog Sample Label and Values" 25 60 16 \
+        "${lables[0]}:" 1 1 "${deflts[0]}" 1 25 25 30 \
+        "${lables[1]}:" 2 1 "${deflts[1]}" 2 25 25 30 \
+        "${lables[2]}:" 3 1 "${deflts[2]}" 3 25 25 30 \
+        "${lables[3]}:" 4 1 "${deflts[3]}" 4 25 25 30 \
+        2>${dia_form}
+
+        fn_eval_lables
+
+        echo key1 is $key1
+    }
+
+    fn_main
+

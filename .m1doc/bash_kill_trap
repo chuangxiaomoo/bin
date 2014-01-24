@@ -1,0 +1,9 @@
+    1. U can't trap SIGKILL and SIGSTOP
+    2. Kill -l  or trap -l to show all SIG
+    3. run a <.sh> file or <.elf> file in a mother.sh, if mother.sh was killed,
+        the <.sh> and <.elf> also alive, because the are process, like system();
+        system() fork a process, and waitpid() untill the <.sh> or <.elf> exit.
+
+        only the threads share the SIGNALS. 
+
+        Just like 'auto_run.sh &'

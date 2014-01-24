@@ -1,0 +1,61 @@
+#! /bin/bash
+
+rar
+    rar
+    unrar x archive.rar .
+
+zip
+    zip -r archive_name.zip directory_to_compress
+    unzip archive_name.zip [-d exdir]
+
+tar 
+    /* Copying an Entire Directory Tree Without GNU cp, 
+     * the '-' is stand for the stdin & stdout, or understand to a
+     * intermediate file.
+     */
+    (cd  SRC_DIR  && tar cf - .) | (cd  DEST_DIR  && tar xvf -) 
+
+
+    高级应用（可以单独抽取压缩包个的某几个文件）
+
+    tar [options] a.tar.gz
+        filename1 [ filename2, ... filenameN ]
+        directory1 [ directory2, ...directoryN ]
+
+    -t, --list
+        列出存档中文件的目录
+    -T, --files-from F
+        从文件中得到要展开或要创建的文件名
+    -X, --exclude-from FILE
+        从指定文件中读入不想包含的文件的列表(做备份时很有用)
+
+    # 不备份 warehouse
+    echo warehouse > /dev/shm/.tar.exclude
+    cd ~; tar -zcf bin.tgz bin -X /dev/shm/.tar.exclude    
+
+    # 可以指定目录层次
+    echo kts/warehouse > /dev/shm/.tar.exclude 
+
+-X的3种有效路径
+
+ 1. 绝对路径：唯一匹配
+
+ 2. 多级相对路径：多个匹配，与find出后用grep过滤再tar
+
+ 3. 单级相对路径：多个匹配
+
+    root@Moo:~/sh/t/tartest# find -name a
+    ./a
+    ./a/a
+    ./a/a/a
+    ./b/a
+    ./b/a/a
+    root@Moo:~/sh/t/tartest# echo a/a > X
+    root@Moo:~/sh/t/tartest# tar -zcvf a.tgz * -X X
+    a/
+    a/b/
+    b/
+    b/a/
+    b/b/
+    t.tgz
+    X

@@ -1,0 +1,55 @@
+/* mousedown */
+
+1. 真正原因
+    /* True causes */
+
+    当我们双击鼠标时，IE和其他的浏览器所产生的鼠标事件序列就有差别了，
+    首先看看其他浏览器的情况：
+   
+        mousedown
+        mouseup
+        click
+        mousedown
+        mouseup
+        click
+        dblclick
+    
+    两套单击的序列再加上一个dblclick，再看看讨厌的IE吧：
+    
+        mousedown
+        mouseup
+        click
+        mouseup
+        dblclick
+    
+    可恨的IE竟然把mousedown和click事件吃掉了，根本没有派发出来。
+
+2. 问题描述
+    /* from R&D or Tester */
+    快速点击IE按钮时，系统多发一个STOP命令给MCU。
+
+
+3. 现象分析
+    /* log or details */    "ATTENTION: err or fail"
+    IE的特性，Chrome及FireFox没有这个问题。
+
+5. 解决方案
+    /* 包括对未来的防御 */
+    如果IE处理两个单击为一个双击，那么忽略这个不成对的 mouseup event。
+
+6. Time
+    (1) 整个问题过程花费的时间  1天
+
+    (2) 问题引入、发现、解决    2013-10-10
+
+7. Introspection
+
+    1   这是IE的特性，当yinshi为自己找到一个借口时，则心安理得地继续玩手机。
+    2   我要求过yinshi，让其Google出丢mousedown event的原因，其只是一味玩手机。
+    3   责任心怎么可能培养，人品及素质，能通过上课获得吗？ --答案在 sanxing三省中
+    4   怀疑是进步的源泉，在内心里，"响应速度"一直这一说法站不住脚，yinshi从来就不是
+        权威，当我想到，可以依赖Google时，我信心大增
+    5   冬哥说，开发人员需要一点洁癖，一点偏执
+    6   "此问题是在会议上想出来的，日后还可以线下收集更多的问题，会上思考"
+
+    7   "不要染指385，于己，于人，培养团队的责任心都有好处"

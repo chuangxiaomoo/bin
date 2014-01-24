@@ -1,0 +1,39 @@
+/* mysqldump */
+MySQL的mysqldump工具的基本用法
+http://www.blogjava.net/Alpha/archive/2007/08/10/135694.html
+http://blog.csdn.net/wulantian/article/details/8516375
+
+. dump
+
+    mysqldump -uroot kts --flush-logs --extended-insert 
+        --max_allowed_packet=1048576 --net_buffer_length=16384 > kts.sql
+
+. 最快导出
+
+    mysqldump --opt database > backup-file.sql  
+
+. load
+
+    由于mysqldump导出的是完整的SQL语句，所以用mysql客户程序很容易就能把数据导入了：
+    shell> mysqladmin create target_db_name
+    shell> mysql target_db_name < backup-file.sql
+
+. 几个常用用例：
+
+    1.导出整个数据库
+     mysqldump -u 用户名 -p 数据库名 > 导出的文件名    
+
+    2.导出一个表
+     mysqldump -u 用户名 -p 数据库名 表名> 导出的文件名
+
+    3.导出一个数据库结构
+      mysqldump -u wcnc -p -d --add-drop-table smgp_apps_wcnc >d:\wcnc_db.sql
+      -d 没有数据 --add-drop-table 在每个create语句之前增加一个drop table 
+
+    4.导入数据库
+      shell> mysql -u root -p
+      mysql> use DBNAME
+      mysql> source d:\wcnc_db.sql
+
+    5.导入数据库，无打印
+      shell> mysql DBNAME < test.sql

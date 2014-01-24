@@ -1,0 +1,8 @@
+#! /bin/bash
+
+手把手教你把Vim改装成一个IDE编程环境(图文)
+http://blog.csdn.net/wooin/article/details/1858917
+
+
+reloading
+:edit!

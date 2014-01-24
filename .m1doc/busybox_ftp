@@ -1,0 +1,10 @@
+    *4* busybox
+
+(0) ftp of the busybox
+
+/* the addrass bar format of $ftp:
+ *  ftp://[user]:[passwd]@192.168.86.160:[port]
+ */
+
+ftpput -u lsl -p 123 192.168.83.41 hosts hosts
+

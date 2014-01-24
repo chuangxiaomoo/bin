@@ -1,0 +1,75 @@
+#! /bin/bash
+
+
+# 自动登陆
+    http://wenku.baidu.com [putty自动验证登录]
+    http://blog.csdn.net/shiqidide/article/details/8110958
+
+    1. 生成公钥(authorized_keys)和密钥(ubt.ppk)
+    2. 上传公钥
+    3. putty连接时选择密钥
+
+    在putty文件夹已经有了两个文件，可以重复使用。
+
+
+## 使用Putty密钥方式验证自动登陆  
+
+    打开Putty.exe
+    ------>Session
+    ------>Host name(or IP address)输入远程服务器IP地址
+    ------>Connection
+    ------>data
+    ------>Auto-login username输入用于登陆的用户名
+    ------>SSH---->Auth
+    ------>Private key file for authentication
+    ------>点击Browser选择到你保存私钥(.pkk)的文件。
+    ---->Open自动登陆到服务器上了。
+
+## 使用Putty密钥方式验证自动登陆  
+
+    一定要从Session输入IP开始，也可以Load已经保存的会话以载入IP和端口。
+
+一、解决PUTTY上VIM小键盘使用
+
+    http://www.cnblogs.com/wangshuo/archive/2011/01/07/1929723.html
+
+    原来在putty上用vi的时候，开NumLock时按小键盘上的数字键并不能输入
+    数字，而是出现一个字母然后换行（实际上是命令模式上对应上下左右的
+    键）。输入数字的时候，不能用小键盘总是很不舒服的。于是就去找解决
+    办法。
+    其实最后的解决办法也很简单，在选项Terminal->Features里，找到
+    Disable application keypad mode，选上就可以了。
+
+
+二、option
+
+ (1) cp936 
+              
+     Option -> Window -> Translation -> 
+             Remote char set 可以直接输入 cp936
+
+     Option -> Window -> Translation -> 
+             勾选 Treat CJK as wide 会导致boxdraw显示异常
+
+     字符终端同时兼容 utf8 与 cp936 的方法还没有找到
+
+ (2) utf8-cat     
+
+     VIM已经可以完美解决中文utf8 cp936智能识别，但是cat不可以，这时请使用
+
+     ucat
+     # cat $@ | iconv -f cp936 -t utf8
+
+     cat config_user.ini  | ucat
+     # 猜想，当 | 出现时，bash 系统自动将$@设置为 /dev/stdout
+
+ (3) color
+    blue        60 120 255          
+    blue bold   60 120 240
+
+三、pietty
+
+    http://ntu.csie.org/~piaip/pietty/download
+
+    可以显示gdk编码
+

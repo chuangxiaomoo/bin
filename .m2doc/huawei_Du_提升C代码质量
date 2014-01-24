@@ -1,0 +1,195 @@
+/* Du_提升C代码质量 */
+
+阻碍我们提升C代码质量的壁垒，根本不在于是否采用OO 
+
+    鉴于最近突然出现了一股不明身份的专家大佬对本人进行毫无来由的人身攻击。因而不得已写下这段申明，还望见谅。我欢迎一切形式的技术讨论和学术争辩，但不屑于参与人格互殴，有此嗜好的请立即goto out，谢谢合作。
+
+
+ 引言：
+
+     在代码现场工作中常常听到众多希望用C来实现OO的呼声，我也常常向C程序员传授一些OO的原则和技巧。但我发现很多的C程序员试图刻板地去复制C++的做法，这是费力不讨好的，绝非正道。这会让我们把OO当成改善代码质量的救命稻草。但事实上，阻碍我们代码质量提升的壁垒根本不在于面向过程还是OO，而是...(出于信息安全的考虑，此处删除99字)。本文简要地阐述了我的观点。因为主要是基于思辨的，因此我没有举太多的例子，使得这篇文章看上去有点儿形而上学的味道。当你耐心读下去的话，也许还会发现一点点信仰的影子，不是对上帝（虽然我自诩为虔诚的准基督徒），而是作为一名编码13年的老程序员对于“真相”的思考。皮埃尔.迪昂说过：“逻辑是永恒的，因而它能够忍耐”。我也将恪守我心中的逻辑之火，努力在纷乱的现象背后锁定真相的影子。为了证明我的观点并非被实用主义专家们所诟病的“经院哲学”，我挑选了一些例子作为佐证。也许不甚恰当，欢迎商榷。
+
+此文没有半分反OO的味道。事实上，我一直是OO的拥护者，但时至今日，在我接触了更多coder之后，我的观点有所改变。关于C语言编码，我觉得有必要回归其自主发展的实在论和本体论。
+
+    我一向厌恶花里胡哨的东西，因此选择了练习截拳道---“人只有两只胳膊和两条腿，因此不管你学习的套路多么潇洒飘逸，真打起来都是一个样”---Bluce.Lee。基于同样的理由，我也只开手动档的车，因为我可以随心所欲地控制离合与油门，为此，我最近正在考虑加装一块BCS的涡轮表并把泄压阀改成外出气，因为我希望能尽可能多地感知到发动机工作时的每一个细节。
+
+
+    作为我赖以谋生的职业，编码至今，我用过的编程语言不算少。包括DELPHI，VB，C++ BUILDER，C，Perl，ASM，SQL---如果它也可以算一门语言的话，但最爱的仍然是C和ASM。事实上，在我看来，C也不过是ASM的另一个变种---对人类而言更加自然和友好的ASM罢了。2007年9月5日开始的那场激烈的论战让我至今印象深刻，Linus所表达的正是我的见解，只不过弱小的我从来都不敢出声。在这个张口OO，闭口模式的时代，似乎你不在交谈中蹦出Factory，Observer或者STL，SOLID就不好意思和别的程序员打招呼。但我认为，任何工具的使用都应该看场合（这显然是一句废话）。在战斗中，斧子的攻击距离和杀伤力显然不如步枪，然而你试试用步枪去砍树？不容置疑，C++和OO是应运而生的，它要解决的是如何让程序员更好地用代码诠释真实世界的问题，从而让人类对程序拥有更好的控制力。或者说，在软件规模恶性暴增的情况下，运用OO的原则可以让代码变得更易于维护，但前提是你会用并且用对了。但不管怎么说，OO对于计算机科学而言，绝对是一场革命。
+
+经常有初学者问我：怎么用C来实现OO？通常我会告诉他一些基本的技巧用以构造类，继承，聚集以及组合关系，甚至用宏来模拟一个模板。但仅此而已，末了我一定会追加一句：我不赞同用C来绝对实现OO---除非出于研究或者某种有趣的理由。若C可以很好地诠释OO，那么C++的发明人Bjarne Stroustrup一定是做了件蠢事，而Perl的发明者Larry.Wall则聪明得多（请参阅Perl的hash和OO设计），但事实显然不是这样。C++这些年来蓬勃发展，势头迅猛，Java的出现也不能动摇其OO语言老大的地位。为什么呢？这就又回到了开头我提出的观点：任何一种编程语言都是为了解决某种问题而发明的，因此彼此不具有概念上的可替代性和历史观念上的进步性。或许我们可以在技术上讨论一项工作用C还是C++来实现，但仅限于此了。哪怕最终选择了Ruby，那也一定基于某种强依赖于工作本身的压倒性的理由，而不是因为这个语言更优越。
+
+
+    C和C++是面目相似，实则截然不同的语言。C的发明人需要在不损失效率的前提下，让语言和硬件架构“解耦”，从而写出可移植的UNIX。C++借鉴了C的语法和文法，但全新的设计原则使其面向完全不同的世界。C高手如果没有经过OO的训练，一定用不好C++，而即便经过了训练，想要真正在C++代码中处处体现OO也不是一件容易的事情。因此，OO程序员中那些个最聪明的人便总结经验，提出了原则和模式，然后告诫C++程序员，你们一定要花功夫浸淫其中，运用这些原则来分析问题，然后精心挑选一个模式来解决问题。Gof设计模式一共23条，均给出了结构、意图和使用范围，这被很多C++、Java或者C#的程序员奉为圣经，相关的讨论和研究乃至争论热闹非凡。看到外面的世界这么奇妙，我们有些C程序员也开始按捺不住了，也开始对设计模式逐条尝试，试图让自己的代码看上去不是那个有点儿古老，土里土气的C Style。若真这么做，那么你犯了两个错误：1. 你在邯郸学步；2. OO的原则和模式你或许早就在用了，只不过表达形式不同而已。
+
+2007年9月5日，Dmitry Kakurin在git的讨论组中说了这样一番话：
+
+When I first looked at Git source code two things struck me as odd:1. Pure C as opposed to C++. No idea why. Please don't talk about portability, it's BS.2. Brute-force, direct string manipulation. It's both verbose and error-prone. This makes it hard to follow high-level code logic.- Dmitry
+
+    这显然激怒了以火爆和认死理著称的Linus，于是他反击：
+
+ *YOU* are full of bullshit.C++ is a horrible language. It's made more horrible by the fact that a lot of substandard programmers use it, to the point where it's much much easier to generate total and utter crap with it. Quite frankly, even if the choice of C were to do *nothing* but keep the C++ programmers out, that in itself would be a huge reason to use C.In other words: the choice of C is the only sane choice. I know Miles Bader jokingly said "to piss you off", but it's actually true. I've come to the conclusion that any programmer that would prefer the project to be in C++ over C is likely a programmer that I really *would* prefer to piss off, so that he doesn't come and screw up any project I'm involved with.C++ leads to really really bad design choices. You invariably start using the "nice" library features of the language like STL and Boost and other total and utter crap, that may "help" you program, but causes: - infinite amounts of pain when they don't work (and anybody who
+tells me that STL and especially Boost are stable and portable is just so full of BS that it's not even funny) - inefficient abstracted programming models where two years down the road you notice that some abstraction wasn't very efficient, but now all your code depends on all the nice object models around it, and you cannot fix it without rewriting your app.In other words, the only way to do good, efficient, and system-level and portable C++ ends up to limit yourself to all the things that are basically available in C. And limiting your project to C means that people don't screw that up, and also means that you get a lot of programmers that do actually understand low-level issues and don't screw things up with any idiotic "object model" crap.So I'm sorry, but for something like git, where efficiency was a primary objective, the "advantages" of C++ is just a huge mistake. The fact that we also piss off people who cannot see that is just a big additional advantage.If you want a VCS
+that is written in C++, go play with Monotone. Really. They use a "real database". They use "nice object-oriented libraries". They use "nice C++ abstractions". And quite frankly, as a result of all these design decisions that sound so appealing to some CS people, the end result is a horrible and unmaintainable mess.But I'm sure you'd like it more than git. Linus
+
+    有人提出，这场论战没有对错、没有胜者，乃是“信仰”之争。但我不这么认为，因为Dmitry Kakurin在嘲弄C的同时或许忘记了C++展现出来的华丽的String类背后隐藏的是比git更为晦涩难懂的低级代码。就好比形形色色的人，不管你穿戴多么华贵，多么有气质，进了澡堂，光溜溜的一个怂样。所以第三次回到那句老话：“选择哪种语言达成你的目标，信仰只是一小方面因素，关键在于你得弄清楚你究竟想做什么，不要用一种语言去做它不擅长的事情”。
+
+    设计模式是OO程序员基于经验和研究的总结，有点儿实用主义的处方观的味道---“什么？你不知道如何处理这种情形下的编码问题！好吧，拿我这张方子去照猫画虎，包您满意”。这些处方显然是正确的，谙熟五大原则和23种设计模式足以够支撑一位OO程序员成为设计专家。但可惜的是，这些处方不是专为C语言设计的，它们要么剂量太猛，要么不完全对症。C程序员如果刻意复制，很容易写出蹩脚的程序，等于在自废武功的基础上又练了一部残卷，那么离走火入魔不远了。
+
+
+    传统的面向过程的C语言设计是基于数据结构的---数据被作为资源受控制流程的管理。我们自顶向下，逐级实现。在很多基于C语言的开源项目中，你或许能看到如下的目录结构：
+
+ workdir/
+ ├── APP
+ │   ├── APP.c
+ │   └── APP.h
+ ├── APP2
+ │   ├── APP2.c
+ │   └── APP2.h
+ └── lib
+     ├── errno-bash.h
+     ├── include
+     │   ├── libcore.h
+     │   └── libmath.h
+     ├── libcore
+     │   ├── core.c
+     │   └── core.h
+     ├── libmath
+     │   ├── math.c
+     │   └── math.h
+     └── types.h
+
+ 这样的结构反映的层次很明显：
+
+ +-----+  +------+
+ | APP |  | APP2 | ... 
+ +-----+  +------+
+ +--------------------+
+ |         lib        |   
+ |+-------+ +--------+|
+ ||libcore| |libmatch||
+ |+-------+ +--------+|
+
+ +--------------------+
+
+如果把这样一种结构变成OO会怎样呢？很抱歉，我不知道，因为这个目录层次反映出来的架构是清晰合理的，暂时实在看不到OO化的必要。当非要把它OO化的时候，一定是出现了非常充分的理由，那个理由就是寻求解决OO之路。那么，是不是说OO原则和设计模式就不适用于C呢？也不是！前面提到过，很多OO的方法在C程序设计中早都使用了，因为是那样的自然，以至于我们没有意识到而已。
+
+
+
+    设想我们要为路由器写控制接口up/down的代码。与接口强相关的数据有路由表、ARP表。当接口down的时候，必须删除相关的如上表项。蹩脚的C程序员会写出类似这样的代码：
+
+int interface_down(const char *interface)
+{
+    int errno = 0;
+    if (down(interface)) {
+        errno = -EFAULT;
+        goto out;
+    }
+    route_remove_by_if(tbl_route, interface);
+    arp_remove_by_if(tbl_arp, interface);
+out:
+    return errno;
+}
+
+    也许以后对接口的down操作还会影响更多的数据，例如增加了VLAN支持，有一个VLAN-PORT映射表。那么首先要写一个vlan_remove_by_if()接口，然后在interface_down()中调用。
+
+int interface_down(const char *interface)
+{
+    int errno = 0;
+    if (down(interface)) {
+        errno = -EFAULT;
+        goto out;
+    }
+    route_remove_by_if(tbl_route, interface);
+    arp_remove_by_if(tbl_arp, interface);
+    vlan_remove_by_if(tbl_vlan, interface);
+out:
+    return errno;
+}
+
+    老道的C程序员在第一次变化中就敏锐地察觉这种变动可能会是持续剧烈的，随着越多地对接口down事件感兴趣的模块的加入，interface_down()函数的外部耦合就越严重，于是他决定重构。
+
+int interface_down(const char *interface)
+{
+    int errno = 0;
+    if (down(interface)) {
+        errno = -EFAULT;
+        goto out;
+    }
+    notify_broadcast(EVENT_IF_DOWN, interface);
+out:
+    return errno;
+}
+
+    接口down掉，只要把这个事件广播到系统就可以了，至于谁对这个事件感兴趣，并不是接口自己需要关心的。为了支撑这种重构，他在系统中提供了两个接口：register_notifier()和unregister_notifier()。对接口down这个事件感兴趣的模块初始化的时候注册自己的处理函数到一条notifier_chain上。
+
+void route_init()
+{
+    ...;
+    register_notifier(EVENT_IF_DOWN, &route_remove_by_if());
+    ...;
+}
+
+void arp_init()
+{
+    ...;
+    register_notifier(EVENT_IF_DOWN, &arp_remove_by_if());
+    ...;
+}
+
+void vlan_init()
+{
+    ...;
+    register_notifier(EVENT_IF_DOWN, &vlan_remove_by_if());
+    ...;
+}
+
+
+    如果你是C++程序员，或许会意识到，这种处理看上去似乎是某种模式？没错，Observer模式告诉我们：“定义对象间的一种一对多的依赖关系,当一个对象的状态发生改变时, 所有依赖于它的对象都得到通知并被自动更新。”虽然这里的notifier_chain形式上和C++基于Observer模式的实现不同，但都精确地体现了如何处理一对多依赖的思想。因此，一位老道的C程序员虽然不知道Observer模式的存在，但却写出了同样精妙的实现，殊途同归。这种处理方式甚至还体现了“依赖倒置”的OO原则。
+
+
+
+    来看另外两个著名的例子。
+
+    我曾经是一名delphi程序员，delphi在pascal语法的基础上，对win32进行了彻底的面向对象的封装。其发明人后来被微软挖走，创造了大名鼎鼎的C#。delphi的很多窗体组件都有两个方法clone和copy。当你想要创建同类同属性窗体时，简单地调用clone或者copy就可以达成目的。这显然比从头create并初始化来的方便。两种方法的区别在于clone只复制对象的结构，而copy连数据一起复制了。这就是大名鼎鼎的Prototype模式。那么，在C语言中有这种用法吗？不但有，而且多了去了！
+
+    第一个例子，就是经典的UNIX系统上的fork()调用。它就是通过拷贝父进程自己的struct task_struct达成创建子进程的目的的。就古老程度而言，与其说fork()符合Prototype模式，倒不如说Prototype从fork()获取了灵感。由于篇幅有限fork的实现又比较复杂，所以这里不贴代码了。
+ 
+另一个例子，则是linux网络子系统处理sk_buff的一组接口。skb_clone()和skb_copy()。与Gof的那些样例相比，也不过只是C语言独特书写形式上的区别罢了。显然这种书写方式更符合C的设计哲学，它可以让程序员全神贯注于如何控制数据本身，而不是分出一大块精力去模仿C++构造“class"。
+
+static void
+send_socklist(struct mISDN_sock_list *sl, struct sk_buff *skb)
+{
+    struct hlist_node  *node;
+    struct sock        *sk;
+    struct sk_buff     *cskb = NULL;
+
+    read_lock(&sl->lock);
+    sk_for_each(sk, node, &sl->head) {
+        if (sk->sk_state != MISDN_BOUND)
+            continue;
+        if (!cskb)
+            cskb = skb_copy(skb, GFP_KERNEL);
+        if (!cskb) {
+            printk(KERN_WARNING "%s no skb\n", __func__);
+            break;
+        }
+        if (!sock_queue_rcv_skb(sk, cskb))
+            cskb = NULL;
+    }
+    read_unlock(&sl->lock);
+    if (cskb)
+        dev_kfree_skb(cskb);
+}
+
+    在这里，虽然函数仍然是面向过程的，但设计和使用skb_copy()是再自然不过的事情了，我们根本不需要考虑所谓的设计模式，但写出来的代码就是符合设计模式的，这难道真的只是巧合吗？send_socklist()中还隐含了另一个常用的设计模式，看看你找到了吗？
+
+有人或许要质疑：“你怎么知道网络子系统的设计者没有借鉴Prototype模式呢？”我觉得无需考证，如果他真的借鉴了Prototype模式，那更进一步证明了C完全可以以自己的方式来实现设计模式，这比生搬硬套地写C++ Style的C code好多了。
+
+    设计模式是一组经过证明对于解决特定问题行之有效的有限的OO方法集，不是什么灵丹妙药。其实，我的话外之音是：“设计模式是为了解决相当一部分OO程序员能力不足而产生的教科书。旨在对OO程序员进行系统地培训，预防代码混乱。”C的设计哲学更为贴近底层，要更多地考虑基本计算机资源的管理问题，那么C语言设计的教科书在哪里？“谭浩强C”？？？No，No，它只解决了如何正确运用C语法的问题。
+
+    我一直在坚持传递这样的观点：作为C程序员，提升编码能力最快的途径就是广泛阅读优秀的代码，作为C项目组，提高代码可读性和可维护性的最快途径就是大家都模仿同一份优秀的代码，掌握同样的技巧。把这些技巧提炼出来整理成册，就是一份很好的C语言“设计模式”。有人说，我们不是有编程规范吗？但编程规范看上去更像是谭浩强C的增强版。我们需要一份能教会coder们基于语义进行思考的权威材料。但遗憾的是，我们内部对于何为优秀的C代码却众说纷纭，翻来覆去地只在已有的烂代码中挑将军。为什么不能跳出去看看外面的世界呢？阻碍我们代码质量提升的壁垒根本不在于使用面向过程还是OO，而在于我们的心或者是别的一些藏于皮袍之下，不可言表的东西。
+
+ 《Refactoring》（译名重构）、《Refactoring to Pattern》（译名从重构到设计模式）和《Design Patterns》（译名设计模式）三本书是需要一起看的。
+
+
+

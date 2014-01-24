@@ -1,0 +1,32 @@
+#! /bin/bash
+
+一、设计原则
+     (1) 不同的东西看起来应该不同
+
+二、Syntax    
+    if (condi) {}   # {} is needed always
+
+三、url
+    http://www.oschina.net/question/234345_47386
+    http://www.oschina.net/question/12_67215
+    http://www.cnblogs.com/hokyhu/archive/2011/09/27/2193489.html
+    http://www.catonmat.net/download/perl1line.txt
+
+四、DOC
+    http://hi.baidu.com/drymarsh/item/aee6f402f43ff713cc34eaf5
+    http://linuxtoy.org/archives/perl-video-tutorials.html
+
+    perldoc -f sort
+    perldoc -q sort
+    .pod(plainold documentation)
+
+    man all item in below man item
+    Overview
+           perl                Perl overview (this section)
+           perlintro           Perl introduction for beginners
+           perltoc             Perl documentation table of contents
+
+    Tutorials
+           perlreftut          Perl references short introduction
+           perldsc             Perl data structures intro
+           perllol             Perl data structures: arrays of arrays

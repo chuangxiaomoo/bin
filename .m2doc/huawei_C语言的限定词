@@ -1,0 +1,198 @@
+/* C语言的限定词 */
+
+    C语言的限定词，兼就所谓编程技巧谈谈看法。 
+
+    读了赵小刚：《有些编译warning或许我们需要“忍”》之后，我马上想起了曾替
+    人解答的这个问题：《把数据赋值放到while循环内为什么就编不通过呢？》似
+    乎，要解决这两个问题都用到了同样的技巧---把数组封装在结构体内部。
+
+
+
+一、两个实际问题
+
+ 1. 把数组封装在结构体内部，从而可以对外呈现出一致的数据接口和操作方法。
+    比如:
+
+    struct array_t {
+        int a[100];
+    };
+
+    这样，在运行时就可以写：
+
+    struct array_t table;
+    table = (struct array_t){ .a = { 0 }, };
+
+    这样的初始化方法是符合标准的。而且这样做的好处显而易见，假如将来修改
+    了array_t，变成了:
+
+    struct array_t {
+        atomic_t refcnt;
+        int a[100];
+    };
+
+    上述的初始化方法依然有效：）相对于memset，它不容易出错。
+
+    有人疑惑，你这样的写法只初始化了一个元素。没错，的确是这样，但C标准中
+    规定，如果显式的初始化了复合数据结构的任意元素，那么隐式地其它元素都
+    会置0。这么好的“技巧”，为什么不用呢？
+
+ 2. 避免限定词对嵌套指针的“穿透”作用
+
+    除了对之使用&操作符或者使用extern，否则数组名称等价于指针。所以我们可
+    以这样定义一个函数：
+
+    void nic_setup_name(char *name);
+
+    也可以这样：
+
+    void nic_setup_name(char name[]);
+
+    大多数情况下，调用nic_setup_name的时候会传入一个字符串常量，而且这个
+    函数不应该对传入的字符串做任何修改。于是可以给参数加上限定词 const，
+    像这样：
+
+    void nic_setup_name(const char *name);
+
+    或者
+
+    void nic_setup_name(const char name[])；
+
+    这两种写法完全等价，但使用数组形式的话语义更明确。
+
+    在开启-Wall的情况下，编译器也不会发出任何warning--因为给变量加上限定词
+    ，意味着从宽松到严格的语义改变。严格的语义往往是宽松语义的子集，因此显
+    然是十分合理的。为了进一步说明这一点，我想借助cdecl
+
+    cdecl> explain int a
+    declare a as int
+    cdecl> explain const int a
+    declare a as const int
+
+    不管定义的int变量可被修改还是不可被修改，他们都同属于int集合。所以，当
+    隐性地把int类型转换成const int类型时，编译器不会告警。相应的：
+
+    cdecl> explain int *p
+    declare p as pointer to int
+    cdecl> explain const int *p
+    declare p as pointer to const int
+
+    既然const int是int的子集，那么指向const int的指针也是指向int的指针的子
+    集，这显然成立。可是还有一种情况：
+
+    cdecl> explain int * const p
+    declare p as const pointer to int
+
+    它仍然是一个指向int的指针的子集，而且相对而言这里的包含关系更清晰，因
+    为限定词const直接作用于指针。所以把int *隐形转换成const int *或int *
+    const都是合乎语义的，gcc绝对不会发出warning。
+
+    可是，这个规律被嵌套指针破坏了，在赵小刚的文章中分析的很清楚---限定词
+    有“穿透作用”。
+
+    char p1[1][2];和const p2[1][2];
+
+    cdecl> explain int p1[1][2]
+    declare p1 as array 1 of array 2 of int
+    cdecl> explain const a[1][2]
+    declare p2 as array 1 of array 2 of const int
+
+    p1是包含有一个元素的数组，这个元素本身是包含有两个int元素的数组；
+    p2也是包含有一个元素的数组，这个元素本身是包含有两个const int元素的数
+    组；
+
+    按照gcc的官方说法：
+
+    Not a bug. The function parameters are of type "pointer to array[2] of
+    const int"because const on an array type applies to the element type,
+    recursively, and then the outermost array type, only, of a parameter
+    of array type decays to a pointer, and the arguments passed are of
+    type "pointer to array[2] of int" after array-to-pointer decay, and
+    the only case where qualifiers are permitted to be added in
+    assignment, argument passing etc. is qualifiers on the immediate
+    pointer target, not those nested more deeply.
+
+
+    这个结论和赵小刚独立研究的结果如出一辙：）但我还是有些纳闷，为什么这种
+    集合的包含关系不能传递呢？我认为gcc的官方解释并不完美。const int元素的
+    数组是int元素数组的特例，也就是子集，那么指向前者的指针或者构成的数组
+    也应该是指向后者指针或构成的数组的子集。这个传递关系是十分自然的：假设
+    A和B是同类型的对象的集合，已知A包含于B，且&A 包含于&B，那么&&A包含于
+    &&B理所当然成立。gcc在这里做了一个人为的限制而已，或者说，gcc在耍大牌
+    。：P
+
+    当然，int **p和int * const *p以及int ** const p是可以无障碍隐式转换的。
+    为了解决这个问题，就必须把嵌套指针转换成立即指针，于是还要用struct来封
+    装。
+
+    struct array_of_array_t {
+        int a[1][2];
+    } *p;
+
+    void foo(const struct array_of_array_t *p);
+
+    经过这种处理，gcc就不会在发出无谓的warning了。
+
+二、
+
+    初次接触这样的技巧是在阅读linux kernel的时候，这里绝对是一个gcc运用技
+    巧的大杂烩，但这些技巧都用的恰到好处。其实，我不太认同所谓技巧的说法--
+    所谓会者不难，难者不会--当你不知道编译器的这些特性和为什么会设计这些特
+    性的时候，你看到什么都会觉得是TMD技巧。但实际上，当你熟练之后，这些不
+    过是最质朴无华的解决问题的手段罢了。
+
+    关于消除switch case的问题。通常这类问题被提出来99%是为了让圈复杂度的指
+    标看上去美一点。那怎么办了，就有人提出了所谓“查找表”的概念：把分支关键
+    字和对应的输出放在一个数组里面，用关键字来索引，这样代码中就看不到
+    switch case字样。不过这种做法并不能时时奏效。于是有的switch case被消除
+    ，有的还存在，代码凌乱不堪。最大的问题是，这样做并没有真正做到解耦：把
+    剧烈变动的部分和相对稳定的部分分离。---它只不过是把发生在控制流程的耦
+    合转嫁到了数据结构中而已。可是，这种做法却被大量推广。以至于现在有人只
+    要看到switch case就想消除，my god，我强烈推荐有这种应激反应的人去发明
+    一种不需要任何分支的C语言超级版本，然后申报个国家科技进步xx奖，从此和
+    麒麟系统并称中华IT行业两大“神器”。：）
+
+    以下内容来自高尚的博客，太感谢了！
+    为什么C++只允许一层指针的const自动类型转换昨天看到了两位专家的博客：《
+    有些编译warning或许我们需要“忍”》和《C语言的限定词，兼就所谓编程技巧谈
+    谈看法。》。里面谈到C和C++的一个特性：允许把普通指针赋值给指向const类
+    型的指针，因为后者的类型更严格。但是却不允许把普通指针的指针赋值给指向
+    const类型的指针的指针。也就是说，const只能穿透一层指针进行自动类型转换
+    。
+
+    其实，这是C++语言标准规定的。我想起来《C++ Primer Plus》一书中曾解释过
+    为什么不允许这么做。昨天回家又翻了翻这本书，终于把书中所举的反例找了出
+    来：
+
+    const int **pp2;
+    int *p1;
+    const int n = 3;
+    pp2 = &p1; // 错误
+    *pp2 = &n; // 假如允许这种类型转换，p1的值在此已经被修改成指向n了。
+    *p1 = 5; // 假如允许这种类型转换，这里就会修改const常量n的值。
+
+    用VC编译上面这段代码，红色的那行会报错：error C2440: '=' : cannot
+    convert from 'int ** ' to 'const int ** '。其实原因从这个例子中也可以
+    看出来了：假如允许这种赋值的话，有可能导致一个非const的指针（p1）指向
+    一个const类型的对象（n），而修改const常量的值。
+
+    这个问题相当隐蔽，乍一看从int **转换成const int **貌似是安全的，但其实
+    它是不安全的。问题的根源在于const int **是一个指向指针的指针，通过它可
+    以修改另一个指针的值，而这一修改过程另一指针自己却毫不知情。要避免这种
+    隐蔽的错误，就必须规定const只允许一层指针的转换，这样当指针的值发生改
+    变时，指针自己是一定能觉察到的，编译器可以据此查出错误。
+
+    对于指针如此，那数组呢？看看下面这个例子：
+
+    const int (*pa)[5];
+    int a[5];
+    const int b[5] = {0, 1, 2, 3, 4};
+    pa = &a; // OK，编译器不会报错
+    *pa = b; // 不允许这样赋值
+
+    假如去掉最后一行，VC会顺利的编译通过，没有warning。
+    （据说C语言编译器会报一个warning）这说明编译器认为把int (*)[5]赋值给
+    const (*)[5]是安全的。
+
+    事实也证明了，由于数组名是一个指针常量，无法再像第一个例子里那样在另一
+    个数组不知情的情况下修改其它数组的头指针。因此这种赋值应当被允许。
+

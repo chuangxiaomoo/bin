@@ -1,0 +1,42 @@
+/* make blocking func to non-blocking with long jump.
+ * tags: $alarm(), interval timer, setitimer()
+ */
+
+#include <alarm.h>
+#include <signal.h>	/* and setjmp.h */
+/* flag_getted_host and jmpbuf is for the non_block gethostbyname() */
+static int flag_getted_host = 0;
+jmp_buf jmpbuffer;
+
+void alarm_handler()
+{       /* if the flag_getted_host is 0, it's blocking now, and then
+	 * longjmp to return, or do nothing;
+	 */
+	if (!flag_getted_host) {
+		longjmp(jmpbuffer, 1);
+	}
+}
+
+void b4jump()
+{
+alarm:
+	signal(SIGALRM, alarm_handler);
+	alarm(5);
+	if (setjmp(jmpbuffer) != 0) {
+		if (flag_getted_host == 0) {
+			printf("Network is unreachable!\n");
+			return -1;
+		}
+	} else {
+		printf("alarm 1st time \n");
+		
+		blocking_func();
+	}
+}
+
+void blocking_func()
+{
+	flag_getted_host = 0;
+	ntpserver = gethostbyname(hostname);
+	flag_getted_host++;
+}

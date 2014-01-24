@@ -1,0 +1,5 @@
+
+
+*4.0* install configure
+    :version to check feature
+    ./configure --enable-multibyte --enable-cscope --enable-pythoninterp 

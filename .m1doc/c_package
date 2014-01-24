@@ -1,0 +1,58 @@
+/* package */
+
+关于封装：
+
+    这是一个来自2008年去中兴时的面试题的扩展。念念不忘，必有回响。
+    这样的封装与 (FILE *)有同样的效果，由API创建并返回handler指针。
+
+// pack.h
+┌────────────────────────────────────────────────────────────────────────────┐
+│                                                                            │
+│   struct _pack_t;                    // hide defination, just declare here │
+│   typedef struct _pack_t pack_t;                                           │
+│                                                                            │
+│   pack_t *init_pack();                                                     │
+│   int print_pack(pack_t *pack);                                            │
+└────────────────────────────────────────────────────────────────────────────┘
+
+// pack.c
+┌────────────────────────────────────────────────────────────────────────────┐
+│   #include "pack.h"                                                        │
+│                                                                            │
+│   struct _pack_t {                                                         │
+│       int data;                                                            │
+│   };                                                                       │
+│                                                                            │
+│   pack_t *init_pack()                                                      │
+│   {                                                                        │
+│       pack_t *p = malloc(sizeof(pack_t));                                  │
+│       p->data = 5;                                                         │
+│       return p;                                                            │
+│   }                                                                        │
+│                                                                            │
+│   int print_pack(pack_t *pack)                                             │
+│   {                                                                        │
+│       printf("%d\n", pack->data);                                          │
+│                                                                            │
+│       return 0;                                                            │
+│   }                                                                        │
+└────────────────────────────────────────────────────────────────────────────┘
+
+// pack_suit.c
+┌────────────────────────────────────────────────────────────────────────────┐
+│                                                                            │
+│   #include "pack.h"                                                        │
+│                                                                            │
+│   int main(int argc, char *argv[])                                         │
+│   {                                                                        │
+│       // pack_t mypack;       // error: storage size of ‘mypack’ is unknown│
+│       pack_t *p_pack = init_pack();                                        │
+│       print_pack(p_pack);                                                  │
+│       free(p_pack);                                                        │
+│       return 0;                                                            │
+│   }                                                                        │
+│                                                                            │
+└────────────────────────────────────────────────────────────────────────────┘
+
+// compile
+// gcc -c pack.c pack_suit.c

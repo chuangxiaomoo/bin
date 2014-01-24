@@ -1,0 +1,18 @@
+        系统配置
+
+一、通常，系统配置提高了系统的灵活性。《UNIX编程艺术》
+
+
+二、常用配置方法
+
+    U-boot bootargs -> /proc/cmdline
+
+    /etc/ini配置文件
+
+    argc argv 命令行参数
+
+    /sys/net proc文件系统实时配置
+
+    jcpcmd 通过网络实时配置
+
+

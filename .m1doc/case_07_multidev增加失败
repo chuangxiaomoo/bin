@@ -1,0 +1,26 @@
+
+    multidev在http port为8080时多路设备增加失败
+
+
+一、现象
+    必须在port为80时才可添加成功
+    
+
+二、解决方案
+
+    分解    
+    求证
+
+三、实施
+
+    二步走 -- 以jcp命令为分界点
+           ┌───────┐
+    web端  │ jcp界 │ jco_server端
+           └───────┘
+
+三、抓包求证
+                                                                      ┌─┐
+    jcpcmd=multidev -act set -desc0 192.168.2.45,554,admin,admin,aaa,│1│/D1, 
+    jcpcmd=multidev -act set -desc1 192.168.2.45,554,admin,admin,aaa,│0│/D1, 
+                                                                      └─┘
+

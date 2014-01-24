@@ -1,0 +1,1901 @@
+                    UTF-8 and Unicode FAQ for Unix/Linux
+
+作者 Markus Kuhn 
+
+原文地址：http://www.cl.cam.ac.uk/~mgk25/unicode.html
+
+译者：Love.Katherine，2007-8-30
+
+译文地址：http://blog.csdn.net/lovekatherine/archive/2007/08/30/1765903.aspx
+
+
+转载时务必以超链接形式标明文章原始出处及作者、译者信息。
+
+    本文对在POSIX系统(Linux,Unix)中如何应用Unicode/UTF-8这一话题进行了全面讲
+解，不仅为普通用户提供介绍性信息，也为富有经验的开发者提供详尽的参考。
+
+    Unicode已经开始在各个层面上取代ASCII，ISO 8859以及EUC。它不仅允许用户处理
+地球上的任何文字和语言，而且还支持一套范围广泛的数学和技术符号集，以用于简化
+科学信息的交流。
+
+    通过使用UTF-8这种编码方式，原本完全围绕ASCII设计的环境，例如Unix，也可以
+方便且向后兼容的应用Unicode。UTF-8就是Unix，Linux以及类似系统中Unicode的应用
+形式。现在是时候该对它进行深入了解，并保证你的软件对UTF-8编码方式提供良好支持
+。
+
+目录
+
+  ● 什么是UCS和ISO 10646?
+  ● 什么是组合字符?
+  ● 什么是UCS实现级别?
+  ● UCS是否被采纳为国家标准?
+  ● 什么是Unicode?
+  ● Unicode 与 ISO 10646之间的区别是什么?
+  ● 什么是UTF-8?
+  ● 谁发明的UTF-8?
+  ● 哪里可以找到优质的UTF-8示例文件?
+  ● 存在哪些不同的编码方法?
+  ● 哪些编程语言支持Unicode?
+  ● Linux下应该如何应用Unicode?
+  ● 开发者该如何修改代码?
+  ● C语言对Unicode和UTF-8的支持
+  ● UTF-8 模式应该如何被激活?
+  ● 如何获得UTF-8版本的xterm?
+  ● xterm 对Unicode的支持程度如何?
+  ● 从哪里可以找到ISO 10646-1 X11 字体?
+  ● 与UTF-8 终端模拟器相关的问题有哪些?
+  ● 支持UTF-8的应用程序有哪些? [更新的内容]
+  ● 用于改善UTF-8支持的补丁有哪些?
+  ● 有没有用于处理Unicode的免费库?
+  ● 各种 X widget 库对于Unicode支持的现状如何?
+  ● 哪些支持UTF-8的软件包正处于开发阶段?
+  ● Solaris对UTF-8的支持如何?
+  ● UTF-8 可以应用于 Web吗?
+  ● PostScript的字形名字与UCS码值是怎么关联在一起的?
+  ● 有没有已制定好的Unicode子集?
+  ● 在不同编码方式之间进行转换时需要考虑哪些问题?
+  ● X11对使用Unicode已经准备就绪了么？
+  ● 什么是在UTF-8下工作的Perl one-liner?
+  ● 我怎样才能输入Unicode字符? [新加的内容]
+  ● 关于这个话题有哪些好的邮件列表?
+  ● 更多参考
+
+
+什么是UCS和ISO 10646?
+
+国际标准 ISO 10646定义了通用字符集(UCS)。UCS是其它所有现有字符集标准的超集，
+它保证与其它字符集之间的双向兼容性。这意味着如果你将任意字符串转换为UCS格式再
+转换为源格式，不会出现信息的丢失。
+
+UCS中包含了用于表示所有已知语言的字符。这不仅包括拉丁语、希腊语、斯拉夫语、希
+伯来语、阿拉伯语、亚美尼亚语和格鲁吉亚语，还包括中文、日文和韩文这样的表意文
+字，以及平假名、片假名、Hangul、梵文、孟加拉语、果鲁穆奇语、古吉拉特语、奥里
+雅语, 泰米尔语、泰卢固语、埃纳德语、马拉雅拉姆语、泰国语、老挝语、高棉语,、汉
+语拼音、藏语、Runic(古代北欧文字)、埃塞俄比亚语、 Canadian Syllabics、切罗基
+语、蒙古语、欧甘语、缅甸语、僧伽罗、Thaana、彝语和其它语言。对于上面未提及的
+语言，对其如何编码的研究正在进行中，并最终都会被加入UCS。这其中不仅包括古语言
+如楔性文字，埃及象形文字以及各种印欧语系语言，甚至还包括挑选出的艺术语言如托
+儿金[指环王的作者]创造的Tengwar 和 Cirth. UCS中还包含大量的图形、印刷、数学以
+及科学符号，包括所有由Tex、Postscript、  APL、国际音标字母表(IPA)、MS-DOC、
+MS-Windows、Macintosh、OCR字体、以及很多字处理和出版系统提供的符号。该标准
+(ISO 10646)还处在不断的维护和更新之中，未来的很多年内，会有更多的外来的和专用
+符号、字符被加入到UCS之中。
+
+ISO 10646原本被定义了一个31-bit的字符集。元素个数为2^16，且元素(用32-bit的整
+型数值表示)之间只有低16位不同的元素子集，被定义为UCS的一个平面。
+
+最常用的字符，包括各主要旧有编码标准中的所有字符，全部被放入了UCS的第一个平面
+中(值域为0x0000至0xFFFD)，该平面又被称为基本多语言平面(BMP) 或平面0。位于BMP
+之外的字符大多数都是用于特殊应用，例如古代文字和科学符号。按照目前的计划，永
+远不会有字符被分配到定义为从0x000000至 0x10FFFF、可容纳超过100万个潜在未来字
+符的21-bit编码空间之外。ISO 16046-1标准最初于1993被公布，它定义了UCS这个字符
+集的结构以及BMP的内容。2001又增加了ISO 10646-2标准，定义了BMP意外的字符编码。
+2003年，这两部分被合并为单一的ISO 10646标准。新的字符仍然被不断的添加进入UCS
+，但是已有的字符会保持稳定，不会发生变化了。
+
+UCS为每个字符不仅分配了码值，还有一个正式名称。一个表示UCS或Unicode码值的16进
+制数通常在表示时加上前缀"U+",例如U+0041表示拉丁大写子母A的UCS码值。码值在
+U+0000至U+007F之间的UCS字符与US-ASCII(ISO 646 IRV)相同，码值在U+0000至U+00FF
+之间的字符与ISO 8859-1(Latin-1)相同。码值在U+E000至U+F8FF之间，以及BMP之外的
+UCS字符是被保留的、留作私用的。UCS还定义了将 UCS字符串编码为字节串的几种方法
+，例如UTF-8和UTF-16。
+
+UCS标准的完整引用形式为：
+
+    International Standard ISO/IEC 10646, Information technology — Universal
+    Multiple-Octet Coded Character Set (UCS) . Third edition, International
+    Organization for Standardization, Geneva, 2003.  
+
+可从ISO在线订购该标准的文档格式为PDF的光盘，价格为112瑞士法郎。
+
+[更新] 2006年9月，ISO在它的免费标准页面公布了ISO 16046:2003的在线免费PDF文档
+，该ZIP文件大小为82 MB。
+
+什么是组合字符?
+
+UCS中的一些码值被分配给了组合字符。它们类似于打字机上的不占空位的重音键。组合
+字符自身不是一个完整的字符。它是一个重音或其它指示标记，用于添加到之前的字符
+之上。这样，就可以为任何字符添加重音。那些最重要的加重音的字符，就像普通语言
+的正字法(orthographies of common languages)中用到的那样，在UCS中有自己独立的
+位置，来保证其与旧字符集的向后兼容性。这些字符被称为预制字符。UCS 提供预制字
+符是为了与那些未定义组合字符的旧编码集，例如ISO 8859，保持向后兼容性。组合字
+符机制允许用户为任何字符添加重音或其它指示标记。这对于科学标记尤其重要，例如
+数学方程式以及国际音标字母表，可能会需要在一个基本字符后组合上一个或多个指示
+标记
+
+组合字符位于其要修饰的字符之后。例如，德语中的元音变音字符Ä(带分音符的拉丁字
+母A)，可以用码值为U+00C4的UCS预制字符来表示，也可以通过普通拉丁字母A后跟组合
+分音子符的组合U+0041 U+0308来表示。当需要堆叠多个重音符，或在一个基本字符的上
+面和下面都要加上组合标记时, 可以使用多个组合字符；比如在泰国文中, 一个基本字
+符最多可加上两个组合字符。
+
+ 
+
+什么是UCS实现级别?
+
+无法指望所有系统都支持UCS中的全部高级机制，例如组合字符。因此， ISO 10646定义
+了以下三种实现级别:                                                       
+                                   
+
+级别1
+
+    不支持组合字符和Hangul Jamo字符
+
+级别2 
+
+       类似于级别1, 但是对于某些语言, 允许一个固定列表中的组合字符(例如, 希伯
+来语, 阿拉伯语, 梵文, 孟加拉语, 果鲁穆奇语, 古吉拉特语, 奥里雅语泰米尔语, 泰
+卢固语,埃纳德语,马拉雅拉姆语, 泰国语,老挝语)。
+       如果具体实现中没有对最起码的几个组合字符的支持， 就无法使用UCS完整地表
+达这些语言。
+
+级别3
+
+        支持所有UCS字符；举例来说，这样数学家就可以对任意字符加一个波浪或一个
+箭头或是两者兼有。
+
+USC是否被采纳为国家标准?
+
+是的，很多国家已经采纳ISO 10646作为国家标准，某些情况下在原有标准基础上添加了
+对旧国家标准的交叉引用，实现指引以及定义各种实现子集。
+
+  ● 中国: GB 13000.1-93
+  ● 日本: JIS X 0221-1:2001
+  ● 韩国: KS X 1005-1:1995 (包含 ISO 10646-1:1993 的修正案 1-7)
+  ● 越南: TCVN 6909:2001
+  ● 伊朗: ISIRI 6219:2002
+
+什么是Unicode?
+
+上世纪80年代后期，两个尝试创立统一字符集的项目同时独立存在。一个是国际标准化
+组织(ISO)的ISO 10646项目,另一个是由多语言软件制造商协会(最初成员大多数是美国
+公司)组织的Unicode 项目。幸运的是，两个项目的参与者在大约1991年意识到，世界并
+不需要两个不同的统一字符集。他们将双方的工作进行合并，并为创立一个统一编码表
+而共同工作。两个项目如今仍然存在，并独立公布各自的标准，然而Unicode协会和ISO/
+IEC JTC1/SC2同意保持Unicode和ISO 10646的编码表的相互兼容，并为任何的未来扩展
+进行紧密协调。Unicode 1.1与ISO 10646-1:1993相对应，Unicode 3.0与ISO
+10646-1:2000相对应，Unicode 3.2中添加了 ISO 10646-2:2001,Unicode 4.0对应于ISO
+10646:2003,Unicode 5.0对应于ISO 10646:2003加上其修正案1-3。所有2.0版本之后的
+Unicode是向后兼容的，只有新的字符会被加入，已有的字符在未来不会被删除或是改变
+。
+
+Unicode 标准可以像任何普通书籍一般被订购，例如通过amazon.com，价格在60 USD左
+右。
+
+The Unicode Consortium: The Unicode Standard 5.0,
+Addison-Wesley, 2006,
+ISBN 0-321-48091-0.
+
+如果你的工作频繁的与字处理和字符集打交道，你绝对应该拥有一份Unicode标准。
+Unicode 5.0还可以在线获取。
+
+Unicode 与 ISO 10646之间的区别是什么?
+
+Unicode协会公布的Unicode 标准对应于实现级别3的ISO 10646。两个标准中所有字符都
+有相同的位置并有相同的名字。
+
+Unicode标准额外为某些字符定义了更多的语义。一般来说对于高质量印刷出版系统的实
+现者而言是更好的参考。Unicode详细说明了某些文字 (如阿拉伯语)的表示形式的绘制
+算法，处理双向文本(如拉丁语和希伯来语的混合使用)的算法，排序和字符串比较所使
+用的算法以及其它更多内容。
+
+另一方面，ISO 10646标准，就像旧有的ISO 8859(Latin-1)标准一样，不过是一个简单
+的字符集表。它指定了与标准相关的一些术语，定义了一些编码方法，并详细说明了如
+何实现UCS与其它已有的ISO标准的结合使用,例如ISO 6429和ISO 2022。还存在其它紧密
+相关的ISO标准，例如关于UCS字符串排序的ISO 14651。ISO 10646-1标准的一个优点是
+，它以五种不同风格的变种来提供CJK示例字型，而Unicode标准只以一种汉字风格来显
+式CJK表意文字。
+
+什么是UTF-8?
+
+UCS和Unicode本质上只是将整型数值分配给字符的码表。而如何将一系列这样的字符或
+是单个字符的整型数值用字节串表示，则存在几种不同的方法。最显然的两种存储
+Unicode文本的编码方法是2或4字节序列组成的序列。这两种编码方法的正式名字分别是
+UCS-2和UCS-4。除非另外指定，每个字符对应的字节串遵循大端字节序(Big-endian)。
+一个ASCI或Latin-1文件只需要在每个ASCII字节前插入一个0X00字节，就可以转换为
+UCS-2文件；如果想转换为UCS-4文件，则需要在每个ASCII字节前插入三个0x00字节。
+
+在Unix世界中使用UCS-2(或UCS-4)会导致非常严重的问题。使用这两种编码方式的字符
+串，可能会包含诸如字节"/0"或"/"作为很多宽字符的组成部分，而这样的字节在文件名
+和其它C语言库函数中有特殊的意义。此外，大多数Unix工具都被设计用来处理ASCII文
+件的，不进行大幅度的修改是无法读取16-bit字符的。基于这些原因，在文件名、文本
+文件、环境变量等地方，UCS-2(或UCS-4) 不是一种合适的Unicode外部编码。
+
+在ISO 10646-1:2000 附录D、RFC3629以及Unicode 4.0标准的 3.9节中均有定义的UTF-8
+编码方法不存在上述问题。它很显然是在类Unix风格的操作系统中使用Unicode的合适方
+法。
+
+UTF-8具有以下特性：
+
+  ● 码值在U+0000至U+007F之间的UCS字符被简单的编码为0X00至0X7F(兼容ASCII)。这
+    意味着只包含7- bit ASCII字符的文件，在ASCII和UTF-8两种编码方法下具有相同
+    的编码。
+  ● 所有码值大于U+007的UCS字符都被编码为若干个字节组成的序列，序列中每个字节
+    最高位均为1。因此，ASCII字节 (0X00-0X7F)不可能作为任何其它字符的一部分而
+    出现。
+  ● 表示一个非ASCII字符的多字节序列中的第一个字节总是位于0XC0至0XFD之间，它能
+    指出该字符由几个字节表示。多字节序列中的所有后续字节都位于0X80至0XBF。这
+    使得重新同步变得容易，编码变得无状态化，对于字节的丢失具备健壮性。
+  ● 所有可能的2^31个UCS字符都可被编码。
+  ● UTF-8编码的字符理论上最长可达6字节长，不过16-bit的BMP字符最多为3字节长。
+  ● 保留了大端UCS-4字节串的排序顺序。
+  ● 字节0XFE和0XFF在UTF-8编码中永远不会被用到。
+
+以下字节序列用于表示一个字符。要使用的字节序列由字符的Unicode码值决定。
+
+ 
+
+U-00000000 – U-0000007F: 0xxxxxxx
+
+U-00000080 – U-000007FF: 110xxxxx 10xxxxxx
+
+U-00000800 – U-0000FFFF: 1110xxxx 10xxxxxx 10xxxxxx     (汉字编码头 0xe0~0xef)
+
+U-00010000 – U-001FFFFF: 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+
+U-00200000 – U-03FFFFFF: 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+
+U-04000000 – U-7FFFFFFF: 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+
+
+
+以上的比特位xxx由UCS字符码值的二进制表示进行填充，最右边的x比特的权值最低。能
+表示同一字符码值的若干多字节序列中，只有最短的那个可以在编码时被使用。注意，
+在多字节序列中，第一个字节中开头'1'的数目就等于整个字节序列中的字节数。
+
+例子: Unicode字符 U+00A9=10101011(版权符号)在UTF-8方法中被编码为
+
+11000010   10101001=0XC2   0XA9
+
+而字符U+2260＝0010 0010 0110 0000(不等于号)被编码为
+
+11100010   10001001   10100000＝0XE2   0X89   0XA0
+
+这种编码方法的正式名字和拼写是UTF-8，这里UTF代表UCS Transformation Format。请
+勿在任何文档中用任何其它方式(如utf8或UTF_8)来表示UTF-8，当然除非你是指称一个
+变量名而不是这种编码本身。
+
+针对UTF-8解码函数开发者的重要说明：基于安全的原因，UTF-8的解码函数不允许接受
+超出必要编码长度的UTF-8字节序列。例如，字符U+000A(换行符)只允许从UTF-8字节流
+中以 0X0A的形式被接受(解码)，而不是以下五种过长形式的任何一种：
+
+0XC0 0X8A
+
+0XE0 0X80 0X8A
+
+0XF0 0X80 0X80 0X8A
+
+0XF8 0X80 0X80 0X80 0X8A
+
+0XFC 0X80 0X80 0X80 0X80 0X8A
+
+任何过长UTF-8序列都可能被滥用，以绕过UTF-8的子串测试——它只搜索最短的可能编码
+。所有过长UTF-8字节序列都以以下一种字节模式作为起始：
+
+1100000x (10xxxxxx)
+
+11100000 100xxxxx (10xxxxxx)
+
+11110000 1000xxxx (10xxxxxx 10xxxxxx)
+
+11111000 10000xxx (10xxxxxx 10xxxxxx 10xxxxxx)
+
+11111100 100000xx (10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx)
+
+
+
+此外还要注意，UCS码值U+D800至U+DFFF(UTF-16代理)以及U+FFFE和U+FFFF不允许出现在
+正常的UTF- 8或UCS-4编码的数据中。基于安全原因，UTF-8解码器应将它们视为畸形或
+过长序列。
+
+Markus Kuhn的UTF -8解码器压力测试文件中含有畸形或过长序列的系统性集合，可以用
+来帮助检验解码器的健壮性。
+
+ 
+
+谁发明的UTF-8?
+
+ 
+
+如今被称为UTF-8的编码方式是由Ken Thompson发明的。它于1992-09-02晚间在新泽西的
+一家餐馆里诞生；Ken Thompson在Rob Pike在场的情况下在餐具垫上完成了UTF-8的设计
+(参见Rob Pike的“UTF -8的历史”)。 1992年8月，Gary Miller (IBM), Greger
+Leijonhufvud and John Entenmann (SMI)曾在X/Open的工作文档中提出设计一种FSS/
+UTF(文件系统安全的UCS转换格式)，以替代ISO 10646-1第一版中的除法密集型的UTF-1
+编码方法；Thompson的工作成果取代了这一更早的尝试。1992年9月的第一个星期结束之
+前， Pike和Thompson己将AT&T贝尔实验室的 Plan 9转变成世界上第一个使用UTF-8的操
+作系统。他们在USENIX 1993 冬天的技术大会上报告了他们的经验(USENIX Winter 1993
+Technical Conference, San Diego, January 25-29, 1993, Proceedings, pp. 43-50)
+。FSS/UTF也曾被暂时命名为UTF-2，之后被更名为UTF-8，并由 XOJIG(X/Open Joint
+Internationalization Group)完成了标准化过程。
+
+ 
+
+哪里可以找到优质的UTF-8示例文件?
+
+ 
+
+以下是一些有趣的用于测试和示范的UTF-8示例文件：
+
+  ● 由Kermit项目提供的UTF-8 Sampler网页
+  ● Markus Kuhn的纯文本示例文件，其中包括经典演示，解码测试，Tex 指令集，WGL4
+    指令集,欧元测试页面以及Robert Brady提供的IPA lyrics
+  ● Unicode Transcriptions
+  ● Unicode 印度语测试文件生成器
+
+存在哪些不同的编码方法?
+
+UCS和Unicode标准两者本质上都是为每个字符分配对应码值的很大的表格。在使用
+"UCS","ISO 16046"或"Unicode"这些术语时，所表示的只是字符和码值之间的映射关系
+，而并未涉及以何种方式将这些码值存储为字节串。
+
+ISO 10646-1中定义了UCS-2和UCS-4两种编码方法。它们分别是一个字符对应2字节和4字
+节。ISO 10646从最初就被设计成一个31-bit的字符集(码值在U+00000000至U+7FFFFFFF
+之间)，然而直到2001才出现第一个不在 BMP(即码表的前2^16个位置，参见ISO 10646-2
+及Unicode 3.1)之中的字符。UCS-4可以表示全部可能的UCS和Unicode字符，而UCS-2只
+能表示位于BMP之中的字符(U+ 0000至U+FFFF)。
+
+“Unicode”原本暗示着会采用UCS-2编码方法，并且最初在码表中并未为BMP之外的字符预
+留位置。然而，事实表明，为了支持某些特殊应用(古代文字，象形文字，数学和音乐排
+版等)，必需的字符数超出了64K的容量。因此，Unicode被转变为一种21-bit的字符集，
+支持的码值范围为从U+00000000至U+0010FFFF。BMP为此定义了2 x 1024个特殊字符
+(U+D800至U+DFFF)，称为代理字符(surrogate character);把两个16-bit的代理字符连
+用，可以用来表示1024 x 1024个non-BMP字符。这样就产生了UTF-16，它向后兼容UCS-2
+，并能用于扩展后21-bit的Unicode的编码。UTF-32是Unicode 标准中提出的用于表示
+21-bit Unicode的4字节编码方式。UTF-32和UCS-4两种编码方法其实是相同的，唯一的
+区别在于UTF-32从不会用于表示码值大于U+ 0010FFFF字符，而UCS-4可用于表示不超过
+U+7FFFFFFF的2^31 个字符。ISO 10646工作小组已承诺保证不会为任何字符分配超过
+U+00107FFF的码值，保证UCS-4和UTF-32这两种编码方法在实际应用中完全相同。
+
+除此之外， UTF-8被引入用来提供一种向后兼容ASCII的编码方法。UCS和 Unicode标准
+中对UTF-8的定义稍有不同，因为在UCS中，UTF-8字节序列的最大可能长度为6，以表示
+所有码值不大于U+7FFFFFFF的字符;而在Unicode中，UTF-8字节序列的最大可能长度为4
+，以表示所有码值不大于U+0010FFFF的字符。(这一差别在本质上与UCS-4 和UTF-32之间
+的相同)。
+
+编码名UCS-2,UCS-4,UTF-16,UTF-32并未表明所采取的字节序，然而根据ISO 10646-1标
+准，除非另有约定，大端字节序为首选。在编码后面附加"BE"(大端，高位在前)和"LE"(
+小端，低位在前)来显示指定字节序，这已经成为惯例。
+
+
+为了能实现自动检测字节序，在某些平台(特别是Win32)上，每个Unicode文件都以字符
+U+FEFF(零宽度空白符)作为起始，已经成了一种惯例；该字符又被称为字节序标记(
+Byte-Order Mark (BOM) )。该字符的字节对换对等体U+FFFE是一个非法(未分配)的
+Unicode字符，因此它可以用来无二义性的区分UTF-16和UTF-32的大端和小端变种。
+
+一个功能完备的编码转换器必须提供以下13种Unicode和UCS编码变种：
+
+    UCS-2, UCS-2BE, UCS-2LE, UCS-4, UCS-4LE, UCS-4BE, UTF-8, UTF-16,
+    UTF-16BE, UTF-16LE, UTF-32, UTF-32BE, UTF-32LE
+
+若未显式指明字节序，则采用执行转换操作的CPU的字节序，并在从输入流中每次读进字
+符U+FFFE时就改变当前字节序。USC-4和 UTF-32，以及UCS-2和UTF-16的编码输出的区别
+在于越界字符的处理。处理不可表示字符的应急机制必须分别在UTF-32(码值大于
+U+0010FFFF)和 UCS-2(码值大于U+FFFF)中被激活；而这些码值在USC-4或UTF-16中则会
+提供相应的表示。
+
+UTF-1, UTF-7, SCSU以及很多其它各具特性的UCS编码方法现在只剩下历史意义罢了，它
+们从未被广泛应用过，应该避免使用这些编码方法。
+
+一个优秀的编码转换器还应该提供选择性添加或移除BOM的特性：
+
+  ● 无条件的为输出添加U+FEFF前缀
+  ● 为输出添加U+FEFF前缀，除非该前缀已经存在
+  ● 如果输出第一个字符为U+FEFF，则移除该字符
+
+对于UTF-8，同样存在使用UTF-8编码后的BOM(字节串:0XFF 0XBB 0XBF)作为UTF-8文件起
+始标志的建议。然而基于以下原因，绝不应该在POSIX系统中采用这种做法：
+
+  ● 在POSIX系统中，应该通过locale信息而不是文件类型魔数来确认纯文本文件的编码
+    方法。混淆这两个概念会增加复杂性，并破坏已有功能。
+  ● 在文件头部添加UTF-8签名会对很多已有惯例产生妨碍，例如内核在一个纯文本的可
+    执行文件的起始处查找"#!"，以定位合适的解释器。
+  ● 对BOM的正确处理会为简单程序增加不必要的复杂性，例如cat或grep这样将多个文
+    件的内容进行合并的程序。
+
+除了规定可选的编码方法外，Unicode还规定了各种范式以提供合理的Unicode子集，尤
+其是为了消除预制字符和组合字符的存在所导致的编码二义性。
+
+  ● Normalization Form D (NFD):尽可能的将所有预制字符分裂成字符序列，例如使用
+    U+0041 U+0308(大写拉丁字母A,组合分音符号 ̈) 而不是U+00C4(Ä)。此外，避免使
+    用已废弃的字符；例如，使用U+0041 U+030A(大写拉丁字母A,组合符号 ̊) 而不是使
+    用U+212B(物理符号埃:Å)。
+  ● Normalization Form C (NFC): 尽可能的使用预制字符而不是字符序列。例如是用
+    U+00C4(Ä) 而不是U+0041 U+0308(大写拉丁字母A,组合分音符号 ̈)，此外，避免使
+    用已废弃的字符。例如，使用U+0041 U+030A(大写拉丁字母A,组合符号 ̊) 而不是使
+    用U+212B(物理符号埃:Å)。对于Linux和WWW，NFC是首选范式。
+  ● Normalization Form KD (NFKD): 类似 NFD,但还要避免使用兼容性字符
+    (compatibility character)，例如使用"fi"而不是U+FB01(LATIN SMALL LIGATURE
+    FI)。
+  ● Normalization Form KC (NFKC): 类似 NFC, 但还要避免使用兼容性字符
+    (compatibility character)，例如使用"fi"而不是U+FB01(LATIN SMALL LIGATURE
+    FI)。
+
+一个功能完备的字符编码转换器还应该提供在不同范式之间进行的转换。在进行从NFKD
+到NFKC的映射时需要特别注意，因为这个过程中可能会出现语义信息的丢失，例如字符
+U+00B2(上标2)会被映射成2;而为了维持原有语义信息，可能需要添加额外的标记信息(
+例如，在HTML中为<SUP>2<SUP>)。
+
+哪些编程语言支持Unicode?
+
+大约在1993年之后出现的、更年轻的语言已经拥有专门用于Unicode/ISO 10646-1字符的
+内置数据类型，这包括Ada95，Java，TCL，Perl，Python，C#及其它语言。
+
+ISO C90 标准规定了处理多字节编码的机制以及宽字符。这些特性在ICO C90修正1中得
+到了改善，并在ISO C 99标准中被进一步强化。这些特性原本是被设计用来处理各种东
+亚字符编码的。一方面，它们比处理UCS中的转移序列所需要的支持要稍复杂一些；另一
+方面，却又缺少对UCS中各种高级特性(如组合字符)的支持。UTF-8是ISO C标准中的多字
+节编码的一个实例。类型wchar_t(在现今环境中通常是一个32-bit的整数),可用来存放
+Unicode字符。
+
+不幸的是，wchar_t在上世纪90年代被广泛应用于各种16-bit的亚洲编码之中，因此ISO
+C 99标准被向后兼容这一问题所束缚，C无法利用类型wchar_t完美的支持UCS，如同Java
+和Ada95所做到的那样。然而，C编译器至少能够通知应用程序类型它所比保证的wchar_t
+在各种locale情况下可容纳的UCS值。为实现这一点，编译器会把宏__STDC_ISO_10646__
+定义为格式为yyyymmL的整型常量。格式中的年份和月份用于表明已实现的ISO/IEC
+10646及其修正的版本。例如，如果编译器实现了ISO/IEC 10646-1：2000的话，
+__STDC_ISO_10646__==200009L，
+
+Linux下应该如何应用Unicode?
+
+在UTF-8出现前，全世界所有的Linux用户不得不使用各自语言特定的ASCII扩展。最流行
+的有欧洲范围使用的ISO 8859-1和ISO 8859-2，希腊使用的ISO 8859-7，俄罗斯使用的
+KOI-8 / ISO 8859-5 / CP1251，日本使用的EUC and Shift-JIS，以及中国台湾省使用
+的BIG5，等等。这导致文档交流困难，并且应用软件不得不考虑这些编码方式之间的各
+种小差别。应用程序对这些编码方式的支持通常是不完整、未经测试且难以令人满意的
+，因为开发者自身很少会使用所有这些编码方式。
+
+由于存在这些困难，多数Linux发行版和开发者正逐步淘汰这些遗留编码而改用UTF-8。
+过去几年内Linux世界对UTF-8的支持有了极大改进，现在UTF-8的使用已融入日常操作，
+如:
+
+  ● 文本文件(源代码，HMTL文件,e-mail等等)
+  ● 文件名
+  ● 标准输入、标准输出和管道
+  ● 环境变量
+  ● 剪切和粘贴操作的缓存
+  ● telnet，modem和与终端模拟器间的串口通讯
+
+以及任何其它字节序列原本被解释为ASCII的应用场合。
+
+在UTF-8模式下，终端模拟器，例如xterm或Linux控制台驱动，将每次键盘敲击都转换为
+对应的UTF-8字节序列，并将它送至后台应用程序的标准输入。类似的，应用程序所有在
+标准输出上的输出都被送至终端模拟器，在这里由UTF-8解码器处理后，以16-bit字体显
+示在屏幕上。
+
+对Unicode的各种高级功能(例如，阿拉伯文和印度文的高品质印刷)的完备支持，只有复
+杂的多语种字处理软件包才会提供。Linux现今对 Unicode广泛提供的支持要比这简单许
+多，并且其主要目的是取代旧式的8位和16位字符集。Linux终端模拟器和命令行工具通
+常只提级别1的ISO 10646-1(未定义组合字符)实现，只支持拉丁语、希腊语、亚美尼亚
+语、格鲁吉亚语、CJK以及不需要额外处理支持的大量科学符号。处于这个实现级别的
+UCS与ISO 8859有很大的相似性，唯一的重大差别在于UCS提供了数以千记的字符，每个
+字符可以表示为多字节序列，还有表意的汉字/日文/韩文/字符在终端上显示时会占据两
+个字符位置(双倍宽度)。
+
+UCS级别2实现(对某些特定语言，特别是泰语，包含组合字符以及Hangul Jamo)，目前在
+Linux中部分可用(也就是说，某些字体、终端模拟器和编辑器可以通过简单的
+overstringing提供支持)，但是相比组合字符序列，应该尽可能优先考虑使用预制字符
+。更正式的说法是，如Unicode技术报告#15所述，Linux下文本的Unicode编码应该优先
+采用范式NFC。
+
+一家很有影响力的非POSIX PC操作系统厂商(这里我们略掉它的名字)曾建议所有Unicode
+文件都以字符U+FEFF(零宽度空白符)作为起始；该字符又被称为“签名”或“字节序标记
+(BOM)",用于判断文件使用的编码方式和字节序。Linux/Unix不使用任何BOM 或签名。那
+样会破坏太多现有的基于ASCII的文法惯例(例如脚本以#!开头)。在POSIX系统中，系统
+选定的locale就已经表明了程序所有的输入和输出文件预期编码方式。不带签名的UTF-8
+也被建议称为"UTF-8N"文件，但这个非标准称谓在POSIX世界中很少被使用。
+
+在转向使用UTF-8工作之前，先将你的系统更新为较新的具备UTF-8支持的发行版。如果
+你使用的发行版比SuSE 9.1或Red Hat 8.0,这一点尤为重要。在这些版本之前的发行版
+对UTF-8的支持还没有成熟到可推荐用于日常使用的程序。 
+
+Red Hat Linux 8.0(2000 年9月)是第一个实现将UTF-8作为绝大多数locale默认编码这
+一飞跃的Linux发行版。唯一的例外是 Chinese/Japanese/Korean这些locale，因为当时
+还有太多可用的专用工具尚不支持UTF-8。UTF-8在Linux下的这次首次大规模部署，导致
+绝大多数遗留问题在2003年内很快的被解决。之后SuSE Linux 在其9.1版(2004 年5月)
+中也将locale的默认编码转为UTF-8。再之后是Ubuntu Linux，第一个转向UTF-8作为系
+统范围内默认编码的Debian衍生发行版。随着这三个最流向Linux发行版的转换，现在几
+乎所有维护良好的Linux工具中与 UTF-8相关的bug都已被修正。可以预计其它发行版也
+会很快跟上。
+
+ 
+
+开发者该如何修改代码?
+
+ 
+
+如果你是一名开发者，可通过若干种方法为程序添加UTF-8支持。可以将它们分为两类，
+这里我分别称之为软转换和硬转换。软转换中，数据在任何时候都以UTF-8格式被保存，
+只需要对代码进行很少的改动。硬转换中，程序读入的任何数据都被转换并存放在宽字
+符数组中，并且在程序内部都以这种形式存在；字符串只有在被输出时才转换为UTF-8编
+码格式，在程序内部，所有字符都由固定长度的内存对象进行表示。
+
+我们还可以根据程序处理字符串时对标准库函数的依赖程度，将对UTF-8的支持区分为硬
+编码和locale相关两种。C语言提供了很多字符串处理函数，它们被设计成可以处理任何
+locale相关的多字节编码。一个完全依赖这些库函数的程序员，无需了解UTF -8编码的
+实际细节。很可能只需适当改变locale设置，就能使程序自动的也支持其它几种多字节
+编码(例如EUC)。程序员可选用的另一种方式，是在代码中根据自己对UTF-8格式的了解
+，进行硬编码。在某些情况下这种方法能获得显著的性能提升，对于只用来处理ASCII和
+UTF-8编码的程序，也许是最好的选择。
+
+即使是在要求由libc对每种编码方式提供支持的情况下，为UTF-8格式添加额外的优化代
+码也是值得的。多亏了UTF-8的自同步特性，对它的处理可以很有效率的完成。locale依
+赖的libc字符串函数可能比对应的硬编码函数速度慢上两个数量级。GNU grep就是一个
+反面例子；它完全依赖于locate相关的libc函数，如mbrlen()来提供通用多字节编码支
+持。这使得在多字节模式下的速度比单字节模式下要慢100倍！而其它依靠硬编码提供
+UTF-8支持的正则表达式，例如 Perl 5.8，则不会出现这样剧烈的性能下降。
+
+大多数应用程序仅用软转换就可以很好的工作于UTF-8环境。正是这一点使得在Unix中引
+入UTF-8具有可行性。举两个简单的例子，cat和echo这样的程序不需作任何修改就能在
+UTF-8环境下工作。它们完全不受输入和输出编码方式的影响, 无论是ISO 8859-2还是
+UTF-8,因为它们的工作基于字节流而不对其进行其它处理。它们只认识ASCII字符和'/n'
+这样的控制字符— —而这些字符的编码在UTF-8中不发生任何改变。因此，对于这些应用
+程序，UTF-8的编码和解码工作完全交由终端模拟器为之完成。
+
+而任何程序，如果是通过统计字节数来确定字符数目，则需要对代码进行一些修改。类
+似于其它多字节编码方式，在涉及到UTF-8文本字符串的长度问题时，程序员必须明确区
+分下面三个概念：
+
+ 1. 字节数
+ 2. 字符数
+ 3. 显示宽度(例如，在VT100终端模拟器中显示时所占据的占位符数量)
+
+C函数strlen()总是返回字符串在内存中占据的字节数。若strlen()被用于该目的而被调
+用，不需要进行改动。
+
+C语言中使用mbstowcs(NULL,s,0)来统计字符串中的字符数，该函数具有良好的可移植性
+。只要设定好合适的locale，该函数在UTF- 8环境下就能正常工作。一种计算UTF-8编码
+的字符串中字符数的硬编码方法，是统计所有值不在0X80-0XBF之内的字节数，因为它们
+只是字节而不是独立的字符。然而，需要计算字符数的应用场景是惊人的罕见的。
+
+在基于ASCII或ISO 8859的程序中，strlen()更常见的用途是预计字符串被打印到终端时
+，光标移动的列数。在UTF-8环境下,无论是字节数或是字符数都无法用来预计字符串的
+显示宽度，因为表意字符(汉字/日文/韩文)会占据两列的位置，而控制字符和组合字符
+不占位置。为了确定一个字符串在终端屏幕显示时的宽度，需要对UTF-8字节串解码后，
+调用wcwidth()函数来测量每个字符的显示宽度，或调用wcswidth()来测量整个字符串的
+显示宽度。
+
+举例来说, ls 这个程序(要支持UTF-8)必须修改代码，因为如果不知道文件名的显示宽
+度，它就无法以格式化的表格形式向用户呈现目录结构。类似的，所有假设输出由定宽
+字体表示并据此完成格式化的程序，都必须在UTF-8模式下重新学习如何计算显示宽度。
+编辑功能，例如删除一个字符这样的操作，必须稍作修改以删除该字符对应的所有字节
+。受此影响的包括编辑器(例如vi,emacs,realine等)以及使用了ncurses库的程序。
+
+所有类Unix内核都可以很好的应用软转换，只需进行很细微的修改就可以完全支持UTF-8
+。
+
+ 
+
+  ● 控制台显示和键盘驱动(还有VT100模拟器)必须具备UTF-8编码和解码功能，并且至
+    少要支持Unicode字符集的某个子集。Linux自从内核1.2版本后就已支持这些特性(
+    发送 ESC %G至控制台来激活 UTF-8模式)。
+  ● 外部文件系统的驱动程序，例如VFAT和WinNT，必须完成文件名编码方式的转换。
+    UTF-8是可用转换选项之一，而 mount命令必须告知内核驱动:用户进程希望看到
+    UTF-8编码的文件名。由于VFAT和WinNT已经使用Unicode编码，UTF-8是唯一可选的
+    保证无损转换的编码方式。
+  ● 所有POSIX系统的tty驱动都支持一种"cooked“模式，该模式提供某些原始的行编辑
+    功能。为了保证字符删除功能 (charatcer-erase)在UTF-8下正常工作，需要通过某
+    种方式告知tty驱动在"cooked“模式下不要将值在 0x80- 0XBF的跟随字节视为字符
+    ，而应将它们视为一个UTF-8多字节序列的一部分而删除。由于内核无视libc提供的
+    lcoale机制，需要另一种机制来告知tty驱动来使用UTF-8。Linux内核2.6及之后的
+    版本在类型为termios结构的成员变量c_iflag中支持一个IUTF8 位。在其被置位时
+    ，"cooked“模式的行编辑器会正确的处理UTF-8多字节序列。可在shell中通过命令
+    "stty iutf8“来进入该模式。Xterm及类似程序在UTF-8环境中被调用时，应该自动
+    将该位置位。
+
+C语言对Unicode和UTF-8的支持
+
+从GNU glibc 2.2开始，类型wchar_t只用于存放32-bit的ISO 10646码值，而独立于当前
+使用的locale。这一点通过对宏__STDC_ISO_10646__的定义来通知应用程序，如ISO C99
+所要求的一般。glibc2.2或更高版本完全实现了ISO C的多字节转换函数(mbsrtowcs
+(),wcsrtombs()等)，可以用来在wchar_t和任意locale相关的多字节编码进行转换，包
+括 UTF-8,ISO 8859-1等。
+
+例如，你可以编写如下的程序
+
+ #include <stdio.h>
+
+
+ #include <locale.h>
+
+ int main()
+
+ {
+
+ if (!setlocale(LC_CTYPE, "")) {
+
+ fprintf(stderr, "Can't set the specified locale! "
+
+ "Check LANG, LC_CTYPE, LC_ALL./n");
+
+ return 1;
+
+ }
+
+ printf("%ls/n", L"SchÃ¶ne GrÃ¼ÃŸe");
+
+ return 0;
+
+ }
+
+将locale设置为LANG＝de_DE并调用该程序，则程序输出为ISO 8859-1格式。而将locale
+设置为LANG=de_DE.UTF-8，则程序输出为UTF-8。printf函数中的%ls格式说明符会(隐式
+的)调用wcsrtombs函数来将参数中的宽字符字符串转换为locale特定的多字节编码格式
+。
+
+C的很多字符串函数都是locale无关的，它们所处理的只是以'/0'为结束符的字节串，例
+如：
+
+strcpy strncpy strcat strncat strcmp strncmp strdup strchr strrchr
+strcspn strspn strpbrk strstr strtok
+
+
+这其中的某些函数，如strcpy，既可以用于单字节字符集(如ISO 8859-1)，也可以用于
+多字节编码(如UTF-8)的字符集，因为它们完成的任务无需了解一个字符究竟对应几个字
+节，而其它函数(如strchr)所完成的任务则依赖于一个字符编码成一个字节，因此对于
+UTF-8用处不大(如果在UTF-8字符串中寻找ASCII字符的话，strchr依然能正常工作)。
+
+其它的C函数是locale相关的，在UTF-8 locale下同样可以正常工作，如：
+
+ strcoll strxfrm
+
+UTF-8模式该如何被激活?
+
+假设你的程序属于软转换类型，没有调用任何C的locale相关的多字节函数(mbsrtowcs()
+，wcsrtombs()等)来将所有字符转换为wchar_t以用于后面的处理，有时候却必须以某种
+方式判明：它所处理的文本数据，是假定为某种8-bit编码(例如ISO 8859-1,一个字节=
+一个字符)还是UTF-8编码。只要所有人都只使用UTF-8，当然可以直接设为默认方式，但
+是现在必须同时支持UTF-8和传统的8-bit字符集。
+
+最早提供UTF-8支持的一批应用程序，使用了各种不同的命令行开关来激活各自的UTF-8
+模式，例如著名的xterm -u8。事实证明这是一个糟糕的主意。记住每一个应用程序的命
+令行选项或其他配置方法是非常单调乏味的,，因此命令行选项并不是激活UTF-8模式的
+正确途径。
+
+激活UTF-8模式的正确途径是利用POSIX的locale机制。locale是包含特定文化中应用惯
+例的信息集合，包括字符编码、日期/时间符号、字母排序规则、测量体系以及普通办公
+纸张尺寸等。locale的名称通常由分别在ISO 639-1和ISO 3166-1中定义的语言和国家代
+码组成，有时还后跟额外的编码名称或其它限定符，例如zh_CN.utf8。
+
+命令“locale -a”可用来获取包含系统已安装的所有locale(通常位于/usr/lib/locale/)
+的列表。将环境变量LANG设置为要选用的locale的名称。当C程序执行setlocale
+(LC_CTYPE,"")函数时，库函数会依次检查环境变量LC_ALL、 LC_CTYPE和LANG，三者中
+的首个非空值将决定为分类LC_TYPE(它可以控制多字节转换函数)加载哪种locale。
+locale配置被分成不同类别。例如，LC_TYPE定义字符编码，而LC_COLLATE定义字符串排
+序顺序。环境变量LANG为所有类别设置了默认值,不过LC_*变量可用于覆盖单个类别的设
+置。没有必要过分在意locale中的国家标识符。en_GB(English in Great Britain)和
+en_AU(English in Australia)这两个locale通常只在分类LC_MONETARY(货币名称，货币
+数额的打印规则)上存在差别，而几乎没有Linux应用程序会用到这些。LC_CTYPE=en_GB
+和LC_CTYPE=en_AU具有完全相同的效果。
+
+命令“locale charmap”可用来查看当前locale的字符编码。如果你为LC_CTYPE选择了一
+个UTF-8 locale的话，该命令的执行结果会是"UFT-8"。命令"locale -m“则返回包含所
+有已安装编码的列表。
+
+如果开发者完全使用 C提供的多字节函数来完成外部字符编码和程序内部使用的wchar_t
+之间的转换的话，那么C的库函数则负责根据 LC_CTYPE的值选择合适的编码，这样应用
+程序甚至不必明确知道使用当前的多字节编码。
+
+
+然而，如果你不希望所有的工作都依赖于库中的多字节函数(例如，因为你认为这样需要
+对程序进行多处修改或是效率不高)，那么你的程序必须靠自己来找出何时激活UTF-8模
+式。为了做到这一点，在任意X/Open兼容系统中，头文件<langinfo.h>可用的情况下，
+可以编写类似下面的代码来检测是否当前locale使用UTF-8编码:
+
+ utf8_mode = (strcmp(nl_langinfo(CODESET), "UTF-8") == 0);
+
+
+当然你首先必须在程序的起始处添加上"setlocale(LC_CTYPE," " )"来根据环境变量设
+置locale。命令"locale charmap“同样是调用nl_langinfo(CODESET)，来为用户查出当
+前locale所使用的编码名称的。该函数在几乎所有现代Unix系统上都可用。FreeBSD 4.6
+版(2002-06)之后添加了对nl_langinfo(CODESET)的支持。如果你需要测试nl_langinfo
+(CODESET)可用性的autoconf的话，这里有Bruno Haible推荐的一个：
+
+======================== m4/codeset.m4 ================================
+
+#serial AM1
+
+dnl From Bruno Haible.
+
+AC_DEFUN([AM_LANGINFO_CODESET],
+
+[
+
+ AC_CACHE_CHECK([for nl_langinfo and CODESET], am_cv_langinfo_codeset,
+
+ [AC_TRY_LINK([#include <langinfo.h>],
+
+ [char* cs = nl_langinfo(CODESET);],
+
+ am_cv_langinfo_codeset=yes,
+
+ am_cv_langinfo_codeset=no)
+
+ ])
+
+
+ if test $am_cv_langinfo_codeset = yes; then
+
+ AC_DEFINE(HAVE_LANGINFO_CODESET, 1,
+
+ [Define if you have <langinfo.h> and nl_langinfo(CODESET).])
+
+ fi
+
+])
+
+=======================================================================
+
+[你也可以不通过调用setlocale()，而是尝试手动查询环境变量。按照LC、
+ALL,LC_CTYPE,LANG的顺序，从中寻找第一个值非空的环境变量；当该值中包含“UTF-8”
+这个子字符串时，将UTF-8模式设为默认值(不过还是可以被命令行开关覆盖)，因为这已
+经可靠合理的表示者C库函数已被要求使用一个UTF-8 Locale。以下是一段实例代码：
+
+ char *s;
+
+ int utf8_mode = 0;
+
+ if (((s = getenv("LC_ALL")) && *s) ||
+
+ ((s = getenv("LC_CTYPE")) && *s) ||
+
+ ((s = getenv("LANG")) && *s)) {
+
+ if (strstr(s, "UTF-8"))
+
+ utf8_mode = 1;
+
+ }
+
+当然这种方法依赖于所有UTF-8 locale的名称中都包含编码名称，而事实并非总是如此
+，因此使用nl_langinfo()很明显是更好的选择。如果你真的担心使用 nl_langinfo()缺
+少足够的可移植性，对于不提供nl_langinfo(CODESET)的系统还有Markus Kuhn编写的免
+费模拟器(Bruno Haible也提供了一个)，开发者可以调用norm_charmap()对nl_langinfo
+(CODESET)在不同平台上的输出进行标准化。］
+
+ 
+
+如何获得UTF-8版本的xterm?
+
+ 
+
+XFree86 4.0或更高版本中自带的 xterm(由 Thomas Dickey维护)版本都支持UTF-8。要
+激活UTF-8模式，在某个UTF-8 locale中运行xterm，并使用ISO 10646-1编码的字体，例
+如：
+
+ LC_CTYPE=en_GB.UTF-8 xterm /
+ -fn '-Misc-Fixed-Medium-R-SemiCondensed--13-120-75-75-C-60-ISO10646-1'
+
+在新开启的xterm中对某些示例文件，例如UTF-8-demo.txt，执行cat命令，好好享受你
+所看到的吧。
+
+如果你的XFree86版本低于4.0，那么可以单独下载最新开发版本的Xterm，并且自己通过
+“./configure --enable-wide-chars ; make”或者“xmkmf; make Makefiles; make;
+make install; make install.man”来完成编译。
+
+如果你没有支持UTF-8的locale，那么启动xterm时加上命令行选项 -u8，来将其输入和
+输出切换至UTF-8
+
+xterm对Unicode的支持如何?
+
+XFree86 4.0.1中的Xterm只在定宽字体和从左至右的书写顺序的条件西支持ISO 10646-1
+的实现级别1(无组合字符)。换句话说，除了能解码UTF-8字节序列以及使用16-bit字符
+外，终端语义与ISO 8859-1基本保持一致。
+
+而到了XFree4.0.3,两项重要的功能被添加进来：
+
+  ● 对于CJK表意文字，自动转换至双倍宽度的字体
+  ● 对组合字符的简单加粗:
+
+        如果选择的正常字体的尺寸为 X × Y像素，那么xterm会尝试额外加载一个尺寸
+为2X × Y的字体；除了具有双倍的平均宽度属性之         外，它与前者具有相同的
+XLFD(Xl逻辑字体描述)。xterm将用这个字体来显示所有Unicode 技术报告 #11中确定的
+被赋予East           Asian Wide (W) or East Asian FullWidth (F)属性的Unicode
+字符。
+
+XFree86 4.x中附带的以下字体适用于在终端模拟器和编辑器中显式日文和韩文Unicode
+字符：
+
+ 6x13 -Misc-Fixed-Medium-R-SemiCondensed--13-120-75-75-C-60-ISO10646-1
+
+ 6x13B -Misc-Fixed-Bold-R-SemiCondensed--13-120-75-75-C-60-ISO10646-1
+
+ 6x13O -Misc-Fixed-Medium-O-SemiCondensed--13-120-75-75-C-60-ISO10646-1
+
+ 12x13ja -Misc-Fixed-Medium-R-Normal-ja-13-120-75-75-C-120-ISO10646-1
+
+ 9x18 -Misc-Fixed-Medium-R-Normal--18-120-100-100-C-90-ISO10646-1
+
+ 9x18B -Misc-Fixed-Bold-R-Normal--18-120-100-100-C-90-ISO10646-1
+
+ 18x18ja -Misc-Fixed-Medium-R-Normal-ja-18-120-100-100-C-180-ISO10646-1
+
+ 18x18ko -Misc-Fixed-Medium-R-Normal-ko-18-120-100-100-C-180-ISO10646-1
+
+ 
+
+XFree86已为环绕型组合字符(nonspacing or enclosing combining characters ,即那
+些在Unicode 数据库中具有通用类型代码Mn或Me的字符)的提供了某种简单支持，其实现
+方式是简单的“加粗”(逻辑或运算)，每个基字符最多可以附加两个组合字符。这种实现
+方式，对于在上方和下方附加重音符号的小号字符，能产生可接受的表示效果；对于特
+别为overstriking设计的泰国和韩国的Hangul Conjoining Jamo字体，也能很好的工作
+。然而，在某些字体(特别是"fixed“字体族)下，对位于大号字符之上的组合重音字符，
+这种方法就无法提供完全令人满意的效果。因此，应继续尽可能的优先考虑使用预制字
+符。
+
+XFree86 4.x中附带的下列字体适用于显示Latin等组合字符。其它字体只适用于附加于
+小号字符的组合重音字符。
+
+ 6x12 -Misc-Fixed-Medium-R-Semicondensed--12-110-75-75-C-60-ISO10646-1
+
+ 9x18 -Misc-Fixed-Medium-R-Normal--18-120-100-100-C-90-ISO10646-1
+
+ 9x18B -Misc-Fixed-Bold-R-Normal--18-120-100-100-C-90-ISO10646-1
+
+XFree86 4.x中附带的下列字体适用于显示泰语中的组合字符：
+
+ 6x13 -Misc-Fixed-Medium-R-SemiCondensed--13-120-75-75-C-60-ISO10646-1
+
+ 9x15 -Misc-Fixed-Medium-R-Normal--15-140-75-75-C-90-ISO10646-1
+
+ 9x15B -Misc-Fixed-Bold-R-Normal--15-140-75-75-C-90-ISO10646-1
+
+ 10x20 -Misc-Fixed-Medium-R-Normal--20-200-75-75-C-100-ISO10646-1
+
+ 9x18 -Misc-Fixed-Medium-R-Normal--18-120-100-100-C-90-ISO10646-1
+
+字体18x18ko，18x18Bko，16x16Bko和16x16ko适用于显示Hangul Jamo(使用与泰语相同
+的字符"加粗"机制)。
+
+文本模式应用程序的开发者需要注意：
+
+由于有了对CJK表意文字和组合字符的支持，xterm的输出特性有些更类似于比例字体，
+因为一个拉丁/希腊/斯拉夫(等)字符占一个光标位置，CJK字符占2个，组合字符占0个。
+Open Group的Single UNIX Specification中定义了两个C函数wcwidth()和wcswidth()，
+允许应用程序测试一个字符(在终端输出时)占据几个光标位置。
+
+ #include <wchar.h>
+
+ int wcwidth(wchar_t wc);
+
+ int wcswidth(const wchar_t *pwcs, size_t n);
+
+在C的库函数未提供合适功能的平台上，应用程序可以免费使用Markus Kuhn’s提供的对
+wcwidth()的实现。
+
+在可以预见的未来一段时间内，Xterm可能不会支持以下这些更复杂的、完善的Unicode
+表现引擎所提供的特性：
+
+  ● 希伯来文和阿拉伯文的双向输出
+  ● 阿拉伯语的替换定义表
+  ● substitution of Indic/Syriac ligatures
+  ● 组合字符的任意堆积
+
+   
+因此，希伯来和阿拉伯用户使用的程序，在将字符串输出到终端前，必须将字符串反向
+并保证右对齐。换言之，双向处理必须由程序而不是xterm完成。与 ISO 8859相比，希
+伯来文和阿拉伯文所面临的处境，至少以提供预制字符和表现表(presentation form)的
+形式得到了改善。现阶段来看，难以预测xterm中是否会加入双向支持以及它将具体如何
+工作。 ISO 6429 = ECMA-48和Unicode bidi algorithm都提供了解决该问题的不同思路
+。也可参考ECMA Technical Report TR/53。
+
+如果你打算在程序中支持双向文本输出，可以参考Dov Grobgeld的FriBidi或者 Mark
+Leisher的 Pretty Good Bidi Algorithm，这是Unicode bidi算法的两个免费实现。
+
+Xterm目前不支持阿拉伯、叙利亚或梵文的文本格式化算法，尽管Robert Brady已经为此
+发布了一些试验性补丁。现在还不确定在一个VT100模拟器中，支持这一特性是否可行。
+应用程序自身可以很轻易的应用阿拉伯和Hangul格式化算法，因为xterm允许它们输出必
+要的表现表(presentation form)。对于Hangul，Unicode中包含现代韩国表意文字(1933
+之后)所需要的表现表。对于梵文，当前X的字体机制甚至不支持必要的 ligature变种的
+编码，因此xterm也爱莫能助。需要输出梵文或叙利亚文的应用程序，最好选用合适的
+X11绘制库，如Pango，而不是xterm这样的VT100 模拟器。
+
+ 
+
+从哪里可以找到ISO 10646-1 x11 字体?
+
+ 
+
+在过于几个月中已经有很多Unicode字体在X11中变得可用，而且该名单正在迅速增长。
+
+  ● Markus Kuhn同很多其他志愿者一起将X11附带的旧有的-misc-fixed-*-iso8859-1字
+    体扩展为涵盖所有欧洲字符(拉丁语、希腊语、斯拉夫语、注音符号、数学和技术符
+    号,某些字体中甚至包含亚美尼亚语、格鲁吉亚语、片假名、泰语以及更多)的字体
+    表。更多信息请参考Unicode fonts and tools for X11页面。这些字体现在随
+    XFree86 4.0.1或更高版本一起分发。
+  ● Markus还制作了X11R6.4中的所有Abobe和B&H BDF字体的ISO 10646-1版本。这些字
+    体已经包含了完整的Postscript字体表(大约30个额外的字符，其中大部分也被CP
+    1252 MS-Windows所使用，如智能引用和破折号等)。它们原来在ISO 8859-1编码下
+    是不可用的，而现在在ISO10646-1版本中已完全可用，并附加了很多涵盖ISO 8859-
+    1,2,3,4,9,10,13,14,15的预制字符。这些字体现在随XFree86 4.0.1或更高版本一
+    起分发。
+  ● XFree86 4.0 附带了一个集成的TrueType font引擎，能够令采用ISO 10646-1编码
+    的X程序使用任何Apple/Microsoft字体。
+  ● 未来的 XFree86 分发版本很有可能去除大多数旧式的 BDF 字体, 而替换成 ISO
+    10646-1 编码的版本。 X 服务器则会增加一个自动编码转换器；当旧式的8位软件
+    需要使用旧式字体编码时，它会根据其ISO 10646-1版本的字体文件对用户透明的、
+    动态的创建ISO 8859-* 字体编码。现代软件应该优先直接使用 ISO 10646-1 字体
+    编码。
+  ● ClearlyU (cu12)是由Mark Leisher提供的一个12 point、100dpi的用于X11的ISO
+    10646-1编码的成比例 BDF字体(示例图像)。
+  ● 日本的Electronic Font Open Laboratory也致力于Unicode点阵字体族的工作。
+  ● Dmitry Yu. Bolkhovityanov提供了一个BDF格式的Unicode VGA font，用于在IBM
+    PC模拟器等中使用。
+  ● Roman Czyborra的GNU Unicode font项目的目标是整理出一个完整、免费的 8×16/
+    16×16像素的Unicode字体。目前已包含超过34000个字符。
+  ● etl-unicode是一个ISO 10646-1编码的BDF格式的字体，由Primoz Peterlin提供。
+  ● Primoz Peterlin还发起了freefont项目，借助于PfaEdit，对URW++ 捐赠给
+    ghostscript项目的35个核心PostScript轮廓字体中的某些进行了扩展，使其具有更
+    好的UCS涵盖性。
+  ● George Williams提供了Type1 Unicode font family，其也有BDF格式。他还开发了
+    PostScript和点阵字体编辑器PfaEdit。
+  ● EversonMono是一个包含超过3000个欧洲字符的共享的等宽字体，可以从DKUUG
+    server处获得。
+  ● Birger Langkjer为Linux提供了一个Unicode VGA Console Font。
+  ● Alan Wood 给出了支持不同Unicode值域的Microsoft 字体的清单。
+  ● CODE2000是由James Kass提供的一个Unicode字体。
+
+Unicode X11字体名字以-ISO10646-1结尾，该值已成为所有Unicode和ISO 10646-1
+16-bit字体对应的X 逻辑字体描述符(XLFD)中CHARET_REGISTERY和CHARSET_ENCODING这
+两个域的正式注册值。每个 *-ISO10646-1 字体涵盖了整个Unicode字符集中的某个子集
+，而用户必须清楚选择哪个字体能够涵盖他们所需要的字符子集。
+
+*-ISO10646-1字体通常也指定了一个DEFAULT_CHAR值，指向一个特殊的非Unicode字形，
+用于表示该字体不支持的字符(通常是一个虚线框，一个H的大小，定位于0x00)。这保证
+用户至少能意识到此处有一个不被支持的字符。xterm所使用的较小的定宽字体如6x13等
+，永远不可能涵盖所有Unicode字符，因为很多语言，例如日文，只有在字体的像素尺寸
+与欧洲用户广泛使用的大很多的情况下才能被表示。用于欧洲字符的典型Unicode字体只
+包含1000至3000的字符子集，例如CEN MES-3 repertoire。
+
+你可能注意到，ASCII 引用标记的形状在 *-ISO10646-1字体中发生了细微的变化，这是
+为了与其它平台上的标准和习惯保持一直。
+
+ 
+
+与UTF-8 终端模拟器相关的问题有哪些?
+
+ 
+
+VT100g终端模拟器可接受ISO 2022(=ECMA-35) 转义序列，用于在不同字符集间切换。
+
+从ISO 2022的角度看，UTF-8是“另一套编码系统"(参见ECMA 35的 15.4节)。UTF-8位于
+ISO 2022 SS2/SS3/G0/G1/G2/G3 的世界之外，因此如果从IS0 2022切换至UTF-8的话，
+所有的SS2/SS3/G0/G1/G2/G3状态信息都变得无意义，直到离开UTF-8模式并切换回ISO
+2022为止。UTF-8是一种无状态编码，即一个自结束的字节序列就完全确定了要表示的字
+符，而不用依赖任何转换状态。ISO 10646-1中的G0和G1与ISO 8859-1中的一样，而G2/
+G3在ISO 10646-1中并不存在，因为每个字符在码表中的位置固定，切换不会发生。在
+UTF-8模式下，终端不会因为载入某个二进制文件而意外的切换至奇怪的图形字符模式。
+这使得一个终端在UTF-8模式下比在ISO 2022模式下具备好得多的健壮性，因此能将终端
+锁定于UTF-8模式而不会意外切换回ISO 2022的话，是会很有用的。
+
+ISO 2022标准规定了一系列的ESC%序列，用于离开ISO2022模式而切换至其它编码系统，
+很多这样的用于UTF-8的序列已经被注册进入ISO 2375 International Register of
+Coded Character Sets。
+
+  ● ESC %G，从ISO2022环境下激活一个UTF-8模式(对实现级别无要求)，并允许再次返
+    回ISO 2022模式。
+  ● ESC %@，在UTF-8模式下输入该序列的话，则从UTF-8模式返回IS02022模式。
+  ● ESC %/G，切换至实现级别1的UTF-8模式，不允许返回。
+  ● ESC %/H，切换至实现级别二的UTF-8模式，不允许返回。
+  ● ESC %/I ，切换至实现级别三的UTF-8模式，不允许返回。
+
+终端模拟器处于UTF-8模式下时，输入的任何ISO 2022转义序列例如G2/G3切换等都被其
+忽略。终端模拟器唯一会处理的ISO 2022转义序列是ESC %@，用于从UTF-8返回ISO 2022
+。
+
+UTF-8 仍然允许你使用像CSI 这样的 C1 控制字符,尽管UTF-8也使用0X80-0X9F之间的字
+节。重要的是要明白，UTF-8模式下的终端模拟器在解释执行任何控制字符前，必须先对
+输入的字节流进行UTF-8解码。C1字符同其它大于U+007F的字符一样要先被解码。
+
+很多现在可用的文本模式应用程序，它们期望于与使用旧式编码的终端进行交互，或者
+使用ISO 2022转义序列用于切换终端字体。为了使这些应用程序在UTF-8终端模拟器中可
+用，可能需要使用一个执行ISO 2022和UTF-8之间动态转换的中间转换层，例如Juliusz
+Chroboczek发布的 luit and pluto。如果你对于一个UTF-8终端的要求仅是对ISO 8859
+的支持的话，还可以使用Michael Schröder and Jürgen Weigert提供的screen(4.0 或
+更新版本)。由于实现ISO 2022是一个很复杂而且容易出错的任务，开发者最好避免由自
+己来实现ISO 2022，而只是实现UTF-8模式；对于需要ISO 2022的用户则建议他们利用
+luit或是screen。
+
+支持UTF-8的应用程序有哪些?
+
+警告：自2003年年中开始，这一部分日趋变得不完备。支持UTF-8，已成为大多数维护良
+好的软件包的标准特性。这份清单很快就会被转变为最流行的存在UTF-8相关问题的软件
+清单。
+
+终端模拟器和通讯
+
+ 
+
+  ● 随XFree86 4.0或更高版本分发的xterm在UTF-8 locale下能工作，条件是用户要选
+    择一种*-iso10646-1字体。尝试运行一下"LC_CTYPE=en_GB.UTF-8 xterm -fn
+    '-Misc-Fixed-Medium-R-Normal--18-120-100-100-C-90-ISO10646-1' "。
+  ● C-Kermit从7.0 后支持UTF-8作为传输、终端和文件字符集。
+  ● mlterm是一个多语言的终端模拟器，支持UTF-8和很多其它编码、组合字符、XIM。
+  ● Edmund Grimley Evans对BOGL这个Linux帧缓冲图形库进行了扩展，增加了对UCS字
+    体的支持，并利用其开发了一个名为bterm的简单的UTF-8控制台终端模拟器。
+  ● Uterm是一个用于Linux帧缓冲控制台的UTF-8终端模拟器。
+  ● [新增内容] Juliusz Chroboczek’s提供的Pluto, 一个超凡的Unicode转换器，能够
+    检测一个终端session中使用的编码，并透明的转换为UTF-8(这对于使用混杂着ISO
+    8859和UTF-8消息的IRC频道来说，太美妙了！)
+
+编辑和字处理
+
+  ● Vim(一个流行的经典编辑器vi的克隆版)自版本6.0后支持UTF-8宽字符，以及最多两
+    个组合字符(连用)。
+  ● Emacs自版本21.3后具备对UTF-8良好的基本支持。等到尚在进行的在Emacs23中将
+    Emacs/MULE的内部编码完全转换为UTF-8的工作完成后，该状况会得到显著改善。(
+    某些较旧的21.x版本中通过mule-utf-8编码系统来提供实验性质的UTF-8支持，只有
+    在适当配置的前提下才能工作。最好升级到至少Emacs 21.3，这样在默认配置下就
+    可以在UTF-8模式下很好的工作)
+  ● Yudit是由Gaspar Sinai编写的免费 X11 Unicode编辑器。
+  ● Thomas Wolff编写的Mined 2000是一款非常优秀的支持UTF-8的文本编辑器，它领先
+    于其它竞争者之处不仅在于支持双倍宽度和组合字符，而且还支持双向文字、为很
+    多语种提供键盘映射以及语种相关的高亮表示等特性。
+  ● JOE是一款流行的仿wordStar的编辑器，自版本3.0起支持UTF-8。
+  ● Cooledit自版本3.15.0后提供UTF-8和UCS支持。
+  ● QEmacs是一个用于UTF-8终端的轻量级编辑器。
+  ● less是一个流行的纯文本文件查看器，自版本348后支持UTF-8(版本358中存自一个
+    与处理UTF-8字符相关的bug，对此已有相应的patch；版本381中在搜索模式的输入
+    行中对UTF-8字符仍然存在问题)。
+  ● GNU bash and readline 都提供了单行编辑器，bash自版本2.05b、readline自版本
+    4.3后键入了对多字节编码的支持，例如UTF-8。
+  ● gucharmap 和 UMap 是用于在程序中选择和粘贴Unicode字符的工具。
+  ● [新加内容]LaTeX在2004 年3月后在基本包中支持UTF-8(仍是实验性的)。你可以简
+    单的写“/usepackage[utf8]{inputenc}&”，然后就至少能对你的LaTex源文件中包含
+    的属于Tex标准字符表的字符采用UTF-8编码(在此之前，UTF-8通过使用Dominique
+    Unruh提供的软件包就可用，该软件包涵盖了更多的字符，对资源的消耗很大)。
+  ● Abiword.
+
+编程
+
+  ● Perl在5.8.1 起就提供了实用的Unicode和UTF-8支持。内存中的文本串加上了标记
+    ，标明是字节串或是字符串，后者在内部以UTF-8的格式存储而从程序员的角度来看
+    则是UCS字符序列。现在又包含了对编码转换和范式的全面支持。详情参阅"man
+    perluniintro"。
+  ● Python在版本1.6中增加了对Unicode的支持。
+  ● Tcl/Tk从版本8.1开始使用Unicode作为基础字符集。
+  ● CLISP可在所有多字节编码(包括Unicode)下工作，并提供了类似于wcwidth()和
+    wcswidth()的API函数char-width()和 string-width()。
+
+邮件和互联网
+
+ 
+
+  ● 邮件客户端Mutt自版本1.3.24后就可以在UTF-8 locale下正常工作。如果编译和链
+    接时加上ncurses库(在ncurses库的基础上键入了宽字符支持)的话，Mutt 1.3.x在
+    UTF-8 locale中可以在xterm这样的UTF-8终端模拟器中很好的工作。
+  ● Exmh是 MH 或 nmh邮件系统的 GUI前端，自版本2.1.1开始部分支持Unicode，条件
+    是使用8.3.3或更新版本的Tcl/Tk。要显示UTF-8格式的email，请确认已安装*-
+    iso10646-1字体并在.Xdefaults中添加一行“exmh.mimeUCharsets: utf-8”。Exmh内
+    部的大多数MIME字符集功能仍保留在Tcl 8.1之前的样子，因而忽略了Tcl/Tk提供的
+    最新的Unicode支持；而原本这些是可以被简化和得到显著改善的。尤其是撰写或是
+    回复UTF-8信件，现在仍然不支持。
+  ● 大多数现代web浏览器，如Mozilla Firefox，现在都对UTF-8有良好的支持。
+
+打印
+
+  ● Cedilla是由 Juliusz Chroboczek提供的Unicode至PostScript的best-effort文本
+    打印程序
+  ● Markus Kuhn’s编写的hpp是一个简单的纯文本转换器，可用于支持在C语言库中存在
+    对应的locale的所有字符编码中被标准PCL定宽字体所覆盖的字符表的HP PCL打印机
+    。
+  ● Markus Kuhn编写的utf2ps是一个较早出现的带有概念验证性质、敏捷实现的用于
+    PostScript的UTF格式化工具，该程序只是用来证明哪个字符表在仅使用标准
+    PostScirpt字体的条件性就能很轻松的打印出来，而绝不应该用于实际应用。
+  ● CUPS(通用Unix打印系统)中附带了一个将UTF-8纯文本转换为PostScript的工具
+    :texttops。
+  ● Serge Winitzki编写的txtbdf2ps是一个使用BDF像素字体将UTF-8纯文本打印成
+    PostScript的Perl脚本。
+
+其它
+
+  ● PostgreSQL DBMS自版本7.1后就不仅支持UTF-8作为前端编码，同样支持作为后台的
+    存储编码。前端与后台编码之间的数据转换是自动进行的。
+  ● FIGlet是一个使用等宽字符作为块图形元素，输出大尺寸标题文本的工具，在版本
+    2.2中添加了对UTF-8的支持
+  ● Charlint是一个用于W3C 字符模型的字符规范化工具。
+  ● 第一批Unix下可用的UTF-8工具源自于Plan 9项目——贝尔实验室Unix的继承者同时也
+    是世界上第一个使用UTF-8的操作系统。Plan 9中的编辑器Sam和终端模拟器9term也
+    被移植到了Unix下。Wily开始是作为Plan 9中的编辑器Acme在Unix下的实现，它为
+    程序员提供了一个面向鼠标、基于文本的工作环境。最近出现了Plan 9 from User
+    Space这个软件包，将很多Plan 9程序从原生的Plan 9环境中移植到了类Unix操作系
+    统中。
+  ● 表格工具Gnumeric从版本1.1开始就完全基于Unicode。
+  ● The Heirloom Toolchest是一套标准Unix工具，它在原有的由Caldera以开源方式发
+    布的工具的基础上，增加了对多字节编码特别是UTF-8的支持。
+  ● convmv是一个用于将整个目录树中所有旧式编码的文件名转换为UTF-8编码的工具。
+
+用于改善UTF-8支持的补丁有哪些?
+
+在各主要发行版中已经包含了很多这样的补丁。
+
+  ● OpenI18N (以前的Li18nux)项目下的高级工具开发小组已为诸如
+    cut,fold,glibc,sed,uniq,xterm等各种工具提供了可改善UTF- 8支持的国际化补丁
+    程序。
+  ● Bruno Haible编写的Unicode-HOWTO中收集了各种工具的UTF-8补丁以及统计各种程
+    序对UTF-8支持状态的列表。
+  ● Bruno Haible还为stty,linux内核tty等制作了各种补丁程序。
+  ● 文本模式web浏览器w3m的多语言化补丁 (w3m-m17n)允许用户在类似xterm的UTF-8终
+    端中以统一编码来查看文档(按下"o"键后)。此外还有多语言版本的w3m (w3mmee) (
+    未曾试用)。
+
+有没有用于处理Unicode的免费库?
+
+  ● Ulrich Drepper发布的GNU C library glibc在版本2.2之后就实现了对UTF-8的充分
+    支持，一个ISO 14651排序算法，并且可以重新编码为很多其它编码形式。当前所有
+    Linux发行版都附带glibc 2.2或更高版本，因此如果你仍在使用比这更早个Linux C
+    library的话，绝对应该马上升级。
+  ● International Components for Unicode (ICU)已成为世界上可能是最强大的提供
+    高级Unicode字符处理功能的跨平台标准库。
+  ● X.Net提供的 xIUA 软件包的设计目的是通过提供locale管理机制来改造现有代码，
+    以获取ICU的支持；这样开发者就不必修改内部调用接口用于传递 locale参数。它
+    使用更熟悉的API，例如使用xiua_strcoll来进行分配，并且是线程安全的。
+  ● Mark Leisher提供的 UCDATA Unicode字符属性和bidi库以及 wchar_t类型的测试代
+    码。
+  ● Bruno Haible提供的字符集转换库libiconv提供了一个iconv()实现，可用于缺少该
+    实现的系统中或者存在实现，却无法完成到/从 Unicode的转换。它还包含了字符编
+    码查询库libcharset，可以允许应用程序以一种具备良好可移植性的方式查询当前
+    lcoale所使用的编码方式，避免了直接使用nl_langinfo(CODESET)所带来的移植性
+    问题。
+  ● Bruno Haible编写的libutf8库提供了处理UTF-8串的各种函数，特别是为尚未提供
+    合适的UTF-8 locale平台。
+  ● Tom Tromey提供的 libunicode是GNOME 项目的组成部分，但也可以被独立构建。它
+    包含了各种字符类和转换函数(CVS)。
+  ● FriBidi 是由Dov Grobgeld提供的Unicode bidi算法的免费实现。
+  ● Markus Kuhn提供了wcwidth() 的免费实现，用于判断一个字符在UTF-8终端模拟器
+    的屏幕上会占据几个光标位置；在C库尚未提供对等功能的平台中，应用程序可以利
+    用该免费实现。
+  ● Markus Kuhn编写的transtab为那些必须尽全力完成从Unicode至ASCII或其它8-bit
+    字符集转换的应用程序提供的一个表。该表中含有全面的Unicode字符的替代串，类
+    似于人们经常在email或打字机中用于表示无可用字符的回退标记(fallback
+    notation)。该表以ISO/IEC TR 14652的格式被分发，以保证可以很容易的被POSIX
+    locale定义文件所包含。
+
+各种 X widget 库对于Unicode支持的现状如何?
+
+  ● Pango – Unicode and Complex Text Processing项目为GTK+添加了功能齐备的
+    Unicode支持。 
+  ● Qt自2.0 之后支持使用*-ISO10646-1字体。
+  ● Jean-Marc Lienher为Fast Light Tool Kit提供了一个基于他自己的Xutf8 Unicode
+    显示库的UTF-8扩展。
+
+哪些支持UTF-8的软件包正处于开发阶段?
+
+  ● Emacs 23计划内部完全使用UTF-8编码。如果你有兴趣参与或测试的话，请加入邮件
+    列表emacs-devel @gnu.org。
+  ● Linux Console Project致力于在内核中加入修正版的VT100模拟器，这将改善现有
+    的UTF-8的过分简单化的支持
+
+Solaris对UTF-8的支持如何?
+
+Solaris从版本2.8开始就至少部分支持UTF-8。要使用UTF-8模式，只需设定好某个UTF-8
+locale,例如在C shell中输入：
+
+setenv LANG en_US.UTF-8
+
+这样，终端模拟器 dtterm就可用来输入和输出UTF-8文本，打印过滤器 mp就能在
+PostScript打印机上打印UTF-8文件。目前，locale en_US.UTF-8被Motif 和CDE桌面应
+用程序和库所支持，但并不被OpenWindows,XView和OPENLOOK桌面应用程序和库所支持。
+
+更多信息请参考SUN的Overview of en_US.UTF-8 Locale Support网页。
+
+UTF-8 可以应用于 Web吗?
+
+是的。HTTP 服务器可以通过两种方式告知客户某个文档采用了UTF-8编码：
+
+  ●   保证传输该文档的HTTP头部中包含如下内容：
+
+ Content-Type: text/html; charset=utf-8
+
+这适用于HTML文件；对于纯文本文件，则要变为
+
+ Content-Type: text/plain; charset=utf-8
+
+
+如何实现上述要求取决于你使用的Web服务器。如果使用Apache并且有一个子目录，其中
+存放的素有.html或.txt文件都采用UTF-8编码的话，在该目录下创建一个.htaccess文件
+并在其中添加以下两行:
+
+    Addtype text/html; charset=UTF-8 html
+    Addtype text/plain;charset=UTF-8 txt
+
+网站管理员可以修改/etc/httpd/mime.types，对所有子目录同时完成相同的修改。    
+                                                                       
+
+  ● 如果你无法影响Web服务器如何自动在文档之前添加HTTP头部的话，那么就在HTML文
+    档的HEAD元素中添加
+
+        <META http-equiv=Content-Type content="text/html; charset=UTF-8">
+        
+    这样就能产生相同的效果。很显然这种方法只对HTML文件有效，而无法应用于纯文
+    本文件；而且，该方式只能在解析器已经开始读取文件内容后才能告知解析器该文
+    件使用的编码格式。因此，相比之下，该方式显然不如前者优雅。 
+
+目前最广泛使用的浏览器对UTF-8的有足够好的支持，因而通常推荐在网页中采用UTF-8
+编码。陈旧的Netscape 4浏览器使用了一种犯人的单一大号字体来显示所有UTF-8文档。
+最好升级到Mozilla，Netscape或其它较新的浏览器(Netscape 4总体来看有很多bug而且
+已停止了维护)。
+
+还有一个问题，HTML表单中输入的非ASCII字符在随后的将内容发送给服务器某个CGI脚
+本的GET或POST请求中该如何编码?不幸的是无论在标准还是实现领域，正如Alan
+Flavell在表单提交与国际化指南中所探讨的一般，这个问题依然一片混乱。我们只能寄
+望于最终会出现一套在UTF-8下解决这一切的惯例。也可参考Mozilla bug 18643的相关
+讨论。
+
+ 
+
+PostScript的字形名字与UCS码值是怎么关联在一起的?
+
+ 
+
+参考 Adobe 的 Unicode and Glyph Names 指南
+
+有没有已制定好的Unicode子集?
+
+对包含40000个以上字符的Unicode进行完整和全面的实现，这是一个庞大的工程。然而
+，很多情况下(尤其对于欧洲市场)同之前一样只实现几百或几千字符就足够了，而且仍
+然享受Unicode所提供的的单一简单编码覆盖所有需要字符的简洁性。已经有很多不同的
+UCS子集被制定出来：
+
+
+  ● Windows Glyph List 4.0 (WGL4)是一个容量为650的字符表，它涵盖了所有
+    Microsoft以前使用的所有8-bit MS-DOS,Windows,Mac和ISO 码值页。现在所有
+    Windows字体都至少覆盖了WGL4字符表。WGL4是CEN MES-1的超集(WGL4 测试文件)
+  ● 欧洲标准委员会CEN/TC304在CWA 13873中定义了UCS的三个欧洲子集：MES-1, MES-2
+    和MES-3
+      ○ MES-1是一个很小的含335个字符的(Unicode的)拉丁语子集。它恰好包含了ISO
+        6937中的所有字符再加上欧元符号。这意味着MES-1包含了 ISO 8859 part
+        1,2,3,4,9,1,15中的全部字符[注意，如果目的仅是提供最简单、最低成本的合
+        理UCS中欧子集，我会选择实现MES-1外加以下14个在 Windows 码值页1252之中
+        却不在MES-1之中的字符：U+0192, U+02C6, U+02DC, U+2013, U+2014,
+        U+201A, U+201E, U+2020, U+2021, U+2022, U+2026, U+2030, U+2039,
+        U+203A]。
+      ○ MES-2是一个包含1052个拉丁语/希腊语/叙利亚语/亚美尼亚语/格鲁吉亚语字符
+        的子集。它涵盖了欧洲(不止是欧盟!)和欧洲语言国家使用的所有语言和所有
+        8-bit码值页。它还附加了一个在技术文档中使用的数学符号的很小集合。
+        MES-2 是MES-1的超集。如果只面向欧洲或西方市场进行开发，MES-2是推荐使
+        用的字符表。[注意:由于奇怪的政治原因，下面8个WGL4ZI字符不在 MES-2之中
+        ：U+2113, U+212E, U+2215, U+25A1, U+25AA, U+25AB, U+25CF, U+25E6。如
+        果你要实现MES-2，绝对应该附加支持这8个字符，这样就能附加实现对WGL4的
+        兼容]。
+      ○ MES-3是一个包含2819个字符、非常全面的UCS子集。它将所有对欧洲用户有潜
+        在使用可能的UCS字符包含进来。它是为更有野心的实现者提供的。MES-3是
+        MES-2 和 WGL4的超集。
+  ● JIS X 0221-1995 为日本用户定义了7个不相交的UCS子集:
+      ○ Basic Japanese (6884 characters): JIS X 0208-1997, JIS X 0201-1997
+      ○ Japanese Non-ideographic Supplement (1913 characters): JIS X
+        0212-1990 non-kanji, plus various other non-kanji
+      ○ Japanese Ideographic Supplement 1 (918 characters): some JIS X
+        0212-1990 kanji
+      ○ Japanese Ideographic Supplement 2 (4883 characters): remaining JIS X
+        0212-1990 kanji
+      ○ Japanese Ideographic Supplement 3 (8745 characters): remaining
+        Chinese characters
+      ○ Full-width Alphanumeric (94 characters): for compatibility
+      ○ Half-width Katakana (63 characters): for compatibility
+  ● ISO 10646 标准将其字符表分成若干的collection，用于定义和实现子集。Unicode
+    定义了类似但并不一致的字符块，对应于Unicode标准中的section。
+  ● RFC 1815是由某个家伙在1995年提交的备忘录，他显然并不喜欢ISO 10646并且当时
+    未意识到JIS X 0221-1995的存在。该备忘录中讨论了一个称之为“ISO-10646-J-1”
+    的UCS子集，它由14 个 UCS collection组成，其中的某些与JIS X 0208存在交集。
+    它只是一个在Windows NT 1995年的某个日语版本中偶然实现的特殊字体。RFC 1815
+    现在已是完全过时和不相干，最好被忽略。
+  ● Markus Kuhn 在ucs-fonts.tar.gz中定义了三个UCS子集：TARGET1, TARGET2,
+    TARGET3。他们是相应MES子集的合理扩展，是该xterm字体包完成的基础。
+
+Markus Kuhn编写的Perl 脚本unise允许对UCS子集进行方便的集合运算，它对于想要定
+义一个新的UCS子集或是检查某个实现的覆盖范围的用户很有用。
+
+在不同编码方式之间进行转换时需要考虑哪些问题?
+
+Unicode 协会维护了一组Unicode和其它旧有编码标准之间的映射关系表。重要的是要明
+白，这些映射表的主要目的是展示Unicode是被映射的旧有编码的超集，并记录为了保证
+对旧有字符集的round-trip兼容而纳入 Unicode标准的那些字符背后的动机和起源。优
+秀的字符编码转换函数应完成的任务，远比盲目的应用这些示例映射表复杂的多！这是
+因为某些字符集中一致的字符在其它字符集中却被区分。
+
+Unicode映射表只在一定程度上适用于将文本直接由旧式编码转换为Unicode。然而高端
+的转换工具应该提供交互机制，使得在旧式编码中一致而在 Unicode中被区分的字符可
+以被逐个的交互式或半自动的消除歧义。
+
+从Unicode到旧式字符集的反向转换需要以上映射表的多对一扩展。在很多旧式编码中，
+若干Unicode字符必须被映射至单一码值。Unicode协会目前并未为此而维护标准多对一
+表，而且也没有为字符集转换工具定义任何标准行为。
+
+以下是一些从Unicode转为其它形式时必须解决的多对一映射的例子：
+
+              UCS characters                    equivalent        in target
+                                                 character          code
+
+U+00B5 MICRO SIGN                           0xB5                ISO 8859-1
+U+03BC GREEK SMALL LETTER MU
+
+U+00C5 LATIN CAPITAL LETTER A WITH RING
+ABOVE                                       0xC5                ISO 8859-1
+U+212B ANGSTROM SIGN
+
+U+03B2 GREEK CAPITAL LETTER BETA            0xE1                CP437
+U+00DF LATIN SMALL LETTER SHARP S
+
+U+03A9 GREEK CAPITAL LETTER OMEGA           0xEA                CP437
+U+2126 OHM SIGN
+
+U+03B5 GREEK SMALL LETTER EPSILON           0xEE                CP437
+U+2208 ELEMENT OF
+
+U+005C REVERSE SOLIDUS                      0x2140              JIS X 0208
+U+FF3C FULLWIDTH REVERSE SOLIDUS
+
+从现有标准化信息中可以近似的生成类似的多对一映射表，然而对这些映射表仍必须进
+行手动扩展和修订。例如，似乎显而易见，IBM PC字符集中0XE1原本既被当作小写beta
+使用(因为它在码表中位于alpha和gamma之间)，也被当作德语的sharp-s 字符使用(因为
+当在德语键盘上按下sharp-s键时生成该值)。类似的，0XEE既可以是数学符号“属于"，
+也可以是一个 small epsilon。这些字符并不是Unicode标准等价字符，因为尽管它们在
+低解析度字体下看起来很相似，然而在高质量印刷中它们是完全不同的字符。 IBM为
+CP437提供的映射表体现了一种用途，而微软提供的映射表则体现了另一种用途;两者具
+备同等的合理性。一个优秀的转换器在从Unicode进行转换时，应该做到对二者都兼容，
+而不是盲目的只使用Microsoft的映射表。
+
+Unicode database在filed 5包含了字符分解映射(Character Decomposition Mapping)
+，可用于自动生成上述示例的某些映射。作为一条规则，Unicode至其它字符集的转换输
+出，必须与输入的Unicode字符是否采用范式NFC无关。要查询汉语、日文、韩文Han/
+Kanji/Hanja的等价信息，可使用Unihan database 。对于上述例子中的IBM PC字符，标
+准映射表并未提供足够的映射；此时在Unicode book中对外形近似字符的交叉引用，则
+成为等价映射有价值的参考来源。最后，究竟选用哪种映射是个人喜好问题。
+
+Unicode协会曾维护了至CJK字符集的映射表，但已经宣布它们是过时和废弃的，这事因
+为它们在Unicode Web服务器上的存在而导致了一大批幼稚、不完整的转换器被开发出来
+。要特别指出的是，现已废弃的CJK Unicode映射表，在某些情况下必须进行轻微的修改
+来保留组合(字符)编码中的信息(完整性)。例如，标准映射表为ASCII-Unicode- ASCII
+，以及JIS X 0208-Unicode-JIS X 0208的转换链提供了roung-trip兼容性。然而，
+EUC-JP编码同时涵盖了ASCII 和 JIS X 0208，而ASCII映射表和JIS X 0208映射表在一
+个字符上存在重叠，即U+005C(反向分割符'/')。因此EUC-JP转换器必须使用一个略微修
+改过的JIS X 0208映射表，使得JIS X 0208中的0X2140(对应EUC-JP中的0XA1 0XC0)被映
+射到字符U+FF3C(全宽度反向分割符)。。这样就保证从EUC-JP到Unicode再到EUC-JP的过
+程中不会出现信息的丢失,即 round-trip兼容性。Unicode 标准附录#11就该问题提供了
+进一步的指导。另一个存在的问题是它同旧有映射表存在兼容性问题，这点在Tomohiro
+Kubota的一篇短文中有相关解释。
+
+除了使用标准规范映射表外，编码转换器的开发者还可以提供对转译(
+transliteration)的支持。转译的意思一个将Unicode字符在目标编码中转换为一个在图
+形和(或)语义上相似的字符，即使这两者规范化 (normalization)后在Unicode中是不同
+的字符。例子如下：
+
+              UCS characters                   equivalent      in target code
+                                                character
+
+U+0022 QUOTATION MARK
+U+201C LEFT DOUBLE QUOTATION MARK
+U+201D RIGHT DOUBLE QUOTATION MARK         0x22                ISO 8859-1
+U+201E DOUBLE LOW-9 QUOTATION MARK
+U+201F DOUBLE HIGH-REVERSED-9 QUOTATION
+MARK
+
+Unicode协会当前并没有提供或维护任何标准转译表。CEN/TC304有一份有关建议使用的
+ASCII回撤字符的 “European fallback rules”草案正在制定中，但还尚未成熟。现有可
+用的Unicode转译表可从Bruno Haible的 libiconv， glibc 2.2 locales和Markus Kuhn
+的 transtab中找到。
+
+X11对使用Unicode已经准备就绪了么？
+
+X11 R7.0 release (2005)是X协会对X11 Window System标准最新版本的示例实现。目前
+大部分的X11标准以及部分示例实现仍然没有未跟上在Unix下使用Unicode的广泛兴趣。
+
+这其中已经得到修正的包括：
+
+  ● Keysyms:自 X11R6.9之后， X窗口系统协议规范的附录A中为每个Unicode字符分配
+    了一个keysym值。任何码值界于U+00000100到 U+00FFFFFF之间的UCS字符可以表示
+    为0x01000100 到 0x01FFFFFF之间的keysym值。该方案是由Markus Kuhn于1998年提
+    出的，并且已被很多应用程序(最早是xterm)支持了很多年。修订后的附录A现在在
+    其pre-Unicode的旧式 keysyms 表中还包含了一个正是的UCS交叉引用列。
+  ● UTF-8 locales：X11R6.8添加了对UTF-8的支持。
+  ● X11R6.8中增加了很多广泛使用的Unicode标准字体，而且这些字体现在被某些经典
+    的标准工具所支持，例如xterm。
+
+对于Unicode用户，X11标准还存在许多问题；其示例实现中还存在某些不方便之处，仍
+然需要在某个后继X11版本中得到修正：
+
+  • UTF-8 剪切和粘贴: ICCCM 标准依然没有确定如何转递选中的UCS字符。某些生产商
+    选择将UTF-8作为另一种编码方式添加到现有的复合文本机制(CTEXT) 中。这并不是
+    一个好的解决方案，原因至少有三：                                        
+                                                     
+      ○ CTEXT是一个相当复杂的ISO 2022机制，并且Unicode所提供的机会不只是对
+        CTEXT提供一个扩展，而是用另一种简单的多、更方便而且同样强大的机制来替
+        代这个庞然大物。 
+      ○ 很多现有的应用程序能够通过CTEXT交流所选内容，但并不支持新增的UTF-8。
+        CTEXT的使用者必须选择是使用旧式的ISO 2022编码还是新增的UTF-8编码，但
+        二者无法同时使用。换言之，将UTF-8加入CTESX严重破坏了与现有CTEXT程序的
+        向后兼容性。
+      ○ 当前的CTEXT规范甚至在第六节明确禁止添加UTF-8：“复合文本中不使用其它在
+        ISO中注册的编码系统；扩展段是使用ISO 2022编码的唯一机制。“          
+                                                                             
+                                                               
+    Juliusz Chroboczek 起草了一份对ICCCM进行扩展的建议草案 Inter-Client
+    Exchange of Unicode Text  ，通过加入一个新的可用于属性类型和选择目标的
+    UTF8_STRING 来处理UTF-8选择(区域)。这种方法利落的解决了上述所有问题。
+    UTF8_STRING同现有的STRING(为ISO 8859-1字符串保留使用)一样的无状态和易用，
+    并且增加一个新的选择对象允许应用程序同时以旧有的CTEXT和新增的UTF8_STRING
+    格两种格式提供选择区域，这使得协同工作能力最大化。选择区域的持有者和请求
+    者之间可以对UTF8_STRING的使用进行协商，无论如何也不会导致兼容性问题。
+    Markus Kuhn已制作好了一个ICCCM patch ，它向标准中添加了必要的定义。当前情
+    况，UTF8_STRING已在X.Org正是注册，我们希望在未来的某个版本中ICCCM 有相应
+    的更新。                     
+  • 应用程序窗口属性：为了帮助窗口管理器正确的为窗口进行标注，ICCCM 2.0规范要
+    求应用程序为每个窗口对类似WM_NAME, WM_ICON_NAME和WM_CLIENT_MACHINE这样的
+    属性赋值。旧有的ICCCM 2.0 (1993)将这些属性的类型定义为多态类型TEXT，这意
+    味着它们可以使用类型STRING(ISO 8859-1)、COMPOUND_TEXT(ISO 2022的一个子集)
+    或C_STRING(未知字符集)之一，表明采用的文本编码。单纯添加UTF8_STRING作为
+    TEXT的可选项会破坏对那些不知道有该类型的旧有窗口管理器的向后兼容性。因此
+    ，freedesktop.org的窗口管理器规范项目制定的标准草案额外添加了窗口属性如
+    _NET_WM_NAM、_NET_WM_ICON_NAME等，它们的类型为UTF8_STRING。
+
+  • 低效率的字体数据结构：Xlib API和X11协议中用于表示字体度量信息的数据结构，
+    在处理稀疏分布的字体时极度缺乏效率。最常用X Client中访问字体最常用的方式
+    是调用XLoadQueryFont()，它会为一个XFontStruct分配空间并从Server 提取其内
+    容。XFontStruct中包含一个元素为XCharStruct(12字节)的数组。数组的大小等于
+    字体中最后一个字符的码值减去第一个字符的码值后再加1。因此，任何同时包含
+    U+0020和U+FFFD的“*-iso10646-1”字体，即使它只涵盖了1000个字符，也会导致分
+    配一个拥有65502个元素的数组，这意味着786KB的客户端内存和数据传输。
+
+迄今为止采用了某些变通方法:
+
+      ○ XFree86 4.0中附带的非亚洲的-misc-fixed-*-iso10646-1字体不包含码值超过
+        U+31FF的字符。这将内存需求减至153KB，虽然仍然不良，但少了很多(实际上
+        在BDF文件中有很多有用的字符其码值超过了U+31FF,等待着这个问题某一天被
+        解决；但是现在他们都被编码为-1因此被X server忽略。如果你需要使用这些
+        字符，那就安装没有应用"BDF裁减"的原始字体)。                        
+                                                                             
+                 
+      ○ 从XFree86 4.0.3开始，对BDF字体的检测还可以通过在XLFD尾部附加字符码值
+        范围来完成，这在XLFD规范的3.1.2.12这一节有详细说明，例如：
+
+        -Misc-Fixed-Medium-R-Normal--20-200-75-75-C-100-ISO10646-1
+        [0x1200_0x137f]
+
+        这样只会加载BDF字体中埃塞俄比亚语的部分，从而产生一个很小的
+        XFontStruct。更早版本的X server会简单的忽略字体的子集括号，并加载完整
+        字体，因而使用该方法不存在向后兼容性问题。                          
+                             
+      ○ Bruno Haible 为 XFree86 4.0编写了一个BIGFONT扩展协议，它对XChaStruct
+        从server至client间执行了压缩传输，并在若干个装载相同字体的client之间
+        使用Xlib的共享内存。
+
+这些变通并没有解决XFontStruct不适用于稀疏分布字体这一底层问题，但是他们的确提
+供了显著的效率改善，而不需改变任何 API或Client源码。真正的解决方案应该是用某
+个稍微更灵活的、包含有序线性表或哈希表而不是数组的数据结构扩展或取代
+XFontStruct。对XFontStruct的重新设计，同时还为增加急需的组合字符和ligature提
+供了可能性。
+
+另一种方法则是引入一种新的字体编码，例如可以称之为“ISO10646-C”(这里的 C表示
+combing,complex,compact或character-glyph mapped,随你的便)。在这种编码中，为每
+个字形分配的数值是真正的字体相关的字形值，而不是任何UCS码值的等价物。应用程序
+要利用这种新的字体编码的话，需要配合使用一些高效的完成字符-字形码值映射的C函
+数：
+
+      ○ makeiso10646cglyphmap(XFontStruct *font, iso10646cglyphmap *map)
+        从字体属性中读取字符-字形映射，并存入一个紧凑和高效的内存表示。
+      ○ freeiso10646cglyphmap(iso10646cglyphmap *map)
+        释放指定的内存表示。
+      ○ mbtoiso10646c(char *string, iso10646cglyphmap *map, XChar2b *output)
+        wctoiso10646c(wchar_t *string, iso10646cglyphmap *map, XChar2b
+        *output)
+        输入一个Unicode字符串，通过将它转换为XChar2b字形串，该字形串适合于被
+        XDrawString使用从参数 iso10646cglyphmap中提取的ISO10646-C字体用于输出
+        。
+
+ISO10646-C 字体仍被限制为不能包含超过64K个字形，但是它们可以来自于UCS的任何位
+置，而不只是BMP。这种解决方案还轻易的提供了字形替代特性，这样我们终于可以处理
+印度字体了。它解决了ISO 10646-1的超大XFontStruct问题，因为现在该结构所占空间
+与字形数成线性关系，而不是最大码值。它还可以提供组合字符的简单"加粗"，不过这
+样在ISO 10646-C字体中组合字符必须以负宽度存储。它甚至可以通过为同一个组合字符
+提供若干个位于不同高度的组合字型，来支持可变的组合字符位置。
+
+待办事项：为ISO 10646-C 属性编写规范，编写映射函数的示例实现，并将其添加入
+xterm，GTK和其它应用程序和库。志愿者？
+
+  ● 组合字符: X11 规范不以任何方式支持组合字符。字体信息中缺少必要的数据来完
+    成高质量、自动的重音放置操作(正如在所有的Tex字体中所发现的那样)。很多人试
+    验了通过使用在原始字符左侧带有墨点的零宽度字符来实现最简单的组合字体"加粗
+    "，但详细如何做到这一则点细节不祥(例如，零宽度字符在CharCell 和
+    Monospaced 字体中被允许么？)，因此这还不是一个广泛接受的惯例。
+  ● Ligatures: 印度文字需要支持 ligature替换的字体文件格式，而这同组合字符一
+    样，完全超出了当前X11规范的范围。
+
+XFree86小组几位成员一直在围绕这些问题展开工作。X.Org这个开放团体，作为X协会的
+官方继承者以及X11标准及其示例实现的管理者，已经(或者仍在考虑)接收了这些工作成
+果。
+
+X11 规范不以任何方式支持组合字符。字体信息中缺少必要的数据来完成高质量、自动
+的重音放置操作(正如在所有的Tex字体中所发现的那样)。很多人试验了通过使用在原始
+字符左侧带有墨点的零宽度字符来实现最简单的组合字体"加粗"，但详细如何做到这一
+则点细节不祥(例如，零宽度字符在CharCell 和 Monospaced 字体中被允许么？)，因此
+这还不是一个广泛接受的惯例。
+
+至于与字体相关的问题，解决方案很可能会是完全丢弃旧式的服务端字体机制而改而使
+用XFree86新提供的Xft。另一项正在进行中相关工作是 Sun正在开发的标准类型服务
+(ST)。
+
+什么是在UTF-8下工作的Perl one-liner?
+
+以下例子是基于两点假设：使用Perl 5.8.1或更新版本，以及使用UTF-8 locale(即
+"locale charmap“命令输出"UTF-8")。
+
+对于Perl 5.8.0,不需要使用选项'-c'；下面的例子不带'-c'的话无法在UTF-8 locale下
+工作。你真的不应该再使用Perl 5.8.0,因为它对Unicode的支持存在很多bug。
+
+在标准输出上打印欧元符号(U+20AC)：
+
+  perl -C -e 'print pack("U",0x20ac)."/n"'
+  perl -C -e 'print "/x{20ac}/n"'           # works only from U+0100 upwards
+
+查找畸形的UTF-8序列:
+
+  perl -ne '/^(([/x00-/x7f]|[/xc0-/xdf][/x80-/xbf]|[/xe0-/xef][/x80-/xbf]{2}|
+[/xf0-/xf7][/x80-/xbf]{3})*)(.*)$/;print "$ARGV:$.:".($-[3]+1).":$_" if
+length($3)'
+
+查找非ACII字节:
+
+  perl -ne '/^([/x00-/x7f]*)(.*)$/;print "$ARGV:$.:".($-[2]+1).":$_" if length($2)'
+
+将非ASCII字符转换为SGML/HTML/XML风格的对字符码值的10进制表示(例如，将‘Ş’转换
+为&#350)
+
+  perl -C -pe 's/([^/x00-/x7f])/sprintf("&#%d;", ord($1))/ge;'
+
+将用10(16)进制码值引用的字符转换为UTF-8：
+
+  perl -C -pe 's/&/#(/d+);/chr($1)/ge;s/&/#x([a-fA-F/d]+);/chr(hex($1))/ge;'
+
+ 
+
+我怎样才能输入Unicode字符?
+
+ 有很多方法可以用于输入标准键盘上没有的Unicode字符。
+
+独立于应用程序的方法
+
+  ● 在一个小文件中将你最常用到的Unicode字符按照最符合应用的方式安排好，要用的
+    时候执行复制和粘帖操作。对于相对而言很少用到的非常特殊的字符，例如更为深
+    奥的数学运算符，这通常是最方便和最合适的方法。
+  ● 使用xmodmap对键盘映射进行扩展。如果你的键盘上有专用于此的AltGr键的话，这
+    种方法会非常方便；某些US键盘上没有 AltGr 而只有右Alt键，而其它键盘则很不
+    幸的完全没有类似键。创建包含如下条目的~/.Xmodmap文件，并在X11的启动脚本中
+    通过加入” xmodmap ~/.Xmodmap”将该文件载入X server。 
+
+ keysym d = d NoSymbol degree NoSymbol
+
+ keysym m = m NoSymbol emdash mu
+
+ keysym n = n NoSymbol endash NoSymbol
+
+ keysym 2 = 2 quotedbl twosuperior NoSymbol
+
+ keysym 3 = 3 sterling threesuperior NoSymbol
+
+ keysym 4 = 4 dollar EuroSign NoSymbol
+
+ keysym space = space NoSymbol nobreakspace NoSymbol
+
+ keysym minus = minus underscore U2212 NoSymbol
+
+ keycode 34 = bracketleft braceleft leftsinglequotemark leftdoublequotemark
+
+ keycode 35 = bracketright braceright rightsinglequotemark rightdoublequotemark
+
+ keysym KP_Subtract = KP_Subtract NoSymbol U2212 NoSymbol
+
+ keysym KP_Multiply = KP_Multiply NoSymbol multiply NoSymbol
+
+ keysym KP_Divide = KP_Divide NoSymbol division NoSymbol
+
+
+现在你会发现借助于AltGr键，能够很容易的通过键盘输入下列字符：
+
+AltGr+d         °
+
+AltGr+          NBSP
+
+AltGr+[         ‘
+
+AltGr+]         ’
+
+AltGr+{         “
+
+AltGr+}         ”
+
+AltGr+2         ²
+
+AltGr+3         ³
+
+AltGr+-         −
+
+AltGr+n         –
+
+AltGr+m         —
+
+AltGr+M         µ
+
+AltGr+keypad-/  ÷
+
+AltGr+keypad-*  ×
+
+
+上述例子文件是基于UK键盘的，不过可以很容易的修改为其它键盘布局并自由选择映射
+的字符。  
+
+  ● ISO 14755中定义了一种16进制的输入方法:在按下Ctrl和Shift键的同时输入16进制
+    的Unicode码值；释放Ctrl和 Shift键后，就完成了对应的Unicode字符的输入。
+
+        这种方法目前在GTK+2中得到了实现，并在GNOME终端，Mozilla和Firefox中可
+用。
+
+依赖于应用程序的方法
+
+  ● VIM中，依次输入‘Ctrl-V’、‘u'和16机制数字，例如 Ctrl-V u 20ac
+  ● 在Microsoft Windows中，按下Alt键的同时，输入十进制Unicode码值(前面附加小
+    键盘上的0)。例如，按下Alt｜输入08364｜释放Alt。I
+  ● 在 Microsoft Word中，输入16进制Unicode码值，然后按Alt+X可将其转为对应的
+    Unicode字符。例如，20ac Alt-X。
+
+关于这个话题有哪些好的邮件列表?
+
+你当然应该订阅邮件列表 linux-utf8@nl.linux.org。这是一个所有致力于改进GNU/
+Linux或Unix系统和应用程序UTF-8支持的人们进行交流的场所。订阅方法是，发送主题
+为"subscribe的信件"至linux-utf8-request@nl.linux.org 。你也可以通过web接口来
+进行订阅和浏览存档。
+
+还有邮件列表unicode@unicode.org，这里是搜寻Unicode标准的作者和很多其它guru的
+发言最佳场所。订阅方式，是发送主题为"subscribe“，内容为”subscribe
+YOUR@EMAIL.ADDRESS unicode“的信件至unicode-request@unicode.org。
+
+现在用于讨论Xlib和X server的Unicode支持的相关邮件列表是xorg@xorg.org。过去在
+xfree86.org的邮件列表中还包括fonts 和 i18n，它们的存档中仍包含着有价值的信息
+。
+
+更多参考
+
+  ● Bruno Haible’s Unicode HOWTO.
+  ● The Unicode Standard, Version 5.0, Addison-Wesley, 2006. You definitely
+    should have a copy of the standard if you are doing anything related to
+    fonts and character sets.
+  ● Ken Lunde’s CJKV Information Processing, O’Reilly & Associates, 1999.
+    This is clearly the best book available if you are interested in East
+    Asian character sets.
+  ● Unicode Technical Reports
+  ● Mark Davis’ Unicode FAQ
+  ● ISO/IEC 10646-1:2000
+  ● Frank Tang’s Iñtërnâtiônàlizætiøn Secrets
+  ● IBM’s Unicode Zone
+  ● Unicode Support in the Solaris 7 Operating Environment
+  ● The USENIX Winter 1993 paper by Rob Pike and Ken Thompson on the
+    introduction of UTF-8 under Plan 9 reports about the experience gained
+    when Plan 9 migrated as the first operating system back in 1992
+    completely to UTF-8 (which was at the time still called UTF-2). A must
+    read!
+  ● OpenI18N is a project initiated by several Linux distributors to enhance
+    Unicode support for free operating systems. It published the OpenI18N
+    Globalization Specification, as well as some patches.
+  ● The Online Single Unix Specification contains definitions of all the ISO
+    C Amendment 1 function, plus extensions such as wcwidth().
+  ● The Open Group’s summary of ISO C Amendment 1.
+  ● GNU libc
+  ● The Linux Console Tools
+  ● The Unicode Consortium character database and character set conversion
+    tables are an essential resource for anyone developing Unicode related
+    tools.
+  ● Other conversion tables are available from Microsoft and Keld Simonsen’s
+    WG15 archive.
+  ● Michael Everson’s Unicode and JTC1/SC2/WG2 Archive contains online
+    versions of many of the more recent ISO 10646-1 amendments, plus many
+    other goodies. See also his Roadmaps to the Universal Character Set.
+  ● An introduction into The Universal Character Set (UCS).
+  ● Otfried Cheong’s essay on Han Unification in Unicode
+  ● The AMS STIX project revised and extended the mathematical characters for
+    Unicode 3.2 and ISO 10646-2. They are now preparing a freely available
+    the STIX Fonts family of fully hinted Type1 and TrueType fonts, covering
+    the over 7700 characters needed for scientific publishing in a “Times
+    compatible” design.
+  ● Jukka Korpela’s Soft hyphen (SHY) – a hard problem? is an excellent
+    discussion of the controversy surrounding U+00AD.
+  ● James Briggs’ Perl, Unicode and I18N FAQ.
+  ● Mark Davis discusses in Forms of Unicode the tradeoffs between UTF-8,
+    UTF-16, and UCS-4 (now also called UTF-32 for political reasons). Doug
+    Ewell wrote A survey of Unicode compression.
+  ● Alan Wood has a good page on Unicode and Multilingual Support in Web
+    Browsers and HTML.
+  ● ISO/JTC1/SC22/WG20 produced various Unicode related standards such as the
+    International String Ordering (ISO 14651) and the Cultural Convention
+    Specification TR (ISO TR 14652) (an extension of the POSIX locale format
+    that covers, for example, transliteration of wide character output).
+  ● ISO/JTC1/SC2/WG2/IRG (Ideographic Rapporteur Group)
+  ● The Letter Database answers queries on languages, character sets and
+    names, as does the Zvon Character Search.
+  ● Vietnamese Unicode FAQs
+  ● China has specified in GB 18030 a new encoding of UCS for use in Chinese
+    government systems that is backwards-compatible with the widely used GB
+    2312 and GBK encodings for Chinese. It seems though that the first
+    version (released 2000-03) is somewhat buggy and will likely go through a
+    couple more revisions, so use with care. GB 18030 is probably more of a
+    temporary migration path to UCS and will probably not survive for long
+    against UTF-8 or UTF-16, even in Chinese government systems.
+  ● Hong Kong Supplementary Character Set (HKSCS)
+  ● Various people propose UCS alternatives: Rosetta, Bytext.
+  ● Proceedings of the International Unicode Conferences: ICU13, ICU14, ICU15
+    , ICU16, ICU17, ICU18, etc.
+  ● This FAQ has been translated into other languages:
+      ○ Korean: 2001-02
+
+Be aware that each translation reflects only some past version of this
+document, which I update several times per month and revise more thorougly
+once or twice each year.
+
+我会经常为该文档的添加新的内容，因此请定期来查看。非常欢迎关于改进的建议。请
+为在自由软件社区中传播UTF-8的重要性贡献一份力量。
+
+特别感谢Ulrich Drepper, Bruno Haible, Robert Brady, Juliusz Chroboczek,
+Shuhei Amakawa, Jungshik Shi, Robert Rogers 和很多其它人提供了有价值的注释, 
+还有 SuSE GmbH, Nürnberg的支持。
+
+Markus Kuhn
+
+创建时间 1999-06-04 – 最近一次更新 2006-11-17 – http://www.cl.cam.ac.uk/
+~mgk25/unicode.html
+上一篇：简单测试你的C学的如何
+下一篇：bash 杂记
+查看评论
+* 以上用户言论只代表其个人观点，不代表CSDN网站的观点或立场
+TOP
+
+    个人资料
+
+    [1_lovekath]
+    lovekatherine
+      
+      □ 访问：121991次
+      □ 积分：2163分
+      □ 排名：第3753名
+      □ 原创：81篇
+      □ 转载：10篇
+      □ 译文：7篇
+      □ 评论：58条
+
+    文章搜索
+
+    [                    ] [搜索] 
+
+    文章分类
+
+  • C++(23)
+  • C语言(15)
+  • GNU/Linux(16)
+  • Java(2)
+  • Qt(2)
+  • 业余翻译者(6)
+  • 他山之石(6)
+  • 小程序(10)
+  • 读书笔记(21)
+
+    文章存档
+
+  • 2008年06月(3)
+  • 2008年04月(5)
+  • 2008年03月(7)
+  • 2008年02月(6)
+  • 2008年01月(6)
+  • 2007年12月(2)
+  • 2007年11月(7)
+  • 2007年10月(1)
+  • 2007年09月(12)
+  • 2007年08月(4)
+  • 2007年07月(1)
+  • 2007年06月(6)
+  • 2007年05月(3)
+  • 2007年04月(20)
+  • 2007年03月(10)
+  • 2007年02月(3)
+  • 2007年01月(2)
+
+    阅读排行
+
+  • 浅谈C中的wprintf和宽字符显示(12490)
+  • UTF-8 and Unicode FAQ for Unix/Linux(8778)
+  • C语言中的整型提升(integral promotion)(5264)
+  • 从用户角度理解"零拷贝" (Zero Copy I: User-Mode Perspective)(5039)
+  • 为何以及如何使用Netlink Socket ( Why and How to Use Netlink Socket)(4932)
+  • Solaris 10开启SSH服务(3526)
+  • Byte and Bit Order Dissection（解析字节序和比特序）(3367)
+  • 编写可重入和线程安全的代码(Writing Reentrant and Thread-Safe Code)(3002)
+  • 读书摘要—深入理解计算机系统(CSAPP)(2947)
+  • 三种继承方式与三种访问权限的相互组合(2639)
+
+    评论排行
+
+  • 浅谈C中的wprintf和宽字符显示(9)
+  • C语言中的整型提升(integral promotion)(7)
+  • 容易被误解的inline(4)
+  • C++：The One-Definition Rule(4)
+  • Solaris 10开启SSH服务(3)
+  • 从用户角度理解"零拷贝" (Zero Copy I: User-Mode Perspective)(3)
+  • 转型操作的中的一个陷阱(3)
+  • 关于Stack unwinding(3)
+  • 三种继承方式与三种访问权限的相互组合(2)
+  • C语言混乱大赛1987年获奖作品(2)
+
+    推荐文章
+
+    最新评论
+
+  • C语言中的整型提升(integral promotion)
+
+    FrankHB1989: 显然渣解。C语言中'A'的类型是就int，而不是char。C++中'A'才是
+    char。
+
+  • 浅谈C中的wprintf和宽字符显示
+
+    miorezet: 博主的系统是32位还是64位的？
+
+  • 读书摘要：C++ Template:The Complete Guide
+
+    qq2399431200: 请问作者下面这点怎么解释，我看到这句话时不是很理解。博主能
+    帮我解释下吗？3.2 Use of Cla...
+
+  • 浅析C++的构造函数,拷贝构造函数和赋值运算符
+
+    RunZhi1989: 你好，我在读 T a=v这一节中遇到一个问题。T b=0; 在我的环境中也
+    是编译出错。然后我把pri...
+
+  • const&volatile 与函数重载
+
+    RunZhi1989: 赞！
+
+  • 浅谈C中的wprintf和宽字符显示
+
+    creativewang: ⊛ mike@mike-ThinkPad ∘ 19:59:12 ∘ ~/code ⊳ cat ww...
+
+  • C语言中的整型提升(integral promotion)
+
+    chancecore: 为什么要整数提升呢？意义是什么呢
+
+  • 浅谈C中的wprintf和宽字符显示
+
+    mayadong7349: %S是微软搞的但好像未被ANSI采纳
+
+  • 读书摘要—深入理解计算机系统(CSAPP)
+
+    hansuanren: 楼主可知道这本书的第六章411页习题××6.45的mountain程序怎么下载
+    么？
+
+  • 从用户角度理解"零拷贝" (Zero Copy I: User-Mode Perspective)
+
+    m_nValue: http://www.linuxjournal.com/files/linuxjournal.com...
+
+    不谈技术
+
+      □ 帅气无边的猪
+
+    大牛的地盘
+
+      □ 负暄琐话 (RSS)
+      □ C++的罗浮宫
+

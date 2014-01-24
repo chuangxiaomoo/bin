@@ -1,0 +1,96 @@
+POSIX Extension Timer Module
+============================
+
+
+*0* About this File
+
+The document use some vim help file tag. You may use any text file reader to
+read it, but vim is preferred.
+
+
+*1* Introduction
+
+Petimer is a module to provide easy-to-use timer facility for programmers.
+
+You have two means to do something at a particular time if you directly use
+POSIX interfaces. The first is to create a thread and waiting for a period
+
+
+*2* Compile Time Configuration
+
+By running "configure" script you may change the behaviors of petimer by
+command line options. They are:
+
+--enable-abstimer enable to use absolute timer, so you can start a timer
+ at particular time
+
+*3* Programming Interfaces
+
+petimer.h is the only header file you need to include for using petimer.
+
+Before invoking any other petimer function, you need to call the following
+function to enable the module:
+ int petimer_start(pthread_t * thread, pthread_attr_t * attr);
+For more detail of interface, please refer to petimer.h
+
+*4* Program Consideration
+
+*4.1* Synchronization Issue
+
+It is safty to call any interfaces in petimer from other thread. And because
+all callback functions are called by the same thread, you don't need to worry
+about the synchonization issue among these functions.
+
+*4.2* Memory Leak Issue
+
+There is a initial function (petimer_start) while without finallize function
+in petimer. So a snipet of memory will not be released until the process stop.
+It will not cause any problem except memory leak detect program (e.g. dmalloc)
+will report an error. 
+
+Another memory leak risk in petimer is on its tasklet mechanism(see chapter
+"tasklet" below). When you invoke an API in petimer, it will not take the
+action immediately. Instean, it create a tasklet, and take the action after a
+"timer scanning loop" is over. By this means, the operations to the timer list
+are always in the same thread, this may avoid lots of synchronization problem.
+But if your timeout callback function take a long time to
+
+finish, while another thread keep invoke these APIs. Then a lot of tasklet will be
+accumulated. This may be some form of "memory leak".
+
+
+*4.3* timer delay and lost
+
+
+*5* Miscellaneous
+
+When petimer is implemented, two samll modules are introduced. The programmers
+can use them also.
+
+
+*5.1* list
+
+This module implements a cycle link list, you may use a "struct list_head" as
+the head of a list and put a "struct list_head" into your elements. then you
+can easily add, remove, traval the list by function provide by the module.
+
+check list.h for detail.
+
+
+*5.2* tasklet
+
+The module enable you to do something "later". To use it, init a "struct
+task_let" by tsklet_init(). tsklet_invokelater() is used to do something later
+and tsklet_invokeall() is to invoke all tasklets.
+
+The module can avoid a lot of synchronized issue. If you need to cooperate
+with another thread, you may create a tasklet and do it in that thread.
+
+
+*6* FAQ
+
+The section has been move to FAQ file.
+
+_______________________
+vim: tw=78 ft=help sw=8
+

@@ -1,0 +1,32 @@
+/* socket */
+
+linux 多 播
+http://www.verydemo.com/demo_c167_i163456.html
+
+基于Linux的多播编程
+http://blog.csdn.net/tigerjibo/article/details/6801273
+
+
+. 多播知识点
+
+    所谓多播，即组播，host发group收。group对应一个组IP。
+
+    多播使用UDP。
+    host sendto() 直接发送到GroupIP， 
+    group中各成员 recvfrom()前要先加入到该group。
+
+. 多播通信tool
+
+    多播搜索 多播命令，通信时通过一个ID进行区别。
+
+    多播查询 通过recvfrom()中IP返回，在host端要选择好发送的IP。
+
+        // INADDR_ANY 即0.0.0.0
+        struct sockaddr_in addr;
+        memset(&addr, 0, sizeof(addr));
+        addr.sin_family = AF_INET;
+        addr.sin_addr.s_addr = inet_addr("192.168.2.41");   // htonl(INADDR_ANY);
+        addr.sin_port = htons(MCAST_PORT);
+
+.
+

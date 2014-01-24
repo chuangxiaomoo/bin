@@ -1,0 +1,25 @@
+/* vlc */
+
+vlc简介
+    http://blog.csdn.net/hui523hui523hui523/article/details/8505152
+    ┌───────────────────────────────────────────────────────────┐
+    │ 这个哥们有干货                                            │
+    │                                                           │
+    │ VLC框架分析                                               │
+    │ http://blog.csdn.net/szu030606/article/details/7210758    │
+    │ vlc内部运行机制以及架构分析                               │
+    │ http://blog.csdn.net/szu030606/article/details/7210747    │
+    └───────────────────────────────────────────────────────────┘
+
+Donwload
+    http://download.videolan.org/pub/videolan/vlc/
+
+
+VLC 0.1.99 源码分析
+    http://blog.csdn.net/raymond_lu_rl/article/details/7336038
+
+    VLC经过10多年的发展，现在的2.0版本已经非常庞大了。磨刀不误砍柴工，还是先花两天时
+    间学习一下最初的0.1.99版本，先摸清个大概，再往高版本学习。
+
+
+    rtsp://192.168.2.145/1/d1

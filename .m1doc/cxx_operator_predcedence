@@ -1,0 +1,121 @@
+http://blog.sina.com.cn/s/blog_61f0374801014zrk.html
+
+cpp operator predcedence
+
+The following table lists the precedence and associativity of C++ operators.
+Operators are listed top to bottom, in descending precedence.
+
+┌──────────┬────────────┬───────────────────────────────────────┬─────────────┐
+│Precedence│  Operator  │              Description              │Associativity│
+├──────────┼────────────┼───────────────────────────────────────┼─────────────┤
+│    1     │::          │Scope resolution                       │             │
+├──────────┼────────────┼───────────────────────────────────────┤             │
+│          │++ --       │Suffix/postfix increment and decrement │             │
+│          ├────────────┼───────────────────────────────────────┤             │
+│          │()          │Function call                          │             │
+│          ├────────────┼───────────────────────────────────────┤Left-to-right│
+│    2     │[]          │Array subscripting                     │             │
+│          ├────────────┼───────────────────────────────────────┤             │
+│          │.           │Element selection by reference         │             │
+│          ├────────────┼───────────────────────────────────────┤             │
+│          │−>          │Element selection through pointer      │             │
+├──────────┼────────────┼───────────────────────────────────────┼─────────────┤
+│          │++ --       │Prefix increment and decrement         │             │
+│          ├────────────┼───────────────────────────────────────┤             │
+│          │+ −         │Unary plus and minus                   │             │
+│          ├────────────┼───────────────────────────────────────┤             │
+│          │! ~         │Logical NOT and bitwise NOT            │             │
+│          ├────────────┼───────────────────────────────────────┤             │
+│          │(type)      │Type cast                              │             │
+│          ├────────────┼───────────────────────────────────────┤             │
+│    3     │*           │Indirection (dereference)              │Right-to-left│
+│          ├────────────┼───────────────────────────────────────┤             │
+│          │&           │Address-of                             │             │
+│          ├────────────┼───────────────────────────────────────┤             │
+│          │sizeof      │Size-of                                │             │
+│          ├────────────┼───────────────────────────────────────┤             │
+│          │new, new[]  │Dynamic memory allocation              │             │
+│          ├────────────┼───────────────────────────────────────┤             │
+│          │delete,     │Dynamic memory deallocation            │             │
+│          │delete[]    │                                       │             │
+├──────────┼────────────┼───────────────────────────────────────┼─────────────┤
+│    4     │.* ->*      │Pointer to member                      │             │
+├──────────┼────────────┼───────────────────────────────────────┤             │
+│    5     │* / %       │Multiplication, division, and remainder│             │
+├──────────┼────────────┼───────────────────────────────────────┤             │
+│    6     │+ −         │Addition and subtraction               │             │
+├──────────┼────────────┼───────────────────────────────────────┤             │
+│    7     │<< >>       │Bitwise left shift and right shift     │             │
+├──────────┼────────────┼───────────────────────────────────────┤             │
+│          │< <=        │For relational operators < and ≤       │             │
+│          │            │respectively                           │             │
+│    8     ├────────────┼───────────────────────────────────────┤             │
+│          │> >=        │For relational operators > and ≥       │             │
+│          │            │respectively                           │Left-to-right│
+├──────────┼────────────┼───────────────────────────────────────┤             │
+│    9     │== !=       │For relational = and ≠ respectively    │             │
+├──────────┼────────────┼───────────────────────────────────────┤             │
+│    10    │&           │Bitwise AND                            │             │
+├──────────┼────────────┼───────────────────────────────────────┤             │
+│    11    │^           │Bitwise XOR (exclusive or)             │             │
+├──────────┼────────────┼───────────────────────────────────────┤             │
+│    12    │|           │Bitwise OR (inclusive or)              │             │
+├──────────┼────────────┼───────────────────────────────────────┤             │
+│    13    │&&          │Logical AND                            │             │
+├──────────┼────────────┼───────────────────────────────────────┤             │
+│    14    │||          │Logical OR                             │             │
+├──────────┼────────────┼───────────────────────────────────────┼─────────────┤
+│    15    │?:          │Ternary conditional                    │             │
+├──────────┼────────────┼───────────────────────────────────────┤             │
+│          │=           │Direct assignment (provided by default │             │
+│          │            │for C++ classes)                       │             │
+│          ├────────────┼───────────────────────────────────────┤             │
+│          │+= −=       │Assignment by sum and difference       │             │
+│          ├────────────┼───────────────────────────────────────┤             │
+│    16    │*= /= %=    │Assignment by product, quotient, and   │Right-to-Left│
+│          │            │remainder                              │             │
+│          ├────────────┼───────────────────────────────────────┤             │
+│          │<<= >>=     │Assignment by bitwise left shift and   │             │
+│          │            │right shift                            │             │
+│          ├────────────┼───────────────────────────────────────┤             │
+│          │&= ^= |=    │Assignment by bitwise AND, XOR, and OR │             │
+├──────────┼────────────┼───────────────────────────────────────┤             │
+│    17    │throw       │Throw operator (for exceptions)        │             │
+├──────────┼────────────┼───────────────────────────────────────┼─────────────┤
+│    18    │,           │Comma                                  │Left-to-right│
+└──────────┴────────────┴───────────────────────────────────────┴─────────────┘
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+┌─────────────────────────────────────────────────────────────────────────┐
+│                            Common operators                             │
+├────────────┬──────────┬────────────┬───────┬────────────┬──────┬────────┤
+│assignment  │increment │arithmetic  │logical│comparison  │member│other   │
+│            │decrement │            │       │            │access│        │
+├────────────┼──────────┼────────────┼───────┼────────────┼──────┼────────┤
+│a = b       │          │+a          │       │            │      │        │
+│a = rvalue  │          │-a          │       │            │      │        │
+│a += b      │          │a + b       │       │            │      │        │
+│a -= b      │          │a - b       │       │a == b      │a[b]  │        │
+│a *= b      │++a       │a * b       │       │a != b      │*a    │a(...)  │
+│a /= b      │--a       │a / b       │!a     │a < b       │&a    │a, b    │
+│a %= b      │a++       │a % b       │a && b │a > b       │a->b  │(type) a│
+│a &= b      │a--       │~a          │a || b │a <= b      │a.b   │? :     │
+│a |= b      │          │a & b       │       │a >= b      │a->*b │        │
+│a ^= b      │          │a | b       │       │            │a.*b  │        │
+│a <<= b     │          │a ^ b       │       │            │      │        │
+│a >>= b     │          │a << b      │       │            │      │        │
+│            │          │a >> b      │       │            │      │        │
+├────────────┴──────────┴────────────┴───────┴────────────┴──────┴────────┤
+│                            Special operators                            │
+├─────────────────────────────────────────────────────────────────────────┤
+│static_cast: converts one type to another compatible type                │
+│dynamic_cast: converts virtual base class to derived class               │
+│const_cast: converts type to compatible type with different cv qualifiers│
+│reinterpret_cast: converts type to incompatible type                     │
+│new: allocates memory                                                    │
+│delete: deallocates memory                                               │
+│sizeof: queries the size of a type                                       │
+│sizeof...: queries the size of a parameter pack (since C++11)            │
+│typeid: queries the type information of a type                           │
+│noexcept: checks if an expression can throw an exception (since C++11)   │
+│alignof: queries alignment requirements of a type (since C++11)          │
+└─────────────────────────────────────────────────────────────────────────┘

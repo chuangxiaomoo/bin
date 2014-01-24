@@ -1,0 +1,64 @@
+#! /bin/bash
+# 在Bash中将字符串拆分成数组
+# http://zengrong.net/post/1591.htm
+
+# read
+    # 命令会改变 IFS 的值 
+    # <<< 后的 "" 不能省，内容输出到 /dev/stdin
+    function fn_IFS_reload_after_command() 
+    {
+        echo $PWD
+        IFS=/ read -r -a PARTS <<<"$PWD"
+        
+        declare -p PARTS
+        echo "IFS _${IFS}_"
+    }
+
+# array     
+    # 赋值会改变 IFS 的值 
+    function fn_IFS_change_after_assign() 
+    {
+        echo $PWD
+        OLDIFS=$IFS
+        IFS=/ DIRS=($PWD) 
+        declare -p DIRS
+        echo "IFS _${IFS}_"
+        IFS=$OLDIFS
+    }
+
+    fn_IFS_change_after_assign
+
+    fn_IFS_reload_after_command
+
+# 不用IFS，还可以去掉打头的分界符 
+    STR=",oh,my,god"
+    arr=(${STR//,/ })
+    declare -p arr
+
+# 遍历字串中的所有字符
+# my_god_hoo -> MyGodHoo
+
+function fn_main() 
+{
+    jcp=my_god_hoo
+    local hyphon=1
+
+    echo ${#jcp}
+
+    local i
+    for (( i=0; i<${#jcp}; i+=1 )); do
+        if [ '_' == ${jcp:$i:1} ]; then
+            hyphon=1
+            continue
+        else
+            if [ "$hyphon" -eq 1 ] ; then
+                echo -n "${jcp:$i:1}" | tr '[a-z]' '[A-Z]'
+                hyphon=0
+            else
+                echo -n "${jcp:$i:1}" 
+            fi
+        fi
+    done
+}
+
+fn_main

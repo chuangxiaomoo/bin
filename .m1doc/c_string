@@ -1,0 +1,51 @@
+
+一、存储(可参见elf|浅谈C语言的数据存储（一）|)
+
+    1. 赋值给字串指针时为地址
+    2. 初始化字符数组时直接为.text段中的汇编指令中的操作数（立即数）
+    3. 初始化结构体及结构体数组时同样遵循上面的规则。
+
+    4. 不同文件中相同字串会有不同的地址。
+
+    参见 P.S.用例
+
+二、应用
+    同一文件中直接用“字串”初始化的字串指针可以直接比较。
+
+
+P.S.测试用例 
+
+1. Makefile
+
+    %.i:%.c
+        @echo "----------compile $@------"
+        $(CC) -o $@ -E $< $(CFLAGS) $(INCLUDE)
+
+2. C source
+
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <unistd.h>
+    #include <string.h>
+
+    struct test {
+        char p[12];
+        int a;
+    };
+
+    int main(int argc, char *argv[])
+    {
+        // char *p = "123456789";
+        // char p[] = "123456789";
+        // struct test p = {"123456789", 32};
+        struct test p[] = {
+            {"123456789", 32},
+            {"987654321", 11}
+        };
+        // printf("ptr     is %s\n", p);
+        // printf("arr     is %s\n", p);
+        // printf("str     is %s\n", p);
+        printf("str arr is %s\n", p[0].p);
+
+        return 0;
+    }

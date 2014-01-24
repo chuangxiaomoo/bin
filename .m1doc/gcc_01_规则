@@ -1,0 +1,59 @@
+/* gcc */
+
+一、调试宏，得到更准确的Error位置信息
+
+    使用-E得到预处理文件 .i
+
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <unistd.h>
+    #include <string.h>
+    
+    /* socket() */
+    #include <sys/types.h>
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+    #include <arpa/inet.h>
+    
+    /* self-header-file */
+    #include <xt_macro.h>
+    #include <libgen.h>
+    
+    #define JCOLogMsg(priority, fmt, args...) \
+    do{  \
+    fprintf(stdout, "[%d:%s:%5d] --- " fmt, priority, basename(__FILE__),__LINE__,## args);  \
+    }while(0)
+    
+    int main(int argc, char *argv[])
+    {
+        char arr[] = "oh my god";
+        printf("mg: %s\n", arr);
+        JCOLogMsg(5, "God: %s\n", arr);     // line 25
+        return 0;
+    }
+
+    编译上面的代码, 得到如下warning:
+    sof2.cpp|25 col 5| warning: deprecated conversion from string constant to ‘char*’
+
+    do{ fprintf(stdout, "[%d:%s:%5d] --- " "God: %s\n", 5, __xpg_basename("sof2.cpp"),44, arr); }while(0);
+    使用上面这行 -E 后的代码替换上面第line 25, 可以得到下面这条更加准确的warning:
+
+    sof2.cpp|25 col 85| warning: deprecated conversion from string constant to ‘char*’
+
+
+二、支持中文identifer
+
+    根据文件的编码（GBK or UTF8）设置相应相应的LC_CTYPE即可以。
+    $LANG $LC_CTYPE to support Chinese
+    LANG=en_US.UTF-8
+    LC_CTYPE="en_US.UTF-8"
+
+
+四、静态库链接顺序
+    http://haoxg.spaces.live.com/blog/cns!667714E7CE1BE835!260.entry 
+    在链接静态库时，如果多个静态库之间存在依赖关系，
+    原理：符号的搜索从当前.o或.a往后搜索，而不是全部.o .a .so
+    所以，如果main.o依赖lib1.a，lib1.a 依赖于 lib2.a，那么，编译命令如下：
+        cc main.o lib1.a lib2.a -o main
+
+

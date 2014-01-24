@@ -1,0 +1,28 @@
+/* 02_梦想与实现 */
+
+
+. 独立性设计 -- Advice: 一个函数一个测试用例，并尝试多次
+
+    /* enable 与 context 在内部没有做好独立性设计，当前的测试用例工作正常，
+     * 然，单独运行两次，问题就暴露出来了，设置其中一个会清0另一个。
+     * */
+
+    TEST(video_param, multiosd)
+    {
+        pschn_multiOSDText_enable(1);
+
+        printf("--------- going to setting musti osd -----------\n");
+
+        char msgbuf[128] = "我是中国人\r\n深圳市福田区新闻路\r\n"
+                            "捷高电子有限公司网络软件工程部";
+
+        pschn_multiOSDText_set(1, msgbuf, 100, 100);
+    }
+
+
+. 可重启性
+
+    /* 同样还是上面这两个API，重启后是会没有OSD信息的。 */
+
+
+.     

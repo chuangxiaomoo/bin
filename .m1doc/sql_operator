@@ -1,0 +1,44 @@
+六. mysql存储过程学习总结－操作符
+
+    算术运算符
+
+        +     加   SET var1=2+2;       4
+        -     减   SET var2=3-2;       1
+        *     乘   SET var3=3*2;       6
+        /     除   SET var4=10/3;      3.3333
+        DIV   整除 SET var5=10 DIV 3;  3
+        %     取模 SET var6=10%3 ;     1
+
+    比较运算符
+
+        >            大于 1>2 False
+        <            小于 2<1 False
+        <=           小于等于 2<=2 True
+        >=           大于等于 3>=2 True
+        BETWEEN      在两值之间 5 BETWEEN 1 AND 10 True
+        NOT BETWEEN  不在两值之间 5 NOT BETWEEN 1 AND 10 False
+        IN           在集合中 5 IN (1,2,3,4) False
+        NOT IN       不在集合中 5 NOT IN (1,2,3,4) True
+        =            等于 2=3 False
+        <>, !=       不等于 2<>3 False
+        <=>          严格比较两个NULL值是否相等 NULL<=>NULL True
+        LIKE         简单模式匹配 "Guy Harrison" LIKE "Guy%" True
+        REGEXP       正则式匹配 "Guy Harrison" REGEXP "[Gg]reg" False
+        IS NULL      为空 0 IS NULL False
+        IS NOT NULL  不为空 0 IS NOT NULL True
+
+    逻辑运算符
+
+        与(AND)
+        或(OR)
+        异或(XOR)
+
+
+    位运算符
+
+        |   位或
+        &   位与
+        <<  左移位
+        >>  右移位
+        ~   位非(单目运算，按位取反)
+

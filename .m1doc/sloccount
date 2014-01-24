@@ -1,0 +1,11 @@
+#! /bin/bash
+
+二、学会做统计及报表，数据及估算。
+
+    工具
+    sudo apt-get install sloccount
+    sloccount --cached --details | grep "sysctrl" | print_sum
+    http://www.dwheeler.com/sloccount/sloccount.html
+    http://www.dwheeler.com/sloccount/
+    http://www.cnblogs.com/visayafan/archive/2012/06/01/2529431.html
+

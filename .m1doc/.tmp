@@ -1,0 +1,43 @@
+                                 # 常用函数
+                         abs(-1) # 绝对值
+                            pi() # pi值
+                         sqrt(2) # 平方根
+                       mod(-5,3) # 取余-2
+                      ceil(10.6) # 进位+1 结果11 ceil(10.0)结果10
+                     floor(10.6) # 取整 10
+                      round(2.5) # 四舍五入到整数 结果3
+                    round(2.5,2) # 保留两位小数 结果2.50
+              truncate(2.5234,3) # 取小数后3位不四舍五入 2.523
+                       sign(-2); # 符号函数 返回-1 0还是0 正数返回1
+                pow(2,3),exp(2); # 2的3次幂 或e的2次幂
+                log(2),log10(2); # 求对数
+    radians(180),degrees(0.618); # 角度弧度转换
+              sin(0.5),asin(0.5) # 正弦和反正弦 类似cos acos tan atan
+                    length('hi') # 计算字符长度
+              concat('1',1,'hi') # 合并字符串
+     insert('12345',1,0,'7890'); # 从开头第1个字符开始到0个结束，替换成后边字符串，0表示在最前边插入
+           ucase('a'),lcase('A') # 转成大写和小写
+ left('abcd',2),right('abcd',2); # 返回前两个字符和后两个字符
+ltrim('  0  '),rtrim(' 0 '),trim('  0  ') # 删除空格
+replace('1234567890','345678','0'); # 替换输出12090
+          substring('12345',1,2) # 取字符 输出12 1是位置 2是长度
+            instr('1234','234'); # 取得234位置是2
+                reverse('1234'); # 反序输出4321
+                       current() # 返回日期
+                       curtime() # 返回时间
+                           now() # 返回日期时间
+                    month(now()) # 当前月份 monthname 英文月份
+                  dayname(now()) # 星期英文 dayofweek()1是星期天 weekday()1是星期二
+                     week(now()) # 本年第多少周
+dayofyear(now()),dayofmonth(now()) # 今天是本年第多少天 今天是本月第多少天
+year(now()),month(now()),day(now()),hour(now()),minute(now()),second(now()) # 返回年月日 时分秒
+time_to_sec(now()),sec_to_time(3600*8); # 转换时间为秒和还原
+                       version() # mysql版本
+                      database() # 当前连接的数据库 没有为null
+                          user() # 获取用户名
+                        md5('a') # 加密字符串
+                      ascii('a') # ascii值97
+      bin(100),hex(100),oct(100) # 返回二进制 十六进制 八进制
+                conv(10001,2,8); # 各种进制相互转换
+                          rand() # 生成0到1之间随机数
+                     sleep(0.02) # 暂停秒数

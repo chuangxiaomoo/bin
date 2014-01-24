@@ -1,0 +1,15 @@
+/*  */
+
+. WHERE ... IN()
+
+    SELECT code,date,rise_pct FROM min  
+    WHERE  code in 
+
+    (SELECT code FROM min WHERE date='2013-09-18' and 
+                    time = '10:01:00' && rise_pct >= 7 ) 
+
+    and date >= '2013-09-18' 
+    and date <= '2013-09-23' 
+    and time = '10:01:00' 
+    ORDER BY code,date ASC;
+

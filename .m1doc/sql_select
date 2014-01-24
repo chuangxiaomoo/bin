@@ -1,0 +1,67 @@
+
+. SELECT 输出到会话变量 (会话变量是一种弱变量)
+
+    SET     @var_name = expr [, var_name = expr]
+    SELECT col_name[,...] INTO var_name[,...] table_expr
+
+. SELECT 输出到文件 (相对于datadir下)
+
+    SELECT * INTO OUTFILE '/tmp/foo.sql' FROM foo;
+    SELECT * INTO OUTFILE 'data.txt' from min where date='2014-00-00';
+
+. SELECT INTO CSV 文件 
+
+    SELECT * INTO OUTFILE '/tmp/foo.csv' FROM foo 
+    FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"' LINES TERMINATED BY '\n';
+    -- 指定 OPTIONALLY, 只 ENCLOSED 字串类型 (such as CHAR, BINARY, TEXT, or ENUM):
+
+. 分界符
+
+    FIELDS TERMINATED BY '\t' 
+    ENCLOSED BY '' 
+    ESCAPED BY '\\'
+    LINES TERMINATED BY '\n' 
+
+. SELECT 追加    
+
+    注：输出不可追加到已有文件，只可创建新文件。
+    You cannt do that(output append to file) with SELECT INTO OUTFILE. That 
+    command only creates new files, and will fail if the file already exists.
+    You can append query output to an existing files using the TEE command 
+    in the MySQL client.
+    
+    Here iss your example appending two query results to the same file using TEE:
+    
+    TEE ~/TestInput/Results.csv
+        SELECT * FROM Results;
+        SELECT * FROM Results;
+    NOTEE
+
+. LIMIT
+
+    LIMIT 结合 ASC DESC 可以得到 shell head tail 的效果。
+
+. 联合查询
+
+    SELECT min.*, cap.name FROM min,cap 
+    where   min.date = (SELECT date FROM stamp_min order by id DESC limit 1) and 
+            min.time = (SELECT time FROM stamp_min order by id DESC limit 1) and 
+            min.code = cap.code order by amount DESC limit 20;
+
+. 唯一(UNIQUE)
+
+    SELECT DISTINCT  code FROM day;
+
+. SELECT复制表
+
+    INSERT INTO SELECT语句
+
+    要求目标表Table2必须存在，我们除了插入源表Table1的字段外，还可以插入常量
+        INSERT INTO TABLE2(FIELD1,FIELD2,...) SELECT VALUE1,VALUE2,... FROM TABLE1
+        INSERT INTO TABLE2(A, C, D)           SELECT A,C,5 FROM TABLE1
+        
+
+    要求目标表Table2不存在，需要结合 CREATE，具体参见 m1 sql cp
+        
+    
+    

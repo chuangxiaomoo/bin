@@ -1,0 +1,6 @@
+(1)
+    nc -l -p 1234
+
+(2)
+    /dev/net/tcp
+    cat j2box

@@ -1,0 +1,54 @@
+/* struct */
+
+
+. 占位符可以在结构体的任意位置
+
+    struct test {
+        int a;
+        int b;
+        char x[0];
+        char y[0];
+        char c[4];
+        char d[8];
+    };
+
+    int main(int argc, char *argv[])
+    {
+        
+        printf("%x %x %x %x %x %x\n",
+                (int)&((struct test *)0)->a,
+                (int)&((struct test *)0)->b,
+                (int)&((struct test *)0)->x,
+                (int)&((struct test *)0)->y,
+                (int)&((struct test *)0)->c,
+                (int)&((struct test *)0)->d
+                );
+        printf("%d\n", sizeof(struct test));
+        return 0;
+    }
+
+. 占位符实现变长数据
+
+    struct tlv {
+        int type;
+        int len;
+        char val[0];
+    }
+
+    struct tlv *p = (struct tlv *)malloc(sizeof(struct tlv) + PRIV_DATA_LEN);
+
+. 初始化
+
+    struct s {
+        int i;
+        char *s;
+    };
+
+    int main(int argc, char *argv[])
+    {
+        struct s var = {.i = 5, .s = "ohMyGod"};
+
+        printf("%d\n", var.i); 
+        return 0;
+    }
+

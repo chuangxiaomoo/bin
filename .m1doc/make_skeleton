@@ -1,0 +1,32 @@
+#! /usr/bin/make
+
+SRC := $(shell find ./ -name "*.c")
+SRCS:= $(wildcard *.c)
+OBJS:= $(SRCS:%.c=%.o)
+DEP := $(SRC:%.c=%.d)
+OBJ := $(SRC:%.c=%.o)
+
+# list all header file path
+SRCPATH	:= /opt/envir/svn/JCO_CENTER/LIB/TRUCK/IPCam_dm365
+INC_LIB := $(shell find $(SRCPATH) -name '*.h')
+INC_LIB := $(sort $(dir $(INC_LIB)))
+INC_LIB := $(foreach dir, $(INC_LIB), -I$(dir))
+
+# sed 中 \1 代表 \(\) 中括起来的部分
+%.d:%.c
+	@set -e; rm -f $@; 										\
+		$(CC) -MM $(CFLAGS) $(CPPFLAGS) $< > $@.$$$$; 		\
+		sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
+		rm -f $@.$$$$
+
+%.o:%.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+
+#
+# 老式的 .c.o: 相当于上面的 %.o:%.c 
+# (后缀规则会被模式规则逐步地取代。其更强更清晰)
+#
+# 后缀规则不允许任何的依赖文件，因此
+# .c.o: foo.h 	!=  %.o: %.c foo.h
+#
+# 《跟我一起写 Makefile.pdf》隐含规则一览

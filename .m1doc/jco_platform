@@ -1,0 +1,68 @@
+// platform
+
+0. 平台
+
+    . 需要增加APP，如：jco_hwvoip
+
+        PLATFORM_E                      // 定义平台ID，type_common.h
+        SYSTEM_PLATFORM_S platform[]    // 关联平台名与 配给APP：ftp msn mobile
+
+        SYSTEM_APP_E                    // 定义APP ID，system_ctrl.h
+        SYSTEM_APP_MNG_S appMng[]       // 关联APP与实际应用名，注意 .enable=FALSE
+
+        MSG_TYPE_HWVOIP_SVR             // 消息号
+        MSG_TYPE_HWVOIP_PROC
+
+     /* 使用for()替代 switch()case 后，no need below 2
+      * JCOCtrlApp2MsgSvr()             // SYSTEM_APP_SERVER -> MSG_TYPE_SYSTEM_SVR
+      * JCOCtrlMsgSvr2App()
+      */
+
+    . 小定制，不需要增加APP，如：中云网眼
+
+        PLATFORM_E                      // 定义平台ID，type_common.h
+        SYSTEM_PLATFORM_S platform[]    // 关联平台名与 配给APP：ftp msn mobile
+
+        if (JCOPlatformIDGet() == PLATFORM_BQST) {
+        }
+
+
+1. 应用心跳及消息
+
+    Msg_common.h
+    MSG_TYPE_HWVOIP_SVR             // jco_hwvoip接收的消息TYPE
+    MSG_TYPE_HWVOIP_PROC
+
+    +-----------------------------------------------------------+
+    |                                                           |
+    |         type                                              |
+    | SERVER  _SVR  --->  +-------+                             |
+    |                     |msgsnd |          type               |
+    |                     +-------+  <---   _PROC     HWVOIP    |
+    |                                                           |
+    +-----------------------------------------------------------+
+
+    JCOCtrlApp2MsgSvr               // System_ctrl.c 心跳
+    JCOCtrlMsgSvr2App
+
+
+2. JCP命令及配置（需要启动时向SERVER GET）
+
+    jcp_cmd.c               // JCP命令
+    system_config.c         // 配置文件
+
+    SYS_MSG_CMD_E           // 配置Msg TYPE：SYS_MSG_CMD_GET_HWVOIP
+    sys_msg_cmd_get_hwvoip  // 配置发送函数 sys_msg_svr.c           
+
+
+
+3. pack.sh
+    arr_platform_ids        // must
+    arr_sys_app             // optional
+    platforminfo            // must
+    app_mng                 // optional
+
+4. ini文件
+    config_server.ini
+          ->[plt4_name]     // 配置
+

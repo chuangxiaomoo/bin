@@ -1,0 +1,26 @@
+#! /usr/bin/make
+
+# CROSS_COMPILE := arm-hismall-linux-
+CC  = $(CROSS_COMPILE)gcc       # gcc
+AR  = $(CROSS_COMPILE)ar        # ar
+
+DEBUG   = -g -Wall
+CFLAGS  = $(DEBUG)              
+ARFLAGS = rcsv
+# INC    = -I.. -I./include      
+# LDFLAGS   = -L ./lib/arm -lsqlite3    
+
+OBJLIB  = libxx.a
+LIB_DEPEND_FILES = lib1.o lib2.o
+
+all: $(OBJLIB)
+
+# $?    dependent files Newer than $@, used when $@ is static lib
+$(OBJLIB): $(LIB_DEPEND_FILES)
+    $(AR) $(ARFLAGS) $(OBJLIB) $?
+
+clean:
+	rm -f $(OBJLIB) 
+
+%.o : %.c
+    $(CC) $(CFLAGS) $(INC) -o $@ -c $<

@@ -1,0 +1,102 @@
+-- http://www.ccvita.com/100.html
+
+. 一个遍历的例子
+
+    DELIMITER //
+    DROP PROCEDURE IF EXISTS sp_clear_sec_of_time//
+
+    -- BEGIN与CREATE可以直接放在一行
+    CREATE PROCEDURE sp_clear_sec_of_time() BEGIN
+        -- 变量名使用 v_ 打头, INT 变量一定给默认值
+        DECLARE v_done INT DEFAULT 0;
+        DECLARE v_code INT;
+        DECLARE v_cursor CURSOR FOR SELECT code FROM min;
+
+        -- 光标必须在声明处理程序之前被声明
+        DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET v_done = 1;
+        OPEN v_cursor;
+
+        loop_visit: LOOP
+            FETCH v_cursor INTO v_code;
+            IF v_done = 1 THEN 
+                LEAVE loop_visit; 
+            END IF; 
+        END LOOP;
+        CLOSE v_cursor;
+    END //
+
+    -- 注意：存储过程名称后面必须加括号，哪怕该存储过程没有参数传递
+    call sp_clear_sec_of_time(); //
+
+. 查看
+
+    show    procedure status like 'sp_%';
+    select  db, name from mysql.proc where name > 'sp_';
+
+. 参数
+
+    每个参数默认都是一个IN参数。要指定为其它参数，可在参数名之前使用关键词
+    OUT或INOUT。
+
+    如果仅仅想把数据传给 MySQL 存储过程，那就使用“in” 类型参数；如果仅仅从
+    MySQL 存储过程返回值，那就使用“out” 类型参数；如果需要把数据传给 MySQL
+    存储过程，还要经过一些计算后再传回给我们，此时，要使用“inout” 类型参数。
+
+. 删除存储过程
+
+    1.基本语法(不带括号)：
+        -- 不能在一个存储过程中删除另一个存储过程，只能调用另一个存储过程
+        DROP PROCEDURE IF EXISTS sp_name//
+
+. 区块，条件，循环
+
+    -- begin end 相当于C中的{}，可以用leave lable;跳出区块，执行区块以后的代码
+    1.区块定义，常用
+        [lable:]begin
+        end [lable];
+
+    2.条件语句
+        if 条件 then
+        else
+        end if;
+
+    3.循环语句
+
+        [label:] WHILE expression DO
+            statements
+        END WHILE [label] ;
+
+        [label:] LOOP
+            statements
+        END LOOP [label];
+
+        [label:] REPEAT
+            statements
+        UNTIL expression END REPEAT [label] ;
+
+. 用户变量
+
+    可以先在用户变量中保存值然后在以后引用它；当前连接会话有效。用户变量名一般以
+    @开头，滥用用户变量会导致程序难以理解及管理直接 SET @VAR = value; 即可用。
+
+. 存储过程变量(必须以 DECLARE 声明)：
+
+    -- DECLARE 声明语句必须在过程开头，所有执行语句之前
+    DECLARE var_name[,...] type [DEFAULT value]
+    SET     var_name = expr [, var_name = expr]
+    SELECT col_name[,...] table_expr INTO var_name[,...] 
+
+. 变量与SELECT
+    -- 在SELECT语句中, 列名与表名都不可以是变量，可以通过EXECUTE来解决些问题。
+    PREPARE stmt from @sqls; EXECUTE stmt;
+
+    -- 用户变量名在MySQL 5.1中大小写不敏感。SQL变量名和列名冲突。变量优先。
+    DECLARE v_col CHAR(20) DEFAULT 'nmc';
+    SELECT v_col from cap limit 2;
+    +-------+
+    | v_col |
+    +-------+
+    | nmc   |
+    | nmc   |
+    +-------+
+

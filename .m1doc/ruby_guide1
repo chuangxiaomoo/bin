@@ -1,0 +1,336 @@
+#! /usr/bin/env ruby
+#
+# 二十分钟 教你Ruby快速入门
+# http://developer.51cto.com/art/200703/41243.htm
+# Ruby程序设计语言教程(中文版).pdf
+
+puts '---------------- base ---------------------------'
+
+puts "Hello World"
+puts 3 + 2
+puts 3 ** 2
+
+# Math是Ruby内建的数学模块
+puts Math.sqrt(9)
+
+
+def h1
+    puts "Hello World"
+end
+
+# #{name} 相当于shell的 ${name}
+def h2(name)
+    puts "Hello #{name}!"
+end
+
+def h3(name='arthur')
+    puts "Hello #{name.capitalize}!"
+end
+
+h1
+h2('moo')
+h3('moo')
+
+# 一个class实例
+puts '---------------- class ---------------------------'
+
+class Greeter
+    # initialize是关键词，不可变。 如同c++ 与类同名的构建函数
+    def initialize(name = 'world')
+        # 类的实例变量，类中的所有方法（say_hi和say_bye方法）可见
+        @name = name  
+    end
+    def say_hi
+        puts "Hi #{@name}!"
+    end
+
+    def say_bye
+        puts "Bye #{@name}, come back soon."
+    end
+end
+
+g = Greeter.new("Sir")
+
+g.say_hi
+g.say_bye
+
+
+# instance_methods()会打印所有方法，加(false)时只打印自定义的
+puts '---------------- inspect ---------------------------'
+puts Greeter.instance_methods(false)
+
+puts g.respond_to?("say_hi")
+puts g.respond_to?("inspect")
+
+
+# 这里就是多行注释
+
+=begin
+    puts "#{__LINE__} "
+    这里就是多行注释
+
+=end
+
+=begin
+    这样访问会失败
+    puts g.@name
+
+    Ruby提供了访问对象变量的简单方法
+    我们通过使用attr_accessor定义了两个方法：
+    “.name”用来获取name属性值；
+    “.name=”用来设置namee属性值。
+=end
+
+puts '---------------- attr_accessor ---------------------------'
+class Greeter
+    attr_accessor :name
+end
+
+g = Greeter.new('Andy')
+
+# 带问号(如：respond_to?)的方法一定返回'true'  or  'false'
+# 只有保留关键字false和nil代表false，其他都是true
+puts g.respond_to?('name')
+puts g.respond_to?('name=')
+
+g.say_hi
+g.name = 'betty'
+puts g
+puts g.name
+
+# times 使用
+
+rice_on_square = 1    
+3.times do |square| 
+    puts "On square #{square} are #{rice_on_square} grain(s)"   
+    rice_on_square *= 2 
+end 
+
+5.times { puts "Mice!\n" }
+
+
+# `pre-execute`
+puts `df -h`
+
+# append，不止一种方法
+a = 'This is a append string'
+puts "#{__LINE__} " << a
+puts "#{__LINE__} " +  a
+
+# .to_i, .to_f, .to_s 用来转换成integer, float, string
+# puts 5 + "tail" 得不到任何结果
+int = 5
+puts 5.to_s + "tail" 
+
+# 全局变量以一个美元符号（$）开头
+=begin
+    ‘$0’ 代表的是所运行应用程序的文件名称；
+    ‘$:’代表的是默认的文件搜索路径；
+    '$$'代表的是ruby程序的进程id
+=end
+puts $0 
+puts $$
+
+# 输入, chomp get rid the '\n' from the input
+=begin
+    puts "which city do you stay:"
+    STDOUT.flush
+    city = gets.chomp
+    puts "This is your city:" + city
+=end
+
+# 格式化输出 format
+x = 45.2345678
+puts format("%.2f", x)
+puts (x*100).round/100.0        # floor舍 round四舍五入
+
+# 命名规则
+=begin
+    ruby可以根据名称的第一个字符来区分是什么名称
+    本地变量（在对象中定义）以小写字母或者下划线开头，后面跟合法字符。
+    实例变量以‘@’开头，后面至少跟一个合法字符。
+    在类中定义的变量，以‘@@’，两个‘@’开头，后面至少跟一个合法字符。
+    全局变量以‘$’开头，后面跟合法字符，也可以使用‘$-’开头，后跟一个字母（是字母）
+=end
+
+# 在Ruby中，需要处理的都是对象，并且返回的也是对象。
+
+
+# 参数按引用传递 
+
+# self, 相当于C中的 __func__
+def downer(string)   
+    string.downcase! 
+    puts "I am here, ----- #{self}"
+end 
+a = "HELLO" # -> "HELLO" 
+downer(a)   # -> "hello" 
+puts a 
+
+# 重磅方法：（bang or ! methods）
+=begin
+    执行不带‘!’的方法后，会返回一个全新的对象。
+    但是如果带‘!’的方法，返回的是原来的对象。
+    数组的sort/sort!方法，字符串的upcase/upcase!，chomp/chomp!方法，
+    字符串和数组的reverse/reverse!方法。
+=end
+
+# method_missing方法: 处理找不到方法这种情况
+class Dummy 
+    def method_missing(m, *args) 
+        puts "method_missing: called #{m} here -- please try again."   
+    end 
+end 
+Dummy.new.anything
+
+
+# 更多字符串方法
+=begin
+    upcase, downcase, swapcase和capitalize方法返回的都是原字符串的一个拷贝。但是
+    upcase!, downcase!, swapcase!和capitalize!这些重磅方法，
+    都是直接修改并返回原对象，如果你确认，没有必要保留原字符串，可以使用它们。
+=end
+
+# 列出一个类或对象的所有方法，如String
+=begin
+    puts String.methods.sort                 # 列出类string的所有方法。
+    puts String.instance_methods.sort        # 列出string实例的所有实例方法。
+    puts String.instance_methods(false).sort # 列出string实例的所有非继承的实例方法
+=end
+
+
+# 比较两个字符串
+=begin
+    ruby中比较字符串的方法有好几种。其中最普通的就是“==”，它比较两个字符串的内容
+    是否相同；还有String.eql?，它比较的也是两个字符串的内容。还有String.equal?，
+    它比较两个字符串是否同一个对象。
+    String#eql?, tests two strings for identical content.   
+    It returns the same result as ==   
+    String#equal?, tests whether two strings are the same object   
+=end
+
+s1 = 'Jonathan' 
+s2 = 'Jonathan' 
+s3 = s1 
+if s1 == s2   
+    puts 'Both Strings have identical content'   
+else 
+    puts 'Both Strings do not have identical content'   
+end 
+if s1.eql?(s2) 
+    puts 'Both Strings have identical content'   
+else 
+    puts 'Both Strings do not have identical content'   
+end 
+if s1.equal?(s2) 
+    puts 'Two Strings are identical objects'   
+else 
+    puts 'Two Strings arenot identical objects'   
+end 
+if s1.equal?(s3) 
+    puts 'Two Strings are identical objects'   
+else 
+    puts 'Two Strings arenot identical objects'   
+end 
+
+# Strings split
+
+words = 'Learning Ruby - Your one stop guide'   
+puts words.split(" ").reverse.join(" ")   
+
+# 字串的 method
+# http://www.ruby-doc.org/core-2.1.0/String.html
+
+# 控制块 if else while case
+
+
+# 范围
+puts (1..4).to_a
+puts "------------------------ "
+puts (1...4).to_a
+
+# scope 方法
+
+digits = -1..9 
+puts digits.include?(5) # true 
+puts digits.min # -1 
+puts digits.max # 9 
+puts digits.reject {|i| i < 5 }   # [5, 6, 7, 8, 9]   
+
+# 判断某个值是否在某个范围内
+puts (1..10) === 5       # -> true 
+puts (1..10) === 15      # -> false 
+puts (1..10) === 3.14159 # -> true   
+puts ('a'..'j') === 'c'  # -> true 
+puts ('a'..'j') === 'z'  # -> false 
+
+
+# hash Hash 对象
+
+#encoding:gbk
+Stus = {"tom"=>"42","Aaron"=>"29","Lucy"=>"32"};
+
+for key,value in Stus
+    print key, ' ',value, ' ';
+end
+
+puts
+puts "***********************"
+
+Stus.each do |key,value|
+    print key, ' ', value, ' ';
+end
+
+puts Stus.size().to_s;
+
+# Hash new
+
+S = Hash.new
+S["wang"]="28";
+S["phone"]=123456789;
+S["sex"]="male";
+
+puts "************************";
+S.each do |key,value|
+    print key, ' ', value, ' ';
+end;
+
+puts S.size().to_s;
+
+
+# 数组的创建方式和Hash对象差不多，可以直接创建，也可以通过Array.new，然后添加元素
+
+#encoding:gbk
+Foods = ["饺子","面条","馄饨"];
+
+for f in Foods
+    print f, ' ';
+end
+puts
+puts "********************";
+
+person = Array.new
+person[0]="a";
+person[1]="b";
+person[2]="c";
+
+for p in person
+    print p, ' ';
+end
+puts
+person << '太阳依旧升起'
+for p in person
+    print p, ' ';
+end
+puts
+
+# 数组元素可以是同一种类型，也可以是不同类型。
+# 数组赋值的两种形式: %W: 会对字符进行转义，%w: 不会对字符进行转义
+names1 = [ 'ann', 'richard', 'william', 'susan', 'pat' ]   
+puts names1[0] # ann 
+puts names1[3] # susan 
+names2 = %w{ ann richard william susan pat }   
+puts names2[0] # ann 
+puts names2[3] # susan
+
+

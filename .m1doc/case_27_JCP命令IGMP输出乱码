@@ -1,0 +1,74 @@
+/* 27_JCP命令IGMP输出乱码 */
+
+
+/* fundamental */
+
+1. 真正原因
+    /* True causes */
+
+    static int JCPCmdRtspIgmp(void *szMsgBuf, int argc, char *argv[], MSG_CMD_JCP_S *jcp)
+    {
+        /* 
+         * MSG_RTSPIGMP_S 被写成了 ETH_S 
+         **/
+         memcpy(&standby, &inner, sizeof(ETH_S)); 
+    }
+
+    typedef struct {
+        int  enable0;
+        char ip0[32];
+        int  port0;
+        int  enable1;
+        char ip1[32];
+        int  port1;
+    } MSG_RTSPIGMP_S;
+
+    typedef struct eth {
+        char nic[32];
+        char ipaddr[32];
+        char mask[32];
+        char gw[32];
+        char nic_end[0];
+        int  dhcpen;
+        char dns[32];
+        char mac[64];
+    } ETH_S;
+
+2. 问题描述
+    /* from R&D or Tester */
+    j2box rtspigmp -act list 
+    [Success]enable0=1083840;ip0=¾`;port0=1087201452;enable1=0;ip1=port1=21810;
+
+3. 现象分析
+    /* log or details */    "ATTENTION: err or fail"
+
+4. 原因分析
+    /* 原因猜想，目标分解，process to true causes */
+
+    跟踪读取看有没有问题，结果一切正常
+    return access_ini(act, SYS_CONF_FILE_SERVER, opts, maps);
+
+    应该是读取之后的问题。看到下面这一行，亮瞎了我的眼。
+    memcpy(&standby, &inner, sizeof(ETH_S));
+
+    ETH_S的size很大，把原有数据都干掉了。
+
+5. 解决方案
+    /* 包括对未来的防御 */
+    组织编写JCP命令，在现有的框架下，依赖于结构体，所以第一要事就是：
+    "把所有的结构体先换掉 ETH_S -> MSG_RTSPIGMP_S"
+
+    更进一步：
+    使用一个脚本自动生成代码，也就是"会写代码的代码"  -> autojcp.sh 
+
+6. Time
+    (1) 整个问题过程花费的时间 2 hours
+
+    (2) 问题引入、发现、解决
+        解决引入                2013-07-19
+                                2013-07-24 (补充 autojcp.sh)
+
+7. Introspection
+
+    把问题放在心里，解决方法会自动浮出水面，记得naked阿基米德吗？()
+

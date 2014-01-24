@@ -1,0 +1,35 @@
+# method
+
+## 浅谈HTTP中Get与Post的区别
+
+    http://www.cnblogs.com/hyddd/archive/2009/03/31/1426026.html
+
+    总结两点：
+    (1) jcpcmd是一个http 的 GET方法
+    http://192.168.2.45/?jcpcmd=xkcd /sbin/debugsys.sh force
+
+    (2)
+    POST，顾名思义，就是“提交”，用于更新信息；而get，即“获取”，用于从服务器中获
+    取、查询信息。这两者在地址栏中的区别，使用post方法时数据是不会在地址栏中显示
+    的，而get方法则会显示。
+
+    curl -d 'name=123&hello=345' http://192.168.2.41/cgi-bin/hello.cgi
+
+    
+## CGI
+
+    mini_httpd代码分析  
+    http://wdqfirst.blog.163.com/blog/static/113347411201212310592905/
+    
+    Mini_httpd 如何将出客户端得到的数据传递给CGI 程序？
+    --CGI网关，即以Post参数为CGI脚本的stdin，CGI脚本的stdout为Post的返回。
+
+    Httpserver 获得的数据（由client 发送过来）放在一个buffer （ request ）中，在
+    调用CGI程序前，创建一个子进程，这个子进程将request 中的数据写入到这个PIPE中，
+    然后利用dup2函数将标准输入重定向到pipe[0] ,这样CGI 程序可以通过标准输入获取
+    httpserver 等到的数据。
+
+    同理也将stdout 重定向，这样 CGI printf函数直接将数据发出给连接socketfd
+
+    最后通过execve() 来调用 CGI程序
+

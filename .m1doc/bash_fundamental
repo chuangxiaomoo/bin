@@ -1,0 +1,109 @@
+#! /bin/bash
+
+#写出健壮的 Bash 脚本
+    http://www.oschina.net/news/26744/build-robust-bash-script
+    使用set -u
+    你也可以使用可读性更强一点的set -o nounset
+    使用set -e
+    你也可以使用可读性更强一点的set -o errexit
+
+
+. MAN on ubuntu
+    http://manpages.ubuntu.com/manpages/hardy/zh_CN/man1/bash.1.html
+
+. Bash auto complete for environment variables    
+    http://askubuntu.com/questions/41891/bash-auto-complete-for-environment-variables
+    ┌───────────────────────────────────────┐
+    │ export SCRIPT=/home/user/script       │
+    │ cd $SCRIPT/<tab>                      │
+    └───────────────────────────────────────┘
+
+    results in a \ being added before $SCRIPT i.e. the prompt becomes
+
+    ┌───────────────────────────────────────┐
+    │ cd \$SCRIPT/                          │
+    └───────────────────────────────────────┘
+
+    resolve:
+    ┌───────────────────────────────────────┐
+    │ <Esc>+<Ctrl>-E     // secuCRT         │
+    │ Cntrl-Alt-E        // puTTY           │
+    └───────────────────────────────────────┘
+
+. 祖先 
+
+ (1) Unix考古记：一个“遗失”的shell
+     http://coolshell.cn/articles/9410.html#more-9410
+
+ (2) Ken Thompson 注解   
+     http://blog.chinaunix.net/uid-20106293-id-142129.html
+
+. 最后一个参数
+ http://blog.morebits.org/?p=103
+
+ (1) eval
+     byang@byang-desktop:~$ eval echo \${$#}
+     bash
+     byang@byang-desktop:~$
+
+ (2) 或者，使用bash提供的间接变量替换
+
+     byang@byang-desktop:~$ echo ${!#}
+     bash
+     byang@byang-desktop:~$
+
+     bash中以${!name}形式出现的变量替换，就是间接替换。bash首先，
+     计算$name的值，并用它的值来替换中括号里面的值，再作一次变量替换。
+
+
+. cmdline 巧用 "" 处理换行文本     
+
+     root@Moo:/home/q# svn co https://jabscodevsvn/svn/dm36xPro/trunk/ .
+     A    pack.sh
+     A    imgtool
+     A    common.rc
+     A    makenode.sh
+ 
+ 
+     root@Moo:/home/q# echo "
+     pack.sh
+     imgtool
+     common.rc
+     makenode.sh"  | xargs rm -f
+
+. source common.rc
+
+    [ "${BASH_SOURCE##*/}" != "${0##*/}" ] && return 0
+
+    在.rc开头使用 set -e，结尾时使用 set +e。如此以防止低级错误。
+
+
+. 通配*扩展也有备胎    
+    function fn_main()
+    {
+        f=123
+
+        for f in *.def ; do     # 当目录中没有 .def 时，其不进行扩展
+            echo $f
+        done
+        
+        echo $f
+    }
+
+    fn_main $@
+
+. for i in list; 的 i 也需要初始化，当list 为空时，其会继承
+    function fn_main() {
+
+        files=`ls *.def`
+
+        f=123
+        for f in $files ; do
+            echo $f
+        done
+        
+        echo $f
+    }
+
+    fn_main $@
+

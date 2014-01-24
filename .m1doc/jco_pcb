@@ -1,0 +1,24 @@
+/* pcb */
+
+
+1. 串口使用分布情况 单兵链路不能上报
+    com1 debug rfid
+    com2 ptz gps
+    com3 lcd
+    //
+    // 出了电子围栏 sys_msg_event_gpsalarm -> msg_snd ->
+    // 上报信息     sys_msg_event_gpsdata(MSG_TYPE_STARVALLEY_SVR, ) 
+    //                      -> msg_snd(g_sys_msg_id, )
+    //              sys_msg_cmd_get_gps_ext()
+    // msg_rcv
+
+2. NAND 
+
+    清除nand中的分区"uboot params" // nand erase all
+        DM365 EVM :>nand erase
+        NAND erase: device 0 whole chip
+
+        参考:
+        E:\winc\DL\Resource\Chips\NAND\SAMSUNG\readme_dm365
+        E:\winc\DL\Resource\Chips\NAND\SAMSUNG\nand
+

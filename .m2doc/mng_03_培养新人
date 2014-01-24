@@ -1,0 +1,103 @@
+# cult
+
+ > 05_培养新人 -- 一朝天子一朝臣
+ >
+ > 对于cheby，2013-06-28，我是淡然了，这两日喉咙发炎了，其所做的事总是差强人意。
+ > 不可能培养得了一个人，只可能培养得了文化。
+ >
+ > 你不可能改变他人，你能改变的只有你自己。 -- yins, cheby, chenx, zengy, dongzh
+ >
+
+## 定义
+
+  解决问题，让他意识到自己的问题。积极主动的思考。    -- 其问题在于太随意
+  总之不能当成自己，因为每个人都不想改变自己。        -- <book_dt_暗时间>
+
+  做一天和尚撞一天钟 (from yinshi), 2013-06-21
+   1) 不二过: yinshi -> /root/cmd  cheby -> case_fundamental
+   2) 和尚也是要读经的，不是所有的都问师傅。有事先问google
+
+
+## 团队魂 -- 敏捷的早立会
+
+  个人秉性不改，但团队可以有魂。 -- 行动派
+  时间预测 -- 早会决定
+  时间确定 -- 评估预测时间
+  搞出demo -- 1/3 实现时间
+  最后优化
+
+## 层次
+
+  讲究层次灰度，团队里总是有那么几个傻x，不然把人逼走了，没有人干活了。
+  zengy 毛躁，eth 在file damaged 的情况下，配置重新 restore
+  cheby 再次按自己的想法实现一遍，执行力强
+  从印象派事
+
+## cheby    
+
+  0. 向罗文学习，把信送给加西亚。出发点，已知量，未知量，目标。
+  1. 试错是最基本的调试方法，也是最没有技术含量的方法。
+      试错改变参数不要过多，步子大了不好。
+      “我以为”，
+  2. 请保存一份好的样本，这是排除错误最好的方法
+  3. 问题的聚焦，文件系统filesys与我们raysharp根本就没有关系，去up做什么。
+  4. 请保证你的工作环境是干净的，文件夹整理，桌面整理
+  5. 工欲善其事，必先利其器
+  6. ftp不能用了。bind error. 【请不要忽略任何错误信息】
+
+## 规则
+
+  1. 任何问题都有其数学模型，《跟波利亚学解题》
+
+  2. 有章法，如同写小说。《哈利波特》 时间、地点、人物，事情起因、经过、结果
+      what, how, why ------- when, where, who
+
+  3. 问题解决是输入输出过程。
+      result = f(v1, v2, v3...) 
+
+  4. 方法The_Getting_Things_Done
+
+   http://blog.csdn.net/haoel/article/details/1948051/
+   > The Getting Things Done method rests on the idea that a person needs to
+   > move tasks out of the mind by recording them externally, so the mind is
+   > free from the job of remembering the tasks that need to be completed. One
+   > can then concentrate on performing the tasks, instead of remembering.
+
+
+## chenxiang    
+
+  EGO         --  20多年的EGO，谁都不想改变自我，而且内心里认为：都是他人的错
+  兴趣        --  先把事做好了，有了成就感，再对某事感兴趣；还是先兴趣，再做好
+                  因为把事做好了，老板才给你机会；还是因兴趣，给机会
+
+  君子不器    --  IT知识5年半衰。
+  期望        --  来自老板对自己的期望，来自自己对 自己的期望。
+  自然法则    --  老板不会因道德上的原因给你工资，只会因你做了多少事来给你工资
+
+  传递压力    --  把压力传递给chenx，or "把chenx传递给上峰superior"
+
+## yinshi                    
+  deligete    --  chenxiang 给装机，但是确实没有装好。此时不要多管闲事。
+                  你要做的，只是监管而已，形成习惯。
+  concentrate --  重装一台环境，并不是那么简单的事。配置一个NFS文件系统也一样。
+                  让chebiyou去做，改掉喜欢摊事的坏毛病。
+
+## 看书培训
+  看Luo的成长及行事，这不是重点。
+  重点是自己要对整个系统熟悉，这自然在员工前树起了一个榜样及威信。榜样的力量是无穷的。
+  廖哥和老六、赵广不就是这么做的吗？
+
+## 专家
+
+  把 subordinate 培养成专家。专家从实战中来 -- 任正非 
+  让 soldier 忙起来，没事的时候给他们想事。 -- Luo 2013-05-08
+
+  将模糊的，未定义的定义了、量化了，时间就明确了。
+  SE 与 SWE 的二级代理  --- 《寒战》
+                         |
+                         v
+                         关注未定义的内容
+                         关注不稳定因素
+                         关注效率低下的内容
+                         扫除体系外的影响
+

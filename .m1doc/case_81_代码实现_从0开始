@@ -1,0 +1,94 @@
+/*  */
+
+. 命名
+
+    从来都与原有结构相同
+    刚开始，使用 roots trees 来代替 map_lv1, map_lv2，
+    为理解的一致性，roots trees -> ext_lv1 ext_lv2s。
+
+. 从最简单的开始，不要相信自己可以一次性搞定
+
+    代码实现，for循环时，先搞定，特例化为1，把逻辑走通再说
+
+
+. 代码实现    
+
+#define GRAFT_N_INFO_2_LV2_THEN_LV1(n, map_lv1, map_lv2, ext_lv1, ext_lv2s, ext_infos)         \
+do {                                                                                           \
+    int i;                                                                                     \
+    for (i = 0; i < n; i++) {                                                                  \
+        /* ext_lv1 */                                                                          \
+        memcpy(&ext_lv1[i], &map_lv1[0], sizeof(xmlmap_t));                                    \
+        ext_lv1[i].value = &ext_lv2s[i];                                                       \
+                                                                                               \
+        /* ext_lv2 */                                                                          \
+        memcpy(&ext_lv2s[i], &map_lv2, sizeof(map_lv2));                                       \
+                                                                                               \
+        int j = 0;                                                                             \
+        xmlmap_t *ext_lv2 = &ext_lv2s[i][0];                                                   \
+        for (; ext_lv2[j].tag != NULL; j++) {                                                  \
+            ext_lv2[j].value =(void *) ((unsigned)ext_lv2[j].value + (unsigned)&ext_infos[i]); \
+        }                                                                                      \
+                                                                                               \
+    }                                                                                          \
+} while (0)
+
+
+typedef struct {
+    int id;
+    char user[16];   // <!-- req, xs:string -->
+    char passwd[16]; // <!-- wo, req, xs:string -->
+    char level[16];  // <!-- opt, xs:string, Administrator,Operator,Viewer -->
+} User;
+
+int test_id_adapture()
+{
+    User *p = NULL;
+
+    xmlmap_t map_lv2[] = {
+        {"id"       , NTYPE_INT, &((User*)p)->id   },
+        {"userName" , NTYPE_STR, &((User*)p)->user },
+        {"userLevel", NTYPE_STR, &((User*)p)->level},
+        {0          ,                       },
+    };
+
+    xmlmap_t map_lv1[] = {
+        {"User", NTYPE_TREE, map_lv2, nattr_top20},
+        {0     ,                                 },
+    };
+
+    xmlmap_t maps[] = {
+        {"UserList", NTYPE_TREE, map_lv1, nattr_top},
+        {0         ,                               },
+    };
+
+    // User;
+    int count = 3; // get_security_users_count(NULL);
+    return_val_if_fail(count > 0, FAILURE);
+
+    // 指针
+    xmlmap_t *ext_lv1 = calloc((count+1), sizeof(xmlmap_t));
+    // 数组指针
+    xmlmap_t (*ext_lv2s)[ARRAY_SIZE(map_lv2)] = calloc((count), sizeof(map_lv2));
+    // 结构体指针
+    User *ext_infos = calloc(count, sizeof(User));
+
+    GRAFT_N_INFO_2_LV2_THEN_LV1(count, map_lv1, map_lv2, ext_lv1, ext_lv2s, ext_infos);
+
+    maps[0].value = ext_lv1;
+
+#if __FILL_INFO__
+        /* info and id */
+    User user = {1,"u", "p", "l"};
+    memcpy(&ext_infos[i], &user, sizeof(User));
+    ext_infos[i].id = i+1;
+#endif
+
+    // for (i = 0; i < count; i++) {
+    //     printf("list haha %d %s %s\n", ext_infos[i].id, ext_infos[i].user, ext_infos[i].level);
+    // }
+
+    char buf[8192];
+    return xmlmap_2_buf(maps, buf, sizeof(buf));
+}
+

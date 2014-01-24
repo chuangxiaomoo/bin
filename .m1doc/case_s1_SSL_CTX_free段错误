@@ -1,0 +1,100 @@
+        case_01_SSL_CTX_free段错误
+
+1. 问题描述
+    在web上修改http监听端口，导致jco_server 段错误退出并由auto_run.sh 重启
+
+2. 现象分析
+    thttpd_ssl_uninit
+    SSL_CTX_free(ssl_ctx);
+
+    通过GDB debug, 发生了段错误.
+
+    Program received signal SIGBUS, Bus error.
+    (gdb) bt
+    #0  0x402bfd80 in free () from /lib/libc.so.6
+    #1  0x000c568c in CRYPTO_free ()
+    #2  0x000cbb44 in asn1_enc_free ()
+    #3  0x000c8e2c in asn1_item_combine_free ()
+    #4  0x000c8f4c in ASN1_template_free ()
+    #5  0x000c8e80 in asn1_item_combine_free ()
+    #6  0x000c8f88 in ASN1_item_free ()
+    #7  0x000c7fec in X509_free ()
+    #8  0x400a2f64 in ssl_cert_free () from /usr/lib/libssl.so.0.9.8
+    #9  0x400a0c7c in SSL_CTX_free () from /usr/lib/libssl.so.0.9.8
+    #10 0x00092bac in thttpd_ssl_uninit () at thttpd/thttpd_ssl.c:88
+    #11 0x0008c4a8 in thttpd_main (arg=<value optimized out>) 
+        at thttpd/thttpd.c:920
+    #12 0x0015114c in PthreadMng_PthreadProc (pvArg=<value optimized out>)
+        at src/jco_pthread_mng.c:61
+    #13 0x4002a8f8 in start_thread () from /lib/libpthread.so.0
+    #14 0x403168c8 in clone () from /lib/libc.so.6
+    Backtrace stopped: frame did not save the PC
+    (gdb) 
+    Killed
+
+3. 原因分析
+    SSL_CTX_free(ssl_ctx); 中的ssl_ctx 是一个全局变量，通过openssl的源码
+    发现，SSL_CTX_free在free时都会判断其是否为空。
+
+    那么SSL_CTX_free(ssl_ctx)被free两次这种情况，是根本不成立的。
+
+    如此，可以推断，应该是ssl_ctx 这个结构体变量中的成员出了问题.
+
+    那么，ssl_ctx到底在哪里出了问题呢？
+    不如事后来个猜想(根据上下文)，
+    thttpd_ssl_uninit 对应的是thttpd_ssl_init() 
+
+    经检查发现 thttpd_ssl_init() 失败了,但代码中没有对其进行返回值检查。
+
+    那为什么 thttpd_ssl_init() 失败了？
+
+4. 解决方案
+    thttpd_ssl_init() 为什么会失败，难道是库的问题。
+    从GDB的显示可以知道，库版本是/usr/lib/libssl.so.0.9.8
+
+    下载一个较新的库 1.0.d ，编译、链接，结果还是一样。
+
+    最终阿光在编译的时候，发现代码编译的时候链接的头文件是openssl-1.0.1c。
+
+    版本不匹配，这个才是最终的原因。
+
+    那为什么版本不匹配呢？
+
+    前两天，因为jco_alarm的原因，我上传了一个较新的ssl库，路径为：
+    JCO_CENTER/LIB/TRUCK/IPCam_dm365/openssl-1.0.1c, 且被Makefile优先使用.
+
+    默认路径: 
+    /opt/dm365/montavista/pro/devkit/arm/v5t_le/bin/../target/usr/include
+
+    solution:
+    删除JCO_CENTER/LIB/TRUCK/IPCam_dm365/openssl-1.0.1c
+
+5. Thinking
+    (1) 整个问题过程花费的时间
+        袁辅仙      1.5 day
+        张 + 罗     0.5 day
+        郭          2   day
+
+    (2) 问题引入、发现、解决
+        openssl-1.0.1c commite      2012-11-21 14:39:05
+        测试部发现问题
+        测试部被我忽悠
+        开始着手解决问题
+        问题解决日期                2012-11-28
+
+        问题总结日期                2012-12-01 10:10:00 ~ 10:30:00
+
+    (3)
+        软件危机, 我们需要总设计师, 对整体进行把握, 考虑到部分间的影响
+        发现问题越早, 解决成本越低, 我们需要持续集成测试、回归测试
+        我们需要产品特性定义文档, 如果没有, 研发可以随便忽悠测试
+        解决问题的方法要积累、橡皮鸭工作法（多出声问自己几个为什么？）
+        程序员存在的价值：防御式编程、为什么不检查返回值。
+        故善战者，立于不败之地，而不失敌之败也。
+
+    (4)
+        Why
+        What
+        How     将大目标、大任务无限细分的过程。而面对问题的直接逃避，是
+                最终不能解决问题、效率低下的最根本原因。
+

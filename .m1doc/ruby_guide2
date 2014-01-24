@@ -1,0 +1,62 @@
+#! /usr/bin/env ruby
+
+class MegaGreeter
+    attr_accessor :names
+
+    def initialize(names = 'world')
+        @names = names
+    end
+
+    # say hi to everybody
+    def say_hi
+        if @names.nil?
+            puts '...'
+        elsif @names.respond_to?("each")
+            # @names is a list of some kind, iterate!
+            @names.each do |name|
+                puts "hello #{name}!"
+            end
+        else
+            puts "hello #{@names}!"
+        end
+    end
+
+    # say bye to everybody
+    def say_bye
+        if @names.nil?
+            puts "..."
+        elsif @names.respond_to?("join")
+            # join the list elements
+            puts "Goodbye #{@names.join(", ")}. come back"
+        else
+            puts "Goodbye #{@names}. Come back soon!"
+        end
+    end
+end
+
+# self __func__
+if __FILE__ == $0
+
+    puts "-------- #{__LINE__} ----------" 
+    mg = MegaGreeter.new
+    mg.say_hi
+    mg.say_bye
+
+    # Change name to be 'Zeke'
+    puts "-------- #{__LINE__} ----------" 
+    mg.names = 'Zeke'
+    mg.say_hi
+    mg.say_bye
+
+    # Change the name to an array of names
+    puts "-------- #{__LINE__} ----------" 
+    mg.names = ['Albert', 'Brenda', 'Charles', 'Dave', 'Englebert']
+    mg.say_hi
+    mg.say_bye
+
+    # Change to nil
+    puts "-------- #{__LINE__} ----------" 
+    mg.names = nil
+    mg.say_hi
+    mg.say_bye
+end

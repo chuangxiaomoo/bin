@@ -1,0 +1,66 @@
+/* live555 */
+
+live555学习笔记3－消息循环
+http://blog.csdn.net/niu_gao/article/details/6907493
+
+. doEventLoop 中的 SingleStep()
+
+    循环中每次走一步：SingleStep()。这走一步中都做些什么呢？
+
+    总结为以下四步：
+
+    １为所有需要操作的socket执行select。
+
+    ２找出第一个应执行的socket任务(handler)并执行之。
+
+    ３找到第一个应响应的事件，并执行之。
+
+    ４找到第一个应执行的延迟任务并执行之。
+
+    /*  所有的task的执行时间都不可以太长，若有执行时间太长的task，可以：
+     *  1   建线程来处理
+     *  2   BasicTaskScheduler::createNew() 以在不同的 TaskScheduler 中做。
+     **/
+
+live555学习笔记4－计划任务(TaskScheduler)深入探讨
+http://blog.csdn.net/niu_gao/article/details/6910549
+
+
+. 延时执行任务，通常用来作错误的循环处理
+
+    scheduleDelayedTask(延时时间, 函数指针)
+
+    通常初始化函数被两个上层函数调用：
+
+    一个是构造函数，
+    另一个则是scheduleDelayedTask()的参数TaskFunc *指针指向的函数，以保证错误重试。
+
+
+. Background，对socket的监听，以事件的形式真正的替代循环
+
+    turnOnBackgroundReadHandling(socket, )
+    setBackgroundHandling()
+
+. Event
+
+    triggerEvent 只是SET了一个标志位，然后在 doEventLoop中检查罢了。
+
+    upgradeTaskID = theScheduler->createEventTrigger(JPtzService::dmUpgradeTask);
+    theScheduler->triggerEvent(upgradeTaskID, this);
+
+. TaskScheduler执行圈圈
+
+    TaskScheduler* theScheduler = BasicTaskScheduler::createNew();
+
+    theScheduler->doEventLoop(&flag); 
+
+    void BasicTaskScheduler0::doEventLoop(char* watchVariable) 
+    {
+        // Repeatedly loop, handling readble sockets and timed events:
+        while (1) {
+            if (watchVariable != NULL && *watchVariable != 0)
+                break;
+            SingleStep();
+        }
+    }
+

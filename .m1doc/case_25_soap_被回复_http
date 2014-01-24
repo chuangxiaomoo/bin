@@ -1,0 +1,11 @@
+/* 25_soap_被回复_http */
+
+
+1. 真正原因
+    /* True causes */
+    IP 冲突了
+
+2. 问题描述
+    /* from R&D or Tester */
+    经抓包，soap 的post，回复了一个 http response.
+

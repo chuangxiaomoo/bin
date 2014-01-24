@@ -1,0 +1,104 @@
+/* encode_para */
+
+. devvecfg -act list
+
+[Success]
+validvinum=1  // ReadOnly 输入最大通道数 摄像机数量
+validvenum=2  // ReadOnly 输出最大通道数 编码数量
+
+/* 基本没有什么用，可以剔除   --->   devValid.iValidSizeNum = 4;
+    清理，搜索所有 devValid.iValidSizeNum
+
+    devValid.iValidVINum = 1;   // 镜头数
+    devValid.iValidVENum = 3;   // 同时出的码流，应该是2
+    devValid.iValidSizeNum = 4; // 同时能编的流数目
+
+    enctype0=0    // ReadOnly  if (is_family_1080p() || is_family_720p()) {
+    enctype1=1    // ReadOnly      devValid.iValidSizeNum = 4;
+    enctype2=2    // ReadOnly  }
+    enctype3=3    // ReadOnly
+
+    typedef enum {                  // enctype
+        VENC_SIZE_QCIF  = 0,        // QCIF
+        VENC_SIZE_CIF   = 1,        // CIF
+        VENC_SIZE_D1    = 2,        // D1
+        VENC_SIZE_720P  = 3,        // 720P
+        VENC_SIZE_UVGA  = 4,        // UVGA
+        VENC_SIZE_1080P = 5,        // 1080P
+    } VENC_SIZE_E;
+
+*/
+
+
+/* 以逗号为分隔符 C(n, 1) + C(n, 2) 种排列组合  */
+capabiliby720p=QCIF,CIF,D1,720P,QCIF:D1,CIF:D1,QCIF:720P,CIF:720P,D1:720P
+
+devvecfg -act set -chns 2,3,0,0,25,4096,25,1,0,;2,1,0,0,25,512,25,1,0,;    
+                        2,3,0,0,25,4096,25,1,0,;
+                        2,1,0,0,25,512,25,1,0,;    
+
+chn0=format:2,enctype:3,standard:0,vi:0,fps:25,bps:4096,gop:25,preferfps:1,brmode:0,
+chn1=format:2,enctype:0,standard:0,vi:0,fps:25,bps:120,gop:25,preferfps:1,brmode:0,
+
+    format:     压缩算法，2,h264;4,mpeg4。现只支持2 ->VENC_FORMAT_E
+    enctype:    尺寸                                ->VENC_SIZE_E
+                    0,        // QCIF
+                    1,        // CIF
+                    2,        // D1
+                    3,        // 720P
+                    4,        // UVGA
+                    5,        // 1080P
+    standard:   制式，0,P制;1, N制。现只支持0       ->VI_STD_E
+    vi:         Camera编号，现在只支持0，代表一个Camera
+    fps:        帧率
+    bps:        码率
+    gop:        I帧间隔
+    preferfps:  0 质量优先，1 速度优先
+    brmode:     0 定码流，1 变码流
+
+/* ini */
+config_vechn.ini-> [ve_attr.normal] chns
+
+/* data struct details 
+ *  2013-05-11
+ */
+
+static VENC_SIZE_E devVeChnCap[VECAPNUM_MAX][VECAPCHN_MAX]
+ConfVeCapInit();
+
+QCIF,CIF,D1,QCIF:D1,CIF:D1
+devVeChnCap [][2]= {
+    {0},
+    {1},
+    {2},
+    {0,2},
+    {1,2},
+}
+
+
+int ConfVeCapMatch()
+
+
+/* API details 
+ *  2013-05-11
+ */
+
+JCPCmdDevVECfg 
+
+    /* CONF_ACT_GET 从全局变量 devVeChnAttr 获取 chns */
+    /* CONF_ACT_SET do {} while (strtok_r(chns, ";");); 来智能识别有几个通道 */
+    int SysConfEncChnCfg(CONF_ACT_E act, char *szChns)
+
+        /* 完成 结构体 VECHN_FORMAT_S and 字串 chns 的解析
+         *
+         * 通过do {} while (strtok_r(chns, ";");); 来智能识别有几个通道 
+         * VECHN_FORMAT_S 和 iChn 为输出参数
+         * szChns 与 delim 为输入参数
+         */
+        ConfVeChns2Attr(VECHN_FORMAT_S *, int *iChn, char *szChns, char *delim)
+            /* 如果只有一个通道，比较第一列就可以了。 -- devVeChnCap
+             * 如果有两个通道，再比较第2列的。
+             */
+            ConfVeCapMatch(VECHN_FORMAT_S *veChnAttr, int iChn)
+
+
