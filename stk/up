@@ -1,0 +1,534 @@
+#! /bin/bash
+
+. `dirname ${0}`/dbank || { echo "dbank err" && exit; }
+. /etc/common.rc
+
+#
+# ------  common part over -----------
+#
+
+
+function fn_tougu_reminder() 
+{
+    function fn_wall() {
+        cat <<-HERE > $tougu_wall
+
+        -------------------------------------------------------------------------
+
+                    $code         $code        $code        $code
+                    $code         $code        $code        $code
+                    $code         $code        $code        $code
+                    $code         $code        $code        $code
+                    $code         $code        $code        $code
+
+        -------------------------------------------------------------------------
+
+		HERE
+
+        wall $tougu_wall
+        exit
+    }
+
+    function fn_url() {
+        host="http://stock.finance.sina.com.cn/match/api/jsonp.php/"
+        host=${host}"SINAFINANCE137718069283484444/Order_Service.getTransaction?"
+        url=${host}"uid=$1&count=100&from=0&days=0&sort=1&cid=1001"
+    }
+
+    function fn_arrest() {
+        > $tougu_stdout
+        fn_url $uid_HuGongjian
+
+        $W3M -dump $url > $tougu_rawxml 2>$tougu_stderr
+        xt_ret $? "NETWORK" || return $?
+
+        cat $tougu_rawxml | sed 's/-[0-9][0-9]$/&./' | \
+            tr -d '\n' | tr -d ' ' | \
+            sed -e 's/\},/&\n/g' -e 's#["{}]##g' -e '1s#.*\[##g' -e '$s#]##g' | \
+            tee $tougu_stdout | \
+            sed -e 's/StockName.*SellBuy/SellBuy/g' -e 's/[a-z][a-z_]*://g' > $tougu_ripexml
+
+        sellbuy=`cat $tougu_ripexml | awk -F',' '{  
+            if ($5==0) { deal="buy" } else {deal="sell";}
+            printf "%-10s %-6s %-8s %s\n", $4, deal, $6, $10;
+        }'`
+
+        echo "$sellbuy" | \
+            awk '{print $1}' | tr -d '[a-z]' | sort -u -g > $tougu_ripetxt
+
+        exit
+        # | sed -e 's/.*[//g' -e 's/].*//g'
+    }
+    # ------------------------- BODY -------------------------------------
+
+    deal_buy=0
+    deal_sell=1
+    deal_wanted=$deal_buy
+    uid_HuGongjian=1026334481
+
+    mkdir -p ${tougu_debug%/*}
+    touch $tougu_debug
+
+    while :; do
+        fn_arrest
+        sleep 5
+    done
+}
+
+function fn_cap() 
+{
+    $workdir/sina 
+    xt_ret $? "sina fail" || return $?
+
+    lines=`cat $sn_cap_nmc | wc -l`
+    [ $lines -gt 2000 ]
+    xt_ret $? "$sn_cap_nmc $lines less than 2000 lines" || return $?
+
+    echo "
+    DROP TABLE IF EXISTS cap;
+    CREATE TABLE cap (
+        code    INT(6)  ZEROFILL, 
+        date    DATE NOT NULL,
+        close   DECIMAL(6,2) NOT NULL,
+        cap     INT(14),
+        nmc     INT(14), 
+        name    CHAR(16),
+        INDEX(code,date)
+    );
+
+    LOAD DATA LOCAL INFILE '$sn_cap_nmc' INTO TABLE cap;
+    " | mysql -u root kts
+}
+
+function fn_load_f_2_tbl_samename() 
+{
+    echo "为防止误删表，特停用此功能!" && exit
+
+    [ ! -f "$1" ] && echo "Usage: $FUNCNAME FILEPATH" && exit
+
+    tbl_day=${1##*/}
+    tbl_day=${tbl_day%%\.*}
+    tbl_macd="macd_${tbl_day}"
+    tmp_txt='/dev/shm/.tmp_txt'
+
+    tail -251 $1 | tail -n +2  > $tmp_txt
+    
+    echo "
+    DROP TABLE IF EXISTS $tbl_day;
+    CREATE TABLE $tbl_day (
+        date        DATE NOT NULL,
+        yesc        DECIMAL(6,2) NOT NULL,
+        open        DECIMAL(6,2) NOT NULL,
+        high        DECIMAL(6,2) NOT NULL,
+        low         DECIMAL(6,2) NOT NULL,
+        close       DECIMAL(6,2) NOT NULL,      
+        volume      DECIMAL(10,2) NOT NULL,
+        amount      DECIMAL(12) NOT NULL
+    );
+
+    LOAD DATA LOCAL INFILE '$tmp_txt' INTO TABLE $tbl_day FIELDS TERMINATED BY ',';
+
+    DROP TABLE IF EXISTS $tbl_macd;
+    CREATE TABLE $tbl_macd (
+        id          INT(6) PRIMARY key AUTO_INCREMENT NOT NULL,
+        date        DATE NOT NULL,
+        close       FLOAT NOT NULL DEFAULT 0,
+        short_ema   FLOAT NOT NULL DEFAULT 0,
+        long_ema    FLOAT NOT NULL DEFAULT 0,
+        dif         FLOAT NOT NULL DEFAULT 0,
+        dea         FLOAT NOT NULL DEFAULT 0,
+        macd        FLOAT NOT NULL DEFAULT 0
+    );
+
+    INSERT INTO $tbl_macd (date, close) SELECT date, close FROM $tbl_day ;
+
+    " | mysql -u root test
+}
+
+function fn_http_get() 
+{
+    abc=12345
+    echo ${abc:0:1}
+    bourse='sh'
+
+    echo "
+    DROP TABLE IF EXISTS $tbl_day;
+    CREATE TABLE $tbl_day (
+        code        INT(6) ZEROFILL NOT NULL, 
+        date        DATE NOT NULL,
+        yesc        DECIMAL(6,2) NOT NULL,
+        open        DECIMAL(6,2) NOT NULL,
+        high        DECIMAL(6,2) NOT NULL,
+        low         DECIMAL(6,2) NOT NULL,
+        close       DECIMAL(6,2) NOT NULL,      
+        volume      DECIMAL(12) NOT NULL,       -- 以‘万股’为单位
+        amount      DECIMAL(12) NOT NULL,       -- 以元为单位
+        INDEX(code,date),
+        INDEX(date)
+    );
+
+    LOAD DATA LOCAL INFILE '$tmp_txt' INTO TABLE $tbl_day FIELDS TERMINATED BY ',';
+
+    " | mysql -u root test
+}
+
+function fn_add_yesclose() 
+{
+    local p_znz="$warehs/znz_day"
+    local p_sql="$warehs/mysql"
+    local day_del='2013-10-08'
+
+    mkdir -p $p_sql
+    cd $p_znz
+
+    local i=
+    for i in *; do
+        sort -k2 -g $i | awk '{
+            printf "%s\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n" ,
+            $1,$2, yesc, $3, $4, $5, $6, $7, $8;
+            yesc=$6
+        }' | sed "/$day_del/d" > $p_sql/$i
+    done
+}
+
+# min/2013-09-30/14.59.01
+#         TRADE           昨收    今开    最高 最低 
+# 000002  9.13    0.77    9.06    9.08    9.18 9.03 633756.30   576146571
+#         $2                      $5      $6   $7
+# 
+# day/000002
+# 日期        开盘价  最高价  最低价  收盘价      成交量（万股）  成交额（万元）
+# 2013-09-30  9.08    9.18    9.03    9.13        6337.56     57614.66
+
+function fn_hexun_day() 
+{
+    DATE=`date +%Y-%m-%d`
+    OPENDATE=`$W3M -dump ${url_sh000001} |awk -F',' '{print $(NF-2)}'`
+    # export DATE=${OPENDATE}      # uncomment this line to update compulsely
+
+    [ -z "$OPENDATE" ] && echo "    SINA UNREACHABLE!" | wall && return 1
+    [ "$DATE" != "$OPENDATE" ] && echo "Error: market is close" && return 1
+
+    MAXDATE=`mysql -N kts <<< "SELECT max(date) from day WHERE code = 900001 ;"`
+
+    if [ "$MAXDATE" == "$OPENDATE" ]; then
+        echo "WARNING: ignore redo $MAXDATE" && return 1
+    fi 
+
+    $workdir/hexun || { 
+        sleep 2; $workdir/hexun || 
+        { echo "up 2 fail" | wall; return 1 ;}
+    }
+
+    awk '{
+        printf "%06d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n", 
+                  $1, $13, $4, $5,  $6,  $7,  $2, ($8/100), ($9/10000)
+    }'  $hx_ripetxt > $hx_dayclose
+
+    $W3M -dump ${url_sh000001} | awk -F',' '{
+        printf "%06d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n", 
+            '900001', $31, $3, $2, $5, $6, $4, ($9/100), ($10/10000);
+    }' >> $hx_dayclose
+    xt_ret $? "NETWORK" || return $?
+
+    grep -q 900001 $hx_dayclose || { echo "Error: 900001" && return 1 ;}
+
+    p_hx_day="$warehs/hx_day"
+    mkdir -p $p_hx_day
+    cp $hx_dayclose $p_hx_day/$DATE
+
+    echo "
+    LOAD DATA LOCAL INFILE '${hx_dayclose}' INTO TABLE kts.day;
+    " | mysql kts
+}
+
+function fn_del_hexun_day() 
+{
+    DATE=`date +%Y-%m-%d`
+    OPENDATE=`$W3M -dump ${url_sh000001} | awk -F',' '{print $(NF-2)}'`
+
+    [ -z "$OPENDATE" ] && echo "    SINA UNREACHABLE!" | wall && return 1
+    export DATE=${OPENDATE}      # uncomment this line to del compulsely
+    echo "    del hexun_day ${DATE}..."
+
+    if [ "$DATE" = "$OPENDATE" ]; then
+        cmd_del_curdate="DELETE FROM day WHERE date = '${OPENDATE}';"
+        echo "
+        ${cmd_del_curdate}
+        " | mysql kts
+    fi
+    return 0
+}
+
+function fn_redo_hexun_day() 
+{
+    echo "    redo hexun_day..."
+    fn_del_hexun_day && fn_hexun_day
+
+    if [ "$?" -eq 0 ]; then
+        echo "    redo hexun_day succ"
+    else
+        echo "    redo hexun_day fail"
+    fi
+}
+
+function fn_load_directory() 
+{
+    local tbl_name='day'
+    local p_sql="$warehs/znz_day/"
+    cd $p_sql
+    # 做成一个大文件会快得多
+    # cat [0-7]* > sql
+
+    local i=
+   #for i in 000002; do
+    for i in 900001; do
+        echo load $i ...
+        echo "
+        LOAD DATA LOCAL INFILE '$i' INTO TABLE $tbl_name
+        " | mysql kts
+    done
+}
+
+
+function fn_add_code_2_zixungu() 
+{
+    [ -z "$*" ] && echo "Usage: zixungu code..." && exit
+    # echo $@ && exit
+    # D:\dzh2\USERDATA\block
+    # 每个自选股都有自己的独特代码，现以8为实现
+    # Linux中的vim ga 不是很准确的，不能完全解码uni-code，到xp中就OK了。
+    # echo "obase=16;ibase=16; 87+A" | bc
+    # mysql -N -B kts <<< "SELECT code FROM cap WHERE code < 50 order by code;" | xargs up 6 > /winc/relay/自选股.BLK
+
+    # HEAD="\xa6\x00Q\xff\x01"              
+    # DELI="\x00}\xa9\x00\x91\xb9\x88R"
+    HEAD="\xa5\x00Q\xff"              
+    DELI="\x00\x00\x00\x00"
+    sql_insert0=''
+
+    echo "DROP TABLE IF EXISTS zxg;
+        CREATE TABLE zxg (
+            id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+            code        INT(6) ZEROFILL NOT NULL DEFAULT 0
+        );
+        INSERT INTO zxg (code) VALUES 
+    " > ${sql_temp}
+    echo $@ | sed -e 's/^/(/' -e 's/ /),(/g' -e 's/$/);/' >> ${sql_temp}
+
+    {
+    echo -n -e $HEAD
+    local i=
+    for i in $@; do
+        case $i in
+        [67]*)
+            echo -n SH$i
+            ;;
+        [03]*)
+            echo -n SZ$i
+            ;;
+        *)
+            echo -e "\n    Invalide code $i, exit\n" > /dev/stderr && exit
+            ;;
+        esac
+        echo -n -e $DELI
+    done ;
+    } > /media/sf_dzh2/USERDATA/block/自选股.BLK
+
+    mysql kts < ${sql_temp}
+    echo -e "\n    add zxg over.\n"
+}
+
+
+function fn_add_flt_visit_2_zixuangu() 
+{
+   #goodboys=`mysql -N -B kts <<< "SELECT flt_visit.code, cap.nmc FROM flt_visit,cap ;"`
+    goodboys=`mysql -N -B kts <<< "SELECT f.code FROM 
+        flt_visit as f,cap as c WHERE f.code=c.code ORDER by c.nmc;"`
+
+    [ -z "$goodboys" ] && echo "No goodboys found!" && exit
+
+    fn_add_code_2_zixungu $goodboys
+}
+
+function fn_up_tbl_xRD() 
+{
+    p_bin=/root/bin/stk/bin/
+
+    make -C $p_bin
+    
+    cp /media/sf_dzh2/Download/PWR/full.PWR $p_bin
+    xert $? `$PS8` || return $?
+
+    [ ! -f "$p_bin/xRD" ] && echo "xRD not exist" && exit
+    $p_bin/xRD | sort -r -k2 > $p_bin/xRD.list
+
+    echo "
+    DROP TABLE IF EXISTS xRD;
+    CREATE TABLE xRD (
+        code        INT(6)  ZEROFILL, 
+        date        DATE NOT NULL,
+        song_ratio  DECIMAL(8,5) NOT NULL,
+        pei_ratio   DECIMAL(8,5) NOT NULL,
+        pei_price   DECIMAL(8,5) NOT NULL,
+        div_ratio   DECIMAL(8,5) NOT NULL,
+        INDEX(code,date)
+    );
+
+    LOAD DATA LOCAL INFILE '$p_bin/xRD.list' INTO TABLE xRD;
+    " | mysql -u root kts
+
+
+    if [ "$?" -eq 0 ] ; then
+        echo "Update TABLE xRD SUCCESS" && return 0
+    else
+        echo "Update TABLE xRD FAILURE" && return 1
+    fi
+}
+
+function fn_down_fenbi() 
+{
+    # sina的分笔粒度是最小的，分笔数据3家对比详见：
+    mkdir -p `dirname $fenbi_raw`
+    
+    host="http://hqdigi2.eastmoney.com/EM_Quote2010NumericApplication/CompatiblePage.aspx?"
+    para="Type=OB&stk=0000022&Reference=xml&limit=0&page="
+
+    page_cnt=`$W3M -dump "$host${para}1" 2>/dev/null | head -1 | awk -F"[:,]" '{print $2}'`
+    [ -z "$page_cnt" ] && echo "error: null page_cnt" && exit
+
+    > $fenbi_raw
+    local i
+    for (( i=1; i<=$page_cnt; i++ )); do
+         url=$host${para}$i
+         $W3M -dump "$url" 2>/dev/null >> $fenbi_raw
+         xt_ret $? "NETWORK" || return $?
+    done
+
+    sed -i '/jsTimeSharingData/d' $fenbi_raw
+    cat $fenbi_raw | tr -d '[' | tr -d ']};' | sed 's/","/\n/g'  | tr -d '"' > ${fenbi_ripe}
+}
+
+function fn_sel_day_into_znz_dir() 
+{
+    # 对 /tmp 有写权限，其它的则需要设置
+    mkdir -p /tmp/znz_day
+    icodes=`(cd $warehs/znz_day && ls)`;
+    local i=
+    for i in $icodes; do
+        echo $i
+        echo "
+        SELECT * FROM day WHERE code = $i INTO OUTFILE '/tmp/znz_day/$i'; 
+        " | mysql kts
+    done
+}
+
+function fn_trs_min_2_day() 
+{
+    # 指南针数据是经过除权的数据，每次使用znz后要记住除权时间.
+    # [ -z "$1" ] && echo "Usage: $FUNCNAME date" && exit
+    DATE=2013-12-12
+
+    # SELECT code,date,yesc,open,high,low,close,volume,amount 
+    # SELECT code,date,open,high,low,close,volume,amount 
+    echo "
+    SELECT code,date,yesc,open,high,low,trade,volume/100,amount/10000 
+        FROM min WHERE date='$DATE' and time='15:09:00';
+	" | mysql -N kts > $m2d_temp
+
+    ## LOAD时数据自动会进行四舍5入
+    echo "
+    LOAD DATA LOCAL INFILE '$m2d_temp' INTO TABLE day
+	" | mysql kts
+
+    return 0
+}
+
+function fn_redo_hexun_day_fr_min() 
+{
+    # 
+    echo "    redo hexun_day fr min..."
+
+    DATE=`mysql -N kts <<< "SELECT date FROM stamp_min WHERE id = (SELECT max(id) FROM stamp_min);"`
+    TIME=`mysql -N kts <<< "SELECT time FROM stamp_min WHERE id = (SELECT max(id) FROM stamp_min);"`
+    OPENDATE=`$W3M -dump ${url_sh000001} |awk -F',' '{print $(NF-2)}'`
+
+    [ -z "$OPENDATE" ] && echo "    SINA UNREACHABLE!" | wall && return 1
+    [ "$DATE" != "$OPENDATE" ] && echo "Error: market is close" && return 1
+
+
+    fn_del_hexun_day
+    xt_ret $? "del error" || return $?
+
+    echo "
+    SELECT code,date,yesc,open,high,low,trade,volume/100,amount/10000 
+        FROM min WHERE date='$DATE' and time='${TIME}';
+	" | mysql -N kts > $m2d_temp
+    xt_ret $? "mysql > $m2d_temp" || return $?
+
+    ## LOAD时数据自动会进行四舍5入
+    echo "
+    LOAD DATA LOCAL INFILE '$m2d_temp' INTO TABLE day
+	" | mysql kts
+    xt_ret $? "load data $m2d_temp" || return $?
+
+    echo "    end of redo hexun_day fr min..."
+
+    return 0
+}
+
+function fn_up_rzrq_codes_tbl() 
+{
+    echo "
+    DROP TABLE IF EXISTS rzrq_codes;
+    CREATE TABLE rzrq_codes (
+        id      INT(6) PRIMARY key AUTO_INCREMENT NOT NULL,
+        code    INT(6)  ZEROFILL
+    );
+
+    INSERT INTO rzrq_codes(code) SELECT DISTINCT  code FROM rzrq_day;
+    " | mysql kts
+    return 0
+}
+
+
+function fn_up_swing10() 
+{
+    cd $workdir
+    > $mps_god
+    head -n -5 $mps_org >> $mps_god
+    
+    echo "call sp_count_swing10();" >> $mps_god 
+    mysql $mo -t kts <<< "source $mps_god"
+}
+
+function fn_main() 
+{
+    cmdlist=(
+    # fixed sequence
+    "cap                                # up cap (A股最大市值股中国石油--2万亿)"
+    "down_fenbi                         # 下载分笔数据"
+    "hexun_day                          # 大盘日线数据 4:00:00 PM"
+    "del_hexun_day                      # 删除大盘日线，防止冲突"
+    "redo_hexun_day                     # 重做大盘日线数据"
+    "redo_hexun_day_fr_min              # 利用已有分线，重做大盘日线"
+    # --------------------              ABOVE IS FIXED SEQUENCE --------------------
+    "up_tbl_xRD                         # --- update table EXCLUDE RIGHT DIVIDEN"
+    "add_code_2_zixungu code...         # 添加CODE到ZXG.BLK，并写表zxg"
+    "add_flt_visit_2_zixuangu           # 添加表flt_visit中code到ZXG.BLK"
+    "up_rzrq_codes_tbl                  # 更新RZRQ业务数据"
+    "up_swing10                         # 更新涨跌停6.1%数据"
+    # --------------------              ABOVE IS FIXED SEQUENCE --------------------
+    "tougu_reminder                     # --- 投顾大赛提醒器，5分钟延时"
+    "add_yesclose                       # 为yahoo.指南针数据添加yesclose"
+    "load_directory                     # load整个文件夹到数据库"
+    "load_f_2_tbl_samename filepath     # 导入日线到同名表"
+    "sel_day_into_znz_dir               # 导出日线"
+    "trs_min_2_day                      # 最后一笔分线转日线"
+    )
+    fn_execute "$@"
+}
+
+# fn_main 5
+ fn_main "$@"
+

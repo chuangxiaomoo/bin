@@ -1,0 +1,93 @@
+#! /bin/bash -
+
+. `dirname ${0}`/dbank || { echo "dbank err" && exit; }
+. /etc/common.rc
+
+function fn_sina_ticktime() {
+    cat $sn_rawxml | xargs -d ',' -n1 2>/dev/null | grep -m1 ticktime ; exit
+}
+
+function fn_sina_filedname() {
+    cat $sn_rawxml | \
+     sed -e 's/\},/&\n/g' -e 's#["{}]##g' -e '1s#^\[##g' -e '$s#]##g' \
+         -e 's/ticktime:..:..:..,//g' | \
+      head -1 $file | xargs -d',' -n1 | grep -v '^$' | cat -n -b  ; exit
+}
+
+function fn_fmt_sina() {
+    awk -F',' '{ 
+        synlen = " %-12s ";
+        if (length($3) < 9) { synlen = " %-10s "; }
+        else if (length($3) < 12) { synlen = " %-11s "; }
+
+        printf "%-6s" synlen "%-6s %-6s %-6s %-6s %-6s %-6s %-6s %-6s %-6s %-10s %-10s\n", \
+                   $2, $3,   $4,   $5,  $6,   $7, $8,  $9,  $10, $11, $12, $13,  $14
+    }' $1
+}
+
+function fn_sina() {
+    local url='http://vip.stock.finance.sina.com.cn'
+    local page='/quotes_service/api/json_v2.php/Market_Center.getHQNodeData'
+    local all='?page=1&num=2480&sort=symbol&asc=1&node=hs_a&_s_r_a=page'
+    local  sh='?page=1&num=1000&sort=symbol&asc=1&node=sh_a&_s_r_a=page'
+    local sz1='?page=1&num=800&sort=symbol&asc=1&node=sz_a&_s_r_a=page'
+    local sz2='?page=2&num=800&sort=symbol&asc=1&node=sz_a&_s_r_a=page'
+
+    OPENDATE=`$W3M -dump ${url_sh000001} | \
+                            awk -F',' '{print $(NF-2)}'`
+    [ -z "$OPENDATE" ] && echo "    SINA UNREACHABLE!" | wall && return
+#   代码   名称     最新价 涨跌额 涨跌幅 买入   卖出   昨收   今开   最高   最低   成交量/手 成交额/万 
+
+    # link=$url$page$all so slowly
+    for link in $url$page$sh $url$page$sz1 $url$page$sz2; do
+        echo      $link > /dev/stderr
+        $W3M -dump $link > $sn_rawxml 2>$sn_stderr
+        xt_ret $? "NETWORK" || return $?
+
+        # std xml parser 
+        # xml-content all in 1 line         
+        # google {"matches":[{},{}]}        
+        # sina              [{},{}]
+
+        # -- step1, trim redundant, del spaces
+        # -- step2, split xml to txt lines with '},'
+        # -- step3, dle '"' '{' '}'
+        # -- step4, del head '.*[', del tail '].*'
+
+        # -- step5, del filed such as ticktime
+        # -- step6, del filed names
+
+        cat $sn_rawxml | \
+            sed -e 's/\},/&\n/g' -e 's#["{}]##g' -e '1s#^.*\[##g' -e '$s#].*##g' \
+                -e 's/ticktime:..:..:..,//g' | \
+            sed -e 's/[a-z]*://g' > $sn_ripexml
+
+        fn_fmt_sina $sn_ripexml
+
+        cat $sn_ripexml | \
+            awk -F',' -v v_date=$OPENDATE '{
+                if($4 == 0 ) { v_close = $9; } else { v_close = $4; } 
+                printf "%s\t%s\t%.2f\t%.0f\t%.0f\t%s\n", $2,v_date,v_close, $17,$18, $3;
+            }' >> $sn_cap_nmc
+            # '{printf "%s\t%s\t%s\t%s\t%s\t%s\n", $2,v_date,$4, $17,$18, $3}' | \
+            # sed -e 's/\.[0-9][0-9]*//g' >> $sn_cap_nmc
+
+    done > $sn_ripetxt
+    sort -k3 -g $sn_cap_nmc -o $sn_cap_nmc
+}
+
+function fn_main() {
+    mkdir -p ${sn_rawxml%/*}
+    >${sn_cap_nmc}
+
+    # fn_sina_ticktime
+    # fn_sina_filedname
+    fn_sina 
+}
+
+fn_main $@
+
+# ~/bin/stk/.template/sina.tag
+# 
+#   代码   名称     最新价 涨跌幅 昨收   今开   最高   最低   成交量       成交额       换手   振幅   量比    
+

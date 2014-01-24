@@ -1,0 +1,309 @@
+#! /bin/bash
+#
+#
+# when replace '/' with SF '#', no need to escape, but with SF '/', it does
+# when replace '\', it must be escaped, use the below vars, regardless of 
+# how may `` and "", it work very well. e.g.
+# sed_out=`echo '/\/\$' | 
+# sed -e "s#$_slash#_o_#g" -e "s#$_2backslash#-o-#g" -e "s#$_bsl#+o+#g"` 
+shopt -s gnu_errfmt 
+shopt -s extglob
+
+_slash='/'          # slash
+_2slash='//'        # double slash
+_backslash='\'         # backslash
+_2backslash='\\'        # double backslash
+
+CWD=${PWD}
+SHMPATH=/dev/shm/${0##*/}/$$
+mkdir -p $SHMPATH
+
+# for multi instance
+_pids_=`ls /dev/shm/${0##*/}`
+for _pid_ in $_pids_; do
+    test -d /proc/$_pid_ || rm -fr /dev/shm/${0##*/}/$_pid_
+done
+
+PS8="eval echo \${BASH_SOURCE##*/}\|\$LINENO\|: "
+
+function xert() { [ "${1}" -eq 0 ] || echo ${@:2}; return ${1}; }
+
+function xt_ret() 
+{
+    [ "${1}" = "0" ] && return 0
+    printf "${BASH_SOURCE[1]##*/}%-6s %s\n" "|${BASH_LINENO[0]}|" "${@:2}"
+    return 1
+}
+
+function fn_echo_line()
+{ 
+    echo '|'${BASH_LINENO[0]}'|' $*; 
+}
+
+# echo yellow
+function fn_echo_warn()
+{
+    FG=33 BG=40
+    TEXT="$@"
+    echo -e "\E[${FG};${BG}m${TEXT}"
+    echo -ne "\E[0m"
+    return 0
+}
+
+# echo green
+function fn_echo_succ()
+{
+    FG=32 BG=40
+    TEXT="$@"
+    echo -e "\E[${FG};${BG}m${TEXT}"
+    echo -ne "\E[0m"
+    return 0
+}
+
+#echo red
+function fn_echo_fail()
+{
+    FG=31 BG=40
+    TEXT="$@"
+    echo -e "\E[${FG};${BG}m${TEXT}"
+    echo -ne "\E[0m"
+    return 0
+}
+
+function fn_pkill_children()
+{
+    local papa=$1
+    local child
+    local children=`ps -e -opid,ppid | grep "$papa$" | awk '{print $1}'`
+
+    for child in $children; do
+        fn_pkill_children $child
+        kill -9 $child
+    done
+    return 0;
+}
+
+function fn_pkill_tree() { fn_pkill_children $1; kill -9 $1 ;}
+
+# use default: free -m
+function fn_get_total_mem() { free ${1:--m} | awk '/Mem:/ {print $2}'   ;}
+function fn_get_swap_mem()  { free ${1:--m} | awk '/Swap:/ {print $2}'  ;}
+
+function fn_validate_ip()
+{
+    echo $1 | awk -F. ' {
+        if ((NF != 4) ||
+            ($0 ~ / / ) ||
+            ($1 > 255 || $1<0) ||
+            ($2 > 255 || $2 < 0) ||
+            ($3 > 255 || $3 < 0) ||
+            ($4 > 255 || $4 < 0 )) {
+            exit 1
+        } else {
+            exit 0
+        }
+    }'
+    return $?
+}
+
+function fn_get_value()
+{
+    local file=$1
+    local key=$2
+    cat $file | grep -m1 "^${key}=" | awk 'BEGIN {FS="="}{print $2}'
+}
+
+function fn_get_if_ip()
+{
+    # if $1 not empty, it is interface name
+    ifconfig $1 | grep "inet addr" | cut -d : -f 2 | cut -d ' ' -f 1
+}
+
+function fn_get_using_port_pid()
+{
+    local port=$1 # port number or service name
+    local ip=${2:+@${2}}
+    local protocol=TCP
+
+    lsof -i${protocol}${ip}:${port} | awk '{if ($2 !~ /PID/) print $2}'
+}
+
+function fn_extract_file()
+{
+    local cmprfile=$1 # head.mil.tail.tar
+    local xtract_file=$2
+    local xtract_2_path=$3
+    local cmprtype=${cmprfile##*.}
+    local xtract_cmd=
+
+    case $cmprtype in
+    tar)
+        xtract_cmd="tar xf ${cmprfile} -C ${xtract_2_path} ${xtract_file}"  ;;
+    tgz|gz)
+        xtract_cmd="tar zxf ${cmprfile} -C ${xtract_2_path} ${xtract_file}" ;;
+    zip)
+        xtract_cmd="unzip ${cmprfile} ${xtract_file} -d ${xtract_2_path}"   ;;
+    *)
+        return 1
+        ;;
+    esac
+
+    $xtract_cmd
+    return $?
+}
+
+function fn_create_tar_bz2()
+{
+    local tarfile=$1
+    local files_from=$2
+    local files_xclu=$3
+
+    tar jcfpPTX $tarfile $files_from $files_xclu --ignore-failed-read --atime-preserve
+    return $?
+}
+
+function fn_is_digit()
+{   # echo $@ | grep -q -E "^[0-9]+$"; return ${PIPESTATUS[1]}
+    case $1 in
+        +([0-9])) return 0 ;;
+        *)        return 1 ;;
+    esac
+}
+
+# ini parser
+function fn_ini_get()
+{
+    if [ "$#" -lt 3 ] ; then
+        echo "Usage: fn_get_ini file sect key"
+        return 1
+    fi
+
+    local file=$1
+    local sect=$2
+    local key=$3
+    local val=
+
+    val=`sed -n  -e 's/;.*//g' -e 's///g' -e "/^\[$sect\]/,/\[/p" $file | \
+        grep -w "$key" |  awk -F'=' '{print $2}'`
+
+    if [ "$?" -ne 0 ] ; then
+        return 1
+    fi
+
+    echo $val
+}
+
+function fn_ini_set()
+{
+    if [ "$#" -lt 4 ] ; then
+        echo "Usage: fn_set_ini file sect key val"
+        return 1
+    fi
+
+    local file=$1
+    local sect=$2
+    local key=$3
+    local val=$4
+
+    LANG=GB2312 sed -i "/\[$sect\]/,/\[/s/\<$key\>.*/$key = $val/" $file
+    return $?
+}
+
+function fn_sed_auto_rm()
+{
+    local rm_file=$1
+
+    local rm_start="sed auto add start"
+    local rm_end="sed auto add ending"
+
+    sed -i -e "/$rm_start/,/$rm_end/d" $rm_file
+    xert $? `$PS8`  || return $?
+
+    grep "$rm_end" $rm_file >& /dev/null
+    test $? -ne 0
+    xert $? `$PS8`  || return $?
+}
+
+function fn_sed_auto_insert()
+{
+    test $# -ge 3
+    xert $? `$PS8` "argc error" || return $?
+
+    local add_point=$1
+    local add_content=$2
+    local add_file=$3
+
+    # use c comment 
+    local l_comment=${COMMENT:-//}
+    local add_start="${l_comment} sed auto add start\n"
+    local add_end="${l_comment} sed auto add ending"
+
+    local moo_slash=_moo_slash_
+    local moo_bslash=_moo_bslash_
+
+    add_content=`echo "${add_content}" | \
+        sed -e "s#$_slash#$moo_slash#g" -e "s#$_2backslash#$moo_bslash#g" \
+        -e "s/$/$_2backslash/g" `  # add a '\' at EOF for sed command 'a'
+
+    sed -i -e "/${add_point}/i \
+        ${add_start}${add_content}${add_end}" ${add_file}
+    xert $? `$PS8`  || return $?
+
+    sed -i -e "s#$moo_slash#$_slash#g" -e "s#$moo_bslash#$_2backslash#g" $add_file
+    xert $? `$PS8`  || return $?
+
+    grep "$add_end" $add_file >& /dev/null
+    xert $? `$PS8`  || return $?
+}
+
+
+function fn_exe_usage() 
+{
+    echo
+    echo "    ${0##*/} <id> [OPTIONS...]"
+    echo "    ${0##*/} keyword_in_list"
+    echo "    ${0##*/} {-l | --list}"
+    echo "    ${0##*/} / keyword"
+    echo
+    exit 0
+}
+
+function fn_execute() 
+{
+    case $1 in
+    ''|l|-l|--list)
+        echo "$helpmsg"
+        local idx
+        for (( idx=0; idx<${#cmdlist[@]}; idx+=1 )); do
+            printf "  %-4s%s\n" $idx "${cmdlist[${idx}]}"
+        done
+        ;;
+    +([0-9]))
+        [ $1 -ge ${#cmdlist[@]} ] && \
+        fn_execute --list && echo -e "\n  -- fn_execute $1 too big --\n" && return
+
+        cmd=${cmdlist[$1]/ */}
+        fn_${cmd} "${@:2}"
+        ;;
+    /)
+        local idx
+        for (( idx=0; idx<${#cmdlist[@]}; idx+=1 )); do
+            printf "  %-4s%s\n" $idx "${cmdlist[${idx}]}"
+        done | grep --color "${@:2}"
+        ;;
+    *)
+        local idx
+        for (( idx=0; idx<${#cmdlist[@]}; idx+=1 )); do
+            cmd=${cmdlist[${idx}]/ */}
+            if [ "$1" = "${cmd}" ] ; then
+                fn_${cmd} "${@:2}"
+                return              # avoid fn_exe_usage
+            fi
+        done 
+        fn_exe_usage
+        ;;
+    esac
+}
+
+[ "${BASH_SOURCE##*/}" != "${0##*/}" ] && return 0
+

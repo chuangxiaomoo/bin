@@ -1,0 +1,167 @@
+#! /bin/bash
+. `dirname ${0}`/dbank || { echo "dbank err" && exit; }
+. /etc/common.rc
+
+#
+# .select.sql
+#
+
+function fn_get_curdate_min() 
+{
+    local code=${1:-900001}
+    echo "
+    SELECT * FROM min WHERE code = ${code} and date = CURRENT_DATE();
+    " | mysql kts
+}
+
+function fn_goo_sym_day() 
+{
+    [ $# -eq "0" ] && fn_execute -l && exit
+
+    if fn_is_digit $1; then
+        code=$1
+    else
+        local shmout=$SHMPATH/shmout
+        local index=1
+        echo "google  $1 ..."
+        google $1 2 | tee $shmout
+        [ 0 -ne  "${PIPESTATUS[0]}" ] && echo google fail && exit 1
+
+        lines=`cat $shmout | grep '^[603]' | wc -l`
+        [ 0 -eq "$lines" ] && echo "Error: no symbol $1 found" && exit
+        if [ 1 -eq "$lines" ]; then
+            code=`awk '/^[603]/{print $1}' $shmout`
+            echo $code
+        else
+            while :; do
+                cat -n $shmout
+                read -p "    Please input index[1]:" index
+                [ "${index:=1}" -le $lines ] && let index-- && break
+            done
+            codes=(`awk '{print $1}' $shmout`)
+            code=${codes[$index]}
+        fi 
+    fi
+
+    fields='d.code,d.date,d.close,d.amount'
+    echo "
+    SELECT $fields, $RISE as rise, $SWING as swing,
+        $TURNOV as turnover, c.name FROM day as d, cap as c 
+        WHERE d.code = ${code} and d.code = c.code 
+        ${PIPECMD} ORDER by date ${ASC} limit ${LIMIT:-24};
+	" | mysql -t kts
+}
+
+function fn_get_open_days() 
+{
+    mysql -N kts <<< "SELECT date from day WHERE code = 900001 " | tail -${LIMIT:-48} 
+}
+
+function fn_get_open_days_min() 
+{
+    mysql -N kts <<< "SELECT DISTINCT(date) from min WHERE (code<3 OR code=5)" | tail -${LIMIT:-48}
+}
+
+
+function fn_app_nmc_name() 
+{
+    # 考虑把$1作为排序关键字
+    # comment columns="" to assign *
+    # columns="code rise sink bounce turnover amount"
+    columns=${columns:-'*'}
+    columns=d.${columns// / d.}
+    columns=${columns// /,}
+
+    field=${1:+d.${1}}
+    field=${field:-c.nmc}
+    # echo $columns && exit
+
+    echo "
+    SELECT $columns, c.nmc,c.name FROM ${TBL:-flt_visit} as d, cap as c 
+        WHERE d.code = c.code ORDER by ${field} ${ASC} limit ${LIMIT:-12};
+	" | mysql $mo -t kts     
+}
+
+
+function fn_app_wgt_turnov() 
+{
+    # bounce净换手 amount价格反弹
+    columns="code swing rise sink bounce amount turnover date_low date_high"
+    columns=${columns:-'*'}
+    columns=d.${columns// / d.}
+    columns=${columns// /,}
+    columns=${columns//amount/amount as revive}
+    columns=${columns//bounce/bounce as nettnv}
+
+    field=${1}
+    field=${field:-d.bounce}
+    wgt="TRUNCATE(swing*bounce*nmc/1000000, 2)"
+
+    echo "
+    SELECT $columns, c.nmc, $wgt as wgt, c.name 
+        FROM ${TBL:-flt_visit} as d, cap as c 
+        WHERE d.code = c.code and swing<0 HAVING wgt > 0 ORDER by ${field} ${ASC} limit ${LIMIT:-20};
+	" | mysql $mo -t kts     
+    
+}
+
+function fn_app_day_rise() 
+{
+    # where d.code = c.code 非常重要，不重叠的filed不需要加‘tbl_name.’
+    # as 语句可在 FROM 子句中
+    # field=${1:+d.${1}} 
+    field=${1:-rise}
+    disfield="d.code,d.date,d.volume,d.amount"
+    echo "
+    SELECT $disfield, $RISE as rise, $TURNOV as turnover, c.name 
+            FROM day as d,cap as c where d.code = c.code and  
+            d.date = '$tailday' ${PIPECMD} ORDER BY ${field} ${ASC} limit ${LIMIT:-48};
+	" | mysql -t kts
+}
+
+function fn_get_comma_cloumns()
+{
+    echo "
+    SELECT * FROM ${1:-day} limit 1;
+	" | mysql kts  | head -1  | tr '\t' ','
+    # code,date,yesc,open,high,low,close,volume,amount
+}
+
+function fn_app_day_turnover() 
+{
+    field=${1:-turnover}
+    echo "
+    SELECT d.date,d.code, $TURNOV as turnover, c.name 
+            FROM day as d, cap as c WHERE d.code = c.code and 
+            d.date='$tailday' ${PIPECMD} ORDER by ${field} ${ASC} limit ${LIMIT:-48};
+	" | mysql $mo -t kts
+}
+
+function fn_main() 
+{
+    cmdlist=(
+    "app_nmc_name       [sortfiled]          # 追加股票名到表TBL"
+    "app_wgt_turnov     [sortfiled]          # 追加weight到down_turnov"
+    "get_comma_cloumns  [tbl_name:-day]      # 逗分列名"
+    "get_open_days                           # 开市日列表 \$LIMIT"
+    "get_open_days_min                       # 分钟日列表 \$LIMIT"
+    # ----------------  ABOVE IS FIXED SEQUENCE --------------------
+    "get_curdate_min    [CODE:-900001]       # --- 当日min \$LIMIT"
+    "goo_sym_day        {code|symbol}        # 日线数据 \$LIMIT"
+    "app_day_rise       [sortfiled]          # --- END 涨幅排名 \$LIMIT" 
+    "app_day_turnover   [sortfiled]          # END 换手排名 \$LIMIT"
+    )
+
+    tailday=`fn_maxdate`
+    tailday=${END:-$tailday}
+    ASC=${ASC:+'DESC'}
+    ASC=${ASC:-'ASC'}
+
+    fn_execute "$@"
+}
+
+fn_main "$@"
+
+# http://www.cnblogs.com/zhenjing/archive/2011/07/15/process_mutex_race.html
+# 获取最大ID的记录
+

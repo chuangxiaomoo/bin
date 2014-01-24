@@ -1,0 +1,1 @@
+/root/sh/tools/x_profile.sh

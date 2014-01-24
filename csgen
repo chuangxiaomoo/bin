@@ -1,0 +1,126 @@
+#!/bin/bash -
+#-----------------------------------------------------------------------------
+#          FILE: csgen
+#   DESCRIPTION: Generate ${reffile} for cscope
+#        AUTHOR: moo (God helps those who help themselves) 
+#       CREATED: 2012-05-24 11:29:59 HKT
+#      REVISION: 1.0 
+#-----------------------------------------------------------------------------
+
+PS8="eval echo \${BASH_SOURCE##*/}\|\$LINENO\|: "
+xert() { [ "${1}" -eq 0 ] || echo ${@:2}; return ${1}; }
+
+
+function fn_usage()
+{
+    cat <<-HERE
+    Usage: ${0##*/} [OPTION]
+    Generate ${reffile} for cscope
+
+        -h, --help          show usage
+        -r, --remove        remove ${reffile}* b4 cscope -Rbq
+        -i, --interactive   vi ${cspathes} of project b4 cscope -Rbq
+        -f, --filelist      use filelist and exit
+        -U,                 Update timestamp
+
+    Configuration:
+        .cscope.pathes, include path or exclude path(head with -)
+	HERE
+
+    exit 0
+}
+
+function fn_main()
+{
+    cpplang=(
+        # *.c is default
+        '*.h'
+        '*.cpp'
+        '*.cc'
+        '*.xx'
+        # include
+        '*.hh'
+        '*.inc'
+    )
+
+    reffile=.cscope.out
+    csfiles=.cscope.files
+   cspathes=.cscope.pathes
+    exclude='(||)'  # grep -E -v "${exclude}"
+   namepatt="-iname '*.c' -print"
+    incpath='-I/usr/local/include'
+
+    if [ -f ${reffile} ] && lsof ${reffile} >& /dev/null; then
+        echo "
+        -----------------------------------------------------
+
+        Another cscope is running! Please exit it first...
+
+        -----------------------------------------------------
+        "
+        sleep 1 && exit
+    fi
+
+    case "$1" in
+        -h|--help)
+            fn_usage                        ;;
+        -r|--remove)
+            rm -f ${reffile%%.out}*   
+            echo "
+            Clean ${reffile}* over
+            "
+            exit 0                                              ;;
+        -i|--interactive)
+            vi ${cspathes}                                      ;;
+        -f|--filelist)
+            cscope ${incpath} -u -bq -i $csfiles -f${reffile} 
+            exit 0                                              ;;
+        *)
+            ;;
+    esac
+
+    local idx
+    for (( idx=0; idx<${#cpplang[@]}; idx+=1 )); do
+        namepatt="${namepatt} -o -iname '${cpplang[$idx]}' -print"
+    done
+
+    [ ! -f "$cspathes" ] && > ${cspathes} && vi ${cspathes}
+
+    # exclude line start with '-'
+    exclude_path=`grep "^-" $cspathes | sed 's/^- *//g'`
+
+    if [ -n "$exclude_path" ]; then
+        for x_path in $exclude_path; do
+            x_path=./${x_path#./} # ignore begin with './'
+            x_path=${x_path%/}    # ignore   end with '/'
+            [ ! -e "$x_path" ] && echo $x_path not exist && exit
+            echo "Skip path $x_path"
+            exclude_opt="$exclude_opt -path '$x_path' -prune -o"
+        done
+    fi
+
+    # find [path1] [path2] [path3] -name <name>
+
+    eval find . $exclude_opt $namepatt > $csfiles
+    xert $? `$PS8` "find" || return $?
+
+    while read srcpath; do
+        [ -z "$srcpath" ] && continue
+        [ "${srcpath:0:1}" == '-' ] && continue # echo "Skip $srcpath" && continue
+
+        # 应用于文件夹与文件在同一目录的情况，如 http下 httpd*.c onvif: 
+        # Format: pathname -maxdepth 1
+        [ ! -d "${srcpath%% *}" ] && echo "$srcpath: No such directory" && exit 0
+
+        # echo "eval find ${srcpath} $namepatt >> $csfiles"
+        eval find ${srcpath} $namepatt >> $csfiles
+    done < $cspathes
+
+    sort -u $csfiles -o $csfiles
+
+    # force=-u # Unconditionally  build the cross-reference file
+    [ "-U" == "$1" ] && force=$1
+    cscope ${incpath} ${force} -bq -i $csfiles -f${reffile} 
+}
+
+fn_main $@

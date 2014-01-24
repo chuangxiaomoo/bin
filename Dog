@@ -1,0 +1,87 @@
+#! /bin/bash
+
+
+function fn_main() 
+{
+    [ ! -f "$run" ] && echo "Usage: $0 your_elf_bin" && exit 1
+    [ "$1" == l ] && ./$run --gtest_list_tests && exit 0
+   #[ "$#" != 2 ] && echo "Usage: deco Suite Test" && exit 0
+
+    suites=(`./$run --gtest_list_tests | grep '\.$' | sed 's/\.$//g'`)
+    suites_sz=${#suites[@]}
+
+    if [ "$1" -le $suites_sz ]>&/dev/null; then
+        suites_idx=$1
+        let suites_idx--
+        suite=${suites[${suites_idx}]}
+    else
+        match_word=`echo "${suites[@]}" | xargs -n 1 | grep  "\<$1\>"`   
+        match_open=`echo "${suites[@]}" | xargs -n 1 | grep  "\<$1"`
+        
+        match_lines=${match_word:-${match_open}}
+        match_count=`echo $match_lines | wc -w`
+        suite=$match_lines
+
+        if [ $match_count -eq 0 ] || [ -z "$1" ]; then
+            echo -e "Please select a suite from:" 
+            # no cat -n of busybox
+            # cat -n  --------->  grep -n '^' | tr ':' ' '
+            echo ${suites[@]} | xargs -n 1 | grep -n '^' | tr ':' ' '
+            return 0
+        elif [ $match_count -gt 1 ]; then
+            echo -e "Which suite do u mean:"
+            echo ${suites[@]} | xargs -n 1 | grep -n '^' | tr ':' ' ' | grep "\<$1"
+            # echo $match_count 
+            # echo $match_lines
+            return 0
+        fi
+    fi
+
+
+    # if [ $match_count -eq 1 ]; then
+    tests=(`./$run --gtest_list_tests | sed -n "/${suite}\./,/\.$/p" | grep -v '\.$'`)
+    tests_sz=${#tests[@]}
+
+    if [ "$2" -le $tests_sz ]>&/dev/null; then
+        tester_idx=$2
+        let tester_idx--
+        tester=${tests[${tester_idx}]}
+        echo "----------> $suite.$tester"
+        ./$run --gtest_color=yes --gtest_filter=$suite.$tester
+        return 0
+    else
+        match_word=`echo "${tests[@]}" | xargs -n 1 | grep  "\<$2\>"`   
+        match_open=`echo "${tests[@]}" | xargs -n 1 | grep  "\<$2"`
+        
+        match_lines=${match_word:-${match_open}}
+        match_count=`echo $match_lines | wc -w`
+        tester=${match_lines// /}
+    fi
+
+    #echo $match_count
+    #echo $match_lines
+
+    if [ $match_count -eq 1 ]; then
+        echo "----------> $suite.$tester"
+        ./$run --gtest_color=yes --gtest_filter=$suite.$tester
+    elif [ $match_count -eq 0 ] || [ -z "$2" ]; then
+        echo Please select tester from $suite:
+        echo ${tests[@]} | xargs -n 1 | grep -n '^' | tr ':' ' '
+        return 
+    elif [ $match_count -gt 1 ]; then
+        echo Which tester@$suite do u mean:
+        echo ${tests[@]} | xargs -n 1 | grep -n '^' | tr ':' ' ' | grep "\<$2"
+        return 
+    fi
+}
+
+# Usage: 
+#       Dog l                   --gtest_list_tests 显示所有测试suite和case
+#       Dog                     编号并显示gtest中的suite
+#       Dog suite               编号并显示suite里的case，如果只有一个case，运行之
+#       Dog suite testcase      运行一个case
+#
+#       suite testcase 3种形式：(1) fullnamm (2) abbr. (3) index
+#
+run=$1
+fn_main ${@:2}

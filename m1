@@ -1,0 +1,1159 @@
+#! /bin/bash
+
+ARCHIVE=~/bin/.m1doc/
+cd ${ARCHIVE}
+ . ${ARCHIVE}.pri.bashrc
+
+function fn_agile()                     { cat agile ;}
+function fn_adobepdf()                  { cat adobepdf ;}
+function fn_asm()                       { cat asm ;}
+function fn_awk()                       { cat awk ;}
+function fn_sed()                       { cat sed ;}
+function fn_elf()                       { cat elf ;}
+function fn_fdisk()                     { cat fdisk ;}
+function fn_gprof()                     { cat gprof ;}
+function fn_gcov()                      { cat gcov ;}
+function fn_glibc()                     { cat glibc ;}
+function fn_info()                      { cat info ;}
+function fn_j2box()                     { cat /root/bin/j2box ;}
+function fn_lcov()                      { cat lcov ;}
+function fn_pinfo()                     { cat pinfo ;}
+function fn_puTTY()                     { cat puTTY ;}
+function fn_secureCRT()                 { cat secureCRT ;}
+function fn_sourceinsight()             { cat sourceinsight ;}
+function fn_sloccount()                 { cat sloccount ;}
+function fn_tmux()                      { cat tmux ;}
+function fn_uboot()                     { cat uboot ;}
+function fn_vmware()                    { cat vmware ;}
+function fn_yum()                       { cat yum ;}
+function fn_tcpdump()                   { cat tcpdump ;}
+function fn_wireshark()                 {
+function fn_base()                      { cat wireshark_base ;}
+function fn_filter()                    { cat wireshark_filter ;}
+    local opts=(
+        base
+        filter              # 规则类似 tcpdump
+    )
+    fn_print $@
+}
+
+function fn_python()                    { 
+function fn_base()                      { cat python_base ;}
+function fn_huawei()                    { cat python_huawei ;}
+    local opts=(
+        base
+        huawei              # 未整理
+    )
+    fn_print $@
+}
+
+function fn_ruby()                      { 
+function fn_base()                      { cat ruby_base ;}
+function fn_grammer()                   { cat ruby_grammer ;}
+function fn_guide1()                    { cat ruby_guide1 ;}
+function fn_guide2()                    { cat ruby_guide2 ;}
+function fn_operator()                  { cat ruby_operator ;}
+function fn_block()                     { cat ruby_block ;}
+function fn__percent()                  { cat ruby__percent ;}
+function fn__dollor()                   { cat ruby__dollor ;}
+    local opts=(
+        base                # 手册 在Ruby中，解决一个问题会有多种方法
+        operator            # + - * % 
+        _percent            # %
+        _dollor             # $
+        grammer             # 语法
+        guide1              # 教程1：基础概念
+        guide2              # 教程2：iterate
+        block               # loop while if else case
+    )
+    fn_print $@
+}
+
+function fn_regex()                     { cat regex ;}
+function fn_grep()                      { cat grep ;}
+function fn_find()                      { cat find ;}
+
+function fn_google()                    { cat google ;}
+function fn_chrome()                    { cat chrome ;}
+
+function fn_prog()                      {
+function fn_fundamental()               { cat prog_fundamental ;}
+function fn_01_社会学()                 { cat prog_01_社会学 ;}
+function fn_02_工程学()                 { cat prog_02_工程学 ;}
+    local opts=(
+        fundamental
+        01_社会学
+        02_工程学
+    )
+    fn_print $@
+}
+
+function fn_gcc()                       {
+function fn_fundamental()               { cat gcc_fundamental ;}
+function fn_01_规则()                   { cat gcc_01_规则 ;}
+function fn_02_header_file_include()    { cat gcc_02_header_file_include ;}
+function fn_03_ld_wrap()                { cat gcc_03_ld_wrap ;}
+function fn_ec_闭包()                   { cat gcc_ec_闭包 ;}
+
+    local opts=(
+        fundamental
+        01_规则
+        02_header_file_include
+        03_ld_wrap
+        ec_闭包
+    )
+    fn_print $@
+}
+
+function fn_linux()                     { 
+function fn_cron()                      { cat linux_cron ;}
+function fn_fundamental()               { cat linux_fundamental ;}
+function fn_kernel()                    { cat linux_kernel ;}
+function fn_ldd3()                      { cat linux_ldd3 ;}
+function fn_boot()                      { cat linux_boot ;}
+function fn_time管理()                  { cat linux_time管理 ;}
+function fn_IPC()                       { cat linux_IPC ;}
+function fn_proc()                      { cat linux_proc ;}
+    local opts=(
+        fundamental
+        kernel
+        cron
+        ldd3
+        IPC
+        boot
+        proc
+        time管理
+    )
+    fn_print $@
+}
+
+#
+# . busybox_tftp
+function fn_busybox()                   { 
+function fn_arch()                      { cat busybox_arch ;}
+function fn_ftp()                       { cat busybox_ftp ;}
+function fn_tftp()                      {   . busybox_tftp ;}
+function fn_top()                       { cat busybox_top ;}
+    local opts=(
+        arch
+        ftp
+        tftp
+        top
+    )
+    fn_print $@
+}
+
+# bash中以${!name}形式出现的变量替换，就是间接替换。
+# bash首先，计算$name的值，并用它的值来替换中括号里面的值，再作一次变量替换。
+function fn_bash() {
+function fn_fundamental()               { cat bash_fundamental ;}
+function fn_00_函数bg时main挂住了()     { cat bash_00_函数bg时main挂住了 ;}
+function fn_01_PIPE会使变量为空()       { cat bash_01_PIPE会使变量为空 ;}
+function fn_02_unquoted_star将被扩展()  { cat bash_02_unquoted_star将被扩展 ;}
+function fn_03_unquot_去两边空格()      { cat bash_03_unquot_去两边空格 ;}
+function fn_04_算术运算()               { cat bash_04_算术运算 ;}
+function fn_05_大括号_冒号_操作符运算() { cat bash_05_大括号_冒号_操作符运算 ;}
+function fn_06_将字符串拆分成数组()     { cat bash_06_将字符串拆分成数组 ;}
+function fn_color()                     { cat bash_color ;}
+function fn_common_sense_常识()         { cat bash_common_sense_常识 ;}
+function fn_echo_last_cmd()             { cat bash_echo_last_cmd ;}
+function fn_getopts()                   { cat bash_getopts ;}
+function fn_kill_trap()                 { cat bash_kill_trap ;}
+function fn_tcpip()                     { cat bash_tcpip ;}
+function fn_readline()                  { cat bash_readline ;}
+function fn_redirection()               { cat bash_redirection ;}
+function fn_tmo_getopts()               { cat bash_tmo_getopts ;}
+function fn_tmo_trap()                  { cat bash_tmo_trap ;}
+function fn_dialog()                    { cat bash_dialog ;}
+function fn_string()                    { cat bash_string ;}
+function fn_PIPESTATUS()                { cat bash_PIPESTATUS ;}
+    local opts=(
+        fundamental
+        00_函数bg时main挂住了
+        01_PIPE会使变量为空
+        02_unquoted_star将被扩展        # 不引起来的 * 会被 扩展
+        03_unquot_去两边空格
+        04_算术运算                     # math
+        05_大括号_冒号_操作符运算       # ${parameter:-word} 操作符都以 : 打头 
+        06_将字符串拆分成数组           # 字串中的单个字符操作
+        20_beep                         # echo -e "\a" #如果你的终端会发声的话
+        color
+        common_sense_常识               # try & error
+        echo_last_cmd
+        getopts
+        kill_trap
+        tcpip
+        readline
+        redirection
+        string
+        tmo_getopts
+        tmo_trap
+        dialog                          # whiptail
+        PIPESTATUS                      # 只可以被提取一次
+    )
+    fn_print $@
+}
+
+#
+# ATTENTION: Mark time in every case
+#
+function fn_case() {
+function fn_fundamental()               { cat case_fundamental ;}
+function fn_00_网络故障排查()           { cat case_00_网络故障排查 ;}
+function fn_s1_SSL_CTX_free段错误()     { cat case_s1_SSL_CTX_free段错误 ;}
+function fn_s2_ZXW修改ipcam_cfg段错误() { cat case_s2_ZXW修改ipcam_cfg段错误 ;}
+
+function fn_02_文件不能删除升级失败()   { cat case_02_文件不能删除升级失败 ;}
+function fn_03_FACEBOOK中无ftpclient()  { cat case_03_FACEBOOK中无ftpclient ;}
+function fn_04_红外夜视只有8m()         { cat case_04_红外夜视只有8m ;}
+function fn_05_告警烧加密芯片()         { cat case_05_告警烧加密芯片 ;}
+function fn_06_PROFILE解析失败()        { cat case_06_PROFILE解析失败 ;}
+function fn_07_multidev增加失败()       { cat case_07_multidev增加失败 ;}
+function fn_08_alarm当前状态应该只读()  { cat case_08_alarm当前状态应该只读 ;}
+function fn_09_4358日立机芯无自动聚焦() { cat case_09_4358日立机芯无自动聚焦 ;}
+function fn_10_MAC非00打头网络故障()    { cat case_10_MAC非00打头网络故障 ;}
+function fn_11_mount替换之殇()          { cat case_11_mount替换之殇 ;}
+function fn_12_ini_no_sec()             { cat case_12_ini_no_sec ;}
+function fn_13_No_init_found()          { cat case_13_No_init_found ;}
+function fn_14_web_dont_work()          { cat case_14_web_dont_work ;}
+function fn_15_multi_plt4m_多平台()     { cat case_15_multi_plt4m_多平台 ;}
+function fn_16_WiFi_AP_切换卡顿()       { cat case_16_WiFi_AP_切换卡顿 ;}
+function fn_17_secureCRT_F5_罢工()      { cat case_17_secureCRT_F5_罢工 ;}
+function fn_18_yishi_NFS_boot_fail()    { cat case_18_yishi_NFS_boot_fail ;}
+function fn_19_ssh_Permission_denied()  { cat case_19_ssh_Permission_denied ;}
+function fn_20_svn_passwd_leak()        { cat case_20_svn_passwd_leak ;}
+function fn_21_对讲时_PC端有_echo()     { cat case_21_对讲时_PC端有_echo ;}
+function fn_22_feed_watchdog_fail()     { cat case_22_feed_watchdog_fail ;}
+function fn_23_Tool_connection_fail()   { cat case_23_Tool_connection_fail ;}
+function fn_24_3g_reconnect()           { cat case_24_3g_reconnect ;}
+function fn_25_soap_被回复_http()       { cat case_25_soap_被回复_http ;}
+function fn_26_设备CPU占用率过高()      { cat case_26_设备CPU占用率过高 ;}
+function fn_27_JCP命令IGMP输出乱码()    { cat case_27_JCP命令IGMP输出乱码 ;}
+function fn_28_汉字UTF8串尾乱码()       { cat case_28_汉字UTF8串尾乱码 ;}
+function fn_29_设备到PC单向ping通()     { cat case_29_设备到PC单向ping通 ;}
+function fn_30_ftp_ServerU_文件不完整() { cat case_30_ftp_ServerU_文件不完整 ;}
+function fn_31_REBOOT_LINUX_fail()      { cat case_31_REBOOT_LINUX_fail ;}
+function fn_32_IE吃掉_mousedown_click() { cat case_32_IE吃掉_mousedown_click ;}
+function fn_33_云台运动步长不一致()     { cat case_33_云台运动步长不一致 ;}
+function fn_34_ZXWSDK告警丢失()         { cat case_34_ZXWSDK告警丢失 ;}
+function fn_35_bind_失败_No_such_file() { cat case_35_bind_失败_No_such_file ;}
+function fn_50_前置条件之重启()         { cat case_50_前置条件之重启 ;}
+function fn_51_多行OSD出现UNKNOW()      { cat case_51_多行OSD出现UNKNOW ;}
+function fn_52_TUTK_获取不到配置值()    { cat case_52_TUTK_获取不到配置值 ;}
+function fn_53_平台删除对应用的影响()   { cat case_53_平台删除对应用的影响 ;}
+
+function fn_70_merge_error()            { cat case_70_merge_error ;}
+function fn_71_行淫的女人_小魔的牢骚()  { cat case_71_行淫的女人_小魔的牢骚 ;}
+
+function fn_80_西昌门禁()               { cat case_80_西昌门禁 ;}
+function fn_81_代码实现_从0开始()       { cat case_81_代码实现_从0开始 ;}
+function fn_82_HIK协议实现1个月后傻眼() { cat case_82_HIK协议实现1个月后傻眼 ;}
+
+function fn_a0_vobx_tool_filename()     { cat case_a0_vobx_tool_filename ;}
+
+    local opts=(
+        fundamental
+        00_网络故障排查                 # ethernet mac ip
+        s1_SSL_CTX_free段错误
+        s2_ZXW修改ipcam_cfg段错误
+        02_文件不能删除升级失败         # also busybox SegmentFault
+        03_FACEBOOK中无ftpclient
+        04_红外夜视只有8m
+        05_告警烧加密芯片
+        06_PROFILE解析失败
+        07_multidev增加失败
+        08_alarm当前状态应该只读
+        09_4358日立机芯无自动聚焦
+        10_MAC非00打头网络故障
+        11_mount替换之殇
+        12_ini_no_sec
+        13_No_init_found
+        14_web_dont_work
+        15_multi_plt4m_多平台
+        16_WiFi_AP_切换卡顿
+        17_secureCRT_F5_罢工 
+        18_yishi_NFS_boot_fail
+        19_ssh_Permission_denied
+        20_svn_passwd_leak
+        21_对讲时_PC端有_echo
+        22_feed_watchdog_fail
+        23_Tool_connection_fail
+        24_3g_reconnect
+        25_soap_被回复_http
+        26_设备CPU占用率过高
+        27_JCP命令IGMP输出乱码
+        28_汉字UTF8串尾乱码             # UTF-8 编码
+        29_设备到PC单向ping通
+        30_ftp_ServerU_文件不完整
+        31_REBOOT_LINUX_fail
+        32_IE吃掉_mousedown_click       # 执行力 怀疑精神
+        33_云台运动步长不一致           # 问题：你如何知道->量化数据
+
+        34_ZXWSDK告警丢失               # API设计原则: 进程锁，勿注释代码如何运作
+        35_bind_失败_No_such_file       # API设计原则: API的生命在于复用
+        50_前置条件之重启               # API测试原则：配置文件相关都需要重启
+        51_多行OSD出现UNKNOW            # API测试原则：条件分支，五大特性之完整性
+        52_TUTK_获取不到配置值          # API测试原则：No test, no release
+        53_平台删除对应用的影响         # API测试原则：一个测试套伯至少3个用例:头尾身
+
+        70_merge_error                  # 朝令夕改 请Luo不要随便插脚
+        71_行淫的女人_小魔的牢骚        # care你的牢骚。PK产品经理
+
+        80_西昌门禁                     # 软件方法论：先固化，再优化。按契约编程
+        81_代码实现_从0开始             # 软件方法论：命名考虑应用场景。mxml id 动态扩展时
+        82_HIK协议实现1个月后傻眼       # 软件方法论：横向考虑设计架构，纵向考虑可用性。
+
+        a0_vobx_tool_filename           # 虚拟机存储映射后WINDOWS文件系统时，filename不区别大小写
+    )
+    fn_print $@
+}
+
+function fn_socket()                    {
+function fn_ip点分十进制转换()          { cat socket_ip点分十进制转换 ;}
+function fn_multicast多播()             { cat socket_multicast多播 ;}
+    local opts=(
+        ip点分十进制转换
+        multicast多播                   # unicast - multicast - broadcast
+    )
+    fn_print $@
+}
+
+function fn_c() {
+function fn_01_C调用C++链接库()         { cat c_01_C调用C++链接库 ;}
+function fn_cdecl()                     { cat c_cdecl ;}
+function fn_const()                     { cat c_const ;}
+function fn_operator_predcedence()      { cat c_operator_predcedence ;}
+function fn_string()                    { cat c_string ;}
+function fn_struct()                    { cat c_struct ;}
+function fn_typedef()                   { cat c_typedef ;}
+function fn_warning()                   { cat c_warning ;}
+function fn_pointer()                   { cat c_pointer ;}
+function fn_callback()                  { cat c_callback ;}
+function fn_linklist()                  { cat c_linklist ;}
+function fn_package()                   { cat c_package ;}
+function fn_macro()                     { cat c_macro ;}
+function fn_memorylayout()              { cat c_memorylayout ;}
+# ----- posix -------
+function fn_errno()                     { cat c_errno ;}
+function fn_open()                      { cat c_open ;}
+function fn_syslog()                    { cat c_syslog ;}
+function fn_time()                      { cat c_time ;}
+function fn_non_block_func()            { cat c_non_block_func ;}
+function fn_non_sig_select()            { cat c_non_sig_select ;}
+function fn_signal()                    { cat c_signal ;}
+function fn_coredump()                  { cat c_signal ;}
+function fn_tty()                       { cat c_tty ;}
+function fn_iconv()                     { cat c_iconv ;}
+function fn_md5()                       { cat c_md5 ;}
+function fn_printf()                    { cat c_printf ;}
+function fn_bit()                       { cat c_bit ;}
+function fn_strncpy()                   { cat c_strncpy ;}
+
+    local opts=(
+        01_C调用C++链接库
+        cdecl
+        const
+        bit
+        operator_predcedence
+        pointer                 # 指针 
+        callback                # 注册加回调指针实现多态or重载
+        linklist                # 注册之链表
+        package                 # 头文件封装
+        memorylayout            # 32位LINUX系统`虚拟地址空间分布`
+        string
+        struct
+        typedef
+        warning
+        macro
+        # ------ POSIX ------
+        md5                     # 
+        iconv                   # utf-8 gbk wide-character handling ascii
+        syslog
+        errno
+        open
+        printf                  # scanf format
+        signal
+        strncpy                 # string serial
+        coredump
+        time
+        tty                     # serial port
+        non_block_func
+        non_sig_select
+    )
+    fn_print $@
+}
+
+function fn_binutils()                  { cat binutils ;}
+
+function fn_coreutils() {
+function fn_alphabet_list()             { cat coreutils_alphabet_list ;}
+function fn_class_list()                { cat coreutils_class_list ;}
+function fn_manual()                    { cat coreutils_manual ;}
+
+    local opts=(
+        alphabet_list
+        class_list
+        manual
+    )
+    fn_print $@
+}
+
+function fn_cxx() {
+function fn_3000问()                    { cat cxx_3000问 ;}
+function fn_fundamental()               { cat cxx_fundamental ;}
+function fn_operator_predcedence()      { cat cxx_operator_predcedence ;}
+function fn_op_names()                  { cat cxx_op_names ;}
+function fn_const_char()                { cat cxx_const_char ;}
+
+    local opts=(
+        3000问
+        fundamental
+        operator_predcedence
+        op_names
+        const_char
+    )
+    fn_print $@
+}
+
+function fn_design() {
+function fn_01_配置()                   { cat design_01_配置 ;}
+function fn_02_分析()                   { cat design_02_分析 ;}
+function fn_UI()                        { cat design_UI ;}
+function fn_patterns()                  { cat design_patterns ;}
+
+    local opts=(
+        01_配置
+        02_分析                         # 需求分析、概要设计、详细设计析义
+        patterns
+        UI                              # 不要让客户思考 don't make user thingking
+    )
+    fn_print $@
+}
+
+function fn_gdb() {
+function fn_0_haoel()                   { cat gdb_0_haoel ;}
+function fn_4_查看源程序()              { cat gdb_4_查看源程序 ;}
+function fn_5_查看运行时数据()          { cat gdb_5_查看运行时数据 ;}
+function fn_7_改变程序的执行()          { cat gdb_7_改变程序的执行 ;}
+function fn_breakpoints()               { cat gdb_breakpoints ;}
+function fn_convention()                { cat gdb_convention ;}
+function fn_most_freq_cmds()            { cat gdb_most_freq_cmds ;}
+function fn_print_exp()                 { cat gdb_print_exp ;}
+function fn_reverse_debug()             { cat gdb_reverse_debug ;}
+function fn_run()                       { cat gdb_run ;}
+function fn_SIGSEGV()                   { cat gdb_SIGSEGV ;}
+function fn_source()                    { cat gdb_source ;}
+
+    local opts=(
+        0_haoel
+        4_查看源程序
+        5_查看运行时数据
+        7_改变程序的执行
+        convention
+        breakpoints
+        most_freq_cmds
+        print_exp
+        reverse_debug
+        run
+        SIGSEGV
+        source
+    )
+    fn_print $@
+}
+
+function fn_make() {
+function fn_base()                      { cat make_base ;}
+function fn_func()                      { cat make_func ;}
+function fn_skeleton()                  { cat make_skeleton ;}
+function fn_var_cmdline()               { cat make_var_cmdline ;}
+function fn_var_debug()                 { cat make_var_debug ;}
+function fn_var_inner()                 { cat make_var_inner ;}
+function fn_lib_dynamic()               { cat make_lib_dynamic ;}
+function fn_lib_static()                { cat make_lib_static ;}
+function fn_shell()                     { cat make_shell ;}
+
+    local opts=(
+        base
+        func
+        skeleton
+        shell
+
+        lib_dynamic
+        lib_static
+
+        var_cmdline
+        var_debug
+        var_inner
+    )
+    fn_print $@
+}
+
+function fn_git()                       { 
+function fn_base()                      { cat git_base ;}
+function fn_github()                    { cat git_github ;}
+    local opts=(
+        base                            # 入门
+        github                          # 使用 github.com
+        init                            # 按遇到的先后顺序
+    )
+    fn_print $@
+}
+
+function fn_svn() {
+function fn_fundamental()               { cat svn_fundamental ;}
+function fn_help()                      { cat svn_help ;}
+function fn_merge()                     { cat svn_merge ;}
+function fn_visual_svn_server()         { cat svn_visual_svn_server ;}
+    local opts=(
+        fundamental
+        help
+        merge
+        visual_svn_server               # Visual SVN Server
+    )
+    fn_print $@
+}
+
+function fn_vim() {
+function fn_fundamental()               { cat vim_fundamental ;}
+function fn_align()                     { cat vim_align ;}
+function fn_hotkey()                    { cat vim_hotkey ;}
+function fn_install()                   { cat vim_install ;}
+function fn_plugin()                    { cat vim_plugin ;}
+function fn_clang_complete()            { cat vim_clang_complete ;}
+function fn_NERDtree()                  { cat vim_NERDtree ;}
+function fn_diff()                      { cat vim_diff ;}
+
+    local opts=(
+        fundamental
+        diff
+        align
+        clang_complete
+        hotkey
+        install
+        plugin
+        netrw               # networking r&w, e.g. vim scp://hostname/
+        NERDtree
+    )
+    fn_print $@
+}
+
+function fn_w3m() {
+function fn_dump()                      { cat w3m_dump ;}
+function fn_hotkey()                    { cat w3m_hotkey ;}
+
+    local opts=(
+        dump
+        hotkey
+    )
+    fn_print $@
+}
+
+function fn_cmd()                       {
+function fn_01_方便之门()               { cat cmd_01_方便之门 ;}
+function fn_fdisk()                     { cat cmd_fdisk ;}
+function fn_date()                      { cat cmd_date ;}
+function fn_dd()                        { cat cmd_dd ;}
+function fn_himm()                      { cat cmd_himm ;}
+function fn_ifconfig()                  { cat cmd_ifconfig ;}
+function fn_ln()                        { cat cmd_ln ;}
+function fn_mount()                     { cat cmd_mount ;}
+function fn_patch()                     { cat cmd_patch ;}
+function fn_route()                     { cat cmd_route ;}
+function fn_strace()                    { cat cmd_strace ;}
+function fn_sort()                      { cat cmd_sort ;}
+function fn_rar()                       { cat cmd_tar ;}
+function fn_tar()                       { cat cmd_tar ;}
+function fn_zip()                       { cat cmd_tar ;}
+function fn_xargs()                     { cat cmd_xargs ;}
+function fn_sysv-rc-conf()              { cat cmd_rcconf ;}
+function fn_rcconf()                    { cat cmd_rcconf ;}
+function fn_tftp()                      { cat cmd_tftp ;}
+function fn_top()                       { cat cmd_top;}
+function fn_lsof()                      { cat cmd_lsof ;}
+function fn_tr()                        { cat cmd_tr ;}
+function fn_dialog()                    { cat cmd_dialog ;}
+function fn_hexdump()                   { cat cmd_hexdump ;}
+function fn_cpio()                      { cat cmd_cpio ;}
+    local opts=(
+        01_方便之门
+        date
+        dd
+        dialog
+        himm
+        hexdump                 # xxd od
+        ifconfig
+        ln
+        lsof
+        mount
+        patch
+        rar
+        rcconf                  # ubuntu 默认启动方式 /etc/init/*.conf
+        sysv-rc-conf
+        route
+        sort
+        strace
+        tr
+        tar
+        tftp
+        top
+        xargs
+        zip
+        cpio                    # 与tar类似的打包格式cpio，结合压缩命令gzip zcat
+        usb-creator-gtk         # startup-disk-creator 制作启动盘
+    )
+    # 每天一个linux命令，还有其它非常有价值的东西
+    # www.cnblogs.com/peida/tag/linux命令
+    fn_print $@
+}
+
+function fn_bat()                       {
+function fn_manul()                     { cat bat_manul ;}
+function fn_examples()                  { cat bat_examples ;}
+function fn_fundamental()               { cat bat_fundamental ;}
+    local opts=(
+        fundamental
+        manul
+        examples
+    )
+    fn_print $@
+}
+
+function fn_win()                       {
+function fn_win7()                      { cat win_win7 ;}
+function fn_01()                        { cat win_01 ;}
+function fn_02_清晰显示()               { cat win_02_清晰显示 ;}
+function fn_03_看雪()                   { cat win_03_看雪 ;}
+function fn_excel()                     { cat win_excel ;}
+function fn_word()                      { cat win_word ;}
+function fn_mpp()                       { cat win_mpp ;}
+function fn_beyondcompare3()            { cat win_beyondcompare3 ;}
+function fn_rightclick()                { cat win_rightclick ;}
+    local opts=(
+        01                      # usb systeminfo printer vlc viso
+        02_清晰显示
+        03_看雪                 # encrypt 加密解密
+        win7                    # 快捷键
+        rightclick              # 添加右键编辑 gvim bc3
+        excel
+        word
+        mpp                     # msproject task
+        beyondcompare3          # BC3
+        大拿万能老板键          # 大拿软件系列 boss
+        Mobi阅读器              # mobipocket_reader
+        修复网络链接无法关闭    # 在任务管理器中关闭及重新开启 explorer.exe
+
+    )
+    fn_print $@
+}
+
+function fn_msys()                      { cat msys ;}
+function fn_cygwin()                    {
+function fn_install()                   { cat cygwin_install ;}
+function fn_config()                    { cat cygwin_config ;}
+    local opts=(
+        install
+        config
+    )
+    fn_print $@
+}
+
+function fn_curl()                       {
+function fn_manual()                    { cat curl_manual ;}
+function fn_examples()                  { cat curl_examples ;}
+    local opts=(
+        manual
+        examples
+    )
+    fn_print $@
+}
+
+# cat http ;
+function fn_http()                      {
+function fn_base()                      { cat http_base ;}
+function fn_method()                    { cat http_method ;}
+function fn_boa()                       { cat http_boa ;}
+    local opts=(
+        base                            # URL特殊字符 REST
+        method                          # get post put del cgi-bin
+        boa
+    )
+    fn_print $@
+}
+
+function fn_circuit()                   {
+function fn_01_三极管的下拉电阻()       { cat circuit_01_三极管的下拉电阻 ;}
+function fn_11_色环电阻识别()           { cat circuit_11_色环电阻识别 ;}
+    local opts=(
+        01_三极管的下拉电阻
+        11_色环电阻识别
+    )
+    fn_print $@
+}
+
+function fn_vs()                        { cat vs ;}
+function fn_bc()                        { cat bc ;}
+function fn_url()                       { cat url ;} # blog
+
+function fn_perl()                      { 
+function fn_gate_入门()                 { cat perl_gate_入门 ;}
+function fn_pod()                       { cat perl_pod ;}
+    local opts=(
+        gate_入门
+        pod
+    )
+    fn_print $@
+}
+
+function fn_opera()                     { cat opera ;}
+function fn_1Line()                     { cat 1Line ;}
+function fn_graphviz()                  { cat graphviz ;}
+function fn_gnuplot()                   { cat gnuplot ;}
+function fn_firefox()                   { cat firefox ;}
+function fn_firebug()                   { cat firebug ;}
+
+function fn_services()                  {
+function fn_nfs()                       { cat services_nfs ;}
+function fn_samba()                     { cat services_samba ;}
+function fn_vsftpd()                    { cat services_vsftpd ;}
+function fn_ntp()                       { cat services_ntp ;}
+function fn_xinetd()                    { cat services_xinetd ;}
+    local opts=(                        # etc
+        nfs
+        ntp
+        samba
+        vsftpd
+        xinetd
+    )
+    fn_print $@
+}
+
+function fn_surveil()                   {
+function fn_video()                     { cat surveil_video ;}
+function fn_video_resolution()          { cat surveil_video_resolution ;}
+function fn_ptz()                       { cat surveil_ptz ;}
+function fn_ac_音频()                   { cat surveil_ac_音频 ;}
+function fn_op_光学知识()               { cat surveil_op_光学知识 ;}
+function fn_jc_捷高Style()              { cat surveil_jc_捷高Style ;}
+function fn_term()                      { cat surveil_term ;}
+    local opts=(
+        ac_音频
+        op_光学知识
+        jc_捷高Style
+        video
+        video_resolution
+        term
+        ptz
+    )
+    fn_print $@
+}
+
+function fn_h264()                      { 
+function fn_base()                      { cat h264_base ;}
+function fn_profile()                   { cat h264_profile ;}
+    local opts=(
+        base
+        profile
+    )
+    fn_print $@
+}
+
+function fn_jco()                       { 
+function fn_pcb()                       { cat jco_pcb ;}
+function fn_delay_service()             { cat jco_delay_service ;}
+function fn_msg()                       { cat jco_msg ;}
+function fn_platform()                  { cat jco_platform ;}
+function fn_alarm_design()              { cat jco_alarm_design ;}
+function fn_alarm_software()            { cat jco_alarm_software ;}
+function fn_alarm_hardware()            { cat jco_alarm_hardware ;}
+function fn_alarm_motion_detc()         { cat jco_alarm_motion_detc ;}
+function fn_capture()                   { cat jco_capture ;}
+function fn_jcp()                       { cat jco_jcp ;}
+function fn_encode_para()               { cat jco_encode_para ;}
+function fn_record()                    { cat jco_record ;}
+function fn_prerecord()                 { cat jco_prerecord ;}
+function fn_zxw()                       { cat jco_zxw ;}
+function fn_3g()                        { cat jco_3g ;}
+function fn_time()                      { cat jco_time ;}
+function fn_httpd_n_onvif()             { cat jco_httpd_n_onvif ;}
+function fn_ptz20()                     { cat jco_ptz20 ;}
+function fn_ir()                        { cat jco_ir ;}
+function fn_upgrade_prog_bar()          { cat jco_upgrade_prog_bar ;}
+
+    local opts=(
+        pcb                 # hardware
+        alarm_design
+        alarm_hardware
+        alarm_software
+        alarm_motion_detc
+        capture
+        delay_service
+        encode_para         # devvecfg
+        httpd_n_onvif       # 融合方案
+        upgrade_prog_bar    # 升级进度方案
+        jcp
+        msg
+        platform
+        ptz20
+        zxw
+        record
+        prerecord
+        3g
+        ir                  # infrared
+        time                # data ntp timecfg related
+    )
+    fn_print $@
+}
+
+function fn_ideas()                     { cat ideas ;}
+
+function fn_test()                      {
+function fn_fundamental()               { cat test_fundamental ;}
+function fn_gtest()                     { cat test_gtest ;}
+function fn_01_用例设计原则()           { cat test_01_用例设计原则 ;}
+function fn_02_梦想与实现()             { cat test_02_梦想与实现 ;}
+function fn_03_五个要点()               { cat test_03_五个要点 ;}
+function fn_11_测试工程师如何提BUG()    { cat test_11_测试工程师如何提BUG ;}
+    local opts=(
+        gtest
+        fundamental             # 测试就是写方程
+        01_用例设计原则
+        02_梦想与实现
+        03_五个要点             # 测试的第一原则：思维很混乱时查看
+        11_测试工程师如何提BUG
+    )
+    fn_print $@
+}
+
+
+function fn_codingstyle()               { cat codingstyle ;}
+function fn_google_cxx_style()          { cat google_cxx_style ;}
+function fn_question()                  { cat question ;}
+
+function fn_tips_4_reading_code()       { cat tips_4_reading_code ;}
+
+function fn_codetool()                  { 
+function fn_splint()                    { cat codetool_splint ;}
+function fn_cppcheck()                  { cat codetool_cppcheck ;}
+function fn_calltree()                  { cat codetool_calltree ;}
+    local opts=(
+        fundamental
+        splint
+        cppcheck
+        calltree            # g p r o f 可以生成更棒的图
+    )
+    fn_print $@
+}
+
+function fn_CC()                        {
+function fn_01_圈复杂度及其计算()       { cat CC_01_圈复杂度及其计算 ;}
+function fn_SourceMonitor()             { cat CC_SourceMonitor ;}
+function fn_hfcca()                     { cat CC_hfcca ;}
+function fn_cppncss()                   { cat CC_cppncss ;}
+    local opts=(
+        01_圈复杂度及其计算
+        SourceMonitor
+        hfcca
+        cppncss             # only a toy
+    )
+    fn_print $@
+}
+
+function fn_apt-get()                   { cat apt-get ;}
+function fn_java()                      { cat java ;}
+function fn_scp()                       { cat scp ;}
+function fn_ssh()                       { cat ssh ;}
+function fn_libevent()                  { cat libevent ;}
+function fn_live555()                   { cat live555 ;}
+function fn_time_call_engine()          { cat time_call_engine ;}
+function fn_hudson()                    { cat hudson ;}
+function fn_vlc()                       { cat vlc ;}
+function fn_framework()                 { cat framework ;}
+function fn_refactoring()               { cat refactoring ;}
+
+function fn_postgresql()                { cat postgresql ;}
+
+function fn_mysql()                     { 
+function fn_base()                      { cat mysql_base ;}
+function fn_extend()                    { cat mysql_extend ;}
+function fn_complete()                  { cat mysql_complete ;}
+function fn_troubleshooting()           { cat mysql_troubleshooting ;}
+    local opts=(
+        base                # 安装及startup on Linux
+        extend              # sql 的扩展及命令行shell
+        complete
+        troubleshooting
+    )
+    fn_print $@
+}
+
+function fn_sql()                       {
+function fn_kts()                       { cat sql_kts ;}
+function fn_min()                       { cat sql_min ;}
+function fn_base()                      { cat sql_base ;}
+function fn_datatype()                  { cat sql_datatype ;}
+function fn_show()                      { cat sql_show ;}
+function fn_create()                    { cat sql_create ;}
+function fn_alter()                     { cat sql_alter ;}
+function fn_delete()                    { cat sql_delete ;}
+function fn_update()                    { cat sql_update ;}
+function fn_select()                    { cat sql_select ;}
+function fn_nest_select()               { cat sql_nest_select ;}
+function fn_insert()                    { cat sql_insert ;}
+function fn_describe()                  { cat sql_describe ;}
+function fn_load()                      { cat sql_load ;}
+function fn_drop()                      { cat sql_drop ;}
+function fn_join()                      { cat sql_join ;}
+function fn_function()                  { cat sql_function ;}
+function fn_execute()                   { cat sql_execute ;}
+function fn_procedure()                 { cat sql_procedure ;}
+function fn_operator()                  { cat sql_operator ;}
+function fn_optimize()                  { cat sql_optimize ;}
+function fn_array()                     { cat sql_array ;}
+function fn_tbl_create()                { cat sql_tbl_create ;}
+function fn_tbl_temp()                  { cat sql_tbl_temp ;}
+function fn_index()                     { cat sql_index ;}
+function fn_order()                     { cat sql_order ;}
+function fn_dump()                      { cat sql_dump ;}
+function fn_condition()                 { cat sql_condition ;}
+function fn_group_by_having()           { cat sql_group_by_having ;}
+function fn_cp()                        { cat sql_cp ;}
+function fn_where_in()                  { cat sql_where_in ;}
+    local opts=(
+        kts
+        min
+        base
+        datatype            # int char data time
+        # ----- BASE
+        create
+        describe
+        drop                # 删除索引、表和数据库
+        delete              # 删除表中的行
+        alter               # 修改表结构：添加、修改或删除列
+        insert
+        update
+        select
+        nest_select         # 这个哥们的blog很清晰
+        show
+        load
+        where_in            # where in
+        # ----- SQL 高级教程
+        condition           # if
+        cp                  # 复制表数据or结构(copy)
+        dump                # mysqldump
+        group_by_having     # 
+        index
+        execute             # prepare
+        join                # 两个或多个表查询连结
+        function            # 常用函数
+        procedure           # 存储过程
+        operator
+        optimize            # 优化
+        order
+        array
+        tbl_create          # 以表为操作
+        tbl_temp            # 临时表 内存表(HEAP) 
+    )
+    fn_print $@
+}
+
+function fn_xml()                       {
+function fn_base()                      { cat xml_base ;}
+function fn_api.c()                     { cat xml_api.c ;}
+function fn_api.h()                     { cat xml_api.h ;}
+function fn_xsd()                       { cat xml_xsd ;}
+    local opts=(
+        base
+        api.c 
+        api.h
+        xsd                # XML Schema xml schema
+    )
+    fn_print $@
+}
+
+function fn_json()                      { cat json ;}
+
+function fn_mxml()                      { fn_xml $@ ;}
+function fn_markdown()                  { cat markdown ;}
+
+function fn_alg()                       {
+function fn_tree()                      { cat alg_tree ;}
+    local opts=(
+        tree
+        link
+        queue
+    )
+    fn_print $@
+}
+
+function fn_report()                    { 
+function fn_球机不能控制()              { cat report_球机不能控制 ;}
+function fn_可观可控可溯设计()          { cat report_可观可控可溯设计 ;}
+    local opts=(
+        球机不能控制                    # 固始平安城市项目球机不能控制
+        可观可控可溯设计
+    )
+    fn_print $@
+}
+
+function fn_team()                      { cat team ;}
+function fn_rdm()                       { cat rdm ;}
+
+function fn_chuansong.me()              { cat ../stk/.chuansong.me ;}
+
+function fn_problem()                   { 
+function fn_X-Y_problem()               { cat problem_X-Y_problem ;}
+function fn_sloving()                   { cat problem_sloving ;}
+function fn_ask_question()              { cat problem_ask_question ;}
+    local opts=(
+        X-Y_problem
+        sloving                         # ../.m2doc/02_如何解题
+        ask_question                    # 你会问问题吗
+    )
+    fn_print $@
+}
+
+function fn_jimxl()                     {
+function fn_base()                      { cat jimxl_base ;}
+function fn_nvr()                       { cat jimxl_nvr ;}
+function fn_goyo.vim()                  { cat jimxl_goyo.vim ;}
+    local opts=(
+        base
+        goyo.vim
+        nvr                             # nvr 交接
+    )
+    fn_print $@
+}
+
+function fn_point()                     { 
+function fn_01_mode_type_不能保存()     { cat point_01_mode_type_不能保存 ;}
+    local opts=(
+        01_mode_type_不能保存           # 需要加ubootpara force=1
+    )
+    fn_print $@
+}
+
+function fn_alibaba()                   { cat alibaba ;}
+
+function fn_main() {
+    local ARGC=${#}
+    local LASTARG=${!#}
+    local opts=(
+        1Line
+        alibaba                 # taobao
+        apt-get
+        agile                   # project 做项目，带团队
+        adobepdf
+        asm
+        awk
+        bash
+        bat
+        bc
+        binutils
+        busybox
+        c                       # clang
+        alg                     # link queue tree
+        case
+        circuit
+        cmd
+        codetool
+        CC
+        tips_4_reading_code     # how to read code
+        codingstyle
+        google_cxx_style
+        google
+        coreutils
+        curl
+        cxx
+        cygwin
+        msys
+        design
+        elf
+        framework
+        find
+        firebug
+        firefox
+        chrome
+        gcc
+        gcov
+        gdb
+        glibc
+        gprof
+        graphviz
+        gnuplot                 # 线状 IBM stock chart
+        grep
+        http                    # boa GET POST
+        hudson
+        mp4                     # GOOGLE `mp4 sample` to get sample file
+        h264
+        ideas
+        info
+        j2box
+        java
+        jco
+        jimxl
+        kernel
+        lcov
+        libevent
+        live555
+        time_call_engine
+        linux
+        make
+        pandoc                  # johnmacfarlane.net/pandoc/try/
+        markdown                # README.md xianglei
+        opera
+        perl
+        pinfo
+        problem                 # question 
+        prog
+        puTTY
+        ruby
+        python
+        question
+        regex
+        refactoring
+        report
+        secureCRT
+        sed
+        services
+        sloccount
+        sourceinsight
+        scp
+        splint
+        sql
+        socket
+        postgresql              # PostgreSQL
+        mysql
+        ssh
+        surveil
+        svn
+        git
+        tcpdump
+        test
+        tmux
+        uboot
+        url
+        vim
+        vlc
+        vs
+        vmware
+        virtualbox
+        w3m
+        win
+        wireshark
+        xml
+        mxml                    # 
+        json
+        yum
+        point                   # 较c a s e，这不是错误，是经验知识
+        rdm                     # 技术管理
+        team                    # 团队 老板 同事 下属
+        chuansong.me            # 传送门，只在HOME使用
+    )
+    fn_print $@
+}
+
+#
+# 我们在做同样的事，只是方式不同 -- 哥们的 wiki
+# www.noah.org/wiki/Category:Engineering
+#
+fn_main $@

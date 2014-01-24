@@ -1,0 +1,240 @@
+#! /bin/bash
+#---------------------------------------------------------------------------
+#          FILE: SCREENER.sh
+#         USAGE: ./SCREENER.sh 
+#   DESCRIPTION: 
+#        AUTHOR: chuangxiaomoo (God helps those who help themselves) 
+#  ORGANIZATION: 
+#       CREATED: 2013-12-11 08:46:51 AM
+#      REVISION: 1.0 
+#---------------------------------------------------------------------------
+
+. `dirname ${0}`/dbank || { echo "dbank err" && exit; }
+. /etc/common.rc
+
+
+function fn_get_block_info() 
+{
+    # 显示当前选中，及可选BLOCK列表
+    # "show create table test;" | grep 'COMMENT=' 
+    
+    return 1
+}
+
+function fn_set_block_info() 
+{
+    # 从列表中选择BLOCK
+    # "alter table 表名 comment '注释';"
+    
+    return 1
+}
+
+function fn_get_13d_20psink() 
+{
+    cat <<-"HERE"
+    4日内从历史最高点回落时选择，
+    前期上升速度必须快，8日涨幅30%，13日涨幅在40%以上。
+    如观察日2013-12-12，
+    失败案例：
+    新宁物流(300013) 由于是从最高点的第2波下降，必也以“疲惫”
+
+    成功案例：
+    北京君正(300223) 13日涨幅 83% = (33-18)/18
+    潜能恒信(300191) 13日涨幅 73% = (33-19)/19
+
+    如此，可选
+    奥普光电 002338
+    麦捷科技 300319
+    奋达科技 002681
+
+    
+    此类波动频繁之属，做好波段操作，特别是大盘行情不好的日子。大着眼，小着手。
+	HERE
+
+    echo "call sp_visit_tbl('cap', 2);" | tee -a $mps_god
+    mysql $mo -t kts <<< "source $mps_god"
+}
+
+# 大写变量作为全局，小写作为内部
+function fn_get_1_swing_num() 
+{
+    percent=${1:-8}
+    if [ "${percent%.*}" -lt 0 ] ; then
+        swing_cmd="HAVING rise < $percent"
+    else
+        swing_cmd="HAVING rise > $percent"
+    fi
+    echo "
+    DELETE from flt_visit;
+    INSERT INTO flt_visit(code,sink) 
+    SELECT code,100*(close-yesc)/yesc as rise FROM day 
+        WHERE date='$END' $swing_cmd ORDER by rise ${ASC:-DESC}; 
+    " | mysql $mo kts
+    fn_cp_tbl flt_visit pipe
+    ./up add_flt_visit_2_zixuangu   # 添加到ZXG，可根据需要再进行排序
+    ./SELECT app_nmc_name               # 追加表名打印
+    # no need source 
+    exit
+}
+
+function fn_sort_amount() 
+{
+    # 可扩展 'flt_visit' 的表定义
+    # where d.code = c.code 非常重要
+    # as 语句可在 FROM 子句中
+    echo "
+    DELETE from flt_visit;
+    INSERT INTO flt_visit(code,sink,amount,turnover) 
+    SELECT d.code, $RISE as rise, 
+        amount, $TURNOV as turnover FROM day as d, cap as c 
+        WHERE d.code = c.code and d.date='$END' 
+        ${PIPECMD} ORDER by amount ${ASC:-DESC} limit ${LIMIT:-48};
+	" | mysql -t kts
+    fn_cp_tbl flt_visit pipe
+    ./up add_flt_visit_2_zixuangu       # 添加到ZXG，可根据需要再进行排序
+    ./SELECT app_nmc_name amount        # 追加表名打印
+}
+
+
+function fn_sort_turnover() 
+{
+    echo "
+    DELETE from flt_visit;
+    INSERT INTO flt_visit(code,sink,amount,turnover) 
+    SELECT d.code, $RISE as rise, 
+        amount, $TURNOV as turnover FROM day as d, cap as c 
+        WHERE d.code = c.code and d.date='$END' 
+        ${PIPECMD} ORDER by turnover ${ASC:-DESC} limit ${LIMIT:-48};
+	" | mysql -t kts
+    fn_cp_tbl flt_visit pipe
+    ./up add_flt_visit_2_zixuangu       # 添加到ZXG，可根据需要再进行排序
+    ./SELECT app_nmc_name turnover      # 追加表名打印
+    
+}
+
+function fn_get_n_swing_num() 
+{
+    echo "
+    2013-12-18
+    双日一字涨停股是好股，只要能抢到第一个开闸日，还是可以有所作为。
+    但切记留恋。 翠微股份 000597
+    非一字涨停股最好不要碰，如东北制药 603123
+
+    这些类股都是振荡股，短线实时监控器的研发迫在眉捷。
+    "
+    [ "$#" -eq 1 ] && echo "Usage: 要么不带参数，要么两个参数" && exit
+    tailrise=8
+    daynum=${1:-2}
+    fullrise=${2:-17}
+
+    # SELECT * FROM day WHERE date=$END and (close-yesc)/yesc > 0.08;
+    # date=''需要单引号
+    echo "
+    DROP TABLE IF EXISTS shellcodes;
+    CREATE TABLE shellcodes (
+        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0
+    );
+    INSERT INTO shellcodes(code)
+    SELECT code FROM day WHERE date='$END' and 100*(close-yesc)/yesc > $tailrise;
+    " | mysql $mo kts
+
+    # [ "$fullrise" -lt 0 ] && intbl=cap || intbl=shellcodes
+    if [ "$fullrise" -lt 0 ] ; then
+        intbl=cap
+    else
+        intbl=shellcodes
+    fi
+
+    echo "
+    SET @argv_change = $fullrise;
+    SET @argv_n = $daynum;
+    call sp_visit_tbl('$intbl', @fn_flt_n_day_change);
+    " | tee -a $mps_god
+    mysql $mo -t kts <<< "source $mps_god"
+}
+
+
+function fn_get_stat_turnov() 
+{
+    local usage="Usage: ${FUNCNAME[0]} code start [end]"
+    fn_is_digit $1
+    xt_ret $? "$usage" || return $?
+
+    [ -n "${START:=${2}}" ]
+    xt_ret $? "$usage" || return $?
+
+    echo "
+    SET @START='$START';
+    SET @END='${3:-${END}}';
+    call sp_stat_turnov('$1');
+    " | tee -a $mps_god
+    mysql $mo -t kts <<< "source $mps_god"
+}
+
+function fn_get_down_turnov() 
+{
+    local usage="Usage: ${FUNCNAME[0]} start [end]"
+
+    [ -n "${START:=${1}}" ]
+    xt_ret $? "$usage" || return $?
+
+    [ -n "${END:=${2}}" ]
+    xt_ret $? "$usage" || return $?
+
+    # 指定环境变量TBL来进行测试
+    TBL=${TBL:-'zxg'}
+
+    echo "
+    SET @DOWNSLOPE='${DOWNSLOPE:-1}';
+    SET @START='$START';
+    SET @END='$END';
+    call sp_visit_tbl('$TBL', @fn_get_down_turnov);
+    " | tee -a $mps_god
+    mysql $mo -t kts <<< "source $mps_god"
+
+    echo '
+    提示：  超跌时必须缩量方可买入
+            `好想你`    是个反例：下跌时换手不够大，属阴跌，无生气。
+            `中科电气`  是个好崽：需要在上行1%时及时抓住。
+            `中科电气`  2014-01-10下跌换手继承，需要人去计算。
+            
+    排序：  abs(swing * bounce * nmc) e.g. 2014-01-15 贵州百灵
+    '
+}
+
+function fn_get_rise_turnov() 
+{
+    DOWNSLOPE=0
+    fn_get_down_turnov $@
+}
+
+function fn_main() 
+{
+    END=${END:-`fn_maxdate`}
+    # SCREENER的宗旨，弃子取势
+    # xet_block_info 为 sp_visit_tbl() 选定相应的BLOCK 
+    cmdlist=(
+    "get_stat_turnov      code start [end]      # 个股区间换手统计"
+    "get_down_turnov      start [end]           # 100%下降净换手"
+    "get_rise_turnov      start [end]           # 100%上升净换手"
+    "get_13d_20psink                            # 8日13日SINK超20%"
+    "get_1_swing_num      [RISE_PERCENT:-8]     # 单日振幅，小于0计算跌幅"
+    "get_n_swing_num      [SWING_PERCENT:-16]   # 双日振幅，小于0计算跌幅"
+    "sort_amount          [LIMIT_NUM:-48]       # --- 成交量排名"
+    "sort_turnover        [LIMIT_NUM:-48]       # 换手排名"
+    # ----------------    ABOVE FIXED SEQUENCE  -------------------
+    "get_block_info                             # 查看当前BLOCK"
+    "set_block_info                             # 设置当前BLOCK"
+    )
+
+    # 存储过程函数文件的最后5行都是注释
+    cd $workdir
+    head -n -5 $mps_org > $mps_god
+
+    # 为提高效率，可能使用临时表，必要请备份相应文件 call sp_cp_tbl('fr', 'to');
+    fn_execute "$@" || return $?
+}
+
+  fn_main "$@"
+# fn_main 4

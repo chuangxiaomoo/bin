@@ -1,0 +1,181 @@
+#! /bin/bash
+
+. `dirname ${0}`/dbank || { echo "dbank err" && exit; }
+. /etc/common.rc
+
+ws_rzrq=$warehs/rzrq
+rzrq_day=$ws_rzrq/day
+rzrq_overview=$ws_rzrq/overview
+mkdir -p $rzrq_overview $rzrq_day
+mkdir -p ${rzrq_rawxml%/*}
+
+function fn_rzrq_day() 
+{
+    idate=$1
+    # idate=2013-12-20
+    # http://stockdata.stock.hexun.com/rzrq/
+    url="http://stockdata.stock.hexun.com/rzrq/data/Stock/"
+    url="${url}DetailCollectDay.ashx"
+    url="${url}?date=$idate&count=1000&page=1"
+
+    $W3M -dump "$url" > $rzrq_rawxml 2>$rzrq_stderr
+    xt_ret $? "NETWORK" || return $?
+
+    cat $rzrq_rawxml | sed -e '1s/.*:\[//' -e 's/}./}\n/g' | \
+    head -n -2 | # head -2 | 
+     sed -e 's/^{/,/' -e 's/,FBuy:.*//g' | sed -e 's/,[a-zA-Z][a-zA-Z]*//g' | 
+     tr -d "'"  | tr -d ',' | 
+     sed -e 's#^.*rzrq/s##' -e 's#\.shtml##' -e 's/-:/0:/g' |
+     tr ':' '\t' | sed "s/^/$idate\t/"
+    # sed -e 's/\],/\n/g' -e '$s/]];//g'> $rzrq_ripexml
+    # fn_fmt_hexun $hx_ripexml
+}
+
+
+function fn_rzrq_overview() 
+{
+    idate=$1
+    # idate=2013-12-20
+    url="http://stockdata.stock.hexun.com/rzrq/Data/Stock/"
+    url="${url}DetailCollectOverview.ashx"
+    url="${url}?date=$idate&count=1&titType=null&page=1"
+
+    $W3M -dump "$url" > $rzrq_rawxml 2>$rzrq_stderr
+    xt_ret $? "NETWORK" || return $?
+    # 非贪婪
+    # echo 'asfs callback=12345&abcde&sfd' | sed 's/callback=.*&//g' 
+    # echo 'asfs callback=12345&abcde&sfd' | sed 's/callback=[^&]*&//g' 
+    cat $rzrq_rawxml | sed -e '1s/.*:\[//' -e 's/}./}\n/g'  | 
+      head -n -2 |
+        sed -e 's/^{/,/' -e 's/<a[^>]*>//g' -e 's#</a>只##g' -e 's/ //g'|
+        sed -e 's/,[a-zA-Z][a-zA-Z]*//g' | 
+         tr -d "'"  | tr -d ',' |  tr -d '}' |
+        sed -e 's/-:/0:/g' -e 's/^://' |
+        tr ':' '\t' # | sed "s/^/$idate\t/"
+
+    return
+}
+
+function fn_create_tbl() 
+{
+    <<-"TABLE_DIFF"
+    信用交易日                                  date        DATE NOT NULL,
+                            股票名称            code        INT(6) ZEROFILL NOT NULL, 
+    融资余额                融资余额            fin_bala    DECIMAL(10,2) NOT NULL,
+    融资买入额              融资买入额          fin_buy     DECIMAL(10,2) NOT NULL,
+                            融资偿还额          fin_pay     DECIMAL(10,2) NOT NULL,
+    融券余量                融券余量            alw_bala    DECIMAL(10,2) NOT NULL,
+    融券卖出量              融券卖出量          alw_sell    DECIMAL(10,2) NOT NULL,
+                            融券偿还量          alw_payb    DECIMAL(10,2) NOT NULL,
+    融资融券余额            融资融券余额        sec_bala    DECIMAL(10,2) NOT NULL,
+    余额差值                余额差值            sec_diff    DECIMAL(10,2) NOT NULL,
+    交易额差值              交易额差值          turnover    DECIMAL(10,2) NOT NULL,
+    融资买入（支）
+    融资卖出（支）
+	TABLE_DIFF
+
+    echo "
+    DROP TABLE IF EXISTS rzrq_day;
+    CREATE TABLE rzrq_day (
+        date        DATE NOT NULL,
+        code        INT(6) ZEROFILL NOT NULL, 
+        fin_bala    DECIMAL(10,2) NOT NULL,
+        fin_buy     DECIMAL(10,2) NOT NULL,
+        fin_pay     DECIMAL(10,2) NOT NULL,
+        alw_bala    DECIMAL(10,2) NOT NULL,
+        alw_sell    DECIMAL(10,2) NOT NULL,
+        alw_payb    DECIMAL(10,2) NOT NULL,
+        sec_bala    DECIMAL(10,2) NOT NULL,
+        sec_diff    DECIMAL(10,2) NOT NULL,
+        turnover    DECIMAL(10,2) NOT NULL,
+        INDEX(date),
+        INDEX(code,date)
+    );
+    " | mysql kts
+    
+    echo "
+    DROP TABLE IF EXISTS rzrq_overview;
+    CREATE TABLE rzrq_overview (
+        date        DATE NOT NULL,
+        fin_bala    DECIMAL(10,2) NOT NULL,
+        fin_buy     DECIMAL(10,2) NOT NULL,
+        alw_bala    DECIMAL(10,2) NOT NULL,
+        alw_sell    DECIMAL(10,2) NOT NULL,
+        sec_bala    DECIMAL(10,2) NOT NULL,
+        sec_diff    DECIMAL(10,2) NOT NULL,
+        turnover    DECIMAL(10,2) NOT NULL,
+        INDEX(date)
+    );
+    " | mysql kts
+    # 融资平衡 FinancBalance                687393.52
+    # 支：FinancBuy                         17748.43
+    # 收：FinancPay                         19098.37
+    # 融券：FinancAllowance                 338.83
+    # 卖：FinancSell                        524.94
+    # 买：FinancPayB                        497.19
+    # 资券平衡：FinancSecuritiesBalance     690564.98	= 687393.52 + 338.83 * 9.36(均价)
+    # 余额差值：BalanceDiff:'684222.05'     684222.05	= 687393.52 - 338.83 * 9.36(均价)
+    # 交易额差值：ATurnoverMoney:'12835.00' 12835.00	= FinancBuy - FinancPayB*9.36 
+    # 交易额差值比：ATurnoverDiff:'0.2579'  0.2579      = (当日交易额差值-/MA5日交易额差值)/abs(MA5日交易额差值)
+}
+
+function fn_dl_history() 
+{
+    opens=`echo "
+    SELECT date FROM day WHERE code=900001 order by date DESC limit 200;
+    " | mysql -N kts`
+
+    fn_create_tbl
+    exit 
+
+    local i=
+    for i in $opens; do
+        echo --- doing $i
+        fn_rzrq_overview $i > $rzrq_overview/$i
+        xt_ret $? "fn_rzrq_overview $i" || return $?
+
+        fn_rzrq_day $i      > $rzrq_day/$i
+        xt_ret $? "fn_rzrq_day $i" || return $?
+    done
+}
+
+function fn_dl_rzrq_today() 
+{
+    # DATE=`date +%Y-%m-%d`
+    export DATE='2013-12-20'
+
+    # fn_is_market_open || return 1
+
+
+    i=$DATE
+    echo --- doing $i
+    fn_rzrq_overview $i > $rzrq_overview/$i
+    xt_ret $? "fn_rzrq_overview $i" || return $?
+
+    fin_opens=`cat $rzrq_overview/$i | awk '{print $9}'`
+    if [ "${fin_opens:-0}" -lt 500 ]; then
+        echo "$fin_opens opens, and some close" && return 1
+    fi
+
+    fn_rzrq_day $i      > $rzrq_day/$i
+    xt_ret $? "fn_rzrq_day $i" || return $?
+
+    echo "
+    LOAD DATA LOCAL INFILE '$rzrq_day/$i' INTO TABLE rzrq_day;
+    LOAD DATA LOCAL INFILE '$rzrq_overview/$i' INTO TABLE rzrq_overview;
+    " | mysql -N kts
+}
+
+function fn_load_rzrq_history()
+{
+    # cat /opt/warehs/day/* > $ws_rzrq/rz_day
+    # cat /opt/warehs/overview/* > $ws_rzrq/rz_overview
+    echo "
+    LOAD DATA LOCAL INFILE '$ws_rzrq/rz_day' INTO TABLE rzrq_day;
+    LOAD DATA LOCAL INFILE '$ws_rzrq/rz_overview' INTO TABLE rzrq_overview;
+    " # | mysql -N kts
+}
+# fn_load_rzrq_history
+# fn_main $@
+
+  fn_dl_rzrq_today

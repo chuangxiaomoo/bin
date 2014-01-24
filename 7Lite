@@ -1,0 +1,619 @@
+#!/bin/bash
+#
+# a single tool is easy to be forgotten
+#
+
+CWD=${PWD}
+
+shopt -s gnu_errfmt 
+. /etc/common.rc
+
+cd ${CWD}
+
+function fn_ping() 
+{
+    if [ "$1" == "-h" ] || [ "$1" == "" ]; then
+        echo "    Usage: SUBNET=192.168.2 ping <start> <end>"
+        exit 0
+    fi 
+
+    [ -z "$SUBNET" ] && SUBNET="192.168.2"
+    start=$1
+    end=${2:-254}
+
+    fn_validate_ip $SUBNET.$start
+
+    if [ "$?" -ne 0 ] ; then
+        echo "invalid SUBNET $SUBNET or start $start" || return $?
+        echo "Usage: SUBNET=<> ${0} start end"
+    fi
+
+    local idx
+    for (( idx=$start; idx<$end; idx+=1 )); do
+        ip=$SUBNET.$idx
+        echo ping -c 3 $ip
+        ping -c 3 $ip >& /dev/null
+
+        if [ "$?" -eq 0 ] ; then
+            echo "Bingo"
+            break
+        fi
+    done
+}
+
+function fn_dbg_c_usage() 
+{
+    echo -e "\n    Usage: dbg_c {-s|-r}\n"
+    exit 0
+}
+
+function fn_dbg_c_getopt()
+{
+    # : after opt mean must give option, e.g. -t is a test, 
+    # login_shell is seperated by ','
+
+    shortopts="srh"
+    longopts="set,remove,help"
+
+    # after below statement, $@ was set end with '--'
+    eval set -- "$(getopt -n $0 -o "$shortopts" -l "$longopts" 2> $SHMPATH/set "--" "$@")" 
+
+    if [ -s "$SHMPATH/set" ] ; then
+        fn_echo_fail `cat $SHMPATH/set`
+        fn_echo_warn "Type 'dbg_c -h' for usage. "
+        return 1
+    fi
+
+    if echo "$*" | grep -- "-- " >& /dev/null; then
+        local argv="$*"
+        fn_echo_warn "invalid para ${argv##*-- }"
+        sleep 1
+    fi
+
+    #
+    # a shift is the start of block when opt with a `:`
+    #
+    while [ "$*" != "" ]; do
+        case $1 in
+        -s|--set)
+            dbgset=true    ;;
+        -r|--remove)
+            dbgrm=true     ;;
+        --)
+            break ;;
+        --help|-h|*)
+            fn_dbg_c_usage
+            return 1
+            ;;
+        esac
+        shift
+    done
+}
+
+function fn_dbg_c() 
+{
+    function fn_remove() {
+        fn_sed_auto_rm $f_type_common
+        xert $? `$PS8`  || return $?
+
+        fn_sed_auto_rm $f_system_main
+        xert $? `$PS8`  || return $?
+    }
+
+    REPO=~/bin/.warehouse
+    f_dtool=$REPO/dtool.h 
+
+    p_svn=/winc/svn3
+
+    # TRUCK should be TRUNK
+    f_type_common=$p_svn/JCO_CENTER/LIB/TRUCK/IPCam_dm365/include/type_common.h
+    f_system_main=$p_svn/JCO_NETWORK/SRC/TRUNK/IPCam_dm365/video_server/server/sysctrl/system_main.c
+
+    fn_dbg_c_getopt $@
+    
+    if [ "$dbgset" == true ] ; then
+        # remove all auto-add
+        fn_remove
+
+        fn_sed_auto_insert 'JCO_align\>' "`cat $f_dtool`" $f_type_common
+        xert $? `$PS8`  || return $?
+
+        fn_sed_auto_insert "int main" "FILE *f_stdo = NULL;" $f_system_main
+        xert $? `$PS8`  || return $?
+
+        fn_sed_auto_insert "struct sigaction sigAction" \
+            'f_stdo = fopen("/app/vs/stdo", "w");' $f_system_main
+        xert $? `$PS8`  || return $?
+
+    elif [ "$dbgrm" == true ]; then
+        fn_remove
+    else
+        fn_dbg_c_usage
+    fi
+}
+
+function fn_dbgsys()
+{
+    VIP=${VIP:-192.168.2.45}
+    rootpath=${1:-${CWD}/filesys}
+
+    if ! ([ -d "$rootpath" ] && [ -d "$rootpath/app/vs" ]) ; then
+        echo "[VIP=ip] Usage: dbgsys <rootpath>"
+        exit 1
+    fi
+
+    # debug on PC
+    #inittab=inittab 
+    #rcS=rcS
+
+    p_root=$rootpath
+    inittab=$p_root/etc/inittab 
+    rcS=$p_root/etc/init.d/rcS
+
+    sed -i '/ttyS0 115200/s/^#//g' $inittab
+    xert $? `$PS8` "sed" || return $?
+
+    sed -i '/telnetd/s/^#//g' $rcS
+    xert $? `$PS8` "sed" || return $?
+
+    # only when debug sys, when debug package, don't comment it
+    sed -i 's/^ifconfig eth0/#ifconfig eth0/g' $rcS
+    xert $? `$PS8` "sed" || return $?
+
+    sed -i "s/192.168.1.217/${VIP}/g"    $p_root/app/vs/conf/config_server*
+    sed -i "s/192.168.1.1/${VIP%.*}.1/g" $p_root/app/vs/conf/config_server*
+    sed -i "s/^IRCUT *=.*/IRCUT=1/g"     $p_root/app/vs/conf/config_server*
+   #sed -i "s/^IRLIGHT *=.*/IRLIGHT=1/g" $p_root/app/vs/conf/config_server*
+    sed -i "s/^IRCOLOR *=.*/IRCOLOR=1/g" $p_root/app/vs/conf/config_server*
+
+    ROOT=$p_root
+    [ -e $ROOT/dev/console ] || mknod -m 600 $ROOT/dev/console c 5 1 
+    [ -e $ROOT/dev/null ]    || mknod -m 666 $ROOT/dev/null c 1 3
+
+    cp $p_monta/usr/bin/gdb $ROOT/bin
+    cp $p_monta/usr/bin/gdb /tftpboot/
+
+    cp $p_root/app/vs/conf/jco_zxw.cfg.bak $p_root/app/vs/conf/jco_zxw.cfg
+
+
+    echo "set debug system success, ok"
+    echo
+}
+
+function fn_sloc2html()
+{
+    if [ ! -d "$1" ]; then
+    echo "
+    Usage: sloc2html <PATH>
+    sloccount --cached --details
+    " 
+        exit 1
+    fi 
+
+    cd $1
+    fn_echo_succ "sloccount ${PWD}"
+
+    sloccount --details . > result.txt 
+    sloccount . >> result.txt 
+
+    tail -28 result.txt
+
+    fn_echo_succ "sloc2html.py, please wait..."
+
+    sloc2html.py result.txt > /winc/result.html
+    # rm -f result.txt
+
+    fn_echo_succ "SLOC success, enjoy it!"
+}
+
+function fn_tar_draw()
+{ 
+    local dst=/winc/io/vim
+
+    cd ~/.vim
+    rm -rf drawit.tgz boxdraw.tgz
+
+    tar -zcf drawit.tgz `find -iname '*drawit*' `
+    tar -zcf boxdraw.tgz `find -iname '*boxdraw*' `
+    mv *.tgz $dst
+
+    fn_echo_succ "success, to get .tgz, please cd $dst"
+}
+
+function fn_quiet_vim()
+{
+    cd ~/
+    case $1 in
+        q|-q)
+            [ -f .vimrc ] || { echo "no .vimrc" && exit 1 ;}
+            mv .vimrc .vimrc.quiet
+            mv .vim   .vim.quiet
+            ;;
+        r|-r)
+            [ -f .vimrc.quiet ] || { echo "no .vimrc.quiet" && exit 1 ;}
+            mv .vimrc.quiet .vimrc 
+            mv .vim.quiet   .vim   
+            ;;
+        t|-t)
+            [ -f .vimrc ] || { echo "no .vimrc" && exit 1 ;}
+            tar -zcf .vi.tgz .vimrc .vim
+            ;;
+        *)
+            echo "Usage: quiet_vim {-q | -r}"
+            ;;
+    esac
+}
+
+function fn_hex2dec() 
+{
+    # if u want to translate more, use xargs
+    hex=$1
+    echo $hex | grep --color '[g-zG-Z]' && echo "invalid input" && exit
+
+    # 00:FF or 00-FF is valid
+    hex=`echo ${hex} | sed 's/[^a-zA-Z0-9]//g'`
+
+    hex=${hex/0x/}
+    hex=${hex/0X/}
+    echo "ibase=16; `echo $hex | tr '[:lower:]' '[:upper:]'`" | bc -l
+}
+
+function fn_dec2hex() 
+{
+    echo $@ | xargs -n 1 | 
+        grep --color '[^0-9]' && echo "invalid input" && exit
+    for dec in $@; do
+        echo -n 0x
+        echo "obase=16; $dec" | bc
+    done
+}
+
+function fn_conv() 
+{
+    
+    [ 3 != "$#" ] && echo "Usage: conv from to data" && return 1
+
+    from=$1
+    to=$2
+    data=$3
+
+    echo "SELECT conv($data,$from,$to);"  | mysql -u root | grep -v conv
+}
+
+# whole_txt 是分隔前的母文件
+# delim_expr是从关键字行"正则表达式"
+# files     是从关键字行提取到的文件名。
+# fn_debug  以进行打印调试
+function fn_split2files() 
+{
+    function fn_debug() {
+        echo ares: ${lines[@]}
+        echo ares: ${files[@]}
+        exit
+    }
+
+    whole_txt=code.ok
+    [ -f "$whole_txt" ] && echo "$whole_txt not exist" && exit
+
+    delim_expr="cmdtype="
+    lines=(`grep -E -n "$delim_expr" $whole_txt | sed 's/:.*//g'`)
+    files=(`grep -E    "$delim_expr" $whole_txt | 
+                awk -F"[()]" '{print $2}' | sed 's/=//g'`)   
+
+    # fn_debug
+
+    mkdir -p section
+    rm -rf section/*
+    local idx
+    for (( idx=0; idx<${#lines[@]}; idx+=1 )); do
+        let next=idx+1
+
+        filename=${files[$idx]}
+        let begin=${lines[$idx]}+1  # 是否需要头
+        let   end=${lines[$next]}-1
+
+        if [ "$next" == ${#lines[@]} ] ; then
+            end='$'
+        fi
+
+        # echo $begin $end  
+        sed -n "$begin,${end}p" $whole_txt > section/${filename}
+    done
+}
+
+# 
+# 用于 网页定制 如'web_金山松佳' 下的带架构拷贝
+# 参考 (cd  SRC_DIR  && tar cf - .) | (cd  DEST_DIR  && tar xvf -)
+# xargs process multi-file
+function fn_cp_as_tar() 
+{
+    file=$1                     # svn 刚提交过的文件
+    dst_top=$2                  # /1/svn/bin.t/web_jssj/
+    src_top=${3:-$dst_top}      # /1/svn/filesys.t/app/vs/web_nu
+
+    for path in $file $dst_top $src_top; do
+        [ ! -e "$path" ] && echo $path not exist && exit
+    done
+    
+    dst_rela=`(cd "$src_top" >& /dev/null && find -name "${file##*/}")`
+
+    if [ "`echo "$dst_rela" | wc -l`"  -ne 1 ] ; then
+        echo -e "ambiguous relative dst:\n$dst_rela"
+        return 1
+    fi
+
+    # echo $dst_rela $dst_top 
+
+    dst_rela=${dst_rela#./}
+    dst=$dst_top/$dst_rela
+
+
+    mkdir -p ${dst%/*}
+    echo "cp $file $dst"
+
+    cp $file $dst
+    xert $? `$PS8` "cp" || return $?
+}
+
+function fn_tcpstat()    	
+{
+    #  NF   number of fields in the current record.
+    # $NF        last field  in the current record.
+    # state[$NF] create a map
+    netstat -na | 
+        awk '/^tcp/ {++state[$NF]} 
+            END {for(key in state) printf "%-15s%s\n", key,state[key]}
+        ' | sort
+}
+
+
+function fn_filename2fun()
+{
+    routine=${1}
+
+    if [ "$#" -eq 1 ] ; then
+		cat <<-HERE
+		function fn_$routine() 
+		{
+		    
+		}
+		HERE
+        exit
+    elif [ "$#" -ne 3 ]; then
+        echo "Usage: $FUNCNAME routine SECTION {m1|m2}" && exit
+    fi
+
+    [ "$2" != "main" ] && sect_name=${2}_
+
+    boss=${3##*/}
+
+    if [ "$boss" == m1 ]; then
+        filepath=/root/bin/.m1doc/
+    elif [ "$boss" == m2 ]; then
+        filepath=/root/bin/.m2doc/
+    fi
+
+    space_sz=30
+    hanzi=${routine//[0-9A-Za-z_-%$]/}      # 可以用特殊字符 % $
+    hanzi_sz=${#hanzi}
+    let space_sz+=hanzi_sz
+
+    printf "function %-${space_sz}s { cat %s ;}\n" "fn_$routine()" ${sect_name}${routine}
+    
+    # touch file only when create m1 m2 files
+    if [ -n "$filepath" ] && [ ! -f "$filepath/${sect_name}${routine}" ] ; then
+        echo "# ${routine}" >> $filepath/${sect_name}${routine}
+    fi
+}
+
+
+function fn_bakeup()
+{
+    Xfile='/dev/shm/.tar.exclude'
+    backup_path=/winc/bak/root/
+    vimlist=".vimrc .vim"
+    stklist="/root/bin/stk"
+    binlist="/root/bin"
+    rtlist="
+        /root
+        /1/svn/up.sh
+        /etc/crontab
+    "
+    vimtar=$backup_path/vim.tgz
+    stktar=$backup_path/stk.tgz
+    bintar=$backup_path/bin.tgz
+     rttar=$backup_path/rt.tgz
+
+    mpp=/winc/DL/20__Rules_n_员工培养/Schedule/2mdock.mpp
+    mppbak=$backup_path/2mdock.mpp
+
+    # 
+    # tar -X 使用参见 [m1 cmd_tar]
+    #
+
+    cd ~ && mkdir -p $backup_path
+
+    [ -f $vimtar ] && cp $vimtar $vimtar.older
+    [ -f $stktar ] && cp $stktar $stktar.older
+    [ -f $bintar ] && cp $bintar $bintar.older
+    [ -f $rttar  ] && cp $rttar  $rttar.older
+    [ -f $mppbak ] && cp $mppbak $mppbak.older
+
+    cp $mpp $mppbak     
+    tar -zcf $vimtar $vimlist
+    xt_ret $? "" || return $?
+
+    tar -zcf $stktar $stklist 2>&1 | grep -v "Removing leading"
+    xt_ret ${PIPESTATUS[0]} "tar"  || { echo "tar fail" | wall ;} 
+
+    echo $stklist > $Xfile
+    tar -zcf $bintar $binlist -X $Xfile 2>&1 | grep -v "Removing leading"
+    xt_ret ${PIPESTATUS[0]} "tar"  || { echo "tar fail" | wall ;} 
+
+    # root是一个全的，不是增量的
+    # echo $binlist > $Xfile
+    echo > $Xfile
+    tar -zcf $rttar  $rtlist  -X $Xfile 2>&1 | grep -v "Removing leading"
+    xt_ret ${PIPESTATUS[0]} "tar"  || { echo "tar fail" | wall ;} 
+}
+
+
+function fn_escape_char() 
+{   # .*^%/?~$  []
+    echo "$@" | sed -e 's#[.*^%/?~$]#\\&#g' \
+                    -e 's/\[/\\&/g'         \
+                    -e 's/\]/\\&/g'
+}
+
+
+function fn_ipnet() 
+{
+    echo "$1" | grep -q -E "\<[0-9]+\>" || { 
+        echo "Usage: ipnet <net>"
+        return
+    }
+
+    ifconfig eth5:0 192.168.${1}.41
+}
+
+# xargs来实现：echo filesys.*/bin/ | xargs cp file filesys.*/bin/
+function fn_cp_for_in() 
+{
+    file="$1"
+    tops=${@:2}
+
+    [ "$#" -lt 2 ] && echo "$# is argc, exit" && exit
+
+    for top in $tops; do
+        cp $file $top/${file##*/}
+        xert $? `$PS8` "cp"  || return $?
+
+        svn add $top/${file##*/}
+        xert $? `$PS8` "add" || return $?
+
+        svn ci $top/${file##*/} -m "add $file"
+        xert $? `$PS8` "ci"  || return $?
+    done
+}
+
+function fn_genheader() 
+{
+    # use xargs to gen multi header file. e.g.
+    # echo abc.h efg.h | xargs -d ' ' -I{} 7Lite 15 {}
+    [ "$#" -ne 1 ] && echo "Usage: genheader header.h" && exit
+
+    # name as /usr/include/stdio.h|24|
+    header=$1
+    header=`echo $header | tr 'a-z' 'A-Z'`
+    header=_${header/./_}       
+
+    # echo $header
+
+    cat <<-HERE >> $1
+	#ifndef $header
+	#define $header
+	#ifdef __cplusplus 
+	extern "C" {
+	#endif
+	/* macro */
+
+	/* typedef */
+
+	/* declaration */
+	#ifdef __cplusplus
+	}
+	#endif
+	#endif
+	HERE
+}
+
+function fn_svncat() 
+{
+    url=$1
+    [ -z "$url" ] && echo "Error: url is null" && exit
+
+    function fn_if_found() { svn cat $url@$1 | grep -q "$first_patn" ;}
+
+    # svn log -l 50 最近的50条，版本号最大在第一条
+    # start_v
+    versions=(`svn log $url | grep '^r[0-9][0-9]' | awk '{print $1}'`)
+    first_patn="REQUIERAUDIO"
+
+    echo "found ${#versions[@]} version"  # && exit
+
+    local i
+    local start_v=0
+    for (( i=${start_v}; i<${#versions[@]}; i+=1 )); do
+        echo "-- version ${versions[${i}]} ---"
+        # ! or null
+        echo $url@${versions[${i}]}
+        if fn_if_found ${versions[${i}]}; then
+            { fn_echo_succ 'bingo'; exit ;}
+        fi 
+    done
+
+    fn_echo_fail "search fail"
+
+    # 既保存到变量，同时又输出到stdout
+    # command=`svn cat $url@$v | grep --color -n "$first_patn" | tee /dev/stderr`
+}
+
+# 为没满78字符的行后面添加一个空行
+function fn_insert_blankline() 
+{
+    [ -f "$1" ] && "Error: File $1 not exist" && exit 
+
+    sz_line=38
+
+    while read line; do
+        ascii=`echo -n "$line" | tr -d -c '[:print:]' | wc -m`
+        hanzi=`echo -n "$line" | tr -d    '[:print:]' | wc -m`
+        let num_char=(++ascii)/2+hanzi
+
+        echo "$line"
+
+        [ "$num_char" -lt $sz_line ] && echo
+
+    done < $1 > $1.new 
+}
+
+function fn_78cols_text() 
+{
+    # output UTF-8 format
+    [ $# -ne 1 ] && echo "Usage: $FUNCNAME textfile" && exit 1
+    echo " iconv -f gbk -t utf-8 $1 | fold -w ${WIDTH:-78}| dos2unix  "
+}
+
+function fn_main() 
+{
+    cmdlist=(
+    # fixed sequence
+    "filename2fun <name>    # name -> function name() { cat name ;}"
+    "bakeup                 # bakeup files in /root"
+
+    # volatile sequence 
+    "tar_draw               # tar boxdraw and diawit under ~/.vim"
+    "quiet_vim {-q|-r|-t}   # quiet, restore or tar .vimrc and .vim"
+    "ping <start> <end>     # ping until an alive host"    
+    "ipnet <net>            # ifconfig eth5:0 192.168.\${net}.41"    
+    "dbg_c {-s | -r}        # set or remove dbg code of jco_server"
+    "dbgsys <rootpath>      # set dbg sys of NFS filesystem"
+    "tcpstat                # statistics of tcp connections"
+    "sloc2html <path>       # sloc <path>, output to /winc/result.html"
+    "dec2hex <dec>          # xslt dec2hex 2 hex, dec list are seperated by ' '"  # 10
+    "hex2dec <hex>          # xslt hex 2 decimal, hex list are seperated by ' '"
+    "conv from to <data>    # use mysql to conv between binary decimal heximal"
+    "split2files            # split a file to files accord to delim_expression"
+    "cp_as_tar f src dst    # login.asp web_jssj/ /1/svn/filesys.t/app/vs/web_nu"
+    "cp_for_in f to...      # cp less filesys.*/dir"
+    "genheader <.h file>    # define MACRO in header file"                        # 16
+    "svncat <file_url>      # svn 在线搜索"
+    "insert_blankline FILE  # insert blank line for 38 chinese-char txt" 
+    "78cols_text      FILE  # 为大于78字符的行换行"
+    )
+
+    fn_execute "$@"
+}
+
+fn_main "$@"
+

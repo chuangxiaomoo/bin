@@ -1,0 +1,94 @@
+#! /bin/bash -
+# CREATED: 2013-10-06 05:56:37 CST
+
+. `dirname ${0}`/dbank || { echo "dbank err" && exit; }
+. /etc/common.rc
+
+function fn_gether_symbol() {
+    local code=$1
+    local index=1
+    local is_precise_last=false
+    local url='http://yahoo.compass.cn/stock/frames/frmHistoryDetail.php?'
+    local header=${1:0:1}
+    local symbol=
+    case $header in
+      6|7) symbol='sh'$1    ;;
+        s) symbol=$1;   
+           code=9${1:3}     ;;      # sh000001 转化为 900001
+        *) symbol='sz'$1    ;;
+    esac
+
+    > ${day_gether}
+    
+    local last=1
+    while [ $index -le $last ]; do
+        url="${url}start_year=2013&start_month=10&start_day=7&end_year=2013&"
+        url="${url}end_month=11&end_day=8&code=${symbol}&his_type=day&page=${index}"
+
+        # echo $url && exit
+
+        $W3M -dump "${url}" > ${day_temp} || \
+        $W3M -dump "${url}" > ${day_temp}
+        if [ 0 -ne "$?" ]; then
+            echo $code >> /root/bin/stk/.template/codes.timeout
+            echo "${symbol} timeout at page=${index}" 
+            return 1
+        fi
+
+        sed -n '/^20[01].-/,/^$/p' ${day_temp} | head -n -1 >> ${day_gether}
+
+        if [ "${is_precise_last}" = 'false' ]; then
+            if tail -1 ${day_temp} | grep -q '[0-9] 　下一页'; then
+                last=`tail -1 ${day_temp} | awk '{print $(NF-1)}'`
+                is_precise_last=true
+                # echo "last is $last $is_precise_last"
+            fi
+        fi
+        let index++
+    done
+
+    ## 添加yesclose，同 ./up znz2mysql
+    sed -i -e 's/  */\t/g' -e 's/,//g' ${day_gether}
+    sort -k1 -g ${day_gether} | awk -v icode=$code '{
+        printf "%06d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n", 
+                  icode, $1, yesc, $2, $3, $4, $5, $6, $7;
+        yesc=$5
+    }' | sed "/$day_del/d" > ${p_day}/$code
+}
+
+function fn_main()
+{
+    # This script depends on: ./up 3 
+    local p_day=$warehs/znz_day
+    mkdir -p ${p_day}
+    mkdir -p ${day_gether%/*}
+    > /root/bin/stk/.template/codes.timeout
+    # 
+    # cp codes.timeout codes.ask
+
+    local day_del='2013-10-08'
+    Usage="
+1
+    'sh000001' 代表上证
+    codes.ask 通常用连续一周的所有code进行sort -u。记得去头(code)去尾(900001)
+    SELECT code from day where date > '2013-09-23' and date < '2013-09-30' ;
+
+2
+    local day_del='2013-10-08'
+
+3 
+    DELETE FROM day where date > '2013-10-08';
+
+4    
+    LOAD数据： ./up load_directory
+    "
+
+    local i=
+   #for i in `cat /root/bin/stk/.template/codes.ask` ; do
+    for i in sh000001 ; do
+        fn_gether_symbol $i && echo "$i completed!"
+    done
+}
+
+fn_main $@
+

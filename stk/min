@@ -1,0 +1,66 @@
+#! /bin/bash
+
+. `dirname ${0}`/dbank || { echo "dbank err" && exit; }
+. /etc/common.rc
+
+# <<-"HERE"
+#     01 name     ”大秦铁路”，股票名字；
+#     02 open     ”27.55″，今日开盘价；
+#     03 yesc     ”27.25″，昨日收盘价；
+#     04 trade    ”26.91″，当前价格；
+#     05 high     ”27.55″，今日最高价；
+#     06 low      ”26.20″，今日最低价；
+#     07          ”26.91″，竞买价，即“买一”报价；
+#     08          ”26.92″，竞卖价，即“卖一”报价；
+#     09 vloum    ”22114263″，成交的股票数 /100
+#     10 amount   ”589824680″，成交金额，单位为“元” /1000
+#     31 date
+#     32 time
+# HERE
+# code,trade,rise_pct,yesclose,open,high,low,volume,amount,
+# swing_pct,tnov_rate,vol_ratio,date,time
+
+function fn_main()
+{
+    # TIME在这里一直是个问题的
+    # uncomment below for 假日测试
+    # iDATE=`$W3M -dump ${url_sh000001} | awk -F',' '{print $(NF-2)}'`
+
+    DATE=${iDATE:-`date +%Y-%m-%d`} 
+    TIME=`date +%H.%M.%S`
+    p_min=$warehs/min/${DATE}
+
+    # in case today is on holiday
+    if [ ! -d "$p_min" ]; then
+        OPENDATE=`$W3M -dump ${url_sh000001} | awk -F',' '{print $(NF-2)}'`
+        [ "$DATE" != "$OPENDATE" ] && echo "Error: market is close" && return
+        mkdir -p $p_min
+    fi
+
+    export DATE
+    echo "    min ${DATE}..."
+    $workdir/hexun
+
+    $W3M -dump ${url_sh000001} | awk -v v_time=${TIME} -F',' '{
+        printf "%06d\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t" \
+                "%s\t%s\t%s\t%s\t%s\n", 
+                '900001', $4, 100*($4-$3)/$3, $3, $2, $5, $6, 
+                ($9/100), ($10/10000),0,0,0,$31,v_time;
+    }' >> $hx_ripetxt
+    #           ($9/100), ($10/10000),0,0,0,$31,$32;
+
+    mysql -u root <<-HERE
+    LOAD DATA LOCAL INFILE '$hx_ripetxt' INTO TABLE kts.min;
+	HERE
+
+    stamp_date=`head -1 $hx_ripetxt | awk '{print $13}'`
+    stamp_time=`head -1 $hx_ripetxt | awk '{print $14}'`
+
+    mysql -u root <<-HERE
+    INSERT INTO kts.stamp_min values(DEFAULT, '$stamp_date', '$stamp_time')
+	HERE
+
+    cp -a $hx_ripetxt $p_min/$TIME
+}
+
+fn_main $@

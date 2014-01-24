@@ -1,0 +1,68 @@
+#! /bin/bash -
+#---------------------------------------------------------------------------
+#          FILE: google
+#         USAGE: ./google
+#        AUTHOR: chuangxiaomoo (God helps those who help themselves) 
+#  ORGANIZATION: 
+#       CREATED: 2013-09-04 01:40:57 CST
+#      REVISION: 1.0 
+#---------------------------------------------------------------------------
+
+. `dirname ${0}`/dbank || { echo "dbank err" && exit; }
+. /etc/common.rc
+
+function fn_google2() 
+{
+    key=$1
+    echo "w3m -dump 'http://data.stock.hexun.com/include/AjaxSearch2011.ashx?key=$key'"  > /dev/stderr
+    w3m -dump "http://data.stock.hexun.com/include/AjaxSearch2011.ashx?key=$key" | \
+        tr -d '\n' | tr "'" '"'| \
+        sed -e 's/^.*= //' -e 's/;$//'  | sed -e 's/[a-z][a-z][a-z]*/"&"/g' | \
+        JSON.sh -b | tr -d '"' > $go_rawxml 
+    cat $go_rawxml | grep '^[630][0-9]'
+}
+
+
+function fn_google() {
+    [ -z "$*" ] && echo "Usage: $0 symbole" && exit 
+    mkdir -p ${go_rawxml%/*}
+
+    local i=
+    for i in $@; do
+        case $i in +([0-9])) echo $i && continue ;; esac
+
+        host='https://www.google.com.hk/finance/match'
+        host="${host}?matchtype=matchall&hl=zh-CN&ei=K6cmUpCpNomukgWYzgE&q="
+        host="${host}$i"
+        $W3M -dump "${host}" > $go_rawxml
+        xt_ret $? "NETWORK" || return $?
+
+        cat $go_rawxml | \
+            sed -e 's/\},/&\n/g' -e 's#["{}]##g' -e '1s#^.*\[##g' -e '$s#].*##g' | \
+            sed -e 's/[a-z]*://g' > $go_ripexml
+
+        awk -F',' '/SHA|SHE/ {printf "%-8s%s\n", $1, $2}' $go_ripexml
+    done
+}
+
+
+function fn_main() 
+{
+
+    if [ "$2" = '2' ] ; then
+        fn_google2 $@ | tee $go_temp
+    else
+        fn_google  $@ | tee $go_temp
+    fi
+    [ 0 -ne  "${PIPESTATUS[0]}" ] && echo google fail && exit 1
+
+    codes=`cat $go_temp | ./1Line 1stcol | xargs`
+    codes=${codes// /,}
+
+    echo "
+    SELECT * FROM cap WHERE code in ($codes) ORDER by nmc;
+	" | mysql -t kts
+}
+
+fn_main $@
+

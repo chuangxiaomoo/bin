@@ -1,0 +1,173 @@
+#! /bin/bash
+
+helpmsg="
+    ------------------------------ 环境变量 -----------------------------
+    ASC
+        排序方式，默认使用ASC，赋任意值使用DESC，e.g. ASC=1 SELECT 0
+    START
+        时间范围的左值
+    END
+        时间范围的右值，默认使用900001的max(date)
+    LIMIT
+        limit子句输出记录限制，默认48
+    PIPE
+        使能表pipe，WHERE code in (SELECT code in pipe)
+    TBL
+        操作表，默认使用'flt_visit'
+"
+
+[ -n "$END" ] && export END=$END
+
+[ 1 = "$PI" ] && PIPECMD="and code in (SELECT code FROM pipe)"
+
+W3M='timeout 34 /usr/bin/w3m'
+RISE='TRUNCATE(100*(d.close-yesc)/yesc, 2)'
+SWING='TRUNCATE(100*(high-low)/yesc, 2)'
+TURNOV='TRUNCATE(100*d.volume*c.close/c.nmc, 2)'
+
+url_sh000001='http://hq.sinajs.cn/list=sh000001'
+
+mps_org="sql/xRD.sql"
+mps_god="sql/God.sql"
+sql_temp='/dev/shm/sql.temp'
+
+warehs='/opt/warehs'
+workdir='/root/bin/stk'
+
+m2d_temp='/dev/shm/hexun/min2day'
+
+tougu_wall='/dev/shm/sina/tougu/wall'
+tougu_temp='/dev/shm/sina/tougu/temp'
+tougu_debug='/dev/shm/sina/tougu/debug'
+tougu_stderr='/dev/shm/sina/tougu/stderr'
+tougu_stdout='/dev/shm/sina/tougu/stdout'
+tougu_rawxml='/dev/shm/sina/tougu/rawxml'
+tougu_ripexml='/dev/shm/sina/tougu/ripexml'
+tougu_ripetxt='/dev/shm/sina/tougu/ripetxt'
+
+hx_stderr='/dev/shm/hexun/stderr'
+hx_rawxml='/dev/shm/hexun/rawxml'
+hx_ripexml='/dev/shm/hexun/ripexml'
+hx_ripetxt='/dev/shm/hexun/ripetxt'
+hx_dayclose='/dev/shm/hexun/dayclose'
+
+rzrq_stderr='/dev/shm/rzrq/stderr'
+rzrq_rawxml='/dev/shm/rzrq/rawxml'
+rzrq_ripexml='/dev/shm/rzrq/ripexml'
+rzrq_ripetxt='/dev/shm/rzrq/ripetxt'
+
+
+sn_stderr='/dev/shm/sina/stderr'
+sn_rawxml='/dev/shm/sina/rawxml'
+sn_ripexml='/dev/shm/sina/ripexml'
+sn_ripetxt='/dev/shm/sina/ripetxt'
+sn_cap_nmc='/dev/shm/sina/cap_nmc'
+
+go_rawxml='/dev/shm/google/rawxml'
+go_ripexml='/dev/shm/google/ripexml'
+go_temp='/dev/shm/google/temp'
+
+rt_stdout='/dev/shm/realtime/stdout'
+rt_ripetxt='/dev/shm/realtime/ripetxt'
+
+day_temp='/dev/shm/day/temp'
+day_ripe='/dev/shm/day/ripe'
+day_gether='/dev/shm/day/gether'
+
+fenbi_raw='/dev/shm/fenbi/raw'
+fenbi_ripe='/dev/shm/fenbi/ripe'
+
+function fn_is_market_open() 
+{
+    local today=`date +%Y-%m-%d`
+    local OPENDATE=`$W3M -dump 'http://hq.sinajs.cn/list=sh000001' | \
+                            awk -F',' '{print $(NF-2)}'`
+
+    if [ -z "$OPENDATE" ]; then
+        echo "    SINA UNREACHABLE!" | wall && return 1
+    fi
+
+    if [ "${DATE:-$today}" != "$OPENDATE" ]; then
+        echo "Err: market is close" && return 1
+    fi 
+
+    return 0
+}
+
+function fn_maxdate() 
+{
+    mysql -N kts <<< "SELECT max(date) from day WHERE code = 900001;"
+}
+
+function fn_cp_tbl()
+{
+    [ 2 != "$#" ] && echo "Error: we need 2 table name" && exit
+
+    echo "cp $1 $2"
+
+    echo "
+    DROP TABLE IF EXISTS $2;
+    CREATE TABLE $2 LIKE $1;   
+    INSERT INTO $2 SELECT * FROM $1;  
+    " | mysql kts
+}
+
+echo "`date +%F.%T` ${BASH_SOURCE##*/}" >> /var/dbank.trace
+
+[ "${BASH_SOURCE##*/}" != "${0##*/}" ] && return 0
+
+fn_stati_tougu_cap_layout() {
+    cat $tougu_ripetxt | \
+        xargs -I{} grep {} "$sn_cap_nmc" | \
+        sort -g -k5
+}
+
+fn_rank_by_nmc() {
+    echo "
+    SELECT * FROM cap ORDER by nmc DESC limit ${1:-48};
+	" | mysql -t kts
+}
+
+fn_group_nmc_layout() {
+    # cat $sn_cap_nmc
+    mysql -N  kts <<< "SELECT * FROM cap;" | awk 'BEGIN {
+        list="5000 1000 800 500 200 100 50 20 10 5 0";
+        arr_size=split(list, arr_list, " ");
+    } {
+        count++;
+        nmc=$5/10000
+        for(k=1; k<=arr_size; k++) {
+            if (nmc > arr_list[k]) {
+                arr_count[k] = arr_count[k]+1; break;
+            }
+        }
+    } END {
+        printf "    %d支股票市值分布\n", count
+        for(k=1; k<=arr_size; k++) {
+            printf "    大于%s亿:\t %d\n", arr_list[k], arr_count[k]; 
+        }
+
+        printf "    分析可见：   市值%%60分布主要在10~100亿\n";
+        printf "    mysql -N kts <<<\"SELECT code FROM cap WHERE nmc>100000 and nmc<990000\" | xargs up 7\n";
+    }'
+}
+
+main() {
+    list=(
+        fn_stati_tougu_cap_layout
+        fn_group_nmc_layout
+        fn_rank_by_nmc
+    )        
+
+    match_word=(`echo ${list[@]}| xargs -n1 | cat -n | grep  "\<$1\>"`)
+
+    if [ -z "${match_word[0]}" ] ; then
+        echo "available list:"
+        echo ${list[@]} | xargs -n 1 | cat -n | sed 's/^/   /g'
+        exit 0
+    fi
+
+    ${match_word[1]}
+}
+
+main $@
