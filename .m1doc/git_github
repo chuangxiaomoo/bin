@@ -40,3 +40,6 @@
    2227  ssh-keygen         *# 一路回车*
    2228  cat id_rsa.pub     *# 点击头像，SSH Keys -- Add SSH key*
 
+   提交
+
+    git clone git://github.com/chuangxiaomoo/bin.git
