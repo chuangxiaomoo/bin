@@ -35,12 +35,34 @@
 
 ## github ssh profile
 
+  * github
+
    2225  cd ~/.ssh/
    2226  ls
    2227  ssh-keygen         *# 一路回车*
    2228  cat id_rsa.pub     *# 点击头像，SSH Keys -- Add SSH key*
 
-   提交
+  * local
 
-    git clone git://github.com/chuangxiaomoo/bin.git
+   [Git里的SSH key该如何使用](http://segmentfault.com/q/1010000000133596)
+
+  1. 通过命令，将HTTPS分支改为SSH分支
+
+    git remote rm origin
+    git remote add origin git@github.com/chuangxiaomoo/bin.git
+    git push origin
+
+  2. 编辑项目目录下的.git/config文件，找到:
+
+  ```
+    [remote "origin"]
+        url =https://github.com/chuangxiaomoo/bin.git
+        fetch = +refs/heads/*:refs/remotes/origin/*
+
+    改成
+
+    [remote "origin"]
+        url =git@github.com:chuangxiaomoo/bin.git
+        fetch = +refs/heads/*:refs/remotes/origin/*
+  ```
 
