@@ -1,0 +1,12 @@
+#! /bin/bash
+
+files=`ls`
+local i=
+for i in $files; do
+    line=`cat $i | wc -l`
+
+    if [ "$line" -lt 2 ] ; then
+        echo $i
+        git rm $i
+    fi
+done
