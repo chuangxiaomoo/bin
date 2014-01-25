@@ -566,7 +566,7 @@ function fn_svncat()
 # 为没满78字符的行后面添加一个空行
 function fn_insert_blankline() 
 {
-    [ -f "$1" ] && "Error: File $1 not exist" && exit 
+    [ ! -f "$1" ] && "Error: File $1 not exist" && exit 
 
     sz_line=38
 
@@ -579,7 +579,7 @@ function fn_insert_blankline()
 
         [ "$num_char" -lt $sz_line ] && echo
 
-    done < $1 > $1.new 
+    done < $1 | sed 's///g' > $1.new 
 }
 
 function fn_78cols_text() 

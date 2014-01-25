@@ -295,6 +295,7 @@ function fn_01_Akkila与拼字大赛()       { cat movie_01_Akkila与拼字大�
 }
 
 function fn_phi()                       { 
+function fn_flowers12()                 { cat phi_flowers12 ;}
 function fn_01_马克思()                 { cat phi_01_马克思 ;}
 function fn_02_康德()                   { cat phi_02_康德 ;}
 function fn_03_波普尔()                 { cat phi_03_波普尔 ;}
@@ -314,6 +315,7 @@ function fn_wdf_07_哲学实践()           { cat phi_wdf_07_哲学实践 ;}
         freudian                        # 自我 本我 超我
         emotion                         # Anger 七情六欲
 
+        flowers12
         wdf_00                          # 王德峰
         wdf_01_心安之窄门
         wdf_02_国民性
