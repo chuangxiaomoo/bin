@@ -33,6 +33,12 @@
    2162  git commit -m "del dir"
    2163  git push
 
+  * git commit -a
+
+   -a, --all   
+      Tell the command to automatically stage files that have been modified
+      and deleted, but new files you have not told git about are not affected.
+
 ## github ssh profile
 
   * github
