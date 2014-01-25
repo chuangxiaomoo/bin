@@ -393,10 +393,15 @@ function fn_filename2fun()
         filepath=/root/bin/.m2doc/
     fi
 
+    # set -x
+
     space_sz=30
-    hanzi=${routine//[0-9A-Za-z_-%$]/}      # 可以用特殊字符 % $
+   #hanzi=${routine//[0-9a-zA-Z]/}
+    hanzi=`echo $routine | tr -d '[0-9a-zA-Z_%]'`
     hanzi_sz=${#hanzi}
     let space_sz+=hanzi_sz
+
+    # set +x
 
     printf "function %-${space_sz}s { cat %s ;}\n" "fn_$routine()" ${sect_name}${routine}
     

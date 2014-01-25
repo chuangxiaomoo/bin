@@ -300,6 +300,13 @@ function fn_02_康德()                   { cat phi_02_康德 ;}
 function fn_03_波普尔()                 { cat phi_03_波普尔 ;}
 function fn_freudian()                  { cat phi_freudian ;}
 function fn_emotion()                   { cat phi_emotion ;}
+function fn_wdf_01_心安之窄门()         { cat phi_wdf_01_心安之窄门 ;}
+function fn_wdf_02_国民性()             { cat phi_wdf_02_国民性 ;}
+function fn_wdf_03_儒道互补，内方外圆() { cat phi_wdf_03_儒道互补，内方外圆 ;}
+function fn_wdf_04_第八意识()           { cat phi_wdf_04_第八意识 ;}
+function fn_wdf_05_哲学自由()           { cat phi_wdf_05_哲学自由 ;}
+function fn_wdf_06_哲学与其它知识学科() { cat phi_wdf_06_哲学与其它知识学科 ;}
+function fn_wdf_07_哲学实践()           { cat phi_wdf_07_哲学实践 ;}
     local opts=(
         01_马克思
         02_康德
@@ -307,6 +314,39 @@ function fn_emotion()                   { cat phi_emotion ;}
         freudian                        # 自我 本我 超我
         emotion                         # Anger 七情六欲
 
+        wdf_00                          # 王德峰
+        wdf_01_心安之窄门
+        wdf_02_国民性
+        wdf_03_儒道互补，内方外圆       # 中国文化精神传统的特征
+        wdf_04_第八意识
+        wdf_05_哲学自由
+        wdf_06_哲学与其它知识学科
+        wdf_07_哲学实践
+        wdf_08_
+        wdf_09_
+        wdf_10_
+        wdf_11_
+        wdf_12_
+        wdf_13_
+        wdf_14_
+        wdf_15_
+        wdf_16_
+        wdf_17_
+        wdf_18_
+        wdf_19_
+        wdf_20_
+        wdf_21_
+        wdf_22_
+        wdf_23_
+        wdf_24_
+        wdf_25_
+        wdf_26_
+        wdf_27_
+        wdf_28_
+        wdf_29_
+        wdf_30_
+        wdf_31_
+        wdf_32_
     )
     fn_print $@
 }
