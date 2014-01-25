@@ -1,25 +1,38 @@
 #! /bin/bash
 
-function fn_main() 
+function fn_main()
 {
-    # add commit push
-    # commit了但没有push的内容：git diff HEAD^ HEAD 
-    if [ -z "$*" ] ; then
-        echo "Usage: $0 file..." 
+    filelist=${@:2}
+
+    case $1 in
+    '?'|h*)
+        echo "Usage: $0 {?|help|commit|pull} file..."
+        ;;
+
+    c*)
+        # add commit push
+        # commit了但没有push的内容：git diff HEAD^ HEAD
+        local i=
+        for i in ${filelist}; do
+            [ ! -f "$i" ] && { echo "Error: $i not exist"; exit ;}
+        done
+
+        read -p "Please input comment: "
+
+        git add ${filelist}
+        git commit -m "$REPLY" ${filelist}
+        git push origin
+        ;;
+
+    p*)
+        git pull origin master
+        ;;
+
+    s*|*)
         git status
-        exit
-    fi  
+        ;;
+    esac
 
-    local i=
-    for i in $@; do
-        [ ! -f "$i" ] && { echo "Error: $i not exist"; exit ;}
-    done
-
-    read -p "    Please input comment: "
-
-    git add $@
-    git commit -m "$REPLY" $@
-    git push origin
 }
 
 fn_main $@
