@@ -25,6 +25,8 @@ function fn_main()
         ;;
 
     p*)
+        # git config branch.master.remote origin
+        # git config branch.master.merge refs/heads/master
         git pull origin master
         ;;
 

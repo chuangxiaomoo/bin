@@ -61,6 +61,7 @@ function fn_2013_seminar()              { cat annual_2013_seminar ;}
 function fn_2013_report()               { cat annual_2013_report ;}
 function fn_2013_life()                 { cat annual_2013_life ;}
 function fn_2014_plan()                 { cat annual_2014_plan ;}
+function fn_2014_spring_festival()      { cat annual_2014_spring_festival ;}
     local opts=(
         plan_what                       # 基于`以终为始`的理念
         report_what
@@ -72,6 +73,7 @@ function fn_2014_plan()                 { cat annual_2014_plan ;}
         2013_report
         2013_life
         2014_plan                       # `多算胜，少算不胜`
+        2014_spring_festival
     )
     fn_print $@
 }
@@ -308,6 +310,26 @@ function fn_wdf_04_第八意识()           { cat phi_wdf_04_第八意识 ;}
 function fn_wdf_05_哲学自由()           { cat phi_wdf_05_哲学自由 ;}
 function fn_wdf_06_哲学与其它知识学科() { cat phi_wdf_06_哲学与其它知识学科 ;}
 function fn_wdf_07_哲学实践()           { cat phi_wdf_07_哲学实践 ;}
+function fn_wdf_08_哲学与知识()         { cat phi_wdf_08_哲学与知识 ;}
+function fn_wdf_09_科学之非经验的基础() { cat phi_wdf_09_科学之非经验的基础 ;}
+function fn_wdf_10_哲学与世界观关系2()  { cat phi_wdf_10_哲学与世界观关系2 ;}
+function fn_wdf_11_哲学入门()           { cat phi_wdf_11_哲学入门 ;}
+function fn_wdf_13_理念世界()           { cat phi_wdf_13_理念世界 ;}
+function fn_wdf_14_人生理想的证明()     { cat phi_wdf_14_人生理想的证明 ;}
+function fn_wdf_15_本体论()             { cat phi_wdf_15_本体论 ;}
+function fn_wdf_16_哲学第一命题()       { cat phi_wdf_16_哲学第一命题 ;}
+function fn_wdf_17_让思想发现思想()     { cat phi_wdf_17_让思想发现思想 ;}
+function fn_wdf_18_语言()               { cat phi_wdf_18_语言 ;}
+function fn_wdf_19_范畴是最大的概念()   { cat phi_wdf_19_范畴是最大的概念 ;}
+function fn_wdf_20_3大领域的革命()      { cat phi_wdf_20_3大领域的革命 ;}
+function fn_wdf_21_精神之自由()         { cat phi_wdf_21_精神之自由 ;}
+function fn_wdf_22_精神似一种子()       { cat phi_wdf_22_精神似一种子 ;}
+function fn_wdf_23_历史的逻辑预存论()   { cat phi_wdf_23_历史的逻辑预存论 ;}
+function fn_wdf_24_理性的智慧遭遇虚无() { cat phi_wdf_24_理性的智慧遭遇虚无 ;}
+function fn_wdf_25_上手之于概念()       { cat phi_wdf_25_上手之于概念 ;}
+function fn_wdf_26_未言语前已心领神会() { cat phi_wdf_26_未言语前已心领神会 ;}
+function fn_wdf_27_人必有一死()         { cat phi_wdf_27_人必有一死 ;}
+function fn_wdf_28_终极关怀()           { cat phi_wdf_28_终极关怀 ;}
     local opts=(
         01_马克思
         02_康德
@@ -315,7 +337,7 @@ function fn_wdf_07_哲学实践()           { cat phi_wdf_07_哲学实践 ;}
         freudian                        # 自我 本我 超我
         emotion                         # Anger 七情六欲
 
-        flowers12
+        flowers12                       # 哲学12钗
         wdf_00                          # 王德峰
         wdf_01_心安之窄门
         wdf_02_国民性
@@ -324,31 +346,27 @@ function fn_wdf_07_哲学实践()           { cat phi_wdf_07_哲学实践 ;}
         wdf_05_哲学自由
         wdf_06_哲学与其它知识学科
         wdf_07_哲学实践
-        wdf_08_
-        wdf_09_
-        wdf_10_
-        wdf_11_
+        wdf_08_哲学与知识
+        wdf_09_科学之非经验的基础
+        wdf_10_哲学与世界观关系2
+        wdf_11_哲学入门                 # 入哲学之门，先过“区分精神与自然意识”
         wdf_12_
-        wdf_13_
-        wdf_14_
-        wdf_15_
-        wdf_16_
-        wdf_17_
-        wdf_18_
-        wdf_19_
-        wdf_20_
-        wdf_21_
-        wdf_22_
-        wdf_23_
-        wdf_24_
-        wdf_25_
-        wdf_26_
-        wdf_27_
-        wdf_28_
-        wdf_29_
-        wdf_30_
-        wdf_31_
-        wdf_32_
+        wdf_13_理念世界
+        wdf_14_人生理想的证明
+        wdf_15_本体论
+        wdf_16_哲学第一命题             # 水是万物的始基
+        wdf_17_让思想发现思想
+        wdf_18_语言
+        wdf_19_范畴是最大的概念
+        wdf_20_3大领域的革命            # 哲学、宗教、艺术
+        wdf_21_精神之自由
+        wdf_22_精神似一种子             # 黑格尔
+        wdf_23_历史的逻辑预存论         # 黑格尔
+        wdf_24_理性的智慧遭遇虚无
+        wdf_25_上手之于概念             # 马克思--实践是一切认知的基础与源泉
+        wdf_26_未言语前已心领神会
+        wdf_27_人必有一死               # 海伦凯勒 & 乔布斯 & 雷锋 & 保尔柯察金
+        wdf_28_终极关怀                 # 宗教之必然
     )
     fn_print $@
 }
