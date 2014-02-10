@@ -31,7 +31,7 @@ mps_org="sql/xRD.sql"
 mps_god="sql/God.sql"
 sql_temp='/dev/shm/sql.temp'
 
-warehs='/opt/warehs'
+warehs='/opt0/warehs'
 workdir='/root/bin/stk'
 
 m2d_temp='/dev/shm/hexun/min2day'

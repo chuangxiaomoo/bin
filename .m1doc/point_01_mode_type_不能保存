@@ -1,8 +1,8 @@
 # 01_mode_type_不能保存
 
-    root@(none):~# modi_uboot_env --action get --key force          
-    not find key=force
+  root@(none):~# modi_uboot_env --action get --key force
+  not find key=force
 
-    root@(none):~# modi_uboot_env --action set --key force --value 1
-    root@(none):~# modi_uboot_env --action get --key force          
-    1
+  root@(none):~# modi_uboot_env --action set --key force --value 1
+  root@(none):~# modi_uboot_env --action get --key force
+  1
