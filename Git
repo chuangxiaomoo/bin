@@ -9,6 +9,21 @@ function fn_main()
         echo "Usage: $0 {?|help|commit|pull} file..."
         ;;
 
+    A*)
+        # git add -A
+        # commit了但没有push的内容：git diff HEAD^ HEAD
+        local i=
+        for i in ${filelist}; do
+            [ ! -f "$i" ] && { echo "Error: $i not exist"; exit ;}
+        done
+
+        read -p "Please input comment: "
+
+        git add ${filelist}
+        git commit -m "$REPLY" ${filelist}
+        git push origin
+        ;;
+
     c*)
         # add commit push
         # commit了但没有push的内容：git diff HEAD^ HEAD

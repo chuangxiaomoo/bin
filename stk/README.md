@@ -10,6 +10,7 @@
 ## 走势消息论   .doc/excitation_response.md
 ## 六道轮回     .doc/六道轮回.千古兴衰.md
 ## 涨跌的逻辑   .doc/up_down_logic.md
+## 操作之自觉   .doc/discipline.md
 ## 辨别强弩之末 .doc/snail.md
 
   《罗辑思维--躺倒也当英雄.未看完》2身法和2心法：注重单点突破。
