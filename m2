@@ -71,7 +71,7 @@ function fn_2014_spring_festival()      { cat annual_2014_spring_festival ;}
         2013_seminar
         2013_plan
         2013_report
-        2013_life
+        2013_life                       # 财务报表
         2014_plan                       # `多算胜，少算不胜`
         2014_spring_festival
     )
