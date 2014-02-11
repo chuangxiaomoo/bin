@@ -10,17 +10,11 @@ function fn_main()
         ;;
 
     A*)
-        # git add -A
-        # commit了但没有push的内容：git diff HEAD^ HEAD
-        local i=
-        for i in ${filelist}; do
-            [ ! -f "$i" ] && { echo "Error: $i not exist"; exit ;}
-        done
-
+        git status | grep --color "\.swp" && { echo "error: .swp files exist!!!";exit ;}
         read -p "Please input comment: "
 
-        git add ${filelist}
-        git commit -m "$REPLY" ${filelist}
+        git add -A
+        git commit -m "$REPLY"
         git push origin
         ;;
 
