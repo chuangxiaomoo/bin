@@ -501,7 +501,7 @@ function fn_add()                       { cat git_add ;}
         commit
         diff                            # 
         svndiff                         # 与svn比较
-        github                          # 使用 github.com
+        github                          # startup project on github.com 
         init                            # 按遇到的先后顺序
     )
     fn_print $@
