@@ -492,8 +492,10 @@ function fn_git()                       {
 function fn_base()                      { cat git_base ;}
 function fn_github()                    { cat git_github ;}
 function fn_svndiff()                   { cat git_svndiff ;}
+function fn_diff()                      { cat git_diff ;}
     local opts=(
         base                            # 入门
+        diff                            # 
         svndiff                         # 与svn比较
         github                          # 使用 github.com
         init                            # 按遇到的先后顺序
