@@ -62,6 +62,7 @@ function fn_2013_report()               { cat annual_2013_report ;}
 function fn_2013_life()                 { cat annual_2013_life ;}
 function fn_2014_plan()                 { cat annual_2014_plan ;}
 function fn_2014_spring_festival()      { cat annual_2014_spring_festival ;}
+function fn_2014_jco()                  { cat annual_2014_jco ;}
     local opts=(
         plan_what                       # 基于`以终为始`的理念
         report_what
@@ -74,6 +75,7 @@ function fn_2014_spring_festival()      { cat annual_2014_spring_festival ;}
         2013_life                       # 财务报表
         2014_plan                       # `多算胜，少算不胜`
         2014_spring_festival
+        2014_jco
     )
     fn_print $@
 }
