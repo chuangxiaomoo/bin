@@ -1,14 +1,31 @@
-/* cppcheck */
+# cppcheck 
 
-. Intro
+## Intro
     cppcheck的简单介绍
     http://www.cnblogs.com/beifei/archive/2011/08/13/2137474.html
 
-. Install
+## Install
     apt-get install cppcheck
 
     latest: 1.59 2013-03-29
     http://sourceforge.net/projects/cppcheck/files/cppcheck/
 
-. EXAMPLE
+## EXAMPLE
+
+## cppcheck的检查
+
+  1.  自动变量检查
+  2.  数组的边界检查
+  3.  class类检查
+  4.  过期的函数，废弃函数调用检查
+  5.  异常内存使用，释放检查
+  6.  内存泄漏检查，主要是通过内存引用指针
+  7.  操作系统资源释放检查，中断，文件描述符等
+  8.  异常STL 函数使用检查
+  9.  代码格式错误，以及性能因素检查
+
+## 我的检查
+   *  no Warnning, no Error
+   *  80列检查
+   *  open() close(), ini造成的fd泄漏
 

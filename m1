@@ -1043,6 +1043,7 @@ function fn_01_mode_type_不能保存()     { cat point_01_mode_type_不能保�
 }
 
 function fn_alibaba()                   { cat alibaba ;}
+function fn_nxp()                       { cat nxp ;}
 
 function fn_main() {
     local ARGC=${#}
@@ -1107,6 +1108,7 @@ function fn_main() {
         live555
         time_call_engine
         linux
+        nxp
         make
         pandoc                  # johnmacfarlane.net/pandoc/try/
         markdown                # README.md xianglei
