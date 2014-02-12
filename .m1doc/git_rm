@@ -1,0 +1,8 @@
+# rm
+# del, del dir
+
+  2160  git rm    file 
+  2161  git rm -r dir
+  2162  git commit -m "del dir"
+  2163  git push
+

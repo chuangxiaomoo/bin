@@ -19,8 +19,7 @@ function fn_main()
         ;;
 
     c*)
-        # add commit push
-        # commit了但没有push的内容：git diff HEAD^ HEAD
+        # add commit push 指定文件...
         local i=
         for i in ${filelist}; do
             [ ! -f "$i" ] && { echo "Error: $i not exist"; exit ;}
@@ -34,6 +33,7 @@ function fn_main()
         ;;
 
     p*)
+        # 解决自动merge
         # git config branch.master.remote origin
         # git config branch.master.merge refs/heads/master
         git pull origin master

@@ -495,11 +495,13 @@ function fn_github()                    { cat git_github ;}
 function fn_svndiff()                   { cat git_svndiff ;}
 function fn_diff()                      { cat git_diff ;}
 function fn_add()                       { cat git_add ;}
+function fn_rm()                        { cat git_rm ;}
     local opts=(
         base                            # 入门
         add
         commit
         diff                            # 
+        rm
         svndiff                         # 与svn比较
         github                          # startup project on github.com 
         init                            # 按遇到的先后顺序
