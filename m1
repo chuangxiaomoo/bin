@@ -244,6 +244,7 @@ function fn_53_平台删除对应用的影响()   { cat case_53_平台删除对�
 
 function fn_70_merge_error()            { cat case_70_merge_error ;}
 function fn_71_行淫的女人_小魔的牢骚()  { cat case_71_行淫的女人_小魔的牢骚 ;}
+function fn_72_TZ_那些失败的TASK()      { cat case_72_TZ_那些失败的TASK ;}
 
 function fn_80_西昌门禁()               { cat case_80_西昌门禁 ;}
 function fn_81_代码实现_从0开始()       { cat case_81_代码实现_从0开始 ;}
@@ -298,6 +299,7 @@ function fn_a0_vobx_tool_filename()     { cat case_a0_vobx_tool_filename ;}
 
         70_merge_error                  # 朝令夕改 请Luo不要随便插脚
         71_行淫的女人_小魔的牢骚        # care你的牢骚。PK产品经理
+        72_TZ_那些失败的TASK            # 管理总结
 
         80_西昌门禁                     # 软件方法论：先固化，再优化。按契约编程
         81_代码实现_从0开始             # 软件方法论：命名考虑应用场景。mxml id 动态扩展时
