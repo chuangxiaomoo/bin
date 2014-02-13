@@ -5,8 +5,9 @@
   * 在github上create并README.md
 
   * git clone https://github.com/chuangxiaomoo/bin.git
+  `git clone 会自动创建文件夹bin`
 
-  * commit and hide file is ok
+  * add commit push
   `git add 自动add所有，包括隐藏，git add *则不包括隐藏文件`
 
    2038  mkdir dir
@@ -35,7 +36,7 @@
 
   * git commit -a
 
-   -a, --all   
+   -a, --all
       Tell the command to automatically stage files that have been modified
       and deleted, but new files you have not told git about are not affected.
 
@@ -56,22 +57,31 @@
   git clone git@github.com:chuangxiaomoo/bin.git    可以用 git push
 
 
+## 免用户push
+
+  以两种方法都可实现，建议使用第一种方法
+
   1. 通过命令，将HTTPS分支改为SSH分支
 
-    git remote rm origin
-    git remote add origin git@github.com:chuangxiaomoo/bin.git
-    git push origin
+  git remote rm origin
+  git remote add origin git@github.com:chuangxiaomoo/bin.git
+
+  git config branch.master.remote origin
+  git config branch.master.merge refs/heads/master
+
+  git push origin
+
 
   2. 编辑项目目录下的.git/config文件，找到:
 
   ```
-    [remote "origin"]
-        url =https://github.com/chuangxiaomoo/bin.git
-        fetch = +refs/heads/*:refs/remotes/origin/*
+  [remote "origin"]
+      url =https://github.com/chuangxiaomoo/bin.git
+      fetch = +refs/heads/*:refs/remotes/origin/*
 
-    改成
+  改成
 
-    [remote "origin"]
-        url =git@github.com:chuangxiaomoo/bin.git
-        fetch = +refs/heads/*:refs/remotes/origin/*
+  [remote "origin"]
+      url =git@github.com:chuangxiaomoo/bin.git
+      fetch = +refs/heads/*:refs/remotes/origin/*
   ```

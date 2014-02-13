@@ -1,0 +1,12 @@
+[user]
+	name = chuangxiaomoo
+	email = chuangxiaomoo@gmail.com
+
+[color]
+	diff = auto
+
+[diff]
+	external = git_diff_wrapper
+
+[pager]
+	diff =

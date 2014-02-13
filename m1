@@ -498,15 +498,19 @@ function fn_svndiff()                   { cat git_svndiff ;}
 function fn_diff()                      { cat git_diff ;}
 function fn_add()                       { cat git_add ;}
 function fn_rm()                        { cat git_rm ;}
+function fn_config()                    { cat git_config ;}
+function fn_subconf()                   { cat git_subconf ;}
     local opts=(
-        base                            # 入门
+        base                    # 入门
         add
+        config                  # ln -sf ~/bin/.m1doc/git_config .gitconfig
+        subconf                 # bin .vim
         commit
-        diff                            # 
+        diff                    # 
         rm
-        svndiff                         # 与svn比较
-        github                          # startup project on github.com 
-        init                            # 按遇到的先后顺序
+        svndiff                 # 与svn比较
+        github                  # startup project on github.com 
+        init                    # 按遇到的先后顺序
     )
     fn_print $@
 }
