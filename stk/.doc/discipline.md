@@ -1,7 +1,9 @@
 # discipline
 
 ## 知道势还只是第一步
-[为什么顺势交易也会死](http://mp.weixin.qq.com/s?__biz=MjM5MzAzNzE0MQ==&amp;mid=200016434&amp;idx=1&amp;sn=97ffec76199739364f89c0485b926078&amp;scene=1#rd)
+
+  清楚你的对手是谁，对手的胃在哪里？
+  [为什么顺势交易也会死](http://mp.weixin.qq.com/s?__biz=MjM5MzAzNzE0MQ==&amp;mid=200016434&amp;idx=1&amp;sn=97ffec76199739364f89c0485b926078&amp;scene=1#rd)
 
 ## 2013操作案例
 
@@ -34,7 +36,7 @@
   `中科电气`
 
 ## 2014
-  1. 实时监控指标
+  1. 实时监控指标 unfini
 
   考虑精力投入，再次回到趋势，回到 macd kdj 上面来。
   破当日均线的操作。
@@ -42,4 +44,7 @@
   第10天的虎--你们对手的胃是你们首要的目标
   食物的分配方式是要害所在.
 
+  2. 
+
+## 
 
