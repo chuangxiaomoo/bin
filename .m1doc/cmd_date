@@ -2,10 +2,19 @@
 
 # 手册
     pinfo date 查不到 date, 先 pinfo 进入手册，再搜索进入
+    info coreutils 'date invocation'
 
 # 格式输出
     date "+%F %T"
     1970-01-01 00:02:00
+
+# ago and hence(从此)
+
+   * To print the date of the day before yesterday:
+        date --date='2 days ago' +'%F'
+
+   * To print the date of the day three months and one day hence:
+        date --date='3 months 1 day'   
 
 # 转换：把<date-time>转换为<自Epoch的秒数>
     date --date='1970-01-01 00:02:00 +0000' +%s
