@@ -276,9 +276,15 @@ function fn_load_directory()
 {
     local tbl_name='day'
     local p_sql="$warehs/znz_day/"
-    cd $p_sql
+    local f_sql="$warehs/znz.yahoo"
     # 做成一个大文件会快得多
-    # cat [0-7]* > sql
+    cd $p_sql
+    cat * > $f_sql
+    echo "
+    LOAD DATA LOCAL INFILE '$f_sql' INTO TABLE $tbl_name
+    " | mysql kts
+
+    return $?
 
     local i=
    #for i in 000002; do
@@ -289,7 +295,6 @@ function fn_load_directory()
         " | mysql kts
     done
 }
-
 
 function fn_add_code_2_zixungu() 
 {

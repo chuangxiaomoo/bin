@@ -640,8 +640,7 @@ END tag_100d_turnov //
 
 --  call sp_visit_tbl('cap', @fn_flt_n_day_change);
 
-    SET @DOWNSLOPE='1';
-    SET @START='2013-12-29';
-    SET @END='2014-01-21';
-    call sp_visit_tbl('zxg', @fn_get_down_turnov);
+    SET @START='2014-01-10';
+    SET @END='2014-01-30';
+    call sp_stat_turnov('600228');
     

@@ -1,3 +1,6 @@
+# startup
+  znz.yahoo从yahoo收集历史日线数据，这是整个股票系统的开始
+
 # stratagy
 
     I M P O R T A N T
