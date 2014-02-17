@@ -22,7 +22,7 @@ function fn_gether_symbol() {
     
     local last=1
     while [ $index -le $last ]; do
-        url="${url}start_year=2014&start_month=1&start_day=20&end_year=2014&"
+        url="${url}start_year=2013&start_month=1&start_day=20&end_year=2014&"
         url="${url}end_month=2&end_day=14&code=${symbol}&his_type=day&page=${index}"
 
         # echo $url && exit
@@ -38,8 +38,9 @@ function fn_gether_symbol() {
         sed -n '/^20[01].-/,/^$/p' ${day_temp} | head -n -1 >> ${day_gether}
 
         if [ "${is_precise_last}" = 'false' ]; then
-            if tail -1 ${day_temp} | grep -q '[0-9] 　下一页'; then
-                last=`tail -1 ${day_temp} | awk '{print $(NF-1)}'`
+            if tail -1 ${day_temp} | sed 's/ \.\.//' | grep -q '[0-9] 　下一页'; then
+                # 上一页　1 2 3 4 5 .. 　下一页
+                last=`tail -1 ${day_temp} | sed 's/ \.\.//' | awk '{print $(NF-1)}'`
                 is_precise_last=true
                 # echo "last is $last $is_precise_last"
             fi
@@ -48,17 +49,18 @@ function fn_gether_symbol() {
     done
 
     ## 添加yesclose，同 ./up znz2mysql
+    ## XR时，volume没有进行处理，volume ~= amount/close
     sed -i -e 's/  */\t/g' -e 's/,//g' ${day_gether}
     sort -k1 -g ${day_gether} | awk -v icode=$code '{
         printf "%06d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n", 
-                  icode, $1, yesc, $2, $3, $4, $5, $6, $7;
+                  icode, $1, yesc, $2, $3, $4, $5, $7/$5, $7;
         yesc=$5
     }' | sed "/$day_del/d" > ${p_day}/$code
 }
 
 function fn_main()
 {
-    local day_del='2014-01-21'
+    local day_del='2013-01-20'
     local lt_curr="date<='`date +%F`'"
     local codeask='/root/bin/stk/.template/codes.ask'
 
@@ -98,8 +100,9 @@ function fn_main()
 
 
     local i=
-    for i in `cat $codeask` ; do
+    # for i in `cat $codeask` ; do
     # for i in sh000001 ; do
+      for i in 000509; do
         fn_gether_symbol $i && echo "$i completed!"
     done
 }

@@ -6,7 +6,7 @@ function fn_main()
 
     case $1 in
     '?'|h*)
-        echo "Usage: $0 {?|help|commit|pull} file..."
+        echo "Usage: $0 {?|help|commit|pull|revert} file..."
         ;;
 
     A*)
@@ -37,6 +37,11 @@ function fn_main()
         # git config branch.master.remote origin
         # git config branch.master.merge refs/heads/master
         git pull origin master
+        ;;
+
+    s*|revert)
+        [ -z "$filelist" ] && echo "Error: file... must be dedicated" && exit
+        git checkout -- $filelist
         ;;
 
     s*|*)
