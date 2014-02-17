@@ -854,7 +854,7 @@ function fn_calltree()                  { cat codetool_calltree ;}
     local opts=(
         fundamental
         splint
-        cppcheck
+        cppcheck            # my rules 军规
         calltree            # g p r o f 可以生成更棒的图
     )
     fn_print $@
