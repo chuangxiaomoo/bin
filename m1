@@ -418,12 +418,14 @@ function fn_const_char()                { cat cxx_const_char ;}
 }
 
 function fn_design() {
+function fn_pm()                        { cat design_pm ;}
 function fn_01_配置()                   { cat design_01_配置 ;}
 function fn_02_分析()                   { cat design_02_分析 ;}
 function fn_UI()                        { cat design_UI ;}
 function fn_patterns()                  { cat design_patterns ;}
 
     local opts=(
+        pm                              # project manager
         01_配置
         02_分析                         # 需求分析、概要设计、详细设计析义
         patterns

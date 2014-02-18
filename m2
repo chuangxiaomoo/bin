@@ -391,6 +391,7 @@ function fn_Dong_【苏格拉底】关于专家() { cat huawei_Dong_【苏格拉
 function fn_Dong_工作如解题解题如抽丝() { cat huawei_Dong_工作如解题解题如抽丝 ;}
 function fn_Dong_优良的笔头表达能力()   { cat huawei_Dong_优良的笔头表达能力 ;}
 function fn_Dong_研发要我来喂()         { cat huawei_Dong_研发要我来喂 ;}
+function fn_Dong_产品经理()             { cat huawei_Dong_产品经理 ;}
 
 function fn_Du_DIY与戴明()              { cat huawei_Du_DIY与戴明 ;}
 function fn_Du_提升C代码质量()          { cat huawei_Du_提升C代码质量 ;}
@@ -430,6 +431,7 @@ function fn_Qi_疾病()                   { cat huawei_Qi_疾病 ;}
         Du_letter2
 
         Dong_语录                       # 
+        Dong_产品经理                   # pm
         Dong_letter                     # 张冬
         Dong_建议大家都去当2b县长
         Dong_【苏格拉底】关于专家       # 【对话苏格拉底】关于专家 
