@@ -1,5 +1,10 @@
+/* c调用cxx函数 */
 http://www.cnblogs.com/kenkofox/archive/2009/11/05/1597003.html
 
+/*
+ * 关键：cpp.cpp文件必须包含 cpp.h，以编译出"C"格式的函数符号
+ *       C文件编译时通常不用包含其声明。
+ */ 
 拂晓风起
     从代码可以得知，C调用C++链接库的关键在于cpp.h中的函数声明方式，其直接影响g++
     生成symbol name的格式。

@@ -118,7 +118,7 @@ function fn_proc()                      { cat linux_proc ;}
         fundamental
         kernel
         cron
-        ldd3
+        ldd3                            # Linux Device Driver Edition3
         IPC
         boot
         proc
@@ -385,7 +385,16 @@ function fn_strncpy()                   { cat c_strncpy ;}
     fn_print $@
 }
 
-function fn_binutils()                  { cat binutils ;}
+function fn_binutils()                  { 
+function fn_readelf()                   { cat binutils_readelf ;}
+    local opts=(
+        ar
+        nm
+        readelf                 # -h|--file-header | grep Mach 查看CPU架构
+        ldd                     # 只是一个shell脚本，通过ld-linux.so实现
+    )
+    fn_print $@
+}
 
 function fn_coreutils() {
 function fn_alphabet_list()             { cat coreutils_alphabet_list ;}
