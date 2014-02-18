@@ -15,7 +15,7 @@ function fn_main()
 
         git add -A
         git commit -m "$REPLY"
-        git push origin
+        git push origin master
         ;;
 
     c*)
@@ -29,7 +29,7 @@ function fn_main()
 
         git add ${filelist}
         git commit -m "$REPLY" ${filelist}
-        git push origin
+        git push origin master
         ;;
 
     p*)
