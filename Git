@@ -39,6 +39,11 @@ function fn_main()
         git pull origin master
         ;;
 
+    P*|Push)
+        # Your branch is ahead of 'origin/master' by 4 commits.
+        git pull origin
+        ;;
+
     s*|revert)
         [ -z "$filelist" ] && echo "Error: file... must be dedicated" && exit
         git checkout -- $filelist
