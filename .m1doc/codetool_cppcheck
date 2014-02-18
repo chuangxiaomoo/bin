@@ -25,7 +25,8 @@
   9.  代码格式错误，以及性能因素检查
 
 ## 我的检查
-   *  no Warnning, no Error
-   *  80列检查
-   *  open() close(), ini造成的fd泄漏
+  * no Warnning, no Error
+  * 对每个函数检查返回值(2014-02-17因socket()没检查而废了一下午)
+  * 80列检查
+  * open() close(), ini造成的fd泄漏
 
