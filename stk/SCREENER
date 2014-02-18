@@ -186,6 +186,7 @@ function fn_get_down_turnov()
     TBL=${TBL:-'zxg'}
 
     echo "
+    # 注意更新表 $TBL
     SET @DOWNSLOPE='${DOWNSLOPE:-1}';
     SET @START='$START';
     SET @END='$END';
@@ -194,11 +195,13 @@ function fn_get_down_turnov()
     mysql $mo -t kts <<< "source $mps_god"
 
     echo '
-    提示：  超跌时必须缩量方可买入
-            `好想你`    是个反例：下跌时换手不够大，属阴跌，无生气。
-            `中科电气`  是个好崽：需要在上行1%时及时抓住。
-            `中科电气`  2014-01-10下跌换手继承，需要人去计算。
-            
+    提示：80%即可考虑操作，超过50%的也要适当进行人工计算
+
+    超跌时必须缩量方可买入
+          `好想你`   下跌过程长（超过10天），属阴跌，无生气
+          `中科电气` 2014-01-10 下跌换手继承，请人工计算
+          `天舟文化` 2014-02-14 要敢于在右边追击，中午何如？
+          
     排序：  abs(swing * bounce * nmc) e.g. 2014-01-15 贵州百灵
     '
 }

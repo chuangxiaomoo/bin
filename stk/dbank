@@ -14,6 +14,10 @@ helpmsg="
         使能表pipe，WHERE code in (SELECT code in pipe)
     TBL
         操作表，默认使用'flt_visit'
+
+    表zxg更新
+    kmysql -N <<<'SELECT code FROM cap WHERE nmc>100000 and nmc<990000' | xargs up 7
+
 "
 
 [ -n "$END" ] && export END=$END
@@ -28,7 +32,7 @@ TURNOV='TRUNCATE(100*d.volume*c.close/c.nmc, 2)'
 url_sh000001='http://hq.sinajs.cn/list=sh000001'
 
 mps_org="sql/xRD.sql"
-mps_god="sql/God.sql"
+mps_god="/var/God.sql"
 sql_temp='/dev/shm/sql.temp'
 
 warehs='/opt0/warehs'

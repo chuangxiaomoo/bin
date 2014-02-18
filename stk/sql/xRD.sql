@@ -528,11 +528,11 @@ CREATE PROCEDURE sp_get_down_turnov(a_code INT(6) ZEROFILL) tag_100d_turnov:BEGI
     DECLARE v_rise      DECIMAL(12,2) DEFAULT 0;
     DECLARE v_nmc       DECIMAL(12,2) DEFAULT 0;
 
-    -- high value for 最高价日非下跌日修正
+    -- SUM(volume)修正
     DECLARE v_chng0     DECIMAL(12,2) DEFAULT 0;
     DECLARE v_rise0     DECIMAL(12,2) DEFAULT 0;
+    DECLARE v_rise1     DECIMAL(12,2) DEFAULT 0;
     
-
     -- for output
     DECLARE net         DECIMAL(8,2) DEFAULT 0;
     DECLARE sum         DECIMAL(8,2) DEFAULT 0;
@@ -560,10 +560,15 @@ CREATE PROCEDURE sp_get_down_turnov(a_code INT(6) ZEROFILL) tag_100d_turnov:BEGI
         DELETE FROM tempday WHERE date<v_date_high OR date>v_date_low; 
         SET swing= 100 * (v_low-v_high) / v_high;
 
-        -- 再次取high
+        -- 因为上面的DELETE，再次取high和low
         SELECT date,high FROM tempday order by high DESC limit 1 INTO v_date_high,v_high;
+        SELECT date,low  FROM tempday order by low  ASC  limit 1 INTO v_date_low, v_low;
+
+        -- v_chng0 < 0 为正常情况
         SELECT (close-yesc), volume FROM tempday WHERE date=v_date_high INTO v_chng0, v_rise0;
         IF v_chng0 < 0 THEN SET v_rise0 = 0; END IF; 
+        SELECT (close-yesc), volume FROM tempday WHERE date=v_date_low  INTO v_chng0, v_rise1;
+        IF v_chng0 < 0 THEN SET v_rise1 = 0; END IF; 
     ELSE
         -- 取上升段
         SELECT date,low  FROM tempday order by low  ASC  limit 1 INTO v_date_low ,v_low;
@@ -589,7 +594,13 @@ CREATE PROCEDURE sp_get_down_turnov(a_code INT(6) ZEROFILL) tag_100d_turnov:BEGI
     IF v_rise IS NULL THEN SET v_rise = 0; END IF;
     IF v_sink IS NULL THEN SET v_sink = 0; END IF;
 
+    -- 最高价日为红，则60%计入下跌换手; 为绿，全为下跌换手
     SET v_rise = v_rise - v_rise0;
+    SET v_sink = v_sink + v_rise0*0.6;
+
+    -- 最低价日为红，不计入上升换手; 为绿，全为下跌换手
+    SET v_rise = v_rise - v_rise1;
+
     SET rise = 100 * v_rise * v_close / v_nmc;
     SET sink = 100 * v_sink * v_close / v_nmc;
     SET sum  = rise + sink;
