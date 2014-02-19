@@ -596,7 +596,7 @@ CREATE PROCEDURE sp_get_down_turnov(a_code INT(6) ZEROFILL) tag_100d_turnov:BEGI
 
     -- 最高价日为红，则60%计入下跌换手; 为绿，全为下跌换手
     SET v_rise = v_rise - v_rise0;
-    SET v_sink = v_sink + v_rise0*0.6;
+    SET v_sink = v_sink + v_rise0*0.68;
 
     -- 最低价日为红，不计入上升换手; 为绿，全为下跌换手
     SET v_rise = v_rise - v_rise1;
