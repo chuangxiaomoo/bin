@@ -49,14 +49,17 @@ function fn_gether_symbol() {
         let index++
     done
 
+
     ## 添加yesclose，同 ./up znz2mysql
     ## XR时，volume没有进行处理，volume ~= amount/close
+    ## First record 日期 != $start_date, 从mySql读取yesclose
     sed -i -e 's/  */\t/g' -e 's/,//g' ${day_gether}
     sort -k1 -g ${day_gether} | awk -v icode=$code '{
         printf "%06d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n", 
                   icode, $1, yesc, $2, $3, $4, $5, $7/$5, $7;
         yesc=$5
-    }' | sed '1d' > ${p_day}/$code
+    }' | sed "/${start_date}/d" > ${p_day}/$code
+   #}' | sed '1d' > ${p_day}/$code
 }
 
 function fn_main()
@@ -83,11 +86,11 @@ function fn_main()
 
     2.
     设置变量 url 中代表数据日期范围的6个时间变量 start_year... 
-    为保证yesclose的正确性，下载数据的第一条数据将被删除
+    为精确匹配，'$start_date'应当开市，该日数据将被删除，
+    当日停牌的，yesclose需要从mySql读取 -- unfini
 
     3.
     保留原来在数据库中的连续的数据
-    为精确匹配，'$start_date'应当开市
     DELETE FROM day where date > '$start_date';
 
     4.
