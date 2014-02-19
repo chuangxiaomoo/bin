@@ -1,0 +1,4 @@
+# stat
+
+  svn stat -q `don't print unversioned items`
+

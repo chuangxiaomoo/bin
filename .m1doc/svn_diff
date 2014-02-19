@@ -1,0 +1,14 @@
+# diff
+
+  `m1 svn revision 查看版本详解`
+
+  **N old-rev and M new-rev**
+
+    diff [-c M | -r N[:M]]  // M 默认为 WORKINGCOPY
+
+  svn diff <不带参数>     //（最常用）等价于 -r BASE:WORKINGCOPY 
+  svn diff -r 'PREV'      //（最常用）等价于 -r 'PREV':WORKINGCOPY
+  svn diff -c 3 rules.txt //          等价于-r 3:PREV
+  svn diff -r 3   FILE    //          等价于-r 3:WORKINGCOPY
+  svn diff -r N:M FILE    //          N and M 不分大小顺序
+

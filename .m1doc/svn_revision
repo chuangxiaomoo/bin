@@ -1,0 +1,17 @@
+# revision
+
+  http://blog.csdn.net/cmatch/article/details/2988061
+  版本号是递增的, A revision argument can be one of:
+      NUMBER       revision number
+      '{' DATE '}' revision at start of the date
+      'HEAD'       latest in repository
+      'COMMITTED'  last commit
+      'BASE'       up前 == COMMITTED, up后 == HEAD
+      'PREV'       == COMMITTED - 1
+      HEAD 这些关键字可以不用'引起来
+
+# -v 详细信息
+  svn stat -v
+  svn log -v
+
+----------------------------------------------------------------------

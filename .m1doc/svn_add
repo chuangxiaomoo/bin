@@ -1,0 +1,10 @@
+# add
+
+  svn add 文件夹时会自动add其下的文件, 使用 --force 可以避免 worning
+
+    root@Moo:/1/svn/package/upgrade# svn add updateStep9
+    A         updateStep9
+    A         updateStep9/readme.txt
+
+    find ! -name '.' -a -name '*' | xargs -I{} svn add --force {}  | cat -n
+

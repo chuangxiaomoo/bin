@@ -531,9 +531,21 @@ function fn_fundamental()               { cat svn_fundamental ;}
 function fn_help()                      { cat svn_help ;}
 function fn_merge()                     { cat svn_merge ;}
 function fn_visual_svn_server()         { cat svn_visual_svn_server ;}
+function fn_revision()                  { cat svn_revision ;}
+function fn_stat()                      { cat svn_stat ;}
+function fn_diff()                      { cat svn_diff ;}
+function fn_revert()                    { cat svn_revert ;}
+function fn_add()                       { cat svn_add ;}
+function fn_log()                       { cat svn_log ;}
     local opts=(
         fundamental
+        add
+        revision
+        stat
+        diff
+        revert
         help
+        log
         merge
         visual_svn_server               # Visual SVN Server
     )
