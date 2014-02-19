@@ -12,6 +12,10 @@
 
     http://blog.aboutc.net/linux/7/vim-markdown
 
+. md2html生成器 python版本
+
+    https://github.com/trentm/python-markdown2
+
 . 在线Markdown    
     http://mahua.jser.me/
 
@@ -23,6 +27,13 @@
 
     http://johnmacfarlane.net/pandoc/try/
 
+. 2-html 语言语法高亮
+
+    糅合Markdown和语法高亮，快速写作技术博客
+    http://blog.csdn.net/istonelee/article/details/6644152
+
+. google的东西    
+    http://google-code-prettify.googlecode.com/svn/trunk/README.html
 
 /* BELOW IS A EXAMPLE FROM https://raw.github.com/rails/rails/master/README.md */
 

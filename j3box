@@ -1,0 +1,278 @@
+#!/bin/bash - 
+#---------------------------------------------------------------------------
+#          FILE: j2.sh
+#         USAGE: ./j2.sh 
+#   DESCRIPTION: 
+#        AUTHOR: moo (God helps those who help themselves) 
+#  ORGANIZATION: 
+#       CREATED: 2012-11-02 11:31:15 CST
+#      REVISION: 1.0 
+#---------------------------------------------------------------------------
+
+function xt_ret() {
+    [ $? -eq 0 ] && return 0
+    printf "${BASH_SOURCE[1]##*/}%-6s %s\n" "|${BASH_LINENO[0]}|" "$*"
+    return 1
+}
+
+function fn_tmout()
+{
+    OPTIND=1
+    xt_opt() { 
+        [ "${OPTARG:0:1}" == '-' ] && 
+            echo '-'$option argument ${OPTARG} ahead of '-' && exit 1
+    }
+    fn_usage() {
+        echo "$FUNCNAME -t timeout [-i interval] [-d delay] command"
+    }
+
+    while getopts ":t:i:d:" option; do
+        case "$option" in
+            t) xt_opt; local timeout=$OPTARG ;;
+            i) xt_opt; local interval=$OPTARG ;;
+            d) xt_opt; local delay=$OPTARG ;;
+            *) fn_usage; exit 1 ;;
+        esac
+    done
+
+    local command=${@:${OPTIND}}
+    test -z "$command" && fn_usage && exit 1
+    test -z "$timeout" && fn_usage && exit 1
+
+    # support .digtal interval, default 1
+    interval=${interval:-1}
+
+    sleep ${delay:-0}
+    
+    while :; do
+        eval "$command"
+        [ $? -eq 0 ] && return 0
+        [ $timeout -le 0 ] && return 1 
+
+        sleep ${interval}
+        let timeout--
+    done
+}
+
+function fn_jsend() {
+    # ${#string} 不能计算'\n' '\r'等转义字符长度，且把汉字当一个长度单位
+    # echo -e -n ${string} | wc --bytes
+    # echo -e -n ${string} | wc --chars
+    local cmd=$1
+    local len=`echo -e -n ${cmd} | wc --bytes`
+
+    # * was expand in a ${var}
+    echo -e \
+"CMD * RTSP/1.0\r\n"\
+"CSeq: 2\r\n"\
+"Accept:TEXT/JCP\r\n"\
+"Content-Length:${len}\r\n\r\n${cmd}" >&${SFD}
+}
+
+function fn_jsend_proxy() {
+    # ${#string} 不能计算'\n' '\r'等转义字符长度，且把汉字当一个长度单位
+    # echo -e -n ${string} | wc --bytes
+    # echo -e -n ${string} | wc --chars
+    local cmd=$1
+    local len=`echo -e -n ${cmd} | wc --bytes`
+
+    # * was expand in a ${var}
+    echo -e "${cmd}" >&${SFD}
+}
+
+
+function fn_jrecv()
+{
+    if [ -n "$RAW" ] ; then
+        opt_rawdata="s/o7o/;/g" # do nothing
+    else
+        opt_rawdata="s/;/\n/g"
+    fi
+    # timeout 1 cat <&$SFD
+    tm=1
+    [ "${FUNCNAME[1]##fn_}" == "ubt" ] && tm=0.1
+    [ "${FUNCNAME[1]##fn_}" == "ubt_proxy" ] && tm=0.1
+    echo "${FUNCNAME[1]##fn_}" $tm is tm
+
+    while :; do
+        read -t $tm <&$SFD 
+        [ $? -ne 0 ] && return 0  # timeout $?, 142 on ubt, 1 on box
+        echo "$REPLY"             # 4 spaces ahead every line
+    done | sed -e ${opt_rawdata} -e 's/[rs]\]/&\n/g' \
+                -e 's///g' | grep -A50 '[rs]\]'
+    #one | sed  -e "s/;/\n/g" -e 's/Success]/Success]\n/g'
+}
+
+function fn_ubt_proxy()
+{
+    readonly DEVIP=${VIP:-${DIP}}
+    readonly JPORT=6161
+    readonly SFD=6
+   #readonly CMD="${@:-"${deft_cmd}"}\r\n"
+    readonly CMD="${@:-"${deft_cmd}"}\n"
+
+    fn_tmout -t 4 -i .3 "exec $SFD<>/dev/tcp/$DEVIP/$JPORT"
+    xt_ret "open $SFD" || return $?
+
+    fn_jsend_proxy "${CMD}"
+    xt_ret || return $?
+
+    # version -act set -platform 0  # TAKES 10 seconds
+    fn_tmout -t 20 -i .5 "read -t 0 <&${SFD}" 
+    xt_ret "peep $SFD" || return $?
+
+    fn_jrecv 
+    xt_ret "recv $SFD" || return $?
+
+    eval "exec $SFD>&-"
+}
+
+function fn_ubt()
+{
+    readonly DEVIP=${VIP:-${DIP}}
+    readonly JPORT=554
+    readonly SFD=6
+    readonly CMD="${@:-"${deft_cmd}"}\r\n"
+
+    fn_tmout -t 4 -i .3 "exec $SFD<>/dev/tcp/$DEVIP/$JPORT"
+    xt_ret "open $SFD" || return $?
+
+    fn_jsend "${CMD}"
+    xt_ret || return $?
+
+    # version -act set -platform 0  # TAKES 10 seconds
+    fn_tmout -t 20 -i .5 "read -t 0 <&${SFD}" 
+    xt_ret "peep $SFD" || return $?
+
+    fn_jrecv 
+    xt_ret "recv $SFD" || return $?
+
+    eval "exec $SFD>&-"
+}
+
+function fn_box()
+{
+    eth0=`ifconfig eth0 | grep "inet addr" | cut -d : -f 2 | cut -d ' ' -f 1`
+
+    readonly DEVIP=${VIP:-$eth0}
+    readonly JPORT=554
+    readonly SFD=6
+    readonly CMD="${@:-"${deft_cmd}"}\r\n"
+    # Usage: [VIP=devip] ./jsend <cmd>
+
+    fn_tmout -t 4 -i  1 "exec $SFD<>/dev/tcp/$DEVIP/$JPORT"
+    xt_ret "open $SFD" || return $?
+
+    fn_jsend "${CMD}"
+    xt_ret || return $?
+
+    sleep 1
+    # fn_tmout -t 4 -i  1 "read -t 0 <&${SFD}" 
+    # xt_ret "peep $SFD" || return $?
+
+    fn_jrecv 
+    xt_ret "recv $SFD" || return $?
+
+    eval "exec $SFD>&-"
+}
+
+function fn_freq_list() { 
+    #
+    # on command line, TAB is 8 space, so indent is 8 
+    #
+    jlist=(
+    "sysctrl -act list                                     # JCOSystemStatus"
+    "ethcfg -act set -ethip 192.168.2.45
+         -ethmask 255.255.255.0 -ethgw 192.168.2.1         # Set ip"
+    "xkcd sed -i \'s/ifconfig eth0.*/ifconfig eth0 ${DIP}/g\'
+         /etc/init.d/rcS                                   # modify eth0 ip of rcS"
+    "version -act set -platform 0                          # 修改平台为 Normal"
+    "xkcd telnetd -p 24                                    # telnetd"
+    "xkcd /sbin/debugsys.sh force                          # set debug sys"
+    "audiotestcfg -chn 1/d1 -act set -start 1              # audio loopback test"
+    "alarmtest -act set -chn 1/d1 -alarmtype 5 -filter 1   # alarm test 1 md"
+    "alarmtest -act set -chn 1/d1 -alarmtype 30 -filter 1  # alarm test 30 spark"
+    "getalarmmsg -act list                                 # alarm msg"
+    "captprolong -act list                                 # md capt prolong"
+    "devvecfg -act list                                    # web视频通道设置"
+    "enccfg -act list -chn 1/720p                          # 列出编码参数"
+    "multiplatform -act list                               # 列出多平台"
+    )
+    
+    if [ "$1" == list ] ; then
+        local idx
+        for (( idx=0; idx<${#jlist[@]}; idx+=1 )); do
+            # printf "%3d  %s\n" "$idx" "${jlist[${idx}]}"
+            # echo -e "  $idx\t ${jlist[${idx}]}"
+            # 5 spaces is what ethmask indent
+            printf "%3d  " "$idx"
+              echo "${jlist[${idx}]}"
+        done
+    else
+        cmd=`eval echo ${jlist[$1]}`
+        echo -e "\njcpcmd: $cmd\n"
+    fi
+}
+
+function fn_query_jcpcmds()
+{
+    . ~/.bashrc
+   #cfile="$p_br_pelco_d_2/jcpcmd/jcp_cmd.c"    
+   #cfile="$p_br_wenan/jcpcmd/jcp_cmd.c"    
+    cfile="$p_/jcpcmd/jcp_cmd.c"    
+    
+    # awk -F'"' '/JCP_CMD_REG/ { i++; printf "%-16s", $2; if (0 == i%4) print ""; }' $cfile
+    awk -F'"' '/JCP_CMD_REG/ { print $2}' $cfile | sort | \
+    awk '{ i++; printf "%-16s", $1; if (0 == i%4) print ""; }'
+    echo
+}
+
+function fn_main()
+{
+    DIP=192.168.2.45
+    cmd=$@
+
+    case "$1" in
+    h|-h)
+        options="{ -h | -? | -l | -j | <cmd> | <cmd_id>}"
+        echo "
+        Usage: [RAW=1] [VIP=$DIP] $0 $options
+        -l  list often commands
+        -j  list all jcpcmd
+        -?  echo this help message
+        id  exe the jcpcmd lead with id
+        "
+        exit 0  ;;
+    j|-j)
+        fn_query_jcpcmds; exit 0;
+        ;;
+    l|-l)
+        fn_freq_list list; exit 0 ;
+        ;;
+    /)
+        fn_query_jcpcmds  | grep -i --color "${@:2}"
+        fn_freq_list list | grep -i --color "${@:2}"; exit 0 ;
+        ;;
+    *)
+        ;;
+    esac
+
+    deft_cmd="version -act list"
+
+    if echo $@ | grep -q -E "^[0-9]+$"; then
+        { fn_freq_list $1; }
+    fi
+
+    if [ -z "$*" ]; then
+        echo -e "\njcpcmd: $deft_cmd\n"
+    fi
+
+    if [ -e "/usr/bin/vim" ] ; then
+        fn_ubt_proxy $cmd
+       #fn_ubt $cmd
+    else
+        fn_box $cmd
+    fi
+}
+
+fn_main $@
