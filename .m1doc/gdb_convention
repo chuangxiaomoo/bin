@@ -1,15 +1,16 @@
-#! /bin/bash
+# convention 约定 
 
-   /**    convention    **/
-   (1) default value
-       lots of commands are variable parameter commands, so default come along
+## 可选参数如 [bnum]
 
-       e.g.
-       commands [bnum]         # when no <bnum>, commands the last b
-       ... command-list ...
-       end
+    lots of commands are variable parameter commands, so default come along
 
-   (2) pair command
-       set  listsize <count>
-       show listsize
+    commands [bnum]         
+    ... command-list ...
+    end
+
+
+## 配对命令 set show
+
+    set  listsize <count>
+    show listsize
 

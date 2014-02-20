@@ -1,0 +1,70 @@
+# a1_fork_locked
+
+## 目标
+
+## 真正原因 - True causes
+
+## 问题描述 - from R&D or Tester
+
+  Ctrl-C 不能杀死程序
+
+## 现象分析 - log or details such as "ATTENTION: err or fail"
+
+  `Set quit flag!!`不停地打，但进程就是不退出
+
+## 原因分析 - 原因猜想，目标分解，process to true causes
+
+ 1. zengy 已经得出是在 fork() 处阻塞了，但我需要解决方案
+    使用 system() popen() 等都不能解决，因为他们都调用了fork()
+
+ 2. 最后，使用 `gdb -> attach -> bt`
+    #0  0x400bbfe0 in ptmalloc_lock_all () from /lib/libc.so.6
+    #1  0x400dfa50 in fork () from /lib/libc.so.6
+    #2  0x40084554 in do_system () from /lib/libc.so.6
+    #3  0x40084acc in system () from /lib/libc.so.6
+    #4  0x4003fa00 in system () from /lib/libpthread.so.0
+
+ 3. google `fork ptmalloc_lock_all`
+
+   [外国人的分析](https://bugs.maemo.org/show_bug.cgi?id=11533)
+
+   Eero Tamminen  nokia 2010-11-11 10:51:26 UTC
+   As the hang happens in Glibc pmalloc,  issue could be in free/malloc, not
+   fork().  I'm pretty sure either sprintf() or system() does an alloc.
+ 
+   Does the same problem happen if you have same loop both in the thread function
+   and in main()?  If yes, with malloc/free, or with sprintf/system call?
+
+ 4. 猜想
+
+  大家都用 malloc() 导致了死锁。
+
+## 解决方案 - 包括对未来的防御
+
+  保证两个用malloc()的函数隔开
+
+    if(createServicePthread(logStartup, "log record") < 0)
+    {
+      goto EXIT;
+    }
+
+    sleep(2);
+
+    if(createServicePthread(confStartup, "parameter config") < 0)
+    {
+      goto EXIT;
+    }
+
+
+
+
+## Time
+
+  (1) 整个问题过程花费的时间
+
+  (2) 问题引入、发现、解决
+      解决引入                2012-11-28
+      解决日期                2012-11-28
+      总结日期                2012-12-01 10:10:00 ~ 10:30:00
+
+## Introspection

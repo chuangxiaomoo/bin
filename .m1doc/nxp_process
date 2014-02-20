@@ -1,0 +1,53 @@
+# process
+
+  系统通过system()来启动其它应用，对于 system()，是注意以下几点
+
+## 1. system()函数执行过程为：fork()->exec()->waitpid()a
+
+  [Linux下使用system()函数一定要谨慎](http://my.oschina.net/renhc/blog/53580)
+  [Linux下system()函数引发的错误](http://my.oschina.net/renhc/blog/54582)
+
+  As mentioned, system() `ignores SIGINT and SIGQUIT`.   This  may  make  programs
+  that  call it from a loop uninterruptible, unless they take care themselves to
+  check the exit status of the child.  E.g.
+
+  `
+    while (something) {
+        int ret = system("foo");
+
+        if (WIFSIGNALED(ret) &&
+            (WTERMSIG(ret) == SIGINT || WTERMSIG(ret) == SIGQUIT))
+                break;
+    }
+  `
+
+## 2. system()函数返回值
+
+  system()的返回值不是命令的返回值
+
+  [system函数返回值探究](http://blog.chinaunix.net/uid-24774106-id-3048281.html)
+
+  `
+    int main(int argc, char *argv[])
+    {
+        int ret;
+
+        ret  = system("not_a_command 0");
+        printf("ret is %d\n", WEXITSTATUS(ret));    // 127
+
+        ret = system("exit 0");
+        printf("ret is %d\n", WEXITSTATUS(ret));    // 0
+
+        ret = system("exit 3");
+        printf("ret is %d\n", WEXITSTATUS(ret));    // 3
+
+        return 0;
+    }
+  `
+
+## 3. 建议使用popen()代替system()
+
+  popen()函数较于system()函数的优势在于使用简单，popen()函数只返回两个值：
+  成功返回子进程的status，使用WIFEXITED相关宏就可以取得command的返回结果；
+  失败返回-1，我们可以使用perro()函数或strerror()函数得到有用的错误信息。
+

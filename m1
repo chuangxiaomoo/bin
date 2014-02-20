@@ -235,8 +235,8 @@ function fn_30_ftp_ServerU_文件不完整() { cat case_30_ftp_ServerU_文件不
 function fn_31_REBOOT_LINUX_fail()      { cat case_31_REBOOT_LINUX_fail ;}
 function fn_32_IE吃掉_mousedown_click() { cat case_32_IE吃掉_mousedown_click ;}
 function fn_33_云台运动步长不一致()     { cat case_33_云台运动步长不一致 ;}
-function fn_34_ZXWSDK告警丢失()         { cat case_34_ZXWSDK告警丢失 ;}
-function fn_35_bind_失败_No_such_file() { cat case_35_bind_失败_No_such_file ;}
+function fn_54_ZXWSDK告警丢失()         { cat case_54_ZXWSDK告警丢失 ;}
+function fn_55_bind_失败_No_such_file() { cat case_55_bind_失败_No_such_file ;}
 function fn_50_前置条件之重启()         { cat case_50_前置条件之重启 ;}
 function fn_51_多行OSD出现UNKNOW()      { cat case_51_多行OSD出现UNKNOW ;}
 function fn_52_TUTK_获取不到配置值()    { cat case_52_TUTK_获取不到配置值 ;}
@@ -251,6 +251,7 @@ function fn_81_代码实现_从0开始()       { cat case_81_代码实现_从0�
 function fn_82_HIK协议实现1个月后傻眼() { cat case_82_HIK协议实现1个月后傻眼 ;}
 
 function fn_a0_vobx_tool_filename()     { cat case_a0_vobx_tool_filename ;}
+function fn_a1_fork_locked()            { cat case_a1_fork_locked ;}
 
     local opts=(
         fundamental
@@ -290,12 +291,15 @@ function fn_a0_vobx_tool_filename()     { cat case_a0_vobx_tool_filename ;}
         32_IE吃掉_mousedown_click       # 执行力 怀疑精神
         33_云台运动步长不一致           # 问题：你如何知道->量化数据
 
-        34_ZXWSDK告警丢失               # API设计原则: 进程锁，勿注释代码如何运作
-        35_bind_失败_No_such_file       # API设计原则: API的生命在于复用
+        a0_vobx_tool_filename           # 虚拟机存储映射后WINDOWS文件系统时，filename不区别大小写
+        a1_fork_locked                  # fork()阻塞了
+
         50_前置条件之重启               # API测试原则：配置文件相关都需要重启
         51_多行OSD出现UNKNOW            # API测试原则：条件分支，五大特性之完整性
         52_TUTK_获取不到配置值          # API测试原则：No test, no release
         53_平台删除对应用的影响         # API测试原则：一个测试套伯至少3个用例:头尾身
+        54_ZXWSDK告警丢失               # API设计原则: 进程锁，勿注释代码如何运作
+        55_bind_失败_No_such_file       # API设计原则: API的生命在于复用
 
         70_merge_error                  # 朝令夕改 请Luo不要随便插脚
         71_行淫的女人_小魔的牢骚        # care你的牢骚。PK产品经理
@@ -305,7 +309,6 @@ function fn_a0_vobx_tool_filename()     { cat case_a0_vobx_tool_filename ;}
         81_代码实现_从0开始             # 软件方法论：命名考虑应用场景。mxml id 动态扩展时
         82_HIK协议实现1个月后傻眼       # 软件方法论：横向考虑设计架构，纵向考虑可用性。
 
-        a0_vobx_tool_filename           # 虚拟机存储映射后WINDOWS文件系统时，filename不区别大小写
     )
     fn_print $@
 }
@@ -448,6 +451,7 @@ function fn_0_haoel()                   { cat gdb_0_haoel ;}
 function fn_4_查看源程序()              { cat gdb_4_查看源程序 ;}
 function fn_5_查看运行时数据()          { cat gdb_5_查看运行时数据 ;}
 function fn_7_改变程序的执行()          { cat gdb_7_改变程序的执行 ;}
+function fn_attach()                    { cat gdb_attach ;}
 function fn_breakpoints()               { cat gdb_breakpoints ;}
 function fn_convention()                { cat gdb_convention ;}
 function fn_most_freq_cmds()            { cat gdb_most_freq_cmds ;}
@@ -462,6 +466,7 @@ function fn_source()                    { cat gdb_source ;}
         4_查看源程序
         5_查看运行时数据
         7_改变程序的执行
+        attach
         convention
         breakpoints
         most_freq_cmds
@@ -1072,7 +1077,31 @@ function fn_01_mode_type_不能保存()     { cat point_01_mode_type_不能保�
 }
 
 function fn_alibaba()                   { cat alibaba ;}
-function fn_nxp()                       { cat nxp ;}
+
+function fn_nxp()                       { 
+function fn_base()                      { cat nxp_base ;}
+function fn_training()                  { cat nxp_training ;}
+function fn_arch()                      { cat nxp_arch ;}
+function fn_thread()                    { cat nxp_thread ;}
+function fn_process()                   { cat nxp_process ;}
+function fn_ipc()                       { cat nxp_ipc ;}
+function fn_signal()                    { cat nxp_signal ;}
+    base                                # 
+    training                            # 如何做培训？
+    tools                               # SVN WBS RDM Valgrind SourceMonitor
+    language                            # C/C++ BASH JavaScript Asp HTML5
+    arch                                # browser/server, nxp is a server
+    process
+    thread
+    ipc                                 # inter-process-communication
+    signal                              # 信号处理
+    log
+    config
+    upgrade
+    protocol                            # client与server的通信协议
+    jcp                                 # xml, jcp 等只是protocol的不同实现
+    client                              # browser
+}
 
 function fn_main() {
     local ARGC=${#}

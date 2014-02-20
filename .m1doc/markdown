@@ -1,39 +1,46 @@
-/*  */
+# markdown
 
-. Markdown: Basics （快速入门）
+# 参考
 
-    http://wowubuntu.com/markdown/basic.html
+  [Markdown: Basics （快速入门）](http://wowubuntu.com/markdown/basic.html)
 
-. VIM编写markdown文档 
+  [VIM编写markdown文档](http://www.vim.org/scripts/script.php?script_id=2882)
 
-    http://www.vim.org/scripts/script.php?script_id=2882
+  [md2html生成器 Markdown.pl](http://blog.aboutc.net/linux/7/vim-markdown)
 
-. md2html生成器 Markdown.pl
+  [md2html生成器 python版本](https://github.com/trentm/python-markdown2)
 
-    http://blog.aboutc.net/linux/7/vim-markdown
+  [在线Markdown](http://mahua.jser.me/)
 
-. md2html生成器 python版本
+  [怎样使用Markdown](http://www.ituring.com.cn/article/23)
 
-    https://github.com/trentm/python-markdown2
+  [pandoc实验室](http://johnmacfarlane.net/pandoc/try/)
 
-. 在线Markdown    
-    http://mahua.jser.me/
+  [糅合Markdown和语法高亮，快速写作技术博客](http://blog.csdn.net/istonelee/article/details/6644152)
 
-. 怎样使用Markdown
+  [google prettify.js](http://google-code-prettify.googlecode.com/svn/trunk/README.html) 
 
-    http://www.ituring.com.cn/article/23
 
-. pandoc实验室
+# 语法之序列
 
-    http://johnmacfarlane.net/pandoc/try/
+  
+    abcd
+    加了空格在段首，语法就乱了
 
-. 2-html 语言语法高亮
+    abcd
 
-    糅合Markdown和语法高亮，快速写作技术博客
-    http://blog.csdn.net/istonelee/article/details/6644152
+  4. guess
 
-. google的东西    
-    http://google-code-prettify.googlecode.com/svn/trunk/README.html
+  2 spaces ahead line
 
-/* BELOW IS A EXAMPLE FROM https://raw.github.com/rails/rails/master/README.md */
 
+  4. guess
+
+   3 spaces ahead line
+
+
+  4. guess
+
+    4 spaces ahead line
+
+#
