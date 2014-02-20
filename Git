@@ -10,7 +10,7 @@ function fn_main()
         ;;
 
     A*)
-        git status | grep --color "\.swp" && { echo "error: .swp files exist!!!";exit ;}
+        git status | grep --color "\.swp$" && { echo "error: .swp files exist!!!";exit ;}
         read -p "Please input comment: "
 
         git add -A
