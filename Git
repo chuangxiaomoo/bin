@@ -9,7 +9,8 @@ function fn_main()
         echo "Usage: $0 {?|help|commit|pull|revert} file..."
         ;;
 
-    A*)
+    A*|All)
+        # git add -A 递归添加当前目录的变更，要提交所有变更，请切换到项目顶层目录
         git status | grep --color "\.swp$" && { echo "error: .swp files exist!!!";exit ;}
         read -p "Please input comment: "
 
@@ -32,7 +33,7 @@ function fn_main()
         git push origin master
         ;;
 
-    p*)
+    p*|pull)
         # 解决自动merge
         # git config branch.master.remote origin
         # git config branch.master.merge refs/heads/master

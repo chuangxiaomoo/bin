@@ -1186,6 +1186,7 @@ function fn_main() {
         json
         yum
         point                   # 较c a s e，这不是错误，是经验知识
+        wbs                     # WBS任务分解，与 RDM 协同办公
         rdm                     # 技术管理
         team                    # 团队 老板 同事 下属
         chuansong.me            # 传送门，只在HOME使用
