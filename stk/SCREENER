@@ -230,7 +230,7 @@ function fn_main()
     "get_1_swing_num      [RISE_PERCENT:-8]     # 单日振幅，小于0计算跌幅"
     "get_n_swing_num      [SWING_PERCENT:-16]   # 双日振幅，小于0计算跌幅"
     "sort_amount          [LIMIT_NUM:-48]       # --- 成交量排名"
-    "sort_turnover        [LIMIT_NUM:-48]       # 换手排名"
+    "sort_turnover        [LIMIT_NUM:-48]       # 最新日换手排名"
     # ----------------    ABOVE FIXED SEQUENCE  -------------------
     "get_block_info                             # 查看当前BLOCK"
     "set_block_info                             # 设置当前BLOCK"
