@@ -185,8 +185,12 @@ function fn_get_down_turnov()
     # 指定环境变量TBL来进行测试
     TBL=${TBL:-'zxg'}
 
-    echo "
     # 注意更新表 $TBL
+    echo "
+    To visit `mysql -N kts<<<"SELECT count(*) FROM zxg"` codes on table $TBL...
+    "
+
+    echo "
     SET @DOWNSLOPE='${DOWNSLOPE:-1}';
     SET @START='$START';
     SET @END='$END';
