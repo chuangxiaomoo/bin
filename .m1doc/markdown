@@ -24,23 +24,22 @@
 # 语法之序列
 
   
-    abcd
-    加了空格在段首，语法就乱了
+    4 spaces, if above not blank line, it's normal
 
     abcd
 
   4. guess
 
-  2 spaces ahead line
+   2 or 3 spaces ahead line
 
 
   4. guess
 
-   3 spaces ahead line
 
+    4 spaces if 2 blank line
 
   4. guess
 
-    4 spaces ahead line
+        8 spaces if 1 blank line
 
 #

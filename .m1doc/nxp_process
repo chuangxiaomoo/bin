@@ -1,8 +1,16 @@
 # process
 
+## 进程管理
+
+  拉起
+  心跳
+  KILL
+
+## system()调用  
+
   系统通过system()来启动其它应用，对于 system()，是注意以下几点
 
-## 1. system()函数执行过程为：fork()->exec()->waitpid()a
+  1. system()函数执行过程为：fork()->exec()->waitpid()a
 
   [Linux下使用system()函数一定要谨慎](http://my.oschina.net/renhc/blog/53580)
   [Linux下system()函数引发的错误](http://my.oschina.net/renhc/blog/54582)
@@ -21,7 +29,7 @@
     }
   `
 
-## 2. system()函数返回值
+  2. system()函数返回值
 
   system()的返回值不是命令的返回值
 
@@ -45,7 +53,7 @@
     }
   `
 
-## 3. 建议使用popen()代替system()
+  3. 建议使用popen()代替system()
 
   popen()函数较于system()函数的优势在于使用简单，popen()函数只返回两个值：
   成功返回子进程的status，使用WIFEXITED相关宏就可以取得command的返回结果；

@@ -1,3 +1,37 @@
 # thread
 
 
+## 程序的本质
+
+  1.  I/O设备的数据传送方式 
+      1、查询方式（程序控制方式） 2、中断方式 3、DMA方式
+
+  2.  图灵机：
+          一条无限长的纸带TAPE, 一个读写头HEAD, 一套控制规则TABLE, 一个状态寄存器
+      模拟图灵机：
+          程序的基本结构形式有顺序结构、分支结构和循环结构
+
+## 每个thread本质是都是一个循环
+
+
+  1. 定时任务
+
+        while (1) { sleep(20); check_heartbeat(); };
+
+  2. socket
+
+        while (1) { select(,&tv); do_socket(); };
+
+  3. event
+
+        while (1) {  };
+
+## TaskScheduler用一个圈圈解决
+
+  本质：用`中断方式`替代`查询方式`，一个线程包打天下。
+
+  我们且把三种任务命名为：socket handler,event handler,delay task。
+
+  这三种任务的特点是，
+  前两个加入执行队列后会一直存在，而delay task在执行完一次后会立即弃掉。
+

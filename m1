@@ -1078,19 +1078,28 @@ function fn_01_mode_type_不能保存()     { cat point_01_mode_type_不能保�
 
 function fn_alibaba()                   { cat alibaba ;}
 
+#
+# ------------------- 你如何Hold住全场？-------------------------
+#
 function fn_nxp()                       { 
 function fn_base()                      { cat nxp_base ;}
 function fn_training()                  { cat nxp_training ;}
 function fn_arch()                      { cat nxp_arch ;}
+function fn_lib()                       { cat nxp_lib ;}
 function fn_thread()                    { cat nxp_thread ;}
 function fn_process()                   { cat nxp_process ;}
-function fn_ipc()                       { cat nxp_ipc ;}
 function fn_signal()                    { cat nxp_signal ;}
-    base                                # 
+function fn_ipc()                       { cat nxp_ipc ;}
+function fn_log()                       { cat nxp_log ;}
+function fn_config()                    { cat nxp_config ;}
+function fn_upgrade()                   { cat nxp_upgrade ;}
+function fn_testing()                   { cat nxp_testing ;}
+    base                                # `捋`整体功能
     training                            # 如何做培训？
     tools                               # SVN WBS RDM Valgrind SourceMonitor
-    language                            # C/C++ BASH JavaScript Asp HTML5
     arch                                # browser/server, nxp is a server
+    language                            # C/C++ BASH JavaScript Asp HTML5
+    lib                                 # C/C++ -------- utils ----------
     process
     thread
     ipc                                 # inter-process-communication
@@ -1101,6 +1110,7 @@ function fn_signal()                    { cat nxp_signal ;}
     protocol                            # client与server的通信协议
     jcp                                 # xml, jcp 等只是protocol的不同实现
     client                              # browser
+    testing
 }
 
 function fn_main() {

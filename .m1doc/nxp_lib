@@ -1,0 +1,8 @@
+# lib
+
+  除了那些开源的库，Team的常用api应该做的
+
+    root@Moo64:/winc/svn3/nxp/ipcApps# ls libs
+    api  cc.rule  include  Makefile  msgService  mxml-2.7  schedule  utils
+
+## 
