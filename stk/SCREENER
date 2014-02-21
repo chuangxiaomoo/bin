@@ -185,8 +185,12 @@ function fn_get_down_turnov()
     # 指定环境变量TBL来进行测试
     TBL=${TBL:-'zxg'}
 
-    echo "
     # 注意更新表 $TBL
+    echo "
+    To visit `mysql -N kts<<<"SELECT count(*) FROM zxg"` codes on table $TBL...
+    "
+
+    echo "
     SET @DOWNSLOPE='${DOWNSLOPE:-1}';
     SET @START='$START';
     SET @END='$END';
@@ -195,7 +199,8 @@ function fn_get_down_turnov()
     mysql $mo -t kts <<< "source $mps_god"
 
     echo '
-    提示：80%即可考虑操作，超过50%的也要适当进行人工计算
+    提示：超过80%即可考虑操作
+          超过50%的进行人工核算，`300301 2014-01-22`用3日成交构筑了顶
 
     超跌时必须缩量方可买入
           `好想你`   下跌过程长（超过10天），属阴跌，无生气
@@ -225,7 +230,7 @@ function fn_main()
     "get_1_swing_num      [RISE_PERCENT:-8]     # 单日振幅，小于0计算跌幅"
     "get_n_swing_num      [SWING_PERCENT:-16]   # 双日振幅，小于0计算跌幅"
     "sort_amount          [LIMIT_NUM:-48]       # --- 成交量排名"
-    "sort_turnover        [LIMIT_NUM:-48]       # 换手排名"
+    "sort_turnover        [LIMIT_NUM:-48]       # 最新日换手排名"
     # ----------------    ABOVE FIXED SEQUENCE  -------------------
     "get_block_info                             # 查看当前BLOCK"
     "set_block_info                             # 设置当前BLOCK"

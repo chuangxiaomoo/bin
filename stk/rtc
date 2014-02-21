@@ -27,6 +27,7 @@ function fn_peel() {
      sell=`echo "($high - $trade) > ($high * $thrxhold)" | bc -l`
 }
 
+# 实时探测
 fn_realtime() {
     comma_sepa_list=`echo $@ | awk '{
         for (i=1; i<=NF; i++) {

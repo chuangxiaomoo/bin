@@ -78,7 +78,7 @@ function fn_app_nmc_name()
 
     echo "
     SELECT $columns, c.nmc,c.name FROM ${TBL:-flt_visit} as d, cap as c 
-        WHERE d.code = c.code ORDER by ${field} ${ASC} limit ${LIMIT:-12};
+        WHERE d.code = c.code ORDER by ${field} ${ASC} limit ${LIMIT:-48};
 	" | mysql $mo -t kts     
 }
 
@@ -154,9 +154,10 @@ function fn_main()
 
     tailday=`fn_maxdate`
     tailday=${END:-$tailday}
-    ASC=${ASC:+'DESC'}
-    ASC=${ASC:-'ASC'}
 
+    # `ASC=任意值`时使用'DESC'，弃用
+    # ASC=${ASC:+'DESC'}  # ASC=${ASC:-'ASC'}   
+    ASC=${ASC:-'ASC'}
     fn_execute "$@"
 }
 

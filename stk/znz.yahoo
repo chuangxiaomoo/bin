@@ -22,7 +22,8 @@ function fn_gether_symbol() {
     local last=1
     local is_precise_last=false
 
-    while [ $index -le $last ]; do
+    # 一页未满时最后一行为空
+    while [ $index -le ${last:-1} ]; do
         url="${url}start_year=$start_year&start_month=$start_month&start_day=$start_day&"
         url="${url}end_year=$endin_year&end_month=$endin_month&end_day=$endin_day&"
         url="${url}code=${symbol}&his_type=day&page=${index}"
@@ -40,7 +41,7 @@ function fn_gether_symbol() {
         sed -n '/^20[01].-/,/^$/p' ${day_temp} | head -n -1 >> ${day_gether}
 
         if [ "${is_precise_last}" = 'false' ]; then
-            last=`tail -1 ${day_temp} | sed 's/ \.\.//g' | awk '{print $(NF-1)}'`
+            last=`tail -1 ${day_temp} | sed 's/ \.\.//g' | awk '{print $(NF-1)}' 2>/dev/null`
             if tail -1 ${day_temp} | grep -q '[0-9] 　下一页'; then
                 # 上一页　 .. 2 3 4 5 　下一页
                 is_precise_last=true
@@ -53,19 +54,28 @@ function fn_gether_symbol() {
     ## 添加yesclose，同 ./up znz2mysql
     ## XR时，volume没有进行处理，volume ~= amount/close
     ## First record 日期 != $start_date, 从mySql读取yesclose
-    sed -i -e 's/  */\t/g' -e 's/,//g' ${day_gether}
-    sort -k1 -g ${day_gether} | awk -v icode=$code '{
+    sed -i -e 's/  */\t/g' -e 's/,//g' ${day_gether} 
+    sort -k1 -g ${day_gether} -o ${day_gether}
+    first_date=`head -1 ${day_gether} | awk '{print $1}'`
+    
+    if [ "$first_date" != "${start_date}" ] ; then
+        echo "SELECT close FROM day WHERE code=${code} and date<'${start_date}' ORDER by date DESC limit 1"
+        yesc=`mysql -N kts <<<"SELECT close FROM day WHERE code=${code} and 
+                            date<'${start_date}' ORDER by date DESC limit 1"`
+    fi
+    cat ${day_gether} | awk -v icode=$code -v iyesc=${yesc:-0} '{
         printf "%06d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n", 
-                  icode, $1, yesc, $2, $3, $4, $5, $7/$5, $7;
-        yesc=$5
+                  icode, $1, iyesc, $2, $3, $4, $5, $7/$5, $7;
+        iyesc=$5
     }' | sed "/${start_date}/d" > ${p_day}/$code
    #}' | sed '1d' > ${p_day}/$code
 }
 
 function fn_main()
 {
-    start_year=2013; start_month=1; start_day=20
-    endin_year=2014; endin_month=2; endin_day=20
+    start_year=2013; start_month=1; start_day=26
+    endin_year=2013; endin_month=9; endin_day=20
+   #endin_year=2014; endin_month=2; endin_day=20
 
 
     # endin_year=`date +%Y`; endin_month=`date +%m`; endin_day=`date +%d`
@@ -87,7 +97,7 @@ function fn_main()
     2.
     设置变量 url 中代表数据日期范围的6个时间变量 start_year... 
     为精确匹配，'$start_date'应当开市，该日数据将被删除，
-    当日停牌的，yesclose需要从mySql读取 -- unfini
+    当日停牌的，yesclose需要从mySql读取
 
     3.
     保留原来在数据库中的连续的数据

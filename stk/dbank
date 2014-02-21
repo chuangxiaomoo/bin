@@ -3,7 +3,7 @@
 helpmsg="
     ------------------------------ 环境变量 -----------------------------
     ASC
-        排序方式，默认使用ASC，赋任意值使用DESC，e.g. ASC=1 SELECT 0
+        排序方式，SELECT默认使用ASC，SCREENER默认使用DESC
     START
         时间范围的左值
     END
