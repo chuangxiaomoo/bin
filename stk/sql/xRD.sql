@@ -522,6 +522,10 @@ CREATE PROCEDURE sp_get_down_turnov(a_code INT(6) ZEROFILL) tag_100d_turnov:BEGI
     DECLARE v_date_high DATE DEFAULT NULL;
     DECLARE v_date_low  DATE DEFAULT NULL;
 
+    -- 双日顶修正 _h0为最高日前一日
+    DECLARE v_yesdate   DATE DEFAULT NULL;
+    DECLARE v_yesclose  DECIMAL(6,2) DEFAULT 0;
+
     DECLARE v_trade     DECIMAL(8,2) DEFAULT 0;
     DECLARE v_close     DECIMAL(8,2) DEFAULT 0;
     DECLARE v_sink      DECIMAL(12,2) DEFAULT 0;
@@ -556,16 +560,32 @@ CREATE PROCEDURE sp_get_down_turnov(a_code INT(6) ZEROFILL) tag_100d_turnov:BEGI
     SELECT close FROM tempday WHERE date=(SELECT max(date) FROM tempday) INTO v_trade;
 
     IF @DOWNSLOPE = 1 THEN
-        -- 取下降段
-        SELECT date,high FROM tempday order by high DESC limit 1 INTO v_date_high,v_high;
-        SELECT date,low  FROM tempday 
-               WHERE date>v_date_high order by low  ASC  limit 1 INTO v_date_low ,v_low;
+        -- 取下降段，概率性会有相同的high和low
+        SELECT date,high,close FROM tempday order by high DESC limit 1 INTO v_date_high,v_high,v_close;
+        SELECT date,low        FROM tempday 
+               WHERE date>=v_date_high order by low  ASC  limit 1 INTO v_date_low ,v_low;
+
+        -- 在阶段之顶
+        IF v_date_low = v_date_high THEN 
+            LEAVE tag_100d_turnov; 
+        END IF;
+
+        -- 考虑双日顶，high日跌，边界前移一日. （v_date_high won't be ture high date）
+        SELECT date,close      FROM tempday 
+               WHERE date<v_date_high order by date DESC limit 1 INTO v_yesdate,v_yesclose;
+        IF v_close < v_yesclose THEN 
+            SET v_date_high=v_yesdate;
+        END IF;
+
         DELETE FROM tempday WHERE date<v_date_high OR date>v_date_low; 
         SET swing= 100 * (v_low-v_high) / v_high;
 
-        -- 因为上面的DELETE，再次取high和low
-        SELECT date,high FROM tempday order by high DESC limit 1 INTO v_date_high,v_high;
-        SELECT date,low  FROM tempday order by low  ASC  limit 1 INTO v_date_low, v_low;
+        -- 因为上面的date>=v_date_high，不必再次取high和low
+        -- SELECT date,high FROM tempday order by high DESC limit 1 INTO v_date_high,v_high;
+        -- SELECT date,low  FROM tempday order by low  ASC  limit 1 INTO v_date_low, v_low;
+
+        -- 测试上面的`不必再次取high和low`
+        -- SELECT a_code, v_date_high, v_date_low, v_high, v_low; LEAVE tag_100d_turnov;
 
         -- v_chng0 < 0 为正常情况
         SELECT (close-yesc), volume FROM tempday WHERE date=v_date_high INTO v_chng0, v_rise0;
@@ -583,6 +603,7 @@ CREATE PROCEDURE sp_get_down_turnov(a_code INT(6) ZEROFILL) tag_100d_turnov:BEGI
 
     -- 指定日期，股票可能停市
     IF v_date_low IS NULL OR v_date_high IS NULL THEN
+    --  SELECT "pause", a_code, v_date_low, v_date_high;
         LEAVE tag_100d_turnov;
     END IF;
     
@@ -591,15 +612,15 @@ CREATE PROCEDURE sp_get_down_turnov(a_code INT(6) ZEROFILL) tag_100d_turnov:BEGI
 
     SELECT SUM(volume) FROM tempday WHERE (close-yesc)/yesc > 0 INTO v_rise;
     SELECT SUM(volume) FROM tempday WHERE (close-yesc)/yesc <=0 INTO v_sink;
-    SELECT close,nmc   FROM cap     WHERE code=a_code           INTO v_close,v_nmc;
+    SELECT close,nmc   FROM cap     WHERE code=a_code  LIMIT 1  INTO v_close,v_nmc;
 
     -- 时段内全跌时v_rise将为NULL;
     IF v_rise IS NULL THEN SET v_rise = 0; END IF;
     IF v_sink IS NULL THEN SET v_sink = 0; END IF;
 
-    -- 最高价日为红，则80%计入下跌换手; 为绿，全为下跌换手
+    -- 最高价日为红，则70%计入下跌换手; 为绿，全为下跌换手
     SET v_rise = v_rise - v_rise0;
-    SET v_sink = v_sink + v_rise0*0.8;
+    SET v_sink = v_sink + v_rise0*0.7;
 
     -- 最低价日为红，不计入上升换手; 为绿，全为下跌换手
     SET v_rise = v_rise - v_rise1;
@@ -610,10 +631,8 @@ CREATE PROCEDURE sp_get_down_turnov(a_code INT(6) ZEROFILL) tag_100d_turnov:BEGI
     SET net  = rise - sink;
     SET revive = 100 * (v_trade-v_low)/v_low;
 
-    -- 在阶段之顶
-    IF v_date_low = v_date_high THEN LEAVE tag_100d_turnov; END IF;
 
-    -- SELECT a_code, v_date_high, v_date_low, v_low, v_trade, revive;
+    -- SELECT a_code, v_date_high, v_date_low, v_high, v_low, net, revive;
     INSERT INTO flt_visit(code,date_high, date_low, swing, rise, sink, bounce, turnover, amount)
              VALUES(a_code, v_date_high, v_date_low, swing, rise, sink, net, sum, revive);
 
