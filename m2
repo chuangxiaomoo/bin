@@ -496,16 +496,18 @@ function fn_ideas()                     { cat ideas ;}
 function fn_idealism()                  { cat idealism ;}
 function fn_sanxing三省()               { cat sanxing三省 ;}
 function fn_yufen()                     { cat yufen ;}
+function fn_50_interview_faq()          { cat 50_interview_faq ;}
 
 # 新教与天主教。信则得救，不信则下地狱 vs 助人行善
 # 一花一世界，一木一浮生，一草一天堂，一叶一如来，
 # 一砂一极乐，一方一净土，一笑一尘缘，一念一清静
 function fn_main() {
     local opts=(
+        50_interview_faq                # 想想自己的价值？
         01_囧_jiong
-        02_如何解题     # how to solve it, problem_solving
-        aesthetics      # i:s`θetic 美学
-        phi             # philosophy
+        02_如何解题                     # how to solve it, problem_solving
+        aesthetics                      # i:s`θetic 美学
+        phi                             # philosophy
         annual
         artical
         book
@@ -514,26 +516,26 @@ function fn_main() {
         girl
         guang
         huawei
-        humor           # 幽默
+        humor                           # 幽默
         herb
         howto
         ideas
-        idealism        # 理想主义
+        idealism                        # 理想主义
         poet
-        math            # 数
+        math                            # 数
         meeting
         mng
         mindhacks
         movie
         music
         personage
-        prof            # professionalism 专业主义 职业化
+        prof                            # professionalism 专业主义 职业化
         stevejobs
-        socrates        # Socrates 苏格拉底 诘问
+        socrates                        # Socrates 苏格拉底 诘问
         stk
-        futures         # futures trading 期货
+        futures                         # futures trading 期货
         tick
-        value           # 价值
+        value                           # 价值
         why
         words
         yufen
