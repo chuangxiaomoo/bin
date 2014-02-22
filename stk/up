@@ -510,8 +510,8 @@ function fn_up_swing10()
 
 function fn_copy_table_2_table() 
 {
-    fn_cp_tbl ${1:-zxg} ${2:-newstock}
-    echo fn_cp_tbl ${1:-zxg} ${2:-newstock} over!!!
+    fn_cp_tbl ${1:-zxg} ${2:-ipo}
+    echo fn_cp_tbl ${1:-zxg} ${2:-ipo} over!!!
 }
 
 function fn_main() 

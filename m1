@@ -1082,6 +1082,7 @@ function fn_alibaba()                   { cat alibaba ;}
 # ------------------- 你如何Hold住全场？-------------------------
 #
 function fn_nxp()                       { 
+function fn_hold()                      { cat nxp_hold ;}
 function fn_base()                      { cat nxp_base ;}
 function fn_training()                  { cat nxp_training ;}
 function fn_arch()                      { cat nxp_arch ;}
@@ -1094,6 +1095,7 @@ function fn_log()                       { cat nxp_log ;}
 function fn_config()                    { cat nxp_config ;}
 function fn_upgrade()                   { cat nxp_upgrade ;}
 function fn_testing()                   { cat nxp_testing ;}
+    hold
     base                                # `捋`整体功能
     training                            # 如何做培训？
     tools                               # SVN WBS RDM Valgrind SourceMonitor
