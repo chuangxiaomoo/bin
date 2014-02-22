@@ -16,7 +16,7 @@
 ## 谋“势”战略   .doc/围棋谋势
 ## 六道轮回     .doc/六道轮回.千古兴衰.md
 ## 涨跌的逻辑   .doc/up_down_logic.md
-## 操作之自觉   .doc/discipline.md              -- 决策 -- 关键重点
+## 操作之自觉   .doc/discipline.md              -- operator -- 决策 -- 关键重点
 ## 辨别强弩之末 .doc/snail.md
 
 ## 使用手册     .doc/manual.md

@@ -189,7 +189,7 @@ function fn_aesthetics()                { cat aesthetics ;}
 function fn_tick()                      { cat tick ;}
 
 function fn_stk()                       { 
-function fn_ipo()                       { cat stk_ipo ;}
+function fn_newstock()                  { cat stk_newstock ;}
 function fn_urls()                      { cat stk_urls ;}
 function fn_todo()                      { cat stk_todo ;}
 function fn_icase()                     { cat stk_icase ;}
@@ -223,7 +223,6 @@ function fn_jc_Golf智慧_快就是慢()      { cat stk_jc_Golf智慧_快就是�
 function fn_rzrq()                      { cat stk_rzrq ;}
 
     local opts=(
-        ipo                             # newstock 新股
         urls
         todo
         icase
@@ -233,6 +232,7 @@ function fn_rzrq()                      { cat stk_rzrq ;}
         caorenchao                      # 曹仁超
         xuxiaoming                      # 徐小明
         screener                        # 筛选器设计
+        newstock                        # ipo 新股
 
         00_战略                         # strategy
         01_战术                         # tactics

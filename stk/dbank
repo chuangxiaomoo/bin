@@ -17,6 +17,7 @@ helpmsg="
 
     表zxg更新
     kmysql -N <<<'SELECT code FROM cap WHERE nmc>100000 and nmc<990000' | xargs up 7
+    kmysql -N <<<'SELECT code FROM cap WHERE nmc<618000' | xargs up 7
 
 "
 

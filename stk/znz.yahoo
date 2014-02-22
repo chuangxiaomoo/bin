@@ -59,9 +59,9 @@ function fn_gether_symbol() {
     first_date=`head -1 ${day_gether} | awk '{print $1}'`
     
     if [ "$first_date" != "${start_date}" ] ; then
-        echo "SELECT close FROM day WHERE code=${code} and date<'${start_date}' ORDER by date DESC limit 1"
         yesc=`mysql -N kts <<<"SELECT close FROM day WHERE code=${code} and 
                             date<'${start_date}' ORDER by date DESC limit 1"`
+        echo "SELECT close FROM day WHERE code=${code} and date<'${start_date}' --> ${yesc:-0}"
     fi
     cat ${day_gether} | awk -v icode=$code -v iyesc=${yesc:-0} '{
         printf "%06d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n", 
@@ -73,8 +73,8 @@ function fn_gether_symbol() {
 
 function fn_main()
 {
-    start_year=2013; start_month=1; start_day=26
-    endin_year=2013; endin_month=9; endin_day=20
+    start_year=2014; start_month=1; start_day=20
+    endin_year=2014; endin_month=2; endin_day=13
    #endin_year=2014; endin_month=2; endin_day=20
 
 
@@ -113,6 +113,7 @@ function fn_main()
     # This script depends on: ./up 3 
     local p_day=$warehs/znz_day
     mkdir -p ${p_day}
+    rm   -rf ${p_day}/*
     mkdir -p ${day_gether%/*}
     > /root/bin/stk/.template/codes.timeout
     # 
@@ -120,9 +121,9 @@ function fn_main()
 
 
     local i=
-    # for i in `cat $codeask` ; do
+      for i in `cat $codeask` ; do
     # for i in sh000001 ; do
-      for i in 000509; do
+    # for i in 000509; do
         fn_gether_symbol $i && echo "$i completed!"
     done
 }

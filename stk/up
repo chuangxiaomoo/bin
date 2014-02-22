@@ -507,6 +507,13 @@ function fn_up_swing10()
     mysql $mo -t kts <<< "source $mps_god"
 }
 
+
+function fn_copy_table_2_table() 
+{
+    fn_cp_tbl ${1:-zxg} ${2:-newstock}
+    echo fn_cp_tbl ${1:-zxg} ${2:-newstock} over!!!
+}
+
 function fn_main() 
 {
     cmdlist=(
@@ -524,6 +531,7 @@ function fn_main()
     "up_rzrq_codes_tbl                  # 更新RZRQ业务数据"
     "up_swing10                         # 更新涨跌停6.1%数据"
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
+    "copy_table_2_table src dst         # --- 使用 1 1 做为代号"
     "tougu_reminder                     # --- 投顾大赛提醒器，5分钟延时"
     "add_yesclose                       # 为yahoo.指南针数据添加yesclose"
     "load_directory                     # load整个文件夹到数据库"
