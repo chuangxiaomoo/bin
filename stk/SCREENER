@@ -164,9 +164,13 @@ function fn_get_stat_turnov()
     [ -n "${START:=${2}}" ]
     xt_ret $? "$usage" || return $?
 
+    END=${3:-${END}}
+
+
     echo "
     SET @START='$START';
-    SET @END='${3:-${END}}';
+    SET @END='$END';
+    SET @NUM=`mysql -N kts<<<"SELECT count(*) FROM day WHERE code=900001 and date>='$START' and date<='$END'"`
     call sp_stat_turnov('$1');
     " | tee -a $mps_god
     mysql $mo -t kts <<< "source $mps_god"
@@ -194,9 +198,11 @@ function fn_get_down_turnov()
     SET @DOWNSLOPE='${DOWNSLOPE:-1}';
     SET @START='$START';
     SET @END='$END';
+    SET @NUM=`mysql -N kts<<<"SELECT count(*) FROM day WHERE code=900001 and date>='$START' and date<='$END'"`;
     call sp_visit_tbl('$TBL', @fn_get_down_turnov);
     " | tee -a $mps_god
     mysql $mo -t kts <<< "source $mps_god"
+    xt_ret $? "source $mps_god fail" || return $?
 
     echo '
     提示：超过80%即可考虑操作

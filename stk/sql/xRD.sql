@@ -549,9 +549,15 @@ CREATE PROCEDURE sp_get_down_turnov(a_code INT(6) ZEROFILL) tag_100d_turnov:BEGI
 
     call sp_create_tempday();
 
-    INSERT INTO tempday(code,date,yesc,open,high,low,close,volume)
-        SELECT code,date,yesc,open,high,low,close,volume FROM day 
-        WHERE code=a_code and date>=@START and date<=@END;
+    -- INSERT INTO tempday(code,date,yesc,open,high,low,close,volume)
+    --     SELECT code,date,yesc,open,high,low,close,volume FROM day 
+    --     WHERE code=a_code and date<=@END order by date DESC LIMIT 30;
+
+    SET @sqls=concat('
+        INSERT INTO tempday(code,date,yesc,open,high,low,close,volume)
+        SELECT code,date,yesc,open,high,low,close,volume FROM day WHERE code=', 
+        a_code, " and date<= '", @END, "' order by date DESC LIMIT ", @NUM);
+    PREPARE stmt from @sqls; EXECUTE stmt;
 
     -- 新股首日yesc设为open
     UPDATE tempday SET yesc=open WHERE id=1;
@@ -646,6 +652,7 @@ END tag_100d_turnov //
     SET @fn_get_down_turnov     = 4;
     SET @START  = '2013-12-6';
     SET @END    = '2014-1-10';
+    SET @NUM    = 15;
     
 -- 若要计算3日，argv_n为3
 
