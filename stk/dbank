@@ -1,5 +1,6 @@
 #! /bin/bash
 
+selecap="SELECT code FROM cap"
 helpmsg="
     ------------------------------ 环境变量 -----------------------------
     ASC
@@ -16,8 +17,10 @@ helpmsg="
         操作表，默认使用'flt_visit'
 
     表zxg更新
-    kmysql -N <<<'SELECT code FROM cap WHERE nmc>100000 and nmc<990000' | xargs up 7
-    kmysql -N <<<'SELECT code FROM cap WHERE nmc<618000' | xargs up 7
+    kmysql -N <<<'${selecap} WHERE nmc>100000 and nmc<990000' | xargs up 7
+    kmysql -N <<<'${selecap} WHERE nmc<618000' | xargs up 7
+
+    DELETE from zxg; INSERT INTO zxg(code) SELECT code FROM ...
 
 "
 

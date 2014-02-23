@@ -364,6 +364,19 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(20), a_type INT) tag_visit:BEGIN
         date_high   date NOT NULL DEFAULT 0
     );
 
+    DROP TABLE IF EXISTS tbl_ma345; -- for visit output
+    CREATE TABLE tbl_ma345(
+        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        close       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        ma13        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        ma34        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        ma55        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        ma100       DECIMAL(6,2) NOT NULL DEFAULT 0,        
+        revi13      DECIMAL(6,2) NOT NULL DEFAULT 0,
+        revi34      DECIMAL(6,2) NOT NULL DEFAULT 0
+    );
+
     SET @cond=' ORDER by code';
     SET @sqls=concat('INSERT INTO codes(code) SELECT code FROM ', a_tbl, @cond);
     PREPARE stmt from @sqls; EXECUTE stmt;
@@ -386,6 +399,7 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(20), a_type INT) tag_visit:BEGIN
             WHEN 2 THEN call sp_flt_13d_sink(v_code);
             WHEN 3 THEN call sp_flt_n_day_change(v_code);
             WHEN 4 THEN call sp_get_down_turnov(v_code);
+            WHEN 5 THEN call sp_gen_ma_345(v_code);
             ELSE   SELECT "no a_type match";
         END CASE;
 
@@ -644,12 +658,45 @@ CREATE PROCEDURE sp_get_down_turnov(a_code INT(6) ZEROFILL) tag_100d_turnov:BEGI
 
 END tag_100d_turnov //
 
+
+DROP PROCEDURE IF EXISTS sp_gen_ma_345//
+CREATE PROCEDURE sp_gen_ma_345(a_code INT(6) ZEROFILL) tag_gen_ma_345:BEGIN
+    DECLARE v_ma13     DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_ma34     DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_ma55     DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_ma100    DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_close    DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_low13    DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_low34    DECIMAL(6,2) DEFAULT 0;
+    call sp_create_tempday();
+    INSERT INTO tempday(code,date,close)
+        SELECT code,date,close FROM day WHERE code=a_code and date<=@END;
+    -- 13 34 55 100
+    SELECT count(*) FROM tempday INTO @v_len;
+    SELECT close FROM tempday WHERE id=@v_len INTO v_close;
+    IF @v_len < 100 THEN LEAVE tag_gen_ma_345; END IF;
+
+    SELECT MIN(close)     FROM tempday WHERE id > (@v_len-13)  INTO v_low13;
+    SELECT MIN(close)     FROM tempday WHERE id > (@v_len-34)  INTO v_low34;
+    SELECT SUM(close)/13  FROM tempday WHERE id > (@v_len-13 ) INTO v_ma13 ;
+    SELECT SUM(close)/34  FROM tempday WHERE id > (@v_len-34 ) INTO v_ma34 ;
+    SELECT SUM(close)/55  FROM tempday WHERE id > (@v_len-55 ) INTO v_ma55 ;
+    SELECT SUM(close)/100 FROM tempday WHERE id > (@v_len-100) INTO v_ma100;
+
+    -- SELECT 100*(v_close-v_low13)/v_low13, 100*(v_close-v_low34)/v_low34;
+    INSERT INTO tbl_ma345 (code, close, ma13, ma34, ma55, ma100, revi13, revi34)
+                    VALUES(a_code, v_close, v_ma13, v_ma34, v_ma55, v_ma100, 
+                    100*(v_close-v_low13)/v_low13, 100*(v_close-v_low34)/v_low34);
+    
+END tag_gen_ma_345 //
+
 -- 一些需要与shell通信的系统变量
 
     SET @fn_flt_kdj_up          = 1;   
     SET @fn_flt_13d_sink        = 2;
     SET @fn_flt_n_day_change    = 3;
     SET @fn_get_down_turnov     = 4;
+    SET @fn_gen_ma_345          = 5;
     SET @START  = '2013-12-6';
     SET @END    = '2014-1-10';
     SET @NUM    = 15;

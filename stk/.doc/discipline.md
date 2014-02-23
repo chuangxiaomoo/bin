@@ -5,6 +5,12 @@
   清楚你的对手是谁，对手的胃在哪里？
   [为什么顺势交易也会死](http://mp.weixin.qq.com/s?__biz=MjM5MzAzNzE0MQ==&amp;mid=200016434&amp;idx=1&amp;sn=97ffec76199739364f89c0485b926078&amp;scene=1#rd)
 
+## 3板斧
+
+  1.  100%下跌换手
+  2.  [345](macd 13 34 55战法)
+  3.  涨停突击法
+
 ## discipline
 
   1.  `2014-02-21 我武生物 南通锻压`

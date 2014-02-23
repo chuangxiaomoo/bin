@@ -252,6 +252,16 @@ function fn_get_rise_turnov()
     fn_get_down_turnov $@
 }
 
+
+function fn_get_ma345() 
+{
+    echo "
+    SET @END='$END';
+    call sp_visit_tbl('${TBL:-cap}', @fn_gen_ma_345);
+    " | tee -a $mps_god
+    mysql $mo -t kts <<< "source $mps_god"
+}
+
 function fn_main() 
 {
     END=${END:-`fn_maxdate`}
@@ -260,6 +270,7 @@ function fn_main()
     cmdlist=(
     "get_stat_turnov      code start [end]      # 个股区间换手统计"
     "get_down_turnov      start [end]           # 100%下降净换手"
+    "get_ma345            [end]                 # ma 13 34 55 100"
     "get_rise_turnov      start [end]           # 100%上升净换手"
     "get_13d_20psink                            # 8日13日SINK超20%"
     "get_1_swing_num      [RISE_PERCENT:-8]     # 单日振幅，小于0计算跌幅"

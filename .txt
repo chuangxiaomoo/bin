@@ -1,3 +1,1 @@
-    "dec2hex <dec>          # xslt dec2hex 2 hex, dec list are seperated by ' '"  # 10
-    "hex2dec <hex>          # xslt hex 2 decimal, hex list are seperated by ' '"
-    "conv from to <data>    # use mysql to conv between binary decimal heximal"
+SELECT * FROM  tbl_ma345 WHERE  close>ma13 and ma13>ma34 and (ma13-ma34)/ma34 < .05;
