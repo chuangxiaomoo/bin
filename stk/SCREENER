@@ -29,6 +29,35 @@ function fn_set_block_info()
     return 1
 }
 
+function fn_get_open_pcnt() 
+{
+    # 获取开市时间百分比，用于预测当日量比
+    DATE=`date +%Y-%m-%d`
+    sec_0930=$(date +%s -d "${DATE} 09:30:00") 
+    sec_1130=$(date +%s -d "${DATE} 11:30:00")
+    sec_1300=$(date +%s -d "${DATE} 13:00:00")
+    sec_1500=$(date +%s -d "${DATE} 15:00:00")
+   #sec_curr=$(date +%s -d "${DATE} 16:00:00")
+    sec_curr=$(date +%s )
+    sec_open=0
+
+    if [ "$sec_curr" -lt ${sec_0930} ] ; then
+        sec_open=0
+    elif  [ "$sec_curr" -lt ${sec_1130} ]; then
+        sec_open=$(expr $sec_curr - $sec_0930) 
+    elif  [ "$sec_curr" -lt ${sec_1300} ]; then
+        sec_open=7200
+    elif  [ "$sec_curr" -lt ${sec_1500} ]; then
+        sec_open=$(expr $sec_curr - $sec_1300 + 7200) 
+    else
+        sec_open=14400
+    fi
+
+    # echo $sec_open
+    sec_pcnt=$(expr ${sec_open}00 / 14400)
+    echo $sec_pcnt
+}
+
 function fn_get_13d_20psink() 
 {
     cat <<-"HERE"
