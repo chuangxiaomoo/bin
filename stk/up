@@ -296,7 +296,7 @@ function fn_load_directory()
     done
 }
 
-function fn_add_code_2_zixungu() 
+function fn_add_code_2_dzh2zxg() 
 {
     [ -z "$*" ] && echo "Usage: zixungu code..." && exit
     # echo $@ && exit
@@ -349,12 +349,13 @@ function fn_add_code_2_zixungu()
 function fn_add_flt_visit_2_zixuangu() 
 {
    #goodboys=`mysql -N -B kts <<< "SELECT flt_visit.code, cap.nmc FROM flt_visit,cap ;"`
+    field=${1:-nmc}
     goodboys=`mysql -N -B kts <<< "SELECT f.code FROM 
-        flt_visit as f,cap as c WHERE f.code=c.code ORDER by c.nmc;"`
+        flt_visit as f,cap as c WHERE f.code=c.code ORDER by ${field};"`
 
     [ -z "$goodboys" ] && echo "No goodboys found!" && exit
 
-    fn_add_code_2_zixungu $goodboys
+    fn_add_code_2_dzh2zxg $goodboys
 }
 
 function fn_up_tbl_xRD() 
@@ -527,7 +528,7 @@ function fn_main()
     "redo_hexun_day_fr_min              # 利用已有分线，重做大盘日线"
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
     "up_tbl_xRD                         # --- update table EXCLUDE RIGHT DIVIDEN"
-    "add_code_2_zixungu code...         # 添加CODE到ZXG.BLK，并写表{TBL:-zxg}"
+    "add_code_2_dzh2zxg code...         # 添加CODE到ZXG.BLK，并写表{TBL:-zxg}"
     "add_flt_visit_2_zixuangu           # 添加表flt_visit中code到ZXG.BLK"
     "up_rzrq_codes_tbl                  # 更新RZRQ业务数据"
     "up_swing10                         # 更新涨跌停6.1%数据"
