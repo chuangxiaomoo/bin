@@ -1,5 +1,13 @@
-/* program */
+# sina 实时
+  [var hq_str_](http://www.cnblogs.com/chuncn/archive/2009/06/26/1400997.html) 
 
+# sina 行情中心 
+
+  "代码", "名称", "最新价", "涨跌额", "涨跌幅", "买入", "卖出", 
+  "昨收", "今开", "最高", "最低", "成交量/手", "成交额/万", 
+  "市盈率", "市净率", "总市值", "流通市值", "换手率",
+
+  symb
     1	symbol:sh600000          │  symb         │
     2	code:600000              │  代码         │
     3	name:PuFaYinHang         │  名称         │
@@ -21,22 +29,14 @@
    19	turnoverratio:0          │  换手率       │
 
 
+> rise, soar, jump, launch, bounce, move up,....., etc.
+> fall, drop, slide, sink, roll down..... etc.
+> bull, bear
+> [decline, downslope, downhill] ascent 上下坡
 
-# rise, soar, jump, launch, bounce, move up,....., etc.
-# fall, drop, slide, sink, roll down..... etc.
-# bull, bear
-# [decline, downslope, downhill] ascent 上下坡
-
-
-/*  rate 从基数中选多少， 基数是100时如同：percent 
+    rate 从基数中选多少， 基数是100时如同：percent 
     ratio 比率，如量比 大于1 小于1 
- */
 
-symb     
-"代码", "名称", "最新价", "涨跌额", "涨跌幅", "买入", "卖出", "昨收", "今开", "最高", "最低", "成交量/手", "成交额/万", "市盈率", "市净率", "总市值", "流通市值", "换手率",
 
-echo | awk '{ 
-    printf "%-6s %-12s %-6s %-6s %-6s %-6s %-6s %-6s %-6s %-6s %-6s %-8s %-8s %-8s\n", \
-    "代码", "名称", "最新价", "涨跌额", "涨跌幅", "买入", "卖出", "昨收", "今开", "最高", "最低", "成交量/手", "成交额/万";
-}'
-
+# hexun 的列名见
+  hexun|52|
