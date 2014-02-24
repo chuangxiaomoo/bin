@@ -308,16 +308,17 @@ function fn_add_code_2_zixungu()
 
     # HEAD="\xa6\x00Q\xff\x01"              
     # DELI="\x00}\xa9\x00\x91\xb9\x88R"
+    TBL={TBL:-zxg}
     HEAD="\xa5\x00Q\xff"              
     DELI="\x00\x00\x00\x00"
     sql_insert0=''
 
-    echo "DROP TABLE IF EXISTS zxg;
-        CREATE TABLE zxg (
+    echo "DROP TABLE IF EXISTS ${TBL};
+        CREATE TABLE ${TBL} (
             id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
             code        INT(6) ZEROFILL NOT NULL DEFAULT 0
         );
-        INSERT INTO zxg (code) VALUES 
+        INSERT INTO ${TBL} (code) VALUES 
     " > ${sql_temp}
     echo $@ | sed -e 's/^/(/' -e 's/ /),(/g' -e 's/$/);/' >> ${sql_temp}
 
@@ -341,7 +342,7 @@ function fn_add_code_2_zixungu()
     } > /media/sf_dzh2/USERDATA/block/自选股.BLK
 
     mysql kts < ${sql_temp}
-    echo -e "\n    add zxg over.\n"
+    echo -e "\n    add ${TBL} over.\n"
 }
 
 
@@ -526,7 +527,7 @@ function fn_main()
     "redo_hexun_day_fr_min              # 利用已有分线，重做大盘日线"
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
     "up_tbl_xRD                         # --- update table EXCLUDE RIGHT DIVIDEN"
-    "add_code_2_zixungu code...         # 添加CODE到ZXG.BLK，并写表zxg"
+    "add_code_2_zixungu code...         # 添加CODE到ZXG.BLK，并写表{TBL:-zxg}"
     "add_flt_visit_2_zixuangu           # 添加表flt_visit中code到ZXG.BLK"
     "up_rzrq_codes_tbl                  # 更新RZRQ业务数据"
     "up_swing10                         # 更新涨跌停6.1%数据"

@@ -11,10 +11,17 @@
 #      REVISION: 1.0 
 #-----------------------------------------------------------------------------
 
-function fn_main() {
-    echo -n E:
-    echo $@ | sed -e 's#/#\\#g' 
-    #echo "$@" | sed 's#\\#\//#g' 
+function fn_main() 
+{
+    [ -z "${*}" ] && echo "Usage: $0 path_in_linux" && exit
+
+    lnxpath=`echo $@ | sed -e 's#/#\\\\#g'`
+    
+    if echo ${lnxpath} | grep -q "root.bin" ; then
+        echo '\\192.168.2.41'${lnxpath}
+    else
+        echo E:${lnxpath}
+    fi
 }
 
 fn_main $@

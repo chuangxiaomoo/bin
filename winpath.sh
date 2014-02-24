@@ -13,7 +13,10 @@
 #      REVISION: 1.0 
 #-----------------------------------------------------------------------------
 
-function fn_main() {
+function fn_main() 
+{
+    [ -z "${*}" ] && echo "Usage: $0 path_in_windows" && exit
+    
     swd="/root/.swd"
 
     echo $@ | sed -e 's/[A-Z]://g' -e 's#\\#/#g' | tee $swd
