@@ -77,7 +77,7 @@ function fn_app_nmc_name()
     # echo $columns && exit
 
     echo "
-    SELECT $columns, c.nmc,c.name FROM ${TBL:-flt_visit} as d, cap as c 
+    SELECT $columns, c.nmc,c.name FROM ${TBL:-tbl_visit} as d, cap as c 
         WHERE d.code = c.code ORDER by ${field} ${ASC} limit ${LIMIT:-48};
 	" | mysql $mo -t kts     
 }
@@ -99,7 +99,7 @@ function fn_app_wgt_turnov()
 
     echo "
     SELECT $columns, c.nmc, $wgt as wgt, c.name 
-        FROM ${TBL:-flt_visit} as d, cap as c 
+        FROM ${TBL:-tbl_visit} as d, cap as c 
         WHERE d.code = c.code and swing<0 HAVING wgt > 0 ORDER by ${field} ${ASC} limit ${LIMIT:-20};
 	" | mysql $mo -t kts     
     

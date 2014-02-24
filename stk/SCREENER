@@ -94,13 +94,13 @@ function fn_get_1_swing_num()
         swing_cmd="HAVING rise > $percent"
     fi
     echo "
-    DELETE from flt_visit;
-    INSERT INTO flt_visit(code,sink) 
+    DELETE from tbl_visit;
+    INSERT INTO tbl_visit(code,sink) 
     SELECT code,100*(close-yesc)/yesc as rise FROM day 
         WHERE date='$END' $swing_cmd ORDER by rise ${ASC:-DESC}; 
     " | mysql $mo kts
-    fn_cp_tbl flt_visit pipe
-    ./up add_flt_visit_2_zixuangu   # 添加到ZXG，可根据需要再进行排序
+    fn_cp_tbl tbl_visit pipe
+    ./up add_tbl_visit_2_zixuangu   # 添加到ZXG，可根据需要再进行排序
     ./SELECT app_nmc_name               # 追加表名打印
     # no need source 
     exit
@@ -108,19 +108,19 @@ function fn_get_1_swing_num()
 
 function fn_sort_amount() 
 {
-    # 可扩展 'flt_visit' 的表定义
+    # 可扩展 'tbl_visit' 的表定义
     # where d.code = c.code 非常重要
     # as 语句可在 FROM 子句中
     echo "
-    DELETE from flt_visit;
-    INSERT INTO flt_visit(code,sink,amount,turnover) 
+    DELETE from tbl_visit;
+    INSERT INTO tbl_visit(code,sink,amount,turnover) 
     SELECT d.code, $RISE as rise, 
         amount, $TURNOV as turnover FROM day as d, cap as c 
         WHERE d.code = c.code and d.date='$END' 
         ${PIPECMD} ORDER by amount ${ASC:-DESC} limit ${LIMIT:-48};
 	" | mysql -t kts
-    fn_cp_tbl flt_visit pipe
-    ./up add_flt_visit_2_zixuangu       # 添加到ZXG，可根据需要再进行排序
+    fn_cp_tbl tbl_visit pipe
+    ./up add_tbl_visit_2_zixuangu       # 添加到ZXG，可根据需要再进行排序
     ./SELECT app_nmc_name amount        # 追加表名打印
 }
 
@@ -128,15 +128,15 @@ function fn_sort_amount()
 function fn_sort_turnover() 
 {
     echo "
-    DELETE from flt_visit;
-    INSERT INTO flt_visit(code,sink,amount,turnover) 
+    DELETE from tbl_visit;
+    INSERT INTO tbl_visit(code,sink,amount,turnover) 
     SELECT d.code, $RISE as rise, 
         amount, $TURNOV as turnover FROM day as d, cap as c 
         WHERE d.code = c.code and d.date='$END' 
         ${PIPECMD} ORDER by turnover ${ASC:-DESC} limit ${LIMIT:-48};
 	" | mysql -t kts
-    fn_cp_tbl flt_visit pipe
-    ./up add_flt_visit_2_zixuangu       # 添加到ZXG，可根据需要再进行排序
+    fn_cp_tbl tbl_visit pipe
+    ./up add_tbl_visit_2_zixuangu       # 添加到ZXG，可根据需要再进行排序
     ./SELECT app_nmc_name turnover      # 追加表名打印
     
 }

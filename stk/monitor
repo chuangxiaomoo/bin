@@ -1,0 +1,18 @@
+#! /bin/bash -
+#---------------------------------------------------------------------------
+#          FILE: monitor
+#         USAGE: ./monitor
+#   DESCRIPTION: 
+#        AUTHOR: chuangxiaomoo (God helps those who help themselves) 
+#  ORGANIZATION: 
+#       CREATED: 2014-02-24 09:35:42 PM
+#      REVISION: 1.0 
+#---------------------------------------------------------------------------
+
+function fn_main()
+{
+    
+}
+
+fn_main $@
+

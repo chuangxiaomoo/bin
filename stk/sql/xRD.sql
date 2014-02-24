@@ -261,7 +261,7 @@ CREATE PROCEDURE sp_flt_kdj_up(a_code INT(6) ZEROFILL) tag_flt_kdj_up:BEGIN
     -- K上穿D, d<30, and ALIVE
     IF v_k2 > v_d2 AND v_k0 < v_d0 AND v_d2 < 35 AND v_date = @v_maxdate THEN 
         SELECT "coming ", a_code;
-        INSERT INTO flt_visit(code) VALUES(a_code);
+        INSERT INTO tbl_visit(code) VALUES(a_code);
     END IF;
 END tag_flt_kdj_up //
 
@@ -292,7 +292,7 @@ CREATE PROCEDURE sp_flt_13d_sink(a_code INT(6) ZEROFILL) tag_flt_13d_sink:BEGIN
 
     IF v_date_low > v_date_high AND v_date = @v_maxdate AND v_sink > 20 THEN 
         SELECT a_code,v_sink, 100*(v_close-v_low)/v_low as bounce,v_date_low,v_low;
-        INSERT INTO flt_visit(code,sink,bounce,date_low,date_high) 
+        INSERT INTO tbl_visit(code,sink,bounce,date_low,date_high) 
             VALUES(a_code,v_sink,100*(v_close-v_low)/v_low,v_date_low,v_date_high);
     END IF;
 END tag_flt_13d_sink //
@@ -329,13 +329,13 @@ CREATE PROCEDURE sp_flt_n_day_change(a_code INT(6) ZEROFILL) tag_flt_n_day_chang
     # 增幅>@argv_change
     IF @argv_change > 0 AND @argv_change < v_change THEN -- AND v_date = @v_maxdate
         SELECT a_code,v_change;
-        INSERT INTO flt_visit(code,sink) VALUES(a_code,v_change);
+        INSERT INTO tbl_visit(code,sink) VALUES(a_code,v_change);
     END IF;
 
     # 跌幅>@argv_change
     IF @argv_change < 0 AND @argv_change > v_change THEN -- AND v_date = @v_maxdate 
         SELECT a_code,v_change;
-        INSERT INTO flt_visit(code,sink) VALUES(a_code,v_change);
+        INSERT INTO tbl_visit(code,sink) VALUES(a_code,v_change);
     END IF;
 END tag_flt_n_day_change//
 
@@ -350,8 +350,8 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(20), a_type INT) tag_visit:BEGIN
         id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0
     );
-    DROP TABLE IF EXISTS flt_visit; -- for visit output
-    CREATE TABLE flt_visit(
+    DROP TABLE IF EXISTS tbl_visit; -- for visit output
+    CREATE TABLE tbl_visit(
         id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
         swing       DECIMAL(6,2) NOT NULL DEFAULT 0,        -- price swing
@@ -653,7 +653,7 @@ CREATE PROCEDURE sp_get_down_turnov(a_code INT(6) ZEROFILL) tag_100d_turnov:BEGI
 
 
     -- SELECT a_code, v_date_high, v_date_low, v_high, v_low, net, revive;
-    INSERT INTO flt_visit(code,date_high, date_low, swing, rise, sink, bounce, turnover, amount)
+    INSERT INTO tbl_visit(code,date_high, date_low, swing, rise, sink, bounce, turnover, amount)
              VALUES(a_code, v_date_high, v_date_low, swing, rise, sink, net, sum, revive);
 
 END tag_100d_turnov //
