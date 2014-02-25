@@ -45,7 +45,7 @@ function fn_main()
         git pull origin
         ;;
 
-    s*|revert)
+    r*|revert)
         [ -z "$filelist" ] && echo "Error: file... must be dedicated" && exit
         git checkout -- $filelist
         ;;
