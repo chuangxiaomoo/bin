@@ -26,6 +26,7 @@
 
 ## 总结2013     .doc/2013.md
 ## RZRQ         .doc/rzrq.md
+## 观察手       .doc/soptter.md
 
 ## 错过 - 长期超跌反弹
 

@@ -9,7 +9,7 @@
 #      REVISION: 1.0 
 #---------------------------------------------------------------------------
 
-. `dirname ${0}`/dbank || { echo "dbank err" && exit; }
+. `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
 . /etc/common.rc
 
 

@@ -9,7 +9,7 @@
 #      REVISION: 1.0 
 #---------------------------------------------------------------------------
 
-. `dirname ${0}`/dbank || { echo "dbank err" && exit; }
+. `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
 . /etc/common.rc
 
 function fn_peel() 
@@ -51,16 +51,33 @@ fn_realtime()
         }
     }' | tr ' ' ',' | sed 's/,$//g'`
 
-    $W3M -dump "http://hq.sinajs.cn/list=sh000001,sz399001,$comma_sepa_list" > ${rt_stdout} 
-    xt_ret $? "NETWORK" || return $?
+    indexlist='sh000001,sz399001,sz399006'
+    # $W3M -dump "http://hq.sinajs.cn/list=${indexlist},${comma_sepa_list}" > ${rt_stdout} 
+    # xt_ret $? "NETWORK" || return $?
 
-    cat ${rt_stdout}  ; exit
+    # cat ${rt_stdout}  ; exit
+
+    # format ref to .doc/soptter.md
+   #cat ${rt_stdout} | \
+   #    sed -e '1s/sh000001/sh900001/' \
+   #        -e 's/var hq_str_..//g' -e 's/="/,/g' | awk -F',' '{
+   #            printf "%06d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n", 
+   #            $1, $32, $4, $3, $6, $7, $5, ($10/100), ($11/10000);
+   #        }' 
+    # >> $hx_dayclose
+    #   tr -d '"' | tr -d ';' | tr ':' '.' > ${rt_ripetxt} 
+
+    printf "%6s\t%-10s\t%s\t%s\t%s\t%-5s\t%5s\t%5s\t%-5s\t%-5s\t%-5s\t\n" \
+            symbole date  yesc open high low trade change          sink revive
+    #                     $4,   $3, $6,  $7, $5, ($5-$3)/$3, ($5-$6)/$6, ($5-$7)/$7, 
 
     cat ${rt_stdout} | \
-        sed -e 's/var hq_str_..//g' -e 's/=/,/g' | \
-        tr -d '"' | tr -d ';'
+        sed -e '1s/sh000001/sh900001/' \
+            -e 's/var hq_str_..//g' -e 's/="/,/g' | awk -F',' '{
+                printf "%06d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n", 
+                $1, $32, $4, $3, $6, $7, $5, 100*($5-$3)/$3, 100*($5-$6)/$6, 100*($5-$7)/$7;
+            }' 
 
-    #   tr -d '"' | tr -d ';' | tr ':' '.' > ${rt_ripetxt} 
 }
 
 function fn_main() 
