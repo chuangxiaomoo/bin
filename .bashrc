@@ -1,12 +1,16 @@
 # . ~/bin/.bashrc
 
-# alias
 alias    ..='cd ..'
 alias   ...='cd ../..'
 
-alias    ll='ls -alF'
+alias    ls='ls --color=auto'
+alias    ll='ls -AlF'
 alias    la='ls -A'
 alias     l='ls -CF'
+alias   lsf='find `ls -A` -maxdepth 0 -type f | xargs'
+alias   lsd='find `ls -A` -maxdepth 0 -type d | xargs'
+#lias   lsf='find . -maxdepth 1 -type f | sed 's#\./##g' | xargs'
+#lias   lsd='find . -maxdepth 1 -name '\''[a-zA-Z]*'\'' -type d | xargs | sed '\''s#\./##g'\'''
 
 alias    rr='rm -rf'
 alias    rm='rm -i'
@@ -15,7 +19,7 @@ alias     m='make'
 alias    mh='make http1'
 alias    md='Markdown.pl --html4tags'
 alias   slc='sloccount'
-alias  slcd='sloccount --cached --details'  # slcd | grep "sysctrl" | print_sum
+alias  slcd='sloccount --cached --details'          # slcd | grep "sysctrl" | print_sum
 alias     x='chmod 777 '
 alias    xt='chmod 777 /tftpboot/*'
 alias    xx='tar -zxvf'
@@ -24,12 +28,12 @@ alias   .rc='. /root/.bashrc'
 alias   .ps='PS1="[\w]\n\u-> \[\033[0m\]"'
 alias    ct='cd ~/sh/t'
 alias   cwd='pwd >> ~/.env;vi ~/.env; .rc'
-alias   swd='pwd > ~/.swd'    # save pwd
+alias   swd='pwd > ~/.swd'                          # save pwd
 alias   awd='cp ~/.awd /dev/shm/.awd && pwd > ~/.awd && cat /dev/shm/.awd >> ~/.awd'   
 alias   iwd='vi /root/.awd'   
-alias   gwd='cd `cat ~/.swd`' # save pwd
+alias   gwd='cd `cat ~/.swd`'                       # save pwd
 alias    cs='cscope -Rbq *'
-alias vboxr='/etc/init.d/vboxadd-service restart' # ;umount -a 2>/dev/null; mount -a
+alias vboxr='/etc/init.d/vboxadd-service restart'   # ;umount -a 2>/dev/null; mount -a
 
 alias    v1='vi /root/bin/m1'
 alias    v2='vi /root/bin/m2'
@@ -119,6 +123,24 @@ lwd()
             sort -u | sed 's/^/-I/g' >> .clang_complete
     }
 }
+
+activate_eth5() 
+{
+    local ethip="192.168.2.41"
+    ifconfig | grep -q -w "$ethip" || ifconfig eth6 $ethip 
+    return
+
+    local ip=`ifconfig eth5 | grep "inet addr" | 
+                cut -d : -f 2 | cut -d ' ' -f 1`
+    local eth5ip="192.168.2.41"
+    if [ "$ip" != "$eth5ip" ] ; then
+        echo "$ip is different with $eth5ip"
+        /etc/init.d/networking restart
+    fi
+}
+
+.orgpath() { export PATH=$MVTPATH; }
+.monpath() { export PATH=$MONPATH; }
 
 .tar() 
 {

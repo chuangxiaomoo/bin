@@ -220,7 +220,7 @@ function fn_get_down_turnov()
 
     # 注意更新表 $TBL
     echo "
-    To visit `mysql -N kts<<<"SELECT count(*) FROM zxg"` codes on table $TBL...
+    To visit `mysql -N kts<<<"SELECT count(*) FROM ${TBL}"` codes on table $TBL...
     "
 
     echo "
