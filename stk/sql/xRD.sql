@@ -159,6 +159,7 @@ CREATE PROCEDURE sp_create_tempday() tag_tempday:BEGIN
         low         DECIMAL(6,2) NOT NULL,
         close       DECIMAL(6,2) NOT NULL,
         volume      DECIMAL(12,2)NOT NULL,
+        amount      DECIMAL(12,2)NOT NULL DEFAULT 0,
         INDEX(date)
     );
 END tag_tempday //
@@ -358,7 +359,7 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(20), a_type INT) tag_visit:BEGIN
         rise        DECIMAL(6,2) NOT NULL DEFAULT 0,
         sink        DECIMAL(6,2) NOT NULL DEFAULT 0,
         bounce      DECIMAL(6,2) NOT NULL DEFAULT 0,        -- net turnover
-        amount      DECIMAL(12,2) NOT NULL,
+        amount      DECIMAL(12,2)NOT NULL DEFAULT 0,
         turnover    DECIMAL(6,2) NOT NULL DEFAULT 0,        -- sum turnover
         date_low    date NOT NULL DEFAULT 0,
         date_high   date NOT NULL DEFAULT 0
@@ -568,8 +569,8 @@ CREATE PROCEDURE sp_get_down_turnov(a_code INT(6) ZEROFILL) tag_100d_turnov:BEGI
     --     WHERE code=a_code and date<=@END order by date DESC LIMIT 30;
 
     SET @sqls=concat('
-        INSERT INTO tempday(code,date,yesc,open,high,low,close,volume)
-        SELECT code,date,yesc,open,high,low,close,volume FROM day WHERE code=', 
+        INSERT INTO tempday(code,date,yesc,open,high,low,close,volume,amount)
+        SELECT code,date,yesc,open,high,low,close,volume,amount FROM day WHERE code=', 
         a_code, " and date<= '", @END, "' order by date DESC LIMIT ", @NUM);
     PREPARE stmt from @sqls; EXECUTE stmt;
 
@@ -581,8 +582,8 @@ CREATE PROCEDURE sp_get_down_turnov(a_code INT(6) ZEROFILL) tag_100d_turnov:BEGI
 
     IF @DOWNSLOPE = 1 THEN
         -- 取下降段，概率性会有相同的high和low
-        SELECT date,high,close FROM tempday order by high DESC limit 1 INTO v_date_high,v_high,v_close;
-        SELECT date,low        FROM tempday 
+        SELECT date,close FROM tempday order by high DESC limit 1 INTO v_date_high,v_close;
+        SELECT date,low   FROM tempday 
                WHERE date>=v_date_high order by low  ASC  limit 1 INTO v_date_low ,v_low;
 
         -- 在阶段之顶
@@ -593,12 +594,15 @@ CREATE PROCEDURE sp_get_down_turnov(a_code INT(6) ZEROFILL) tag_100d_turnov:BEGI
         -- 考虑双日顶，high日跌，边界前移一日. （v_date_high won't be ture high date）
         SELECT date,close      FROM tempday 
                WHERE date<v_date_high order by date DESC limit 1 INTO v_yesdate,v_yesclose;
+        -- swing将作为一个重要指标，此处high日的均价为v_high，数据更准确
+        SELECT (amount/volume) FROM tempday WHERE date = v_date_high INTO v_high;
         IF v_close < v_yesclose THEN 
             SET v_date_high=v_yesdate;
         END IF;
 
         DELETE FROM tempday WHERE date<v_date_high OR date>v_date_low; 
-        SET swing= 100 * (v_low-v_high) / v_high;
+        -- 为拉大swing的权重，使用 v_low作为被除数 20 25 ---> 1/8=0.125
+        SET swing= 100 * (v_low-v_high) / v_low;
 
         -- 因为上面的date>=v_date_high，不必再次取high和low
         -- SELECT date,high FROM tempday order by high DESC limit 1 INTO v_date_high,v_high;

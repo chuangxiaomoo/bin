@@ -94,14 +94,14 @@ function fn_app_wgt_turnov()
     columns=${columns//bounce/bounce as nettnv}
 
     field=${1}
-    field=${field:-d.bounce}
-    #wgt="TRUNCATE(swing*bounce*nmc/1000000, 2)"
-    wgt="(swing*1.3+bounce)"
+    field=${field:-wgt}
+    #wgt="TRUNCATE(swing*bounce*nmc/1000000, 2)" ---- swing 是经过放大的 20 -> 25
+    wgt="(swing+bounce)"
 
     echo "
     SELECT $columns, c.nmc, $wgt as wgt, c.name 
         FROM ${TBL:-tbl_visit} as d, cap as c 
-        WHERE d.code = c.code and swing<0 HAVING wgt < -50 ORDER by wgt ${ASC} limit ${LIMIT:-30};
+        WHERE d.code = c.code and swing<0 HAVING wgt < -50 ORDER by ${field} ${ASC} limit ${LIMIT:-30};
 	" | mysql $mo -t kts     
     
 }
