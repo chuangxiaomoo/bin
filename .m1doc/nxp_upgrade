@@ -1,3 +1,19 @@
 # upgrade
 
   mtd分区 -》FS -》升级包上传 -》解压 -》升级
+
+# up
+        L1
+        u-boot
+        u-para
+        kernel
+        squash  FS
+        UBI1    APP
+        UBI2    conf
+        UBI2    log
+
+  1. 统一入口，根据文件是否存在进行升级
+  2. 记录RELEASE信息，在入口中判断是否可以直接升级
+  3. 复杂了【考虑一个新增列表，一个del列表，并附以md5值，比对增量升级】
+  4. 保持一致性，最后使用链接一次性处理
+

@@ -1,5 +1,6 @@
 # . ~/bin/.bashrc
 
+alias    .b='cd ~/bin'
 alias    ..='cd ..'
 alias   ...='cd ../..'
 

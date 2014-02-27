@@ -1082,6 +1082,7 @@ function fn_alibaba()                   { cat alibaba ;}
 # ------------------- 你如何Hold住全场？-------------------------
 #
 function fn_nxp()                       { 
+function fn_requirement_analysis()      { cat nxp_requirement_analysis ;}
 function fn_hold()                      { cat nxp_hold ;}
 function fn_base()                      { cat nxp_base ;}
 function fn_training()                  { cat nxp_training ;}
@@ -1097,6 +1098,7 @@ function fn_upgrade()                   { cat nxp_upgrade ;}
 function fn_testing()                   { cat nxp_testing ;}
     hold
     base                                # `捋`整体功能
+    requirement_analysis
     training                            # 如何做培训？
     tools                               # SVN WBS RDM Valgrind SourceMonitor
     arch                                # browser/server, nxp is a server
