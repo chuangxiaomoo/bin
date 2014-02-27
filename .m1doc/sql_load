@@ -1,6 +1,9 @@
 
 . 从文本装入数据库表中（例如D:/mysql.txt）
 
+    ERROR 1085 (HY000): The file 'xxx' must be in the database directory or be readable by all
+    chmod 777 xxx
+
     LOAD DATA LOCAL INFILE '/file' INTO TABLE tbl_name
 
         -- 分界同 SELECT，默认如下
