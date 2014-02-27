@@ -52,9 +52,9 @@ alias   psw3m='ps -ef | grep [w]3m'
 alias  kmysql='mysql kts'
 
 # soptter
-alias   isp='vi /root/bin/stk/.soptter'   
-asp()   { [ -n "$@" ] && echo $@ | xargs -n1 >>/root/bin/stk/.soptter ;}
-M()     { m1 $@ | tail -18; } # M() { m1 $@ | nl -w 3 -s' ' | less -i ;}
+alias    .isoptter='vi /root/bin/stk/.soptter'   
+function .asoptter(){ [ -n "$@" ] && echo $@ | xargs -n1 >>/root/bin/stk/.soptter ;}
+function M()        { m1 $@ | tail -18; } # M() { m1 $@ | nl -w 3 -s' ' | less -i ;}
 
 lwd() 
 {
