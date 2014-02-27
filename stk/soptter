@@ -71,23 +71,23 @@ fn_realtime()
     #                     $4,   $3, $6,  $7, $5, ($5-$4)/$4, ($5-$6)/$6, ($5-$7)/$7, 
 
     printf "%6s\t%-10s\t%s\t%s\t%s\t%-5s\t%5s\t%5s\t%-5s\t%-5s\t%-5s\t\n" \
-            symbole date  yesc trade open_ye high_ye low_ye trd_ye    high_tr     low_tr
+            symbole date  trade diff pcnt  diff_hi pcnt_hi diff_lo pcnt_low
     #                     $4,    $5,  $3,     $6,     $7,   ($5-$4)/$4, ($5-$6)/$6, ($5-$7)/$7, 
 
+    #  trade diff pcnt  diff_hi pcnt_hi diff_lo pcnt_hi     # (trade-xxx)/xxx
 
     cat ${rt_stdout} | \
         sed -e '1s/sh000001/sh900001/' \
             -e 's/var hq_str_..//g' -e 's/="/,/g' | awk -F',' '{
-                printf "%06d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t %s\n", 
-                $1, $32, 
-                $4, 
-                $5, 
-                100*($3-$4)/$4, 
-                100*($6-$4)/$4, 
-                100*($7-$4)/$4, 
+                printf "%06d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t %s\n", 
+                  $1,$32, 
+                     $5, 
+                    ($5-$4), 
                 100*($5-$4)/$4, 
-                100*($6-$5)/$5, 
-                100*($7-$5)/$5, 
+                    ($5-$6), 
+                100*($5-$6)/$6, 
+                    ($5-$7), 
+                100*($5-$7)/$7, 
                 $2;
             }' 
 
