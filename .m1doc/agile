@@ -15,4 +15,13 @@
     and will infuluence the process, 
     or what you plan or thinking.
 
-##
+## 沟通
+
+  无计划，无沟通。
+
+  2014-02-27，本打算从功能入手，功能从WEB切入。但是，luo的打算是：
+  WEB，先ptz20，再nxp。
+
+  想着怎么测试，是否还要一个`硬件模拟器`，其实，luo早有自己的打算。
+  使用api的方法，整个系统非常好测试。
+
