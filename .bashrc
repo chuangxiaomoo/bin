@@ -1,8 +1,13 @@
 # . ~/bin/.bashrc
 
-alias    .b='cd ~/bin'
 alias    ..='cd ..'
 alias   ...='cd ../..'
+alias    .b='cd ~/bin'
+alias    .s='cd ~/bin/stk'
+alias   .rc='. /root/.bashrc'
+alias   .ps='PS1="[\w]\n\u-> \[\033[0m\]"'
+alias    .isoptter='vi /root/bin/stk/.soptter'   
+function .asoptter(){ [ -n "$@" ] && echo $@ | xargs -n1 >>/root/bin/stk/.soptter ;}
 
 alias    ls='ls --color=auto'
 alias    ll='ls -AlF'
@@ -25,8 +30,6 @@ alias     x='chmod 777 '
 alias    xt='chmod 777 /tftpboot/*'
 alias    xx='tar -zxvf'
 alias   irc='vi /root/.bashrc; . /root/.bashrc'
-alias   .rc='. /root/.bashrc'
-alias   .ps='PS1="[\w]\n\u-> \[\033[0m\]"'
 alias    ct='cd ~/sh/t'
 alias   cwd='pwd >> ~/.env;vi ~/.env; .rc'
 alias   swd='pwd > ~/.swd'                          # save pwd
@@ -53,8 +56,6 @@ alias   psw3m='ps -ef | grep [w]3m'
 alias  kmysql='mysql kts'
 
 # soptter
-alias    .isoptter='vi /root/bin/stk/.soptter'   
-function .asoptter(){ [ -n "$@" ] && echo $@ | xargs -n1 >>/root/bin/stk/.soptter ;}
 function M()        { m1 $@ | tail -18; } # M() { m1 $@ | nl -w 3 -s' ' | less -i ;}
 
 lwd() 

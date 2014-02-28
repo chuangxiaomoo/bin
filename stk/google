@@ -54,6 +54,7 @@ function fn_main()
     else
         fn_google  $@ | tee $go_temp
     fi
+
     [ 0 -ne  "${PIPESTATUS[0]}" ] && echo google fail && exit 1
 
     codes=`cat $go_temp | ./1Line 1stcol | xargs`
