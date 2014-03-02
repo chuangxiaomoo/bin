@@ -16,7 +16,7 @@
 ## 谋“势”战略   .doc/围棋谋势
 ## 六道轮回     .doc/六道轮回.千古兴衰.md
 ## 涨跌的逻辑   .doc/up_down_logic.md
-## 操作之自觉   .doc/discipline.md          -- operator -- 决策 -- 关键重点
+## 操作之自觉   .doc/discipline.md            -- operator -- 决策 -- 关键重点
 ## 辨别强弩之末 .doc/snail.md
 
 ## 使用手册     .doc/manual.md
@@ -27,6 +27,7 @@
 ## 总结2013     .doc/2013.md
 ## RZRQ         .doc/rzrq.md
 ## 观察手       .doc/soptter.md
+## 非理性之旅   .doc/non-rationality.md       -- 2014-02-26
 
 ## 错过 - 长期超跌反弹
 
