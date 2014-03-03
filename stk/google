@@ -48,21 +48,16 @@ function fn_google() {
 
 function fn_main() 
 {
-
-    if [ "$2" = '2' ] ; then
-        fn_google2 $@ | tee $go_temp
-    else
-        fn_google  $@ | tee $go_temp
-    fi
+    # index=2
+    fn_google${index}  $@ | tee $go_temp
 
     [ 0 -ne  "${PIPESTATUS[0]}" ] && echo google fail && exit 1
 
     codes=`cat $go_temp | ./1Line 1stcol | xargs`
     codes=${codes// /,}
 
-    echo "
-    SELECT * FROM cap WHERE code in ($codes) ORDER by nmc;
-	" | mysql -t kts
+    [ -z "${codes}" ] && echo "Error: null codelist" && exit 1
+    mysql -t kts<<< "SELECT * FROM cap WHERE code in (${codes}) ORDER by nmc" 
 }
 
 fn_main $@
