@@ -1,0 +1,46 @@
+# limit
+
+Usage:
+
+  SELECT * FROM table  LIMIT [offset,] rows | rows OFFSET offset
+
+NOTE：
+
+  -- 检索记录行 6-15，初始记录行的偏移量是 0(而不是 1)
+  SELECT * FROM table LIMIT 5,10;  
+
+  -- ? 有人说，rows 为-1代表到last,但实验证明不可靠，不如给个非常大的整数
+  SELECT * FROM table LIMIT 95,-1;  -- 检索记录行 96-last. 
+
+  -- LIMIT n 等价于 LIMIT 0,n
+  SELECT * FROM table LIMIT 5;      -- 检索前 5 个记录行 
+
+EXAMPLE:
+
+  -- 带id，计算最后5条数据
+  SET @TLEN=max(id);
+  SELECT * FROM ma WHERE id > @TLEN-5;
+
+  -- 不带id，计算最后5条数据，
+  SELECT * FROM ma ORDER by date DESC LIMIT 5;
+
+  -- 通过desc后，借助数据库子表order by date asc排序实现原有顺序
+  SELECT * FROM (SELECT * FROM ma ORDER by date DESC LIMIT 5) as tbl ORDER by date ASC;
+
+
+BACKGround：
+
+  CREATE TABLE ma (
+      id          INT(6) PRIMARY key AUTO_INCREMENT NOT NULL,
+      code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+      date        date NOT NULL,
+      close       DECIMAL(6,2) NOT NULL DEFAULT 0,
+      INDEX(date)
+  );
+
+  INSERT INTO ma(code,date,close)
+    SELECT code,date,close FROM day WHERE code=a_code and date<=@END ORDER by LIMIT 5;
+
+  上面语句得到的不是按 date 升序排列的表。
+  id与insert的先后顺序有关，与index(key)无关。
+

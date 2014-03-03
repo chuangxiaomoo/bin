@@ -962,6 +962,7 @@ function fn_condition()                 { cat sql_condition ;}
 function fn_group_by_having()           { cat sql_group_by_having ;}
 function fn_cp()                        { cat sql_cp ;}
 function fn_where_in()                  { cat sql_where_in ;}
+function fn_limit()                     { cat sql_limit ;}
     local opts=(
         kts
         min
@@ -973,9 +974,10 @@ function fn_where_in()                  { cat sql_where_in ;}
         drop                # 删除索引、表和数据库
         delete              # 删除表中的行
         alter               # 修改表结构：添加、修改或删除列
-        insert
+        insert              # 
         update
         select
+        limit               # head -n
         nest_select         # 这个哥们的blog很清晰
         show
         load
@@ -985,7 +987,7 @@ function fn_where_in()                  { cat sql_where_in ;}
         cp                  # 复制表数据or结构(copy)
         dump                # mysqldump
         group_by_having     # 
-        index
+        index               # id与insert的先后顺序有关，与index(key)无关
         execute             # prepare
         join                # 两个或多个表查询连结
         function            # 常用函数
