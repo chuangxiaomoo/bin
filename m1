@@ -1096,25 +1096,28 @@ function fn_log()                       { cat nxp_log ;}
 function fn_config()                    { cat nxp_config ;}
 function fn_upgrade()                   { cat nxp_upgrade ;}
 function fn_testing()                   { cat nxp_testing ;}
-    hold
-    base                                # `捋`整体功能
-    requirement_analysis
-    training                            # 如何做培训？
-    tools                               # SVN WBS RDM Valgrind SourceMonitor
-    arch                                # browser/server, nxp is a server
-    language                            # C/C++ BASH JavaScript Asp HTML5
-    lib                                 # C/C++ -------- utils ----------
-    process
-    thread
-    ipc                                 # inter-process-communication
-    signal                              # 信号处理
-    log
-    config
-    upgrade
-    protocol                            # client与server的通信协议
-    jcp                                 # xml, jcp 等只是protocol的不同实现
-    client                              # browser
-    testing
+    local opts=(
+        hold
+        base                            # `捋`整体功能
+        requirement_analysis
+        training                        # 如何做培训？
+        tools                           # SVN WBS RDM Valgrind SourceMonitor
+        arch                            # browser/server, nxp is a server
+        language                        # C/C++ BASH JavaScript Asp HTML5
+        lib                             # C/C++ -------- utils ----------
+        process
+        thread
+        ipc                             # inter-process-communication
+        signal                          # 信号处理
+        log
+        config
+        upgrade
+        protocol                        # client与server的通信协议
+        jcp                             # xml, jcp 等只是protocol的不同实现
+        client                          # browser
+        testing
+    )
+    fn_print $@
 }
 
 function fn_main() {
