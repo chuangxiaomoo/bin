@@ -206,7 +206,7 @@ function fn_04_马云启示录()             { cat stk_04_马云启示录 ;}
 function fn_06_决策心理学()             { cat stk_06_决策心理学 ;}
 function fn_07_牛眼投资法()             { cat stk_07_牛眼投资法 ;}
 function fn_09_银江()                   { cat stk_09_银江 ;}
-function fn_10_dazhihui()               { cat stk_10_dazhihui ;}      # 大智慧 
+function fn_10_dazhihui()               { cat stk_10_dazhihui ;}
 function fn_11_N_XD_XR_DR()             { cat stk_11_N_XD_XR_DR ;}
 function fn_12_手续费()                 { cat stk_12_手续费 ;}
 function fn_13_除权后的股票难以上涨()   { cat stk_13_除权后的股票难以上涨 ;}
@@ -243,7 +243,7 @@ function fn_rzrq()                      { cat stk_rzrq ;}
         07_牛眼投资法                   # bulleye
 
         09_银江
-        10_dazhihui                     # dzh
+        10_dazhihui                     # dzh 大智慧
         11_N_XD_XR_DR                   # 除权除息
         12_手续费                       # cost
         13_除权后的股票难以上涨
