@@ -61,3 +61,6 @@ END tag_ma//
 
 SET @END    = '2014-1-10';
 call sp_ma('day', 002708);
+
+-- 将最后30天记录INSERT到表 tbl_ma_recent 以做快速索引
+
