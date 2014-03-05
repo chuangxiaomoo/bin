@@ -182,7 +182,7 @@ function fn_PIPESTATUS()                { cat bash_PIPESTATUS ;}
         echo_last_cmd
         getopts
         kill_trap
-        tcpip
+        tcpip                           # netcat nc
         readline
         redirection
         string
