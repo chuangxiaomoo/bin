@@ -38,6 +38,16 @@ http://blog.csdn.net/niu_gao/article/details/6910549
 
 . Background，对socket的监听，以事件的形式真正的替代循环
 
+    /*
+     * RTSPServer构造，按顺序，一步都不能少
+     * socket, 
+     * setsoketopt(SO_REUSEADDR), 
+     * bind，
+     * makeNonBlocking(fcntl F_GETFL) , 
+     * makeNonBlocking(fcntl F_SETFL) , 
+     * listen
+     * turnOnBackgroundReadHandling(incomingConnectionHandler)
+     **/
     turnOnBackgroundReadHandling(socket, )
     setBackgroundHandling()
 
