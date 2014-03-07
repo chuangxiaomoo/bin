@@ -36,19 +36,19 @@ function fn_help0() {
     elif [ "${#opts[@]}" -lt 72 ] ; then
         echo ${opts[@]} | awk '{
             for (i = 1; i <= NF; i++) {
-                printf("    %-16s", $i)
+                printf("    %-20s", $i)
                 i++
-                printf("    %-16s\n", $i)
+                printf("    %-20s\n", $i)
             }
         }' 
     else
         echo ${opts[@]} | awk '{
             for (i = 1; i <= NF; i++) {
-                printf("    %-16s", $i)
+                printf("    %-20s", $i)
                 i++
-                printf("    %-16s", $i)
+                printf("    %-20s", $i)
                 i++
-                printf("    %-16s\n", $i)
+                printf("    %-20s\n", $i)
             }
         }' 
     fi
