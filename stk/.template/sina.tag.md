@@ -1,5 +1,8 @@
 # sina 实时
+
   [var hq_str_](http://www.cnblogs.com/chuncn/archive/2009/06/26/1400997.html) 
+
+  实时行情中没有成交与换手内容，要实时显示换手率，需要与MySql表cap合作。
 
 # sina 行情中心 
 
