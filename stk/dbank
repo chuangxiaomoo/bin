@@ -15,6 +15,10 @@ helpmsg="
         使能表pipe，WHERE code in (SELECT code in pipe)
     TBL
         操作表，默认使用'tbl_visit'
+    XTBL
+        EXCLEDE表，SELECT时使用，默认为空
+    COND
+        条件过滤表达式，SELECT时使用，默认为空
 
     表zxg更新
     kmysql -N <<<'${selecap} WHERE nmc>100000 and nmc<990000' | xargs up 7
