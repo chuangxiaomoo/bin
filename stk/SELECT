@@ -96,10 +96,10 @@ function fn_app_wgt_turnov()
     #wgt="TRUNCATE(swing*bounce*nmc/1000000, 2)" ---- swing 是经过放大的 20 -> 25
     wgt="(swing+bounce)"
     field=${1:-wgt}
-    COND=${COND:+and $COND}
-    COND=${XTBL:+and code not in (SELECT code FROM $XTBL) $COND}
+    XTBL=${XTBL:+and code not in (SELECT code FROM $XTBL)}
+    COND=${COND:+and $COND ${XTBL}}
 
-    echo ----- $COND
+    echo ----- COND: $COND -----
 
     echo "
     SELECT $columns, c.nmc, $wgt as wgt, c.name 
