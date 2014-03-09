@@ -44,7 +44,10 @@ mps_god="/var/God.sql"
 sql_temp='/dev/shm/sql.temp'
 
 warehs='/opt0/warehs'
+znzday='/opt0/warehs/znzday'
 workdir='/root/bin/stk'
+yahooask='/root/bin/stk/.template/yahoo.ask'
+yahootimeout='/root/bin/stk/.template/yahoo.ask.timeout'
 
 m2d_temp='/dev/shm/hexun/min2day'
 

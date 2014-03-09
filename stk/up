@@ -275,7 +275,7 @@ function fn_redo_hexun_day()
 function fn_load_directory() 
 {
     local tbl_name='day'
-    local p_sql="$warehs/znz_day/"
+    local p_sql=${znzday}
     local f_sql="$warehs/znz.yahoo"
     # 做成一个大文件会快得多
     cd $p_sql
@@ -285,20 +285,11 @@ function fn_load_directory()
     " | mysql kts
 
     return $?
-
-    local i=
-   #for i in 000002; do
-    for i in 900001; do
-        echo load $i ...
-        echo "
-        LOAD DATA LOCAL INFILE '$i' INTO TABLE $tbl_name
-        " | mysql kts
-    done
 }
 
 function fn_add_codes_2_dzh2tbl() 
 {
-    [ -z "$*" ] && echo "Usage: zixungu code..." && exit
+    [ -z "$*" ] && echo "Usage: zixungu code..." && exit 1
     # echo $@ && exit
     # D:\dzh2\USERDATA\block
     # 每个自选股都有自己的独特代码，现以8为实现
@@ -362,13 +353,14 @@ function fn_up_tbl_xRD()
 {
     p_bin=/root/bin/stk/bin/
 
-    make -C $p_bin
+    # make -C $p_bin
     
     cp /media/sf_dzh2/Download/PWR/full.PWR $p_bin
     xert $? `$PS8` || return $?
 
     [ ! -f "$p_bin/xRD" ] && echo "xRD not exist" && exit
-    $p_bin/xRD | sort -r -k2 > $p_bin/xRD.list
+    cd $p_bin
+    ./xRD | sort -r -k2 > $p_bin/xRD.list
 
     echo "
     DROP TABLE IF EXISTS xRD;
@@ -536,7 +528,7 @@ function fn_main()
     "copy_table_2_table src dst         # --- 使用 1 1 做为代号"
     "tougu_reminder                     # --- 投顾大赛提醒器，5分钟延时"
     "add_yesclose                       # 为yahoo.指南针数据添加yesclose"
-    "load_directory                     # load整个文件夹到数据库"
+    "load_directory                     # load文件夹#{znzday}到表day"
     "load_f_2_tbl_samename filepath     # 导入日线到同名表"
     "sel_day_into_znz_dir               # 导出日线"
     "trs_min_2_day                      # 最后一笔分线转日线"

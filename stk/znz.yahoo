@@ -52,7 +52,7 @@ function fn_gether_symbol() {
 
 
     ## 添加yesclose，同 ./up znz2mysql
-    ## XR时，volume没有进行处理，volume ~= amount/close
+    ## xRD时，yahoo中的volume没有进行处理，volume ~= amount/close
     ## First record 日期 != $start_date, 从mySql读取yesclose
     sed -i -e 's/  */\t/g' -e 's/,//g' ${day_gether} 
     sort -k1 -g ${day_gether} -o ${day_gether}
@@ -61,38 +61,32 @@ function fn_gether_symbol() {
     if [ "$first_date" != "${start_date}" ] ; then
         yesc=`mysql -N kts <<<"SELECT close FROM day WHERE code=${code} and 
                             date<'${start_date}' ORDER by date DESC limit 1"`
-        echo "SELECT close FROM day WHERE code=${code} and date<'${start_date}' --> ${yesc:-0}"
+        # echo "SELECT close FROM day WHERE code=${code} and date<'${start_date}' --> ${yesc:-0}"
     fi
     cat ${day_gether} | awk -v icode=$code -v iyesc=${yesc:-0} '{
         printf "%06d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n", 
                   icode, $1, iyesc, $2, $3, $4, $5, $7/$5, $7;
         iyesc=$5
-    }' | sed "/${start_date}/d" > ${p_day}/$code
-   #}' | sed '1d' > ${p_day}/$code
+    }' | sed "/${start_date}/d" > ${znzday}/$code
+   #}' | sed '1d' > ${znzday}/$code
 }
 
-function fn_main()
+function fn_yahoo()
 {
-    start_year=2014; start_month=1; start_day=20
-    endin_year=2014; endin_month=2; endin_day=13
-   #endin_year=2014; endin_month=2; endin_day=20
-
-
     # endin_year=`date +%Y`; endin_month=`date +%m`; endin_day=`date +%d`
 
     local start_date=$start_year-$start_month-$start_day
     local lt_curr="date<='`date +%F`'"
-    local codeask='/root/bin/stk/.template/codes.ask'
 
     Usage="Usage: 
     执行第1点和第2点
-    $0 start        (先用 for i in sh000001 测试，再用 for i in codeask)
+    $0 start        (先用 for i in sh000001 测试，再用 for i in yahooask)
     执行第3点和第4点
 
     1.
     'sh000001' 代表上证
     codes.ask 通常用连续时间的所有code进行sort -u。手动去头(code)去尾(900001)
-    kmysql<<<\"SELECT code from day where date>='2014-01-20' and $lt_curr;\" | sort -u > $codeask
+    kmysql<<<\"SELECT code from day where date>='2014-01-20' and $lt_curr;\" | sort -u > $yahooask
 
     2.
     设置变量 url 中代表数据日期范围的6个时间变量 start_year... 
@@ -111,21 +105,31 @@ function fn_main()
     [ "start" != "$1" ] && echo "$Usage" && exit
 
     # This script depends on: ./up 3 
-    local p_day=$warehs/znz_day
-    mkdir -p ${p_day}
-    rm   -rf ${p_day}/*
+    mkdir -p ${znzday}
     mkdir -p ${day_gether%/*}
-    > /root/bin/stk/.template/codes.timeout
+    > $yahootimeout
+
+    # for timeout
+    [ -z "${NOCLEAN}" ] && rm   -rf ${znzday}/*
+
     # 
     # cp codes.timeout codes.ask
 
-
     local i=
-      for i in `cat $codeask` ; do
+      for i in `cat $yahooask` ; do
     # for i in sh000001 ; do
     # for i in 000509; do
         fn_gether_symbol $i && echo "$i completed!"
     done
+}
+
+[ "${BASH_SOURCE##*/}" != "${0##*/}" ] && return 0
+
+function fn_main() 
+{
+    start_year=2014; start_month=1; start_day=20
+    endin_year=2014; endin_month=2; endin_day=13
+    fn_yahoo start
 }
 
 fn_main $@
