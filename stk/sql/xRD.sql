@@ -588,6 +588,7 @@ CREATE PROCEDURE sp_get_down_turnov(a_code INT(6) ZEROFILL) tag_100d_turnov:BEGI
 
         -- 在阶段之顶
         IF v_date_low = v_date_high THEN 
+            -- SELECT 'MYGOD', v_date_low , v_date_high;
             LEAVE tag_100d_turnov; 
         END IF;
 
