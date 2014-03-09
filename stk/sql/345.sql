@@ -55,11 +55,11 @@ CREATE PROCEDURE sp_ma(a_tbl CHAR(20), a_code INT(6) ZEROFILL) tag_ma:BEGIN
     call sp_avrg('ma', 'ma2', 13);
     call sp_avrg('ma', 'ma3', 34);
     call sp_avrg('ma', 'ma4', 55);
-    call sp_avrg('ma', 'ma5', 100);
-    call sp_avrg('ma', 'ma6', 144);
+ -- call sp_avrg('ma', 'ma5', 100);
+ -- call sp_avrg('ma', 'ma6', 144);
 END tag_ma//
 
-SET @END    = '2014-1-10';
+SET @END = '2014-3-10';
 call sp_ma('day', 002708);
 
 -- 将最后30天记录INSERT到表 tbl_ma_recent 以做快速索引

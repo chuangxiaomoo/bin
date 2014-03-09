@@ -42,7 +42,7 @@ function fn_main()
 
     P*|Push)
         # Your branch is ahead of 'origin/master' by 4 commits.
-        git pull origin
+        git push origin master
         ;;
 
     r*|revert)

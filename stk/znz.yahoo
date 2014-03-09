@@ -127,10 +127,25 @@ function fn_yahoo()
 
 function fn_main() 
 {
-    start_year=2014; start_month=1; start_day=20
-    endin_year=2014; endin_month=2; endin_day=13
+    echo 600884 > $yahooask
+    start_sps=($(date +'%Y %m %d' --date='365 days ago' ))
+    endin_sps=($(date +'%Y %m %d'))
+    start_year=${start_sps[0]}; start_month=${start_sps[1]}; start_day=${start_sps[2]}
+    endin_year=${endin_sps[0]}; endin_month=${endin_sps[1]}; endin_day=${endin_sps[2]}
     fn_yahoo start
+
+    local i=
+    for i in `cat ${yahooask}`; do
+        echo "DELETE FROM day WHERE code=$i;" | mysql -N kts 
+        xt_ret $? "mysql" || return $?
+    done
+
+    echo "DELETE over"
+
+    up load_directory
+    xt_ret $? "load znzday fail" || return $?
+
+    echo "LOAD over"
 }
 
 fn_main $@
-
