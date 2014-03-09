@@ -262,6 +262,17 @@ function fn_get_ma345()
     mysql $mo -t kts <<< "source $mps_god"
 }
 
+function fn_ana_ma345() 
+{
+    if [ -n "${REDO}" ]; then
+        kmysql -N <<<'SELECT code FROM cap WHERE nmc<2000000' | xargs up 7
+    fi
+
+    TBL=zxg fn_get_ma345
+    kmysql -N <<<'SELECT * FROM tbl_ma345 WHERE close>ma5 and close>ma13' | TBL=ana xargs up 7        
+    # and abs(ma34-close)/close<0.2
+}
+
 function fn_main() 
 {
     END=${END:-`fn_maxdate`}
@@ -271,6 +282,7 @@ function fn_main()
     "get_stat_turnov      code start [end]      # 个股区间换手统计"
     "get_down_turnov      start [end]           # 100%下降净换手"
     "get_ma345            [end]                 # ma 5 13 34 55"
+    "ana_ma345            [end]                 # 分析ma 5 13 34 55"
     "get_rise_turnov      start [end]           # 100%上升净换手"
     "get_13d_20psink                            # 8日13日SINK超20%"
     "get_1_swing_num      [RISE_PERCENT:-8]     # 单日振幅，小于0计算跌幅"
