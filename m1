@@ -252,6 +252,7 @@ function fn_82_HIK协议实现1个月后傻眼() { cat case_82_HIK协议实现1�
 
 function fn_a0_vobx_tool_filename()     { cat case_a0_vobx_tool_filename ;}
 function fn_a1_fork_locked()            { cat case_a1_fork_locked ;}
+function fn_56_ini写入时间耗时3秒()     { cat case_56_ini写入时间耗时3秒 ;}
 
     local opts=(
         fundamental
@@ -300,6 +301,7 @@ function fn_a1_fork_locked()            { cat case_a1_fork_locked ;}
         53_平台删除对应用的影响         # API测试原则：一个测试套伯至少3个用例:头尾身
         54_ZXWSDK告警丢失               # API设计原则: 进程锁，勿注释代码如何运作
         55_bind_失败_No_such_file       # API设计原则: API的生命在于复用
+        56_ini写入时间耗时3秒           # API设计原则: 性能测试用例
 
         70_merge_error                  # 朝令夕改 请Luo不要随便插脚
         71_行淫的女人_小魔的牢骚        # care你的牢骚。PK产品经理
