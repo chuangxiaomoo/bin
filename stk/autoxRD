@@ -3,19 +3,6 @@
 
 . znz.yahoo
 
-function fn_maxyahoo() 
-{
-    start_sps=($(date +'%Y %m %d' --date='8 days ago' ))
-    endin_sps=($(date +'%Y %m %d'))
-    start_year=${start_sps[0]}; start_month=${start_sps[1]}; start_day=${start_sps[2]}
-    endin_year=${endin_sps[0]}; endin_month=${endin_sps[1]}; endin_day=${endin_sps[2]}
-
-    echo sh000001 > ${yahooask}
-    NOCLEAN=1 fn_yahoo start
-
-    date_maxyahoo=`tail -1 ${znzday}/900001 | awk '{print $2}'`
-}
-
 function fn_rebuild_list_and_download_from_last_xRD() 
 {
     last_xRD=`echo "

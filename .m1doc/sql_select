@@ -37,6 +37,10 @@
         SELECT * FROM Results;
     NOTEE
 
+. NOT IN
+
+    SELECT code FROM day WHERE code not in (000001,000002,000004);
+
 . LIMIT
 
     LIMIT 结合 ASC DESC 可以得到 shell head tail 的效果。

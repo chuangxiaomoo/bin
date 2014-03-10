@@ -4,6 +4,19 @@
 . `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
 . /etc/common.rc
 
+function fn_maxyahoo() 
+{
+    start_sps=($(date +'%Y %m %d' --date='8 days ago' ))
+    endin_sps=($(date +'%Y %m %d'))
+    start_year=${start_sps[0]}; start_month=${start_sps[1]}; start_day=${start_sps[2]}
+    endin_year=${endin_sps[0]}; endin_month=${endin_sps[1]}; endin_day=${endin_sps[2]}
+
+    echo sh000001 > ${yahooask}
+    NOCLEAN=1 fn_yahoo start
+
+    date_maxyahoo=`tail -1 ${znzday}/900001 | awk '{print $2}'`
+}
+
 function fn_gether_symbol() {
     local code=$1
     local url='http://yahoo.compass.cn/stock/frames/frmHistoryDetail.php?'
@@ -127,20 +140,29 @@ function fn_yahoo()
 
 function fn_main() 
 {
-    echo 600884 > $yahooask
+    fn_maxyahoo
+    [ -n "${date_maxyahoo}" ]
+    xt_ret $? "date_maxyahoo is NULL" || return $?
+
+    # fn_maxyahoo 会修改 $yahooask, 必须在手动构建 $yahooask 之前
+    echo 300267 000690 002245 300181 > $yahooask
+
     start_sps=($(date +'%Y %m %d' --date='365 days ago' ))
     endin_sps=($(date +'%Y %m %d'))
     start_year=${start_sps[0]}; start_month=${start_sps[1]}; start_day=${start_sps[2]}
     endin_year=${endin_sps[0]}; endin_month=${endin_sps[1]}; endin_day=${endin_sps[2]}
+
     fn_yahoo start
 
     local i=
     for i in `cat ${yahooask}`; do
-        echo "DELETE FROM day WHERE code=$i;" | mysql -N kts 
+        echo "DELETE FROM day WHERE code=$i and date <='${date_maxyahoo}';" | mysql -N kts 
         xt_ret $? "mysql" || return $?
     done
 
     echo "DELETE over"
+
+    rm -f ${znzday}/900001
 
     up load_directory
     xt_ret $? "load znzday fail" || return $?
