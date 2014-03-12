@@ -15,7 +15,7 @@ CREATE PROCEDURE sp_avrg(a_tbl CHAR(20), a_x CHAR(20), a_period INT) tag_avrg:BE
     IF v_i+a_period > @v_masize THEN LEAVE tag_avrg; END IF;
 
     loop_visit: REPEAT
-        SELECT SUM(close)/a_period FROM ma WHERE id > v_i and id <=(a_period+v_i) INTO v_avrg;
+        SELECT SUM(close)/a_period FROM tbl_ma WHERE id > v_i and id <=(a_period+v_i) INTO v_avrg;
         SET @sqls=concat('UPDATE ', a_tbl, ' SET ', a_x,' = ', v_avrg, ' WHERE id=', a_period+v_i);
         PREPARE stmt from @sqls; EXECUTE stmt;
 
@@ -25,8 +25,8 @@ END tag_avrg//
 
 DROP PROCEDURE IF EXISTS sp_ma//
 CREATE PROCEDURE sp_ma(a_code INT(6) ZEROFILL) tag_ma:BEGIN
-    DROP TABLE IF EXISTS ma;
-    CREATE TABLE ma (
+    DROP TABLE IF EXISTS tbl_ma;
+    CREATE TABLE tbl_ma (
         id          INT(6) PRIMARY key AUTO_INCREMENT NOT NULL,
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
         date        date NOT NULL,
@@ -40,17 +40,17 @@ CREATE PROCEDURE sp_ma(a_code INT(6) ZEROFILL) tag_ma:BEGIN
         INDEX(date)
     );
 
-    INSERT INTO ma(code,date,close)
+    INSERT INTO tbl_ma(code,date,close)
         SELECT code,date,close FROM day WHERE code=a_code and date<=@END;
 
-    SELECT count(id) FROM ma INTO @v_masize;        -- don't use max(id), it will be null
+    SELECT count(id) FROM tbl_ma INTO @v_masize;        -- don't use max(id), it will be null
     IF @v_masize = 0 THEN LEAVE tag_ma; END IF;
 
     -- long short dea 26 12 9
-    call sp_avrg('ma', 'ma1', 5);
-    call sp_avrg('ma', 'ma2', 13);
-    call sp_avrg('ma', 'ma3', 34);
-    call sp_avrg('ma', 'ma4', 55);
+    call sp_avrg('tbl_ma', 'ma1', 5);
+    call sp_avrg('tbl_ma', 'ma2', 13);
+    call sp_avrg('tbl_ma', 'ma3', 34);
+    call sp_avrg('tbl_ma', 'ma4', 55);
  -- call sp_avrg('ma', 'ma5', 100);
  -- call sp_avrg('ma', 'ma6', 144);
 END tag_ma//
@@ -58,7 +58,7 @@ END tag_ma//
 -- 将最后30天记录INSERT到表 tbl_ma_recent 以做快速索引
 
 DROP PROCEDURE IF EXISTS sp_visit_tbl//
-CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(20), a_type INT) tag_visit:BEGIN
+CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(20)) tag_visit:BEGIN
     DECLARE v_code  INT(6) ZEROFILL;
     DECLARE v_id    INT DEFAULT 1; 
     DECLARE v_len   INT; /* CURSOR and HANDLER declare in end of declaration */
@@ -68,8 +68,8 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(20), a_type INT) tag_visit:BEGIN
         id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0
     );
-    DROP TABLE IF EXISTS tbl_visit_ma; -- for visit output
-    CREATE TABLE tbl_visit_ma(
+    DROP TABLE IF EXISTS tbl_x20pool; -- for visit output
+    CREATE TABLE tbl_x20pool(
         id          INT(6) PRIMARY key AUTO_INCREMENT NOT NULL,
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
         date        date NOT NULL,
@@ -93,10 +93,14 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(20), a_type INT) tag_visit:BEGIN
         SELECT code FROM codes WHERE id=(v_id) INTO v_code;
         call sp_ma(v_code);
         -- 读取后20条记录
+        INSERT INTO tbl_x20pool (code,date,close,ma1,ma2,ma3,ma4,ma5)
+            SELECT code,date,close,ma1,ma2,ma3,ma4,ma5 FROM tbl_ma WHERE id>(@v_masize-20) ;
         SET v_id = v_id + 1;
     END WHILE;
 END tag_visit //
 
-SET @END = '2014-3-10';
-call sp_ma(002708);
+-- SET @END = '2014-3-10';
+-- call sp_ma(002708);
 
+SET @END = '2014-3-10';
+call sp_visit_tbl('zxg');
