@@ -55,15 +55,16 @@ fn_realtime()
     $W3M -dump "http://hq.sinajs.cn/list=${indexlist},${comma_sepa_list}" > ${rt_stdout} 
     xt_ret $? "NETWORK" || return $?
 
-    # cat ${rt_stdout}  ; exit
+    # cat ${rt_stdout} ; exit
+    # cat ${rt_stdout} | head -1 | # awk -F ',' '{print $32}'  # print time
 
     # format ref to .doc/soptter.md
-   #cat ${rt_stdout} | \
-   #    sed -e '1s/sh000001/sh900001/' \
-   #        -e 's/var hq_str_..//g' -e 's/="/,/g' | awk -F',' '{
-   #            printf "%06d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n", 
-   #            $1, $32, $4, $3, $6, $7, $5, ($10/100), ($11/10000);
-   #        }' 
+    #cat ${rt_stdout} | \
+    #    sed -e '1s/sh000001/sh900001/' \
+    #        -e 's/var hq_str_..//g' -e 's/="/,/g' | awk -F',' '{
+    #            printf "%06d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n", 
+    #            $1, $32, $4, $3, $6, $7, $5, ($10/100), ($11/10000);
+    #        }' 
     # >> $hx_dayclose
     #   tr -d '"' | tr -d ';' | tr ':' '.' > ${rt_ripetxt} 
 
@@ -89,9 +90,7 @@ fn_realtime()
                     ($5-$7), 
                 100*($5-$7)/$7, 
                 $2;
-            }' 
-
-    # cat ${rt_stdout} | head -1 | awk -F ',' '{print $32}'  # print time
+            }'  # | sort -g -r -k5
 }
 
 function fn_main() 
