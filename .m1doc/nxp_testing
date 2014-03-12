@@ -8,11 +8,38 @@
 
   consumer -》 testing-engineer -》me
 
-  browser -》httpd -》jcp -》server -》
+  `browser -》httpd -》jcp` OR `平台对接应用`
+  都可以通过 confapi 来进行配置的读写。
 
 
 ## 自我定位
 
   找到自已的位置：通过找到自已的上家和下家。
 
+## 戏说消息
+
+  花魁的生活
+  不论供需，都不直接与客户打交道，而是与工会，行业联盟这样的组织。
+
+  1. 提供服务，比如接客   set_msghandle_api()
+  2. 需要服务，比如吃饭   register_cbcenter()
+
+## 架构
+
+> 测试代码本身有DEMO的功能
+
+  * 前置条件：初始化、心跳（独立线程）
+
+  服务端（SERVER）
+
+  * 运行SERVER
+
+
+  测试端（2个角色runner: 外部客户端 AND 本地应用ENCODE）
+
+  * 事件侦听器（接收notify通知、register，可放在前置条件中以独立线程运行）
+
+  * 事件触发器（通过conf_xxx即可以触发事件）
+
+## 
 
