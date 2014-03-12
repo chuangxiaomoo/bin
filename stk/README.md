@@ -28,7 +28,7 @@
 ## RZRQ         .doc/rzrq.md
 ## 观察手       .doc/soptter.md
 ## 趋势交易系统 .doc/ma-trade.md
-## 非理性之旅   .doc/non-rationality.md       -- 2014-02-26
+## 非理性之旅   .doc/non-rationality.md       -- 2014-02-26 2014-03-12
 ## 疯狂的贱卖   .doc/how-to-sell.md           -- 2014-03-04 天保重装
 
 ## 错过 - 长期超跌反弹

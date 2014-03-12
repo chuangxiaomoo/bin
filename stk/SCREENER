@@ -208,12 +208,11 @@ function fn_get_stat_turnov()
 function fn_get_down_turnov() 
 {
     local usage="Usage: ${FUNCNAME[0]} start [end]"
+    START=${1:-${START}}
+    END=${2:-${END}}
 
-    [ -n "${START:=${1}}" ]
-    xt_ret $? "$usage" || return $?
-
-    [ -n "${END:=${2}}" ]
-    xt_ret $? "$usage" || return $?
+    [ -n "${START}" ] && [ -n "${END}" ]
+    xt_ret $? "$usage ${START} - ${END}" || return $?
 
     # 指定环境变量TBL来进行测试
     TBL=${TBL:-'zxg'}

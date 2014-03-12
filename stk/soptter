@@ -90,7 +90,7 @@ fn_realtime()
                     ($5-$7), 
                 100*($5-$7)/$7, 
                 $2;
-            }'  # | sort -g -r -k5
+            }'  | sort -g -r -k5
 }
 
 function fn_main() 
