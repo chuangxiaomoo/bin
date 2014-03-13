@@ -99,14 +99,53 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(20)) tag_visit:BEGIN
     END WHILE;
 END tag_visit //
 
+-- -------------------- Analyze functions begin ------------------------------
+
+DROP PROCEDURE IF EXISTS sp_cross //
+CREATE PROCEDURE sp_cross(a_code INT(6) ZEROFILL, a_maxid INT(6)) tag_cross:BEGIN
+    DECLARE id_s    INT DEFAULT 0; 
+    DECLARE id_e    INT DEFAULT 0; 
+    DECLARE date_s  DATE;
+    DECLARE date_e  DATE;
+
+    -- start end maxid
+    DECLARE v_s1    DECIMAL(6,3) DEFAULT 0; 
+    DECLARE v_s2    DECIMAL(6,3) DEFAULT 0; 
+    DECLARE v_s3    DECIMAL(6,3) DEFAULT 0; 
+
+    DECLARE v_e1    DECIMAL(6,3) DEFAULT 0; 
+    DECLARE v_e2    DECIMAL(6,3) DEFAULT 0; 
+    DECLARE v_e3    DECIMAL(6,3) DEFAULT 0; 
+
+    SET id_s = a_maxid - @AHEAD - @STEPS;
+    SET id_e = id_s + @STEPS;
+
+    SELECT ma1,ma2,ma3,date FROM tbl_x20pool WHERE id=id_s INTO v_s1,v_s2,v_s3,date_s;
+    SELECT ma1,ma2,ma3,date FROM tbl_x20pool WHERE id=id_e INTO v_e1,v_e2,v_e3,date_e;
+
+    SELECT v_e1 , v_e2 , v_s1 , v_s2, date_s,date_e; 
+    -- ma5 up cross ma13
+    IF v_e1 > v_e2 AND v_s1 < v_s2 THEN 
+        SELECT "mygod", a_code;
+        INSERT INTO tbl_analyz (code) VALUES(a_code);
+    END IF;
+END tag_cross //
+
 DROP PROCEDURE IF EXISTS sp_ana//
 CREATE PROCEDURE sp_ana(a_tbl CHAR(20)) tag_ana:BEGIN
     DECLARE v_code  INT(6) ZEROFILL;
     DECLARE v_id    INT DEFAULT 1; 
     DECLARE v_len   INT; /* CURSOR and HANDLER declare in end of declaration */
+
+    DECLARE v_maxid INT DEFAULT 0; 
     
     DROP TABLE IF EXISTS codes;
     CREATE TABLE codes (
+        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0
+    );
+    DROP TABLE IF EXISTS tbl_analyz;
+    CREATE TABLE tbl_analyz (
         id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0
     );
@@ -119,6 +158,9 @@ CREATE PROCEDURE sp_ana(a_tbl CHAR(20)) tag_ana:BEGIN
 
     WHILE v_id <= v_len DO
         SELECT code FROM codes WHERE id=(v_id) INTO v_code;
+        SELECT max(id) FROM tbl_x20pool WHERE code=v_code INTO v_maxid;
+        call sp_cross(v_code, v_maxid);
+
      -- INSERT INTO tbl_x20pool (code,date,close,ma1,ma2,ma3,ma4,ma5)
      --     SELECT code,date,close,ma1,ma2,ma3,ma4,ma5 FROM tbl_ma WHERE id>(@v_masize-20) ;
         SET v_id = v_id + 1;
@@ -127,6 +169,9 @@ END tag_ana //
 
 -- SET @END = '2014-3-10';
 -- call sp_ma(002708);
-
-SET @END = '2014-3-10';
-call sp_visit_tbl('zxg');
+-- @AHEAD=0 代表 date_e 是今天
+SET @AHEAD=4;
+SET @STEPS=1;
+SET @END = '2014-3-13';
+-- call sp_visit_tbl('cap');
+call sp_ana('zxg');
