@@ -99,6 +99,32 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(20)) tag_visit:BEGIN
     END WHILE;
 END tag_visit //
 
+DROP PROCEDURE IF EXISTS sp_ana//
+CREATE PROCEDURE sp_ana(a_tbl CHAR(20)) tag_ana:BEGIN
+    DECLARE v_code  INT(6) ZEROFILL;
+    DECLARE v_id    INT DEFAULT 1; 
+    DECLARE v_len   INT; /* CURSOR and HANDLER declare in end of declaration */
+    
+    DROP TABLE IF EXISTS codes;
+    CREATE TABLE codes (
+        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0
+    );
+
+    SET @cond=' ORDER by code';
+    SET @sqls=concat('INSERT INTO codes(code) SELECT code FROM ', a_tbl, @cond);
+    PREPARE stmt from @sqls; EXECUTE stmt;
+    SELECT max(id)   FROM codes INTO v_len;
+    SELECT max(date) FROM day WHERE code=900001 INTO @v_maxdate;
+
+    WHILE v_id <= v_len DO
+        SELECT code FROM codes WHERE id=(v_id) INTO v_code;
+     -- INSERT INTO tbl_x20pool (code,date,close,ma1,ma2,ma3,ma4,ma5)
+     --     SELECT code,date,close,ma1,ma2,ma3,ma4,ma5 FROM tbl_ma WHERE id>(@v_masize-20) ;
+        SET v_id = v_id + 1;
+    END WHILE;
+END tag_ana //
+
 -- SET @END = '2014-3-10';
 -- call sp_ma(002708);
 
