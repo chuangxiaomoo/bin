@@ -341,12 +341,13 @@ function fn_add_codes_2_dzh2tbl()
 }
 
 
-function fn_add_table_2_dzh2tbl() 
+function fn_add_tbl_codes_2_dzh() 
 {
-   #goodboys=`mysql -N -B kts <<< "SELECT tbl_visit.code, cap.nmc FROM tbl_visit,cap ;"`
-    field=${1:-'(swing*1.3+bounce)'}
-    goodboys=`mysql -N -B kts <<< "SELECT f.code FROM 
-        ${TBL:-tbl_visit} as f,cap as c WHERE f.code=c.code ORDER by ${field};"`
+    field=${1}
+    field=${field:+ORDER by ${field}}
+    goodboys=`mysql -N -B kts <<< "SELECT code FROM ${TBL:-tbl_visit} ${field};"`
+
+    # echo $goodboys; exit
 
     [ -z "$goodboys" ] && echo "No goodboys found!" && exit
 
@@ -525,7 +526,7 @@ function fn_main()
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
     "up_tbl_xRD                         # --- update table EXCLUDE RIGHT DIVIDEN"
     "add_codes_2_dzh2tbl code...        # 添加CODE到ZXG.BLK，并写表#{TBL:-zxg}"
-    "add_table_2_dzh2tbl                # 添加表#{TBL:-tbl_visit}到dzh2tbl{zxg}"
+    "add_tbl_codes_2_dzh                # 添加表#{TBL:-tbl_visit}到dzh2tbl{zxg}"
     "up_rzrq_codes_tbl                  # 更新RZRQ业务数据"
     "up_swing10                         # 更新涨跌停6.1%数据"
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
