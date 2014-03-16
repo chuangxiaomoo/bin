@@ -374,8 +374,8 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(20), a_type INT) tag_visit:BEGIN
         ma13        DECIMAL(6,2) NOT NULL DEFAULT 0,
         ma34        DECIMAL(6,2) NOT NULL DEFAULT 0,
         ma55        DECIMAL(6,2) NOT NULL DEFAULT 0,
-        revi13      DECIMAL(6,2) NOT NULL DEFAULT 0,
-        revi34      DECIMAL(6,2) NOT NULL DEFAULT 0
+        high        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        low         DECIMAL(6,2) NOT NULL DEFAULT 0
     );
 
     SET @cond=' ORDER by code';
@@ -670,14 +670,14 @@ CREATE PROCEDURE sp_get_ma345(a_code INT(6) ZEROFILL) tag_get_ma345:BEGIN
     DECLARE v_ma34     DECIMAL(6,2) DEFAULT 0;
     DECLARE v_ma55     DECIMAL(6,2) DEFAULT 0;
     DECLARE v_close    DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_low13    DECIMAL(6,2) DEFAULT .1;
-    DECLARE v_low34    DECIMAL(6,2) DEFAULT .1;
+    DECLARE v_high     DECIMAL(6,2) DEFAULT .1;
+    DECLARE v_low      DECIMAL(6,2) DEFAULT .1;
     DECLARE v_revi13   DECIMAL(6,2) DEFAULT .1;
-    DECLARE v_revi34   DECIMAL(6,2) DEFAULT .1;
 
     call sp_create_tempday();
 
-    SELECT date FROM day WHERE code=a_code ORDER by date DESC limit 40,1 INTO @START;
+    SELECT date FROM day WHERE code=a_code and date<=@END ORDER by 
+           date DESC limit 40,1 INTO @START;
 
     INSERT INTO tempday(code,date,close) SELECT 
            code,date,close FROM day WHERE code=a_code and date>=@START and date<=@END;
@@ -688,21 +688,19 @@ CREATE PROCEDURE sp_get_ma345(a_code INT(6) ZEROFILL) tag_get_ma345:BEGIN
 
     IF @v_len < 13 THEN LEAVE tag_get_ma345; END IF;
 
-    SELECT MIN(close)     FROM tempday WHERE id > (@v_len-13)  INTO v_low13;
-    SELECT SUM(close)/5   FROM tempday WHERE id > (@v_len-5  ) INTO v_ma5  ;
-    SELECT SUM(close)/13  FROM tempday WHERE id > (@v_len-13 ) INTO v_ma13 ;
+    SELECT SUM(close)/5   FROM tempday WHERE id > (@v_len-5 ) INTO v_ma5  ;
+    SELECT SUM(close)/13  FROM tempday WHERE id > (@v_len-13) INTO v_ma13 ;
+    SELECT MAX(close)     FROM tempday WHERE id > (@v_len-13) INTO v_high;
+    SELECT MIN(close)     FROM tempday WHERE id > (@v_len-13) INTO v_low;
 
-    SET v_revi13 = 100*(v_close-v_low13)/v_low13; 
-
-    IF @v_len > 34 THEN       -- use 34 to open, 99 close
-        SELECT MIN(close)     FROM tempday WHERE id > (@v_len-34)  INTO v_low34;
+    -- SET v_revi13 = 100*(v_close-v_low)/v_low; 
+    -- use 34 to open, 99 close
+    IF @v_len > 34 THEN
         SELECT SUM(close)/34  FROM tempday WHERE id > (@v_len-34 ) INTO v_ma34 ;
-     -- SELECT SUM(close)/55  FROM tempday WHERE id > (@v_len-55 ) INTO v_ma55 ;
-        SET v_revi34 = 100*(v_close-v_low34)/v_low34;
     END IF;
 
-    INSERT INTO tbl_ma345 (code, close, ma5, ma13, ma34, ma55, revi13, revi34)
-           VALUES(a_code, v_close, v_ma5, v_ma13, v_ma34, v_ma55, v_revi13, v_revi34);
+    INSERT INTO tbl_ma345 (code, close, ma5, ma13, ma34, ma55, high, low)
+           VALUES(a_code, v_close, v_ma5, v_ma13, v_ma34, v_ma55, v_high, v_low);
 END tag_get_ma345 //
 
 -- 一些需要与shell通信的系统变量

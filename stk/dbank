@@ -114,6 +114,23 @@ function fn_maxdate()
     mysql -N kts <<< "SELECT max(date) from day WHERE code = 900001;"
 }
 
+function fn_create_tbl_codes()
+{
+    [ -z "${*}" ] && echo "Usage: fn_create_tbl_codes tbl_name..." && exit
+
+    local i=
+    for i in ${@}; do
+        echo "
+        DROP TABLE IF EXISTS $i;
+        CREATE TABLE ${i} (
+            id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+            code        INT(6) ZEROFILL NOT NULL DEFAULT 0
+        );
+        " | mysql kts
+        xt_ret $? "" || return $?
+    done
+}
+
 function fn_cp_tbl()
 {
     [ 2 != "$#" ] && echo "Error: we need 2 table name" && exit

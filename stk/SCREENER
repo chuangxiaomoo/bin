@@ -245,17 +245,48 @@ function fn_get_rise_turnov()
     fn_get_down_turnov $@
 }
 
-function fn_get_ma345() 
+
+function fn_insert_codes_2_table() 
 {
+    [ -z "${1}" ] && echo "Usage: insert tbl_name" && exit 1
     echo "
-    SET @END='$END';
-    call sp_visit_tbl('${TBL:-cap}', @fn_get_ma345);
-    " | tee -a $mps_god
-    mysql $mo -t kts <<< "source $mps_god"
+    INSERT INTO ${1}(code) SELECT code FROM ${tbl_ma_date} WHERE ${COND};
+    " | mysql kts
+}
+
+function fn_get_ma345()
+{
+    # 构建单维度ma数据
+    tbl_ma_date=tbl_ma345_${END//-/_}
+    if ! mysql kts<<<"SHOW TABLES" | grep -q ${tbl_ma_date}; then
+        echo "
+        SET @END='$END';
+        call sp_visit_tbl('${TBL:-cap}', @fn_get_ma345);
+        call sp_cp_tbl('tbl_ma345', '${tbl_ma_date}');
+        " | tee -a $mps_god
+        mysql $mo -t kts <<< "source $mps_god"
+    fi
+
+    # 对2500支个股其进行分类，按 TRD ma5 ma13 的穿越关系
+    fn_create_tbl_codes 'tbl_lt_ma5' 'tbl_gt_ma5' 'tbl_gt_ma13'
+    xt_ret $? "create tbl error" || return $?
+
+    COND="close<ma5"                 
+    fn_insert_codes_2_table 'tbl_lt_ma5'
+    xt_ret $? "insert codes table" || return $?
+
+    COND="close>=ma5 and close<ma13" 
+    fn_insert_codes_2_table 'tbl_gt_ma5'
+    xt_ret $? "insert codes table" || return $?
+
+    COND="close>=ma13"
+    fn_insert_codes_2_table 'tbl_gt_ma13'
+    xt_ret $? "insert codes table" || return $?
 }
 
 function fn_ana_ma345() 
 {
+    # 采用双表联合查询来解决分析的困境
     if [ -n "${REDO}" ]; then
         kmysql -N <<<'SELECT code FROM cap WHERE nmc<2000000' | xargs up 7
     fi
