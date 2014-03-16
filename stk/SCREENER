@@ -245,7 +245,6 @@ function fn_get_rise_turnov()
     fn_get_down_turnov $@
 }
 
-
 function fn_get_ma345() 
 {
     echo "
