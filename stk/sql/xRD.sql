@@ -690,8 +690,8 @@ CREATE PROCEDURE sp_get_ma345(a_code INT(6) ZEROFILL) tag_get_ma345:BEGIN
 
     SELECT SUM(close)/5   FROM tempday WHERE id > (@v_len-5 ) INTO v_ma5  ;
     SELECT SUM(close)/13  FROM tempday WHERE id > (@v_len-13) INTO v_ma13 ;
-    SELECT MAX(close)     FROM tempday WHERE id > (@v_len-13) INTO v_high;
-    SELECT MIN(close)     FROM tempday WHERE id > (@v_len-13) INTO v_low;
+    SELECT MAX(close)     FROM tempday WHERE id > (@v_len-8 ) INTO v_high;
+    SELECT MIN(close)     FROM tempday WHERE id > (@v_len-8 ) INTO v_low;
 
     -- SET v_revi13 = 100*(v_close-v_low)/v_low; 
     -- use 34 to open, 99 close

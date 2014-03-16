@@ -263,12 +263,15 @@ function fn_get_ma345()
     tbl_gt_ma3=tbl_gt_ma3_${END//-/_}
 
     if mysql kts<<<"SHOW TABLES" | grep -q ${tbl_ma_date}; then
-        sec_1500=$(date +%s -d "15:00:00")
-        sec_curr=$(date +%s)
-        # touch file the fisttime after $sec_1500
-        if [ "${sec_curr}" -gt "${sec_1500}" ]; then
-            if [ -f /tmp/.${tbl_ma_date} ] && [ "cap" = "${TBL:-cap}" ]; then
+        if [ -f /tmp/.${tbl_ma_date} ]; then
+            if [ "cap" = "${TBL:-cap}" ]; then
                 return 0
+            else
+                echo "
+                DELETE from tbl_ma345;
+                INSERT INTO tbl_ma345 SELECT * FROM ${tbl_ma_date} 
+                            WHERE code in (SELECT code FROM ${TBL});  
+                " | mysql kts
             fi
         fi
     fi
@@ -301,8 +304,12 @@ function fn_get_ma345()
         fn_insert_codes_2_table $tbl_gt_ma3
         xt_ret $? "insert codes table" || return $?
 
-        # tag a tag
-        touch /tmp/.${tbl_ma_date}
+        # tag a tag, touch file the fisttime after $sec_1500
+        sec_1500=$(date +%s -d "15:00:00")
+        sec_curr=$(date +%s)
+        if [ "${sec_curr}" -gt "${sec_1500}" ]; then
+            touch /tmp/.${tbl_ma_date}
+        fi
     fi
 }
 
@@ -312,7 +319,9 @@ function fn_ana_ma345()
     # 采用双表联合查询来解决分析的困境
     # ana 的关键在于 cross & 收敛 & 放量上行
 
-    # 开始分析 tbl_x20pool, loop SELECT
+    # 更成熟的分类时，END在命令行环境变量中指定
+    END=${1:-${END}}
+
     sqls="SELECT date FROM day WHERE code=900001 and date='$END'"
     if ! mysql -N kts<<<"${sqls}" | grep -q ${END}; then
         echo "Error: ${END} is not a open day!!!" && exit 1
