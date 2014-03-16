@@ -112,22 +112,33 @@ CREATE PROCEDURE sp_cross(a_code INT(6) ZEROFILL, a_maxid INT(6)) tag_cross:BEGI
     DECLARE v_s1    DECIMAL(6,3) DEFAULT 0; 
     DECLARE v_s2    DECIMAL(6,3) DEFAULT 0; 
     DECLARE v_s3    DECIMAL(6,3) DEFAULT 0; 
+    DECLARE v_s4    DECIMAL(6,3) DEFAULT 0; 
 
     DECLARE v_e1    DECIMAL(6,3) DEFAULT 0; 
     DECLARE v_e2    DECIMAL(6,3) DEFAULT 0; 
     DECLARE v_e3    DECIMAL(6,3) DEFAULT 0; 
+    DECLARE v_e4    DECIMAL(6,3) DEFAULT 0; 
 
     SET id_s = a_maxid - @AHEAD - @STEPS;
     SET id_e = id_s + @STEPS;
 
-    SELECT ma1,ma2,ma3,date FROM tbl_x20pool WHERE id=id_s INTO v_s1,v_s2,v_s3,date_s;
-    SELECT ma1,ma2,ma3,date FROM tbl_x20pool WHERE id=id_e INTO v_e1,v_e2,v_e3,date_e;
+    SELECT ma1,ma2,ma3,ma4,date FROM tbl_x20pool WHERE id=id_s INTO v_s1,v_s2,v_s3,v_s4,date_s;
+    SELECT ma1,ma2,ma3,ma4,date FROM tbl_x20pool WHERE id=id_e INTO v_e1,v_e2,v_e3,v_e4,date_e;
 
-    SELECT v_e1 , v_e2 , v_s1 , v_s2, date_s,date_e; 
+    -- SELECT v_e1 , v_e2 , v_s1 , v_s2, date_s,date_e; 
+    -- ma 进行了大收敛（ma13 ~= ma100）
+    -- ma 进行了小收敛（ma13 ~= ma55）
+    IF abs((v_s1-v_s4))/v_s4 < 0.06 THEN 
+        INSERT INTO tbl_analyz (tag,code) VALUES(0,a_code);
+    END IF;
+
     -- ma5 up cross ma13
     IF v_e1 > v_e2 AND v_s1 < v_s2 THEN 
-        SELECT "mygod", a_code;
-        INSERT INTO tbl_analyz (code) VALUES(a_code);
+        INSERT INTO tbl_analyz (tag,code) VALUES(1,a_code);
+    END IF;
+    -- ma13 up cross ma34
+    IF v_e2 > v_e3 AND v_s2 < v_s3 THEN 
+        INSERT INTO tbl_analyz (tag,code) VALUES(2,a_code);
     END IF;
 END tag_cross //
 
@@ -147,6 +158,7 @@ CREATE PROCEDURE sp_ana(a_tbl CHAR(20)) tag_ana:BEGIN
     DROP TABLE IF EXISTS tbl_analyz;
     CREATE TABLE tbl_analyz (
         id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+        tag         INT DEFAULT 0,
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0
     );
 
@@ -170,6 +182,7 @@ END tag_ana //
 -- SET @END = '2014-3-10';
 -- call sp_ma(002708);
 -- @AHEAD=0 代表 date_e 是今天
+-- @STEPS=1 代表 1天内发生金叉
 SET @AHEAD=4;
 SET @STEPS=1;
 SET @END = '2014-3-13';

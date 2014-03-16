@@ -669,7 +669,7 @@ CREATE PROCEDURE sp_get_ma345(a_code INT(6) ZEROFILL) tag_get_ma345:BEGIN
     DECLARE v_ma5      DECIMAL(6,2) DEFAULT 0;
     DECLARE v_ma13     DECIMAL(6,2) DEFAULT 0;
     DECLARE v_ma34     DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_ma55     DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_ma100    DECIMAL(6,2) DEFAULT 0;
     DECLARE v_close    DECIMAL(6,2) DEFAULT 0;
     DECLARE v_low13    DECIMAL(6,2) DEFAULT 0;
     DECLARE v_low34    DECIMAL(6,2) DEFAULT 0;
@@ -679,20 +679,25 @@ CREATE PROCEDURE sp_get_ma345(a_code INT(6) ZEROFILL) tag_get_ma345:BEGIN
     -- 13 34 55 100
     SELECT count(*) FROM tempday INTO @v_len;
     SELECT close FROM tempday WHERE id=@v_len INTO v_close;
+
     IF @v_len < 100 THEN LEAVE tag_get_ma345; END IF;
 
     SELECT MIN(close)     FROM tempday WHERE id > (@v_len-13)  INTO v_low13;
     SELECT MIN(close)     FROM tempday WHERE id > (@v_len-34)  INTO v_low34;
     SELECT SUM(close)/5   FROM tempday WHERE id > (@v_len-5  ) INTO v_ma5  ;
     SELECT SUM(close)/13  FROM tempday WHERE id > (@v_len-13 ) INTO v_ma13 ;
+
+    -- select rising
+    IF v_close  < v_ma5  THEN LEAVE tag_get_ma345; END IF;
+    IF v_ma5    < v_ma13 THEN LEAVE tag_get_ma345; END IF;
+
     SELECT SUM(close)/34  FROM tempday WHERE id > (@v_len-34 ) INTO v_ma34 ;
-    SELECT SUM(close)/55  FROM tempday WHERE id > (@v_len-55 ) INTO v_ma55 ;
+    SELECT SUM(close)/55  FROM tempday WHERE id > (@v_len-55 ) INTO v_ma100 ;
 
     -- SELECT 100*(v_close-v_low13)/v_low13, 100*(v_close-v_low34)/v_low34;
     INSERT INTO tbl_ma345 (code, close, ma5, ma13, ma34, ma55, revi13, revi34)
-                    VALUES(a_code, v_close, v_ma5, v_ma13, v_ma34, v_ma55, 
+                    VALUES(a_code, v_close, v_ma5, v_ma13, v_ma34, v_ma100, 
                     100*(v_close-v_low13)/v_low13, 100*(v_close-v_low34)/v_low34);
-    
 END tag_get_ma345 //
 
 -- 一些需要与shell通信的系统变量

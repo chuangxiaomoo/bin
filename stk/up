@@ -344,14 +344,14 @@ function fn_add_codes_2_dzh2tbl()
 function fn_add_tbl_codes_2_dzh() 
 {
     field=${1}
-    field=${field:+ORDER by ${field}}
-    goodboys=`mysql -N -B kts <<< "SELECT code FROM ${TBL:-tbl_visit} ${field};"`
+    field=${field:+ORDER by ${field} DESC}
+    goodboys=`mysql -N -B kts <<< "SELECT code FROM ${TBL:-tbl_ma345} ${field};"`
 
     # echo $goodboys; exit
 
     [ -z "$goodboys" ] && echo "No goodboys found!" && exit
 
-    fn_add_codes_2_dzh2tbl $goodboys
+    TBL= fn_add_codes_2_dzh2tbl $goodboys
 }
 
 function fn_up_tbl_xRD() 
