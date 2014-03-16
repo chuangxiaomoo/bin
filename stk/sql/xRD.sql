@@ -4,7 +4,7 @@
 delimiter //
 
 DROP PROCEDURE IF EXISTS sp_cp_tbl //
-CREATE PROCEDURE sp_cp_tbl(a_tbl_fr CHAR(20), a_tbl_to CHAR(20)) BEGIN
+CREATE PROCEDURE sp_cp_tbl(a_tbl_fr CHAR(32), a_tbl_to CHAR(32)) BEGIN
     -- CREATE TABLE newadmin LIKE admin;   
     -- INSERT INTO newadmin SELECT * FROM admin;  
     SET @sqls=concat('DROP TABLE IF EXISTS ', a_tbl_to);
@@ -19,7 +19,7 @@ CREATE PROCEDURE sp_cp_tbl(a_tbl_fr CHAR(20), a_tbl_to CHAR(20)) BEGIN
 END //
 
 DROP PROCEDURE IF EXISTS sp_ema//
-CREATE PROCEDURE sp_ema(a_tbl CHAR(20), a_x CHAR(20), 
+CREATE PROCEDURE sp_ema(a_tbl CHAR(32), a_x CHAR(20), 
                         a_ema CHAR(20), a_period INT) tag_ema:BEGIN
     DECLARE v_i         INT DEFAULT 1;
     DECLARE v_ema       DECIMAL(8,4) DEFAULT 0;
@@ -52,7 +52,7 @@ END tag_ema//
 
 
 DROP PROCEDURE IF EXISTS sp_macd//
-CREATE PROCEDURE sp_macd(a_tbl CHAR(20), a_code INT(6) ZEROFILL) tag_macd:BEGIN
+CREATE PROCEDURE sp_macd(a_tbl CHAR(32), a_code INT(6) ZEROFILL) tag_macd:BEGIN
     DROP TABLE IF EXISTS macd;
     CREATE TABLE macd (
         id          INT(6) PRIMARY key AUTO_INCREMENT NOT NULL,
@@ -85,7 +85,7 @@ END tag_macd//
 
 /* 结果输出到表 kdj */
 DROP PROCEDURE IF EXISTS sp_kdj//
-CREATE PROCEDURE sp_kdj(a_tbl CHAR(20), a_code INT(6) ZEROFILL, a_N INT) 
+CREATE PROCEDURE sp_kdj(a_tbl CHAR(32), a_code INT(6) ZEROFILL, a_N INT) 
 tag_kdj:BEGIN
     DECLARE v_i         INT DEFAULT a_N;
     DECLARE v_rsv       DECIMAL(8,4) DEFAULT 0;
@@ -180,14 +180,14 @@ CREATE PROCEDURE sp_create_tempwek() tag_tempwek:BEGIN
 END tag_tempwek //
 
 DROP PROCEDURE IF EXISTS sp_day //
-CREATE PROCEDURE sp_day(a_tbl CHAR(20), a_code INT(6) ZEROFILL) tag_day:BEGIN
+CREATE PROCEDURE sp_day(a_tbl CHAR(32), a_code INT(6) ZEROFILL) tag_day:BEGIN
     call sp_create_tempday();
     INSERT INTO tempday(code,date,open,high,low,close) 
         SELECT code,date,open,high,low,close FROM day WHERE code=a_code;
 END tag_day //
 
 DROP PROCEDURE IF EXISTS sp_7day //
-CREATE PROCEDURE sp_7day(a_tbl CHAR(20), a_code INT(6) ZEROFILL) tag_wk:BEGIN
+CREATE PROCEDURE sp_7day(a_tbl CHAR(32), a_code INT(6) ZEROFILL) tag_wk:BEGIN
     DECLARE v_today date DEFAULT CURDATE();
     DECLARE v_date0 date DEFAULT 0;  -- Monday
     DECLARE v_date7 date DEFAULT 0;  -- next Monday
@@ -239,7 +239,7 @@ CREATE PROCEDURE sp_7day(a_tbl CHAR(20), a_code INT(6) ZEROFILL) tag_wk:BEGIN
 END tag_wk //
 
 DROP PROCEDURE IF EXISTS sp_kdj_wk//
-CREATE PROCEDURE sp_kdj_wk(a_tbl CHAR(20), a_code INT(6) ZEROFILL, a_N INT) 
+CREATE PROCEDURE sp_kdj_wk(a_tbl CHAR(32), a_code INT(6) ZEROFILL, a_N INT) 
 tag_kdj_wk:BEGIN
     call sp_7day(a_tbl, a_code);
     call sp_kdj('tempwek', a_code, 9);
@@ -341,7 +341,7 @@ CREATE PROCEDURE sp_flt_n_day_change(a_code INT(6) ZEROFILL) tag_flt_n_day_chang
 END tag_flt_n_day_change//
 
 DROP PROCEDURE IF EXISTS sp_visit_tbl//
-CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(20), a_type INT) tag_visit:BEGIN
+CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
     DECLARE v_code  INT(6) ZEROFILL;
     DECLARE v_id    INT DEFAULT 1; 
     DECLARE v_len   INT; /* CURSOR and HANDLER declare in end of declaration */
@@ -721,6 +721,8 @@ END tag_get_ma345 //
 
 -- 每个SP中创建一个指定的私用表，如此，则只要在SP开头使用一次EXECUTE语句就可以了
 -- 每个SP都有两个参数，一个表作为输入，一个code做为另一个输入
+
+--  THIS EXECUTE DELIMITER
 
 --  call sp_macd('day', 2);
 --  call sp_kdj_wk('day', 2, 9);

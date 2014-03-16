@@ -135,7 +135,7 @@ function fn_cp_tbl()
 {
     [ 2 != "$#" ] && echo "Error: we need 2 table name" && exit
 
-    echo "cp $1 $2"
+    echo "cp_tbl $1 $2"
 
     echo "
     DROP TABLE IF EXISTS $2;
@@ -144,23 +144,33 @@ function fn_cp_tbl()
     " | mysql kts
 }
 
+
+function fn_reset_xRD() 
+{
+    # sed Q exclude the match line, sed q include that
+    sed '/THIS EXECUTE DELIMITER/q' ${mps_org} > ${mps_god}
+}
+
 echo "`date +%F.%T` ${BASH_SOURCE##*/}" >> /var/dbank.trace
 
 [ "${BASH_SOURCE##*/}" != "${0##*/}" ] && return 0
 
-fn_stati_tougu_cap_layout() {
+fn_stati_tougu_cap_layout() 
+{
     cat $tougu_ripetxt | \
         xargs -I{} grep {} "$sn_cap_nmc" | \
         sort -g -k5
 }
 
-fn_rank_by_nmc() {
+fn_rank_by_nmc() 
+{
     echo "
     SELECT * FROM cap ORDER by nmc DESC limit ${1:-48};
 	" | mysql -t kts
 }
 
-fn_group_nmc_layout() {
+fn_group_nmc_layout() 
+{
     # cat $sn_cap_nmc
     mysql -N  kts <<< "SELECT * FROM cap;" | awk 'BEGIN {
         list="5000 1000 800 500 200 100 50 20 10 5 0";
@@ -184,7 +194,8 @@ fn_group_nmc_layout() {
     }'
 }
 
-main() {
+main() 
+{
     list=(
         fn_stati_tougu_cap_layout
         fn_group_nmc_layout

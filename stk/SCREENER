@@ -258,44 +258,74 @@ function fn_get_ma345()
 {
     # 构建单维度ma数据
     tbl_ma_date=tbl_ma345_${END//-/_}
-    if ! mysql kts<<<"SHOW TABLES" | grep -q ${tbl_ma_date}; then
-        echo "
-        SET @END='$END';
-        call sp_visit_tbl('${TBL:-cap}', @fn_get_ma345);
-        call sp_cp_tbl('tbl_ma345', '${tbl_ma_date}');
-        " | tee -a $mps_god
-        mysql $mo -t kts <<< "source $mps_god"
+    tbl_lt_ma5=tbl_lt_ma5_${END//-/_}
+    tbl_gt_ma5=tbl_gt_ma5_${END//-/_}
+    tbl_gt_ma3=tbl_gt_ma3_${END//-/_}
+
+    if mysql kts<<<"SHOW TABLES" | grep -q ${tbl_ma_date}; then
+        sec_1500=$(date +%s -d "15:00:00")
+        sec_curr=$(date +%s)
+        # touch file the fisttime after $sec_1500
+        if [ "${sec_curr}" -gt "${sec_1500}" ]; then
+            if [ -f /tmp/.${tbl_ma_date} ] && [ "cap" = "${TBL:-cap}" ]; then
+                return 0
+            fi
+        fi
     fi
 
-    # 对2500支个股其进行分类，按 TRD ma5 ma13 的穿越关系
-    fn_create_tbl_codes 'tbl_lt_ma5' 'tbl_gt_ma5' 'tbl_gt_ma13'
-    xt_ret $? "create tbl error" || return $?
+    echo "build on ${TBL:-cap}..."
 
-    COND="close<ma5"                 
-    fn_insert_codes_2_table 'tbl_lt_ma5'
-    xt_ret $? "insert codes table" || return $?
+    # build
+    echo "
+    SET @END='$END';
+    call sp_visit_tbl('${TBL:-cap}', @fn_get_ma345);
+    " | tee -a $mps_god
+    mysql $mo -t kts <<< "source $mps_god"
 
-    COND="close>=ma5 and close<ma13" 
-    fn_insert_codes_2_table 'tbl_gt_ma5'
-    xt_ret $? "insert codes table" || return $?
+    if [ "${TBL:-cap}" = "cap" ] ; then
+        fn_cp_tbl tbl_ma345 ${tbl_ma_date}
+        xt_ret $? "fn_cp_tbl" || return $?
+        # 对2500支个股其进行分类，按 TRD ma5 ma13 的穿越关系
+        fn_create_tbl_codes $tbl_lt_ma5 $tbl_gt_ma5 $tbl_gt_ma3
+        xt_ret $? "create tbl error" || return $?
 
-    COND="close>=ma13"
-    fn_insert_codes_2_table 'tbl_gt_ma13'
-    xt_ret $? "insert codes table" || return $?
+        COND="close<ma5"                 
+        fn_insert_codes_2_table $tbl_lt_ma5
+        xt_ret $? "insert codes table" || return $?
+
+        COND="close>=ma5 and close<ma13" 
+        fn_insert_codes_2_table $tbl_gt_ma5
+        xt_ret $? "insert codes table" || return $?
+
+        COND="close>=ma13"
+        fn_insert_codes_2_table $tbl_gt_ma3
+        xt_ret $? "insert codes table" || return $?
+
+        # tag a tag
+        touch /tmp/.${tbl_ma_date}
+    fi
 }
 
 function fn_ana_ma345() 
 {
+    # 可以配合分时线及上涨进行预测
     # 采用双表联合查询来解决分析的困境
-    if [ -n "${REDO}" ]; then
-        kmysql -N <<<'SELECT code FROM cap WHERE nmc<2000000' | xargs up 7
-    fi
-
-    TBL=zxg fn_get_ma345
-    kmysql -N <<<'SELECT * FROM tbl_ma345 WHERE close>ma5 and close>ma13' | TBL=ana xargs up 7        
-    # and abs(ma34-close)/close<0.2
+    # ana 的关键在于 cross & 收敛 & 放量上行
 
     # 开始分析 tbl_x20pool, loop SELECT
+    sqls="SELECT date FROM day WHERE code=900001 and date='$END'"
+    if ! mysql -N kts<<<"${sqls}" | grep -q ${END}; then
+        echo "Error: ${END} is not a open day!!!" && exit 1
+    fi
+    sqls="SELECT date FROM day WHERE code=900001 and date<'$END'"
+    PREV=`mysql -N kts<<<"${sqls} ORDER by date DESC LIMIT 1" `
+
+    fn_reset_xRD
+    END=${PREV} fn_get_ma345
+
+    fn_reset_xRD
+    TBL=tbl_gt_ma5_${PREV//-/_} fn_get_ma345
+    # mysql kts<<<"SELECT * FROM tbl_ma345 WHERE close>ma13"
 }
 
 function fn_main() 
