@@ -1,0 +1,35 @@
+#! /bin/bash -
+#---------------------------------------------------------------------------
+#          FILE: xunner
+#         USAGE: ./xunner
+#   DESCRIPTION: 
+#       CREATED: 2014-03-17 04:44:53 PM
+#      REVISION: 1.0 
+#---------------------------------------------------------------------------
+
+. `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
+. /etc/common.rc
+
+function fn_main()
+{
+    # w3m -dump 'http://quote.stock.hexun.com/stockdata/stock_quote.aspx?stocklist=000002|000001&indexlist=000001_1|399001_2|399006_2' > ${js_xunner}
+    cp ${js_xunner} ${js_xunner}.bak
+    cat ${js_xunner}.bak | \
+        tr -d '\n' | tr "'" '"'| \
+        sed -e 's/^.*= //' -e 's/;.*$//' | sed -e 's/[a-z][a-z][a-z]*/"&"/g' -e 's/;.*//g' | \
+        JSON.sh -b # | tr -d '"'
+    
+}
+
+
+function fn_main2() 
+{
+    # cat ${js_xunner}.bak | tr -d '\n' | tr "'" '"' # | \
+
+    echo
+    echo '[{"000002",7.76,3.05,7.53,7.60,7.80,7.59,1177079,908293030,1.22,2.79,0.74},{"000001",10.47,1.45,10.32,10.41,10.50,10.34,372979.44,388751064,0.67,1.55,0.72}]' | JSON.sh -b
+    
+}
+
+fn_main2 $@
+
