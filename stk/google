@@ -16,8 +16,9 @@ function fn_google2()
     key=$1
     echo "w3m -dump 'http://data.stock.hexun.com/include/AjaxSearch2011.ashx?key=$key'"  > /dev/stderr
     w3m -dump "http://data.stock.hexun.com/include/AjaxSearch2011.ashx?key=$key" | \
-        tr -d '\n' | tr "'" '"'| \
-        sed -e 's/^.*= //' -e 's/;$//'  | sed -e 's/[a-z][a-z][a-z]*/"&"/g' | \
+        tr -d '\n' | tr "'" '"' | \
+        sed -e 's/^.*= //' -e 's/;$//'  | \
+        sed -e 's/[a-z][a-z][a-z]*/"&"/g' -e 's/""/"/g' | \
         JSON.sh -b | tr -d '"' > $go_rawxml 
     cat $go_rawxml | grep '^[630][0-9]'
 }
@@ -60,5 +61,5 @@ function fn_main()
     mysql -t kts<<< "SELECT * FROM cap WHERE code in (${codes}) ORDER by nmc" 
 }
 
-fn_main $@
+fn_main wka
 
