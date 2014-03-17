@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 throw () {
-  echo "$*" >&2
+  # echo "$*" >&2
+  printf "${BASH_SOURCE[1]##*/}%-6s %s\n" "|${BASH_LINENO[0]}|" "${@}" >&2
   exit 1
 }
 
@@ -154,6 +155,8 @@ parse_object () {
 parse_value () {
   iidx=$1
   local jpath="${1:+$1,}$2" isleaf=0 isempty=0 print=0
+  # echo jpath: $jpath
+  # echo "token: $token"
   case "$token" in
     '{') parse_object "$jpath" ;;
     '[') parse_array  "$jpath" ;;
@@ -171,18 +174,17 @@ parse_value () {
   [ "$LEAFONLY" -eq 1 ] && [ "$isleaf" -eq 1 ] && \
     [ $PRUNE -eq 1 ] && [ $isempty -eq 0 ] && print=1
   # [ "$print" -eq 1 ] && printf "[%s]\t%s\n" "$jpath" "$value"
-  if [ "$print" -eq 1 ]; then
 
+  if [ "$print" -eq 1 ]; then
       if [ "$iidx" -ne "${prev_iidx}" ] ; then
         echo && prev_iidx=$iidx
         newline=1
+      fi
+      if [ "${newline:-1}" -eq 1 ] ; then
+        printf "%s" "$value"
+        newline=0
       else
-          if [ "${newline:-1}" -eq 1 ] ; then
-            printf "%s" "$value"
-            newline=0
-          else
-            printf "\t%s" "$value"
-          fi
+        printf "\t%s" "$value"
       fi
   fi
   :
