@@ -43,7 +43,7 @@ function fn_xunner()
     sed '/indexdataArr/Q' ${js_xunner} > ${js_xunner_stk}
     sed -n  '/indexdataArr/,$p' ${js_xunner} > ${js_xunner_idx}
 
-    printf "%6s\t%s\t%s\t%s\t%-5s\t%5s\t%5s\t%5s\n" \
+    printf "%6s\t%s\t\t%s\t%s\t%-5s\t%5s\t%5s\t%5s\n" \
             symbol trade change pcnt_hi pcnt_lo turnov vratio name
 
     cat ${js_xunner_idx} | \
@@ -51,7 +51,7 @@ function fn_xunner()
         sed -e 's/^.*= //' -e 's/;.*$//' | \
         sed -e 's/[a-z][a-z][a-z]*/"&"/g' -e 's/;.*//g' | \
         JSON.sh -b | tr -d '"' | \
-        awk '{printf "%s\t%.2f\t%.2f\t%.2f\t%.2f\t\t\t\t\t%s\n", 
+        awk '{printf "%s\t%.2f\t\t%.2f\t%.2f\t%.2f\t\t\t\t\t%s\n", 
                 $1,$3,$4, 100*($9-$5)/$5, 100*($10-$5)/$5, $2}'
 
     cat ${js_xunner_stk} | \
@@ -59,11 +59,11 @@ function fn_xunner()
         sed -e 's/^.*= //' -e 's/;.*$//' | \
         sed -e 's/[a-z][a-z][a-z]*/"&"/g' -e 's/;.*//g' | \
         JSON.sh -b | tr -d '"' | \
-        awk '{printf "%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%s\n", 
+        awk '{printf "%s\t%.2f\t\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%s\n", 
                 $1,$3,$4, 100*($7-$5)/$5, 100*($8-$5)/$5, $11, $13, $2
         }' | sort -g -r -k3
 
-    printf "%6s\t%s\t%s\t%s\t%-5s\t%5s\t%5s\t%5s\n" \
+    printf "%6s\t%s\t\t%s\t%s\t%-5s\t%5s\t%5s\t%5s\n" \
             symbol trade change pcnt_hi pcnt_lo turnov vratio name
 }
 
