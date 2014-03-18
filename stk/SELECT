@@ -97,7 +97,7 @@ function fn_app_wgt_turnov()
     wgt="(swing+bounce)"
     field=${1:-wgt}
     XTBL=${XTBL:+and code not in (SELECT code FROM $XTBL)}
-    COND=${COND:+and $COND ${XTBL}}
+    COND=${COND:+and $COND }${XTBL}
 
     echo ----- COND: $COND -----
 
