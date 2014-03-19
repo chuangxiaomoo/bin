@@ -149,7 +149,7 @@ function fn_cp_tbl()
 }
 
 
-function fn_reset_xRD() 
+function fn_reset_sqlsource() 
 {
     # sed Q exclude the match line, sed q include that
     sed '/THIS EXECUTE DELIMITER/q' ${mps_org} > ${mps_god}

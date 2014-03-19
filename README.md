@@ -22,3 +22,5 @@ The project include 2 part.
   2. ln -sf ~/bin/common.rc /etc/common.rc
 
 
+## contents
+

@@ -256,6 +256,7 @@ function fn_insert_codes_2_table()
 
 function fn_get_ma345()
 {
+    END=${1:-${END}}
     # 构建单维度ma数据
     tbl_ma_date=tbl_ma345_${END//-/_}
     tbl_lt_ma5=tbl_lt_ma5_${END//-/_}
@@ -329,10 +330,10 @@ function fn_ana_ma345()
     sqls="SELECT date FROM day WHERE code=900001 and date<'$END'"
     PREV=`mysql -N kts<<<"${sqls} ORDER by date DESC LIMIT 1" `
 
-    fn_reset_xRD
+    fn_reset_sqlsource
     END=${PREV} fn_get_ma345
 
-    fn_reset_xRD
+    fn_reset_sqlsource
     TBL=tbl_gt_ma5_${PREV//-/_} fn_get_ma345
     # mysql kts<<<"SELECT * FROM tbl_ma345 WHERE close>ma13"
 }

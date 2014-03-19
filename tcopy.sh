@@ -35,10 +35,10 @@ function fn_tcopy() {
     run="./jco_server &"
     echo $gopath $rmfile $tftp $run
 
-    echo -e "\n-- no kill auto_run.sh --\n"
+    echo -e "\n-- tmp tftp --\n"
 
-    kills="mv jco_server /app/vs;killall jco_server;"
-    echo "cd; $tftp $kills"
+    kills="mv jco_server /app/vs;killall auto_run.sh jco_server;"
+    echo "cd /tmp; $tftp $kills ${gopath} $run"
 }
 
 function fn_main()
