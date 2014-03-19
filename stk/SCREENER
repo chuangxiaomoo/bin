@@ -215,7 +215,7 @@ function fn_get_down_turnov()
     xt_ret $? "$usage ${START} - ${END}" || return $?
 
     # 指定环境变量TBL来进行测试
-    TBL=${TBL:-'zxg'}
+    TBL=${TBL:-'cap'}
 
     # 注意更新表 $TBL
     echo "
