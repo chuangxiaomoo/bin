@@ -28,6 +28,7 @@
 ## RZRQ         .doc/rzrq.md
 ## 观察手       .doc/soptter.md
 
+## 金融研究体系 .doc/finance.md
 ## 趋势理论基础 .doc/trade.md                 -- 信息进化论
 ## 趋势交易系统 .doc/ma-trade.md              
 ## 非理性之旅   .doc/non-rationality.md       -- 2014-02-26 2014-03-12
