@@ -139,7 +139,7 @@ function fn_cp_tbl()
 {
     [ 2 != "$#" ] && echo "Error: we need 2 table name" && exit
 
-    echo "cp_tbl $1 $2"
+    echo "    cp_tbl $1 $2"
 
     echo "
     DROP TABLE IF EXISTS $2;

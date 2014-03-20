@@ -264,20 +264,23 @@ function fn_get_ma345()
     tbl_gt_ma3=tbl_gt_ma3_${END//-/_}
 
     if mysql kts<<<"SHOW TABLES" | grep -q ${tbl_ma_date}; then
+        # 表 ${tbl_ma_date} 存在，且是闭市后构建
+        # 表 tbl_ma345 是TBL的分析结果，需要在此函数调用后用SELECT自己分析。
         if [ -f /tmp/.${tbl_ma_date} ]; then
             if [ "cap" = "${TBL:-cap}" ]; then
-                return 0
+                fn_cp_tbl ${tbl_ma_date} tbl_ma345;
             else
                 echo "
                 DELETE from tbl_ma345;
                 INSERT INTO tbl_ma345 SELECT * FROM ${tbl_ma_date} 
                             WHERE code in (SELECT code FROM ${TBL});  
-                " | mysql kts
+                " | tee /dev/stderr | mysql kts
             fi
+            return 0
         fi
     fi
 
-    echo "build on ${TBL:-cap}..."
+    echo "    build on ${TBL:-cap}..."
 
     # build
     echo "
@@ -333,9 +336,11 @@ function fn_ana_ma345()
     fn_reset_sqlsource
     END=${PREV} fn_get_ma345
 
+    # ---------  下面内容再做一个分支 --------------- 
+
     fn_reset_sqlsource
     TBL=tbl_gt_ma5_${PREV//-/_} fn_get_ma345
-    # mysql kts<<<"SELECT * FROM tbl_ma345 WHERE close>ma13"
+    # mysql -N kts<<<"SELECT code FROM tbl_ma345 WHERE close>ma13"
 }
 
 function fn_main() 
