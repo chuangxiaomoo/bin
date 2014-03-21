@@ -1,0 +1,27 @@
+# cmdlineparser
+
+  介绍一下cmdline的解析过程思路。
+  [参考JSON](http://www.json.org/json-zh.html)
+
+# parser
+
+  因为加入了多通道的支持，cmdline实际上支持了类似JSON的ARRAY。
+  而原有的cmdline输出类似于JSON的STRUCT。
+
+  cmdline是JSON的一种简化形式 -- 单或多STRUCT形式：
+  STRUCT [STRUCT](...)
+
+  参考JSON的一般步骤：
+
+  * tokenize
+
+  * parser
+
+  parser的关键问题：
+
+  * 以 -id 来解决 STRUCT 识别问题
+  * 解析 keyed list，value 支持带空格的字符串
+
+# 总结
+
+  借鉴比自已的创造来得快，改造亦是对知识的致敬。

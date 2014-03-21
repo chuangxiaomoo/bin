@@ -1116,6 +1116,7 @@ function fn_log()                       { cat nxp_log ;}
 function fn_config()                    { cat nxp_config ;}
 function fn_upgrade()                   { cat nxp_upgrade ;}
 function fn_testing()                   { cat nxp_testing ;}
+function fn_cmdlineparser()             { cat nxp_cmdlineparser ;}
     local opts=(
         hold
         base                            # `捋`整体功能
@@ -1136,6 +1137,8 @@ function fn_testing()                   { cat nxp_testing ;}
         jcp                             # xml, jcp 等只是protocol的不同实现
         client                          # browser
         testing
+        # ----- function delimeter ----
+        cmdlineparser
     )
     fn_print $@
 }
