@@ -1,5 +1,6 @@
 #! /bin/bash -
 # CREATED: 2013-10-06 05:56:37 CST
+# znz.yahoo从yahoo收集历史日线数据，这是整个股票系统的开始
 
 . `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
 . /etc/common.rc

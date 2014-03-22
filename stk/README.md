@@ -1,22 +1,16 @@
-# startup
-  znz.yahoo从yahoo收集历史日线数据，这是整个股票系统的开始
-
 # stratagy
 
     I M P O R T A N T
 
   **所做的一切，只为从信息大爆炸中逃离。                          **
   **从战略的角度，弃子取势，以价格换确定性。                      **
-  **股市亦是江湖。江湖即是人心，有人的地方就有江湖。              **
   **佛是过来人，人是未来佛。除了不懈的努力，我们还需要耐心的等待。**
-
 
 > 前言
 
 ## 王大爷的金融   .doc/finance.md
 ## 量子力学       .doc/quantum_mechanics.md
 ## 行为心理学     .doc/behaviorism.md
-
 ## 想看的书       .doc/books.md
 
 > 构建体系
