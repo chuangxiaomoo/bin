@@ -117,7 +117,7 @@ function fn_sort_amount()
     SELECT d.code, $RISE as rise, 
         amount, $TURNOV as turnover FROM day as d, cap as c 
         WHERE d.code = c.code and d.date='$END' 
-        ${PIPECMD} ORDER by amount ${ASC:-DESC} limit ${LIMIT:-48};
+        ${COND} ORDER by amount ${ASC:-DESC} limit ${LIMIT:-48};
 	" | mysql -t kts
     fn_cp_tbl tbl_visit pipe
     ./up add_tbl_visit_2_zixuangu       # 添加到ZXG，可根据需要再进行排序
