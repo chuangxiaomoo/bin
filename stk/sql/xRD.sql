@@ -690,13 +690,14 @@ CREATE PROCEDURE sp_get_ma345(a_code INT(6) ZEROFILL) tag_get_ma345:BEGIN
 
     SELECT SUM(close)/5   FROM tempday WHERE id > (@v_len-5 ) INTO v_ma5  ;
     SELECT SUM(close)/13  FROM tempday WHERE id > (@v_len-13) INTO v_ma13 ;
-    SELECT MAX(close)     FROM tempday WHERE id > (@v_len-8 ) INTO v_high;
-    SELECT MIN(close)     FROM tempday WHERE id > (@v_len-8 ) INTO v_low;
+    SELECT MAX(close),
+           MIN(close)     FROM tempday WHERE id > (@v_len-8 ) INTO v_high,v_low;
 
     -- SET v_revi13 = 100*(v_close-v_low)/v_low; 
     -- use 34 to open, 99 close
-    IF @v_len > 34 THEN
+    IF @v_len > 55 THEN
         SELECT SUM(close)/34  FROM tempday WHERE id > (@v_len-34 ) INTO v_ma34 ;
+        SELECT SUM(close)/55  FROM tempday WHERE id > (@v_len-55 ) INTO v_ma55 ;
     END IF;
 
     INSERT INTO tbl_ma345 (code, close, ma5, ma13, ma34, ma55, high, low)
@@ -709,7 +710,7 @@ END tag_get_ma345 //
     SET @fn_flt_13d_sink        = 2;
     SET @fn_flt_n_day_change    = 3;
     SET @fn_get_down_turnov     = 4;
-    SET @fn_get_ma345          = 5;
+    SET @fn_get_ma345           = 5;
     SET @START  = '2013-12-6';
     SET @END    = '2014-1-10';
     SET @NUM    = 15;

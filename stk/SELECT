@@ -48,7 +48,7 @@ function fn_goo_sym_day()
     SELECT $fields, $RISE as rise, $SWING as swing,
         $TURNOV as turnover, c.name FROM day as d, cap as c 
         WHERE d.code = ${code} and d.code = c.code 
-        ${PIPECMD} ORDER by date ${ASC} limit ${LIMIT:-24};
+        ${CODE} ORDER by date ${ASC} limit ${LIMIT:-24};
 	" | mysql -t kts
 }
 
@@ -96,8 +96,6 @@ function fn_app_wgt_turnov()
     #wgt="TRUNCATE(swing*bounce*nmc/1000000, 2)" ---- swing 是经过放大的 20 -> 25
     wgt="(swing+bounce)"
     field=${1:-wgt}
-    XTBL=${XTBL:+and code not in (SELECT code FROM $XTBL)}
-    COND=${COND:+and $COND }${XTBL}
 
     echo ----- COND: $COND -----
 
@@ -120,7 +118,7 @@ function fn_app_day_rise()
     echo "
     SELECT $disfield, $RISE as rise, $TURNOV as turnover, c.name 
             FROM day as d,cap as c where d.code = c.code and  
-            d.date = '$tailday' ${PIPECMD} ORDER BY ${field} ${ASC} limit ${LIMIT:-48};
+            d.date = '$tailday' ${COND} ORDER BY ${field} ${ASC} limit ${LIMIT:-48};
 	" | mysql -t kts
 }
 
@@ -138,7 +136,7 @@ function fn_app_day_turnover()
     echo "
     SELECT d.date,d.code, $TURNOV as turnover, c.name 
             FROM day as d, cap as c WHERE d.code = c.code and 
-            d.date='$tailday' ${PIPECMD} ORDER by ${field} ${ASC} limit ${LIMIT:-48};
+            d.date='$tailday' ${COND} ORDER by ${field} ${ASC} limit ${LIMIT:-48};
 	" | mysql $mo -t kts
 }
 

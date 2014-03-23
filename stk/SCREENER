@@ -133,7 +133,7 @@ function fn_sort_turnover()
     SELECT d.code, $RISE as rise, 
         amount, $TURNOV as turnover FROM day as d, cap as c 
         WHERE d.code = c.code and d.date='$END' 
-        ${PIPECMD} ORDER by turnover ${ASC:-DESC} limit ${LIMIT:-48};
+        ${COND} ORDER by turnover ${ASC:-DESC} limit ${LIMIT:-48};
 	" | mysql -t kts
     fn_cp_tbl tbl_visit pipe
     ./up add_tbl_visit_2_zixuangu       # 添加到ZXG，可根据需要再进行排序
@@ -257,15 +257,11 @@ function fn_insert_codes_2_table()
 function fn_get_ma345()
 {
     END=${1:-${END}}
-    # 构建单维度ma数据
     tbl_ma_date=tbl_ma345_${END//-/_}
-    tbl_lt_ma5=tbl_lt_ma5_${END//-/_}
-    tbl_gt_ma5=tbl_gt_ma5_${END//-/_}
-    tbl_gt_ma3=tbl_gt_ma3_${END//-/_}
 
     if mysql kts<<<"SHOW TABLES" | grep -q ${tbl_ma_date}; then
         # 表 ${tbl_ma_date} 存在，且是闭市后构建
-        # 表 tbl_ma345 是TBL的分析结果，需要在此函数调用后用SELECT自己分析。
+        # 表 tbl_ma345 是TBL的分析结果，供后续处理分析。
         if [ -f /tmp/.${tbl_ma_date} ]; then
             if [ "cap" = "${TBL:-cap}" ]; then
                 fn_cp_tbl ${tbl_ma_date} tbl_ma345;
@@ -274,7 +270,8 @@ function fn_get_ma345()
                 DELETE from tbl_ma345;
                 INSERT INTO tbl_ma345 SELECT * FROM ${tbl_ma_date} 
                             WHERE code in (SELECT code FROM ${TBL});  
-                " | tee /dev/stderr | mysql kts
+                " | mysql kts # | tee /dev/stderr 
+                echo
             fi
             return 0
         fi
@@ -282,9 +279,8 @@ function fn_get_ma345()
 
     echo "    build on ${TBL:-cap}..."
 
-    # build
     echo "
-    SET @END='$END';
+    SET @END='$END'; 
     call sp_visit_tbl('${TBL:-cap}', @fn_get_ma345);
     " | tee -a $mps_god
     mysql $mo -t kts <<< "source $mps_god"
@@ -292,21 +288,6 @@ function fn_get_ma345()
     if [ "${TBL:-cap}" = "cap" ] ; then
         fn_cp_tbl tbl_ma345 ${tbl_ma_date}
         xt_ret $? "fn_cp_tbl" || return $?
-        # 对2500支个股其进行分类，按 TRD ma5 ma13 的穿越关系
-        fn_create_tbl_codes $tbl_lt_ma5 $tbl_gt_ma5 $tbl_gt_ma3
-        xt_ret $? "create tbl error" || return $?
-
-        COND="close<ma5"                 
-        fn_insert_codes_2_table $tbl_lt_ma5
-        xt_ret $? "insert codes table" || return $?
-
-        COND="close>=ma5 and close<ma13" 
-        fn_insert_codes_2_table $tbl_gt_ma5
-        xt_ret $? "insert codes table" || return $?
-
-        COND="close>=ma13"
-        fn_insert_codes_2_table $tbl_gt_ma3
-        xt_ret $? "insert codes table" || return $?
 
         # tag a tag, touch file the fisttime after $sec_1500
         sec_1500=$(date +%s -d "15:00:00")
@@ -315,6 +296,59 @@ function fn_get_ma345()
             touch /tmp/.${tbl_ma_date}
         fi
     fi
+    #   tbl_lt_ma5=tbl_lt_ma5_${END//-/_}
+    #   tbl_gt_ma5=tbl_gt_ma5_${END//-/_}
+    #   tbl_gt_ma3=tbl_gt_ma3_${END//-/_}
+    #   # 对2500支个股其进行分类，按 TRD ma5 ma13 的穿越关系
+    #   fn_create_tbl_codes $tbl_lt_ma5 $tbl_gt_ma5 $tbl_gt_ma3
+    #   xt_ret $? "create tbl error" || return $?
+    #   COND="close<ma5"                 
+    #   fn_insert_codes_2_table $tbl_lt_ma5
+    #   xt_ret $? "insert codes table" || return $?
+
+    #   COND="close>=ma5 and close<ma13" 
+    #   fn_insert_codes_2_table $tbl_gt_ma5
+    #   xt_ret $? "insert codes table" || return $?
+
+}
+
+function fn_ma_one() 
+{
+    echo "build ${END}..."
+    fn_reset_sqlsource
+    fn_get_ma345
+
+    mysql -N kts<<<"SELECT code FROM tbl_ma345 WHERE 
+                    ma5>ma13 and ma13>ma34" | \
+        xargs -n4 | tee /dev/stderr | xargs up add_codes_2_dzh2tbl 
+    return     
+}
+
+function fn_ma_cross() 
+{   
+    echo "build ${PREV}..."
+    fn_reset_sqlsource
+    END=${PREV} fn_get_ma345
+
+    fn_create_tbl_codes tbl_lt_ma13
+    xt_ret $? "create tbl error" || return $?
+
+    COND="close<ma13" fn_insert_codes_2_table tbl_lt_ma13
+    xt_ret $? "insert codes table" || return $?
+
+    echo "build ${END}..."
+    fn_reset_sqlsource
+    TBL=tbl_lt_ma13 fn_get_ma345
+
+    mysql -N kts<<<"SELECT code FROM tbl_ma345 WHERE close>ma13" | \
+        xargs -n4 | tee /dev/stderr | xargs up add_codes_2_dzh2tbl 
+
+    # 下面方案在实时行情时会很慢
+    # local prev=tbl_ma345_${PREV//-/_}
+    # local curr=tbl_ma345_${END//-/_}
+    # mysql -N kts<<<"SELECT c.code FROM ${prev} as p,${curr} as c \
+    #     WHERE p.code=c.code and p.close<p.ma13 and c.close>c.ma13" |\
+    #     xargs -n4 | tee /dev/stderr | xargs up add_codes_2_dzh2tbl 
 }
 
 function fn_ana_ma345() 
@@ -324,23 +358,23 @@ function fn_ana_ma345()
     # ana 的关键在于 cross & 收敛 & 放量上行
 
     # 更成熟的分类时，END在命令行环境变量中指定
-    END=${1:-${END}}
+    END=${2:-${END}}
 
     sqls="SELECT date FROM day WHERE code=900001 and date='$END'"
     if ! mysql -N kts<<<"${sqls}" | grep -q ${END}; then
         echo "Error: ${END} is not a open day!!!" && exit 1
     fi
-    sqls="SELECT date FROM day WHERE code=900001 and date<'$END'"
-    PREV=`mysql -N kts<<<"${sqls} ORDER by date DESC LIMIT 1" `
+    sqls="SELECT date FROM day WHERE code=900001 and date<='$END'"
+    PREV=`mysql -N kts<<<"${sqls} ORDER by date DESC LIMIT ${STEP:-1},1" `
 
-    fn_reset_sqlsource
-    END=${PREV} fn_get_ma345
-
-    # ---------  下面内容再做一个分支 --------------- 
-
-    fn_reset_sqlsource
-    TBL=tbl_gt_ma5_${PREV//-/_} fn_get_ma345
-    # mysql -N kts<<<"SELECT code FROM tbl_ma345 WHERE close>ma13"
+    # --------- 做分支 --------------- 
+    cmdlist=(
+    "ma_one         # ma5>ma13 and ma13>ma34"
+    "ma_two         # ma5 > ma13 > ma34 > ma55"
+    "ma_three       # 个股区间换手统计"
+    "ma_cross       # close 上穿 ma13"
+    )
+    fn_execute "$@" || return $?
 }
 
 function fn_main() 
@@ -352,7 +386,7 @@ function fn_main()
     "get_stat_turnov      code start [end]      # 个股区间换手统计"
     "get_down_turnov      start [end]           # 100%下降净换手"
     "get_ma345            [end]                 # ma 5 13 34 55"
-    "ana_ma345            [end]                 # 分析ma 5 13 34 55"
+    "ana_ma345            index [end]           # 分析ma 5 13 34 55"
     "get_rise_turnov      start [end]           # 100%上升净换手"
     "get_13d_20psink                            # 8日13日SINK超20%"
     "get_1_swing_num      [RISE_PERCENT:-8]     # 单日振幅，小于0计算跌幅"

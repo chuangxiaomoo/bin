@@ -1,18 +1,41 @@
-/*  */
+# group_by_having
 
 . GROUP BY
 
-    http://www.cnblogs.com/error404/archive/2012/09/20/2695439.html
+  # SELECT region FROM bbc GROUP BY region | SUM(population), SUM(area)
+  [example](http://www.cnblogs.com/error404/archive/2012/09/20/2695439.html) 
+  SELECT region, SUM(population), SUM(area) FROM bbc GROUP BY region
 
-    SELECT region, SUM(population), SUM(area) FROM bbc GROUP BY region
+  # 先分组，再聚合的。
+  # 即相当于把大表按关键字分成小表，再对第个小表操作。最后输出只有一条记录。
+  # EXAMPLE
+  mysql> SELECT code,close FROM day WHERE code<3 and date >'2014-03-17'; 
+  +--------+-------+
+  | code   | close |
+  +--------+-------+
+  | 000001 | 10.38 |
+  | 000001 | 10.24 |
+  | 000001 | 10.10 |
+  | 000001 | 10.79 |
+  | 000002 |  7.60 |
+  | 000002 |  7.50 |
+  | 000002 |  7.51 |
+  | 000002 |  8.01 |
+  +--------+-------+
 
-    ---> 先分组，再聚合的
-    SELECT region FROM bbc GROUP BY region | SUM(population), SUM(area)
-
+  mysql> SELECT code,max(close),min(close) FROM day 
+          WHERE code<5 and date >'2014-03-17' GROUP by code;
+  +--------+------------+------------+
+  | code   | max(close) | min(close) |
+  +--------+------------+------------+
+  | 000001 |      10.79 |      10.10 |
+  | 000002 |       8.01 |       7.50 |
+  +--------+------------+------------+
+  3 rows in set (0.08 sec)
 
 . WHERE and HAVING
 
-    SELECT *,(close-yesc)/yesc as rise FROM day WHERE 
-        date=(SELECT max(date) FROM day) HAVING rise > 0.08  ORDER by rise DESC ;
+  # WHERE 子句中不能有函数及计算引用，但是 HAVING 可以有。
+  SELECT *,(close-yesc)/yesc as rise FROM day WHERE 
+      date=(SELECT max(date) FROM day) HAVING rise > 0.08 ORDER by rise DESC ;
 
-    WHERE 子句中不能有函数及计算引用，但是 HAVING 可以有。
