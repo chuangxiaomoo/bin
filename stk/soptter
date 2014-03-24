@@ -74,8 +74,20 @@ fn_realtime()
             symbole trade pcnt  pcnt_hi pcnt_lo __name
 
     cat ${rt_stdout} | \
-        sed -e '1s/sh000001/sh900001/' \
-            -e 's/var hq_str_..//g' -e 's/="/,/g' | awk -F',' '{
+        sed -e '1s/sh000001/sh900001/' -e 's/var hq_str_..//g' -e 's/="/,/g' | \
+        sed -n '1,3p' | awk -F',' '{
+                printf "%06d\t%.2f\t\t%.2f\t%.2f\t%.2f\t%s\n", 
+                     $1,
+                     $5, 
+                100*($5-$4)/$4, 
+                100*($5-$6)/$4, 
+                100*($5-$7)/$4, 
+                $2;
+            }'  | sort -g -r -k3
+
+    cat ${rt_stdout} | \
+        sed -e '1s/sh000001/sh900001/' -e 's/var hq_str_..//g' -e 's/="/,/g' | \
+        sed -n '3,$p' | awk -F',' '{
                 printf "%06d\t%.2f\t\t%.2f\t%.2f\t%.2f\t%s\n", 
                      $1,
                      $5, 
