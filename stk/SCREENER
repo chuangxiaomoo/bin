@@ -159,20 +159,19 @@ function fn_get_n_swing_num()
     # SELECT * FROM day WHERE date=$END and (close-yesc)/yesc > 0.08;
     # date=''需要单引号
     echo "
-    DROP TABLE IF EXISTS shellcodes;
-    CREATE TABLE shellcodes (
+    DROP TABLE IF EXISTS codes;
+    CREATE TABLE codes (
         id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0
     );
-    INSERT INTO shellcodes(code)
+    INSERT INTO codes(code)
     SELECT code FROM day WHERE date='$END' and 100*(close-yesc)/yesc > $tailrise;
     " | mysql $mo kts
 
-    # [ "$fullrise" -lt 0 ] && intbl=cap || intbl=shellcodes
     if [ "$fullrise" -lt 0 ] ; then
         intbl=cap
     else
-        intbl=shellcodes
+        intbl=codes
     fi
 
     echo "
