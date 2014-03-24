@@ -186,7 +186,7 @@ function fn_02_当代()                   { cat value_02_当代 ;}
 function fn_stevejobs()                 { cat stevejobs ;}
 function fn_socrates()                  { cat socrates ;}
 function fn_aesthetics()                { cat aesthetics ;}
-function fn_tick()                      { cat tick ;}
+function fn_tick()                      { cat tick.md ;}
 
 function fn_stk()                       { 
 function fn_newstock()                  { cat stk_newstock ;}
