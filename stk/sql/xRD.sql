@@ -676,8 +676,9 @@ CREATE PROCEDURE sp_get_ma345(a_code INT(6) ZEROFILL) tag_get_ma345:BEGIN
 
     call sp_create_tempday();
 
+    -- 60 
     SELECT date FROM day WHERE code=a_code and date<=@END ORDER by 
-           date DESC limit 40,1 INTO @START;
+           date DESC limit 60,1 INTO @START;
 
     INSERT INTO tempday(code,date,close) SELECT 
            code,date,close FROM day WHERE code=a_code and date>=@START and date<=@END;
@@ -690,8 +691,8 @@ CREATE PROCEDURE sp_get_ma345(a_code INT(6) ZEROFILL) tag_get_ma345:BEGIN
 
     SELECT SUM(close)/5   FROM tempday WHERE id > (@v_len-5 ) INTO v_ma5  ;
     SELECT SUM(close)/13  FROM tempday WHERE id > (@v_len-13) INTO v_ma13 ;
-    SELECT MAX(close),
-           MIN(close)     FROM tempday WHERE id > (@v_len-8 ) INTO v_high,v_low;
+    SELECT MAX(close),    -- 55日high和low以计算收敛度 (high-low)/low
+           MIN(close)     FROM tempday WHERE id > (@v_len-55) INTO v_high,v_low;
 
     -- SET v_revi13 = 100*(v_close-v_low)/v_low; 
     -- use 34 to open, 99 close

@@ -256,12 +256,12 @@ function fn_insert_codes_2_table()
 function fn_get_ma345()
 {
     END=${1:-${END}}
-    tbl_ma_date=tbl_ma345_${END//-/_}
+    tbl_ma_date=tbl_mx_${END//-/_}
 
     if mysql kts<<<"SHOW TABLES" | grep -q ${tbl_ma_date}; then
         # 表 ${tbl_ma_date} 存在，且是闭市后构建
         # 表 tbl_ma345 是TBL的分析结果，供后续处理分析。
-        if [ -f /tmp/.${tbl_ma_date} ]; then
+        if [ -f /tmp/mx/${tbl_ma_date} ]; then
             if [ "cap" = "${TBL:-cap}" ]; then
                 fn_cp_tbl ${tbl_ma_date} tbl_ma345;
             else
@@ -292,7 +292,8 @@ function fn_get_ma345()
         sec_1500=$(date +%s -d "15:00:00")
         sec_curr=$(date +%s)
         if [ "${sec_curr}" -gt "${sec_1500}" ]; then
-            touch /tmp/.${tbl_ma_date}
+            mkdir -p /tmp/mx/
+            touch /tmp/mx/${tbl_ma_date}
         fi
     fi
     #   tbl_lt_ma5=tbl_lt_ma5_${END//-/_}
@@ -311,14 +312,14 @@ function fn_get_ma345()
 
 }
 
-function fn_ma_one() 
+function fn_ma_ray() 
 {
     echo "build ${END}..."
     fn_reset_sqlsource
     fn_get_ma345
 
     mysql -N kts<<<"SELECT code FROM tbl_ma345 WHERE 
-                    ma5>ma13 and ma13>ma34" | \
+                    ma5>ma13 and ma13>ma34 ${COND}" | \
         xargs -n4 | tee /dev/stderr | xargs up add_codes_2_dzh2tbl 
     return     
 }
@@ -329,22 +330,22 @@ function fn_ma_cross()
     fn_reset_sqlsource
     END=${PREV} fn_get_ma345
 
-    fn_create_tbl_codes tbl_lt_ma13
+    fn_create_tbl_codes tbl_mx_c_lt_13
     xt_ret $? "create tbl error" || return $?
 
-    COND="close<ma13" fn_insert_codes_2_table tbl_lt_ma13
+    COND="close<ma13" fn_insert_codes_2_table tbl_mx_c_lt_13
     xt_ret $? "insert codes table" || return $?
 
     echo "build ${END}..."
     fn_reset_sqlsource
-    TBL=tbl_lt_ma13 fn_get_ma345
+    TBL=tbl_mx_c_lt_13 fn_get_ma345
 
     mysql -N kts<<<"SELECT code FROM tbl_ma345 WHERE close>ma13" | \
         xargs -n4 | tee /dev/stderr | xargs up add_codes_2_dzh2tbl 
 
     # 下面方案在实时行情时会很慢
-    # local prev=tbl_ma345_${PREV//-/_}
-    # local curr=tbl_ma345_${END//-/_}
+    # local prev=tbl_mx_${PREV//-/_}
+    # local curr=tbl_mx_${END//-/_}
     # mysql -N kts<<<"SELECT c.code FROM ${prev} as p,${curr} as c \
     #     WHERE p.code=c.code and p.close<p.ma13 and c.close>c.ma13" |\
     #     xargs -n4 | tee /dev/stderr | xargs up add_codes_2_dzh2tbl 
@@ -368,10 +369,10 @@ function fn_ana_ma345()
 
     # --------- 做分支 --------------- 
     cmdlist=(
-    "ma_one         # ma5>ma13 and ma13>ma34"
-    "ma_two         # ma5 > ma13 > ma34 > ma55"
-    "ma_three       # 个股区间换手统计"
-    "ma_cross       # close 上穿 ma13"
+    "ma_ray     # ma5 > ma13 > ma34"
+    "ma_two     # ma5 > ma13 > ma34 > ma55"
+    "ma_three   # "
+    "ma_cross   # close 上穿 ma13"
     )
     fn_execute "$@" || return $?
 }

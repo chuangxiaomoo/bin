@@ -26,21 +26,21 @@
 
 > 杂论
 
-## 走势消息论   .doc/excitation_response.md
-## 谋“势”战略   .doc/围棋谋势.md
-## 筹码分析法   .doc/六道轮回.千古兴衰.md
-## 缺口理论     .doc/gap_theory.md
-## 涨停理论     .doc/swing10.md
+## 走势消息论     .doc/excitation_response.md
+## 谋“势”战略     .doc/围棋谋势.md
+## 筹码分析法     .doc/六道轮回.千古兴衰.md
+## 缺口理论       .doc/gap_theory.md
+## 涨停理论       .doc/swing10.md
 
 > 实践
 
-## 决策         .doc/how-we-decide.md
-## 心战         .doc/psywar.md
-## 总结2013     .doc/2013.md
-## 笛卡尔实践   .doc/up_down_logic.md         
-## 趋势实践     .doc/ma-trade.md              
-## 操盘记录     .doc/discipline.md
+## 决策           .doc/how-we-decide.md
+## 心战           .doc/psywar.md
+## 总结2013       .doc/2013.md
+## 笛卡尔实践     .doc/up_down_logic.md         
+## 趋势实践       .doc/ma-trade.md              
+## 操盘记录       .doc/discipline.md
 
-## 非理性之旅   .doc/non-rationality.md       -- 2014-02-26 2014-03-12
-## 疯狂的贱卖   .doc/how-to-sell.md           -- 2014-03-04 天保重装
+## 非理性之旅     .doc/non-rationality.md       -- 2014-02-26 2014-03-12
+## 疯狂的贱卖     .doc/how-to-sell.md           -- 2014-03-04 天保重装
 

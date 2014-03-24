@@ -337,7 +337,7 @@ function fn_add_codes_2_dzh2tbl()
     } > /media/sf_dzh2/USERDATA/block/自选股.BLK
 
     mysql kts < ${sql_temp}
-    echo -e "\n    add ${TBL} over.\n"
+    echo -e "\n    add ${#@} to ${TBL} over.\n"
 }
 
 

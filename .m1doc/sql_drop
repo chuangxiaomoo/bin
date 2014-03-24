@@ -4,3 +4,7 @@
     drop DATABASE MYSQLDATA;
     drop TABLE MYTABLE;
 
+. 批量DROP
+
+    kmysql<<<"show tables" | grep ma | xargs -I{} echo 'mysql kts<<<"drop table {}"';
+
