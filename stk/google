@@ -61,5 +61,5 @@ function fn_main()
     mysql -t kts<<< "SELECT * FROM cap WHERE code in (${codes}) ORDER by nmc" 
 }
 
-fn_main wka
+fn_main $@
 

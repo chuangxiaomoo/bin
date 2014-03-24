@@ -68,26 +68,25 @@ fn_realtime()
     # >> $hx_dayclose
     #   tr -d '"' | tr -d ';' | tr ':' '.' > ${rt_ripetxt} 
     #       symbole date  yesc open high low trade tr_yesc  tr_high     tr_low
-    #                     $4,   $3, $6,  $7, $5, ($5-$4)/$4, ($5-$6)/$6, ($5-$7)/$7, 
+    #                     $4,   $3, $6,  $7, $5, ($5-$4)/$4, ($5-$6)/$6, ($5-$7)/$7,
 
-    printf "%6s\t%-10s\t%s\t%s\t%s\t%-5s\t%5s\t%s\n" \
-            symbole date  trade diff pcnt  pcnt_hi pcnt_lo __name
+    printf "%6s\t%s\t\t%s\t%-5s\t%5s\t%s\n" \
+            symbole trade pcnt  pcnt_hi pcnt_lo __name
 
     cat ${rt_stdout} | \
         sed -e '1s/sh000001/sh900001/' \
             -e 's/var hq_str_..//g' -e 's/="/,/g' | awk -F',' '{
-                printf "%06d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%s\n", 
-                  $1,$32, 
+                printf "%06d\t%.2f\t\t%.2f\t%.2f\t%.2f\t%s\n", 
+                     $1,
                      $5, 
-                    ($5-$4), 
                 100*($5-$4)/$4, 
                 100*($5-$6)/$4, 
                 100*($5-$7)/$4, 
                 $2;
             }'  | sort -g -r -k5
 
-    printf "%6s\t%-10s\t%s\t%s\t%s\t%-5s\t%5s\t%s\n" \
-            symbole date  trade diff pcnt  pcnt_hi pcnt_lo __name
+    printf "%6s\t%s\t\t%s\t%-5s\t%5s\t%s\n" \
+            symbole trade pcnt  pcnt_hi pcnt_lo __name
 }
 
 function fn_main() 
