@@ -83,7 +83,7 @@ fn_realtime()
                 100*($5-$6)/$4, 
                 100*($5-$7)/$4, 
                 $2;
-            }'  | sort -g -r -k5
+            }'  | sort -g -r -k3
 
     printf "%6s\t%s\t\t%s\t%-5s\t%5s\t%s\n" \
             symbole trade pcnt  pcnt_hi pcnt_lo __name

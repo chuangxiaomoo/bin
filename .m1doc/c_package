@@ -48,7 +48,7 @@
 │       // pack_t mypack;       // error: storage size of ‘mypack’ is unknown│
 │       pack_t *p_pack = init_pack();                                        │
 │       print_pack(p_pack);                                                  │
-│       free(p_pack);                                                        │
+│       free(p_pack);           // it's good to free() with dele_pack()      │
 │       return 0;                                                            │
 │   }                                                                        │
 │                                                                            │

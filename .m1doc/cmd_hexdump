@@ -1,40 +1,40 @@
-/*  */
+# hexdump
 
-. 前言
-    我使用过的Linux命令之hexdump
-    http://codingstandards.iteye.com/blog/805778
+# 前言
+  我使用过的Linux命令之hexdump
+  http://codingstandards.iteye.com/blog/805778
 
-    三个命令都可以像UltraEdit那样以16进制的方式查看文件
+  三个命令都可以像UltraEdit那样以16进制的方式查看文件
 
-    hexdump的输入格式最灵活，因为它有专门的参数指定格式
-    xxd还可以通过-r选项把16进制表示的反转换为正常的文件
-    od -x 和不带选项的xxd差不多，暂只研究上面两种。
+  hexdump的输入格式最灵活，因为它有专门的参数指定格式
+  xxd还可以通过-r选项把16进制表示的反转换为正常的文件
+  od -x 和不带选项的xxd差不多，暂只研究上面两种。
 
-    xxd默认表示方式和UltraEdit最像：以位移开头，然后每两字节一组，行后有相应字符显示
+  xxd默认表示方式和UltraEdit最像：以位移开头，然后每两字节一组，行后有相应字符显示
 
-. hexdump
-     -n length
-        Interpret only length bytes of input.
-     -s offset
-        Skip offset bytes from the beginning of the input.
+# hexdump
+   -n length
+      Interpret only length bytes of input.
+   -s offset
+      Skip offset bytes from the beginning of the input.
 
-    hexdump -C      <== 单字节十六进制和ASCII码显示(Canonical hex+ASCII)
-    hexdump -x      <== 双字节十六进制显示
-    hexdump -d      <== 双字节十进制显示
-    hexdump -b      <== 单字节八进制显示
+  hexdump -C       == 单字节十六进制和ASCII码显示(Canonical hex+ASCII)
+  hexdump -x       == 双字节十六进制显示
+  hexdump -d       == 双字节十进制显示
+  hexdump -b       == 单字节八进制显示
 
-. hexdump -e 定制    
+# hexdump -e 定制    
 
-    man手册里有很多，此处，我只想实现一个功能，分行显示ascii。
+  man手册里有很多，此处，我只想实现一个功能，分行显示ascii。
 
-    root@Moo:~/txt# cat text 
-    123
-    1234
-    12345
-    root@Moo:~/txt# hexdump -v -e '/1 "%02X "' text | sed  's/0A /\n/g'
-    31 32 33 
-    31 32 33 34 
-    31 32 33 34 35 
+  root@Moo:~/txt# cat text 
+  123
+  1234
+  12345
+  root@Moo:~/txt# hexdump -v -e '/1 "%02X "' text | sed  's/0A /\n/g'
+  31 32 33 
+  31 32 33 34 
+  31 32 33 34 35 
 
     function hdline() 
     {
@@ -42,8 +42,23 @@
         hexdump -v -e '/1 "%02X "' $1 | sed  's/0A /\n/g'
     }
 
-. xxd
+# xxd
 
-    root@Moo:~/txt# xxd text 
-    0000000: 3132 330a 3132 3334 0a31 3233 3435 0a    123.1234.12345.
+  root@Moo:~/txt# xxd text 
+  0000000: 3132 330a 3132 3334 0a31 3233 3435 0a    123.1234.12345.
 
+# xxd插入一段二进制   
+
+ 1. root@Moo64:~/txt# echo -n 123456 > input
+
+ 2. root@Moo64:~/txt# echo -n 123456 | xxd -i
+      0x31, 0x32, 0x33, 0x34, 0x35, 0x36
+
+
+ 3. root@Moo64:~/txt# xxd -i input 
+    unsigned char input[] = {
+      0x31, 0x32, 0x33, 0x34, 0x35, 0x36
+    };
+    unsigned int input_len = 6;
+
+    再用c语言write()写入文件，就好了。
