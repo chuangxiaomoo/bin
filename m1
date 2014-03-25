@@ -331,6 +331,7 @@ function fn_c() {
 function fn_01_C调用C++链接库()         { cat c_01_C调用C++链接库 ;}
 function fn_cdecl()                     { cat c_cdecl ;}
 function fn_const()                     { cat c_const ;}
+function fn_extern()                    { cat c_extern ;}
 function fn_operator_predcedence()      { cat c_operator_predcedence ;}
 function fn_string()                    { cat c_string ;}
 function fn_struct()                    { cat c_struct ;}
@@ -362,6 +363,7 @@ function fn_strncpy()                   { cat c_strncpy ;}
         01_C调用C++链接库
         cdecl
         const
+        extern
         bit
         operator_predcedence
         pointer                 # 指针 
