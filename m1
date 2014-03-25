@@ -328,7 +328,7 @@ function fn_multicast多播()             { cat socket_multicast多播 ;}
 }
 
 function fn_c() {
-function fn_01_C调用C++链接库()         { cat c_01_C调用C++链接库 ;}
+function fn_C调用C++链接库()            { cat c_C调用C++链接库 ;}
 function fn_cdecl()                     { cat c_cdecl ;}
 function fn_const()                     { cat c_const ;}
 function fn_extern()                    { cat c_extern ;}
@@ -360,7 +360,7 @@ function fn_bit()                       { cat c_bit ;}
 function fn_strncpy()                   { cat c_strncpy ;}
 
     local opts=(
-        01_C调用C++链接库
+        C调用C++链接库
         cdecl
         const
         extern
