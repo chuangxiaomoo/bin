@@ -13,13 +13,13 @@ http://www.cnblogs.com/kenkofox/archive/2009/11/05/1597003.html
 
 C调用C++链接库：
 
-　　1.编写C++代码，编写函数的时候，需要加入对C的接口，也就是extern “c"
+　　1.编写C++代码，编写函数的时候，需要加入对C的接口，也就是extern "C"
 
 　　2.由于C不能直接用"class.function”的形式调用函数，所以C++中需要为C写一个接口
 函数。例如本来要调用student类的talk函数，就另外写一个cfun()，专门建一个student
 类，并调用talk函数。而cfun()要有extern声明
 
-　　3.我在练习中就使用在C++头文件中加extern ”c”的方法。而C文件要只需要加入对
+　　3.我在练习中就使用在C++头文件中加extern "C"的方法。而C文件要只需要加入对
 cpp.h的引用
 
 　　4.详细见如下代码：
@@ -54,7 +54,14 @@ cpp.h的引用
   │ #endif                                               │ 
   └──────────────────────────────────────────────────────┘
 
-    cpp.h:
+  /*
+   * c_package.h            声明函数为C命名方式
+   * c_package.cpp          定义接口
+   * helloC.c               调用接口
+   * c_package.cpp helloC.c 都 #include "c_package.h 连接二者。
+   **/
+
+    c_package.h
   ┌──────────────────────────────────────────────────────┐
   │ #ifndef _CPP_                                        │
   │ #define _CPP_                                        │
@@ -71,12 +78,12 @@ cpp.h的引用
   │ #endif                                               │
   └──────────────────────────────────────────────────────┘
 
-　　cpp.cpp:
+　　c_package.cpp:
   ┌──────────────────────────────────────────────────────┐
   │ #include <iostream>                                  │
   │ using namespace std;                                 │
   │                                                      │
-  │ #include "cpp.h"                                     │
+  │ #include "c_package.h"                               │
   │ student stu;                                         │
   │ void helloCplusplus(){                               │
   │     cout<<"helloC++"<<endl;                          │
@@ -91,7 +98,7 @@ cpp.h的引用
 　　helloC.c:
   ┌──────────────────────────────────────────────────────┐
   │ #include <stdio.h>                                   │
-  │ #include "cpp.h"                                     │
+  │ #include "c_package.h"                               │
   │                                                      │
   │ int main(){                                          │
   │     helloCplusplus();                                │
@@ -99,13 +106,12 @@ cpp.h的引用
   │ }                                                    │
   └──────────────────────────────────────────────────────┘
 
-　　我这次练习是直接在xp环境下，在CMD命令行方式用gcc,g++来编译的。
 
-1.编译C++代码，成为链接库
+1.  编译C++代码，成为链接库
 
-　　g++ -shared -o libccall.so cpp.cpp student.cpp  （libccall.so为库名）
+    g++ -shared -o libccall.so c_package.cpp student.cpp  （libccall.so为库名）
 
-2.编译C代码：g++ helloC.c ./libccall.so。这里一定要用g++，如果用gcc会出错，因为
-gcc编译C++文件才会自动调用g++，但如果对象直接就是C文件就不会调用g++了。
+2.  编译C代码：g++ helloC.c ./libccall.so。这里一定要用g++，如果用gcc会出错，因为
 
-[gcc]
+    gcc编译C++文件才会自动调用g++，但如果对象直接就是C文件就不会调用g++了。
+
