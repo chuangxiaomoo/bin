@@ -41,6 +41,5 @@
 ## 趋势实践       .doc/ma-trade.md              
 ## 操盘日记       .doc/diary.md
 
-## 非理性之旅     .doc/non-rationality.md       -- 2014-02-26 2014-03-12
 ## 疯狂的贱卖     .doc/how-to-sell.md           -- 2014-03-04 天保重装
 
