@@ -2,34 +2,30 @@
 http://www.cnblogs.com/kenkofox/archive/2009/11/05/1597003.html
 
 /*
- * 关键：cpp.cpp文件必须包含 cpp.h，以编译出"C"格式的函数符号
- *       g++函数声明方式将决定其symble的格式
- *       C文件编译时通常不用包含其声明。
+ * 关键：c_package.cpp文件必须包含 c_package.h，以编译出"C"格式的函数符号
+ *       extern "C" 不仅作用在链接阶段，C++调用C的函数接口。
+ *       extern "C" 还可作用在编译阶段，强制g++编译出C式的symbol
+ *                                         (g++默认使用C++式symbol)，
+ *
+ *       对声明的理解：
+ *       一个函数声明为static后，实现时不加static，最后symbol也是static的。
  */ 
 
-拂晓风起
-    从代码可以得知，C调用C++链接库的关键在于cpp.h中的函数声明方式，其直接影响g++
-    生成symbol name的格式。
+  C调用C++链接库：
 
-C调用C++链接库：
+　1.编写C++代码，编写函数的时候，需要加入对C的接口，也就是extern "C"
 
-　　1.编写C++代码，编写函数的时候，需要加入对C的接口，也就是extern "C"
+　2.由于C不能直接用"class.function"的形式调用函数，所以C++中需要为C写一个接口函数。
+    例如本来要调用student类的talk函数，就另外写一个cfun()，专门建一个student类，
+    并调用talk函数。而cfun()要有extern声明
 
-　　2.由于C不能直接用"class.function”的形式调用函数，所以C++中需要为C写一个接口
-函数。例如本来要调用student类的talk函数，就另外写一个cfun()，专门建一个student
-类，并调用talk函数。而cfun()要有extern声明
+　3.使用在C++头文件中加extern "C"的方法。而C文件要只需要加入对c_package.h的引用。
 
-　　3.我在练习中就使用在C++头文件中加extern "C"的方法。而C文件要只需要加入对
-cpp.h的引用
+　4.详细见如下代码：
 
-　　4.详细见如下代码：
-
-　　　　student是一个类，里边有talk函数，就输出一句话而已
-
-　　　　cpp.cpp与cpp.h是两个C++代码，包含对C的接口
-
-　　　　最后用C代码：helloC.c来测试结果
-
+　　　student是一个类，里边有talk函数，就输出一句话而已
+　　　c_package.cpp与c_package.h是两个C++代码，包含对C的接口
+　　　最后用C代码：helloC.c来测试结果
 
     student.cpp:                                         
   ┌──────────────────────────────────────────────────────┐
