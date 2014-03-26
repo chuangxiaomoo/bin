@@ -1,0 +1,26 @@
+/* snprintf */
+
+/*
+ * snprintf()比strncpy()更安全，串末尾一定会是0
+ **/
+
+int main(int argc, char *argv[])
+{
+    char buf[20] = "0123456789";
+    size_t len_prefix = strlen("[succ]");
+    printf("len is %d\n", len_prefix);
+
+    // snprintf(buf, len_prefix, "%s", "[succ]");
+    strncpy(buf, "[succ]", len_prefix);
+
+    printf("%s is buf\n", buf);
+    return 0;
+}
+
+// output of strncpy
+|| len is 6
+|| [succ]6789 is buf
+
+// output of snprintf
+|| len is 6
+|| [succ is buf

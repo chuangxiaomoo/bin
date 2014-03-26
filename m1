@@ -358,6 +358,7 @@ function fn_md5()                       { cat c_md5 ;}
 function fn_printf()                    { cat c_printf ;}
 function fn_bit()                       { cat c_bit ;}
 function fn_strncpy()                   { cat c_strncpy ;}
+function fn_snprintf()                  { cat c_snprintf ;}
 
     local opts=(
         C调用C++链接库
@@ -385,6 +386,7 @@ function fn_strncpy()                   { cat c_strncpy ;}
         printf                  # scanf format
         signal
         strncpy                 # string serial
+        snprintf                # more safe vs strncpy
         coredump
         time
         tty                     # serial port
