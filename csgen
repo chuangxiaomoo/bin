@@ -65,10 +65,10 @@ function fn_main()
         -h|--help)
             fn_usage                        ;;
         -r|--remove)
-            rm -f ${reffile%%.out}*   
             echo "
-            Clean ${reffile}* over
+            Clean ${reffile%%.out}* exclue ${cspathes}...
             "
+            ls ${reffile%%.out}* | grep -v pathes | xargs rm -rf
             exit 0                                              ;;
         -i|--interactive)
             vi ${cspathes}                                      ;;
