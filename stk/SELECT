@@ -93,7 +93,7 @@ function fn_app_wgt_turnov()
     columns=${columns//amount/amount as revive}
     columns=${columns//bounce/bounce as nettnv}
 
-    #wgt="TRUNCATE(swing*bounce*nmc/1000000, 2)" ---- swing 是经过放大的 20 -> 25
+    # wgt在下跌市时，与nmc成反比。
     wgt="(swing+bounce)"
     field=${1:-wgt}
 

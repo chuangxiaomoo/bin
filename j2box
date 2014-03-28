@@ -181,7 +181,7 @@ function fn_query_jcpcmds()
     . ~/.bashrc
    #cfile="$p_br_pelco_d_2/jcpcmd/jcp_cmd.c"    
    #cfile="$p_br_wenan/jcpcmd/jcp_cmd.c"    
-    cfile="$p_/jcpcmd/jcp_cmd.c"    
+    cfile="$p_xp_/jcpcmd/jcp_cmd.c"    
     
     # awk -F'"' '/JCP_CMD_REG/ { i++; printf "%-16s", $2; if (0 == i%4) print ""; }' $cfile
     awk -F'"' '/JCP_CMD_REG/ { print $2}' $cfile | sort | \
