@@ -1,0 +1,31 @@
+#! /bin/bash
+
+function fn_main()
+{
+    filelist=${@:2}
+
+    case $1 in
+    r)
+        [ -z "$filelist" ] && echo "Error: file... must be dedicated" && exit
+        svn revert $filelist
+        ;;
+
+    s)
+        svn status
+        ;;
+    q)
+        svn -q status
+        ;;
+    *)
+        echo "
+        ----------- Usage --------------
+        r   revert  [file or directory]
+        q   -q status
+        s   status
+        "
+        ;;
+    esac
+
+}
+
+fn_main $@

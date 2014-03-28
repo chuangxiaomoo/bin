@@ -38,6 +38,8 @@ function fn_main()
         return
     fi
     jcli $@ | sed -e 's///g' -e 's/\;\#$//' | sed -e 's/[;#]/\n/g' 
+
+    # | iconv -f cp936 -t utf8
 }
 
 fn_main $@
