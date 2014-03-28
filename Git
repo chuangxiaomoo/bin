@@ -47,11 +47,20 @@ function fn_main()
 
     r*|revert)
         [ -z "$filelist" ] && echo "Error: file... must be dedicated" && exit
-        git checkout -- $filelist
+        git checkout -- ${filelist%%/}
         ;;
 
     s*|*)
         git status
+        echo "
+        ----------- Usage --------------
+        A   commit  [all changed file]
+        c   commit  [specifid file] 
+        p   pull    [origin master]
+        P   push    [origin master]
+        r   revert  [file or directory]
+        s   status
+        "
         ;;
     esac
 
