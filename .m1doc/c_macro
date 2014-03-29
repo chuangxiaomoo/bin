@@ -1,26 +1,49 @@
-/* c_macro */
+# c_macro 
 
-/* more macro, see:
- * http://www.mikeash.com/pyblog/friday-qa-2010-12-31-c-macro-tips-and-tricks.html
- *
- */
+# 系统里的宏
 
-#if defined(symbol) 
-#ifdef symbol
+    __func__
+    __FILE__
+    __LINE__
+    __DATE__
+    __TIME__
 
-#if !defined(symbol)
-#ifndef symbol
+# 随机数 -- 找到一个不可重复的数 -- time()
 
-#if X > 0 || defined(ABC) && defined(BCD) /* if are powerful */
+    srandom((unsigned)time(NULL));
+    printf("%ld\n", random());
+    printf("%ld\n", random());
 
-#define ISUNSIGNED(a) (a >=0 && (a=~a,a >=0 ? (a=~a,1):(a=~a,0)))
-#define swap(a,b) {a=a^b; b=a^b; a=a^b;}
-#define max(a,b) {a > b ? a : b}
 
-/*
- * #include <libgen.h>
- * basename((char *)__FILE__)
- * basename 在原有路径上找到偏移
- * dirname  会修改传入的路径，若是常量，则有 segfault, 所以用之前先 strdup()
- */
+# ifdef
+
+    #if defined(symbol) 
+    #ifdef symbol
+
+    #if !defined(symbol)
+    #ifndef symbol
+
+# if 
+
+    #if X > 0 || defined(ABC) && defined(BCD) /* if are powerful */
+
+
+# 常用的宏
+
+    #define ISUNSIGNED(a) (a >=0 && (a=~a,a >=0 ? (a=~a,1):(a=~a,0)))
+    #define swap(a,b) {a=a^b; b=a^b; a=a^b;}
+    #define max(a,b) {a > b ? a : b}
+
+
+# basename & dirname
+ 
+    #include <libgen.h>
+    basename((char *)__FILE__)
+    basename 在原有路径上找到偏移
+    dirname  会修改传入的路径，若是常量，则有 segfault, 所以用之前先 strdup()
+ 
+
+# more 
+
+  [macro](http://www.mikeash.com/pyblog/friday-qa-2010-12-31-c-macro-tips-and-tricks.html)
 

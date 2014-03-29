@@ -37,6 +37,9 @@ function fn_main()
         fn_list | grep --color ${@:2}
         return
     fi
+
+    # echo $@ && exit
+
     jcli $@ | sed -e 's///g' -e 's/\;\#$//' | sed -e 's/[;#]/\n/g' 
 
     # | iconv -f cp936 -t utf8
