@@ -1,0 +1,34 @@
+# 35_jcp_blocked_on_conf
+
+## 目标
+
+  jcp 通过 conf 来实现
+
+## 真正原因 - True causes
+
+  devvecfg -act list
+  通过conf发送命令`fireJcpcmd`，并等待返回，在jcpcmd中亦调用
+  conf_get_devvecfg();
+
+  因此而造成死锁。
+
+## 问题描述 - from R&D or Tester
+
+  每个命令，第一次调用时，都会超时。
+
+## 现象分析 - log or details such as "ATTENTION: err or fail"
+
+  TIMEOUT
+
+## 原因分析 - 原因猜想，目标分解，process to true causes
+
+  zengy
+
+## 解决方案 - 包括对未来的防御
+
+  每一种方案都有其自身的局限性。自己不可能革自己的命。
+
+  > 2014-03-30
+  > 面对我关于C++的牢骚，luo什么也没有说，只是听着。
+  > 形成自己的模式及积累。我想，luo在没有执掌团队之前，也隐忍了很久。
+

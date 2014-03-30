@@ -2,3 +2,19 @@
 
 ## udp
 
+## jcp的ipc(2014-03-30) 
+
+  1. 查询
+
+  conf_get_devvecfg()
+  conf_set_devvecfg()
+
+  2. 中断
+  中断在应用层，有另一个名字 -- 订阅模式。注册中断函数，条件触发。
+
+  注册
+  register_event(EVENT_DEVVECFG_CHG, cb_func)
+
+  通知
+  notify_event(EVENT_DEVVECFG_CHG)
+
