@@ -334,7 +334,7 @@ function fn_add_codes_2_dzh2tbl()
         esac
         echo -n -e $DELI
     done ;
-    } > /media/sf_dzh2/USERDATA/block/自选股.BLK
+    } > /dzh2/USERDATA/block/自选股.BLK
 
     mysql kts < ${sql_temp}
     echo -e "\n    add ${#@} to ${TBL} over.\n"
@@ -360,7 +360,7 @@ function fn_up_tbl_xRD()
 
     # make -C $p_bin
     
-    cp /media/sf_dzh2/Download/PWR/full.PWR $p_bin
+    cp /dzh2/Download/PWR/full.PWR $p_bin
     xert $? `$PS8` || return $?
 
     [ ! -f "$p_bin/xRD" ] && echo "xRD not exist" && exit
