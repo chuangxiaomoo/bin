@@ -1,0 +1,38 @@
+# tail & head
+
+  K前可以加前缀，但 head 还是从文件头算，tail还是从文件尾算。
+
+# tail
+
+  > +K 
+
+  -c, --bytes=K         output the last K bytes; alternatively, use -c +K
+                          to output bytes starting with the Kth of each file
+
+  -n, --lines=K         output the last K lines, instead of the last 10;
+                          or use -n +K to output lines starting with the Kth
+
+
+# head
+
+  > -K
+
+  -c, --bytes=K         print the first K bytes of each file;
+                          with the leading '-', print all but the last
+                          K bytes of each file
+  -n, --lines=K         print the first K lines instead of the first 10;
+                             with the leading '-', print all but the last
+                             K lines of each file
+
+
+# busybox
+
+  本想把md5sum放在升级包的最后。但是busybox>head没有-K功能。
+  后想，可以用sed将最后一行的md5sum去除，即可得到tar包文件
+
+    # echo 0123456 |  sed '$s/[0-9]\{4\}$//'
+    # 012
+
+  另外，在打包时，不需要md5sum的'\n'，用tr命令去掉之。
+
+    # echo 123 | md5sum | awk '{print $1}' | tr -d '\n'

@@ -629,6 +629,8 @@ function fn_tr()                        { cat cmd_tr ;}
 function fn_dialog()                    { cat cmd_dialog ;}
 function fn_hexdump()                   { cat cmd_hexdump ;}
 function fn_cpio()                      { cat cmd_cpio ;}
+function fn_head()                      { cat cmd_tail ;}
+function fn_tail()                      { cat cmd_tail ;}
     local opts=(
         01_方便之门
         date
@@ -647,6 +649,8 @@ function fn_cpio()                      { cat cmd_cpio ;}
         route
         sort
         strace
+        head                    # 
+        tail
         tr
         tar
         tftp

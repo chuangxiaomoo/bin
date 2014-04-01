@@ -479,12 +479,18 @@ function fn_11_Geek与产品机器()         { cat prof_11_Geek与产品机器 ;
     fn_print $@
 }
 
+function fn_ljsw()                      { 
+function fn_01_教育()                   { cat ljsw_01_教育 ;}
+    local opts=(
+        01_教育
+    )
+    fn_print $@
+}
+
 function fn_zhenhuan()                  { 
-function fn_00_少年()                   { cat zhenhuan_00_少年 ;}
 function fn_01_曹云金()                 { cat zhenhuan_01_曹云金 ;}
 function fn_11_煎饼果子()               { cat zhenhuan_11_煎饼果子 ;}
     local opts=(
-        00_少年
         01_曹云金
         11_煎饼果子
 
@@ -527,6 +533,7 @@ function fn_main() {
         meeting
         mng
         mindhacks
+        ljsw                            # 罗辑思维
         movie
         music
         personage
