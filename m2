@@ -481,8 +481,10 @@ function fn_11_Geek与产品机器()         { cat prof_11_Geek与产品机器 ;
 
 function fn_ljsw()                      { 
 function fn_01_教育()                   { cat ljsw_01_教育 ;}
+function fn_x1_你的阅读造就了你()       { cat ljsw_x1_你的阅读造就了你 ;}
     local opts=(
         01_教育
+        x1_你的阅读造就了你             # you are what u read
     )
     fn_print $@
 }
