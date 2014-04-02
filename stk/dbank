@@ -76,6 +76,7 @@ go_temp='/dev/shm/google/temp'
 js_xunner='/dev/shm/xunner.js'
 js_xunner_idx='/dev/shm/xunner.idx'
 js_xunner_stk='/dev/shm/xunner.stk'
+js_xunner_txt='/dev/shm/xunner.txt'
 
 rt_stdout='/dev/shm/realtime/stdout'
 rt_ripetxt='/dev/shm/realtime/ripetxt'

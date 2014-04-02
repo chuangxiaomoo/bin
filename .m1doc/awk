@@ -1,10 +1,8 @@
-#! /bin/bash
-# help
-# awk用法小结 
-# http://www.cnblogs.com/276815076/archive/2011/12/05/2276625.html
+#! /bin/awk
 
-# 分隔
-# 多分隔
+# [awk](http://www.cnblogs.com/276815076/archive/2011/12/05/2276625.html)
+
+# 分隔.多分隔
     echo "a=b"         | awk -F'=' '{print $1}'
     echo "1{2[3,4]5|6" | awk -F"[{|,[\]]" '{ print $1,$2,$3,$4,$5}'
     echo "1{2[3,4]5|6" | awk -F'[{|,[\]]' '{ print $1,$2,$3,$4,$5}'
@@ -40,27 +38,26 @@
                 printf("\n")
     }' filename
 
-# array 数组
-http://www.cnblogs.com/chengmo/archive/2010/10/08/1846190.html
+# array 数组 (http://www.cnblogs.com/chengmo/archive/2010/10/08/1846190.html)
 
-Tarray[1]=“cheng mo”
-Tarray[2]=“800927”
+    Tarray[1]=“cheng mo”
+    Tarray[2]=“800927”
 
-Tarray[“first”]=“cheng ”
-Tarray[“last”]=”mo”
-Tarray[“birth”]=”800927”
+    Tarray[“first”]=“cheng ”
+    Tarray[“last”]=”mo”
+    Tarray[“birth”]=”800927”
 
 # 无序
 awk 'BEGIN{info="it is a test";split(info,tA," ");      
     for(k in tA){print k,tA[k];}}'    
+
 # 有序 -- 注意：数组下标是从1开始，与c数组不一样。
 awk 'BEGIN{info="it is a test";tlen=split(info,tA," "); 
     for(k=1;k<=tlen;k++){print k,tA[k];}}' 
 
 
-# next指令 
-# 跳过next指令之后的所有语句，包括next之后的所有Pattern { Actions }
-# '{ ...; next; ...; }'
+# next 跳过next指令之后的所有语句，包括next之后的所有Pattern {Actions}
+    '{ ...; next; ...; }'
 
 # 内置函数
 
@@ -83,6 +80,14 @@ awk 'BEGIN{info="it is a test";tlen=split(info,tA," ");
     awk -F'"' '/JCP_CMD_REG/ { print $2}' $cfile | sort | \
     awk '{ i++; printf "%-16s", $1; if (0 == i%4) print ""; }'
 
+# 正则取反 !
+
+    root@Moo64:~/txt# cat input 
+    123
+    456
+    root@Moo64:~/txt# cat input | awk '!/123/ {print $1}' 
+    456
+
 # gawk中使用位运算和用例
     http://blog.csdn.net/cmatch/article/details/2976538
     e.g.
@@ -104,8 +109,7 @@ awk 'BEGIN{info="it is a test";tlen=split(info,tA," ");
         }' $1
     }
 
-# 内置变量表
-# http://www.cnblogs.com/chengmo/archive/2010/10/06/1844818.html
+# [内置变量表](http://www.cnblogs.com/chengmo/archive/2010/10/06/1844818.html)
     ┌───────────────┬──────────────────────────────────────────────────┐
     │   属性        │ 说明                                             │
     ├───────────────┼──────────────────────────────────────────────────┤

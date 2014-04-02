@@ -513,6 +513,52 @@ function fn_copy_table_2_table()
     echo fn_cp_tbl ${1:-zxg} ${2:-ipo} over!!!
 }
 
+function fn_html()
+{
+    timeout 10 ./xunner > ${js_xunner_txt}
+    xt_ret $? "timeout" || return $?
+
+    names=(`awk  '!/name/ {print $NF}' ${js_xunner_txt}`)
+    codes=(`awk  '!/name/ {print $1}' ${js_xunner_txt}| sed -e 's/^[03]/sz&/g' -e 's/^6/sh&/g'`)
+    codes[0]=sh000001
+    # echo ${names[@]}; echo ${codes[@]}; exit
+
+    [ ${#names[@]} -eq ${#codes[@]} ]
+    xt_ret $? "names codes not equal" || return $?
+
+    cp .template/KiTas.html /winc/relay/
+    xt_ret $? "cp error" || return $?
+
+    cat <<-"HERE_head" > /winc/relay/KiList.html
+    <html>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>KiTas</title>
+    <body>
+    <p align="center">follow your heart!</p>
+    <table align="center" width="100%" border="1">
+	HERE_head
+
+    local align='align="center" width="20%"'
+    local chart='http://image.sinajs.cn/newchart'
+    local target='TARGET="show"'
+    local i
+    for (( i=0; i<${#names[@]}; i+=1 )); do
+    cat <<-HERE_mid >> /winc/relay/KiList.html
+  <tr>
+    <td align="center" width="40%">${names[$i]}</td>
+    <td ${align}> <a HREF="${chart}/min/n/${codes[$i]}.gif"    ${target}>min</a> </td>
+    <td ${align}> <a HREF="${chart}/daily/n/${codes[$i]}.gif"  ${target}>day</a> </td>
+    <td ${align}> <a HREF="${chart}/weekly/n/${codes[$i]}.gif" ${target}>wek</a> </td>
+  </tr>
+	HERE_mid
+    done
+    cat <<-"HERE_tail" >> /winc/relay/KiList.html
+    </table>
+    </body>
+    </html>
+	HERE_tail
+}
+
 function fn_main() 
 {
     cmdlist=(
@@ -530,6 +576,7 @@ function fn_main()
     "up_rzrq_codes_tbl                  # 更新RZRQ业务数据"
     "up_swing10                         # 更新涨跌停6.1%数据"
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
+    "html                               # convert .soptter to html"
     "copy_table_2_table src dst         # --- 使用 1 1 做为代号"
     "tougu_reminder                     # --- 投顾大赛提醒器，5分钟延时"
     "add_yesclose                       # 为yahoo.指南针数据添加yesclose"
