@@ -526,7 +526,7 @@ function fn_html()
     [ ${#names[@]} -eq ${#codes[@]} ]
     xt_ret $? "names codes not equal" || return $?
 
-    cp .template/KiTas.html /winc/relay/
+    cp .template/KiTas.html /winc/relay/KiTas.html
     xt_ret $? "cp error" || return $?
 
     cat <<-"HERE_head" > /winc/relay/KiList.html
