@@ -1,7 +1,14 @@
-#! /bin/bash -- xinetd
+# xinet
 
-# 启动基于xinetd的服务，需要先开启，再重启xinetd
-chkconfig daytime on
-/etc/init.d/xinetd restart
+## inetd
+
+  [inetd超级服务器](http://blog.chinaunix.net/uid-20196318-id-172787.html)
+
+  需要2进制的配合
+
+## 启动基于xinetd的服务，需要先开启，再重启xinetd
+
+  chkconfig daytime on
+  /etc/init.d/xinetd restart
 
 

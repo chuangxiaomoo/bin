@@ -168,7 +168,7 @@ function fn_dialog()                    { cat bash_dialog ;}
 function fn_string()                    { cat bash_string ;}
 function fn_PIPESTATUS()                { cat bash_PIPESTATUS ;}
     local opts=(
-        fundamental
+        fundamental                     # 交叉编译 cross-compile
         00_函数bg时main挂住了
         01_PIPE会使变量为空
         02_unquoted_star将被扩展        # 不引起来的 * 会被 扩展
@@ -308,7 +308,7 @@ function fn_56_ini写入时间耗时3秒()     { cat case_56_ini写入时间耗�
         55_bind_失败_No_such_file       # API设计原则: API的生命在于复用
         56_ini写入时间耗时3秒           # API设计原则: 性能测试用例
 
-        70_merge_error                  # 朝令夕改 请Luo不要随便插脚
+        70_merge_error                  # 朝令夕改 luo
         71_行淫的女人_小魔的牢骚        # care你的牢骚 PK产品经理 学会吐槽
         72_TZ_那些失败的TASK            # 管理总结
 
@@ -781,7 +781,7 @@ function fn_xinetd()                    { cat services_xinetd ;}
         ntp
         samba
         vsftpd
-        xinetd
+        xinetd                          # inetd
     )
     fn_print $@
 }

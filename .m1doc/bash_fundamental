@@ -1,6 +1,10 @@
 #! /bin/bash
 
-#写出健壮的 Bash 脚本
+# cross-compile
+
+    CC=arm-linux-gcc ./configure --host=arm-linux
+
+# 写出健壮的 Bash 脚本
     http://www.oschina.net/news/26744/build-robust-bash-script
     使用set -u
     你也可以使用可读性更强一点的set -o nounset
