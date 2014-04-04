@@ -3,6 +3,7 @@
 alias    ..='cd ..'
 alias   ...='cd ../..'
 alias    .b='cd ~/bin'
+alias    .n='. /opt/nxpbash'
 alias    .s='cd ~/bin/stk'
 alias   .ss='cd ~/bin/stk/sql'
 alias   .rc='. /root/.bashrc'
