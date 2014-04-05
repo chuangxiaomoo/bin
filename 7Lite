@@ -568,7 +568,7 @@ function fn_insert_blankline()
 {
     [ ! -f "$1" ] && "Error: File $1 not exist" && exit 
 
-    sz_line=38
+    sz_line=37
 
     while read line; do
         ascii=`echo -n "$line" | tr -d -c '[:print:]' | wc -m`
