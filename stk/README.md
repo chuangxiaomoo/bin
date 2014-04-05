@@ -34,7 +34,7 @@
 
 > 实践
 
-## 决策           .doc/how-we-decide.md
+## 决策纪律       .doc/how-we-decide.md
 ## 心战           .doc/psywar.md
 ## 总结2013       .doc/2013.md
 ## 笛卡尔实践     .doc/up_down_logic.md         

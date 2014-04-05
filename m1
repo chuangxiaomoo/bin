@@ -1094,6 +1094,7 @@ function fn_01_mode_type_不能保存()     { cat point_01_mode_type_不能保�
 }
 
 function fn_alibaba()                   { cat alibaba ;}
+function fn_kitas()                     { cat kitas ;}
 
 function fn_begin()                     { 
 function fn_language()                  { cat begin_language ;}
@@ -1212,6 +1213,7 @@ function fn_main() {
         java
         jco
         jimxl
+        kitas                   # 产品经理总结
         kernel
         lcov
         libevent
