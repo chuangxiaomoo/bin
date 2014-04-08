@@ -28,11 +28,19 @@
 # busybox
 
   本想把md5sum放在升级包的最后。但是busybox>head没有-K功能。
-  后想，可以用sed将最后一行的md5sum去除，即可得到tar包文件
+  后想，可以用sed将最后一行的md5sum(32 char)去除，即可得到tar包文件
 
     # echo 0123456 |  sed '$s/[0-9]\{4\}$//'
     # 012
 
+    # 去掉文件尾的md5sum
+    # cat normal.nxp.tgz | sed '$s/[0-9a-z]\{32\}$//' > a.tgz
+
+    # 抽取updateExt.sh
+    # cd /tmp/ && sed  '$s/[0-9a-z]\{32\}$//' /home/n/release/tar/normal.nxp.tgz  | tar zxf - updateExt.sh
+
   另外，在打包时，不需要md5sum的'\n'，用tr命令去掉之。
 
+    # 亦可用 awk '{printf "%s" $1}'
     # echo 123 | md5sum | awk '{print $1}' | tr -d '\n'
+

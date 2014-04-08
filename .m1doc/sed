@@ -32,7 +32,7 @@
     root@Ubt:~/sed# sed -n -e 'n' -e 'p' bar 
     2
     4
-    root@Ubt:~/sed# sed -n 'n;p' bar          
+    root@Ubt:~/sed# sed -n 'n;p' bar
     2
     4
 

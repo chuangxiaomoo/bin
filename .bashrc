@@ -20,6 +20,7 @@ alias   lsd='find `ls -A` -maxdepth 0 -type d | xargs'
 #lias   lsf='find . -maxdepth 1 -type f | sed 's#\./##g' | xargs'
 #lias   lsd='find . -maxdepth 1 -name '\''[a-zA-Z]*'\'' -type d | xargs | sed '\''s#\./##g'\'''
 
+alias  kpts="ps -ef | grep 'pts/[0-9]' | awk '{print \$2}' | xargs kill -9"
 alias    rr='rm -rf'
 alias    rm='rm -i'
 alias     i='vi'
