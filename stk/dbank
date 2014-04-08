@@ -7,6 +7,7 @@ helpmsg="
     COND    条件过滤表达式，SELECT时使用，默认为空
     END     时间范围的右值，默认使用900001的max(date)
     LIMIT   limit子句输出记录限制，默认48
+    LIST    code列表文件
     START   时间范围的左值
     TBL     操作表，默认使用'tbl_visit'
     XTBL    EXCLEDE表，SELECT时使用，默认为空

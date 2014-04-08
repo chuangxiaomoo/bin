@@ -518,8 +518,8 @@ function fn_html()
     timeout 10 ./xunner > ${js_xunner_txt}
     xt_ret $? "timeout" || return $?
 
-    names=(`awk  '!/name/ {print $NF}' ${js_xunner_txt}`)
-    codes=(`awk  '!/name/ {print $1}' ${js_xunner_txt}| sed -e 's/^[03]/sz&/g' -e 's/^6/sh&/g'`)
+    names=(`awk '!/name/ {print $NF}' ${js_xunner_txt}`)
+    codes=(`awk '!/name/ {print $1}' ${js_xunner_txt}| sed -e 's/^[03]/sz&/g' -e 's/^6/sh&/g'`)
     codes[0]=sh000001
     # echo ${names[@]}; echo ${codes[@]}; exit
 

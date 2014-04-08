@@ -239,12 +239,11 @@ function fn_get_rise_turnov()
     fn_get_down_turnov $@
 }
 
-
 function fn_insert_codes_2_table() 
 {
     [ -z "${1}" ] && echo "Usage: insert tbl_name" && exit 1
     echo "
-    INSERT INTO ${1}(code) SELECT code FROM ${tbl_ma_date} WHERE ${COND};
+    INSERT INTO ${1}(code) SELECT code FROM ${tbl_ma_date} WHERE ${COND0};
     " | mysql kts
 }
 
@@ -319,8 +318,8 @@ function fn_ma_ray()
     return     
 }
 
-function fn_cross_ma5() 
-{   
+function fn_trd_cross_maX() 
+{
     echo "build ${PREV}..."
     fn_reset_sqlsource
     END=${PREV} fn_get_ma345
@@ -328,37 +327,17 @@ function fn_cross_ma5()
     fn_create_tbl_codes tbl_mx_c_lt
     xt_ret $? "create tbl error" || return $?
 
-    COND="close<ma5" fn_insert_codes_2_table tbl_mx_c_lt
+    COND0="${COND0}" fn_insert_codes_2_table tbl_mx_c_lt
     xt_ret $? "insert codes table" || return $?
 
     echo "build ${END}..."
     fn_reset_sqlsource
     TBL=tbl_mx_c_lt fn_get_ma345
 
-    mysql -N kts<<<"SELECT code FROM tbl_ma345 WHERE close>ma5" | \
-        xargs -n4 | tee /dev/stderr | xargs up add_codes_2_dzh2tbl 
+    mysql -N kts<<<"SELECT code FROM tbl_ma345 WHERE ${COND1}" | \
+        xargs -n6 | tee /dev/stderr | xargs up add_codes_2_dzh2tbl 
 
     xt_ret $? "mysql" || return $?
-}
-
-function fn_cross_ma13() 
-{   
-    echo "build ${PREV}..."
-    fn_reset_sqlsource
-    END=${PREV} fn_get_ma345
-
-    fn_create_tbl_codes tbl_mx_c_lt
-    xt_ret $? "create tbl error" || return $?
-
-    COND="close<ma13" fn_insert_codes_2_table tbl_mx_c_lt
-    xt_ret $? "insert codes table" || return $?
-
-    echo "build ${END}..."
-    fn_reset_sqlsource
-    TBL=tbl_mx_c_lt fn_get_ma345
-
-    mysql -N kts<<<"SELECT code FROM tbl_ma345 WHERE close>ma13" | \
-        xargs -n4 | tee /dev/stderr | xargs up add_codes_2_dzh2tbl 
 
     # 下面方案在实时行情时会很慢
     # local prev=tbl_mx_${PREV//-/_}
@@ -366,6 +345,37 @@ function fn_cross_ma13()
     # mysql -N kts<<<"SELECT c.code FROM ${prev} as p,${curr} as c \
     #     WHERE p.code=c.code and p.close<p.ma13 and c.close>c.ma13" |\
     #     xargs -n4 | tee /dev/stderr | xargs up add_codes_2_dzh2tbl 
+}
+
+function fn_trd_cross_ma5() 
+{
+    COND0="close<ma5" COND1="close>ma5" fn_trd_cross_maX
+    xt_ret $? "xx" || return $?
+}
+
+function fn_trd_cross_ma13() 
+{   
+    COND0="close<ma13" COND1="close>ma13" fn_trd_cross_maX
+    xt_ret $? "xx" || return $?
+}
+
+function fn_trd_cross_5_13() 
+{
+    COND0="close<ma5 and close<ma13" COND1="close>ma5 and close>ma13" fn_trd_cross_maX
+    xt_ret $? "xx" || return $?
+}
+
+
+function fn_ma5_cross_ma13() 
+{
+    COND0="ma5<ma13" COND1="ma5>ma13" fn_trd_cross_maX
+    xt_ret $? "xx" || return $?
+}
+
+function fn_high_cross_ma5() 
+{
+    COND0="close<ma5" COND1="high>ma5 and close<ma5" fn_trd_cross_maX
+    xt_ret $? "xx" || return $?
 }
 
 function fn_ana_ma345() 
@@ -386,11 +396,12 @@ function fn_ana_ma345()
 
     # --------- 做分支 --------------- 
     cmdlist=(
-    "ma_ray         # ma5 > ma13 > ma34"
-    "ma_two         # ma5 > ma13 > ma34 > ma55"
-    "ma_three       # "
-    "cross_ma5      # close 上穿 ma5"
-    "cross_ma13     # close 上穿 ma13"
+    "ma_ray             # ma5 > ma13 > ma34"
+    "trd_cross_ma5      # close 上穿 ma5"
+    "trd_cross_ma13     # close 上穿 ma13"
+    "trd_cross_5_13     # close 上穿 ma5 and ma13"
+    "ma5_cross_ma13     # ma5   上穿 ma13"
+    "high_cross_ma5     # high  上穿 ma5, !close"
     )
     fn_execute "$@" || return $?
 }
