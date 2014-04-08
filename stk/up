@@ -524,7 +524,7 @@ function fn_html()
     # echo ${names[@]}; echo ${codes[@]}; exit
 
     [ ${#names[@]} -eq ${#codes[@]} ]
-    xt_ret $? "names codes not equal" || return $?
+    xt_ret $? "fail: ${#names[@]} -eq ${#codes[@]}" || return $?
 
     cp .template/KiTas.html /winc/relay/KiTas.html
     xt_ret $? "cp error" || return $?

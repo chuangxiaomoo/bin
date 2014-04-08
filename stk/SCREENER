@@ -319,21 +319,43 @@ function fn_ma_ray()
     return     
 }
 
-function fn_ma_cross() 
+function fn_cross_ma5() 
 {   
     echo "build ${PREV}..."
     fn_reset_sqlsource
     END=${PREV} fn_get_ma345
 
-    fn_create_tbl_codes tbl_mx_c_lt_13
+    fn_create_tbl_codes tbl_mx_c_lt
     xt_ret $? "create tbl error" || return $?
 
-    COND="close<ma13" fn_insert_codes_2_table tbl_mx_c_lt_13
+    COND="close<ma5" fn_insert_codes_2_table tbl_mx_c_lt
     xt_ret $? "insert codes table" || return $?
 
     echo "build ${END}..."
     fn_reset_sqlsource
-    TBL=tbl_mx_c_lt_13 fn_get_ma345
+    TBL=tbl_mx_c_lt fn_get_ma345
+
+    mysql -N kts<<<"SELECT code FROM tbl_ma345 WHERE close>ma5" | \
+        xargs -n4 | tee /dev/stderr | xargs up add_codes_2_dzh2tbl 
+
+    xt_ret $? "mysql" || return $?
+}
+
+function fn_cross_ma13() 
+{   
+    echo "build ${PREV}..."
+    fn_reset_sqlsource
+    END=${PREV} fn_get_ma345
+
+    fn_create_tbl_codes tbl_mx_c_lt
+    xt_ret $? "create tbl error" || return $?
+
+    COND="close<ma13" fn_insert_codes_2_table tbl_mx_c_lt
+    xt_ret $? "insert codes table" || return $?
+
+    echo "build ${END}..."
+    fn_reset_sqlsource
+    TBL=tbl_mx_c_lt fn_get_ma345
 
     mysql -N kts<<<"SELECT code FROM tbl_ma345 WHERE close>ma13" | \
         xargs -n4 | tee /dev/stderr | xargs up add_codes_2_dzh2tbl 
@@ -364,10 +386,11 @@ function fn_ana_ma345()
 
     # --------- 做分支 --------------- 
     cmdlist=(
-    "ma_ray     # ma5 > ma13 > ma34"
-    "ma_two     # ma5 > ma13 > ma34 > ma55"
-    "ma_three   # "
-    "ma_cross   # close 上穿 ma13"
+    "ma_ray         # ma5 > ma13 > ma34"
+    "ma_two         # ma5 > ma13 > ma34 > ma55"
+    "ma_three       # "
+    "cross_ma5      # close 上穿 ma5"
+    "cross_ma13     # close 上穿 ma13"
     )
     fn_execute "$@" || return $?
 }

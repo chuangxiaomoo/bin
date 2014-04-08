@@ -75,7 +75,10 @@ function fn_main()
     url="${url}stocklist=`cat .soptter | xargs | sed 's/ /\|/g'`"
     url="${url}&indexlist=000001_1|399001_2|399006_2"
 
-    w3m -dump "${url}" 2>&1 | sed 's/;indexdataArr/;\nindexdataArr/' > ${js_xunner} 
+    # trim *ST individuals
+    w3m -dump "${url}" 2>&1 | \
+        sed -e 's/;indexdataArr/;\nindexdataArr/' \
+            -e 's/*//g'  -e 's/ST//g'  > ${js_xunner} 
 
     fn_xunner
 }
