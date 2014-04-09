@@ -333,8 +333,9 @@ function fn_trd_cross_maX()
     echo "build ${END}..."
     fn_reset_sqlsource
     TBL=tbl_mx_c_lt fn_get_ma345
-
-    mysql -N kts<<<"SELECT code FROM tbl_ma345 WHERE ${COND1}" | \
+    local sqls="(SELECT * FROM day WHERE date='${END}') as d"
+    local conds="t.code=d.code and ${COND1}"
+    mysql -N kts<<<"SELECT t.code FROM tbl_ma345 as t, ${sqls} WHERE ${conds}" | \
         xargs -n6 | tee /dev/stderr | xargs up add_codes_2_dzh2tbl 
 
     xt_ret $? "mysql" || return $?
@@ -349,19 +350,19 @@ function fn_trd_cross_maX()
 
 function fn_trd_cross_ma5() 
 {
-    COND0="close<ma5" COND1="close>ma5" fn_trd_cross_maX
+    COND0="close<ma5 and ma5<ma13" COND1="t.close>ma5" fn_trd_cross_maX
     xt_ret $? "xx" || return $?
 }
 
 function fn_trd_cross_ma13() 
 {   
-    COND0="close<ma13" COND1="close>ma13" fn_trd_cross_maX
+    COND0="close<ma13" COND1="t.close>ma13" fn_trd_cross_maX
     xt_ret $? "xx" || return $?
 }
 
 function fn_trd_cross_5_13() 
 {
-    COND0="close<ma5 and close<ma13" COND1="close>ma5 and close>ma13" fn_trd_cross_maX
+    COND0="close<ma5 and close<ma13" COND1="t.close>ma5 and t.close>ma13" fn_trd_cross_maX
     xt_ret $? "xx" || return $?
 }
 
@@ -374,7 +375,7 @@ function fn_ma5_cross_ma13()
 
 function fn_high_cross_ma5() 
 {
-    COND0="close<ma5" COND1="high>ma5 and close<ma5" fn_trd_cross_maX
+    COND0="close<ma5" COND1="d.high>ma5 and t.close<ma5" fn_trd_cross_maX
     xt_ret $? "xx" || return $?
 }
 
