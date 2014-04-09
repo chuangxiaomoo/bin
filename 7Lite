@@ -589,6 +589,14 @@ function fn_78cols_text()
     echo " iconv -f gbk -t utf-8 $1 | fold -w ${WIDTH:-78}| dos2unix  "
 }
 
+
+function fn_bbox_cmdlist() 
+{
+    find -P  bin sbin usr -name '*' -exec ls -l '{}' \; | \
+        grep busybox | awk '{print $8}' | \
+        xargs -I{} basename {} | sort -u 
+}
+
 function fn_main() 
 {
     cmdlist=(
@@ -613,8 +621,9 @@ function fn_main()
     "cp_for_in f to...      # cp less filesys.*/dir"
     "genheader <.h file>    # define MACRO in header file"                        # 16
     "svncat <file_url>      # svn 在线搜索"
-    "insert_blankline FILE  # insert blank line for 38 chinese-char txt" 
+    "insert_blankline FILE  # 为小于78字符的行换行" 
     "78cols_text      FILE  # 为大于78字符的行换行"
+    "bbox_cmdlist           # all cmd link to busybox"
     )
 
     fn_execute "$@"
