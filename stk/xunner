@@ -48,7 +48,7 @@ function fn_xunner()
 
     cat ${js_xunner_idx} | \
         tr -d '\n' | tr "'" '"' | \
-        sed -e 's/^.*= //' -e 's/;.*$//' | \
+        sed -e 's/^.*= *//' -e 's/;.*$//' | \
         sed -e 's/[a-z][a-z][a-z]*/"&"/g' -e 's/;.*//g' | \
         JSON.sh -b | tr -d '"' | \
         awk '{printf "%s\t%.2f\t%.2f\t\t%.2f\t%.2f\t%.2f\t\t\t\t\t%s\n", 
