@@ -411,14 +411,9 @@ function fn_readelf()                   { cat binutils_readelf ;}
 }
 
 function fn_coreutils() {
-function fn_alphabet_list()             { cat coreutils_alphabet_list ;}
-function fn_class_list()                { cat coreutils_class_list ;}
 function fn_manual()                    { cat coreutils_manual ;}
-
     local opts=(
-        alphabet_list
-        class_list
-        manual
+        manual                          # list
     )
     fn_print $@
 }

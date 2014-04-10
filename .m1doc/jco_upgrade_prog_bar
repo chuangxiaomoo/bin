@@ -4,31 +4,30 @@
 
 ## 全新的升级方案
 
-## 升级进度及升级结果查询方案
+## 升级进度及升级结果查询方案1
 
-  1. 期望    
+  1. 期望
 
-      升级过程中，报告真实进度及升级结果
-      
+  升级过程中，报告真实进度及升级结果
+
   2. 问题模型 
 
-      生产者消费者模型
+  生产者消费者模型
 
   3. 问题冲突
 
-      进入脚本升级部分，httpd退出，不再有进度数据产生，web无法获得真实结果
+  进入脚本升级部分，httpd退出，不再有进度数据产生，web无法获得真实结果
 
 
   4. 问题解决方案
 
-      浏览器端：  web升级请求 -> 传输文件                     
-      
-      设备端：httpd接受文件（响应进度） --> 进入脚本部分(响应进度) -->
-              脚本拉起最简httpd(响应进度) --> 脚本通过curl更新进度
+  浏览器端：web升级请求 --> 传输文件
+ 
+  设备端：httpd接受文件（响应进度） --> 进入脚本部分(响应进度) -->
+          脚本拉起最简httpd(响应进度) --> 脚本通过curl更新进度
 
-      关键：  在进入脚本升级时，拉起一个最简单httpd, 并维护一个全局变量连接
-              生产者与消费者。
-
+  关键：  在进入脚本升级时，拉起一个最简单httpd, 并维护一个全局变量连接
+          生产者与消费者。
 
     mkdir -p /etc/boa
     cp boa.conf /etc/boa/
@@ -36,4 +35,54 @@
     mkdir -p /var/log/boa/
     mkdir -p /var/www/
     cp -a * /var/www/
+
+## 进度方案2 
+
+  需要conf_get_upgrade_progressbar()
+  需要conf_set_upgrade_progressbar()的二进制封装。
+
+    function fn_prog_bar_start() 
+    {
+        xtar_secs=${1:-6}
+        start=`date +%s`
+        let start=start-xtar_secs
+    }
+
+    function fn_prog_bar_set() 
+    {
+        # total_secs = xtar_secs + updateExt.sh 
+        curr=`date +%s`
+        total_secs=100
+        let 'prog_bar=100*(curr-start)/total_secs'
+
+        [ "$prog_bar" -ge 100 ] && prog_bar=99
+
+        echo "----- ${prog_bar} @${BASH_LINENO[0]} ----"
+    }
+
+    function fn_prog_bar_succ() 
+    {
+        curr=`date +%s`
+        let takes_secs=curr-start
+        echo "---- it takes $takes_secs on upgrade ----"
+        prog_bar=100
+        echo ${prog_bar}
+    }
+
+    function fn_prog_bar_fail() 
+    {
+        prog_bar=-1
+        echo ${prog_bar}
+    }
+
+
+    function fn_main()
+    {
+        fn_prog_bar_start
+        fn_prog_bar_set
+        fn_prog_bar_succ
+        fn_prog_bar_fail
+    }
+
+    fn_main $@
 
