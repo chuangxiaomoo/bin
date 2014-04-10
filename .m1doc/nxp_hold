@@ -1,18 +1,123 @@
-# hold
+/* 
+ * 2014-04-10
+ * ## 心理缺陷
+ * 
+ *     没有准备好，就不敢于行动。
+ *     这是一个源自于，成长的困境，从来都是资源短缺的环境长大。
+ *     很少能得到帮助的历史事实。
+ * 
+ * ## 突破？
+ * 
+ * 
+ * ## 基础模式
+ * 
+ *     订阅 -》去中心化的扁平结构 -》
+ * 
+ *     QT的`信号与槽`机制
+ **/
 
-## 心理缺陷
+#include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <unistd.h>
 
-  没有准备好，就不敢于行动。
-  这是一个源自于，成长的困境，从来都是资源短缺的环境长大。
-  很少能得到帮助的历史事实。
+#include "debug.h"
+#include "time_call.h"
+#include <BasicUsageEnvironment.hh>
 
-## 突破？
+#include "logstartup.h"
+#include "pthread_manage.h"
+#include "jconfig.h"
+#include "jcpService.h"
+#include "upnp.h"
+#include "time_config.h"
+#include "net_check.h"
+#include "system_app_manage.h"
+#include "search_service.h"
+#include "system_ctrl.h"
 
+char gMainQuit = 0;
+static void signalINTHandler(int signum)
+{
+	DBG("Set quit flag!!\n");
+	gMainQuit = 1;
 
-## 基础模式
+	return ;
+}
 
-  订阅 -》去中心化的扁平结构 -》
+int main()
+{
+	/* 
+     * Insure a clean shutdown if user types ctrl-c 
+     **/
+	struct sigaction sigAction;
 
-  QT的`信号与槽`机制
+	sigAction.sa_handler = signalINTHandler;
+	sigAction.sa_flags = 0;
+	sigemptyset(&sigAction.sa_mask);
+	sigaddset(&sigAction.sa_mask, SIGTERM);
+	sigaddset(&sigAction.sa_mask, SIGINT);
+	sigaction(SIGINT, &sigAction, NULL);
+	sigaction(SIGTERM, &sigAction, NULL);
+	
+    /* 
+     *  servers -- a thread or a process
+     **/
 
-## 
+	DBG("init LOG...\n");
+    init_server_log();
+
+	DBG("init CONFIG...\n");
+	init_server_config();
+
+	DBG("init JCPCMD...\n");
+    init_server_jcpcmd();
+
+	DBG("init apps...\n");
+    init_server_apps();
+
+    /* 
+     *  servers -- a listen socket on schedule
+	 *  TaskScheduler for backgroundhanding
+     **/
+	TaskScheduler *schedule = BasicTaskScheduler::createNew();
+
+	init_server_search(schedule);
+
+    /* 
+     *  clients -- a timer task
+     *  engine_fast get response accurately, engine_slow something long or delay
+     **/
+	JTimeEngine engine_fast, engine_slow;
+	create_time_engine(&engine_fast);
+	create_time_engine(&engine_slow);
+
+    init_client_log_sync(&engine_fast);
+	init_client_config_sync(&engine_fast);
+
+	init_client_cpu_usage(&engine_fast);
+	init_client_iplink_check(&engine_slow);
+	init_client_ntp_update(&engine_slow);
+
+	init_client_heartbeat_check(&engine_slow);
+	
+	DBG("init upnp...\n");
+	upnp_init(engine_slow, schedule);
+		
+	schedule->doEventLoop(&gMainQuit);
+
+// EXIT:
+
+	gMainQuit = 1;          // avoid create_pthread() fail
+	
+    uninit_server_log();
+    uninit_server_config();
+    uninit_server_jcpcmd();
+	uninit_server_search();
+
+	upnp_uninit();
+
+	quit_all_pthread();
+	
+	return 0;
+}

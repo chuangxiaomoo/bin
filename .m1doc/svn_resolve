@@ -1,0 +1,10 @@
+# resolve
+
+  vi Makefile to edit <<<<<<< .mine 和 ======= 和 >>>>>>> .rxxx
+
+  svn resolve --accept working Makefile
+
+  --accept ARG  : specify automatic conflict resolution source
+                  ('base', 'working', 'mine-conflict',
+                  'theirs-conflict', 'mine-full', 'theirs-full')
+

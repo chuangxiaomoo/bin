@@ -548,6 +548,7 @@ function fn_diff()                      { cat svn_diff ;}
 function fn_revert()                    { cat svn_revert ;}
 function fn_add()                       { cat svn_add ;}
 function fn_log()                       { cat svn_log ;}
+function fn_resolve()                   { cat svn_resolve ;}
     local opts=(
         fundamental
         add
@@ -555,6 +556,7 @@ function fn_log()                       { cat svn_log ;}
         stat
         diff
         revert
+        resolve
         help
         log
         merge
@@ -1127,7 +1129,7 @@ function fn_upgrade()                   { cat nxp_upgrade ;}
 function fn_testing()                   { cat nxp_testing ;}
 function fn_cmdlineparser()             { cat nxp_cmdlineparser ;}
     local opts=(
-        hold
+        hold                            # C/S 架构
         base                            # `捋`整体功能
         requirement_analysis
         training                        # 如何做培训？
