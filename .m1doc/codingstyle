@@ -36,7 +36,7 @@
         #define MAX_SCHEDULER_GRANULARITY 10000
         #define MAX_SCHEDULER_GRANULARITY (10 * 1000)
 
-    don't write implicitely code 
+    don't write implicitely code
         (NULL != ret)
 
     no magic digits and magic strings, espacially in statement return.
@@ -54,5 +54,5 @@
     /usr/src/linux-2.6.38/include/linux/kernel.h
     CodingStyle        
     CodingStyle.zh_CN
-    CodingStyle.jco
+    CodingStyle.team
 
