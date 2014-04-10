@@ -1,9 +1,27 @@
 #!/bin/bash 
 
-一、挂住了
+〇、tee会挂住
 
-    因为fn_sub也使用了 /var/upgrade.log，重定向相当于管道，使用了waitpid()
-    或者是使用了线程?
+    function fn_main()
+    {
+        file=/tmp/.upStart.sh
+        echo "{ echo 10 start; sleep 10; echo 10 end; }" > ${file}
+        bash ${file}&
+    }
+
+    fn_main 2>&1 | tee /root/upgrade.log 
+
+    # and upStart.sh will inherit the STDOUT fd from fn_main, 
+    # tee won't quit till STDOUT closed
+    
+
+一、后台"函数"也挂住
+
+    因为fn_sub也使用了 /var/upgrade.log
+
+    # man bash -> [coproc](http://blog.csdn.net/laoyiin/article/details/8511570)
+    # coproc会使用 built-in wait 进行等待
+    # [GNU并行 parallel](http://blog.sina.com.cn/s/blog_3f7652740100y0ju.html)
 
     #!/bin/bash - 
 
@@ -47,9 +65,9 @@
 
 三、消失的CMD
 
-    如果没有“#!/bin/bash -”，那么ps -ef 时，这个脚本文件的CMD列将会是其
+    如果没有“#! /bin/bash -”，那么ps -ef 时，这个脚本文件的CMD列将会是其
     父进程的名字。
 
     cat <<-"HERE" > /var/sub
-    #!/bin/bash - 
+    #! /bin/bash -
 	HERE

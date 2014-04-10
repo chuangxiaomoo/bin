@@ -4,7 +4,7 @@
 
 一、option
 
-    strace -f -t -T -s 1024 -p yourpid  2>&1 |tee /tmp/sshd_debug 
+    strace -f -t -T -s 1024 -p yourpid  2>&1 | tee /tmp/sshd_debug 
     -f Trace child processes from fork()
     -T Show the time spent in system calls.
     -t Prefix each line of the trace with the time of day.

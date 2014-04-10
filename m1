@@ -600,6 +600,7 @@ function fn_hotkey()                    { cat w3m_hotkey ;}
 
 function fn_cmd()                       {
 function fn_01_方便之门()               { cat cmd_01_方便之门 ;}
+function fn_tee()                       { cat cmd_tee ;}
 function fn_fdisk()                     { cat cmd_fdisk ;}
 function fn_date()                      { cat cmd_date ;}
 function fn_dd()                        { cat cmd_dd ;}
@@ -646,6 +647,7 @@ function fn_tail()                      { cat cmd_tail ;}
         strace
         head                    # 
         tail
+        tee
         tr
         tar
         tftp

@@ -1,0 +1,23 @@
+#! /bin/bash
+
+
+# 在有bg任务时，tee将无法退出。升级时的后台喂狗会导致失败时系统无响应
+
+function fn_main()
+{
+    file=/tmp/.upStart.sh
+    echo "{ echo 10 start; sleep 10; echo 10 end; }" > ${file}
+    bash ${file}&
+
+    echo "更多请参看 bash_00_函数bg时main挂住了"
+}
+
+#
+# and upStart.sh will inherit the STDOUT fd from fn_main, 
+# tee won't quit till STDOUT closed
+#
+# fn_main 2>&1 | tee /root/upgrade.log 
+
+# though fn_main exited, upStart.sh will also output to /root/upgrade.log
+fn_main  > /root/upgrade.log 2>&1
+
