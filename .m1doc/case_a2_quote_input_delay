@@ -1,0 +1,41 @@
+# a2_quote_input_delay
+
+
+## 目标
+
+  1. .sh 文件时能够正常输入
+  2. nxp root.sqfs 时 syslogd不能正常启动
+
+## 真正原因 - True causes
+
+  SecureCRT 本身映射的问题，`"`被占用了
+
+## 问题描述 - from R&D or Tester
+
+  `"`输入有“延时”
+
+## 现象分析 - log or details such as "ATTENTION: err or fail"
+
+
+## 原因分析 - 原因猜想，目标分解，process to true causes
+
+  1. :map " 查看映射
+  2. 开始清楚所有映射
+  3. ...
+
+  在家里尝试，才发现是 SecureCRT 的问题。SecureCRT这样已经不是第一次了。
+
+## 解决方案 - 包括对未来的防御
+
+  世界很复杂，在出现问题时，先进行界定
+
+## Time
+
+  (1) 整个问题过程花费的时间
+
+  (2) 问题引入、发现、解决
+      解决引入                2012-11-28
+      解决日期                2012-11-28
+      总结日期                2012-12-01 10:10:00 ~ 10:30:00
+
+## Introspection

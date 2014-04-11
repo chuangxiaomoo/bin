@@ -21,7 +21,7 @@ alias   lsd='find `ls -A` -maxdepth 0 -type d | xargs'
 #lias   lsd='find . -maxdepth 1 -name '\''[a-zA-Z]*'\'' -type d | xargs | sed '\''s#\./##g'\'''
 
 alias  ktel="ps -ef | grep [t]elnet | awk '{print \$2}' | xargs kill -9"
-alias  kpts="ps -ef | grep 'pts/[0-9]' | awk '{print \$2}' | xargs kill -9"
+alias  kpts="ps -ef | grep '[p]ts/[1-9]' | awk '{print \$2}' | xargs kill -9"
 alias    rr='rm -rf'
 alias    rm='rm -i'
 alias     i='vi'
