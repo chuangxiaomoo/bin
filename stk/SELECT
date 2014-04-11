@@ -54,7 +54,8 @@ function fn_goo_sym_day()
 
 function fn_get_open_days() 
 {
-    mysql -N kts <<< "SELECT date from day WHERE code = 900001 " | tail -${LIMIT:-48} 
+    # 统计13日下跌 配合 SCREENER 3 做相应选股
+    mysql -N kts <<< "SELECT date from day WHERE code = 900001 " | tail -${1:-13} 
 }
 
 function fn_get_open_days_min() 
@@ -146,7 +147,7 @@ function fn_main()
     "app_nmc_name       [sortfiled]          # 追加股票名到表TBL"
     "app_wgt_turnov     [sortfiled]          # 追加weight到down_turnov"
     "get_comma_cloumns  [tbl_name:-day]      # 逗分列名"
-    "get_open_days                           # 开市日列表 \$LIMIT"
+    "get_open_days      [limit:-13]          # 开市日列表"
     "get_open_days_min                       # 分钟日列表 \$LIMIT"
     # ----------------  ABOVE IS FIXED SEQUENCE --------------------
     "get_curdate_min    [CODE:-900001]       # --- 当日min \$LIMIT"

@@ -482,11 +482,13 @@ function fn_11_Geek与产品机器()         { cat prof_11_Geek与产品机器 ;
 function fn_ljsw()                      { 
 function fn_01_教育()                   { cat ljsw_01_教育 ;}
 function fn_02_傻帽悲观派()             { cat ljsw_02_傻帽悲观派 ;}
+function fn_04_民主政治()               { cat ljsw_04_民主政治 ;}
 function fn_x1_你的阅读造就了你()       { cat ljsw_x1_你的阅读造就了你 ;}
     local opts=(
         01_教育
         02_傻帽悲观派
         03_成功人士的3个品质            # 优越感、不安全感、自控力
+        04_民主政治
         x1_你的阅读造就了你             # you are what u read
     )
     fn_print $@
