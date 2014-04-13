@@ -242,7 +242,8 @@ function fn_hexun_day()
     cp $hx_dayclose $p_hx_day/$DATE
 
     echo "
-    LOAD DATA LOCAL INFILE '${hx_dayclose}' INTO TABLE kts.day;
+    DELETE FROM day WHERE date='${DATE}';
+    LOAD DATA LOCAL INFILE '${hx_dayclose}' INTO TABLE day;
     " | mysql kts
 }
 
@@ -360,8 +361,13 @@ function fn_up_tbl_xRD()
 
     # make -C $p_bin
     
-    cp /dzh2/Download/PWR/full.PWR $p_bin
-    xert $? `$PS8` || return $?
+    if [ "$1" = "-i" ] ; then
+        echo "keep $p_bin/full.PWR"
+    else
+        echo "cp /dzh2/Download/PWR/full.PWR $p_bin"
+        cp /dzh2/Download/PWR/full.PWR $p_bin
+        xert $? `$PS8` || return $?
+    fi
 
     [ ! -f "$p_bin/xRD" ] && echo "xRD not exist" && exit
     cd $p_bin
@@ -570,7 +576,7 @@ function fn_main()
     "redo_hexun_day                     # 重做大盘日线数据"
     "redo_hexun_day_fr_min              # 利用已有分线，重做大盘日线"
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
-    "up_tbl_xRD                         # --- update table EXCLUDE RIGHT DIVIDEN"
+    "up_tbl_xRD [-i]                    # --- 带参数-i，使用当前full.PWR"
     "add_codes_2_dzh2tbl code...        # 添加CODE到ZXG.BLK，并写表#{TBL:-zxg}"
     "add_tbl_codes_2_dzh                # 添加表#{TBL:-tbl_visit}到dzh2tbl{zxg}"
     "up_rzrq_codes_tbl                  # 更新RZRQ业务数据"

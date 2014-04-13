@@ -48,6 +48,7 @@ function fn_rebuild_list_and_download_from_last_xRD()
 
     fn_yahoo start
 
+    echo "    Redoing the timeout ones[`cat $yahootimeout`]..."
     cp $yahootimeout $yahooask
     NOCLEAN=1 fn_yahoo start
 }
@@ -55,6 +56,9 @@ function fn_rebuild_list_and_download_from_last_xRD()
 
 function fn_main() 
 {
+    read -p "
+    make sure [up up_tbl_xRD] is done!!! 
+    type any key to continue."
     # get date_maxyahoo
     fn_maxyahoo
 
@@ -62,7 +66,7 @@ function fn_main()
     xt_ret $? "date_maxyahoo is NULL" || return $?
 
     fn_rebuild_list_and_download_from_last_xRD
-    xt_ret $? "" || return $?
+    xt_ret $? "rebuild" || return $?
 
     rm -f ${znzday}/900001
 
