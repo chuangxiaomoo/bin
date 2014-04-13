@@ -12,6 +12,11 @@
 . `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
 . /etc/common.rc
 
+function fn_get_prev() 
+{
+    sqls="SELECT date FROM day WHERE code=900001 and date<='$END'"
+    mysql -N kts<<<"${sqls} ORDER by date DESC LIMIT ${STEP:-1},1"
+}
 
 function fn_get_block_info() 
 {
@@ -365,9 +370,22 @@ function fn_low_cross_maX()
 
 function fn_low_cross_ma5() 
 {
-    # ma5<ma13 --> 触底反弹
-    COND1="ma5<ma13 and d.yesc>ma5 and d.low<ma5 and d.close>ma5" fn_low_cross_maX
-    xt_ret $? "xx" || return $?
+    # ma5<ma13 --> 2次上穿ma5
+    # COND1="ma5<ma13 and d.yesc>ma5 and d.low<ma5 and d.close>ma5" fn_low_cross_maX
+    # xt_ret $? "xx" || return $?
+    iEND=`STEP=1 fn_get_prev`
+    iPREV=`STEP=${STEP} END=${iEND} fn_get_prev`
+
+    PREV=${iPREV} END=${iEND} fn_trd_cross_ma5
+    xt_ret $? "${FUNCNAME}" || return $?
+
+    fn_cp_tbl zxg tbl_cross_ma5
+
+    TBL=tbl_cross_ma5 COND1="ma5<ma13 and d.low<ma5 and d.close>ma5" fn_low_cross_maX
+
+    xt_ret $? "${FUNCNAME}" || return $?
+
+    echo "    2次上穿ma5分析over..."
 }
 
 function fn_trd_cross_ma5() 
@@ -415,7 +433,7 @@ function fn_ana_ma345()
         echo "Error: ${END} is not a open day!!!" && exit 1
     fi
     sqls="SELECT date FROM day WHERE code=900001 and date<='$END'"
-    PREV=`mysql -N kts<<<"${sqls} ORDER by date DESC LIMIT ${STEP:-1},1" `
+    PREV=`fn_get_prev`
 
     # --------- 做分支 --------------- 
     cmdlist=(
@@ -423,7 +441,7 @@ function fn_ana_ma345()
     "trd_cross_ma5      # close 上穿 ma5"
     "trd_cross_ma13     # close 上穿 ma13"
     "trd_cross_5_13     # close 上穿 ma5 and ma13"
-    "low_cross_ma5      # 低开  上穿 ma5"
+    "low_cross_ma5      # 近日再上穿 ma5, STEP设置天数"
     "ma5_cross_ma13     # ma5   上穿 ma13"
     "high_cross_ma5     # high  上穿 ma5, !close"
     )
