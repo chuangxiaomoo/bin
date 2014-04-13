@@ -265,7 +265,7 @@ function fn_exe_usage()
     echo "    ${0##*/} {-l | --list}"
     echo "    ${0##*/} / keyword"
     echo
-    exit 0
+    exit 1
 }
 
 function fn_execute() 
@@ -297,7 +297,7 @@ function fn_execute()
             cmd=${cmdlist[${idx}]/ */}
             if [ "$1" = "${cmd}" ] ; then
                 fn_${cmd} "${@:2}"
-                return              # avoid fn_exe_usage
+                return $?            # avoid fn_exe_usage
             fi
         done 
         fn_exe_usage

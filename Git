@@ -10,6 +10,7 @@ function fn_main()
         ----------- Usage --------------
         A   commit  [all changed file]
         c   commit  [specifid file] 
+        d   dff     [file] 
         p   pull    [origin master]
         P   push    [origin master]
         r   revert  [file or directory]
@@ -39,6 +40,10 @@ function fn_main()
         git add ${filelist}
         git commit -m "$REPLY" ${filelist}
         git push origin master
+        ;;
+
+    d*)
+        git diff ${filelist}
         ;;
 
     p*|pull)
