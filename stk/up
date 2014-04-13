@@ -361,7 +361,7 @@ function fn_up_tbl_xRD()
 
     # make -C $p_bin
     
-    if [ "$1" = "-i" ] ; then
+    if [ "$1" = "--keep.PWR" ] ; then
         echo "keep $p_bin/full.PWR"
     else
         echo "cp /dzh2/Download/PWR/full.PWR $p_bin"
@@ -576,7 +576,7 @@ function fn_main()
     "redo_hexun_day                     # 重做大盘日线数据"
     "redo_hexun_day_fr_min              # 利用已有分线，重做大盘日线"
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
-    "up_tbl_xRD [-i]                    # --- 带参数-i，使用当前full.PWR"
+    "up_tbl_xRD [--keep.PWR]            # --- --keep.PWR，使用当前full.PWR"
     "add_codes_2_dzh2tbl code...        # 添加CODE到ZXG.BLK，并写表#{TBL:-zxg}"
     "add_tbl_codes_2_dzh                # 添加表#{TBL:-tbl_visit}到dzh2tbl{zxg}"
     "up_rzrq_codes_tbl                  # 更新RZRQ业务数据"
