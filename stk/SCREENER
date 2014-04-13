@@ -85,7 +85,9 @@ function fn_get_13d_20psink()
     此类波动频繁之属，做好波段操作，特别是大盘行情不好的日子。大着眼，小着手。
 	HERE
 
-    echo "call sp_visit_tbl('cap', 2);" | tee -a $mps_god
+    echo "
+    call sp_visit_tbl('cap', 2);
+    " | tee -a $mps_god
     mysql $mo -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
 }
@@ -453,6 +455,31 @@ function fn_ana_ma513()
     fn_execute "$@" || return $?
 }
 
+function fn_ana_ma240() 
+{
+    fn_get_ma513
+    xt_ret $? "${FUNCNAME}" || return $?
+
+    # 条件进行分类
+    # 且不要长得太多，已经过去的，要抓住现在
+
+    local sqls="SELECT s.code FROM tbl_ma513 as s, tbl_ma240 as l"
+    local conds=(                                   # 2014-04-14
+                's.code=l.code and'                 # 关联code
+                '(l.high-l.low)/l.low<.63 and'      # 年振幅45%，参照佛山照明、福建水泥
+                's.ma5>s.ma13 and '                 # 345中线：ma5上穿ma13
+                's.ma13>l.ma34 and '                # 345长线：ma13上穿ma34
+                's.close>3 '                        # 价格无关，上海莱士，福建水泥
+                )
+                # abs(ma34-ma60)/ma34<.05 and abs(ma120-ma240)/ma120<.03
+
+    mysql -N kts<<<"${sqls} WHERE ${conds[@]}" | 
+                xargs -n6 | tee /dev/stderr | xargs up add_codes_2_dzh2tbl 
+    xt_ret $? "${FUNCNAME}" || return $?
+    
+    return 0
+}
+
 function fn_main() 
 {
     CURR=`fn_maxdate`
@@ -464,6 +491,7 @@ function fn_main()
     "get_down_turnov      start [end]           # 100%下降净换手"
     "get_ma513            [end]                 # ma 5 13 34 55"
     "ana_ma513            index [end]           # 分析ma 5 13 34 55"
+    "ana_ma240                                  # 分析ma 34 60 120 240"
     "get_rise_turnov      start [end]           # 100%上升净换手"
     "get_13d_20psink                            # 8日13日SINK超20%"
     "get_1_swing_num      [RISE_PERCENT:-8]     # 单日振幅，小于0计算跌幅"

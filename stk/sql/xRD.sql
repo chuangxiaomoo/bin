@@ -188,6 +188,8 @@ CREATE PROCEDURE sp_create_ma240() tag_ma240:BEGIN
         id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
         date        date NOT NULL,
+        low         DECIMAL(6,2) NOT NULL DEFAULT 0,
+        high        DECIMAL(6,2) NOT NULL DEFAULT 0,
         close       DECIMAL(6,2) NOT NULL DEFAULT 0,
         ma34        DECIMAL(6,2) NOT NULL DEFAULT 0,        
         ma60        DECIMAL(6,2) NOT NULL DEFAULT 0,
@@ -744,6 +746,8 @@ END tag_up_ma34 //
 DROP PROCEDURE IF EXISTS sp_get_ma240//
 CREATE PROCEDURE sp_get_ma240(a_code INT(6) ZEROFILL) tag_get_ma240:BEGIN
     DECLARE v_date     DATE;
+    DECLARE v_low      DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_high     DECIMAL(6,2) DEFAULT 0;
     DECLARE v_close    DECIMAL(6,2) DEFAULT 0;
     DECLARE v_ma34     DECIMAL(6,2) DEFAULT 0;
     DECLARE v_ma60     DECIMAL(6,2) DEFAULT 0;
@@ -759,8 +763,8 @@ CREATE PROCEDURE sp_get_ma240(a_code INT(6) ZEROFILL) tag_get_ma240:BEGIN
     INSERT INTO tempday(code,date,close) SELECT 
            code,date,close FROM day WHERE code=a_code and date>=@START and date<=@END;
 
-    -- 13 34 55 100
-    SELECT count(*) FROM tempday INTO @v_len;
+    -- via high, induct is a long-term invaste one
+    SELECT count(*),min(close),max(close) FROM tempday INTO @v_len,v_low,v_high;
     SELECT date,close FROM tempday WHERE id=@v_len INTO v_date,v_close;
 
     IF @v_len < 240 THEN LEAVE tag_get_ma240; END IF;
@@ -772,8 +776,8 @@ CREATE PROCEDURE sp_get_ma240(a_code INT(6) ZEROFILL) tag_get_ma240:BEGIN
 
     -- SELECT v_ma34, v_ma60, v_ma120, v_ma240;
 
-    INSERT INTO tbl_ma240 (code, date, close,   ma34, ma60, ma120, ma240)
-           VALUES(a_code, v_date, v_close, v_ma34, v_ma60, v_ma120, v_ma240);
+    INSERT INTO tbl_ma240 (code,     date,  low,  high,  close,  ma34,  ma60,   ma120,   ma240)
+                    VALUES(a_code, v_date,v_low,v_high,v_close,v_ma34,v_ma60, v_ma120, v_ma240);
 END tag_get_ma240 //
 
 
