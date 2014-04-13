@@ -146,7 +146,7 @@ tag_kdj:BEGIN
     UNTIL v_i > v_len END REPEAT;
 END tag_kdj//
 
-
+ -- 使用TEMPORARY时效率提升5倍
 DROP PROCEDURE IF EXISTS sp_create_tempday //
 CREATE PROCEDURE sp_create_tempday() tag_tempday:BEGIN 
     DROP   TEMPORARY TABLE IF EXISTS tempday;
