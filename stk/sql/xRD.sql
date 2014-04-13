@@ -146,10 +146,13 @@ tag_kdj:BEGIN
     UNTIL v_i > v_len END REPEAT;
 END tag_kdj//
 
+
 DROP PROCEDURE IF EXISTS sp_create_tempday //
 CREATE PROCEDURE sp_create_tempday() tag_tempday:BEGIN 
-    DROP TABLE IF EXISTS tempday;
-    CREATE TABLE tempday (
+    DROP   TEMPORARY TABLE IF EXISTS tempday;
+    CREATE TEMPORARY TABLE tempday (
+ -- DROP   TABLE IF EXISTS tempday;
+ -- CREATE TABLE tempday (
         id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
         date        date NOT NULL,
@@ -163,6 +166,35 @@ CREATE PROCEDURE sp_create_tempday() tag_tempday:BEGIN
         INDEX(date)
     );
 END tag_tempday //
+
+DROP PROCEDURE IF EXISTS sp_create_ma513 //
+CREATE PROCEDURE sp_create_ma513() tag_ma513:BEGIN 
+    DROP TABLE IF EXISTS tbl_ma513; -- for visit output
+    CREATE TABLE tbl_ma513(
+        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        close       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        ma5         DECIMAL(6,2) NOT NULL DEFAULT 0,        
+        ma13        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        high        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        low         DECIMAL(6,2) NOT NULL DEFAULT 0
+    );
+END tag_ma513 //
+
+DROP PROCEDURE IF EXISTS sp_create_ma240 //
+CREATE PROCEDURE sp_create_ma240() tag_ma240:BEGIN 
+    DROP TABLE IF EXISTS tbl_ma240; -- for visit output
+    CREATE TABLE tbl_ma240(
+        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        date        date NOT NULL,
+        close       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        ma34        DECIMAL(6,2) NOT NULL DEFAULT 0,        
+        ma60        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        ma120       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        ma240       DECIMAL(6,2) NOT NULL DEFAULT 0
+    );
+END tag_ma240 //
 
 DROP PROCEDURE IF EXISTS sp_create_tempwek //
 CREATE PROCEDURE sp_create_tempwek() tag_tempwek:BEGIN
@@ -365,19 +397,6 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
         date_high   date NOT NULL DEFAULT 0
     );
 
-    DROP TABLE IF EXISTS tbl_ma345; -- for visit output
-    CREATE TABLE tbl_ma345(
-        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
-        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
-        close       DECIMAL(6,2) NOT NULL DEFAULT 0,
-        ma5         DECIMAL(6,2) NOT NULL DEFAULT 0,        
-        ma13        DECIMAL(6,2) NOT NULL DEFAULT 0,
-        ma34        DECIMAL(6,2) NOT NULL DEFAULT 0,
-        ma55        DECIMAL(6,2) NOT NULL DEFAULT 0,
-        high        DECIMAL(6,2) NOT NULL DEFAULT 0,
-        low         DECIMAL(6,2) NOT NULL DEFAULT 0
-    );
-
     SET @cond=' ORDER by code';
     SET @sqls=concat('INSERT INTO codes(code) SELECT code FROM ', a_tbl, @cond);
     PREPARE stmt from @sqls; EXECUTE stmt;
@@ -391,17 +410,22 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
     );
     PREPARE stmt from @sqls; EXECUTE stmt;
 
+    -- prepare
+    IF a_type = @fn_get_ma513       THEN call sp_create_ma513(); END IF;
+    IF a_type = @fn_up_ma240_all    THEN call sp_create_ma240(); END IF;
+
+    -- visit all codes
     WHILE v_id <= v_len DO
         SELECT code FROM codes WHERE id=(v_id) INTO v_code;
-
-        -- don't forget call before sp_xxx 
         CASE a_type
-            WHEN 1 THEN call sp_flt_kdj_up(v_code);
-            WHEN 2 THEN call sp_flt_13d_sink(v_code);
-            WHEN 3 THEN call sp_flt_n_day_change(v_code);
-            WHEN 4 THEN call sp_get_down_turnov(v_code);
-            WHEN 5 THEN call sp_get_ma345(v_code);
-            ELSE   SELECT "no a_type match";
+            WHEN @fn_flt_kdj_up        THEN call sp_flt_kdj_up(v_code);
+            WHEN @fn_flt_13d_sink      THEN call sp_flt_13d_sink(v_code);
+            WHEN @fn_flt_n_day_change  THEN call sp_flt_n_day_change(v_code);
+            WHEN @fn_get_down_turnov   THEN call sp_get_down_turnov(v_code);
+            WHEN @fn_get_ma513         THEN call sp_get_ma513(v_code);
+            WHEN @fn_up_ma240_all      THEN call sp_get_ma240(v_code);
+            WHEN @fn_up_ma240_34       THEN call sp_up_ma34(v_code);
+            ELSE SELECT "no a_type match";
         END CASE;
 
         SET v_id = v_id + 1;
@@ -663,47 +687,95 @@ CREATE PROCEDURE sp_get_down_turnov(a_code INT(6) ZEROFILL) tag_100d_turnov:BEGI
 
 END tag_100d_turnov //
 
-DROP PROCEDURE IF EXISTS sp_get_ma345//
-CREATE PROCEDURE sp_get_ma345(a_code INT(6) ZEROFILL) tag_get_ma345:BEGIN
+DROP PROCEDURE IF EXISTS sp_get_ma513//
+CREATE PROCEDURE sp_get_ma513(a_code INT(6) ZEROFILL) tag_get_ma513:BEGIN
     DECLARE v_ma5      DECIMAL(6,2) DEFAULT 0;
     DECLARE v_ma13     DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_ma34     DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_ma55     DECIMAL(6,2) DEFAULT 0;
     DECLARE v_close    DECIMAL(6,2) DEFAULT 0;
     DECLARE v_high     DECIMAL(6,2) DEFAULT .1;
     DECLARE v_low      DECIMAL(6,2) DEFAULT .1;
-    DECLARE v_revi13   DECIMAL(6,2) DEFAULT .1;
 
     call sp_create_tempday();
 
-    -- 60 
+    -- 14th
     SELECT date FROM day WHERE code=a_code and date<=@END ORDER by 
-           date DESC limit 60,1 INTO @START;
+           date DESC limit 13,1 INTO @START;
+
+    INSERT INTO tempday(code,date,close) SELECT 
+           code,date,close FROM day WHERE code=a_code and date>@START and date<=@END;
+
+    -- 13 34 55 100
+    SELECT count(*) FROM tempday INTO @v_len;
+    SELECT close FROM tempday WHERE id=@v_len INTO v_close;
+
+    IF @v_len < 13 THEN LEAVE tag_get_ma513; END IF;
+
+    SELECT SUM(close)/5   FROM tempday WHERE id > (@v_len-5 ) INTO v_ma5  ;
+    SELECT SUM(close)/13, MAX(close), MIN(close)  
+                          FROM tempday INTO v_ma13, v_high, v_low ;
+
+    INSERT INTO tbl_ma513 (  code,   close,   ma5,   ma13,   high,   low)
+                    VALUES(a_code, v_close, v_ma5, v_ma13, v_high, v_low);
+END tag_get_ma513 //
+
+-- 考虑使用ma34代替ma34
+DROP PROCEDURE IF EXISTS sp_up_ma34//
+CREATE PROCEDURE sp_up_ma34(a_code INT(6) ZEROFILL) tag_up_ma34:BEGIN
+    DECLARE v_date     DATE;
+    DECLARE v_count    INT(6) DEFAULT 0;
+    DECLARE v_close    DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_ma34     DECIMAL(6,2) DEFAULT 0;
+
+    call sp_create_tempday();
+
+    -- 240
+    SELECT count(*) FROM day WHERE code=a_code INTO v_count;
+    IF @v_count < 240 THEN LEAVE tag_up_ma34; END IF;
+
+    -- get 31th day
+    SELECT date FROM day WHERE code=a_code and date<=@END ORDER by 
+           date DESC limit 34,1 INTO @START;
+
+    SELECT SUM(close)/34 FROM day WHERE code=a_code and date>@START INTO v_ma34;
+
+    UPDATE tbl_ma240 SET ma34 = v_ma34 WHERE code = a_code;
+END tag_up_ma34 //
+
+DROP PROCEDURE IF EXISTS sp_get_ma240//
+CREATE PROCEDURE sp_get_ma240(a_code INT(6) ZEROFILL) tag_get_ma240:BEGIN
+    DECLARE v_date     DATE;
+    DECLARE v_close    DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_ma34     DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_ma60     DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_ma120    DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_ma240    DECIMAL(6,2) DEFAULT 0;
+
+    call sp_create_tempday();
+
+    -- 240
+    SELECT date FROM day WHERE code=a_code and date<=@END ORDER by 
+           date DESC limit 240,1 INTO @START;
 
     INSERT INTO tempday(code,date,close) SELECT 
            code,date,close FROM day WHERE code=a_code and date>=@START and date<=@END;
 
     -- 13 34 55 100
     SELECT count(*) FROM tempday INTO @v_len;
-    SELECT close FROM tempday WHERE id=@v_len INTO v_close;
+    SELECT date,close FROM tempday WHERE id=@v_len INTO v_date,v_close;
 
-    IF @v_len < 13 THEN LEAVE tag_get_ma345; END IF;
+    IF @v_len < 240 THEN LEAVE tag_get_ma240; END IF;
 
-    SELECT SUM(close)/5   FROM tempday WHERE id > (@v_len-5 ) INTO v_ma5  ;
-    SELECT SUM(close)/13  FROM tempday WHERE id > (@v_len-13) INTO v_ma13 ;
-    SELECT MAX(close),    -- 55日high和low以计算收敛度 (high-low)/low
-           MIN(close)     FROM tempday WHERE id > (@v_len-55) INTO v_high,v_low;
+    SELECT SUM(close)/34   FROM tempday WHERE id > (@v_len-34)  INTO v_ma34 ;
+    SELECT SUM(close)/60   FROM tempday WHERE id > (@v_len-60)  INTO v_ma60 ;
+    SELECT SUM(close)/120  FROM tempday WHERE id > (@v_len-120) INTO v_ma120;
+    SELECT SUM(close)/240  FROM tempday WHERE id > (@v_len-240) INTO v_ma240;
 
-    -- SET v_revi13 = 100*(v_close-v_low)/v_low; 
-    -- use 34 to open, 99 close
-    IF @v_len > 55 THEN
-        SELECT SUM(close)/34  FROM tempday WHERE id > (@v_len-34 ) INTO v_ma34 ;
-        SELECT SUM(close)/55  FROM tempday WHERE id > (@v_len-55 ) INTO v_ma55 ;
-    END IF;
+    -- SELECT v_ma34, v_ma60, v_ma120, v_ma240;
 
-    INSERT INTO tbl_ma345 (code, close, ma5, ma13, ma34, ma55, high, low)
-           VALUES(a_code, v_close, v_ma5, v_ma13, v_ma34, v_ma55, v_high, v_low);
-END tag_get_ma345 //
+    INSERT INTO tbl_ma240 (code, date, close,   ma34, ma60, ma120, ma240)
+           VALUES(a_code, v_date, v_close, v_ma34, v_ma60, v_ma120, v_ma240);
+END tag_get_ma240 //
+
 
 -- 一些需要与shell通信的系统变量
 
@@ -711,7 +783,9 @@ END tag_get_ma345 //
     SET @fn_flt_13d_sink        = 2;
     SET @fn_flt_n_day_change    = 3;
     SET @fn_get_down_turnov     = 4;
-    SET @fn_get_ma345           = 5;
+    SET @fn_get_ma513           = 5;
+    SET @fn_up_ma240_all        = 6;
+    SET @fn_up_ma240_34         = 7;
     SET @START  = '2013-12-6';
     SET @END    = '2014-1-10';
     SET @NUM    = 15;
@@ -727,8 +801,6 @@ END tag_get_ma345 //
 --  THIS EXECUTE DELIMITER
 
 --  call sp_macd('day', 2);
---  call sp_kdj_wk('day', 2, 9);
-
 --  call sp_kdj('day', 2, 9);
 --  call sp_filter_kdj('cap');
 --  call sp_flt_13d_sink(2);
@@ -738,12 +810,7 @@ END tag_get_ma345 //
 --  call sp_day('day', 750);
 --  call sp_xRD();
 
---  call sp_kdj('tempday', 750, 9);
-
---  call sp_cp_tbl('kdj', 'forever');
-
 --  call sp_visit_tbl('cap', @fn_flt_13d_sink); 
-
 --  call sp_visit_tbl('cap', @fn_flt_n_day_change);
     
 --  call sp_count_swing10();

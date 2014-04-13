@@ -565,8 +565,37 @@ function fn_html()
 	HERE_tail
 }
 
+function fn_up_tbl_ma240_all()
+{
+    echo "
+    ${FUNCNAME} ...
+    "
+    echo "
+    SET @END='$END';
+    call sp_visit_tbl('${TBL:-cap}', @fn_up_ma240_all);
+    " | tee -a $mps_god
+    mysql $mo -t kts <<< "source $mps_god"
+}
+
+function fn_up_tbl_ma240_34()
+{
+    if ! mysql kts<<<"SHOW TABLES" | grep -q 'tbl_ma240'; then
+        echo -e "\n    error: tbl_ma240 not exist\n"
+        exit 1
+    fi
+
+    echo "
+    SET @END='$END';
+    call sp_visit_tbl('${TBL:-cap}', @fn_up_ma240_34);
+    " | tee -a $mps_god
+    mysql $mo -t kts <<< "source $mps_god"
+}
+
 function fn_main() 
 {
+    CURR=`fn_maxdate`
+    END=${END:-${CURR}}
+
     cmdlist=(
     # fixed sequence
     "cap                                # up cap (A股最大市值股中国石油--2万亿)"
@@ -576,11 +605,13 @@ function fn_main()
     "redo_hexun_day                     # 重做大盘日线数据"
     "redo_hexun_day_fr_min              # 利用已有分线，重做大盘日线"
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
-    "up_tbl_xRD [--keep.PWR]            # --- --keep.PWR，使用当前full.PWR"
+    "up_tbl_xRD [--keep.PWR]            # --- 使用当前除权数据 --keep.PWR"
     "add_codes_2_dzh2tbl code...        # 添加CODE到ZXG.BLK，并写表#{TBL:-zxg}"
     "add_tbl_codes_2_dzh                # 添加表#{TBL:-tbl_visit}到dzh2tbl{zxg}"
     "up_rzrq_codes_tbl                  # 更新RZRQ业务数据"
     "up_swing10                         # 更新涨跌停6.1%数据"
+    "up_tbl_ma240_all                   # --- 更新tbl_ma240"
+    "up_tbl_ma240_34                    # 更新tbl_ma240中的ma34"
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
     "html                               # convert .soptter to html"
     "copy_table_2_table src dst         # --- 使用 1 1 做为代号"
@@ -591,6 +622,11 @@ function fn_main()
     "sel_day_into_znz_dir               # 导出日线"
     "trs_min_2_day                      # 最后一笔分线转日线"
     )
+
+    # 存储过程函数文件的最后5行都是注释
+    cd $workdir
+    head -n -5 $mps_org > $mps_god
+
     fn_execute "$@"
 }
 
