@@ -1,54 +1,59 @@
-/* ssh */
+# ssh
 
-. ubuntu scp fails
-  ┌────────────────────────────────────────────────────────────────────────┐
-  │ root@Moo:~# scp -rp jco_server 192.168.2.126:/root                     │
-  │ root@192.168.2.126's password:                                         │
-  │ -- source /etc/bash.bashrc --                                          │
-  │ root@Moo:/winc/svn3/trunk/ipcApps/server# echo $?                      │
-  │ 1                                                                      │
-  ├────────────────────────────────────────────────────────────────────────┤
-  │ Ok, I figured out the problem: my .bashrc produced output,             │
-  │ even in non-interactive sessions, and this output confused scp...      │
-  └────────────────────────────────────────────────────────────────────────┘
+## 通过 <(some command) 可以把某命令当成一个文件。
 
-. ssh in while  
+  示例：比较一个本地文件和远程文件 /etc/crontab
 
-  ┌────────────────────────────────────────────────────────────────────────┐
-  │ while read ip; do                                                      │
-  │     ssh $ip ${cmd_you_want}                                            │
-  │ done< input_file                                                       │
-  ├────────────────────────────────────────────────────────────────────────┤
-  │ 重定向会 confused ssh，请使用 选项 -n                                  │
-  │                                                                        │
-  │     ssh -n $ip ${cmd_you_want}                                         │
-  └────────────────────────────────────────────────────────────────────────┘
+    diff /etc/crontab <(ssh somehost cat /etc/crontab)
 
-. ssh login slowly  
-  ┌────────────────────────────────────────────────────────────────────────┐
-  │                                                                        │
-  │ "/etc/ssh/sshd_config"                                                 │
-  │ UseDNS no                                                              │
-  │ PrintLastLog no                                                        │
-  │                                                                        │
-  │ 有时，我们不仅是重启服务sshd，必要时还要重启系统，如在华为时日本问题   │
-  │                                                                        │
-  │ rm motd                                                                │
-  │ -d "/etc/update-motd.d" && run-parts                                   │
-  └────────────────────────────────────────────────────────────────────────┘
+## ubuntu scp fails
+  ───────────────────────────────────────────────────────────────────────
+  root@Moo:~# scp -rp jco_server 192.168.2.126:/root
+  root@192.168.2.126's password':
 
-. Permission denied
-  ┌────────────────────────────────────────────────────────────────────────┐
-  │ WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!                       │
-  │                                                                        │
-  │ ssh-keygen -R server                                                   │
-  │                                                                        │
-  │ root@192.168.2.126's password:                                         │
-  │ Permission denied, please try again.                                   │
-  │ root@192.168.2.126's password:                                         │
-  │ Permission denied, please try again.                                   │
-  │                                                                        │
-  │ 最后解决方法是：                                                       │
-  │     更换IP                                                             │
-  │     重启PC机是否也是一个好办法                                         │
-  └────────────────────────────────────────────────────────────────────────┘
+  -- source /etc/bash.bashrc --
+  root@Moo:/winc/svn3/trunk/ipcApps/server# echo $?
+  1
+  ───────────────────────────────────────────────────────────────────────
+  Ok, I figured out the problem: my .bashrc produced output,
+  even in non-interactive sessions, and this output confused scp...
+  ───────────────────────────────────────────────────────────────────────
+
+## ssh in while
+
+    while read ip; do
+        ssh $ip ${cmd_you_want}
+    done< input_file
+
+  ───────────────────────────────────────────────────────────────────────
+  重定向会 confused ssh，请使用 选项 -n
+
+    ssh -n $ip ${cmd_you_want}
+  ───────────────────────────────────────────────────────────────────────
+
+## ssh login slowly
+
+    "/etc/ssh/sshd_config"
+    UseDNS no
+    PrintLastLog no
+
+  有时，我们不仅是重启服务sshd，必要时还要重启系统，如在华为时日本问题
+
+    rm motd
+    -d "/etc/update-motd.d" && run-parts
+
+## Permission denied
+  ───────────────────────────────────────────────────────────────────────
+  WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!
+
+    ssh-keygen -R server
+
+    root@192.168.2.126's password:
+    Permission denied, please try again.
+    root@192.168.2.126's password:
+    Permission denied, please try again.
+
+  最后解决方法是：
+      更换IP
+      重启PC机是否也是一个好办法
+

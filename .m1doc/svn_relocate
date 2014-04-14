@@ -1,0 +1,10 @@
+# relocate
+
+  switch用于在同一个版本库内不同分支之间的切换
+  relocate用于版本库访问地址变更时，重新定位版本库
+
+  svn relocate http://www.example.com/repo/project \
+                 svn://svn.example.com/repo/project
+
+  在 svn url 中使用域名，而不是IP，在svn服务器迁移时就不用 relocate
+
