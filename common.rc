@@ -259,12 +259,13 @@ function fn_sed_auto_insert()
 
 function fn_exe_usage() 
 {
-    echo
-    echo "    ${0##*/} <id> [OPTIONS...]"
-    echo "    ${0##*/} keyword_in_list"
-    echo "    ${0##*/} {-l | --list}"
-    echo "    ${0##*/} / keyword"
-    echo
+    echo "    
+    call from $@
+    ${0##*/} <id> [OPTIONS...]
+    ${0##*/} keyword_in_list
+    ${0##*/} {-l | --list}
+    ${0##*/} / keyword
+    "
     exit 1
 }
 
@@ -297,10 +298,10 @@ function fn_execute()
             cmd=${cmdlist[${idx}]/ */}
             if [ "$1" = "${cmd}" ] ; then
                 fn_${cmd} "${@:2}"
-                return $?            # avoid fn_exe_usage
+                return $?            # avoid _fn_exe_usage_
             fi
         done 
-        fn_exe_usage
+        fn_exe_usage "${BASH_SOURCE[1]##*/}|${BASH_LINENO[0]}|"
         ;;
     esac
 }

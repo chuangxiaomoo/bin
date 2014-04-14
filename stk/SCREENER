@@ -42,7 +42,6 @@ function fn_get_open_pcnt()
     sec_1130=$(date +%s -d "${DATE} 11:30:00")
     sec_1300=$(date +%s -d "${DATE} 13:00:00")
     sec_1500=$(date +%s -d "${DATE} 15:00:00")
-   #sec_curr=$(date +%s -d "${DATE} 16:00:00")
     sec_curr=$(date +%s )
     sec_open=0
 
@@ -295,25 +294,12 @@ function fn_get_ma513()
         # tag a tag, touch file the fisttime after $sec_1500
         sec_1500=$(date +%s -d "15:00:00")
         sec_curr=$(date +%s)
-        if !([ "${END}" = "${CURR}" ] && [ "${sec_curr}" -lt "${sec_1500}" ]); then
+        # ! must append with a whitespace
+        if ! ([ "${END}" = "${CURR}" ] && [ "${sec_curr}" -lt "${sec_1500}" ]); then
             mkdir -p /tmp/mx/
             touch /tmp/mx/${tbl_ma_date}
         fi
     fi
-    #   tbl_lt_ma5=tbl_lt_ma5_${END//-/_}
-    #   tbl_gt_ma5=tbl_gt_ma5_${END//-/_}
-    #   tbl_gt_ma3=tbl_gt_ma3_${END//-/_}
-    #   # 对2500支个股其进行分类，按 TRD ma5 ma13 的穿越关系
-    #   fn_create_tbl_codes $tbl_lt_ma5 $tbl_gt_ma5 $tbl_gt_ma3
-    #   xt_ret $? "create tbl error" || return $?
-    #   COND="close<ma5"                 
-    #   fn_insert_codes_2_table $tbl_lt_ma5
-    #   xt_ret $? "insert codes table" || return $?
-
-    #   COND="close>=ma5 and close<ma13" 
-    #   fn_insert_codes_2_table $tbl_gt_ma5
-    #   xt_ret $? "insert codes table" || return $?
-
 }
 
 function fn_ma_ray() 
@@ -464,14 +450,15 @@ function fn_ana_ma240()
     # 且不要长得太多，已经过去的，要抓住现在
 
     local sqls="SELECT s.code FROM tbl_ma513 as s, tbl_ma240 as l"
-    local conds=(                                   # 2014-04-14
-                's.code=l.code and'                 # 关联code
-                '(l.high-l.low)/l.low<.63 and'      # 年振幅45%，参照佛山照明、福建水泥
-                's.ma5>s.ma13 and '                 # 345中线：ma5上穿ma13
-                's.ma13>l.ma34 and '                # 345长线：ma13上穿ma34
-                's.close>3 '                        # 价格无关，上海莱士，福建水泥
-                )
-                # abs(ma34-ma60)/ma34<.05 and abs(ma120-ma240)/ma120<.03
+    local conds=(                                           # 2014-04-14
+        's.code=l.code and'                                 # 关联code
+        '(l.high-l.low)/l.low<.23 and'                      # 年振幅45%，参照佛山照明、福建水泥
+        's.ma5>s.ma13 and (s.close-s.ma13)/s.ma13<.05 and'    # 345中线：ma5上穿ma13
+        '(s.close-l.low)/l.low<.05 and'    # 345中线：ma5上穿ma13
+       #'s.ma13>l.ma34 and (s.ma13-l.ma34)/l.ma34<.05 and'  # 345长线：ma13上穿ma34
+        's.close>3'                                         # 价格无关，上海莱士，福建水泥
+    )
+        # abs(ma34-ma60)/ma34<.05 and abs(ma120-ma240)/ma120<.03
 
     mysql -N kts<<<"${sqls} WHERE ${conds[@]}" | 
                 xargs -n6 | tee /dev/stderr | xargs up add_codes_2_dzh2tbl 

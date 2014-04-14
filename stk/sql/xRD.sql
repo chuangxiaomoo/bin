@@ -726,21 +726,31 @@ CREATE PROCEDURE sp_up_ma34(a_code INT(6) ZEROFILL) tag_up_ma34:BEGIN
     DECLARE v_date     DATE;
     DECLARE v_count    INT(6) DEFAULT 0;
     DECLARE v_close    DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_low      DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_high     DECIMAL(6,2) DEFAULT 0;
     DECLARE v_ma34     DECIMAL(6,2) DEFAULT 0;
 
     call sp_create_tempday();
 
     -- 240
-    SELECT count(*) FROM day WHERE code=a_code INTO v_count;
-    IF @v_count < 240 THEN LEAVE tag_up_ma34; END IF;
-
-    -- get 31th day
     SELECT date FROM day WHERE code=a_code and date<=@END ORDER by 
-           date DESC limit 34,1 INTO @START;
+           date DESC limit 240,1 INTO @START;
 
-    SELECT SUM(close)/34 FROM day WHERE code=a_code and date>@START INTO v_ma34;
+    INSERT INTO tempday(code,date,close) SELECT 
+           code,date,close FROM day WHERE code=a_code and date>=@START and date<=@END;
 
-    UPDATE tbl_ma240 SET ma34 = v_ma34 WHERE code = a_code;
+    -- via high, induct is a long-term invaste one
+    SELECT count(*)   FROM tempday INTO @v_len;
+    SELECT date,close FROM tempday WHERE id=@v_len INTO v_date,v_close;
+
+    IF @v_len < 240 THEN LEAVE tag_up_ma34; END IF;
+
+    SELECT min(close),max(close) 
+                           FROM tempday WHERE id>(@v_len-@TERM) INTO v_low,v_high;
+    SELECT SUM(close)/34   FROM tempday WHERE id>(@v_len-34)    INTO v_ma34 ;
+
+    UPDATE tbl_ma240 SET date=v_date,close=v_close,
+                         ma34=v_ma34,low=v_low,high=v_high WHERE code = a_code;
 END tag_up_ma34 //
 
 DROP PROCEDURE IF EXISTS sp_get_ma240//
@@ -764,15 +774,17 @@ CREATE PROCEDURE sp_get_ma240(a_code INT(6) ZEROFILL) tag_get_ma240:BEGIN
            code,date,close FROM day WHERE code=a_code and date>=@START and date<=@END;
 
     -- via high, induct is a long-term invaste one
-    SELECT count(*),min(close),max(close) FROM tempday INTO @v_len,v_low,v_high;
+    SELECT count(*)   FROM tempday INTO @v_len;
     SELECT date,close FROM tempday WHERE id=@v_len INTO v_date,v_close;
 
     IF @v_len < 240 THEN LEAVE tag_get_ma240; END IF;
 
-    SELECT SUM(close)/34   FROM tempday WHERE id > (@v_len-34)  INTO v_ma34 ;
-    SELECT SUM(close)/60   FROM tempday WHERE id > (@v_len-60)  INTO v_ma60 ;
-    SELECT SUM(close)/120  FROM tempday WHERE id > (@v_len-120) INTO v_ma120;
-    SELECT SUM(close)/240  FROM tempday WHERE id > (@v_len-240) INTO v_ma240;
+    SELECT min(close),max(close) 
+                           FROM tempday WHERE id>(@v_len-@TERM) INTO v_low,v_high;
+    SELECT SUM(close)/34   FROM tempday WHERE id>(@v_len-34)    INTO v_ma34 ;
+    SELECT SUM(close)/60   FROM tempday WHERE id>(@v_len-60)    INTO v_ma60 ;
+    SELECT SUM(close)/120  FROM tempday WHERE id>(@v_len-120)   INTO v_ma120;
+    SELECT SUM(close)/240  FROM tempday WHERE id>(@v_len-240)   INTO v_ma240;
 
     -- SELECT v_ma34, v_ma60, v_ma120, v_ma240;
 
@@ -792,6 +804,7 @@ END tag_get_ma240 //
     SET @fn_up_ma240_34         = 7;
     SET @START  = '2013-12-6';
     SET @END    = '2014-1-10';
+    SET @TERM   = 240;
     SET @NUM    = 15;
     
 -- 若要计算3日，argv_n为3
