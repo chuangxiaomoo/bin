@@ -91,9 +91,11 @@ function fn_main()
 
     if [ -n "$exclude_path" ]; then
         for x_path in $exclude_path; do
-            x_path=${x_path%/}    # ignore   end with '/'
-            if [ "${x_path:0:1}" != '/' ]; then
-                x_path=./${x_path#./} # ignore begin with './'
+            # -path -prune must begin with '/' './' '../' and 
+            #               not end with '/'
+            x_path=${x_path%/}
+            if [ "${x_path:0:1}" != '/' ] && [ "${x_path:0:3}" != '../' ]; then
+                x_path=./${x_path#./}
             fi
             [ ! -e "$x_path" ] && echo $x_path not exist && exit 1
             echo "skip path $x_path"
@@ -108,13 +110,14 @@ function fn_main()
 
     while read srcpath; do
         [ -z "$srcpath" ] && continue
-        [ "${srcpath:0:1}" == '-' ] && continue # echo "Skip $srcpath" && continue
+        [ "${srcpath:0:1}" == '-' ] && continue
 
         # 应用于文件夹与文件在同一目录的情况，如 http下 httpd*.c onvif: 
         # Format: pathname -maxdepth 1
         [ ! -d "${srcpath%% *}" ] && echo "$srcpath: No such directory" && exit 0
 
-        # echo "eval find ${srcpath} $namepatt >> $csfiles"
+        # echo \
+        #    find ${srcpath} ${exclude_opt} $namepatt >> $csfiles"
         eval find ${srcpath} ${exclude_opt} $namepatt >> $csfiles
     done < $cspathes
 
