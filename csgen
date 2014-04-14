@@ -91,16 +91,18 @@ function fn_main()
 
     if [ -n "$exclude_path" ]; then
         for x_path in $exclude_path; do
-            x_path=./${x_path#./} # ignore begin with './'
             x_path=${x_path%/}    # ignore   end with '/'
-            [ ! -e "$x_path" ] && echo $x_path not exist && exit
-            echo "Skip path $x_path"
+            if [ "${x_path:0:1}" != '/' ]; then
+                x_path=./${x_path#./} # ignore begin with './'
+            fi
+            [ ! -e "$x_path" ] && echo $x_path not exist && exit 1
+            echo "skip path $x_path"
             exclude_opt="$exclude_opt -path '$x_path' -prune -o"
         done
     fi
 
-    # find [path1] [path2] [path3] -name <name>
-
+   #     find [path1] [path2] [path3] -name <name>
+   #echo find . $exclude_opt $namepatt 
     eval find . $exclude_opt $namepatt > $csfiles
     xert $? `$PS8` "find" || return $?
 
@@ -113,7 +115,7 @@ function fn_main()
         [ ! -d "${srcpath%% *}" ] && echo "$srcpath: No such directory" && exit 0
 
         # echo "eval find ${srcpath} $namepatt >> $csfiles"
-        eval find ${srcpath} $namepatt >> $csfiles
+        eval find ${srcpath} ${exclude_opt} $namepatt >> $csfiles
     done < $cspathes
 
     sort -u $csfiles -o $csfiles
