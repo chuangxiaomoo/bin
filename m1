@@ -1135,6 +1135,7 @@ function fn_upgrade()                   { cat nxp_upgrade ;}
 function fn_testing()                   { cat nxp_testing ;}
 function fn_story()                     { cat nxp_story ;}
 
+function fn_delay_exec()                { cat nxp_delay_exec ;}
 function fn_cmdlineparser()             { cat nxp_cmdlineparser ;}
     local opts=(
         hold                            # C/S 架构
@@ -1158,6 +1159,7 @@ function fn_cmdlineparser()             { cat nxp_cmdlineparser ;}
         testing
         story                           # 迭代总结
         # ----- function delimeter ----
+        delay_exec
         cmdlineparser
     )
     fn_print $@

@@ -1,0 +1,18 @@
+# delay_exec
+
+  参照live555的3把利剑
+
+  1. socket_loop
+  2. delay
+  3. trigger
+
+  delay_exec是一个特殊的功能，so WHY delay_exec?
+
+  1. 自已在改变自已，如：网络参数修改
+
+  2. 执行时间比较长来作前置后置操作，如：
+        DELAY_CMD_REBOOT
+        KILL_ALL_APP
+
+  3. 上报频繁，如mcp上报及报警等，会造成信息丢失。
+

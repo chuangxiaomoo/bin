@@ -316,7 +316,14 @@ function fn_add_codes_2_dzh2tbl()
         );
         INSERT INTO ${TBL} (code) VALUES 
     " > ${sql_temp}
+
     echo $@ | sed -e 's/^/(/' -e 's/ /),(/g' -e 's/$/);/' >> ${sql_temp}
+    mysql kts < ${sql_temp}
+    xt_ret $? "${FUNCNAME}" || return $?
+
+    f_zxg='/dzh2/USERDATA/block/自选股.BLK'
+    test -f ${f_zxg}
+    xt_ret $? "" || return $?
 
     {
     echo -n -e $HEAD
@@ -335,9 +342,8 @@ function fn_add_codes_2_dzh2tbl()
         esac
         echo -n -e $DELI
     done ;
-    } > /dzh2/USERDATA/block/自选股.BLK
+    } > ${f_zxg}
 
-    mysql kts < ${sql_temp}
     echo -e "\n    add ${#@} to ${TBL} over.\n"
 }
 
@@ -615,7 +621,7 @@ function fn_main()
     "up_tbl_ma240_all                   # --- 更新tbl_ma240"
     "up_tbl_ma240_34                    # 更新tbl_ma240中的ma34"
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
-    "html                               # convert .soptter to html"
+    "html                               # convert #{LIST:-.soptter} to html"
     "copy_table_2_table src dst         # --- 使用 1 1 做为代号"
     "tougu_reminder                     # --- 投顾大赛提醒器，5分钟延时"
     "add_yesclose                       # 为yahoo.指南针数据添加yesclose"
