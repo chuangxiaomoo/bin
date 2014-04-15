@@ -1,0 +1,20 @@
+# variable
+
+## global variable set
+
+    set global wait_timeout=10;
+    set @@global.wait_timeout=10;
+
+## global variable get
+
+    select @@global.wait_timeout;
+    show global variables like 'wait_timeout';
+
+## session variables set
+
+    set   wait_timeout=10;
+    set @@wait_timeout=10;
+
+## session variables get
+
+    select @@wait_timeout;

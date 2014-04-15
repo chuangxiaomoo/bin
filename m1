@@ -983,6 +983,7 @@ function fn_group_by_having()           { cat sql_group_by_having ;}
 function fn_cp()                        { cat sql_cp ;}
 function fn_where_in()                  { cat sql_where_in ;}
 function fn_limit()                     { cat sql_limit ;}
+function fn_variable()                  { cat sql_variable ;}
     local opts=(
         kts
         min
@@ -1003,6 +1004,7 @@ function fn_limit()                     { cat sql_limit ;}
         load
         where_in            # where in
         # ----- SQL 高级教程
+        variable
         condition           # if
         cp                  # 复制表数据or结构(copy)
         dump                # mysqldump

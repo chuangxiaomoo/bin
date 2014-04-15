@@ -203,8 +203,14 @@ function fn_add_yesclose()
 function fn_hexun_day() 
 {
     DATE=`date +%Y-%m-%d`
-    OPENDATE=`$W3M -dump ${url_sh000001} | awk -F',' '{print $(NF-2)}'`
-    # export DATE=${OPENDATE}      # uncomment this line to update compulsely
+    #OPENDATE=`$W3M -dump ${url_sh000001} | awk -F',' '{print $(NF-2)}'`
+    DATETIME=(`$W3M -dump ${url_sh000001} | awk -F',' '{print $(NF-2), $(NF-1)}'`)
+    OPENDATE=${DATETIME[0]}
+    OPENTIME=${DATETIME[1]}
+    mysql<<<"INSERT INTO kts.stamp_day values(DEFAULT, '$OPENDATE', '$OPENTIME')"
+    xt_ret $? "" || return $?
+
+    export DATE=${OPENDATE}      # uncomment this line to update compulsely
 
     [ -z "$OPENDATE" ] && echo "    SINA UNREACHABLE!" | wall && return 1
     [ "$DATE" != "$OPENDATE" ] && echo "Error: market is close" && return 1

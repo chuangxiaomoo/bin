@@ -36,6 +36,12 @@ CREATE TABLE stamp_min (
     time TIME NOT NULL
 );
 
+CREATE TABLE stamp_day (
+    id   int(4) ZEROFILL PRIMARY key AUTO_INCREMENT NOT NULL,
+    date DATE NOT NULL,
+    time TIME NOT NULL
+);
+
 CREATE TABLE test (
 code INT(6) ZEROFILL, 
 name CHAR(10)
