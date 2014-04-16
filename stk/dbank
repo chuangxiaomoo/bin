@@ -64,6 +64,7 @@ rzrq_rawxml='/dev/shm/rzrq/rawxml'
 rzrq_ripexml='/dev/shm/rzrq/ripexml'
 rzrq_ripetxt='/dev/shm/rzrq/ripetxt'
 
+soptter_zxg='.soptter.zxg'
 
 sn_stderr='/dev/shm/sina/stderr'
 sn_rawxml='/dev/shm/sina/rawxml'
@@ -117,6 +118,7 @@ function fn_get_ratio_close2open()
     sec_1300=$(date +%s -d "${DATE} 13:00:00")
     sec_1500=$(date +%s -d "${DATE} 15:00:00")
     sec_curr=`mysql -N kts<<<"SELECT time FROM stamp_day ORDER by id DESC LIMIT 1"`
+    sec_curr=$(date +%s -d "${DATE} ${sec_curr}")
     sec_open=0
 
     [ -n "$sec_curr" ]

@@ -291,11 +291,11 @@ function fn_select_tbl_ma513()
 {
     local sqls="(SELECT * FROM day WHERE date='${END}') as d"
     local conds="m.code=d.code and ${COND1}"
-    mysql -N kts<<<"SELECT m.code FROM tbl_ma513 as m, ${sqls} WHERE ${conds}" > .soptter.zxg
+    mysql -N kts<<<"SELECT m.code FROM tbl_ma513 as m, ${sqls} WHERE ${conds}" > ${soptter_zxg} 
     xt_ret $? "${FUNCNAME}" || return $?
 
-    cat .soptter.zxg | xargs -n6 | tee /dev/stderr | xargs up add_codes_2_dzh2tbl 
-    xt_ret $? "cat .soptter.zxg" || return $?
+    cat ${soptter_zxg} | xargs -n6 | tee /dev/stderr | xargs up add_codes_2_dzh2tbl 
+    xt_ret $? "cat ${soptter_zxg}" || return $?
 }
 
 function fn_trd_cross_maX() 
@@ -320,7 +320,7 @@ function fn_trd_cross_maX()
     xt_ret $? "" || return $?
 }
 
-function fn_low_cross_maX()
+function fn_hop_cross_maX()
 {
     fn_get_ma513
     xt_ret $? "${FUNCNAME}" || return $?
@@ -329,10 +329,10 @@ function fn_low_cross_maX()
     xt_ret $? "" || return $?
 }
 
-function fn_low_cross_ma5() 
+function fn_hop_cross_ma5() 
 {
     # ma5<ma13 --> 2次上穿ma5
-    # COND1="ma5<ma13 and d.yesc>ma5 and d.low<ma5 and d.close>ma5" fn_low_cross_maX
+    # COND1="ma5<ma13 and d.yesc>ma5 and d.low<ma5 and d.close>ma5" fn_hop_cross_maX
     # xt_ret $? "xx" || return $?
     iEND=`STEP=1 fn_get_prev`
     iPREV=`STEP=${STEP} END=${iEND} fn_get_prev`
@@ -342,7 +342,7 @@ function fn_low_cross_ma5()
 
     fn_cp_tbl zxg tbl_cross_ma5
 
-    TBL=tbl_cross_ma5 COND1="ma5<ma13 and d.low<ma5 and d.close>ma5" fn_low_cross_maX
+    TBL=tbl_cross_ma5 COND1="ma5<ma13 and d.low<ma5 and d.close>ma5" fn_hop_cross_maX
 
     xt_ret $? "${FUNCNAME}" || return $?
 
@@ -402,7 +402,7 @@ function fn_ana_ma513()
     "trd_cross_ma5      # close 上穿 ma5"
     "trd_cross_ma13     # close 上穿 ma13"
     "trd_cross_5_13     # close 上穿 ma5 and ma13"
-    "low_cross_ma5      # 近日再上穿 ma5, STEP设置天数"
+    "hop_cross_ma5      # trd re上穿 ma5, STEP设置天数"
     "ma5_cross_ma13     # ma5   上穿 ma13"
     "high_cross_ma5     # high  上穿 ma5, !close"
     )

@@ -141,13 +141,37 @@ function fn_app_day_turnover()
 	" | mysql $mo -t kts
 }
 
+function fn_sel_vol5_ratio() 
+{
+    field=${1:-ratio}
+    ratio="d.volume/ma.vol5*`fn_get_ratio_close2open`"
+
+    ./SCREENER get_ma513
+    xt_ret $? "${FUNCNAME}" || return $?
+
+    tbl_day="(SELECT * FROM day WHERE date='${END}')"
+    echo "
+    SELECT d.*,  ${ratio} as ratio FROM tbl_ma513 as ma, ${tbl_day} as d 
+            where ma.code=d.code ${COND} ORDER by ${field} DESC limit ${LIMIT:-48};
+    " | tee /dev/stderr | mysql $mo -t kts
+
+    ( echo "
+    SELECT d.code                  FROM tbl_ma513 as ma, ${tbl_day} as d 
+            where ma.code=d.code ${COND} ORDER by ${ratio} DESC limit ${LIMIT:-48};
+    " | mysql $mo -N kts > ${soptter_zxg} )&
+}
+
 function fn_main() 
 {
+    CURR=`fn_maxdate`
+    END=${END:-${CURR}}
+
     cmdlist=(
     "app_nmc_name       [sortfiled]          # 追加股票名到表TBL"
     "app_wgt_turnov     [sortfiled]          # 追加weight到down_turnov"
     "get_comma_cloumns  [tbl_name:-day]      # 逗分列名"
     "get_open_days      [limit:-13]          # 开市日列表"
+    "sel_vol5_ratio     [sortfiled:-ratio]   # 量比排名"
     "get_open_days_min                       # 分钟日列表 \$LIMIT"
     # ----------------  ABOVE IS FIXED SEQUENCE --------------------
     "get_curdate_min    [CODE:-900001]       # --- 当日min \$LIMIT"
@@ -167,7 +191,6 @@ function fn_main()
 
 fn_main "$@"
 
-# SELECT tbl.*, tbl.volume/ma.vol5*2 FROM tbl_ma513 as ma, (SELECT * FROM day WHERE date = '2014-04-16') as tbl where ma.code=tbl.code;
 
 # http://www.cnblogs.com/zhenjing/archive/2011/07/15/process_mutex_race.html
 # 获取最大ID的记录
