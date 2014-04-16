@@ -22,6 +22,8 @@
   * 以 -id 来解决 STRUCT 识别问题
   * 解析 keyed list，value 支持带空格的字符串
 
+  LIST_PARAM_RULE_CHECK
+
 # 总结
 
   借鉴比自已的创造来得快，改造亦是对知识的致敬。

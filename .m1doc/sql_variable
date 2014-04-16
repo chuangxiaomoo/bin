@@ -1,20 +1,28 @@
 # variable
 
+
+## global variable dd
+
+    # vi /etc/mysql/my.cnf
+    [mysqld]
+    markettime=10
+    # service mysqld restart
+
 ## global variable set
 
-    set global wait_timeout=10;
-    set @@global.wait_timeout=10;
+    set global markettime=10;
+    set @@global.markettime=10;
 
 ## global variable get
 
-    select @@global.wait_timeout;
-    show global variables like 'wait_timeout';
+    select @@global.markettime;
+    show global variables like 'markettime';
 
 ## session variables set
 
-    set   wait_timeout=10;
-    set @@wait_timeout=10;
+    set   markettime=10;
+    set @@markettime=10;
 
 ## session variables get
 
-    select @@wait_timeout;
+    select @@markettime;
