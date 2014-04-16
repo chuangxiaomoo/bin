@@ -714,9 +714,9 @@ CREATE PROCEDURE sp_get_ma513(a_code INT(6) ZEROFILL) tag_get_ma513:BEGIN
 
     IF @v_len < 13 THEN LEAVE tag_get_ma513; END IF;
 
-    SELECT SUM(close)/5 , SUM(volume)/5
-                            FROM tempday WHERE id > (@v_len-5 ) INTO v_ma5, v_vol5  ;
-    SELECT SUM(close)/13, MAX(close), MIN(close)  
+    SELECT SUM(close)/5     FROM tempday WHERE id>(@v_len-5) INTO v_ma5;
+    SELECT SUM(volume)/5    FROM tempday WHERE id>(@v_len-6) and id<@v_len INTO v_vol5;
+    SELECT SUM(close)/13, MAX(close), MIN(close)
                             FROM tempday INTO v_ma13, v_high, v_low ;
 
     INSERT INTO tbl_ma513 (  code,   close,   ma5,   ma13,   vol5,  high,   low)

@@ -287,6 +287,17 @@ function fn_ma_ray()
     return     
 }
 
+function fn_select_tbl_ma513() 
+{
+    local sqls="(SELECT * FROM day WHERE date='${END}') as d"
+    local conds="m.code=d.code and ${COND1}"
+    mysql -N kts<<<"SELECT m.code FROM tbl_ma513 as m, ${sqls} WHERE ${conds}" > .soptter.zxg
+    xt_ret $? "${FUNCNAME}" || return $?
+
+    cat .soptter.zxg | xargs -n6 | tee /dev/stderr | xargs up add_codes_2_dzh2tbl 
+    xt_ret $? "cat .soptter.zxg" || return $?
+}
+
 function fn_trd_cross_maX() 
 {
     echo "build ${PREV}..."
@@ -305,12 +316,8 @@ function fn_trd_cross_maX()
     TBL=tbl_fr_ma_where_cond0 fn_get_ma513
     xt_ret $? "${FUNCNAME}" || return $?
 
-    local sqls="(SELECT * FROM day WHERE date='${END}') as d"
-    local conds="m.code=d.code and ${COND1}"
-    mysql -N kts<<<"SELECT m.code FROM tbl_ma513 as m, ${sqls} WHERE ${conds}" | \
-        xargs -n6 | tee /dev/stderr | xargs up add_codes_2_dzh2tbl 
-
-    xt_ret $? "mysql" || return $?
+    fn_select_tbl_ma513
+    xt_ret $? "" || return $?
 }
 
 function fn_low_cross_maX()
@@ -318,12 +325,8 @@ function fn_low_cross_maX()
     fn_get_ma513
     xt_ret $? "${FUNCNAME}" || return $?
 
-    local sqls="(SELECT * FROM day WHERE date='${END}') as d"
-    local conds="m.code=d.code and ${COND1}"
-    mysql -N kts<<<"SELECT m.code FROM tbl_ma513 as m, ${sqls} WHERE ${conds}" | \
-        xargs -n6 | tee /dev/stderr | xargs up add_codes_2_dzh2tbl 
-
-    xt_ret $? "mysql" || return $?
+    fn_select_tbl_ma513
+    xt_ret $? "" || return $?
 }
 
 function fn_low_cross_ma5() 
