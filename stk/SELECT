@@ -167,6 +167,8 @@ function fn_main()
 
 fn_main "$@"
 
+# SELECT tbl.*, tbl.volume/ma.vol5*2 FROM tbl_ma513 as ma, (SELECT * FROM day WHERE date = '2014-04-16') as tbl where ma.code=tbl.code;
+
 # http://www.cnblogs.com/zhenjing/archive/2011/07/15/process_mutex_race.html
 # 获取最大ID的记录
 

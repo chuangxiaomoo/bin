@@ -56,6 +56,9 @@
     SELECT * FROM stamp_min order by id DESC limit 1;
     SELECT * FROM stamp_min where id = (SELECT max(id) FROM stamp_min);
 
+    -- tail 5
+    SELECT * FROM (SELECT * FROM ma ORDER by date DESC LIMIT 5) as tbl ORDER by date ASC;
+
 . 唯一(UNIQUE)
 
     SELECT DISTINCT  code FROM day;
