@@ -118,9 +118,9 @@ function fn_timestamp_market()
     MAXDATE=`mysql -N kts <<< "SELECT max(date) from day WHERE code = 900001"`
     if [ "$MAXDATE" = "${OPENDATE}" ]; then
         if [ "${is_del_routine}" != 'true' ]; then
-        echo "
-        WARNING: $MAXDATE data exist, try up redo_hexun_day
-        " && return 1
+            echo "
+            WARNING: $MAXDATE data exist, try up redo_hexun_day
+            " && return 1
         fi
     fi 
 }
