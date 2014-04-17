@@ -879,17 +879,29 @@ function fn_03_五个要点()               { cat test_03_五个要点 ;}
 function fn_11_测试工程师如何提BUG()    { cat test_11_测试工程师如何提BUG ;}
     local opts=(
         gtest
-        fundamental             # 测试就是写方程
+        fundamental                     # 测试就是写方程
         01_用例设计原则
         02_梦想与实现
-        03_五个要点             # 测试的第一原则：思维很混乱时查看
+        03_五个要点                     # 测试的第一原则：思维很混乱时查看
         11_测试工程师如何提BUG
     )
     fn_print $@
 }
 
 
-function fn_codingstyle()               { cat codingstyle ;}
+function fn_codingstyle()               { 
+function fn_base()                      { cat codingstyle_base ;}
+function fn_kernel()                    { cat codingstyle_kernel ;}
+function fn_qt()                        { cat codingstyle_qt ;}
+function fn_team()                      { cat codingstyle_team ;}
+    local opts=(
+        base
+        kernel                          # 内核风格
+        qt
+        team                            # 关键在映射规则
+    )
+    fn_print $@
+}
 function fn_google_cxx_style()          { cat google_cxx_style ;}
 function fn_question()                  { cat question ;}
 
