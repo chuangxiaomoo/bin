@@ -1,0 +1,6 @@
+# cleanup
+
+## clean add files
+
+  svn stat | grep '^\?' | awk '{print $2}' | xargs rm -f
+
