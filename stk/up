@@ -202,29 +202,21 @@ function fn_add_yesclose()
 
 function fn_hexun_day() 
 {
-    DATE=`date +%Y-%m-%d`
-    #OPENDATE=`$W3M -dump ${url_sh000001} | awk -F',' '{print $(NF-2)}'`
-    DATETIME=(`$W3M -dump ${url_sh000001} | awk -F',' '{print $(NF-2), $(NF-1)}'`)
-    OPENDATE=${DATETIME[0]}
-    OPENTIME=${DATETIME[1]}
-    mysql<<<"INSERT INTO kts.stamp_day values(DEFAULT, '$OPENDATE', '$OPENTIME')"
-    xt_ret $? "" || return $?
+    # unarm_close_forbid=true \
+    fn_timestamp_market
+    xt_ret $? "${FUNCNAME}" || return $?
 
-    export DATE=${OPENDATE}      # uncomment this line to update compulsely
-
-    [ -z "$OPENDATE" ] && echo "    SINA UNREACHABLE!" | wall && return 1
-    [ "$DATE" != "$OPENDATE" ] && echo "Error: market is close" && return 1
-
-    MAXDATE=`mysql -N kts <<< "SELECT max(date) from day WHERE code = 900001 ;"`
-
-    if [ "$MAXDATE" == "$OPENDATE" ]; then
-        echo "WARNING: ignore redo $MAXDATE" && return 1
-    fi 
+    echo "
+    add hexun_day ${DATE}...
+    "
 
     $workdir/hexun || { 
         sleep 2; $workdir/hexun || 
-        { echo "up 2 fail" | wall; return 1 ;}
+        { echo "try 2 times fail" | wall; return 1 ;}
     }
+
+    mysql<<<"INSERT INTO kts.stamp_day values(DEFAULT, '$OPENDATE', '$OPENTIME')"
+    xt_ret $? "" || return $?
 
     awk '{
         printf "%06d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n", 
@@ -255,31 +247,29 @@ function fn_hexun_day()
 
 function fn_del_hexun_day() 
 {
-    DATE=`date +%Y-%m-%d`
-    OPENDATE=`$W3M -dump ${url_sh000001} | awk -F',' '{print $(NF-2)}'`
+    is_del_routine=true
+    # unarm_close_forbid=true \
+    fn_timestamp_market
+    xt_ret $? "${FUNCNAME}" || return $?
 
-    [ -z "$OPENDATE" ] && echo "    SINA UNREACHABLE!" | wall && return 1
-    export DATE=${OPENDATE}      # uncomment this line to del compulsely
-    echo "    del hexun_day ${DATE}..."
+    echo "
+    del hexun_day ${DATE}...
+    "
 
-    if [ "$DATE" = "$OPENDATE" ]; then
-        cmd_del_curdate="DELETE FROM day WHERE date = '${OPENDATE}';"
-        echo "
-        ${cmd_del_curdate}
-        " | mysql kts
-    fi
-    return 0
+    mysql<<<"DELETE FROM kts.day WHERE date = '${OPENDATE}';"
+    xt_ret $? "${FUNCNAME}" || return $?
 }
 
 function fn_redo_hexun_day() 
 {
-    echo "    redo hexun_day..."
     fn_del_hexun_day && fn_hexun_day
 
     if [ "$?" -eq 0 ]; then
-        echo "    redo hexun_day succ"
+        echo "    redo hexun_day succ ^_^
+        "
     else
-        echo "    redo hexun_day fail"
+        echo "    redo hexun_day fail #_#
+        "
     fi
 }
 
@@ -473,6 +463,7 @@ function fn_redo_hexun_day_fr_min()
 
     DATE=`mysql -N kts <<< "SELECT date FROM stamp_min WHERE id = (SELECT max(id) FROM stamp_min);"`
     TIME=`mysql -N kts <<< "SELECT time FROM stamp_min WHERE id = (SELECT max(id) FROM stamp_min);"`
+
     OPENDATE=`$W3M -dump ${url_sh000001} |awk -F',' '{print $(NF-2)}'`
 
     [ -z "$OPENDATE" ] && echo "    SINA UNREACHABLE!" | wall && return 1

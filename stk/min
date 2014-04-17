@@ -22,25 +22,18 @@
 
 function fn_main()
 {
-    # TIME在这里一直是个问题的
-    # uncomment below for 假日测试
-    # iDATE=`$W3M -dump ${url_sh000001} | awk -F',' '{print $(NF-2)}'`
+    # unarm_close_forbid=true \
+    fn_timestamp_market
+    xt_ret $? "${FUNCNAME}" || return $?
 
-    DATE=${iDATE:-`date +%Y-%m-%d`} 
-    TIME=`date +%H.%M.%S`
     p_min=$warehs/min/${DATE}
+    mkdir -p $p_min
 
     # in case today is on holiday
-    if [ ! -d "$p_min" ]; then
-        OPENDATE=`$W3M -dump ${url_sh000001} | awk -F',' '{print $(NF-2)}'`
-        [ "$DATE" != "$OPENDATE" ] && echo "Error: market is close" && return
-        mkdir -p $p_min
-    fi
 
-    export DATE
-    echo "    min ${DATE}..."
     $workdir/hexun
 
+    TIME=`date +%H.%M.%S`
     $W3M -dump ${url_sh000001} | awk -v v_time=${TIME} -F',' '{
         printf "%06d\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t" \
                 "%s\t%s\t%s\t%s\t%s\n", 
@@ -49,16 +42,11 @@ function fn_main()
     }' >> $hx_ripetxt
     #           ($9/100), ($10/10000),0,0,0,$31,$32;
 
-    mysql -u root <<-HERE
-    LOAD DATA LOCAL INFILE '$hx_ripetxt' INTO TABLE kts.min;
-	HERE
+    mysql<<<"LOAD DATA LOCAL INFILE '$hx_ripetxt' INTO TABLE kts.min;" 
+    xt_ret $? "" || return $?
 
-    stamp_date=`head -1 $hx_ripetxt | awk '{print $13}'`
-    stamp_time=`head -1 $hx_ripetxt | awk '{print $14}'`
-
-    mysql -u root <<-HERE
-    INSERT INTO kts.stamp_min values(DEFAULT, '$stamp_date', '$stamp_time')
-	HERE
+    mysql<<<"INSERT INTO kts.stamp_min values(DEFAULT, '$OPENDATE', '$OPENTIME')"
+    xt_ret $? "" || return $?
 
     cp -a $hx_ripetxt $p_min/$TIME
 }

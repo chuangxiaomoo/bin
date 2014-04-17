@@ -26,6 +26,10 @@ function fn_fmt_sina() {
 }
 
 function fn_sina() {
+    # unarm_close_forbid=true \
+    fn_timestamp_market
+    xt_ret $? "${FUNCNAME}" || return $?
+
     local url='http://vip.stock.finance.sina.com.cn'
     local page='/quotes_service/api/json_v2.php/Market_Center.getHQNodeData'
     local all='?page=1&num=2480&sort=symbol&asc=1&node=hs_a&_s_r_a=page'
@@ -33,10 +37,7 @@ function fn_sina() {
     local sz1='?page=1&num=800&sort=symbol&asc=1&node=sz_a&_s_r_a=page'
     local sz2='?page=2&num=800&sort=symbol&asc=1&node=sz_a&_s_r_a=page'
 
-    OPENDATE=`$W3M -dump ${url_sh000001} | \
-                            awk -F',' '{print $(NF-2)}'`
-    [ -z "$OPENDATE" ] && echo "    SINA UNREACHABLE!" | wall && return
-#   代码   名称     最新价 涨跌额 涨跌幅 买入   卖出   昨收   今开   最高   最低   成交量/手 成交额/万 
+    # 代码   名称     最新价 涨跌额 涨跌幅 买入   卖出   昨收   今开   最高   最低   成交量/手 成交额/万 
 
     # link=$url$page$all so slowly
     for link in $url$page$sh $url$page$sz1 $url$page$sz2; do

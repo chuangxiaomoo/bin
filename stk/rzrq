@@ -141,12 +141,11 @@ function fn_dl_history()
 
 function fn_dl_rzrq_today() 
 {
+    fn_timestamp_market
+    xt_ret $? "${FUNCNAME}" || return $?
+
     # DATE=`date +%Y-%m-%d`
-    export DATE='2013-12-20'
-
-    # fn_is_market_open || return 1
-
-
+    # export DATE='2013-12-20'
     i=$DATE
     echo --- doing $i
     fn_rzrq_overview $i > $rzrq_overview/$i
