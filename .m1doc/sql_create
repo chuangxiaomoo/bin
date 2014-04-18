@@ -29,9 +29,11 @@
 
 . 创建临时表
 
-    -- 使用TEMPORARY时效率提升5倍
-    -- ERROR 1137 (HY000): Can't reopen table: 'tempday', 因为使用了SELECT嵌套
-    -- SELECT close FROM tempday WHERE date=(SELECT max(date) FROM tempday) INTO v_trade;
+    -- 1. 使用TEMPORARY时效率提升5倍
+    -- 2. ERROR 1137 (HY000): Can't reopen table: 'tempday', 因为使用了SELECT嵌套
+    --    SELECT close FROM tempday WHERE date=(SELECT max(date) FROM tempday) INTO v_trade;
+    -- 3. 'tmpdir'可写，且有足够空间
+    --    show global variables like 'tmpdir'; 
 
     CREATE TEMPORARY TABLE tempday (
         id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
