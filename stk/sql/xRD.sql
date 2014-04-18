@@ -146,7 +146,9 @@ tag_kdj:BEGIN
     UNTIL v_i > v_len END REPEAT;
 END tag_kdj//
 
- -- 使用TEMPORARY时效率提升5倍
+-- 使用TEMPORARY时效率提升5倍
+-- ERROR 1137 (HY000): Can't reopen table: 'tempday', 因为使用了SELECT嵌套
+-- SELECT close FROM tempday WHERE date=(SELECT max(date) FROM tempday) INTO v_trade;
 DROP PROCEDURE IF EXISTS sp_create_tempday //
 CREATE PROCEDURE sp_create_tempday() tag_tempday:BEGIN 
     DROP   TEMPORARY TABLE IF EXISTS tempday;
@@ -165,6 +167,7 @@ CREATE PROCEDURE sp_create_tempday() tag_tempday:BEGIN
         amount      DECIMAL(12,2)NOT NULL DEFAULT 0,
         INDEX(date)
     );
+   #)engine memory;
 END tag_tempday //
 
 DROP PROCEDURE IF EXISTS sp_create_ma513 //
@@ -604,8 +607,8 @@ CREATE PROCEDURE sp_get_down_turnov(a_code INT(6) ZEROFILL) tag_100d_turnov:BEGI
     -- 新股首日yesc设为open
     UPDATE tempday SET yesc=open WHERE id=1;
 
-    -- 在trim前选出trade值
-    SELECT close FROM tempday WHERE date=(SELECT max(date) FROM tempday) INTO v_trade;
+    -- 在trim前选出trade值，不能用 SELECT 嵌套
+    SELECT close FROM tempday ORDER by date DESC LIMIT 1 INTO v_trade;
 
     IF @DOWNSLOPE = 1 THEN
         -- 取下降段，概率性会有相同的high和low
