@@ -26,3 +26,14 @@
 
     -- 跨数据库
     CREATE TABLE newshop.newadmin LIKE shop.admin;
+
+. 创建临时表
+
+    -- 使用TEMPORARY时效率提升5倍
+    -- ERROR 1137 (HY000): Can't reopen table: 'tempday', 因为使用了SELECT嵌套
+    -- SELECT close FROM tempday WHERE date=(SELECT max(date) FROM tempday) INTO v_trade;
+
+    CREATE TEMPORARY TABLE tempday (
+        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    );

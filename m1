@@ -1043,18 +1043,21 @@ function fn_base()                      { cat xml_base ;}
 function fn_api.c()                     { cat xml_api.c ;}
 function fn_api.h()                     { cat xml_api.h ;}
 function fn_xsd()                       { cat xml_xsd ;}
+function fn_parser()                    { cat xml_parser ;}
     local opts=(
         base
         api.c 
         api.h
-        xsd                # XML Schema xml schema
+        parser              # xpath xslt 
+        xsd                 # XML Schema xml schema
     )
     fn_print $@
 }
 
+function fn_mxml()                      { fn_xml $@ ;}
+
 function fn_json()                      { cat json ;}
 
-function fn_mxml()                      { fn_xml $@ ;}
 function fn_markdown()                  { cat markdown ;}
 
 function fn_alg()                       {
