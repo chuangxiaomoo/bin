@@ -210,7 +210,8 @@ function fn_hexun_day()
     add hexun_day ${DATE}...
     "
 
-    $workdir/hexun || { 
+    $workdir/hexun || {
+        echo "try again..."
         sleep 2; $workdir/hexun || 
         { echo "try 2 times fail" | wall; return 1 ;}
     }
