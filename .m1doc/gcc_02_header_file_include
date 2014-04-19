@@ -5,10 +5,19 @@
   1. 不要在 <.h> 中包含 <.h>
 
   这也是为何 `man 3 printf` 会指示你包含一个头文件
+  2014-04-19 `logapi.h` `debug.h`, `条目2`处理起来非常复杂。
 
   2. 不要试图强制<.h>的包含顺序，有1的情况下，事情变得太复杂
 
-  2014-04-19 `logapi.h` `debug.h`, 因为 1 而流产。
+  #ifdef _DEBUG_H
+  #error "#include <debug.h> must pose after #include <logapi.h>"
+  #endif
+
+  3. 用另一个宏来明令集成
+
+  > DBG() log_recored() 可能产生嵌套，不能自动集成
+  > 用另一个宏来明令集成，缺少 log_record()，gcc会自动提示。
+  # define INTEGRATE_LOG_IN_DEBUG
 
 # 搜索路径
 
