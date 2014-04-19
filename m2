@@ -334,6 +334,7 @@ function fn_wdf_25_上手之于概念()       { cat phi_wdf_25_上手之于概�
 function fn_wdf_26_未言语前已心领神会() { cat phi_wdf_26_未言语前已心领神会 ;}
 function fn_wdf_27_人必有一死()         { cat phi_wdf_27_人必有一死 ;}
 function fn_wdf_28_终极关怀()           { cat phi_wdf_28_终极关怀 ;}
+function fn_epistemology()              { cat phi_epistemology ;}
     local opts=(
         01_马克思
         02_康德
@@ -341,7 +342,10 @@ function fn_wdf_28_终极关怀()           { cat phi_wdf_28_终极关怀 ;}
         freudian                        # 自我 本我 超我
         emotion                         # Anger 七情六欲
 
+        epistemology                    # 知识论
+
         flowers12                       # 哲学12钗
+
         wdf_00                          # 王德峰
         wdf_01_心安之窄门
         wdf_02_国民性
@@ -483,13 +487,20 @@ function fn_ljsw()                      {
 function fn_01_教育()                   { cat ljsw_01_教育 ;}
 function fn_02_傻帽悲观派()             { cat ljsw_02_傻帽悲观派 ;}
 function fn_04_民主政治()               { cat ljsw_04_民主政治 ;}
+
+function fn_210_右派为什么这么横()      { cat ljsw_210_右派为什么这么横 ;}
+
 function fn_x1_你的阅读造就了你()       { cat ljsw_x1_你的阅读造就了你 ;}
     local opts=(
         01_教育
         02_傻帽悲观派
         03_成功人士的3个品质            # 优越感、不安全感、自控力
         04_民主政治
+        05_格局                         # 琐屑在大小格局中的`避错`与`无能`
+        51_右派为什么那么横             # 保守派的3个特性
         x1_你的阅读造就了你             # you are what u read
+
+        210_右派为什么这么横
     )
     fn_print $@
 }
