@@ -41,19 +41,3 @@
     sof2.cpp|25 col 85| warning: deprecated conversion from string constant to ‘char*’
 
 
-二、支持中文identifer
-
-    根据文件的编码（GBK or UTF8）设置相应相应的LC_CTYPE即可以。
-    $LANG $LC_CTYPE to support Chinese
-    LANG=en_US.UTF-8
-    LC_CTYPE="en_US.UTF-8"
-
-
-四、静态库链接顺序
-    http://haoxg.spaces.live.com/blog/cns!667714E7CE1BE835!260.entry 
-    在链接静态库时，如果多个静态库之间存在依赖关系，
-    原理：符号的搜索从当前.o或.a往后搜索，而不是全部.o .a .so
-    所以，如果main.o依赖lib1.a，lib1.a 依赖于 lib2.a，那么，编译命令如下：
-        cc main.o lib1.a lib2.a -o main
-
-

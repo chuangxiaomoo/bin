@@ -1,6 +1,6 @@
-/* 02_header_file_inc_path */
+# 02_header_file_inc_path 
 
-. 搜索路径
+# 搜索路径
 
     http://stackoverflow.com/questions/344317/where-does-gcc-look-for-c-and-c-header-files
 
@@ -17,7 +17,7 @@
 
 
 
-. 头文件搜索顺序
+# 头文件搜索顺序
 
     header files search sequence
      1. 当前工作路径. 
@@ -27,4 +27,26 @@
      注意：/usr/include 只是被默认加到-I的后面，很人性化的东东，
     #include "head.h"       依次搜索    1 2 3
     #include <head.h>         只搜索      2 3
+
+
+# -M 形成依赖文件
+  > -M  包含系统头文件
+  > -MM 不包含系统头文件
+  > gcc -MM jco_update.c 
+
+  jco_update.o: upgrade/jco_update.c \
+    upgrade/jco_update.h /opt/s/n/libs/utils/inc/utils.h \
+    /opt/s/n/libs/include/debug.h /opt/s/n/apis/inc/logapi.h 
+
+
+# -D 形成依赖文件 .d
+  > gcc -MMD jco_update.c -o upgrade/jco_update.d
+
+  upgrade/jco_update.d: upgrade/jco_update.c \
+    upgrade/jco_update.h /opt/s/n/libs/utils/inc/utils.h \
+    /opt/s/n/libs/include/debug.h /opt/s/n/apis/inc/logapi.h 
+
+# -E 查找精确依赖，还是用预处理输出
+
+  > 如：第一次被包含的位置
 
