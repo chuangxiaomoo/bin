@@ -92,22 +92,20 @@ function fn_app_wgt_turnov()
     {
         tbl_super_dive="
         SELECT $columns, c.nmc, $wgt as wgt, c.name 
-            FROM ${TBL:-tbl_visit} as d, cap as c 
+            FROM ${TBL:-tbl_sink} as d, cap as c 
             WHERE d.code = c.code and swing<0 HAVING wgt < -50 ${COND}
             ORDER by ${field} ${ASC} limit ${LIMIT:-30}
         " 
     }
 
-    # bounce净换手 amount价格反弹
-    columns="code swing rise sink bounce amount turnover date_low date_high"
+    # net净下跌换手 amount价格反弹
+    # columns="code swing rise sink ..."
     columns=${columns:-'*'}
     columns=d.${columns// / d.}
     columns=${columns// /,}
-    columns=${columns//amount/amount as revive}
-    columns=${columns//bounce/bounce as nettnv}
 
     # wgt在下跌市时，与nmc成反比。
-    wgt="(swing+bounce)"
+    wgt="(swing+net)"
     field=${1:-wgt}
 
     echo ----- COND: $COND -----

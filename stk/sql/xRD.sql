@@ -146,6 +146,24 @@ tag_kdj:BEGIN
     UNTIL v_i > v_len END REPEAT;
 END tag_kdj//
 
+DROP PROCEDURE IF EXISTS sp_create_tbl_sink //
+CREATE PROCEDURE sp_create_tbl_sink() tag_tbl_sink:BEGIN 
+    DROP   TABLE IF EXISTS tbl_sink;
+    CREATE TABLE tbl_sink (
+        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        swing       DECIMAL(6,2) NOT NULL DEFAULT 0,        -- price swing
+        rise        DECIMAL(6,2) NOT NULL DEFAULT 0,        -- rise turnover
+        sink        DECIMAL(6,2) NOT NULL DEFAULT 0,        -- sink turnover
+        sum         DECIMAL(6,2) NOT NULL DEFAULT 0,        -- sum = rise + sink
+        net         DECIMAL(6,2) NOT NULL DEFAULT 0,        -- net = rise - sink
+        rally       DECIMAL(12,2)NOT NULL DEFAULT 0,
+        date_low    date NOT NULL DEFAULT 0,
+        date_high   date NOT NULL DEFAULT 0
+    );
+   #)engine memory;
+END tag_tbl_sink //
+
 -- 使用TEMPORARY时效率提升5倍
 -- ERROR 1137 (HY000): Can't reopen table: 'tempday', 因为使用了SELECT嵌套
 -- SELECT close FROM tempday WHERE date=(SELECT max(date) FROM tempday) INTO v_trade;
@@ -378,6 +396,7 @@ CREATE PROCEDURE sp_flt_n_day_change(a_code INT(6) ZEROFILL) tag_flt_n_day_chang
     END IF;
 END tag_flt_n_day_change//
 
+
 DROP PROCEDURE IF EXISTS sp_visit_tbl//
 CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
     DECLARE v_code  INT(6) ZEROFILL;
@@ -417,8 +436,9 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
     PREPARE stmt from @sqls; EXECUTE stmt;
 
     -- prepare
-    IF a_type = @fn_get_ma513       THEN call sp_create_ma513(); END IF;
-    IF a_type = @fn_up_ma240_all    THEN call sp_create_ma240(); END IF;
+    IF a_type = @fn_get_ma513       THEN call sp_create_ma513();    END IF;
+    IF a_type = @fn_up_ma240_all    THEN call sp_create_ma240();    END IF;
+    IF a_type = @fn_get_down_turnov THEN call sp_create_tbl_sink(); END IF;
 
     -- visit all codes
     WHILE v_id <= v_len DO
@@ -587,7 +607,7 @@ CREATE PROCEDURE sp_get_down_turnov(a_code INT(6) ZEROFILL) tag_100d_turnov:BEGI
     DECLARE sum         DECIMAL(8,2) DEFAULT 0;
     DECLARE sink        DECIMAL(8,2) DEFAULT 0;
     DECLARE rise        DECIMAL(8,2) DEFAULT 0;
-    DECLARE revive      DECIMAL(8,2) DEFAULT 0;
+    DECLARE rally       DECIMAL(8,2) DEFAULT 0;
 
     -- 价格变化振幅
     DECLARE swing       DECIMAL(8,2) DEFAULT 0;
@@ -618,7 +638,7 @@ CREATE PROCEDURE sp_get_down_turnov(a_code INT(6) ZEROFILL) tag_100d_turnov:BEGI
 
         -- 在阶段之顶
         IF v_date_low = v_date_high THEN 
-            -- SELECT 'MYGOD', v_date_low , v_date_high;
+            -- SELECT 'MYGOD', a_code, v_date_low , v_date_high;
             LEAVE tag_100d_turnov; 
         END IF;
 
@@ -684,12 +704,11 @@ CREATE PROCEDURE sp_get_down_turnov(a_code INT(6) ZEROFILL) tag_100d_turnov:BEGI
     SET sink = 100 * v_sink * v_close / v_nmc;
     SET sum  = rise + sink;
     SET net  = rise - sink;
-    SET revive = 100 * (v_trade-v_low)/v_low;
+    SET rally= 100 * (v_trade-v_low)/v_low;
 
-
-    -- SELECT a_code, v_date_high, v_date_low, v_high, v_low, net, revive;
-    INSERT INTO tbl_visit(code,date_high, date_low, swing, rise, sink, bounce, turnover, amount)
-             VALUES(a_code, v_date_high, v_date_low, swing, rise, sink, net, sum, revive);
+    -- SELECT a_code, v_date_high, v_date_low, v_high, v_low, net, rally;
+    INSERT INTO tbl_sink(code,date_high,   date_low,swing, rise, sink, net, sum, rally)
+             VALUES(a_code, v_date_high, v_date_low,swing, rise, sink, net, sum, rally);
 
 END tag_100d_turnov //
 

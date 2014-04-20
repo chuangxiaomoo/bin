@@ -294,7 +294,7 @@ function fn_select_tbl_ma513()
     mysql -N kts<<<"SELECT m.code FROM tbl_ma513 as m, ${sqls} WHERE ${conds}" > ${soptter_zxg} 
     xt_ret $? "${FUNCNAME}" || return $?
 
-    cat ${soptter_zxg} | xargs -n6 | tee /dev/stderr | xargs up add_codes_2_dzh2tbl 
+    cat ${soptter_zxg} | xargs -n6 | tee /dev/stderr | TBL=ma513 xargs up add_codes_2_dzh2tbl 
     xt_ret $? "cat ${soptter_zxg}" || return $?
 }
 
@@ -424,7 +424,8 @@ function fn_ana_chao()
     2. COND=xx  SELECT   1      # 得到超跌条件筛选表 chao
     3. TBL=chao SCREENER 2      # 得到  tbl_ma513
 
-    4.          SCREENER 3      # 多次进行 ma5 ma13 的分析
+    4. COND=d.code=rally.code   
+                SCREENER 3      # 多次进行 ma5 ma13 的分析
     " | sed 's/^  //g'
     }
 
