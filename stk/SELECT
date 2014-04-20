@@ -14,7 +14,7 @@ function fn_get_curdate_min()
     " | mysql kts
 }
 
-function fn_goo_sym_day() 
+function fn_ls() 
 {
     [ $# -eq "0" ] && fn_execute -l && exit
 
@@ -43,12 +43,14 @@ function fn_goo_sym_day()
         fi 
     fi
 
-    fields='d.code,d.date,d.close,d.amount'
+    fields='d.code,d.date,d.yesc,d.open,d.high,d.low,d.close'
     echo "
-    SELECT $fields, $RISE as rise, $SWING as swing,
-        $TURNOV as turnover, c.name FROM day as d, cap as c 
+    SELECT * FROM (
+        SELECT $fields, $SWING as swing, $RISE as rise, $TURNOV as turnover 
+        FROM day as d, cap as c 
         WHERE d.code = ${code} and d.code = c.code 
-        ${CODE} ORDER by date ${ASC} limit ${LIMIT:-24};
+        ${COND} ORDER by date DESC limit ${LIMIT:-13}
+    ) as tbl ORDER by date ASC;
 	" | mysql -t kts
 }
 
@@ -175,7 +177,7 @@ function fn_main()
     "get_open_days_min                       # 分钟日列表 \$LIMIT"
     # ----------------  ABOVE IS FIXED SEQUENCE --------------------
     "get_curdate_min    [CODE:-900001]       # --- 当日min \$LIMIT"
-    "goo_sym_day        {code|symbol}        # 日线数据 \$LIMIT"
+    "ls                 {code|symbol}        # 日线数据 \$LIMIT"
     "app_day_rise       [sortfiled]          # --- END 涨幅排名 \$LIMIT" 
     "app_day_turnover   [sortfiled]          # END 换手排名 \$LIMIT"
     )
