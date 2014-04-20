@@ -9,6 +9,7 @@ function fn_herb()                      {
 function fn_5邪()                       { cat herb_5邪 ;}
     local opts=(
         5邪
+        case                            # 叶天士 临症指南
     )
     fn_print $@
 }
@@ -542,7 +543,7 @@ function fn_main() {
         guang
         huawei
         humor                           # 幽默
-        herb
+        herb                            # 中医
         howto
         ideas
         idealism                        # 理想主义
