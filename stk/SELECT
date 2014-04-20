@@ -88,6 +88,16 @@ function fn_app_nmc_name()
 
 function fn_app_wgt_turnov() 
 {
+    function fn_get_tbl_super_dive() 
+    {
+        tbl_super_dive="
+        SELECT $columns, c.nmc, $wgt as wgt, c.name 
+            FROM ${TBL:-tbl_visit} as d, cap as c 
+            WHERE d.code = c.code and swing<0 HAVING wgt < -50 ${COND}
+            ORDER by ${field} ${ASC} limit ${LIMIT:-30}
+        " 
+    }
+
     # bounce净换手 amount价格反弹
     columns="code swing rise sink bounce amount turnover date_low date_high"
     columns=${columns:-'*'}
@@ -102,13 +112,13 @@ function fn_app_wgt_turnov()
 
     echo ----- COND: $COND -----
 
-    echo "
-    SELECT $columns, c.nmc, $wgt as wgt, c.name 
-        FROM ${TBL:-tbl_visit} as d, cap as c 
-        WHERE d.code = c.code and swing<0 HAVING wgt < -50 ${COND}
-        ORDER by ${field} ${ASC} limit ${LIMIT:-30};
-	" | mysql $mo -t kts     
-    
+    fn_get_tbl_super_dive
+    mysql $mo -t kts <<< "${tbl_super_dive}"
+    xt_ret $? "${FUNCNAME}" || return $?
+
+    LIMIT=1024 COND='' fn_get_tbl_super_dive
+    mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" | TBL=chao xargs up 7
+    xt_ret $? "${FUNCNAME}" || return $?
 }
 
 function fn_app_day_rise() 

@@ -209,7 +209,7 @@ function fn_get_down_turnov()
     echo '
     提示1: 考虑双日顶，high日绿，边界前移一日，`300301 2014-01-22`构筑3日顶.
     提示2: 最高价日为红，则70%计入下跌换手; 为绿，全为下跌换手
-    提示3: 超过80%即可考虑操作，跌幅亦为重要参考.
+    提示3: ------------------------- 操作要合ma5 -------------------------
     '
 }
 
@@ -290,7 +290,7 @@ function fn_ma_ray()
 function fn_select_tbl_ma513() 
 {
     local sqls="(SELECT * FROM day WHERE date='${END}') as d"
-    local conds="m.code=d.code and ${COND1}"
+    local conds="m.code=d.code and ${COND1} ${COND}"
     mysql -N kts<<<"SELECT m.code FROM tbl_ma513 as m, ${sqls} WHERE ${conds}" > ${soptter_zxg} 
     xt_ret $? "${FUNCNAME}" || return $?
 
@@ -409,6 +409,28 @@ function fn_ana_ma513()
     fn_execute "$@" || return $?
 }
 
+function fn_ana_chao() 
+{
+    #
+    # 从`SCREENER 1`得到超跌股票，并写入表zxg。
+    # 再通过ma5进行过滤。
+    #
+    function fn_exe_usage() 
+    {
+    echo "
+    Usage:
+    0.                up 4      # 更新日线数据
+    1.          SCREENER 1      # 得到超跌数据
+    2. COND=xx  SELECT   1      # 得到超跌条件筛选表 chao
+    3. TBL=chao SCREENER 2      # 得到  tbl_ma513
+
+    4.          SCREENER 3      # 多次进行 ma5 ma13 的分析
+    " | sed 's/^  //g'
+    }
+
+    fn_exe_usage
+}
+
 function fn_ana_ma240() 
 {
     fn_get_ma513
@@ -447,6 +469,7 @@ function fn_main()
     "get_ma513            [end]                 # ma 5 13 34 55"
     "ana_ma513            index [end]           # 分析ma 5 13 34 55"
     "ana_ma240                                  # 分析ma 34 60 120 240"
+    "ana_chao                                   # 分析超跌反弹"
     "get_rise_turnov      start [end]           # 100%上升净换手"
     "get_13d_20psink                            # 8日13日SINK超20%"
     "get_1_swing_num      [RISE_PERCENT:-8]     # 单日振幅，小于0计算跌幅"
