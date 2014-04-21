@@ -274,7 +274,7 @@ function fn_get_ma513()
     fi
 }
 
-function fn_ma_ray() 
+function fn_ma_ray()
 {
     echo "build ${END}..."
     fn_reset_sqlsource
@@ -287,15 +287,25 @@ function fn_ma_ray()
     return     
 }
 
-function fn_select_tbl_ma513() 
+function fn_select_tbl_ma513()
 {
     local sqls="(SELECT * FROM day WHERE date='${END}') as d"
     local conds="m.code=d.code and ${COND1} ${COND}"
+      echo         "SELECT m.code FROM tbl_ma513 as m, ${sqls} WHERE ${conds}" 
     mysql -N kts<<<"SELECT m.code FROM tbl_ma513 as m, ${sqls} WHERE ${conds}" > ${soptter_zxg} 
     xt_ret $? "${FUNCNAME}" || return $?
 
-    cat ${soptter_zxg} | xargs -n6 | tee /dev/stderr | TBL=ma513 xargs up add_codes_2_dzh2tbl 
+    cat ${soptter_zxg} | xargs -n6 | tee /dev/stderr | TBL=zxg_ma513 xargs up add_codes_2_dzh2tbl 
     xt_ret $? "cat ${soptter_zxg}" || return $?
+
+    if [ "${CHAO}" = 1 ]; then
+    echo "
+    css CHAO!
+    "
+    echo "
+    SELECT code FROM zxg_ma513 WHERE code in (SELECT code FROM chao)
+    " | mysql -N kts | xargs -n6 | tee /dev/stderr | TBL=zxg_chao513 xargs up add_codes_2_dzh2tbl 
+    fi 
 }
 
 function fn_trd_cross_maX() 
@@ -419,13 +429,9 @@ function fn_ana_chao()
     {
     echo "
     Usage:
-    0.                up 4      # 更新日线数据
-    1.          SCREENER 1      # 得到超跌数据
-    2. COND=xx  SELECT   1      # 得到超跌条件筛选表 chao
-    3. TBL=chao SCREENER 2      # 得到  tbl_ma513
-
-    4. COND=d.code=rally.code   
-                SCREENER 3      # 多次进行 ma5 ma13 的分析
+    1.          SCREENER 1      # 得到超跌数据          tbl_sink
+    2. COND=xx  SELECT   1      # 得到超跌条件筛选表    chao
+    3. CHAO=1   SCREENER 3 3    # 叠加超跌
     " | sed 's/^  //g'
     }
 
