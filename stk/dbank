@@ -45,7 +45,6 @@ yahootimeout='/root/bin/stk/.template/yahoo.ask.timeout'
 
 m2d_temp='/dev/shm/hexun/min2day'
 
-tougu_wall='/dev/shm/sina/tougu/wall'
 tougu_temp='/dev/shm/sina/tougu/temp'
 tougu_debug='/dev/shm/sina/tougu/debug'
 tougu_stderr='/dev/shm/sina/tougu/stderr'
@@ -92,6 +91,12 @@ day_gether='/dev/shm/day/gether'
 fenbi_raw='/dev/shm/fenbi/raw'
 fenbi_ripe='/dev/shm/fenbi/ripe'
 
+function fn_write() 
+{
+    # wall < /dev/stdin
+    mesg y; write root /dev/pts/0 < /dev/stdin
+}
+
 function fn_timestamp_market() 
 {
     DATETIME=(`$W3M -dump ${url_sh000001} | awk -F',' '{print $(NF-2), $(NF-1)}'`)
@@ -100,7 +105,7 @@ function fn_timestamp_market()
     if [ -z "$OPENDATE" ]; then
         echo "
         SINA UNREACHABLE!
-        " | wall && return 1
+        " | fn_write && return 1
     fi 
 
     export DATE=`date +%Y-%m-%d`

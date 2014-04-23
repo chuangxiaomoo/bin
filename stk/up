@@ -7,12 +7,10 @@
 # ------  common part over -----------
 #
 
-
 function fn_tougu_reminder() 
 {
     function fn_wall() {
-        cat <<-HERE > $tougu_wall
-
+        echo "
         -------------------------------------------------------------------------
 
                     $code         $code        $code        $code
@@ -22,10 +20,7 @@ function fn_tougu_reminder()
                     $code         $code        $code        $code
 
         -------------------------------------------------------------------------
-
-		HERE
-
-        wall $tougu_wall
+        " | fn_write
         exit
     }
 
@@ -212,8 +207,10 @@ function fn_hexun_day()
 
     $workdir/hexun || {
         echo "try again..."
-        sleep 2; $workdir/hexun || 
-        { echo "try 2 times fail" | wall; return 1 ;}
+        sleep 2; $workdir/hexun || { 
+            echo "try 2 times fail" | fn_write;
+            return 1 ;
+        }
     }
 
     mysql<<<"INSERT INTO kts.stamp_day values(DEFAULT, '$OPENDATE', '$OPENTIME')"
@@ -467,7 +464,7 @@ function fn_redo_hexun_day_fr_min()
 
     OPENDATE=`$W3M -dump ${url_sh000001} |awk -F',' '{print $(NF-2)}'`
 
-    [ -z "$OPENDATE" ] && echo "    SINA UNREACHABLE!" | wall && return 1
+    [ -z "$OPENDATE" ] && echo "    SINA UNREACHABLE!" | fn_write && return 1
     [ "$DATE" != "$OPENDATE" ] && echo "Error: market is close" && return 1
 
 

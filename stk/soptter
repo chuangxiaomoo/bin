@@ -18,7 +18,9 @@ function fn_peel()
     # http://www.cnblogs.com/chuncn/archive/2009/06/26/1400997.html
     record=(`grep $1 ${rt_ripetxt} | tr ',' ' '`)
     echo record is $record
-    [ -z "${record[*]}" ] && { echo "code[$1] get error" | wall; } && exit
+    [ -z "${record[*]}" ] && { 
+        echo "code[$1] get error" | fn_write
+    } && exit
     record=(${record[@]:1})     
 
      name=${record[0]} 

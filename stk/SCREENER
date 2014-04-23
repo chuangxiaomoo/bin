@@ -431,7 +431,7 @@ function fn_ana_chao()
     Usage:
     1.          SCREENER 1      # 得到超跌数据          tbl_sink
     2. COND=xx  SELECT   1      # 得到超跌条件筛选表    chao
-    3. CHAO=1   SCREENER 3 3    # 叠加超跌
+    3. CHAO=1   SCREENER 3 3    # 超跌cascading 
     " | sed 's/^  //g'
     }
 

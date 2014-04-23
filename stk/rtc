@@ -7,7 +7,7 @@ function fn_peel() {
     # from SINA
     # http://www.cnblogs.com/chuncn/archive/2009/06/26/1400997.html
     record=(`grep $1 ${rt_ripetxt} | tr ',' ' '`)
-    [ -z "${record[*]}" ] && { echo "code[$1] get error" | wall; } && exit
+    [ -z "${record[*]}" ] && { echo "code[$1] get error" | fn_write; } && exit
     record=(${record[@]:1})     
 
      name=${record[0]} 
@@ -50,7 +50,7 @@ fn_realtime() {
         fn_peel $code
 
         if [ "$sell" -eq 1 ] ; then
-            echo "$code     $trade      $time" | wall
+            echo "$code     $trade      $time" | fn_write
             exit
         fi
     done
