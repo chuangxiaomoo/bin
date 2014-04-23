@@ -159,9 +159,12 @@ function fn_dbgsys()
     # only when debug sys, when debug package, don't comment it
     sed -i 's/^ifconfig eth0/#ifconfig eth0/g' $rcS
     xert $? `$PS8` "sed" || return $?
+    
+    ipaddr=`fn_ini_get $p_root/app/vs/conf/config_server.ini eth ipaddr`
+    gateway=`fn_ini_get $p_root/app/vs/conf/config_server.ini eth gateway`
 
-    sed -i "s/192.168.1.217/${VIP}/g"    $p_root/app/vs/conf/config_server*
-    sed -i "s/192.168.1.1/${VIP%.*}.1/g" $p_root/app/vs/conf/config_server*
+    sed -i "s/${ipaddr}/${VIP}/g"    $p_root/app/vs/conf/config_server*
+    sed -i "s/${gateway}/${VIP%.*}.1/g" $p_root/app/vs/conf/config_server*
     sed -i "s/^IRCUT *=.*/IRCUT=1/g"     $p_root/app/vs/conf/config_server*
    #sed -i "s/^IRLIGHT *=.*/IRLIGHT=1/g" $p_root/app/vs/conf/config_server*
     sed -i "s/^IRCOLOR *=.*/IRCOLOR=1/g" $p_root/app/vs/conf/config_server*
