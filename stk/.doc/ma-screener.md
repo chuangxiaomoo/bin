@@ -36,3 +36,4 @@
   1. 老板电器
 
 
+## 短线配合量比(ratio) unfinished

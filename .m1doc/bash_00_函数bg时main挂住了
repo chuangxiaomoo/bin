@@ -19,8 +19,8 @@
 
     因为fn_sub也使用了 /var/upgrade.log
 
-    # man bash -> [coproc](http://blog.csdn.net/laoyiin/article/details/8511570)
-    # coproc会使用 built-in wait 进行等待
+    # coproc会使用 built-in wait 等待 fn_sub()
+    # [man bash::coproc](http://blog.csdn.net/laoyiin/article/details/8511570)
     # [GNU并行 parallel](http://blog.sina.com.cn/s/blog_3f7652740100y0ju.html)
 
     #!/bin/bash - 
@@ -29,9 +29,8 @@
         sleep 40
     }
 
-    function fn_main() {
-        fn_sub &
-    }
+    function fn_main() { fn_sub & }
+    function fn_main() { { sleep 40 }& }
 
     fn_main >> /var/upgrade.log  2>&1
 
