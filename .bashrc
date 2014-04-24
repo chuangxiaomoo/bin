@@ -48,6 +48,7 @@ alias    v1='vi /root/bin/m1'
 alias    v2='vi /root/bin/m2'
 alias    v7='vi /root/bin/7Lite'
 alias    vj='vi /root/bin/j2box'
+alias    vn='vi --noplugin'
 alias    vr='vi -R'
 alias    vt='vi /root/bin/.m2doc/tick.md'
 
