@@ -776,6 +776,7 @@ function fn_graphviz()                  { cat graphviz ;}
 function fn_gnuplot()                   { cat gnuplot ;}
 function fn_firefox()                   { cat firefox ;}
 function fn_firebug()                   { cat firebug ;}
+function fn_figlet()                    { cat figlet ;}
 
 function fn_services()                  {
 function fn_nfs()                       { cat services_nfs ;}
@@ -1221,6 +1222,7 @@ function fn_main() {
         framework
         find
         begin
+        figlet
         firebug
         firefox
         chrome

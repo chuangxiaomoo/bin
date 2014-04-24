@@ -1,0 +1,15 @@
+# figlet
+
+    echo "obase=13;6*9"|bc|figlet
+
+上面的命令输出：
+
+     _  _  ____
+    | || ||___ \
+    | || |_ __) |
+    |__   _/ __/
+       |_||_____|
+
+解释：为了使用figlet命令，
+你还要去安装一个figlet（http://www.figlet.org/）这是一个让你画ASCII图的命令。
+
