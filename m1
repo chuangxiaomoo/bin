@@ -896,12 +896,12 @@ function fn_codingstyle()               {
 function fn_base()                      { cat codingstyle_base ;}
 function fn_kernel()                    { cat codingstyle_kernel ;}
 function fn_qt()                        { cat codingstyle_qt ;}
-function fn_team()                      { cat codingstyle_team ;}
+function fn_rule()                      { cat codingstyle_rule ;}
     local opts=(
         base
         kernel                          # 内核风格
         qt
-        team                            # 关键在映射规则
+        rule                            # 关键在映射规则
     )
     fn_print $@
 }

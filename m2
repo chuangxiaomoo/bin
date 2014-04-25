@@ -101,6 +101,7 @@ function fn_py_金字塔原理()             { cat book_py_金字塔原理 ;}
 function fn_economic_naturalist()       { cat book_economic_naturalist 
                                           cat read_economic_naturalist ;}
 function fn_10years()                   { cat book_10years ;}
+function fn_conservatism()              { cat book_conservatism ;}
 
     local opts=(
         base       
@@ -115,6 +116,7 @@ function fn_10years()                   { cat book_10years ;}
         PPT演示之道             # to read
         economic_naturalist     # 牛奶可乐
         10years                 # 我的职场十年：修炼
+        conservatism            # 保守主义
     )
     fn_print $@
 
