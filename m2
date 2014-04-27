@@ -101,8 +101,8 @@ function fn_py_金字塔原理()             { cat book_py_金字塔原理 ;}
 function fn_economic_naturalist()       { cat book_economic_naturalist 
                                           cat read_economic_naturalist ;}
 function fn_10years()                   { cat book_10years ;}
-function fn_conservatism()              { cat book_conservatism ;}
-
+function fn_conservatism()              { cat book_conservatism ;
+                                          cat read_conservatism ;} 
     local opts=(
         base       
         01_商君书
