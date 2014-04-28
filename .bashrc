@@ -147,7 +147,7 @@ activate_eth5()
     fi
 }
 
-.orgpath() { export PATH=$MVTPATH; }
+.orgpath() { export PATH=$ORGPATH; }
 .monpath() { export PATH=$MONPATH; }
 
 .tar() 
