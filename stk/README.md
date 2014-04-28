@@ -1,4 +1,4 @@
-# stratagy
+# 是谁派你来投资的？[天命如是](http://news.imeigu.com/a/1306330639828.html)
 
     I M P O R T A N T
 

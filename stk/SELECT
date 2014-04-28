@@ -114,7 +114,9 @@ function fn_app_wgt_turnov()
     mysql $mo -t kts <<< "${tbl_super_dive}"
     xt_ret $? "${FUNCNAME}" || return $?
 
-    LIMIT=1024 COND='' fn_get_tbl_super_dive
+    [ "${CHAO:=0}" -eq 0 ] && echo "CHAO:${CHAO} no zxg, return" && return
+
+    LIMIT=1024 fn_get_tbl_super_dive
     mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" | TBL=chao xargs up 7
     xt_ret $? "${FUNCNAME}" || return $?
 }
@@ -178,7 +180,7 @@ function fn_main()
 
     cmdlist=(
     "app_nmc_name       [sortfiled]          # 追加股票名到表TBL"
-    "app_wgt_turnov     [sortfiled]          # 追加weight到down_turnov"
+    "app_wgt_turnov     [sortfiled]          # 追加weight到down_turnov CHAO=1则进zxg"
     "get_comma_cloumns  [tbl_name:-day]      # 逗分列名"
     "get_open_days      [limit:-13]          # 开市日列表"
     "sel_vol5_ratio     [sortfiled:-ratio]   # 量比排名"

@@ -3,7 +3,7 @@
 alias    ..='cd ..'
 alias   ...='cd ../..'
 alias    .b='cd ~/bin'
-alias    .c="let 'CHAO=!CHAO'; echo \$CHAO"
+alias    .c="let 'CHAO=!CHAO'; echo \$CHAO; export CHAO"
 alias    .n='. /opt/nxpbash'
 alias    .s='cd ~/bin/stk'
 alias   .ss='cd ~/bin/stk/sql'
