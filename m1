@@ -48,6 +48,7 @@ function fn_huawei()                    { cat python_huawei ;}
 }
 
 function fn_ruby()                      { 
+function fn_install()                   { cat ruby_install ;}
 function fn_base()                      { cat ruby_base ;}
 function fn_grammer()                   { cat ruby_grammer ;}
 function fn_guide1()                    { cat ruby_guide1 ;}
@@ -57,6 +58,7 @@ function fn_block()                     { cat ruby_block ;}
 function fn__percent()                  { cat ruby__percent ;}
 function fn__dollor()                   { cat ruby__dollor ;}
     local opts=(
+        install
         base                # 手册 在Ruby中，解决一个问题会有多种方法
         operator            # + - * % 
         _percent            # %
@@ -1187,6 +1189,18 @@ function fn_cmdlineparser()             { cat nxp_cmdlineparser ;}
     fn_print $@
 }
 
+function fn_web()                       {
+function fn_jQuery()                    { cat web_jQuery ;}
+function fn_node()                      { cat web_node ;}
+function fn_coffee()                    { cat web_coffee ;}
+    local opts=(
+        jQuery
+        node
+        coffee
+    )
+    fn_print $@
+}
+
 function fn_main() {
     local ARGC=${#}
     local LASTARG=${!#}
@@ -1294,6 +1308,7 @@ function fn_main() {
         vs
         vmware
         virtualbox
+        web                     # WEB W3School
         w3m
         win
         wireshark

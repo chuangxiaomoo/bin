@@ -1,0 +1,19 @@
+# coffee
+
+  依赖 node 的安装
+  `npm install -g coffee-script`
+
+# install
+
+  记录一个比较爽的CoffeeScript命令：
+
+  coffee -cwo 生成javascript路径 需要编译的coffeescript路径
+
+  它会实时监听当前文件的变更，然后编译代码到目标路径。
+
+
+
+# homepage
+
+  http://coffeescript.org/
+

@@ -6,7 +6,7 @@
 
     使用apt-get安装软件时，可能发生not found，404错误，修改更新源可能可以解决问题。
 
-    1. vi /etc/apt/source.list，把下面内容copy到source.list中
+    1. vi /etc/apt/sources.list，把下面内容copy到sources.list中
     2. apt-get update
      
     deb http://mirrors.163.com/ubuntu/ oneiric main universe restricted multiverse 

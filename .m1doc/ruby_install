@@ -1,0 +1,31 @@
+# install
+
+## Install rvm
+
+  297  \curl -sSL https://get.rvm.io | bash -s stable
+  299  source /etc/profile.d/rvm.sh
+  301  vim.tiny /etc/profile
+       append the line below:
+            source /etc/profile.d/rvm.sh
+  300  rvm list
+
+## Install Ruby 2.0
+
+  303  rvm list
+  304  rvm install 2.0.0
+  307  rvm list
+  308  which ruby
+  309  ruby -v
+  310  rvm alias create default ruby-2.0.0-p353
+  311  rvm list
+  312  which ruby
+  313  rvm use  ruby-2.0.0-p353
+  314  rvm list
+  315  which ruby
+
+  > config.status: creating ruby-1.9.pc
+  > Unknown keyword 'URL' in './ruby.tmp.pc'
+
+  > I think it is because you have old version of pkg-config in you path. run 
+  > pkg-config --version , it should be 0.25 with Xcode 4.3.2. And it should 
+
