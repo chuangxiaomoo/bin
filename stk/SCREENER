@@ -181,12 +181,14 @@ function fn_get_stat_turnov()
 
 function fn_get_down_turnov() 
 {
-    local usage="Usage: ${FUNCNAME[0]} start [end]"
     START=${1:-${START}}
     END=${2:-${END}}
 
-    [ -n "${START}" ] && [ -n "${END}" ]
-    xt_ret $? "$usage" || return $?
+    [ -z "${START}" ] && START=`./SELECT 3 | head -1`
+
+    echo "
+    From ${START} to ${END}...
+    "
 
     # 指定环境变量TBL来进行测试
     TBL=${TBL:-'cap'}
@@ -472,7 +474,7 @@ function fn_main()
     # xet_block_info 为 sp_visit_tbl() 选定相应的BLOCK 
     cmdlist=(
     "get_stat_turnov      code start [end]      # 个股区间换手统计"
-    "get_down_turnov      start [end]           # 100%下降净换手"
+    "get_down_turnov      [start:curr-13] [end] # 100%下降净换手"
     "get_ma513            [end]                 # ma 5 13 34 55"
     "ana_ma513            index [end]           # 分析ma 5 13 34 55"
     "ana_ma240                                  # 分析ma 34 60 120 240"

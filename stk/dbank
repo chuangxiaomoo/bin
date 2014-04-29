@@ -3,7 +3,7 @@
 selecap="SELECT code FROM cap"
 helpmsg="
     ------------------------------ 环境变量 -----------------------------
-    ASC     排序方式，SELECT默认使用ASC，SCREENER默认使用DESC
+    ASC     排序方式，SELECT默认使用asc，SCREENER默认使用desc
     COND    条件过滤表达式，SELECT时使用，默认为空
     CHAO    1时在所有模型上叠加超跌模型
     END     时间范围的右值，默认使用900001的max(date)
