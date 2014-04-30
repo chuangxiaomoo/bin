@@ -138,11 +138,13 @@ function fn_arch()                      { cat busybox_arch ;}
 function fn_ftp()                       { cat busybox_ftp ;}
 function fn_tftp()                      {   . busybox_tftp ;}
 function fn_top()                       { cat busybox_top ;}
+function fn_udhcpc()                    { cat busybox_udhcpc ;}
     local opts=(
         arch
         ftp
         tftp
         top
+        udhcpc
     )
     fn_print $@
 }
