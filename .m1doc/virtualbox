@@ -1,0 +1,12 @@
+# virtualbox
+
+## usb
+
+  两个筛选器都加上
+  必要时插拔U盘，其会自动出现在桌面 
+
+## startx
+
+  由图形界面到文字界面 Ctrl + Alt + F1
+  由文字界面到图形界面 Ctrl + Alt + F7
+
