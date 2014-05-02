@@ -18,6 +18,7 @@
 ## 笛卡尔的金融   .doc/descartes.md
 ## 牛顿经典力学   .doc/newton.md
 
+## 保守主义       .doc/conservatism.md
 ## 趋势理论       .doc/trade.md
 ## 单理论之殇     .doc/hurt.md
 ## 信息进化论     .doc/info_evolution.md
