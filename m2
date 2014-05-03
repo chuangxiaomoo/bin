@@ -56,6 +56,7 @@ function fn_annual()                    {
 function fn_plan_what()                 { cat annual_plan_what ;}
 function fn_report_what()               { cat annual_report_what ;}
 function fn_seminar_what()              { cat annual_seminar_what ;}
+function fn_2011_investment_report()    { cat annual_2011_investment_report ;}
 function fn_2012_report()               { cat annual_2012_report ;}
 function fn_2012_seminar()              { cat annual_2012_seminar ;}
 function fn_2013_seminar()              { cat annual_2013_seminar ;}
@@ -68,6 +69,7 @@ function fn_2014_jco()                  { cat annual_2014_jco ;}
         plan_what                       # 基于`以终为始`的理念
         report_what
         seminar_what
+        2011_investment_report
         2012_report
         2012_seminar
         2013_seminar
