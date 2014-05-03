@@ -1,40 +1,40 @@
 #! /bin/bash
 #---------------------------------------------------------------------------
 #          FILE: SCREENER.sh
-#         USAGE: ./SCREENER.sh 
-#   DESCRIPTION: 
-#        AUTHOR: chuangxiaomoo (God helps those who help themselves) 
-#  ORGANIZATION: 
+#         USAGE: ./SCREENER.sh
+#   DESCRIPTION:
+#        AUTHOR: chuangxiaomoo (God helps those who help themselves)
+#  ORGANIZATION:
 #       CREATED: 2013-12-11 08:46:51 AM
-#      REVISION: 1.0 
+#      REVISION: 1.0
 #---------------------------------------------------------------------------
 
 . `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
 . /etc/common.rc
 
-function fn_get_prev() 
+function fn_get_prev()
 {
     sqls="SELECT date FROM day WHERE code=900001 and date<='$END'"
     mysql -N kts<<<"${sqls} ORDER by date DESC LIMIT ${STEP:-1},1"
 }
 
-function fn_get_block_info() 
+function fn_get_block_info()
 {
     # 显示当前选中，及可选BLOCK列表
-    # "show create table test;" | grep 'COMMENT=' 
-    
+    # "show create table test;" | grep 'COMMENT='
+
     return 1
 }
 
-function fn_set_block_info() 
+function fn_set_block_info()
 {
     # 从列表中选择BLOCK
     # "alter table 表名 comment '注释';"
-    
+
     return 1
 }
 
-function fn_get_13d_20psink() 
+function fn_get_13d_20psink()
 {
     cat <<-"HERE"
     4日内从历史最高点回落时选择，
@@ -52,7 +52,7 @@ function fn_get_13d_20psink()
     麦捷科技 300319
     奋达科技 002681
 
-    
+
     此类波动频繁之属，做好波段操作，特别是大盘行情不好的日子。大着眼，小着手。
 	HERE
 
@@ -64,7 +64,7 @@ function fn_get_13d_20psink()
 }
 
 # 大写变量作为全局，小写作为内部
-function fn_get_1_swing_num() 
+function fn_get_1_swing_num()
 {
     percent=${1:-8}
     if [ "${percent%.*}" -lt 0 ] ; then
@@ -74,28 +74,28 @@ function fn_get_1_swing_num()
     fi
     echo "
     DELETE from tbl_visit;
-    INSERT INTO tbl_visit(code,sink) 
-    SELECT code,100*(close-yesc)/yesc as rise FROM day 
-        WHERE date='$END' $swing_cmd ORDER by rise ${ASC:-DESC}; 
+    INSERT INTO tbl_visit(code,sink)
+    SELECT code,100*(close-yesc)/yesc as rise FROM day
+        WHERE date='$END' $swing_cmd ORDER by rise ${ASC:-DESC};
     " | mysql $mo kts
     fn_cp_tbl tbl_visit pipe
     ./up add_tbl_visit_2_zixuangu   # 添加到ZXG，可根据需要再进行排序
     ./SELECT app_nmc_name               # 追加表名打印
-    # no need source 
+    # no need source
     exit
 }
 
-function fn_sort_amount() 
+function fn_sort_amount()
 {
     # 可扩展 'tbl_visit' 的表定义
     # where d.code = c.code 非常重要
     # as 语句可在 FROM 子句中
     echo "
     DELETE from tbl_visit;
-    INSERT INTO tbl_visit(code,sink,amount,turnover) 
-    SELECT d.code, $RISE as rise, 
-        amount, $TURNOV as turnover FROM day as d, cap as c 
-        WHERE d.code = c.code and d.date='$END' 
+    INSERT INTO tbl_visit(code,sink,amount,turnover)
+    SELECT d.code, $RISE as rise,
+        amount, $TURNOV as turnover FROM day as d, cap as c
+        WHERE d.code = c.code and d.date='$END'
         ${COND} ORDER by amount ${ASC:-DESC} limit ${LIMIT:-48};
 	" | mysql -t kts
     fn_cp_tbl tbl_visit pipe
@@ -104,25 +104,25 @@ function fn_sort_amount()
 }
 
 
-function fn_sort_turnover() 
+function fn_sort_turnover()
 {
     echo "
     DELETE from tbl_visit;
-    INSERT INTO tbl_visit(code,sink,amount,turnover) 
-    SELECT d.code, $RISE as rise, 
-        amount, $TURNOV as turnover FROM day as d, cap as c 
-        WHERE d.code = c.code and d.date='$END' 
+    INSERT INTO tbl_visit(code,sink,amount,turnover)
+    SELECT d.code, $RISE as rise,
+        amount, $TURNOV as turnover FROM day as d, cap as c
+        WHERE d.code = c.code and d.date='$END'
         ${COND} ORDER by turnover ${ASC:-DESC} limit ${LIMIT:-48};
 	" | mysql -t kts
     fn_cp_tbl tbl_visit pipe
     ./up add_tbl_visit_2_zixuangu       # 添加到ZXG，可根据需要再进行排序
     ./SELECT app_nmc_name turnover      # 追加表名打印
-    
+
 }
 
-function fn_get_n_swing_num() 
+function fn_get_n_swing_num()
 {
-    echo " 
+    echo "
     这些类股都是振荡股，莫作留恋。
     "
     [ "$#" -eq 1 ] && echo "Usage: 要么不带参数，要么两个参数" && exit
@@ -158,7 +158,7 @@ function fn_get_n_swing_num()
 }
 
 
-function fn_get_stat_turnov() 
+function fn_get_stat_turnov()
 {
     local usage="Usage: ${FUNCNAME[0]} code start [end]"
     fn_is_digit $1
@@ -179,7 +179,7 @@ function fn_get_stat_turnov()
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
-function fn_get_down_turnov() 
+function fn_get_down_turnov()
 {
     START=${1:-${START}}
     END=${2:-${END}}
@@ -215,13 +215,13 @@ function fn_get_down_turnov()
     '
 }
 
-function fn_get_rise_turnov() 
+function fn_get_rise_turnov()
 {
     DOWNSLOPE=0
     fn_get_down_turnov $@
 }
 
-function fn_insert_codes_2_table() 
+function fn_insert_codes_2_table()
 {
     [ -z "${1}" ] && echo "Usage: insert tbl_name" && exit 1
     echo "
@@ -243,9 +243,9 @@ function fn_get_ma513()
             else
                 echo "
                 DELETE from tbl_ma513;
-                INSERT INTO tbl_ma513 SELECT * FROM ${tbl_ma_date} 
-                            WHERE code in (SELECT code FROM ${TBL});  
-                " | mysql kts # | tee /dev/stderr 
+                INSERT INTO tbl_ma513 SELECT * FROM ${tbl_ma_date}
+                            WHERE code in (SELECT code FROM ${TBL});
+                " | mysql kts # | tee /dev/stderr
                 echo
             fi
             return 0
@@ -255,7 +255,7 @@ function fn_get_ma513()
     echo "    build on ${TBL:-cap}..."
 
     echo "
-    SET @END='$END'; 
+    SET @END='$END';
     call sp_visit_tbl('${TBL:-cap}', @fn_get_ma513);
     " | tee -a $mps_god
     mysql $mo -t kts <<< "source $mps_god"
@@ -283,34 +283,35 @@ function fn_ma_ray()
     fn_get_ma513
     xt_ret $? "${FUNCNAME}" || return $?
 
-    mysql -N kts<<<"SELECT code FROM tbl_ma513 WHERE 
+    mysql -N kts<<<"SELECT code FROM tbl_ma513 WHERE
                     ma5>ma13 and ma13>ma34 ${COND}" | \
-        xargs -n4 | tee /dev/stderr | xargs up add_codes_2_dzh2tbl 
-    return     
+        xargs -n4 | tee /dev/stderr | xargs up add_codes_2_dzh2tbl
+    return
 }
 
 function fn_select_tbl_ma513()
 {
     local sqls="(SELECT * FROM day WHERE date='${END}') as d"
     local conds="m.code=d.code and ${COND1} ${COND}"
-      echo         "SELECT m.code FROM tbl_ma513 as m, ${sqls} WHERE ${conds}" 
-    mysql -N kts<<<"SELECT m.code FROM tbl_ma513 as m, ${sqls} WHERE ${conds}" > ${soptter_zxg} 
+
+    echo "
+    SELECT m.code FROM tbl_ma513 as m, ${sqls} WHERE ${conds}
+    " | tee /dev/stderr | mysql -N kts > ${soptter_zxg}
     xt_ret $? "${FUNCNAME}" || return $?
 
-    cat ${soptter_zxg} | xargs -n6 | tee /dev/stderr | TBL=zxg_ma513 xargs up add_codes_2_dzh2tbl 
+    cat ${soptter_zxg} | xargs -n6 | tee /dev/stderr | TBL=zxg_ma513 xargs up add_codes_2_dzh2tbl
     xt_ret $? "cat ${soptter_zxg}" || return $?
 
-    if [ "${CHAO}" = 1 ]; then
+    [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
+
     echo "
-    css CHAO!
-    "
-    echo "
+    # cascading CHAO!
     SELECT code FROM zxg_ma513 WHERE code in (SELECT code FROM chao)
-    " | mysql -N kts | xargs -n6 | tee /dev/stderr | TBL=zxg_chao513 xargs up add_codes_2_dzh2tbl 
-    fi 
+    " | tee /dev/stderr | mysql -N kts | \
+        xargs -n6 | tee /dev/stderr | TBL=zxg_chao513 xargs up add_codes_2_dzh2tbl
 }
 
-function fn_trd_cross_maX() 
+function fn_trd_cross_maX()
 {
     echo "build ${PREV}..."
     fn_reset_sqlsource
@@ -341,7 +342,7 @@ function fn_hop_cross_maX()
     xt_ret $? "" || return $?
 }
 
-function fn_hop_cross_ma5() 
+function fn_hop_cross_ma5()
 {
     # ma5<ma13 --> 2次上穿ma5
     # COND1="ma5<ma13 and d.yesc>ma5 and d.low<ma5 and d.close>ma5" fn_hop_cross_maX
@@ -361,38 +362,68 @@ function fn_hop_cross_ma5()
     echo "    2次上穿ma5分析over..."
 }
 
-function fn_trd_cross_ma5() 
+function fn_trd_cross_ma5()
 {
     COND0="close<ma5 and ma5<ma13" COND1="m.close>ma5" fn_trd_cross_maX
     xt_ret $? "xx" || return $?
 }
 
-function fn_trd_cross_ma13() 
-{   
+function fn_trd_cross_ma13()
+{
     COND0="close<ma13" COND1="m.close>ma13" fn_trd_cross_maX
     xt_ret $? "xx" || return $?
 }
 
-function fn_trd_cross_5_13() 
+function fn_trd_cross_5_13()
 {
     COND0="close<ma5 and close<ma13" COND1="m.close>ma5 and m.close>ma13" fn_trd_cross_maX
     xt_ret $? "xx" || return $?
 }
 
 
-function fn_ma5_cross_ma13() 
+function fn_ma5_cross_ma13()
 {
     COND0="ma5<ma13" COND1="ma5>ma13" fn_trd_cross_maX
     xt_ret $? "xx" || return $?
 }
 
-function fn_high_cross_ma5() 
+function fn_high_cross_ma5()
 {
     COND0="close<ma5" COND1="d.high>ma5 and m.close<ma5" fn_trd_cross_maX
     xt_ret $? "xx" || return $?
 }
 
-function fn_ana_ma513() 
+function fn_trd_tocross_ma5() 
+{
+    read -p "
+    make sure you have done below points:
+    1. up 4
+    2. 
+    type any key to continue."
+
+    echo "build ${PREV}..."
+    fn_reset_sqlsource
+    END=${PREV} fn_get_ma513
+    xt_ret $? "${FUNCNAME}" || return $?
+
+    # fn_select_tbl_ma513
+    # xt_ret $? "" || return $?
+
+    # 当日上涨(此条件已经隐含在第2个条件)
+    local sqls="(SELECT * FROM day WHERE date='${END}' and close>yesc) as d"
+    # 未穿ma5，放大上涨上穿ma5
+    FACTOR=1.3
+    COND1="m.close<m.ma5 and (d.close+(d.close-d.yesc)*${FACTOR})>m.ma5"
+    local conds="m.code=d.code and ${COND1} ${COND}"
+
+    echo "
+    SELECT m.code FROM tbl_ma513 as m, ${sqls} WHERE ${conds}
+    " | tee /dev/stderr | mysql -N kts # > ${soptter_zxg}
+    xt_ret $? "${FUNCNAME}" || return $?
+
+}
+
+function fn_ana_ma513()
 {
     # 可以配合分时线及上涨进行预测
     # 采用双表联合查询来解决分析的困境
@@ -408,12 +439,13 @@ function fn_ana_ma513()
     sqls="SELECT date FROM day WHERE code=900001 and date<='$END'"
     PREV=`fn_get_prev`
 
-    # --------- 做分支 --------------- 
+    # --------- 做分支 ---------------
     cmdlist=(
     "ma_ray             # ma5 > ma13 > ma34"
     "trd_cross_ma5      # close 上穿 ma5"
     "trd_cross_ma13     # close 上穿 ma13"
     "trd_cross_5_13     # close 上穿 ma5 and ma13"
+    "trd_tocross_ma5    #       上穿 ma5 predicting"
     "hop_cross_ma5      # trd re上穿 ma5, STEP设置天数"
     "ma5_cross_ma13     # ma5   上穿 ma13"
     "high_cross_ma5     # high  上穿 ma5, !close"
@@ -421,26 +453,27 @@ function fn_ana_ma513()
     fn_execute "$@" || return $?
 }
 
-function fn_ana_chao() 
+function fn_ana_chao()
 {
     #
     # 从`SCREENER 1`得到超跌股票，并写入表zxg。
     # 再通过ma5进行过滤。
     #
-    function fn_exe_usage() 
+    function fn_exe_usage()
     {
     echo "
     Usage:
     1.          SCREENER 1      # 得到超跌数据          tbl_sink
-    2. COND=xx  SELECT   1      # 得到超跌条件筛选表    chao
-    3. CHAO=1   SCREENER 3 3    # 超跌cascading 
+    2. .c                       # 全能TBL=chao
+    2. COND=xx  SELECT   1      # 跌条件筛选并写表 => TBL=chao xargs up 7
+    3. CHAO=1   SCREENER 3 3    # 超跌cascading
     " | sed 's/^  //g'
     }
 
     fn_exe_usage
 }
 
-function fn_ana_ma240() 
+function fn_ana_ma240()
 {
     fn_get_ma513
     xt_ret $? "${FUNCNAME}" || return $?
@@ -459,19 +492,19 @@ function fn_ana_ma240()
     )
         # abs(ma34-ma60)/ma34<.05 and abs(ma120-ma240)/ma120<.03
 
-    mysql -N kts<<<"${sqls} WHERE ${conds[@]}" | 
-                xargs -n6 | tee /dev/stderr | xargs up add_codes_2_dzh2tbl 
+    mysql -N kts<<<"${sqls} WHERE ${conds[@]}" |
+                xargs -n6 | tee /dev/stderr | xargs up add_codes_2_dzh2tbl
     xt_ret $? "${FUNCNAME}" || return $?
-    
+
     return 0
 }
 
-function fn_main() 
+function fn_main()
 {
     CURR=`fn_maxdate`
     END=${END:-${CURR}}
     # SCREENER的宗旨，弃子取势
-    # xet_block_info 为 sp_visit_tbl() 选定相应的BLOCK 
+    # xet_block_info 为 sp_visit_tbl() 选定相应的BLOCK
     cmdlist=(
     "get_stat_turnov      code start [end]      # 个股区间换手统计"
     "get_down_turnov      [start:curr-13] [end] # 100%下降净换手"

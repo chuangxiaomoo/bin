@@ -6,7 +6,7 @@
 # .select.sql
 #
 
-function fn_get_curdate_min() 
+function fn_get_curdate_min()
 {
     local code=${1:-900001}
     echo "
@@ -14,7 +14,7 @@ function fn_get_curdate_min()
     " | mysql kts
 }
 
-function fn_ls() 
+function fn_ls()
 {
     [ $# -eq "0" ] && fn_execute -l && exit
 
@@ -40,33 +40,33 @@ function fn_ls()
             done
             codes=(`awk '{print $1}' $shmout`)
             code=${codes[$index]}
-        fi 
+        fi
     fi
 
     fields='d.code,d.date,d.yesc,d.open,d.high,d.low,d.close'
     echo "
     SELECT * FROM (
-        SELECT $fields, $SWING as swing, $RISE as rise, $TURNOV as turnover 
-        FROM day as d, cap as c 
-        WHERE d.code = ${code} and d.code = c.code 
+        SELECT $fields, $SWING as swing, $RISE as rise, $TURNOV as turnover
+        FROM day as d, cap as c
+        WHERE d.code = ${code} and d.code = c.code
         ${COND} ORDER by date DESC limit ${LIMIT:-13}
     ) as tbl ORDER by date ASC;
 	" | mysql -t kts
 }
 
-function fn_get_open_days() 
+function fn_get_open_days()
 {
     # 统计13日下跌 配合 SCREENER 3 做相应选股
-    mysql -N kts <<< "SELECT date from day WHERE code = 900001 " | tail -${1:-13} 
+    mysql -N kts <<< "SELECT date from day WHERE code = 900001 " | tail -${1:-13}
 }
 
-function fn_get_open_days_min() 
+function fn_get_open_days_min()
 {
     mysql -N kts <<< "SELECT DISTINCT(date) from min WHERE (code<3 OR code=5)" | tail -${LIMIT:-48}
 }
 
 
-function fn_app_nmc_name() 
+function fn_app_nmc_name()
 {
     # 考虑把$1作为排序关键字
     # comment columns="" to assign *
@@ -80,23 +80,23 @@ function fn_app_nmc_name()
     # echo $columns && exit
 
     echo "
-    SELECT $columns, c.nmc,c.name FROM ${TBL:-tbl_visit} as d, cap as c 
+    SELECT $columns, c.nmc,c.name FROM ${TBL:-tbl_visit} as d, cap as c
         WHERE d.code = c.code ORDER by ${field} ${ASC} limit ${LIMIT:-48};
-	" | mysql $mo -t kts     
+	" | mysql $mo -t kts
 }
 
 
-function fn_app_wgt_turnov() 
+function fn_app_wgt_turnov()
 {
     # 高换手、超跌、加权
-    function fn_get_tbl_super_dive() 
+    function fn_get_tbl_super_dive()
     {
         tbl_super_dive="
-        SELECT $columns, c.nmc, $wgt as wgt, c.name 
-            FROM ${TBL:-tbl_sink} as d, cap as c 
+        SELECT $columns, c.nmc, $wgt as wgt, c.name
+            FROM ${TBL:-tbl_sink} as d, cap as c
             WHERE d.code = c.code and sum>30 and swing<-10 HAVING wgt<-50 ${COND}
             ORDER by ${field} ${ASC} limit ${LIMIT:-30}
-        " 
+        "
     }
 
     # commnet below to display column id
@@ -121,16 +121,16 @@ function fn_app_wgt_turnov()
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
-function fn_app_day_rise() 
+function fn_app_day_rise()
 {
     # where d.code = c.code 非常重要，不重叠的filed不需要加‘tbl_name.’
     # as 语句可在 FROM 子句中
-    # field=${1:+d.${1}} 
+    # field=${1:+d.${1}}
     field=${1:-rise}
     disfield="d.code,d.date,d.volume,d.amount"
     echo "
-    SELECT $disfield, $RISE as rise, $TURNOV as turnover, c.name 
-            FROM day as d,cap as c where d.code = c.code and  
+    SELECT $disfield, $RISE as rise, $TURNOV as turnover, c.name
+            FROM day as d,cap as c where d.code = c.code and
             d.date = '$tailday' ${COND} ORDER BY ${field} ${ASC} limit ${LIMIT:-48};
 	" | mysql -t kts
 }
@@ -143,17 +143,17 @@ function fn_get_comma_cloumns()
     # code,date,yesc,open,high,low,close,volume,amount
 }
 
-function fn_app_day_turnover() 
+function fn_app_day_turnover()
 {
     field=${1:-turnover}
     echo "
-    SELECT d.date,d.code, $TURNOV as turnover, c.name 
-            FROM day as d, cap as c WHERE d.code = c.code and 
+    SELECT d.date,d.code, $TURNOV as turnover, c.name
+            FROM day as d, cap as c WHERE d.code = c.code and
             d.date='$tailday' ${COND} ORDER by ${field} ${ASC} limit ${LIMIT:-48};
 	" | mysql $mo -t kts
 }
 
-function fn_sel_vol5_ratio() 
+function fn_sel_vol5_ratio()
 {
     field=${1:-ratio}
     ratio="d.volume/ma.vol5*`fn_get_ratio_close2open`"
@@ -163,17 +163,17 @@ function fn_sel_vol5_ratio()
 
     tbl_day="(SELECT * FROM day WHERE date='${END}')"
     echo "
-    SELECT d.*,  ${ratio} as ratio FROM tbl_ma513 as ma, ${tbl_day} as d 
+    SELECT d.*,  ${ratio} as ratio FROM tbl_ma513 as ma, ${tbl_day} as d
             where ma.code=d.code ${COND} ORDER by ${field} DESC limit ${LIMIT:-48};
     " | tee /dev/stderr | mysql $mo -t kts
 
     ( echo "
-    SELECT d.code                  FROM tbl_ma513 as ma, ${tbl_day} as d 
+    SELECT d.code                  FROM tbl_ma513 as ma, ${tbl_day} as d
             where ma.code=d.code ${COND} ORDER by ${ratio} DESC limit ${LIMIT:-48};
     " | mysql $mo -N kts > ${soptter_zxg} )&
 }
 
-function fn_main() 
+function fn_main()
 {
     CURR=`fn_maxdate`
     END=${END:-${CURR}}
@@ -188,7 +188,7 @@ function fn_main()
     # ----------------  ABOVE IS FIXED SEQUENCE --------------------
     "get_curdate_min    [CODE:-900001]       # --- 当日min \$LIMIT"
     "ls                 {code|symbol}        # 日线数据 \$LIMIT"
-    "app_day_rise       [sortfiled]          # --- END 涨幅排名 \$LIMIT" 
+    "app_day_rise       [sortfiled]          # --- END 涨幅排名 \$LIMIT"
     "app_day_turnover   [sortfiled]          # END 换手排名 \$LIMIT"
     )
 
@@ -196,7 +196,7 @@ function fn_main()
     tailday=${END:-$tailday}
 
     # `ASC=任意值`时使用'DESC'，弃用
-    # ASC=${ASC:+'DESC'}  # ASC=${ASC:-'ASC'}   
+    # ASC=${ASC:+'DESC'}  # ASC=${ASC:-'ASC'}
     ASC=${ASC:-'ASC'}
     fn_execute "$@"
 }

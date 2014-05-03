@@ -7,7 +7,7 @@
 # ------  common part over -----------
 #
 
-function fn_tougu_reminder() 
+function fn_tougu_reminder()
 {
     function fn_wall() {
         echo "
@@ -43,7 +43,7 @@ function fn_tougu_reminder()
             tee $tougu_stdout | \
             sed -e 's/StockName.*SellBuy/SellBuy/g' -e 's/[a-z][a-z_]*://g' > $tougu_ripexml
 
-        sellbuy=`cat $tougu_ripexml | awk -F',' '{  
+        sellbuy=`cat $tougu_ripexml | awk -F',' '{
             if ($5==0) { deal="buy" } else {deal="sell";}
             printf "%-10s %-6s %-8s %s\n", $4, deal, $6, $10;
         }'`
@@ -70,9 +70,9 @@ function fn_tougu_reminder()
     done
 }
 
-function fn_cap() 
+function fn_cap()
 {
-    $workdir/sina 
+    $workdir/sina
     xt_ret $? "sina fail" || return $?
 
     lines=`cat $sn_cap_nmc | wc -l`
@@ -82,11 +82,11 @@ function fn_cap()
     echo "
     DROP TABLE IF EXISTS cap;
     CREATE TABLE cap (
-        code    INT(6)  ZEROFILL, 
+        code    INT(6)  ZEROFILL,
         date    DATE NOT NULL,
         close   DECIMAL(6,2) NOT NULL,
         cap     INT(14),
-        nmc     INT(14), 
+        nmc     INT(14),
         name    CHAR(16),
         INDEX(code,date)
     );
@@ -95,7 +95,7 @@ function fn_cap()
     " | mysql -u root kts
 }
 
-function fn_load_f_2_tbl_samename() 
+function fn_load_f_2_tbl_samename()
 {
     echo "为防止误删表，特停用此功能!" && exit
 
@@ -107,7 +107,7 @@ function fn_load_f_2_tbl_samename()
     tmp_txt='/dev/shm/.tmp_txt'
 
     tail -251 $1 | tail -n +2  > $tmp_txt
-    
+
     echo "
     DROP TABLE IF EXISTS $tbl_day;
     CREATE TABLE $tbl_day (
@@ -116,7 +116,7 @@ function fn_load_f_2_tbl_samename()
         open        DECIMAL(6,2) NOT NULL,
         high        DECIMAL(6,2) NOT NULL,
         low         DECIMAL(6,2) NOT NULL,
-        close       DECIMAL(6,2) NOT NULL,      
+        close       DECIMAL(6,2) NOT NULL,
         volume      DECIMAL(10,2) NOT NULL,
         amount      DECIMAL(12) NOT NULL
     );
@@ -140,7 +140,7 @@ function fn_load_f_2_tbl_samename()
     " | mysql -u root test
 }
 
-function fn_http_get() 
+function fn_http_get()
 {
     abc=12345
     echo ${abc:0:1}
@@ -149,13 +149,13 @@ function fn_http_get()
     echo "
     DROP TABLE IF EXISTS $tbl_day;
     CREATE TABLE $tbl_day (
-        code        INT(6) ZEROFILL NOT NULL, 
+        code        INT(6) ZEROFILL NOT NULL,
         date        DATE NOT NULL,
         yesc        DECIMAL(6,2) NOT NULL,
         open        DECIMAL(6,2) NOT NULL,
         high        DECIMAL(6,2) NOT NULL,
         low         DECIMAL(6,2) NOT NULL,
-        close       DECIMAL(6,2) NOT NULL,      
+        close       DECIMAL(6,2) NOT NULL,
         volume      DECIMAL(12) NOT NULL,       -- 以‘万股’为单位
         amount      DECIMAL(12) NOT NULL,       -- 以元为单位
         INDEX(code,date),
@@ -167,7 +167,7 @@ function fn_http_get()
     " | mysql -u root test
 }
 
-function fn_add_yesclose() 
+function fn_add_yesclose()
 {
     local p_znz="$warehs/znz_day"
     local p_sql="$warehs/mysql"
@@ -187,15 +187,15 @@ function fn_add_yesclose()
 }
 
 # min/2013-09-30/14.59.01
-#         TRADE           昨收    今开    最高 最低 
+#         TRADE           昨收    今开    最高 最低
 # 000002  9.13    0.77    9.06    9.08    9.18 9.03 633756.30   576146571
 #         $2                      $5      $6   $7
-# 
+#
 # day/000002
 # 日期        开盘价  最高价  最低价  收盘价      成交量（万股）  成交额（万元）
 # 2013-09-30  9.08    9.18    9.03    9.13        6337.56     57614.66
 
-function fn_hexun_day() 
+function fn_hexun_day()
 {
     # unarm_close_forbid=true \
     fn_timestamp_market
@@ -207,7 +207,7 @@ function fn_hexun_day()
 
     $workdir/hexun || {
         echo "try again..."
-        sleep 2; $workdir/hexun || { 
+        sleep 2; $workdir/hexun || {
             echo "try 2 times fail" | fn_write;
             return 1 ;
         }
@@ -217,12 +217,12 @@ function fn_hexun_day()
     xt_ret $? "" || return $?
 
     awk '{
-        printf "%06d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n", 
+        printf "%06d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n",
                   $1, $13, $4, $5,  $6,  $7,  $2, ($8/100), ($9/10000)
     }'  $hx_ripetxt > $hx_dayclose
 
     $W3M -dump ${url_sh000001} | awk -F',' '{
-        printf "%06d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n", 
+        printf "%06d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n",
             '900001', $31, $3, $2, $5, $6, $4, ($9/100), ($10/10000);
     }' >> $hx_dayclose
     xt_ret $? "NETWORK" || return $?
@@ -243,7 +243,7 @@ function fn_hexun_day()
     " | mysql kts
 }
 
-function fn_del_hexun_day() 
+function fn_del_hexun_day()
 {
     unarm_close_forbid=true \
     is_del_routine=true \
@@ -258,7 +258,7 @@ function fn_del_hexun_day()
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
-function fn_redo_hexun_day() 
+function fn_redo_hexun_day()
 {
     fn_del_hexun_day && fn_hexun_day
 
@@ -271,7 +271,7 @@ function fn_redo_hexun_day()
     fi
 }
 
-function fn_load_directory() 
+function fn_load_directory()
 {
     local tbl_name='day'
     local p_sql=${znzday}
@@ -286,7 +286,7 @@ function fn_load_directory()
     return $?
 }
 
-function fn_add_codes_2_dzh2tbl() 
+function fn_add_codes_2_dzh2tbl()
 {
     [ -z "$*" ] && echo "Usage: zixungu code..." && exit 1
     # echo $@ && exit
@@ -296,10 +296,10 @@ function fn_add_codes_2_dzh2tbl()
     # echo "obase=16;ibase=16; 87+A" | bc
     # mysql -N -B kts <<< "SELECT code FROM cap WHERE code < 50 order by code;" | xargs up 6 > /winc/relay/自选股.BLK
 
-    # HEAD="\xa6\x00Q\xff\x01"              
+    # HEAD="\xa6\x00Q\xff\x01"
     # DELI="\x00}\xa9\x00\x91\xb9\x88R"
     TBL=${TBL:-zxg}
-    HEAD="\xa5\x00Q\xff"              
+    HEAD="\xa5\x00Q\xff"
     DELI="\x00\x00\x00\x00"
     sql_insert0=''
 
@@ -308,7 +308,7 @@ function fn_add_codes_2_dzh2tbl()
             id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
             code        INT(6) ZEROFILL NOT NULL DEFAULT 0
         );
-        INSERT INTO ${TBL} (code) VALUES 
+        INSERT INTO ${TBL} (code) VALUES
     " > ${sql_temp}
 
     echo $@ | sed -e 's/^/(/' -e 's/ /),(/g' -e 's/$/);/' >> ${sql_temp}
@@ -342,7 +342,7 @@ function fn_add_codes_2_dzh2tbl()
 }
 
 
-function fn_add_tbl_codes_2_dzh() 
+function fn_add_tbl_codes_2_dzh()
 {
     field=${1}
     field=${field:+ORDER by ${field} DESC}
@@ -355,12 +355,12 @@ function fn_add_tbl_codes_2_dzh()
     TBL= fn_add_codes_2_dzh2tbl $goodboys
 }
 
-function fn_up_tbl_xRD() 
+function fn_up_tbl_xRD()
 {
     p_bin=/root/bin/stk/bin/
 
     # make -C $p_bin
-    
+
     if [ "$1" = "--keep.PWR" ] ; then
         echo "keep $p_bin/full.PWR"
     else
@@ -376,7 +376,7 @@ function fn_up_tbl_xRD()
     echo "
     DROP TABLE IF EXISTS xRD;
     CREATE TABLE xRD (
-        code        INT(6)  ZEROFILL, 
+        code        INT(6)  ZEROFILL,
         date        DATE NOT NULL,
         song_ratio  DECIMAL(8,5) NOT NULL,
         pei_ratio   DECIMAL(8,5) NOT NULL,
@@ -396,11 +396,11 @@ function fn_up_tbl_xRD()
     fi
 }
 
-function fn_down_fenbi() 
+function fn_down_fenbi()
 {
     # sina的分笔粒度是最小的，分笔数据3家对比详见：
     mkdir -p `dirname $fenbi_raw`
-    
+
     host="http://hqdigi2.eastmoney.com/EM_Quote2010NumericApplication/CompatiblePage.aspx?"
     para="Type=OB&stk=0000022&Reference=xml&limit=0&page="
 
@@ -419,7 +419,7 @@ function fn_down_fenbi()
     cat $fenbi_raw | tr -d '[' | tr -d ']};' | sed 's/","/\n/g'  | tr -d '"' > ${fenbi_ripe}
 }
 
-function fn_sel_day_into_znz_dir() 
+function fn_sel_day_into_znz_dir()
 {
     # 对 /tmp 有写权限，其它的则需要设置
     mkdir -p /tmp/znz_day
@@ -428,21 +428,21 @@ function fn_sel_day_into_znz_dir()
     for i in $icodes; do
         echo $i
         echo "
-        SELECT * FROM day WHERE code = $i INTO OUTFILE '/tmp/znz_day/$i'; 
+        SELECT * FROM day WHERE code = $i INTO OUTFILE '/tmp/znz_day/$i';
         " | mysql kts
     done
 }
 
-function fn_trs_min_2_day() 
+function fn_trs_min_2_day()
 {
     # 指南针数据是经过除权的数据，每次使用znz后要记住除权时间.
     # [ -z "$1" ] && echo "Usage: $FUNCNAME date" && exit
     DATE=2013-12-12
 
-    # SELECT code,date,yesc,open,high,low,close,volume,amount 
-    # SELECT code,date,open,high,low,close,volume,amount 
+    # SELECT code,date,yesc,open,high,low,close,volume,amount
+    # SELECT code,date,open,high,low,close,volume,amount
     echo "
-    SELECT code,date,yesc,open,high,low,trade,volume/100,amount/10000 
+    SELECT code,date,yesc,open,high,low,trade,volume/100,amount/10000
         FROM min WHERE date='$DATE' and time='15:09:00';
 	" | mysql -N kts > $m2d_temp
 
@@ -454,9 +454,9 @@ function fn_trs_min_2_day()
     return 0
 }
 
-function fn_redo_hexun_day_fr_min() 
+function fn_redo_hexun_day_fr_min()
 {
-    # 
+    #
     echo "    redo hexun_day fr min..."
 
     DATE=`mysql -N kts <<< "SELECT date FROM stamp_min WHERE id = (SELECT max(id) FROM stamp_min);"`
@@ -472,7 +472,7 @@ function fn_redo_hexun_day_fr_min()
     xt_ret $? "del error" || return $?
 
     echo "
-    SELECT code,date,yesc,open,high,low,trade,volume/100,amount/10000 
+    SELECT code,date,yesc,open,high,low,trade,volume/100,amount/10000
         FROM min WHERE date='$DATE' and time='${TIME}';
 	" | mysql -N kts > $m2d_temp
     xt_ret $? "mysql > $m2d_temp" || return $?
@@ -488,7 +488,7 @@ function fn_redo_hexun_day_fr_min()
     return 0
 }
 
-function fn_up_rzrq_codes_tbl() 
+function fn_up_rzrq_codes_tbl()
 {
     echo "
     DROP TABLE IF EXISTS rzrq_codes;
@@ -503,18 +503,18 @@ function fn_up_rzrq_codes_tbl()
 }
 
 
-function fn_up_swing10() 
+function fn_up_swing10()
 {
     cd $workdir
     > $mps_god
     head -n -5 $mps_org >> $mps_god
-    
-    echo "call sp_count_swing10();" >> $mps_god 
+
+    echo "call sp_count_swing10();" >> $mps_god
     mysql $mo -t kts <<< "source $mps_god"
 }
 
 
-function fn_copy_table_2_table() 
+function fn_copy_table_2_table()
 {
     fn_cp_tbl ${1:-zxg} ${2:-ipo}
     echo fn_cp_tbl ${1:-zxg} ${2:-ipo} over!!!
@@ -594,7 +594,7 @@ function fn_up_tbl_ma240_34()
     mysql $mo -t kts <<< "source $mps_god"
 }
 
-function fn_main() 
+function fn_main()
 {
     CURR=`fn_maxdate`
     END=${END:-${CURR}}
