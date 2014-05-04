@@ -197,7 +197,7 @@ function fn_add_yesclose()
 
 function fn_hexun_day()
 {
-    # unarm_close_forbid=true \
+    unarm_close_forbid=true \
     fn_timestamp_market
     xt_ret $? "${FUNCNAME}" || return $?
 
@@ -245,7 +245,7 @@ function fn_hexun_day()
 
 function fn_del_hexun_day()
 {
-    unarm_close_forbid=true \
+    # unarm_close_forbid=true \
     is_del_routine=true \
     fn_timestamp_market
     xt_ret $? "${FUNCNAME}" || return $?

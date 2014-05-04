@@ -387,18 +387,17 @@ function fn_ma5_cross_ma13()
     xt_ret $? "xx" || return $?
 }
 
-function fn_high_cross_ma5()
+function fn_hii_cross_ma5()
 {
     COND0="close<ma5" COND1="d.high>ma5 and m.close<ma5" fn_trd_cross_maX
     xt_ret $? "xx" || return $?
 }
 
-function fn_trd_tocross_ma5() 
+function fn_trd_rally_ma5() 
 {
     read -p "
     make sure you have done below points:
-    1. up 4
-    2. 
+    ./SCREENER ana_chao
     type any key to continue."
 
     echo "build ${PREV}..."
@@ -406,20 +405,12 @@ function fn_trd_tocross_ma5()
     END=${PREV} fn_get_ma513
     xt_ret $? "${FUNCNAME}" || return $?
 
-    # fn_select_tbl_ma513
-    # xt_ret $? "" || return $?
-
-    # 当日上涨(此条件已经隐含在第2个条件)
-    local sqls="(SELECT * FROM day WHERE date='${END}' and close>yesc) as d"
-    # 未穿ma5，放大上涨上穿ma5
-    FACTOR=1.3
-    COND1="m.close<m.ma5 and (d.close+(d.close-d.yesc)*${FACTOR})>m.ma5"
-    local conds="m.code=d.code and ${COND1} ${COND}"
-
-    echo "
-    SELECT m.code FROM tbl_ma513 as m, ${sqls} WHERE ${conds}
-    " | tee /dev/stderr | mysql -N kts # > ${soptter_zxg}
-    xt_ret $? "${FUNCNAME}" || return $?
+    # 昨未穿ma5，今上涨，今放大上涨上穿ma5
+    SCALE=-0.5
+    COND1="m.close<m.ma5 and d.close>d.yesc"
+    COND1="${COND1} and (d.close+(d.close-d.yesc)*${SCALE})>m.ma5"
+    fn_select_tbl_ma513
+    xt_ret $? "" || return $?
 
 }
 
@@ -437,18 +428,17 @@ function fn_ana_ma513()
         echo "Error: ${END} is not a open day!!!" && exit 1
     fi
     sqls="SELECT date FROM day WHERE code=900001 and date<='$END'"
-    PREV=`fn_get_prev`
 
     # --------- 做分支 ---------------
     cmdlist=(
     "ma_ray             # ma5 > ma13 > ma34"
+    "trd_rally_ma5      #       上穿 ma5 predicting"
     "trd_cross_ma5      # close 上穿 ma5"
     "trd_cross_ma13     # close 上穿 ma13"
     "trd_cross_5_13     # close 上穿 ma5 and ma13"
-    "trd_tocross_ma5    #       上穿 ma5 predicting"
     "hop_cross_ma5      # trd re上穿 ma5, STEP设置天数"
     "ma5_cross_ma13     # ma5   上穿 ma13"
-    "high_cross_ma5     # high  上穿 ma5, !close"
+    "hii_cross_ma5      # high  上穿 ma5, !close"
     )
     fn_execute "$@" || return $?
 }
@@ -463,10 +453,11 @@ function fn_ana_chao()
     {
     echo "
     Usage:
-    1.          SCREENER 1      # 得到超跌数据          tbl_sink
-    2. .c                       # 全能TBL=chao
-    2. COND=xx  SELECT   1      # 跌条件筛选并写表 => TBL=chao xargs up 7
-    3. CHAO=1   SCREENER 3 3    # 超跌cascading
+    1. SCREENER 1 backward_14th_day #{PREV} # 得到超跌数据tbl_sink
+    2. .c                                   # 全能TBL=chao
+    3. SELECT   1                           # SELECT => TBL=chao xargs up 7
+
+    4. SCREENER 3 1                         # 上涨预测
     " | sed 's/^  //g'
     }
 
@@ -503,6 +494,7 @@ function fn_main()
 {
     CURR=`fn_maxdate`
     END=${END:-${CURR}}
+    PREV=`fn_get_prev`
     # SCREENER的宗旨，弃子取势
     # xet_block_info 为 sp_visit_tbl() 选定相应的BLOCK
     cmdlist=(
