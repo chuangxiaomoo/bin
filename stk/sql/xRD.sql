@@ -198,6 +198,7 @@ CREATE PROCEDURE sp_create_ma513() tag_ma513:BEGIN
         ma5         DECIMAL(6,2)  NOT NULL DEFAULT 0,        
         ma13        DECIMAL(6,2)  NOT NULL DEFAULT 0,
         vol5        DECIMAL(12,2) NOT NULL DEFAULT 0,
+        vol13       DECIMAL(12,2) NOT NULL DEFAULT 0,
         high        DECIMAL(6,2)  NOT NULL DEFAULT 0,
         low         DECIMAL(6,2)  NOT NULL DEFAULT 0
     );
@@ -717,6 +718,7 @@ CREATE PROCEDURE sp_get_ma513(a_code INT(6) ZEROFILL) tag_get_ma513:BEGIN
     DECLARE v_ma5      DECIMAL(6,2)  DEFAULT 0;
     DECLARE v_ma13     DECIMAL(6,2)  DEFAULT 0;
     DECLARE v_vol5     DECIMAL(12,2) DEFAULT 0;
+    DECLARE v_vol13    DECIMAL(12,2) DEFAULT 0;
     DECLARE v_close    DECIMAL(6,2)  DEFAULT 0;
     DECLARE v_high     DECIMAL(6,2)  DEFAULT .1;
     DECLARE v_low      DECIMAL(6,2)  DEFAULT .1;
@@ -736,13 +738,13 @@ CREATE PROCEDURE sp_get_ma513(a_code INT(6) ZEROFILL) tag_get_ma513:BEGIN
 
     IF @v_len < 13 THEN LEAVE tag_get_ma513; END IF;
 
-    SELECT SUM(close)/5     FROM tempday WHERE id>(@v_len-5) INTO v_ma5;
-    SELECT SUM(volume)/5    FROM tempday WHERE id>(@v_len-6) and id<@v_len INTO v_vol5;
-    SELECT SUM(close)/13, MAX(close), MIN(close)
-                            FROM tempday INTO v_ma13, v_high, v_low ;
+    -- ma 即有平均的意义，但vol没有
+    SELECT SUM(close)/5,  SUM(volume) FROM tempday WHERE id>(@v_len-5) INTO v_ma5, v_vol5;
+    SELECT SUM(close)/13, SUM(volume), MAX(close), MIN(close)
+                                      FROM tempday INTO v_ma13, v_vol13, v_high, v_low;
 
-    INSERT INTO tbl_ma513 (  code,   close,   ma5,   ma13,   vol5,  high,   low)
-                    VALUES(a_code, v_close, v_ma5, v_ma13, v_vol5, v_high, v_low);
+    INSERT INTO tbl_ma513 (  code,   close,   ma5,   ma13,   vol5,   vol13,  high,   low)
+                    VALUES(a_code, v_close, v_ma5, v_ma13, v_vol5, v_vol13,v_high, v_low);
 END tag_get_ma513 //
 
 -- 考虑使用ma34代替ma34
