@@ -39,8 +39,12 @@ function fn_main()
     fi
 
     # echo $@ && exit
-
-    jcli $@ | sed -e 's///g' -e 's/\;\#$//' | sed -e 's/[;#]/\n/g' 
+    VIP=${VIP:-192.168.2.44}
+    echo 
+    echo "w3m -dump 'http://${VIP}?jcpcmd=$*'"
+    w3m -dump "http://${VIP}?jcpcmd=$*" | \
+        sed -e 's/.*Success./\n/' -e 's///g' -e 's/\;"\;//g' -e 's/\;\#$//' | sed -e 's/[;#]/\n/g' 
+    # jcli $@ | sed -e 's///g' -e 's/\;\#$//' | sed -e 's/[;#]/\n/g' 
 
     # | iconv -f cp936 -t utf8
 }

@@ -700,6 +700,7 @@ function fn_word()                      { cat win_word ;}
 function fn_mpp()                       { cat win_mpp ;}
 function fn_beyondcompare3()            { cat win_beyondcompare3 ;}
 function fn_rightclick()                { cat win_rightclick ;}
+function fn_U盘DOS启动盘制作工具()      { cat win_U盘DOS启动盘制作工具 ;}
     local opts=(
         01                      # usb systeminfo printer vlc viso
         02_清晰显示
@@ -713,6 +714,7 @@ function fn_rightclick()                { cat win_rightclick ;}
         大拿万能老板键          # 大拿软件系列 boss
         Mobi阅读器              # mobipocket_reader
         修复网络链接无法关闭    # 在任务管理器中关闭及重新开启 explorer.exe
+        U盘DOS启动盘制作工具    # MS-DOS DOS 
 
     )
     fn_print $@
