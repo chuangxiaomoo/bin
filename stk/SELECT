@@ -173,6 +173,11 @@ function fn_sel_vol5_ratio()
     " | mysql $mo -N kts > ${soptter_zxg} )&
 }
 
+function fn_sel_tbl_sink_where()
+{
+    SELECT * FROM tbl_sink WHERE code in (SELECT code FROM zxg_chao513); 
+}
+
 function fn_main()
 {
     CURR=`fn_maxdate`
@@ -183,6 +188,7 @@ function fn_main()
     "app_wgt_turnov     [sortfiled]          # 追加weight到down_turnov CHAO=1则进zxg"
     "get_comma_cloumns  [tbl_name:-day]      # 逗分列名"
     "get_open_days      [limit:-13]          # 开市日列表"
+    "sel_tbl_sink_where [TBL:-zxg_chao513]   # chao ..."
     "sel_vol5_ratio     [sortfiled:-ratio]   # 量比排名"
     "get_open_days_min                       # 分钟日列表 \$LIMIT"
     # ----------------  ABOVE IS FIXED SEQUENCE --------------------

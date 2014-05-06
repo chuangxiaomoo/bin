@@ -79,7 +79,7 @@ lwd()
             cd $path_goto
             break
         else
-            echo "     invalid path index $path_index"
+            echo "     invalid path[$path_index]: ${path_goto}"
         fi
     done
 }

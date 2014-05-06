@@ -307,7 +307,7 @@ function fn_select_tbl_ma513()
     echo "
     # cascading CHAO!
     SELECT code FROM zxg_ma513 WHERE code in (SELECT code FROM chao)
-    " | tee /dev/stderr | mysql -N kts | \
+    " | tee /dev/stderr | mysql -N kts | tee .soptter.chao | \
         xargs -n6 | tee /dev/stderr | TBL=zxg_chao513 xargs up add_codes_2_dzh2tbl
 }
 
@@ -406,7 +406,7 @@ function fn_trd_rally_ma5()
     xt_ret $? "${FUNCNAME}" || return $?
 
     # 昨未穿ma5，今上涨，今放大上涨上穿ma5
-    SCALE=-0.5
+    SCALE=1.3
     COND1="m.close<m.ma5 and d.close>d.yesc"
     COND1="${COND1} and (d.close+(d.close-d.yesc)*${SCALE})>m.ma5"
     fn_select_tbl_ma513
