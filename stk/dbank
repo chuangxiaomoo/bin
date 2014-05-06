@@ -170,6 +170,12 @@ function fn_maxdate()
     mysql -N kts <<< "SELECT max(date) from day WHERE code = 900001;"
 }
 
+function fn_get_prev()
+{
+    sqls="SELECT date FROM day WHERE code=900001 and date<='$END'"
+    mysql -N kts<<<"${sqls} ORDER by date DESC LIMIT ${STEP:-1},1"
+}
+
 function fn_create_tbl_codes()
 {
     [ -z "${*}" ] && echo "

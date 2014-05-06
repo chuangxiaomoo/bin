@@ -24,7 +24,7 @@ function fn_ls()
         local shmout=$SHMPATH/shmout
         local index=1
         echo "google  $1 ..."
-        google $1 2 | tee $shmout
+        google $1 | tee $shmout
         [ 0 -ne  "${PIPESTATUS[0]}" ] && echo google fail && exit 1
 
         lines=`cat $shmout | grep '^[603]' | wc -l`
@@ -156,9 +156,9 @@ function fn_app_day_turnover()
 function fn_sel_vol5_ratio()
 {
     field=${1:-ratio}
-    ratio="d.volume/ma.vol5*`fn_get_ratio_close2open`"
+    ratio="5*d.volume/ma.vol5*`fn_get_ratio_close2open`"
 
-    ./SCREENER get_ma513
+    ./SCREENER get_ma513 ${PREV}
     xt_ret $? "${FUNCNAME}" || return $?
 
     tbl_day="(SELECT * FROM day WHERE date='${END}')"
@@ -182,6 +182,7 @@ function fn_main()
 {
     CURR=`fn_maxdate`
     END=${END:-${CURR}}
+    PREV=`fn_get_prev`
 
     cmdlist=(
     "app_nmc_name       [sortfiled]          # 追加股票名到表TBL"

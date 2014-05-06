@@ -12,12 +12,6 @@
 . `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
 . /etc/common.rc
 
-function fn_get_prev()
-{
-    sqls="SELECT date FROM day WHERE code=900001 and date<='$END'"
-    mysql -N kts<<<"${sqls} ORDER by date DESC LIMIT ${STEP:-1},1"
-}
-
 function fn_get_block_info()
 {
     # 显示当前选中，及可选BLOCK列表
