@@ -538,14 +538,15 @@ function fn_genheader()
 function fn_svncat() 
 {
     url=$1
+    pattern="${2:-osdstyle}"
     [ -z "$url" ] && echo "Error: url is null" && exit
 
-    function fn_if_found() { svn cat $url@$1 | grep -q "$first_patn" ;}
+    # -v 反转搜索
+    function fn_if_found() { svn cat $url@$1 | grep -i -q "$pattern" ;}
 
     # svn log -l 50 最近的50条，版本号最大在第一条
     # start_v
     versions=(`svn log $url | grep '^r[0-9][0-9]' | awk '{print $1}'`)
-    first_patn="REQUIERAUDIO"
 
     echo "found ${#versions[@]} version"  # && exit
 
@@ -563,7 +564,7 @@ function fn_svncat()
     fn_echo_fail "search fail"
 
     # 既保存到变量，同时又输出到stdout
-    # command=`svn cat $url@$v | grep --color -n "$first_patn" | tee /dev/stderr`
+    # command=`svn cat $url@$v | grep --color -n "$pattern" | tee /dev/stderr`
 }
 
 # 为没满78字符的行后面添加一个空行
@@ -623,7 +624,7 @@ function fn_main()
     "cp_as_tar f src dst    # login.asp web_jssj/ /1/svn/filesys.t/app/vs/web_nu"
     "cp_for_in f to...      # cp less filesys.*/dir"
     "genheader <.h file>    # define MACRO in header file"                        # 16
-    "svncat <file_url>      # svn 在线搜索"
+    "svncat <url> <pattern> # svn cat <url> | grep <pattern>"
     "insert_blankline FILE  # 为小于78字符的行换行" 
     "78cols_text      FILE  # 为大于78字符的行换行"
     "bbox_cmdlist           # all cmd link to busybox"
