@@ -117,7 +117,8 @@ function fn_app_wgt_turnov()
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
     LIMIT=1024 fn_get_tbl_super_dive
-    mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" | TBL=chao xargs up 7
+    mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" | \
+        tee .soptter.chao | TBL=chao xargs up 7
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -175,7 +176,8 @@ function fn_sel_vol5_ratio()
 
 function fn_sel_tbl_sink_where()
 {
-    SELECT * FROM tbl_sink WHERE code in (SELECT code FROM zxg_chao513); 
+    # SELECT * FROM tbl_sink WHERE code in (SELECT code FROM zxg_chao513); 
+    echo
 }
 
 function fn_main()
