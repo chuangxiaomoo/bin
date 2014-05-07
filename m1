@@ -1165,6 +1165,7 @@ function fn_story()                     { cat nxp_story ;}
 
 function fn_delay_exec()                { cat nxp_delay_exec ;}
 function fn_cmdlineparser()             { cat nxp_cmdlineparser ;}
+function fn_jcp()                       { cat nxp_jcp ;}
     local opts=(
         hold                            # C/S 架构
         base                            # `捋`整体功能
@@ -1182,13 +1183,13 @@ function fn_cmdlineparser()             { cat nxp_cmdlineparser ;}
         config
         upgrade
         protocol                        # client与server的通信协议
-        jcp                             # xml, jcp 等只是protocol的不同实现
         client                          # browser
         testing
         story                           # 迭代总结
         # ----- function delimeter ----
         delay_exec
         cmdlineparser
+        jcp                             # xml, jcp 等只是protocol的不同实现
     )
     fn_print $@
 }

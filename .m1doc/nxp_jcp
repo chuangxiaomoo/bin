@@ -1,0 +1,35 @@
+# jcp
+
+  添加一个新jcp命令，系统需要做哪些变动。
+  由此来看一下jcp的整理运转。
+
+  以osdstyle为例
+
+
+## osdstyle
+
+  jcli 
+    devvecfg
+    osdstyle
+
+  jcpCmdImplement.cpp 
+    JCPCmdDevveCfg
+    JCPCmdOsdstyle
+
+  confapi.c 
+    `在此处做网络request`
+    conf_get_videocfg()
+    conf_video_enc_process(cmd."getVideoCfg")
+    .
+    conf_get_osdstylecfg()
+    conf_osd_style_process("getOsdStyleCfg")
+
+  jconfig.cpp
+    `在此处做网络listen`
+    set_api_msg_handle(g_cbcentre, cmd."getOsdStyleCfg")
+    handleVideoCfg()
+    SysConfCfg()
+    eventNotify()
+    .
+    handleOsdStyleCfg()
+

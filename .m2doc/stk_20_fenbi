@@ -10,6 +10,10 @@
 
     wget 'http://market.finance.sina.com.cn/downxls.php?date=2013-07-29&symbol=sz000002' -O wka.0709
 
+.  实时分笔
+
+    http://stockdata.stock.hexun.com/gghq_000002.shtml 
+
 
 . 分笔数据3家比对 -- sina数据最接近真相
 
