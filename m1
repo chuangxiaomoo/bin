@@ -1109,10 +1109,10 @@ function fn_ask_question()              { cat problem_ask_question ;}
 function fn_jimxl()                     {
 function fn_base()                      { cat jimxl_base ;}
 function fn_nvr()                       { cat jimxl_nvr ;}
-function fn_goyo.vim()                  { cat jimxl_goyo.vim ;}
+function fn_goyo()                      { cat jimxl_goyo;}
     local opts=(
         base
-        goyo.vim
+        goyo                            # goyo.vim
         nvr                             # nvr 交接
     )
     fn_print $@

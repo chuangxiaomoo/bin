@@ -6,3 +6,7 @@ http://blog.csdn.net/wooin/article/details/1858917
 
 reloading
 :edit!
+
+
+# bash 
+<C-X><C-E> 可以轻松执行多行语句
