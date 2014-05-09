@@ -4,7 +4,15 @@ ARCHIVE=~/bin/.m1doc/
 cd ${ARCHIVE}
  . ${ARCHIVE}.pri.bashrc
 
-function fn_agile()                     { cat agile ;}
+function fn_agile()                     { 
+function fn_base()                      { cat agile_base ;}
+function fn_26_hints()                  { cat agile_26_hints ;}
+    local opts=(
+        base
+        26_hints
+    )
+    fn_print $@
+}
 function fn_adobepdf()                  { cat adobepdf ;}
 function fn_asm()                       { cat asm ;}
 function fn_awk()                       { cat awk ;}
