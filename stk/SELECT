@@ -156,6 +156,11 @@ function fn_app_day_turnover()
 
 function fn_sel_vol5_ratio()
 {
+    function fn_build_sqls() {
+    sqls="
+    SELECT d.*,  ${ratio} as ratio FROM tbl_ma513 as ma, ${tbl_day} as d
+        where ma.code=d.code ${COND} ORDER by ${field} DESC limit ${LIMIT:-24}" 
+    }
     field=${1:-ratio}
     ratio="5*d.volume/ma.vol5*`fn_get_ratio_close2open`"
 
@@ -163,21 +168,41 @@ function fn_sel_vol5_ratio()
     xt_ret $? "${FUNCNAME}" || return $?
 
     tbl_day="(SELECT * FROM day WHERE date='${END}')"
-    echo "
-    SELECT d.*,  ${ratio} as ratio FROM tbl_ma513 as ma, ${tbl_day} as d
-            where ma.code=d.code ${COND} ORDER by ${field} DESC limit ${LIMIT:-48};
-    " | tee /dev/stderr | mysql $mo -t kts
+    fn_build_sqls
+    echo "$sqls" | tee /dev/stderr | mysql -t kts
 
-    ( echo "
-    SELECT d.code                  FROM tbl_ma513 as ma, ${tbl_day} as d
-            where ma.code=d.code ${COND} ORDER by ${ratio} DESC limit ${LIMIT:-48};
-    " | mysql $mo -N kts > ${soptter_zxg} )&
+    [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
+
+    field=ratio fn_build_sqls
+    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" | tee ${soptter_zxg} | TBL=zxg xargs up 7
+    xt_ret $? "${FUNCNAME}" || return $?
 }
 
 function fn_sel_tbl_sink_where()
 {
     # SELECT * FROM tbl_sink WHERE code in (SELECT code FROM zxg_chao513); 
     echo
+}
+
+function fn_sel_ma513_ob_vol5()
+{
+    # read -p "U've done [SCREENER 2]?"
+    SCALE=`fn_get_ratio_close2open`
+    sqls="
+    SELECT t.*, 
+    round(100*vol5/(c.nmc/c.close),2) as tov5, 
+    round(100*vol13/(c.nmc/c.close),2) as tov13, 
+    round(${SCALE}*4*vol/(vol5-vol),2) as ratio,
+    c.nmc
+    FROM tbl_ma513 as t, cap as c WHERE t.code=c.code 
+    ORDER by ${1:-tov5} ${ASC:-DESC} LIMIT ${LIMIT:-24}
+    " 
+    echo "${sqls}" | tee /dev/stderr | mysql $mo -t kts
+
+    [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
+
+    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" | tee .soptter.chao | TBL=chao xargs up 7
+    xt_ret $? "${FUNCNAME}" || return $?
 }
 
 function fn_main()
@@ -193,6 +218,7 @@ function fn_main()
     "get_open_days      [limit:-13]          # 开市日列表"
     "sel_tbl_sink_where [TBL:-zxg_chao513]   # chao ..."
     "sel_vol5_ratio     [sortfiled:-ratio]   # 量比排名"
+    "sel_ma513_ob_vol5  [sortfiled]          # 成交量排名"
     "get_open_days_min                       # 分钟日列表 \$LIMIT"
     # ----------------  ABOVE IS FIXED SEQUENCE --------------------
     "get_curdate_min    [CODE:-900001]       # --- 当日min \$LIMIT"
@@ -206,7 +232,7 @@ function fn_main()
 
     # `ASC=任意值`时使用'DESC'，弃用
     # ASC=${ASC:+'DESC'}  # ASC=${ASC:-'ASC'}
-    ASC=${ASC:-'ASC'}
+    # ASC=${ASC:-'ASC'}
     fn_execute "$@"
 }
 

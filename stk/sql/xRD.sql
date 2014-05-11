@@ -197,6 +197,7 @@ CREATE PROCEDURE sp_create_ma513() tag_ma513:BEGIN
         close       DECIMAL(6,2)  NOT NULL DEFAULT 0,
         ma5         DECIMAL(6,2)  NOT NULL DEFAULT 0,        
         ma13        DECIMAL(6,2)  NOT NULL DEFAULT 0,
+        vol         DECIMAL(12,2) NOT NULL DEFAULT 0,
         vol5        DECIMAL(12,2) NOT NULL DEFAULT 0,
         vol13       DECIMAL(12,2) NOT NULL DEFAULT 0,
         high        DECIMAL(6,2)  NOT NULL DEFAULT 0,
@@ -717,6 +718,7 @@ DROP PROCEDURE IF EXISTS sp_get_ma513//
 CREATE PROCEDURE sp_get_ma513(a_code INT(6) ZEROFILL) tag_get_ma513:BEGIN
     DECLARE v_ma5      DECIMAL(6,2)  DEFAULT 0;
     DECLARE v_ma13     DECIMAL(6,2)  DEFAULT 0;
+    DECLARE v_vol      DECIMAL(12,2) DEFAULT 0;
     DECLARE v_vol5     DECIMAL(12,2) DEFAULT 0;
     DECLARE v_vol13    DECIMAL(12,2) DEFAULT 0;
     DECLARE v_close    DECIMAL(6,2)  DEFAULT 0;
@@ -734,7 +736,7 @@ CREATE PROCEDURE sp_get_ma513(a_code INT(6) ZEROFILL) tag_get_ma513:BEGIN
 
     -- 13 34 55 100
     SELECT count(*) FROM tempday INTO @v_len;
-    SELECT close FROM tempday WHERE id=@v_len INTO v_close;
+    SELECT close,volume FROM tempday WHERE id=@v_len INTO v_close,v_vol;
 
     IF @v_len < 13 THEN LEAVE tag_get_ma513; END IF;
 
@@ -743,8 +745,8 @@ CREATE PROCEDURE sp_get_ma513(a_code INT(6) ZEROFILL) tag_get_ma513:BEGIN
     SELECT SUM(close)/13, SUM(volume), MAX(close), MIN(close)
                                       FROM tempday INTO v_ma13, v_vol13, v_high, v_low;
 
-    INSERT INTO tbl_ma513 (  code,   close,   ma5,   ma13,   vol5,   vol13,  high,   low)
-                    VALUES(a_code, v_close, v_ma5, v_ma13, v_vol5, v_vol13,v_high, v_low);
+    INSERT INTO tbl_ma513 (  code,   close,   ma5,   ma13,   vol,   vol5,   vol13,  high,   low)
+                    VALUES(a_code, v_close, v_ma5, v_ma13, v_vol, v_vol5, v_vol13,v_high, v_low);
 END tag_get_ma513 //
 
 -- 考虑使用ma34代替ma34
