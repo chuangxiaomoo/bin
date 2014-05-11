@@ -105,7 +105,7 @@ function fn_app_wgt_turnov()
     columns=d.${columns//,/,d.}
 
     # swing ~= 30, sum(13) ~= 130  流动性*.4 以拉到 100 这个范围
-    wgt="(swing-sum*.4)"
+    wgt="${1:-'(swing-sum*.4)'}"
     field=${1:-wgt}
 
     echo ----- COND: $COND -----
