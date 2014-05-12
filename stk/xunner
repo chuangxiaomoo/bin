@@ -72,7 +72,7 @@ function fn_xunner()
 function fn_main() 
 {
     url='http://quote.stock.hexun.com/stockdata/stock_quote.aspx?'
-    url="${url}stocklist=`cat ${LIST:-.soptter} | xargs | sed 's/ /\|/g'`"
+    url="${url}stocklist=`cat ${LIST:-'.soptter'} | xargs | sed 's/ /\|/g'`"
     url="${url}&indexlist=000001_1|399001_2|399006_2"
 
     # trim *ST individuals
