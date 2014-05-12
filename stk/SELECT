@@ -94,9 +94,10 @@ function fn_app_wgt_turnov()
         tbl_super_dive="
         SELECT $columns, c.nmc, $wgt as wgt, c.name
             FROM ${TBL:-tbl_sink} as d, cap as c
-            WHERE d.code = c.code and sum>30 and swing<-10 HAVING wgt<-38 ${COND}
+            WHERE d.code = c.code and sum>20 and swing<-10 HAVING wgt<-38 ${COND}
             ORDER by ${field} ${ASC} limit ${LIMIT:-30}
         "
+        # echo "${tbl_super_dive}"
     }
 
     # commnet below to display column id
@@ -105,7 +106,7 @@ function fn_app_wgt_turnov()
     columns=d.${columns//,/,d.}
 
     # swing ~= 30, sum(13) ~= 130  流动性*.4 以拉到 100 这个范围
-    wgt="${1:-'(swing-sum*.4)'}"
+    wgt="(swing-sum*.4)"
     field=${1:-wgt}
 
     echo ----- COND: $COND -----
@@ -116,7 +117,7 @@ function fn_app_wgt_turnov()
 
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
-    LIMIT=1024 fn_get_tbl_super_dive
+    LIMIT=128 fn_get_tbl_super_dive
     mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" | \
         tee .soptter.chao | TBL=chao xargs up 7
     xt_ret $? "${FUNCNAME}" || return $?
