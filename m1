@@ -1171,6 +1171,8 @@ function fn_upgrade()                   { cat nxp_upgrade ;}
 function fn_testing()                   { cat nxp_testing ;}
 function fn_story()                     { cat nxp_story ;}
 
+function fn_alarm_link()                { cat nxp_alarm_link ;}
+
 function fn_delay_exec()                { cat nxp_delay_exec ;}
 function fn_cmdlineparser()             { cat nxp_cmdlineparser ;}
 function fn_jcp()                       { cat nxp_jcp ;}
@@ -1194,6 +1196,8 @@ function fn_jcp()                       { cat nxp_jcp ;}
         client                          # browser
         testing
         story                           # 迭代总结
+        # ----- web func delimeter ----
+        alarm_link
         # ----- function delimeter ----
         delay_exec
         cmdlineparser

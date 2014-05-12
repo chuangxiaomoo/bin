@@ -3,8 +3,13 @@
   添加一个新jcp命令，系统需要做哪些变动。
   由此来看一下jcp的整理运转。
 
-  以osdstyle为例
+  以osdstyle, devvecfg为例
 
+## 为什么要3个map
+
+  jcp - confapi -- udpsocket -- jconfig
+  jcp命令使用一个
+  confapi 及 xml 各使用一个，以跨越udpsocket
 
 ## osdstyle
 
