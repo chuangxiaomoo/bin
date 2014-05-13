@@ -494,6 +494,7 @@ function fn_02_傻帽悲观派()             { cat ljsw_02_傻帽悲观派 ;}
 function fn_04_民主政治()               { cat ljsw_04_民主政治 ;}
 
 function fn_210_右派为什么这么横()      { cat ljsw_210_右派为什么这么横 ;}
+function fn_215_发现你的太平洋()        { cat ljsw_215_发现你的太平洋 ;}
 
 function fn_x1_你的阅读造就了你()       { cat ljsw_x1_你的阅读造就了你 ;}
     local opts=(
@@ -506,6 +507,7 @@ function fn_x1_你的阅读造就了你()       { cat ljsw_x1_你的阅读造就
         x1_你的阅读造就了你             # you are what u read
 
         210_右派为什么这么横
+        215_发现你的太平洋              # 创业
     )
     fn_print $@
 }
