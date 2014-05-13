@@ -46,6 +46,7 @@ function fn_xunner()
     printf "%6s\t%s\t%s\t\t%s\t%s\t%-5s\t%5s\t%5s\t%5s\n" \
             symbol avrg trade change pcnt_hi pcnt_lo turnov vratio name
 
+    # echo ${js_xunner_idx}
     cat ${js_xunner_idx} | \
         tr -d '\n' | tr "'" '"' | \
         sed -e 's/^.*= *//' -e 's/;.*$//' | \
@@ -76,9 +77,16 @@ function fn_main()
     url="${url}&indexlist=000001_1|399001_2|399006_2"
 
     # trim *ST individuals
-    w3m -dump "${url}" 2>&1 | \
-        sed -e 's/;indexdataArr/;\nindexdataArr/' \
-            -e 's/*//g'  -e 's/ST//g'  > ${js_xunner} 
+
+    while :; do
+        w3m -dump "${url}" 2>&1 | \
+            sed -e 's/;indexdataArr/;\nindexdataArr/' \
+                -e 's/*//g'  -e 's/ST//g'  > ${js_xunner} 
+        # tee /tmp/xunner 
+
+        [ -n "`cat ${js_xunner}`" ] && break
+        echo "w3m fail, try again!"
+    done
 
     fn_xunner
 }
