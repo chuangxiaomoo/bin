@@ -78,3 +78,5 @@ Logical Operations（逻辑运算）:
 
     host 192.168.2.45 and tcp port 80   通过HTTP的JCP命令报文
 
+    -------------------- 抓取jcpcmd     ------------------------------------
+    ip host 192.168.2.44
