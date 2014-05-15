@@ -26,7 +26,7 @@ function fn_fmt_sina() {
 }
 
 function fn_sina() {
-    # unarm_close_forbid=true \
+    unarm_close_forbid=true \
     fn_timestamp_market
     xt_ret $? "${FUNCNAME}" || return $?
 

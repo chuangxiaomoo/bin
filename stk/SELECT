@@ -94,8 +94,8 @@ function fn_app_wgt_turnov()
         tbl_super_dive="
         SELECT $columns, c.nmc, $wgt as wgt, c.name
             FROM ${TBL:-tbl_sink} as d, cap as c
-            WHERE d.code = c.code and sum>20 and swing<-10 HAVING wgt<-38 ${COND}
-            ORDER by ${field} ${ASC} limit ${LIMIT:-30}
+            WHERE d.code = c.code and sum>20 and swing<-10 HAVING wgt>50 ${COND}
+            ORDER by ${field} ${ASC:-desc} limit ${LIMIT:-30}
         "
         # echo "${tbl_super_dive}"
     }
@@ -106,7 +106,8 @@ function fn_app_wgt_turnov()
     columns=d.${columns//,/,d.}
 
     # swing ~= 30, sum(13) ~= 130  流动性*.4 以拉到 100 这个范围
-    wgt="(swing-sum*.4)"
+    # wgt="(swing-sum*.4)"
+    wgt="(sum-net)"
     field=${1:-wgt}
 
     echo ----- COND: $COND -----
