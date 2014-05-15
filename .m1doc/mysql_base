@@ -1,5 +1,7 @@
 /* mysql */
 
+. [MySQL性能优化的最佳20+条经验](http://coolshell.cn/articles/1846.html)
+
 . HELP：
     MySQL 5.1参考手册
     http://dev.mysql.com/doc/refman/5.1/zh/index.html

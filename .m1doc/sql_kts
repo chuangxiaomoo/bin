@@ -1,4 +1,6 @@
 
+-- [MySQL性能优化的最佳20+条经验](http://coolshell.cn/articles/1846.html)
+
 CREATE TABLE min2 (
     code INT(6) ZEROFILL NOT NULL, 
     trade DECIMAL(6,2) NOT NULL,
