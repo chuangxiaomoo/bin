@@ -718,7 +718,7 @@ function fn_U盘DOS启动盘制作工具()      { cat win_U盘DOS启动盘制作
         excel
         word
         mpp                     # msproject task
-        beyondcompare3          # BC3
+        beyondcompare3          # BC3 bc3
         大拿万能老板键          # 大拿软件系列 boss
         Mobi阅读器              # mobipocket_reader
         修复网络链接无法关闭    # 在任务管理器中关闭及重新开启 explorer.exe

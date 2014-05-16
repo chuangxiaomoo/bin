@@ -47,6 +47,7 @@ function fn_main()
     # jcli $@ | sed -e 's///g' -e 's/\;\#$//' | sed -e 's/[;#]/\n/g' 
 
     # | iconv -f cp936 -t utf8
+    #   jcli ethcfg -act set -ethip 192.168.2.44 -ethmask 255.255.255.0 -ethgw 192.168.2.1
 }
 
 fn_main $@
