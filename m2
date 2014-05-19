@@ -489,6 +489,7 @@ function fn_11_Geek与产品机器()         { cat prof_11_Geek与产品机器 ;
 }
 
 function fn_ljsw()                      { 
+function fn_voice()                     { cat ljsw_voice ;}
 function fn_01_教育()                   { cat ljsw_01_教育 ;}
 function fn_02_傻帽悲观派()             { cat ljsw_02_傻帽悲观派 ;}
 function fn_04_民主政治()               { cat ljsw_04_民主政治 ;}
@@ -498,6 +499,7 @@ function fn_215_发现你的太平洋()        { cat ljsw_215_发现你的太平
 
 function fn_x1_你的阅读造就了你()       { cat ljsw_x1_你的阅读造就了你 ;}
     local opts=(
+        voice
         01_教育
         02_傻帽悲观派
         03_成功人士的3个品质            # 优越感、不安全感、自控力
