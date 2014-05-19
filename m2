@@ -529,6 +529,7 @@ function fn_sanxing三省()               { cat sanxing三省 ;}
 function fn_yufen()                     { cat yufen ;}
 function fn_50_interview_faq()          { cat 50_interview_faq ;}
 function fn_traffic()                   { cat traffic ;}
+function fn_influence()                 { cat influence ;}
 
 # 新教与天主教。信则得救，不信则下地狱 vs 助人行善
 # 一花一世界，一木一浮生，一草一天堂，一叶一如来，
@@ -553,6 +554,7 @@ function fn_main() {
         howto
         ideas
         idealism                        # 理想主义
+        influence                       # 三十而立 影响力 30 
         poet
         math                            # 数
         meeting
