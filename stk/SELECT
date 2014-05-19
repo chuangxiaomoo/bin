@@ -93,11 +93,11 @@ function fn_app_wgt_turnov()
     {
         tbl_super_dive="
         SELECT $columns, c.nmc, $wgt as wgt, c.name
-            FROM ${TBL:-tbl_sink} as d, cap as c
+            FROM tbl_sink as d, cap as c
             WHERE d.code = c.code and sum>20 and swing<-10 HAVING wgt>50 ${COND}
             ORDER by ${field} ${ASC:-desc} limit ${LIMIT:-30}
         "
-        # echo "${tbl_super_dive}"
+        echo "${tbl_super_dive}"
     }
 
     # commnet below to display column id
@@ -109,6 +109,9 @@ function fn_app_wgt_turnov()
     # wgt="(swing-sum*.4)"
     wgt="(sum-net)"
     field=${1:-wgt}
+
+    # 预筛选:高换手 SELECT 6 --> sel_ma513_ob_vol5
+    COND=${TBL:+and code in (SELECT code FROM $TBL) }${COND}
 
     echo ----- COND: $COND -----
 
@@ -160,8 +163,8 @@ function fn_sel_vol5_ratio()
 {
     function fn_build_sqls() {
     sqls="
-    SELECT d.*,  ${ratio} as ratio FROM tbl_ma513 as ma, ${tbl_day} as d
-        where ma.code=d.code ${COND} ORDER by ${field} DESC limit ${LIMIT:-24}" 
+    SELECT d.*,  ${ratio} as ratio, c.name FROM tbl_ma513 as ma, ${tbl_day} as d, cap as c
+        where ma.code=d.code and ma.code=c.code ${COND} ORDER by ${field} DESC limit ${LIMIT:-24}" 
     }
     field=${1:-ratio}
     ratio="5*d.volume/ma.vol5*`fn_get_ratio_close2open`"
@@ -190,12 +193,14 @@ function fn_sel_ma513_ob_vol5()
 {
     # read -p "U've done [SCREENER 2]?"
     SCALE=`fn_get_ratio_close2open`
+    columns=code,close,ma5,ma13,vol,vol5,vol13
+    columns=t.${columns//,/,t.}
     sqls="
-    SELECT t.*, 
+    SELECT ${columns}, 
     round(100*vol5/(c.nmc/c.close),2) as tov5, 
     round(100*vol13/(c.nmc/c.close),2) as tov13, 
     round(${SCALE}*4*vol/(vol5-vol),2) as ratio,
-    c.nmc
+    c.nmc, c.name
     FROM tbl_ma513 as t, cap as c WHERE t.code=c.code 
     ORDER by ${1:-tov5} ${ASC:-DESC} LIMIT ${LIMIT:-24}
     " 
@@ -220,7 +225,7 @@ function fn_main()
     "get_open_days      [limit:-13]          # 开市日列表"
     "sel_tbl_sink_where [TBL:-zxg_chao513]   # chao ..."
     "sel_vol5_ratio     [sortfiled:-ratio]   # 量比排名"
-    "sel_ma513_ob_vol5  [sortfiled]          # 成交量排名"
+    "sel_ma513_ob_vol5  [sortfiled]          # 换手率排名"
     "get_open_days_min                       # 分钟日列表 \$LIMIT"
     # ----------------  ABOVE IS FIXED SEQUENCE --------------------
     "get_curdate_min    [CODE:-900001]       # --- 当日min \$LIMIT"
