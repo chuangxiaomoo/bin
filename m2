@@ -523,6 +523,14 @@ function fn_11_煎饼果子()               { cat zhenhuan_11_煎饼果子 ;}
     fn_print $@
 }
 
+function fn_family()                    {
+function fn_01_王海滨()                 { cat family_01_王海滨 ;}
+    local opts=(
+        01_王海滨                       # 男人的责任与爱
+    )
+    fn_print $@
+}
+
 function fn_ideas()                     { cat ideas ;}
 function fn_idealism()                  { cat idealism ;}
 function fn_sanxing三省()               { cat sanxing三省 ;}
@@ -546,6 +554,7 @@ function fn_main() {
         book
         english
         faith
+        family                          # 难念的经
         girl
         guang
         huawei
