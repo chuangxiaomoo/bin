@@ -1178,7 +1178,7 @@ function fn_cmdlineparser()             { cat nxp_cmdlineparser ;}
 function fn_jcp()                       { cat nxp_jcp ;}
     local opts=(
         hold                            # C/S 架构
-        base                            # `捋`整体功能
+        base                            # `捋`整体功能：查询和中断 ---> 即视频和告警
         requirement_analysis
         training                        # 如何做培训？
         tools                           # SVN WBS RDM Valgrind SourceMonitor
