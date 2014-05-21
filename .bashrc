@@ -52,6 +52,7 @@ alias    v7='vi /root/bin/7Lite'
 alias    vj='vi /root/bin/j2box'
 alias    vn='vi --noplugin'
 alias    vr='vi -R'
+alias    vR='vi README*'
 alias    vt='vi /root/bin/.m2doc/tick.md'
 
 alias   w3m='w3m -cols 78'

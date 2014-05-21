@@ -163,11 +163,12 @@ function fn_dbgsys()
     ipaddr=`fn_ini_get $p_root/app/vs/conf/config_server.ini eth ipaddr`
     gateway=`fn_ini_get $p_root/app/vs/conf/config_server.ini eth gateway`
 
-    sed -i "s/${ipaddr}/${VIP}/g"    $p_root/app/vs/conf/config_server*
-    sed -i "s/${gateway}/${VIP%.*}.1/g" $p_root/app/vs/conf/config_server*
-    sed -i "s/^IRCUT *=.*/IRCUT=1/g"     $p_root/app/vs/conf/config_server*
    #sed -i "s/^IRLIGHT *=.*/IRLIGHT=1/g" $p_root/app/vs/conf/config_server*
+    sed -i "s/${ipaddr}/${VIP}/g"    $p_root/app/vs/conf/config_server*         && \
+    sed -i "s/${gateway}/${VIP%.*}.1/g" $p_root/app/vs/conf/config_server*      && \
+    sed -i "s/^IRCUT *=.*/IRCUT=1/g"     $p_root/app/vs/conf/config_server*     && \
     sed -i "s/^IRCOLOR *=.*/IRCOLOR=1/g" $p_root/app/vs/conf/config_server*
+    xt_ret $? "sed error" || return $?
 
     ROOT=$p_root
     [ -e $ROOT/dev/console ] || mknod -m 600 $ROOT/dev/console c 5 1 
