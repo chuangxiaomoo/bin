@@ -44,6 +44,12 @@
   <C-T>     tab缩进
   <C-S-T>   tab缩退
   <C-B>     加黑处理
+  <C-U>     Underline
+  <C-I>     Italy
+  <C-F>     查找
+  <C-G>     查找定位
+  <C-H>     查找替换
+  <C-K>     插入超链接
 
 
 ## 小技巧
