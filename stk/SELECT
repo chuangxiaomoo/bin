@@ -127,7 +127,7 @@ function fn_app_wgt_turnov()
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
-function fn_sel_day_ob_rise()
+function fn_ls_day_ob_rise()
 {
     # where d.code = c.code 非常重要，不重叠的filed不需要加‘tbl_name.’
     # as 语句可在 FROM 子句中
@@ -223,7 +223,7 @@ function fn_main()
     # ----------------  ABOVE IS FIXED SEQUENCE --------------------
     "get_curdate_min    [CODE:-900001]       # --- 当日min \$LIMIT"
     "ls                 {code|symbol}        # 日线数据 \$LIMIT"
-    "sel_day_ob_rise    [sortfiled]          # --- END 涨幅排名 \$LIMIT"
+    "ls_day_ob_rise     [sortfiled]          # --- END 涨幅排名 \$LIMIT"
     )
 
     tailday=`fn_maxdate`
