@@ -135,12 +135,12 @@ function fn_ls_day_ob_rise()
     field=${1:-rise}
     disfield="d.code,d.date,d.volume,d.amount"
     
-    echo ----- COND: $COND -----
+    echo ----- COND: $HAVING -----
 
     echo "
     SELECT $disfield, $RISE as rise, $TURNOV as turnover, c.nmc, c.name
             FROM day as d,cap as c where d.code = c.code and
-            d.date = '$tailday' ${COND} ORDER BY ${field} ${ASC:-desc} limit ${LIMIT:-24};
+            d.date = '$tailday' ${HAVING} ORDER BY ${field} ${ASC:-desc} limit ${LIMIT:-24};
 	" | mysql -t kts
 }
 
@@ -194,7 +194,7 @@ function fn_sel_ma513_ob_vol5()
     round(100*vol13/(c.nmc/c.close),2) as tov13, 
     round(${SCALE}*4*vol/(vol5-vol),2) as ratio,
     c.nmc, c.name
-    FROM tbl_ma513 as t, cap as c WHERE t.code=c.code 
+    FROM tbl_ma513 as t, cap as c WHERE t.code=c.code ${HAVING}
     ORDER by ${1:-tov5} ${ASC:-DESC} LIMIT ${LIMIT:-24}
     " 
     echo "${sqls}" | tee /dev/stderr | mysql $mo -t kts

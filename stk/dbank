@@ -25,6 +25,10 @@ helpmsg="
 [ -n "$END" ] && export END=$END
 
 XTBL=${XTBL:+and code not in (SELECT code FROM $XTBL)}
+
+HAVING=${COND:+HAVING $COND }${XTBL}
+HAVING="${HAVING}${GEM:+ and d.code>300000 and d.code<400000}"
+
 COND=${COND:+and $COND }${XTBL}
 COND="${COND}${GEM:+ and d.code>300000 and d.code<400000}"
 
