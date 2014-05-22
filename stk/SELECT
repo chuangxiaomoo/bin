@@ -127,17 +127,20 @@ function fn_app_wgt_turnov()
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
-function fn_app_day_rise()
+function fn_sel_day_ob_rise()
 {
     # where d.code = c.code 非常重要，不重叠的filed不需要加‘tbl_name.’
     # as 语句可在 FROM 子句中
     # field=${1:+d.${1}}
     field=${1:-rise}
     disfield="d.code,d.date,d.volume,d.amount"
+    
+    echo ----- COND: $COND -----
+
     echo "
-    SELECT $disfield, $RISE as rise, $TURNOV as turnover, c.name
+    SELECT $disfield, $RISE as rise, $TURNOV as turnover, c.nmc, c.name
             FROM day as d,cap as c where d.code = c.code and
-            d.date = '$tailday' ${COND} ORDER BY ${field} ${ASC} limit ${LIMIT:-48};
+            d.date = '$tailday' ${COND} ORDER BY ${field} ${ASC:-desc} limit ${LIMIT:-24};
 	" | mysql -t kts
 }
 
@@ -147,16 +150,6 @@ function fn_get_comma_cloumns()
     SELECT * FROM ${1:-day} limit 1;
 	" | mysql kts  | head -1  | tr '\t' ','
     # code,date,yesc,open,high,low,close,volume,amount
-}
-
-function fn_app_day_turnover()
-{
-    field=${1:-turnover}
-    echo "
-    SELECT d.date,d.code, $TURNOV as turnover, c.name
-            FROM day as d, cap as c WHERE d.code = c.code and
-            d.date='$tailday' ${COND} ORDER by ${field} ${ASC} limit ${LIMIT:-48};
-	" | mysql $mo -t kts
 }
 
 function fn_sel_vol5_ratio()
@@ -230,8 +223,7 @@ function fn_main()
     # ----------------  ABOVE IS FIXED SEQUENCE --------------------
     "get_curdate_min    [CODE:-900001]       # --- 当日min \$LIMIT"
     "ls                 {code|symbol}        # 日线数据 \$LIMIT"
-    "app_day_rise       [sortfiled]          # --- END 涨幅排名 \$LIMIT"
-    "app_day_turnover   [sortfiled]          # END 换手排名 \$LIMIT"
+    "sel_day_ob_rise    [sortfiled]          # --- END 涨幅排名 \$LIMIT"
     )
 
     tailday=`fn_maxdate`

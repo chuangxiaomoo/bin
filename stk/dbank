@@ -7,6 +7,7 @@ helpmsg="
     COND    条件过滤表达式，SELECT时使用，默认为空
     CHAO    1时在所有模型上叠加超跌模型
     END     时间范围的右值，默认使用900001的max(date)
+    GEM     Growth Enterprise Market, 1 to filter
     LIMIT   limit子句输出记录限制，默认48
     LIST    code列表文件
     START   时间范围的左值
@@ -25,6 +26,7 @@ helpmsg="
 
 XTBL=${XTBL:+and code not in (SELECT code FROM $XTBL)}
 COND=${COND:+and $COND }${XTBL}
+COND="${COND}${GEM:+ and d.code>300000 and d.code<400000}"
 
 W3M='timeout 34 /usr/bin/w3m'
 RISE='TRUNCATE(100*(d.close-yesc)/yesc, 2)'
