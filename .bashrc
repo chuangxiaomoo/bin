@@ -55,6 +55,8 @@ alias    vr='vi -R'
 alias    vR='vi README*'
 alias    vt='vi /root/bin/.m2doc/tick.md'
 
+alias sdiff='svn diff -r PREV'
+
 alias   w3m='w3m -cols 78'
 
 alias   ltmux='TERM=xterm /usr/local/bin/tmux'
