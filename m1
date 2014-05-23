@@ -597,6 +597,7 @@ function fn_plugin()                    { cat vim_plugin ;}
 function fn_clang_complete()            { cat vim_clang_complete ;}
 function fn_NERDtree()                  { cat vim_NERDtree ;}
 function fn_diff()                      { cat vim_diff ;}
+function fn_quickfix()                  { cat vim_quickfix ;}
 
     local opts=(
         fundamental
@@ -606,6 +607,7 @@ function fn_diff()                      { cat vim_diff ;}
         hotkey
         install
         plugin
+        quickfix
         netrw               # networking r&w, e.g. vim scp://hostname/
         NERDtree
     )
