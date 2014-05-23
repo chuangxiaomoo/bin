@@ -539,7 +539,13 @@ function fn_sanxing三省()               { cat sanxing三省 ;}
 function fn_yufen()                     { cat yufen ;}
 function fn_50_interview_faq()          { cat 50_interview_faq ;}
 function fn_traffic()                   { cat traffic ;}
-function fn_influence()                 { cat influence ;}
+function fn_influence()                 {
+function fn_base()                      { cat influence_base ;}
+    local opts=(
+        base
+    )
+    fn_print $@
+}
 
 # 新教与天主教。信则得救，不信则下地狱 vs 助人行善
 # 一花一世界，一木一浮生，一草一天堂，一叶一如来，
