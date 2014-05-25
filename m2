@@ -539,10 +539,17 @@ function fn_sanxing三省()               { cat sanxing三省 ;}
 function fn_yufen()                     { cat yufen ;}
 function fn_50_interview_faq()          { cat 50_interview_faq ;}
 function fn_traffic()                   { cat traffic ;}
+
 function fn_influence()                 {
 function fn_base()                      { cat influence_base ;}
+function fn_agile()                     { cat influence_agile ;}
+function fn_sxmm()                      { cat influence_sxmm ;}
+function fn_stock()                     { cat influence_stock ;}
     local opts=(
         base
+        agile
+        sxmm
+        stock                           # 
     )
     fn_print $@
 }
