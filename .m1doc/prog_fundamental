@@ -1,76 +1,79 @@
-#! /bin/bash
+# programming
                         PROGRAM
 
 零、设计即生活
-    第一，入世和出世要分开，不要让世俗的东西打扰到你的内心世界
-    第二，就是要有热情，有了热情，你的心情就会很好，加班都可以是快乐的
 
-    # Programmer Competency Matrix -- 程序员能力矩阵
-    http://www.indiangeek.net/wp-content/uploads/Programmer%20competency%20matrix.htm
+  第一，入世和出世要分开，不要让世俗的东西打扰到你的内心世界
+  第二，就是要有热情，有了热情，你的心情就会很好，加班都可以是快乐的
 
-    # 我是怎么招聘程序员的
-    http://coolshell.cn/articles/1870.html
+  # Programmer Competency Matrix -- 程序员能力矩阵
+  http://www.indiangeek.net/wp-content/uploads/Programmer%20competency%20matrix.htm
 
-    # 程序员需要具备的基本技能
-    http://coolshell.cn/articles/428.html
+  # 我是怎么招聘程序员的
+  http://coolshell.cn/articles/1870.html
 
-    #《代码大全》读书笔记|自上而下和自下而上的设计方法|
-    http://blog.codingnow.com/cloud/CodeComplete/
+  # 程序员需要具备的基本技能
+  http://coolshell.cn/articles/428.html
 
-    # 编程的首要原则(s)是什么？   -- DRY
-    http://blog.csdn.net/pongba/article/details/3974110
-    # Ken Thompson
-    http://quotes.cat-v.org/programming/
+  #《代码大全》读书笔记|自上而下和自下而上的设计方法|
+  http://blog.codingnow.com/cloud/CodeComplete/
 
-    cat <<-"HERE"
-    It is the way I think. I am a very bottom-up thinker. 
-    Program for the future. From bottem, by built system from resuable small
-    blocks, good interface. 
-    
-    如同风云所言:这两种方法并不是互相排斥的——你会受益于二者的相互协作。
-	HERE
+  # 编程的首要原则(s)是什么？   -- DRY
+  http://blog.csdn.net/pongba/article/details/3974110
 
+  # Ken Thompson
+  http://quotes.cat-v.org/programming/
+
+  It is the way I think. I am a very bottom-up thinker. 
+  Program for the future. From bottem, by built system from resuable small
+  blocks, good interface. 
+
+> 如同风云所言:这两种方法并不是互相排斥的——你会受益于二者的相互协作。
+
+  [一个阿里巴巴码农的六年回眸](http://news.zol.com.cn/tech/4628.html)
 
 五、haoel
 
-  (1)
-    《自适应软件开发》—从奴隶主到领袖< 1 序言 >
-    http://blog.csdn.net/haoel/article/details/2865
+
+(1)
+  《自适应软件开发》—从奴隶主到领袖< 1 序言 >
+  http://blog.csdn.net/haoel/article/details/2865
 
 
-  (2)
-    如此理解面向对象编程
-    http://coolshell.cn/articles/8745.html
+(2)
+  如此理解面向对象编程
+  http://coolshell.cn/articles/8745.html
 
-    我的理解
+  我的理解
 
-        我觉得，这篇文章的例子举得太差了，差得感觉就像是OO的高级黑。面向对象编程
-    注重的是：1）数据和其行为的打包封装，2）程序的接口和实现的解耦。你那怕，举一
-    个多个开关和多个电器的例子，不然就像STL中，一个排序算法对多个不同容器的例子
-    ，都比这个例子要好得多得多。老实说，Java SDK里太多这样的东西了。
+      我觉得，这篇文章的例子举得太差了，差得感觉就像是OO的高级黑。面向对象编程
+  注重的是：1）数据和其行为的打包封装，2）程序的接口和实现的解耦。你那怕，举一
+  个多个开关和多个电器的例子，不然就像STL中，一个排序算法对多个不同容器的例子
+  ，都比这个例子要好得多得多。老实说，Java SDK里太多这样的东西了。
 
-        我以前给一些公司讲一些设计模式的培训课，我一再提到，那23个经典的设计模式
-    和OO半毛钱关系没有，只不过人家用OO来实现罢了。设计模式就三个准则：1）中意于
-    组合而不是继承，2）依赖于接口而不是实现，3）高内聚，低耦合。你看，这完全就是
-    Unix的设计准则。
+      我以前给一些公司讲一些设计模式的培训课，我一再提到，那23个经典的设计模式
+  和OO半毛钱关系没有，只不过人家用OO来实现罢了。设计模式就三个准则：1）中意于
+  组合而不是继承，2）依赖于接口而不是实现，3）高内聚，低耦合。你看，这完全就是
+  Unix的设计准则。
 
-    # 1. Decoupling
-    #     no_core_dbg_terminator.tgz, decouple with auto_run.sh
+  # 1. Decoupling
+  #     no_core_dbg_terminator.tgz, decouple with auto_run.sh
 
-  (3)
-    软件的精髓不在于你对系统底层有多了解，也不在语言层面，而是在于设计和架构，
-    而设计和架构这种东西只能靠多想多看"
+(3)
+  软件的精髓不在于你对系统底层有多了解，也不在语言层面，而是在于设计和架构，
+  而设计和架构这种东西只能靠多想多看
 
-  (4) TDD
-    TDD到底美还是不美 
-    http://coolshell.cn/articles/3766.html
+(4) TDD
+  TDD到底美还是不美 
+  http://coolshell.cn/articles/3766.html
 
-    但从宏观上看，TDD和瀑布比是换汤不换药。
+  但从宏观上看，TDD和瀑布比是换汤不换药。
 
-    需求和实现之间不是简单的谁驱动谁，而是一种相互反馈的关系，这与需求用什么方式
-    表达没有关系。到目前为主，我推崇的方式是快速实现，在实际运行中体验效果，不断优
-    化探索和明确需求，当需求达到一个比较稳定的程度才编写测试用例将需求固化下来。
+  需求和实现之间不是简单的谁驱动谁，而是一种相互反馈的关系，这与需求用什么方式
+  表达没有关系。到目前为主，我推崇的方式是快速实现，在实际运行中体验效果，不断优
+  化探索和明确需求，当需求达到一个比较稳定的程度才编写测试用例将需求固化下来。
 
-    适用场景:
-    TDD在某些需求特别固定的场合是适用的，尤其是与具体业务关系不大的需求，比如：写
-    一个通用的数据结构，实现一个通用算法。
+  适用场景:
+  TDD在某些需求特别固定的场合是适用的，尤其是与具体业务关系不大的需求，比如：写
+  一个通用的数据结构，实现一个通用算法。
+
