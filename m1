@@ -827,7 +827,7 @@ function fn_term()                      { cat surveil_term ;}
         jc_捷高Style
         video
         video_resolution
-        term
+        term                            # 常用参数
         ptz
     )
     fn_print $@
