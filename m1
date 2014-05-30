@@ -455,6 +455,7 @@ function fn_const_char()                { cat cxx_const_char ;}
 }
 
 function fn_design() {
+function fn_Designing_Design()          { cat design_Designing_Design ;}
 function fn_pm()                        { cat design_pm ;}
 function fn_config()                    { cat design_config ;}
 function fn_startup()                   { cat design_startup ;}
@@ -462,6 +463,7 @@ function fn_UI()                        { cat design_UI ;}
 function fn_patterns()                  { cat design_patterns ;}
 
     local opts=(
+        Designing_Design                # 设计中的设计
         pm                              # project manager
         config                          # 配置
         startup                         # 需求分析、概要设计、详细设计析义
