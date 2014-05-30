@@ -32,4 +32,6 @@
 
   > 关键检查：所有写.def的操作，是否都有在RestoreConfig() ?
 
+# 2014-05-29 效率之争 XML vs INI
+
 
