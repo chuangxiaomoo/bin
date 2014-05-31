@@ -518,6 +518,7 @@ CREATE PROCEDURE sp_count_swing10() tag_swing10:BEGIN
         sink        INT NOT NULL DEFAULT 0
     );
 
+    -- 之前的数据不删除，只做增量统计
     SELECT count(*) FROM swing10 INTO v_len;
     IF v_len <> 0 THEN
         SELECT max(date) FROM swing10 INTO v_start;
@@ -539,6 +540,84 @@ CREATE PROCEDURE sp_count_swing10() tag_swing10:BEGIN
     END WHILE;
 
 END tag_swing10 //
+
+DROP PROCEDURE IF EXISTS sp_stat_change //
+CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
+    DECLARE v_sink      INT DEFAULT 0; 
+    DECLARE v_rise      INT DEFAULT 0; 
+    DECLARE v_len       INT DEFAULT 0; 
+    DECLARE v_start     date DEFAULT 0;
+    DECLARE v_tmpdate   date DEFAULT 0;
+
+    DECLARE v_inc       INT DEFAULT 0; 
+    DECLARE v_dec0      INT DEFAULT 0; 
+
+    DECLARE v_inc8      INT DEFAULT 0; 
+    DECLARE v_inc5      INT DEFAULT 0; 
+    DECLARE v_inc2      INT DEFAULT 0; 
+    DECLARE v_inc1      INT DEFAULT 0; 
+
+    DECLARE v_dec2      INT DEFAULT 0; 
+    DECLARE v_dec5      INT DEFAULT 0; 
+    DECLARE v_dec8      INT DEFAULT 0; 
+    DECLARE v_dec1      INT DEFAULT 0; 
+
+    DROP TABLE IF EXISTS tbl_change;
+    CREATE TABLE IF NOT EXISTS tbl_change (
+        id          INT(6) PRIMARY key AUTO_INCREMENT NOT NULL,
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        date        date NOT NULL,
+        chng        DECIMAL(6,2) NOT NULL DEFAULT 0
+    );
+
+    DROP TABLE IF EXISTS tbl_stat_change;
+    CREATE TABLE IF NOT EXISTS tbl_stat_change (
+        id          INT(6) PRIMARY key AUTO_INCREMENT NOT NULL,
+        date        date NOT NULL,
+
+        inc         INT(6) NOT NULL DEFAULT 0,
+        dec0        INT(6) NOT NULL DEFAULT 0,
+
+        inc8        INT(6) NOT NULL DEFAULT 0,
+        inc5        INT(6) NOT NULL DEFAULT 0,
+        inc2        INT(6) NOT NULL DEFAULT 0,
+        inc1        INT(6) NOT NULL DEFAULT 0,
+
+        dec1        INT(6) NOT NULL DEFAULT 0,
+        dec2        INT(6) NOT NULL DEFAULT 0,
+        dec5        INT(6) NOT NULL DEFAULT 0,
+        dec8        INT(6) NOT NULL DEFAULT 0
+    );
+
+    INSERT INTO tbl_change(code,date,chng) SELECT 
+           code,date,100*(close-yesc)/yesc FROM day 
+            WHERE date>=@START and date<=@END and code>300000 and code<400000;
+
+    SET v_start=@START;
+
+    WHILE v_start <> @END DO
+        SELECT date FROM day WHERE code=900001 and date>v_start limit 1 INTO v_start;
+        -- SELECT v_start;
+
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng>0               INTO v_inc;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<0               INTO v_dec0;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng>=8              INTO v_inc8;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<8 and chng>=5   INTO v_inc5;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<5 and chng>=2   INTO v_inc2;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<2 and chng>=0   INTO v_inc1;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<0  and chng>=-2 INTO v_dec1;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<-2 and chng>=-5 INTO v_dec2;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<-5 and chng>=-8 INTO v_dec5;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<-8              INTO v_dec8;
+
+        INSERT INTO tbl_stat_change(date, inc, dec0, 
+                inc8 ,inc5 ,inc2 ,inc1 ,dec1 ,dec2 ,dec5 ,dec8 )
+        VALUES(v_start, v_inc, v_dec0, 
+                v_inc8 ,v_inc5 ,v_inc2 ,v_inc1 ,v_dec1 ,v_dec2 ,v_dec5 ,v_dec8 );
+        -- LEAVE tag_stat_change;
+    END WHILE;
+
+END tag_stat_change //
 
 DROP PROCEDURE IF EXISTS sp_stat_turnov//
 CREATE PROCEDURE sp_stat_turnov(a_code INT(6) ZEROFILL) tag_turnov:BEGIN

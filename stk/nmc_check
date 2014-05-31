@@ -33,6 +33,7 @@ function fn_update()
 function fn_main()
 {
     today='/tmp/mx/soptter.nmc'
+    mkdir -p ${today%/*}
 
     CURR=`fn_maxdate`
     END=${END:-${CURR}}

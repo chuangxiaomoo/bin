@@ -205,6 +205,32 @@ function fn_sel_ma513_ob_vol5()
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
+function fn_stat_change()
+{
+    START=${1:-${START}}
+    END=${2:-${END}}
+    [ -z "${START}" ] && START=`./SELECT 3 | head -1`
+
+    echo "
+    From ${START} to ${END}...
+    "
+
+    cd $workdir
+    > $mps_god
+    head -n -5 $mps_org >> $mps_god
+
+    echo "
+    SET @START='$START';
+    SET @END='$END';
+    call sp_stat_change();
+    SELECT * FROM tbl_stat_change;
+    " | tee /dev/stderr >> $mps_god
+
+    mysql $mo -t kts <<< "source $mps_god"
+
+    return
+}
+
 function fn_main()
 {
     CURR=`fn_maxdate`
@@ -224,6 +250,7 @@ function fn_main()
     "get_curdate_min    [CODE:-900001]       # --- 当日min \$LIMIT"
     "ls                 {code|symbol}        # 日线数据 \$LIMIT"
     "ls_day_ob_rise     [sortfiled]          # --- END 涨幅排名 \$LIMIT"
+    "stat_change                             # 近期涨跌统计"
     )
 
     tailday=`fn_maxdate`
