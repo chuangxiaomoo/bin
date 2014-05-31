@@ -88,11 +88,14 @@ function fn_app_nmc_name()
 
 function fn_app_wgt_turnov()
 {
+    rally='round(100*(trade-low)/low,2)'
+    dcost='round(100*(trade-avrg)/avrg,2)'
     # 高换手(流动性)、超跌、加权
     function fn_get_tbl_super_dive()
     {
         tbl_super_dive="
-        SELECT $columns, c.nmc, $wgt as wgt, c.name
+        SELECT $columns, ${rally} as rally, ${dcost} as dcost,
+            $wgt as wgt, c.nmc, c.name
             FROM tbl_sink as d, cap as c
             WHERE d.code = c.code and sum>20 and swing<-10 HAVING wgt>50 ${COND}
             ORDER by ${field} ${ASC:-desc} limit ${LIMIT:-30}
@@ -101,7 +104,8 @@ function fn_app_wgt_turnov()
     }
 
     # commnet below to display column id
-    columns=code,swing,rise,sink,sum,net,rally,date_low,date_high
+    #olumns=code,swing,rise,sink,sum,net,rally,date_low,date_high
+    columns=code,swing,sum,net,date_low,date_high,avrg
     columns=${columns:-'*'}
     columns=d.${columns//,/,d.}
 

@@ -157,7 +157,9 @@ CREATE PROCEDURE sp_create_tbl_sink() tag_tbl_sink:BEGIN
         sink        DECIMAL(6,2) NOT NULL DEFAULT 0,        -- sink turnover
         sum         DECIMAL(6,2) NOT NULL DEFAULT 0,        -- sum = rise + sink
         net         DECIMAL(6,2) NOT NULL DEFAULT 0,        -- net = rise - sink
-        rally       DECIMAL(12,2)NOT NULL DEFAULT 0,
+        low         DECIMAL(6,2) NOT NULL DEFAULT 0,        
+        avrg        DECIMAL(6,2) NOT NULL DEFAULT 0,        
+        trade       DECIMAL(6,2) NOT NULL DEFAULT 0,        
         date_low    date NOT NULL DEFAULT 0,
         date_high   date NOT NULL DEFAULT 0
     );
@@ -166,7 +168,7 @@ END tag_tbl_sink //
 
 -- 使用TEMPORARY时效率提升5倍
 -- ERROR 1137 (HY000): Can't reopen table: 'tempday', 因为使用了SELECT嵌套
--- SELECT close FROM tempday WHERE date=(SELECT max(date) FROM tempday) INTO v_trade;
+-- SELECT close FROM tempday WHERE date=(SELECT max(date) FROM tempday);
 DROP PROCEDURE IF EXISTS sp_create_tempday //
 CREATE PROCEDURE sp_create_tempday() tag_tempday:BEGIN 
     DROP   TEMPORARY TABLE IF EXISTS tempday;
@@ -688,7 +690,7 @@ CREATE PROCEDURE sp_get_down_turnov(a_code INT(6) ZEROFILL) tag_100d_turnov:BEGI
     DECLARE sum         DECIMAL(8,2) DEFAULT 0;
     DECLARE sink        DECIMAL(8,2) DEFAULT 0;
     DECLARE rise        DECIMAL(8,2) DEFAULT 0;
-    DECLARE rally       DECIMAL(8,2) DEFAULT 0;
+    DECLARE avrg        DECIMAL(8,2) DEFAULT 0;
 
     -- 价格变化振幅
     DECLARE swing       DECIMAL(8,2) DEFAULT 0;
@@ -708,11 +710,11 @@ CREATE PROCEDURE sp_get_down_turnov(a_code INT(6) ZEROFILL) tag_100d_turnov:BEGI
     -- 新股首日yesc设为open
     UPDATE tempday SET yesc=open WHERE id=1;
 
-    -- 在trim前选出trade值，不能用 SELECT 嵌套
+    -- 在trim前选出trade值，不能用 SELECT 嵌套 来操作临时表
     SELECT close FROM tempday ORDER by date DESC LIMIT 1 INTO v_trade;
 
     IF @DOWNSLOPE = 1 THEN
-        -- 取下降段，概率性会有相同的high和low
+        -- 取下降段，概率性会有相同的high和low. v_low 取最低的 close 会是如何？
         SELECT date,close FROM tempday order by high DESC limit 1 INTO v_date_high,v_close;
         SELECT date,low   FROM tempday 
                WHERE date>=v_date_high order by low  ASC  limit 1 INTO v_date_low ,v_low;
@@ -734,14 +736,8 @@ CREATE PROCEDURE sp_get_down_turnov(a_code INT(6) ZEROFILL) tag_100d_turnov:BEGI
 
         DELETE FROM tempday WHERE date<v_date_high OR date>v_date_low; 
         -- 为拉大swing的权重，使用 v_low作为被除数 20 25 ---> 1/8=0.125
-        SET swing= 100 * (v_low-v_high) / v_low;
-
         -- 因为上面的date>=v_date_high，不必再次取high和low
-        -- SELECT date,high FROM tempday order by high DESC limit 1 INTO v_date_high,v_high;
-        -- SELECT date,low  FROM tempday order by low  ASC  limit 1 INTO v_date_low, v_low;
-
-        -- 测试上面的`不必再次取high和low`
-        -- SELECT a_code, v_date_high, v_date_low, v_high, v_low; LEAVE tag_100d_turnov;
+        SET swing= 100 * (v_low-v_high) / v_low;
 
         -- v_chng0 < 0 为正常情况
         SELECT (close-yesc), volume FROM tempday WHERE date=v_date_high INTO v_chng0, v_rise0;
@@ -766,6 +762,7 @@ CREATE PROCEDURE sp_get_down_turnov(a_code INT(6) ZEROFILL) tag_100d_turnov:BEGI
     -- SELECT * FROM tempday;
     -- call sp_cp_tbl('tempday', 'forever');
 
+    SELECT SUM(amount)/SUM(volume) FROM tempday                 INTO avrg;
     SELECT SUM(volume) FROM tempday WHERE (close-yesc)/yesc > 0 INTO v_rise;
     SELECT SUM(volume) FROM tempday WHERE (close-yesc)/yesc <=0 INTO v_sink;
     SELECT close,nmc   FROM cap     WHERE code=a_code  LIMIT 1  INTO v_close,v_nmc;
@@ -785,11 +782,10 @@ CREATE PROCEDURE sp_get_down_turnov(a_code INT(6) ZEROFILL) tag_100d_turnov:BEGI
     SET sink = 100 * v_sink * v_close / v_nmc;
     SET sum  = rise + sink;
     SET net  = rise - sink;
-    SET rally= 100 * (v_trade-v_low)/v_low;
 
     -- SELECT a_code, v_date_high, v_date_low, v_high, v_low, net, rally;
-    INSERT INTO tbl_sink(code,date_high,   date_low,swing, rise, sink, net, sum, rally)
-             VALUES(a_code, v_date_high, v_date_low,swing, rise, sink, net, sum, rally);
+    INSERT INTO tbl_sink(code,date_high,   date_low,swing, rise, sink, net, sum,   low, avrg,  trade)
+             VALUES(a_code, v_date_high, v_date_low,swing, rise, sink, net, sum, v_low, avrg,v_trade);
 
 END tag_100d_turnov //
 

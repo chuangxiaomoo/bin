@@ -33,6 +33,7 @@ COND=${COND:+and $COND }${XTBL}
 COND="${COND}${GEM:+ and d.code>300000 and d.code<400000}"
 
 W3M='timeout 34 /usr/bin/w3m'
+# round(100*vol5/(c.nmc/c.close),2) as tov5, 
 RISE='TRUNCATE(100*(d.close-yesc)/yesc, 2)'
 SWING='TRUNCATE(100*(high-low)/yesc, 2)'
 TURNOV='TRUNCATE(100*d.volume*c.close/c.nmc, 2)'
