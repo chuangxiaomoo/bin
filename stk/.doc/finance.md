@@ -1,3 +1,11 @@
+# 逻辑
+
+  [坐台小姐的1000个金币](http://blog.sina.com.cn/s/blog_608e1afd0102e1l8.html)
+
+# 体系
+
+  [学而优则投机](http://blog.sina.com.cn/s/blog_608e1afd0102e1fu.html)
+
 # 建立在量子物理学和人类行为心理学
 
   [市场是心灵的映照 ](http://blog.sina.com.cn/s/blog_608e1afd0102e6l3.html)
