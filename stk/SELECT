@@ -43,7 +43,7 @@ function fn_ls()
         fi
     fi
 
-    fields='d.code,d.date,d.yesc,d.open,d.high,d.low,d.close'
+    fields='d.code,d.date,d.yesc,d.open,d.high,d.low,d.close,d.volume,d.amount'
     echo "
     SELECT * FROM (
         SELECT $fields, $SWING as swing, $RISE as rise, $TURNOV as turnover
