@@ -1,6 +1,6 @@
 # 是谁派你来投资的？[天命如是](http://news.imeigu.com/a/1306330639828.html)
 
-    I M P O R T A N T
+    I M P O R T A N T -- 我是谁？从哪里来？到哪里去？
 
   **所做的一切，只为从信息大爆炸中逃离。                          **
   **从战略的角度，弃子取势，以价格换确定性。                      **
@@ -18,6 +18,7 @@
 ## 笛卡尔的金融   .doc/descartes.md
 ## 牛顿经典力学   .doc/newton.md
 
+## 决定论         .doc/model.md                 -- 打造自己的交易模型
 ## 保守主义       .doc/conservatism.md
 ## 趋势理论       .doc/trade.md
 ## 单理论之殇     .doc/hurt.md
@@ -40,7 +41,6 @@
 ## 总结2013       .doc/2013.md
 ## 笛卡尔实践     .doc/up_down_logic.md         
 ## 趋势实践       .doc/ma-trade.md              
-## 趋势选股       .doc/model.md                 -- 打造自己的交易模型
 ## 疯狂的贱卖     .doc/how-to-sell.md           -- 2014-03-04 天保重装
 
 ## 操盘日记       .doc/diary.md

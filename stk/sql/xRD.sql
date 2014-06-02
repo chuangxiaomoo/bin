@@ -597,6 +597,7 @@ CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
 
     SET v_start=@START;
 
+    -- @START 这天没有进入统计
     WHILE v_start <> @END DO
         SELECT date FROM day WHERE code=900001 and date>v_start limit 1 INTO v_start;
         -- SELECT v_start;
