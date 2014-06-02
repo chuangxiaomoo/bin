@@ -12,13 +12,13 @@
 ## 量子力学       .doc/quantum_mechanics.md
 ## 行为心理学     .doc/behaviorism.md
 ## 想看的书       .doc/books.md
+## 决定论         .doc/model.md                 -- 打造自己的交易模型
 
 > 构建体系
 
 ## 笛卡尔的金融   .doc/descartes.md
 ## 牛顿经典力学   .doc/newton.md
 
-## 决定论         .doc/model.md                 -- 打造自己的交易模型
 ## 保守主义       .doc/conservatism.md
 ## 趋势理论       .doc/trade.md
 ## 单理论之殇     .doc/hurt.md
