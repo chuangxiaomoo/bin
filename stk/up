@@ -82,17 +82,27 @@ function fn_cap()
     echo "
     DROP TABLE IF EXISTS cap;
     CREATE TABLE cap (
+        id      int(4) ZEROFILL PRIMARY key AUTO_INCREMENT NOT NULL,
         code    INT(6)  ZEROFILL,
         date    DATE NOT NULL,
         close   DECIMAL(6,2) NOT NULL,
         cap     INT(14),
         nmc     INT(14),
+        shares  DECIMAL(12,2) DEFAULT 0,
         name    CHAR(16),
         INDEX(code,date)
     );
 
-    LOAD DATA LOCAL INFILE '$sn_cap_nmc' INTO TABLE cap;
+    LOAD DATA LOCAL INFILE '$sn_cap_nmc' INTO 
+    TABLE cap(code, date, close, cap, nmc, name);
     " | mysql -u root kts
+
+    echo "
+    update finance...
+    "
+    cd ${workdir}/bin
+    ./fin > /dev/shm/fin
+    mysql kts < /dev/shm/fin
 }
 
 function fn_load_f_2_tbl_samename()
