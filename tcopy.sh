@@ -39,6 +39,11 @@ function fn_tcopy() {
 
     kills="mv jco_server /app/vs;killall auto_run.sh jco_server;"
     echo "cd /tmp; $tftp $kills ${gopath} $run"
+
+    echo -e "\n-- nxp --\n"
+    kills="mv jco_server /opt/app;killall auto_run.sh jco_server;"
+    gopath="cd /opt/app;" 
+    echo "cd /tmp; $tftp $kills ${gopath} $run"
 }
 
 function fn_main()

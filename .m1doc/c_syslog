@@ -1,12 +1,12 @@
 /* syslog */
 
-/* a simple example of syslog();
- * LOG_UPTO(LOG_ERR) means the level < LOG_ERR will print;
- */
+a simple example of syslog();
+LOG_UPTO(LOG_ERR) means the level < LOG_ERR will print;
 
-/*
- * openlog() 不是必须的，当调用 syslog() 时，syslog 会自动打开。 
- */
+openlog() 不是必须的，当调用 syslog() 时，syslog 会自动打开。 
+
+Ubuntu 使用rsyslogd， 配置文件目录：/etc/rsyslog.d，其日志打印在 /var/log/syslog
+
 
 #define  GS_TRACE(level, fmt, args...) \
 do { \
