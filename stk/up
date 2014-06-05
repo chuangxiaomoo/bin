@@ -97,12 +97,22 @@ function fn_cap()
     TABLE cap(code, date, close, cap, nmc, name);
     " | mysql -u root kts
 
-    echo "
-    update finance...
+    read -p "
+    Make sure U have down full.FIN?
     "
+    echo "
+    update shares from dzh2 full.FIN...
+    UPDATE cap SET nmc=close*shares WHERE nmc/close<shares;
+    为兼容旧代码，最后的shares=nmc/close（只更新nmc，不更新shares）
+    "
+
     cd ${workdir}/bin
     ./fin > /dev/shm/fin
     mysql kts < /dev/shm/fin
+
+    echo "
+    UPDATE cap SET nmc=close*shares WHERE nmc/close<shares;
+    " | mysql -u root kts
 }
 
 function fn_load_f_2_tbl_samename()
