@@ -1049,7 +1049,7 @@ function fn_variable()                  { cat sql_variable ;}
         execute             # prepare
         join                # 两个或多个表查询连结
         function            # 常用函数
-        procedure           # 存储过程
+        procedure           # 存储过程 loop
         operator
         optimize            # 优化
         order
