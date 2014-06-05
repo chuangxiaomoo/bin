@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
             break;
         }
         int code = atoi(fin.sym+2);
-#if 1
+#if 0
         if (code == 300001) {
             printf("%s\n", fin.sym);
             int i;
