@@ -11,7 +11,7 @@
   jcp命令使用一个
   confapi 及 xml 各使用一个，以跨越udpsocket
 
-## osdstyle
+## config之xml
 
   jcli 
     devvecfg
@@ -27,7 +27,7 @@
     conf_video_enc_process(cmd."getVideoCfg")
     .
     conf_get_osdstylecfg()
-    conf_osd_style_process("getOsdStyleCfg")
+    conf_osd_style_process("getOsdStyleCfg")                -- 请求xml报文
 
   jconfig.cpp
     `在此处做网络listen`
@@ -36,5 +36,8 @@
     SysConfCfg()
     eventNotify()
     .
-    handleOsdStyleCfg()
+    handleOsdStyleCfg()                                     -- 响应xml报文
 
+## config之结构体
+
+  直接使用结构体传输 -- Type Length Value

@@ -66,6 +66,7 @@ alias  dialog='TERM=linux dialog'
 alias psmysql='ps -ef | grep [m]ysql'
 alias   psw3m='ps -ef | grep [w]3m'
 alias  kmysql='mysql kts'
+alias   xgrep="find . -name '*' -type f | xargs grep "
 
 # soptter
 function M()        { m1 $@ | tail -18; } # M() { m1 $@ | nl -w 3 -s' ' | less -i ;}

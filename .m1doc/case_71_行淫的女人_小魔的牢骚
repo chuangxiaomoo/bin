@@ -1,5 +1,13 @@
 # laosao
 
+# 威信 2014-06-05
+
+    必须保证自已的权威
+
+    grep -R 不能搜索`设备文件`
+    alias xgrep="find . -name '*' -type f | xargs grep "
+
+
 # 闷声发大财
 
 2013-10-28
