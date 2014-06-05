@@ -209,6 +209,31 @@ function fn_get_down_turnov()
     '
 }
 
+function fn_dugu9jian()
+{
+    END=${2:-${END}}
+    TBL=${TBL:-'cap'}
+    NUM=${1:-21}
+    START=`./SELECT 3 ${NUM} | head -1`   # Default 21 days before
+
+    echo "
+    To visit `mysql -N kts<<<"SELECT count(*) FROM ${TBL}"` codes on table $TBL...
+    "
+
+    echo "
+    SET @START='$START';
+    SET @END='$END';
+    SET @NUM=${NUM};
+    call sp_visit_tbl('$TBL', @fn_dugu9jian);
+    " | tee -a $mps_god
+    mysql $mo -t kts <<< "source $mps_god"
+    xt_ret $? "${FUNCNAME}" || return $?
+
+    echo '
+    DU GU 9 SWORD, DU BU WULIN. Good Luck!!! 
+    '
+}
+
 function fn_get_rise_turnov()
 {
     DOWNSLOPE=0
