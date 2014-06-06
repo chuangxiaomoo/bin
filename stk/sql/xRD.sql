@@ -178,6 +178,7 @@ CREATE PROCEDURE sp_create_tbl_9jian() tag_tbl_9jian:BEGIN
         close       DECIMAL(6,2) NOT NULL DEFAULT 0,
         volume      DECIMAL(12,2) NOT NULL DEFAULT 0,
         amount      DECIMAL(12,2) NOT NULL DEFAULT 0,
+        turnov      DECIMAL(6,2) NOT NULL DEFAULT 0,    
         avrg        DECIMAL(6,2) NOT NULL DEFAULT 0,    -- avrg = sum(amount) / sum(volume)
         chng        DECIMAL(6,2) NOT NULL DEFAULT 0,    -- chng = (close-open)/open
         wchng       DECIMAL(6,2) NOT NULL DEFAULT 0     -- wchng = (close - avrg)/avrg
@@ -813,7 +814,7 @@ END tag_100d_turnov //
 DROP PROCEDURE IF EXISTS sp_dugu9jian//
 CREATE PROCEDURE sp_dugu9jian(a_code INT(6) ZEROFILL) tag_9jian:BEGIN
     -- 9jian
-    DECLARE v_id        INT DEFAULT 0; 
+    DECLARE v_id        INT DEFAULT 1; 
     DECLARE v_open      DECIMAL(6,2) DEFAULT 0;
     DECLARE v_close     DECIMAL(6,2) DEFAULT 0;
     DECLARE v_chng      DECIMAL(8,2) DEFAULT 0;
@@ -826,14 +827,12 @@ CREATE PROCEDURE sp_dugu9jian(a_code INT(6) ZEROFILL) tag_9jian:BEGIN
     DECLARE v_amount    DECIMAL(12,2) DEFAULT 0;
     DECLARE v_sumvolume DECIMAL(12,2) DEFAULT 0;
     DECLARE v_sumamount DECIMAL(12,2) DEFAULT 0;
-
-    -- 价格变化振幅
-    DECLARE swing       DECIMAL(8,2) DEFAULT 0;
+    DECLARE v_turnov    DECIMAL(12,2) DEFAULT 0;
 
     call sp_create_tempday();
-
     SELECT nmc/close FROM cap WHERE code=a_code INTO v_shares;
 
+    -- 可以通过 turnover = latest(volume/shares); 来计算相应日期数 @NUM
     SET @sqls=concat('
         INSERT INTO tempday(code,date,yesc,open,high,low,close,volume,amount)
         SELECT code,date,yesc,open,high,low,close,volume,amount FROM day WHERE code=', 
@@ -841,11 +840,9 @@ CREATE PROCEDURE sp_dugu9jian(a_code INT(6) ZEROFILL) tag_9jian:BEGIN
     PREPARE stmt from @sqls; EXECUTE stmt;
 
     SELECT count(*)   FROM tempday INTO @v_len;
-    SELECT date,close FROM tempday WHERE id=@v_len INTO v_date2,v_close;
+    SELECT date,close FROM tempday WHERE id=1 INTO v_date2,v_close;
 
-    SET v_id = @v_len;
-    
-    lbl_upto_100: WHILE v_id > 0 DO
+    lbl_upto_100: WHILE v_id <= @v_len DO
         SELECT volume,amount FROM tempday WHERE id=(v_id) INTO v_volume,v_amount;
 
         SET v_sumvolume = v_sumvolume + v_volume;
@@ -854,19 +851,20 @@ CREATE PROCEDURE sp_dugu9jian(a_code INT(6) ZEROFILL) tag_9jian:BEGIN
         -- upto 100% turnover
         IF  v_sumvolume >= v_shares THEN 
             SELECT date,open FROM tempday WHERE id=(v_id) INTO v_date1,v_open;
-            SET v_chng = (v_close-v_open)/v_open;
             SET v_avrg = (v_sumamount/v_sumvolume);
-            SET v_wchng = (v_close-v_avrg)/v_avrg;
+            SET v_chng = 100*(v_close-v_open)/v_open;
+            SET v_wchng = 100*(v_close-v_avrg)/v_avrg;
+            SET v_turnov = 100*v_sumvolume/v_shares;
             -- SELECT * FROM tempday;
             -- SELECT v_id;
             INSERT INTO tbl_9jian(code,date1,date2,open,close,
-                            volume,amount,avrg,chng,wchng)
+                            amount,volume,turnov,avrg,chng,wchng)
                      VALUES(a_code,v_date1,v_date2,v_open,v_close,
-                            v_sumvolume,v_sumamount, v_avrg, v_chng, v_wchng);
+                            v_sumamount,v_sumvolume,v_turnov, v_avrg, v_chng, v_wchng);
             LEAVE lbl_upto_100; 
         END IF;
 
-        SET v_id = v_id - 1;
+        SET v_id = v_id + 1;
     END WHILE lbl_upto_100;
 END tag_9jian //
 
@@ -989,7 +987,7 @@ END tag_get_ma240 //
     SET @fn_up_ma240_34         = 7;
     SET @fn_dugu9jian           = 9;
     SET @START  = '2013-12-6';
-    SET @END    = '2014-1-10';
+    SET @END    = '2014-06-06';
     SET @TERM   = 240;
     SET @NUM    = 15;
     
