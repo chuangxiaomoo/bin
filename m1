@@ -1003,7 +1003,7 @@ function fn_describe()                  { cat sql_describe ;}
 function fn_load()                      { cat sql_load ;}
 function fn_drop()                      { cat sql_drop ;}
 function fn_join()                      { cat sql_join ;}
-function fn_function()                  { cat sql_function ;}
+function fn_function()                  { cat sql_function ;} # ? FUNCTIONS
 function fn_execute()                   { cat sql_execute ;}
 function fn_procedure()                 { cat sql_procedure ;}
 function fn_operator()                  { cat sql_operator ;}

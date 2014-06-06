@@ -211,17 +211,15 @@ function fn_get_down_turnov()
 
 function fn_dugu9jian()
 {
-    END=${2:-${END}}
+    END=${1:-${END}}
     TBL=${TBL:-'cap'}
-    NUM=${1:-21}
-    START=`./SELECT 3 ${NUM} | head -1`   # Default 21 days before
+    NUM=${2:-21}
 
     echo "
     To visit `mysql -N kts<<<"SELECT count(*) FROM ${TBL}"` codes on table $TBL...
     "
 
     echo "
-    SET @START='$START';
     SET @END='$END';
     SET @NUM=${NUM};
     call sp_visit_tbl('$TBL', @fn_dugu9jian);
@@ -229,9 +227,7 @@ function fn_dugu9jian()
     mysql $mo -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
 
-    echo '
-    DU GU 9 SWORD, DU BU WULIN. Good Luck!!! 
-    '
+    SELECT 0
 }
 
 function fn_get_rise_turnov()
@@ -517,7 +513,7 @@ function fn_main()
     # SCREENER的宗旨，弃子取势
     # xet_block_info 为 sp_visit_tbl() 选定相应的BLOCK
     cmdlist=(
-    "get_stat_turnov      code start [end]      # 个股区间换手统计"
+    "dugu9jian            [end [offset]]        # cost analyze"
     "get_down_turnov      [start:curr-13] [end] # 100%下降净换手"
     "get_ma513            [end]                 # ma 5 13 34 55"
     "ana_ma513            index [end]           # 分析ma 5 13 34 55"
@@ -529,6 +525,7 @@ function fn_main()
     "get_n_swing_num      [SWING_PERCENT:-16]   # 双日振幅，小于0计算跌幅"
     "sort_amount          [LIMIT_NUM:-48]       # --- 成交量排名"
     "sort_turnover        [LIMIT_NUM:-48]       # 最新日换手排名"
+    "get_stat_turnov      code start [end]      # 个股区间换手统计"
     # ----------------    ABOVE FIXED SEQUENCE  -------------------
     "get_block_info                             # 查看当前BLOCK"
     "set_block_info                             # 设置当前BLOCK"

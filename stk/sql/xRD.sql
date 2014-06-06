@@ -174,6 +174,7 @@ CREATE PROCEDURE sp_create_tbl_9jian() tag_tbl_9jian:BEGIN
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
         date1       date NOT NULL DEFAULT 0,
         date2       date NOT NULL DEFAULT 0,
+        off         INT  NOT NULL DEFAULT 0,
         open        DECIMAL(6,2) NOT NULL DEFAULT 0,
         close       DECIMAL(6,2) NOT NULL DEFAULT 0,
         volume      DECIMAL(12,2) NOT NULL DEFAULT 0,
@@ -842,6 +843,9 @@ CREATE PROCEDURE sp_dugu9jian(a_code INT(6) ZEROFILL) tag_9jian:BEGIN
     SELECT count(*)   FROM tempday INTO @v_len;
     SELECT date,close FROM tempday WHERE id=1 INTO v_date2,v_close;
 
+    -- 过滤停牌很久的个股
+    IF DATE_ADD(v_date2, INTERVAL 5 DAY) < @END THEN LEAVE tag_9jian; END IF;
+
     lbl_upto_100: WHILE v_id <= @v_len DO
         SELECT volume,amount FROM tempday WHERE id=(v_id) INTO v_volume,v_amount;
 
@@ -857,9 +861,9 @@ CREATE PROCEDURE sp_dugu9jian(a_code INT(6) ZEROFILL) tag_9jian:BEGIN
             SET v_turnov = 100*v_sumvolume/v_shares;
             -- SELECT * FROM tempday;
             -- SELECT v_id;
-            INSERT INTO tbl_9jian(code,date1,date2,open,close,
+            INSERT INTO tbl_9jian(code,date1,date2,off,open,close,
                             amount,volume,turnov,avrg,chng,wchng)
-                     VALUES(a_code,v_date1,v_date2,v_open,v_close,
+                     VALUES(a_code,v_date1,v_date2,v_id,v_open,v_close,
                             v_sumamount,v_sumvolume,v_turnov, v_avrg, v_chng, v_wchng);
             LEAVE lbl_upto_100; 
         END IF;
