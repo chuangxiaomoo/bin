@@ -57,7 +57,11 @@ function fn_ls()
 function fn_get_open_days()
 {
     # 统计13日下跌 配合 SCREENER 3 做相应选股
-    mysql -N kts <<< "SELECT date from day WHERE code = 900001 " | tail -${1:-13}
+    if [ -z "${2}" ] ; then
+        mysql -N kts <<< "SELECT date from day WHERE code = 900001 " | tail -${1:-13}
+    else
+        mysql -N kts <<< "SELECT date from day WHERE code = 900001 " | tail -${1:-13} | tac | cat -n
+    fi
 }
 
 function fn_get_open_days_min()
@@ -235,6 +239,37 @@ function fn_stat_change()
     return
 }
 
+
+function fn_dugu9jian()
+{
+    columns="code,date1,date2,off,open,close,amount,turnov,avrg,chng,wchng"
+    columns=${columns:-'*'}
+    columns=d.${columns//,/,d.}
+
+    echo ----- COND: $COND -----
+    function fn_get_tbl_super_dive()
+    {
+        tbl_super_dive="
+        SELECT ${columns}, c.name 
+            FROM tbl_9jian as d, cap as c
+            WHERE d.code = c.code and wchng<-8 ${COND} 
+            ORDER by ${1:-wchng} ${ASC:-asc} limit ${LIMIT:-48}
+        "
+        echo "${tbl_super_dive}"
+    }
+
+    fn_get_tbl_super_dive
+    mysql $mo -t kts <<< "${tbl_super_dive}"
+    xt_ret $? "${FUNCNAME}" || return $?
+    
+    [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
+
+    LIMIT=128 fn_get_tbl_super_dive
+    mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" | \
+        tee .soptter.chao | TBL=chao xargs up 7
+    xt_ret $? "${FUNCNAME}" || return $?
+}
+
 function fn_main()
 {
     CURR=`fn_maxdate`
@@ -242,14 +277,15 @@ function fn_main()
     PREV=`fn_get_prev`
 
     cmdlist=(
-    "app_nmc_name       [sortfiled]          # 追加股票名到表TBL"
+    "dugu9jian          [sortfiled]          # nine sword"
     "app_wgt_turnov     [sortfiled]          # 追加weight到down_turnov CHAO=1则进zxg"
     "get_comma_cloumns  [tbl_name:-day]      # 逗分列名"
-    "get_open_days      [limit:-13]          # 开市日列表"
+    "get_open_days      [limit:-13 [desc]]   # 开市日列表"
     "sel_tbl_sink_where [TBL:-zxg_chao513]   # chao ..."
     "sel_vol5_ratio     [sortfiled:-ratio]   # 量比排名"
     "sel_ma513_ob_vol5  [sortfiled]          # 换手率排名"
     "get_open_days_min                       # 分钟日列表 \$LIMIT"
+    "app_nmc_name       [sortfiled]          # 追加股票名到表TBL"
     # ----------------  ABOVE IS FIXED SEQUENCE --------------------
     "get_curdate_min    [CODE:-900001]       # --- 当日min \$LIMIT"
     "ls                 {code|symbol}        # 日线数据 \$LIMIT"
