@@ -493,6 +493,7 @@ function fn_voice()                     { cat ljsw_voice ;}
 function fn_01_教育()                   { cat ljsw_01_教育 ;}
 function fn_02_傻帽悲观派()             { cat ljsw_02_傻帽悲观派 ;}
 function fn_04_民主政治()               { cat ljsw_04_民主政治 ;}
+function fn_06_胡适()                   { cat ljsw_06_胡适 ;}
 
 function fn_210_右派为什么这么横()      { cat ljsw_210_右派为什么这么横 ;}
 function fn_215_发现你的太平洋()        { cat ljsw_215_发现你的太平洋 ;}
@@ -505,6 +506,7 @@ function fn_x1_你的阅读造就了你()       { cat ljsw_x1_你的阅读造就
         03_成功人士的3个品质            # 优越感、不安全感、自控力
         04_民主政治
         05_格局                         # 琐屑在大小格局中的`避错`与`无能`
+        06_胡适                         # 少谈些主义
         51_右派为什么那么横             # 保守派的3个特性
         x1_你的阅读造就了你             # you are what u read
 
