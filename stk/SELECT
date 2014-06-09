@@ -242,7 +242,7 @@ function fn_stat_change()
 
 function fn_dugu9jian()
 {
-    columns="code,date1,date2,off,open,close,amount,turnov,avrg,chng,wchng"
+    columns="code,date1,date2,off,open,close,amount,turnov"
     columns=${columns:-'*'}
     columns=d.${columns//,/,d.}
 
@@ -250,9 +250,9 @@ function fn_dugu9jian()
     function fn_get_tbl_super_dive()
     {
         tbl_super_dive="
-        SELECT ${columns}, c.name 
+        SELECT ${columns}, c.nmc, chng,wchng, c.name 
             FROM tbl_9jian as d, cap as c
-            WHERE d.code = c.code and wchng<-8 ${COND} 
+            WHERE d.code = c.code ${COND} 
             ORDER by ${1:-wchng} ${ASC:-asc} limit ${LIMIT:-48}
         "
         echo "${tbl_super_dive}"

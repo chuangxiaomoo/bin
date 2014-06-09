@@ -98,6 +98,17 @@ day_gether='/dev/shm/day/gether'
 fenbi_raw='/dev/shm/fenbi/raw'
 fenbi_ripe='/dev/shm/fenbi/ripe'
 
+function fn_iscode()
+{
+    local num=`echo -n $1 | grep -E '^[0-9]+$' | xargs printf "%06d"  | wc -c`
+    test ${num:-0} -eq 6
+}
+
+function fn_isdate()
+{
+    echo -n $1 | grep -E '^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$'
+}
+
 function fn_write() 
 {
     # wall < /dev/stdin
