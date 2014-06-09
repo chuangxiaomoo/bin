@@ -213,7 +213,7 @@ function fn_dugu9jian()
 {
     END=${1:-${END}}
     TBL=${TBL:-'cap'}
-    NUM=${2:-21}
+    NUM=${2:-34}
 
     echo "
     To visit `mysql -N kts<<<"SELECT count(*) FROM ${TBL}"` codes on table $TBL...
@@ -229,6 +229,19 @@ function fn_dugu9jian()
 
     SELECT 0
 }
+
+function fn_get_cost()
+{
+    test -n "${1}" && fn_iscode ${1}       
+    xt_ret $? "invalid code[$1]" || return $?
+    fn_isdate ${2:-$END} 
+    xt_ret $? "invalid date[$2]" || return $?
+
+    local code=`printf "%06d" $1`
+    TBL=tbl_cost9 up add_codes_2_dzh2tbl ${code}
+    TBL=tbl_cost9 fn_dugu9jian ${2:-$END} 240
+}
+
 
 function fn_get_rise_turnov()
 {
@@ -523,9 +536,10 @@ function fn_main()
     "get_13d_20psink                            # 8日13日SINK超20%"
     "get_1_swing_num      [RISE_PERCENT:-8]     # 单日振幅，小于0计算跌幅"
     "get_n_swing_num      [SWING_PERCENT:-16]   # 双日振幅，小于0计算跌幅"
+    "get_stat_turnov      code start [end]      # 个股区间换手统计"
+    "get_cost             code [end]            # 个股成本分析"
     "sort_amount          [LIMIT_NUM:-48]       # --- 成交量排名"
     "sort_turnover        [LIMIT_NUM:-48]       # 最新日换手排名"
-    "get_stat_turnov      code start [end]      # 个股区间换手统计"
     # ----------------    ABOVE FIXED SEQUENCE  -------------------
     "get_block_info                             # 查看当前BLOCK"
     "set_block_info                             # 设置当前BLOCK"
