@@ -25,3 +25,6 @@
 
   可以在开发板上attach一个线程（clone的进程）
 
+  4. thread apply all bt
+
+  打印所有进程的调用栈（`多线程死锁调试`时特别有用）
