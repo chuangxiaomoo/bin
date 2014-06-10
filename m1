@@ -20,7 +20,7 @@ function fn_sed()                       { cat sed ;}
 function fn_elf()                       { cat elf ;}
 function fn_fdisk()                     { cat fdisk ;}
 function fn_gprof()                     { cat gprof ;}
-function fn_opgprof()                   { cat opgprof ;}
+function fn_oprofile()                  { cat oprofile ;}
 function fn_gcov()                      { cat gcov ;}
 function fn_glibc()                     { cat glibc ;}
 function fn_info()                      { cat info ;}
@@ -1271,7 +1271,7 @@ function fn_main() {
         gdb
         glibc
         gprof
-        opgprof
+        oprofile
         graphviz
         gnuplot                 # 线状 IBM stock chart
         grep
