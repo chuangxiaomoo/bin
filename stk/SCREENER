@@ -237,7 +237,7 @@ function fn_get_cost()
     fn_isdate ${2:-$END} 
     xt_ret $? "invalid date[$2]" || return $?
 
-    local code=`printf "%06d" $1`
+    local code=`sed 's/^0*//g' <<< $1 | xargs printf "%06d"`
     TBL=tbl_cost9 up add_codes_2_dzh2tbl ${code}
     TBL=tbl_cost9 fn_dugu9jian ${2:-$END} 240
 }
