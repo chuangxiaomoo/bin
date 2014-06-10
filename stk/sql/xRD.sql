@@ -854,7 +854,7 @@ CREATE PROCEDURE sp_dugu9jian(a_code INT(6) ZEROFILL) tag_9jian:BEGIN
 
         -- upto 100% turnover
         IF  v_sumvolume >= v_shares THEN 
-            SELECT date,open FROM tempday WHERE id=(v_id) INTO v_date1,v_open;
+            SELECT date,yesc FROM tempday WHERE id=(v_id) INTO v_date1,v_open;
             SET v_avrg = (v_sumamount/v_sumvolume);
             SET v_chng = 100*(v_close-v_open)/v_open;
             SET v_wchng = 100*(v_close-v_avrg)/v_avrg;

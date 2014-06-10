@@ -100,7 +100,7 @@ fenbi_ripe='/dev/shm/fenbi/ripe'
 
 function fn_iscode()
 {
-    local num=`echo -n $1 | grep -E '^[0-9]+$' | xargs printf "%06d"  | wc -c`
+    local num=`sed 's/^0*//g' <<< "$1" | grep -E '^[0-9]+$' | xargs printf "%06d"  | wc -c`
     test ${num:-0} -eq 6
 }
 
