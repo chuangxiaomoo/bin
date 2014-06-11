@@ -1,50 +1,63 @@
-#! /bin/bash
+# samba
 
-*1* XP不删除samba的user & passwd
+# XP不删除samba的user & passwd
 
-    (1) net use * /d /y
+  (1) net use * /d /y
+  (2) if you want to change a user
 
-    (2) if you want to change a user
+      clear passwd xp remembered
+      [win+r]
+      control userpasswords2
+      preference -> manage passwd
 
-        clear passwd xp remembered
-        [win+r]
-        control userpasswords2
-        preference -> manage passwd
+# 添加用户并设置密码共享
 
-*2* 指定密码
-    $smbpasswd -a root
+  > when no '-a', prompt: Failed to find entry for user root
 
-*3* /etc/samba/smb.conf
+  $ smbpasswd -a root
 
-    # 只要用户存在，不论密码如何都可访问
+  [/etc/samba/smb.conf]()
+
     security = user
 
-    [my_home]
-        path = %H
-        writeable = yes
-        browseable = yes
-        valid users = %U
+    [home]
+      valid users = root
 
-*4* 查看XP及*nix共享
-    $smbclient -N -L 11.70.3.93
+  > 使用 变量 %H 代表登陆的用户
 
-*5*  windows 找不到 \\192.168.2.xx
+    [my_home] 
+      path = %H  
+      writeable = yes 
+      browseable = yes 
+      valid users = %U
 
-    已经将samba弄好了，主要是windows下的防火墙没有关闭。
+# 无密码共享
 
-*6* Samba服务器高级应用之四：隐藏共享目录
+  [/etc/samba/smb.conf]()
 
-    添加字段browseable = no 就可以实现，也就是说这个隐藏的目录对所有的用户都
-    是不可见的，要访问得：\\samba服务器主机名或ip\隐藏共享目录，如果有很多的隐藏
-    目录，要记住是很麻烦的。可以使用下面的方法实现而不用记忆：
+    security = share
+    [home]
+      path = /home/
+      guest ok = yes  
+      writeable = yes 
+      browseable = yes
 
-    可以为需要隐藏目录的组和用户单独建立配置文件，从而实现隐藏目录。
+# 查看XP及*nix共享
 
-*7* Re-install
+  $smbclient -N -L 11.70.3.93
 
-    apt-get remove samba-common
-    apt-get remove smbclient
-    apt-get remove samba
+#  windows 找不到 \\192.168.2.xx
 
-    apt-get install samba
-    apt-get install smbfs
+  已经将samba弄好了，主要是windows下的防火墙没有关闭。
+
+# Samba服务器高级应用之四：隐藏共享目录
+
+  添加字段browseable = no 就可以实现，也就是说这个隐藏的目录对所有的用户都
+  是不可见的，要访问得：\\samba服务器主机名或ip\隐藏共享目录，如果有很多的隐藏
+  目录，要记住是很麻烦的。可以使用下面的方法实现而不用记忆：
+  可以为需要隐藏目录的组和用户单独建立配置文件，从而实现隐藏目录。
+
+# Re-install
+
+  apt-get remove samba-common smbclient samba
+  apt-get install samba smbfs
