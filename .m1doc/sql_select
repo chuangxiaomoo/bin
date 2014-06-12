@@ -6,8 +6,8 @@
 
 . SELECT 输出到文件 (相对于datadir下)
 
-    SELECT * INTO OUTFILE '/tmp/foo.sql' FROM foo;
-    SELECT * INTO OUTFILE 'data.txt' from min where date='2014-00-00';
+    SELECT * INTO OUTFILE 'foo.sql' FROM foo;
+    SELECT * INTO OUTFILE '/tmp/day.txt' from day where date='2014-06-11';
 
 . SELECT INTO CSV 文件 
 
