@@ -182,6 +182,7 @@ function fn_tmo_trap()                  { cat bash_tmo_trap ;}
 function fn_dialog()                    { cat bash_dialog ;}
 function fn_string()                    { cat bash_string ;}
 function fn_PIPESTATUS()                { cat bash_PIPESTATUS ;}
+function fn_export()                    { cat bash_export ;}
     local opts=(
         fundamental                     # 交叉编译 cross-compile
         00_函数bg时main挂住了
@@ -205,6 +206,7 @@ function fn_PIPESTATUS()                { cat bash_PIPESTATUS ;}
         tmo_trap
         dialog                          # whiptail
         PIPESTATUS                      # 只可以被提取一次
+        export                          # 
     )
     fn_print $@
 }

@@ -1,0 +1,25 @@
+# export
+
+# set -a 
+
+  Automatically mark variables and functions which are modified or created 
+  for export to the environment of subsequent commands
+
+# 设定共用变量，每设置一次，多次访问有效
+
+    function fn_set()
+    {
+        if [ "${#}" -ne 2 ]; then
+            echo "Usage: set key value" ; exit
+        fi
+        echo "export $1=${2}" > .myexport
+    }
+
+
+    function fn_main()
+    {
+        touch .myexport
+        . .myexport
+    }
+
+    fn_main
