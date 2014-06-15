@@ -564,7 +564,7 @@ function fn_finance()                   {
 function fn_base()                      { cat finance_base ;}
 function fn_leverage()                  { cat finance_leverage ;}
     local opts=(
-        base
+        base                            # 利率 汇率 基础概念
         leverage                        # 杠杆
     )
     fn_print $@
