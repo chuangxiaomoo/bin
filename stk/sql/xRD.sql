@@ -926,14 +926,14 @@ CREATE PROCEDURE sp_up_ma34(a_code INT(6) ZEROFILL) tag_up_ma34:BEGIN
     INSERT INTO tempday(code,date,close) SELECT 
            code,date,close FROM day WHERE code=a_code and date>=@START and date<=@END;
 
-    -- via high, induct is a long-term invaste one
+    -- via high, induct is a long-CYCLE invaste one
     SELECT count(*)   FROM tempday INTO @v_len;
     SELECT date,close FROM tempday WHERE id=@v_len INTO v_date,v_close;
 
     IF @v_len < 240 THEN LEAVE tag_up_ma34; END IF;
 
     SELECT min(close),max(close) 
-                           FROM tempday WHERE id>(@v_len-@TERM) INTO v_low,v_high;
+                           FROM tempday WHERE id>(@v_len-@CYCLE) INTO v_low,v_high;
     SELECT SUM(close)/34   FROM tempday WHERE id>(@v_len-34)    INTO v_ma34 ;
 
     UPDATE tbl_ma240 SET date=v_date,close=v_close,
@@ -960,14 +960,14 @@ CREATE PROCEDURE sp_get_ma240(a_code INT(6) ZEROFILL) tag_get_ma240:BEGIN
     INSERT INTO tempday(code,date,close) SELECT 
            code,date,close FROM day WHERE code=a_code and date>=@START and date<=@END;
 
-    -- via high, induct is a long-term invaste one
+    -- via high, induct is a long-CYCLE invaste one
     SELECT count(*)   FROM tempday INTO @v_len;
     SELECT date,close FROM tempday WHERE id=@v_len INTO v_date,v_close;
 
     IF @v_len < 240 THEN LEAVE tag_get_ma240; END IF;
 
     SELECT min(close),max(close) 
-                           FROM tempday WHERE id>(@v_len-@TERM) INTO v_low,v_high;
+                           FROM tempday WHERE id>(@v_len-@CYCLE) INTO v_low,v_high;
     SELECT SUM(close)/34   FROM tempday WHERE id>(@v_len-34)    INTO v_ma34 ;
     SELECT SUM(close)/60   FROM tempday WHERE id>(@v_len-60)    INTO v_ma60 ;
     SELECT SUM(close)/120  FROM tempday WHERE id>(@v_len-120)   INTO v_ma120;
@@ -992,7 +992,7 @@ END tag_get_ma240 //
     SET @fn_dugu9jian           = 9;
     SET @START  = '2013-12-6';
     SET @END    = '2014-06-06';
-    SET @TERM   = 240;
+    SET @CYCLE  = 240;
     SET @NUM    = 15;
     
 -- 若要计算3日，argv_n为3

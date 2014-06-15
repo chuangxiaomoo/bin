@@ -257,7 +257,7 @@ function fn_rzrq()                      { cat stk_rzrq ;}
 
         20_fenbi
 
-        jc_行为金融学                   # juece behavioral finance
+        jc_行为金融学                   # behavioral finance
         jc_人皆患失                     # 决策小分队
         jc_这不是独家买卖
         jc_Golf智慧_快就是慢            # 把目标放在心中；严谨，但不能太认真
@@ -488,12 +488,15 @@ function fn_11_Geek与产品机器()         { cat prof_11_Geek与产品机器 ;
     fn_print $@
 }
 
+function fn_sbfm()                      { cat sbfm ;}
+
 function fn_ljsw()                      { 
 function fn_voice()                     { cat ljsw_voice ;}
 function fn_01_教育()                   { cat ljsw_01_教育 ;}
 function fn_02_傻帽悲观派()             { cat ljsw_02_傻帽悲观派 ;}
 function fn_04_民主政治()               { cat ljsw_04_民主政治 ;}
 function fn_06_胡适()                   { cat ljsw_06_胡适 ;}
+function fn_07_大数据()                 { cat ljsw_07_大数据 ;}
 
 function fn_210_右派为什么这么横()      { cat ljsw_210_右派为什么这么横 ;}
 function fn_215_发现你的太平洋()        { cat ljsw_215_发现你的太平洋 ;}
@@ -507,6 +510,7 @@ function fn_x1_你的阅读造就了你()       { cat ljsw_x1_你的阅读造就
         04_民主政治
         05_格局                         # 琐屑在大小格局中的`避错`与`无能`
         06_胡适                         # 少谈些主义
+        07_大数据                       # 大国不可不识数
         51_右派为什么那么横             # 保守派的3个特性
         x1_你的阅读造就了你             # you are what u read
 
@@ -556,6 +560,16 @@ function fn_stock()                     { cat influence_stock ;}
     fn_print $@
 }
 
+function fn_finance()                   {
+function fn_base()                      { cat finance_base ;}
+function fn_leverage()                  { cat finance_leverage ;}
+    local opts=(
+        base
+        leverage                        # 杠杆
+    )
+    fn_print $@
+}
+
 # 新教与天主教。信则得救，不信则下地狱 vs 助人行善
 # 一花一世界，一木一浮生，一草一天堂，一叶一如来，
 # 一砂一极乐，一方一净土，一笑一尘缘，一念一清静
@@ -570,6 +584,7 @@ function fn_main() {
         artical
         book
         english
+        finance                         # economic
         faith
         family                          # 难念的经
         girl
@@ -587,6 +602,7 @@ function fn_main() {
         mng
         mindhacks
         ljsw                            # 罗辑思维
+        sbfm                            # 上兵伐谋 
         movie
         music
         personage
