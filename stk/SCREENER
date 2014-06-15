@@ -239,7 +239,7 @@ function fn_get_cost()
 
     local code=`sed 's/^0*//g' <<< $1 | xargs printf "%06d"`
     TBL=tbl_cost9 up add_codes_2_dzh2tbl ${code}
-    TBL=tbl_cost9 fn_dugu9jian ${2:-$END} 240
+    TBL=tbl_cost9 fn_dugu9jian ${2:-$END} ${CYCLE:-240}
 }
 
 
@@ -537,7 +537,7 @@ function fn_main()
     "get_1_swing_num      [RISE_PERCENT:-8]     # 单日振幅，小于0计算跌幅"
     "get_n_swing_num      [SWING_PERCENT:-16]   # 双日振幅，小于0计算跌幅"
     "get_stat_turnov      code start [end]      # 个股区间换手统计"
-    "get_cost             code [end]            # 个股成本分析"
+    "get_cost             code [end]            # #{CYCLE}日，个股成本分析"
     "sort_amount          [LIMIT_NUM:-48]       # --- 成交量排名"
     "sort_turnover        [LIMIT_NUM:-48]       # 最新日换手排名"
     # ----------------    ABOVE FIXED SEQUENCE  -------------------
