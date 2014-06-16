@@ -1,0 +1,13 @@
+# ftpd
+
+# install
+  apt-get install ftpd
+
+# config
+
+  ftpd 使用系统用户，但注意用户不能在/etc/ftpusers中
+
+  useradd -m ftptest
+  passwd  ftptest[ftp123]()
+
+
