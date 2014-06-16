@@ -563,9 +563,11 @@ function fn_stock()                     { cat influence_stock ;}
 function fn_finance()                   {
 function fn_base()                      { cat finance_base ;}
 function fn_leverage()                  { cat finance_leverage ;}
+function fn_fortune()                   { cat finance_fortune ;}
     local opts=(
         base                            # 利率 汇率 基础概念
         leverage                        # 杠杆
+        fortune                         # 财富
     )
     fn_print $@
 }
