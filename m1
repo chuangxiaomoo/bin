@@ -804,15 +804,19 @@ function fn_figlet()                    { cat figlet ;}
 function fn_services()                  {
 function fn_nfs()                       { cat services_nfs ;}
 function fn_samba()                     { cat services_samba ;}
+function fn_ftpd()                      { cat services_ftpd ;}
 function fn_vsftpd()                    { cat services_vsftpd ;}
 function fn_ntp()                       { cat services_ntp ;}
 function fn_xinetd()                    { cat services_xinetd ;}
+function fn_syslogd()                   { cat services_syslogd ;}
     local opts=(                        # etc
         nfs
         ntp
         samba
+        ftpd                            # in.ftpd
         vsftpd
         xinetd                          # inetd
+        syslogd
     )
     fn_print $@
 }

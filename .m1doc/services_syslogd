@@ -1,0 +1,5 @@
+# syslogd
+
+# 日志文件 /var/log/syslog
+
+# 客户端 logger

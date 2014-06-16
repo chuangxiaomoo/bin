@@ -12,3 +12,8 @@
   /etc/init.d/xinetd restart
 
 
+## example -- ftpd
+
+  1. apt-get install ftpd
+  2. cp /usr/share/doc/ftpd/examples/ftpd.xinetd /etc/xinetd.d
+  3. /etc/init.d/xinetd restart
