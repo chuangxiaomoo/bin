@@ -602,6 +602,18 @@ function fn_bbox_cmdlist()
         xargs -I{} basename {} | sort -u 
 }
 
+
+function fn_count_frame()
+{
+    while : ; do
+        old=$new
+        sleep 4
+        new=`cat /proc/interrupts | grep vpfe_capture0 | awk '{print $2}' `
+        echo expr ${new:0} - ${old:-0}
+        expr ${new} - ${old:-0}
+    done
+}
+
 function fn_main() 
 {
     cmdlist=(
@@ -629,6 +641,7 @@ function fn_main()
     "insert_blankline FILE  # 为小于78字符的行换行" 
     "78cols_text      FILE  # 为大于78字符的行换行"
     "bbox_cmdlist           # all cmd link to busybox"
+    "count_frame            # 计算帧"
     )
 
     fn_execute "$@"

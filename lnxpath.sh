@@ -13,14 +13,15 @@
 
 function fn_main() 
 {
-    [ -z "${*}" ] && echo "Usage: $0 path_in_linux" && exit
+    [ "${1}" = '-h' ] && echo "Usage: $0 path_in_linux" && exit
 
-    lnxpath=`echo $@ | sed -e 's#/#\\\\#g'`
+    cmdline="${*}"
+    lnxpath=`echo ${cmdline:-${PWD}} | sed -e 's#/#\\\\#g'`
     
-    if echo ${lnxpath} | grep -q "root.bin" ; then
-        echo '\\192.168.2.41'${lnxpath}
-    else
+    if echo ${lnxpath} | grep -q "winc" ; then
         echo E:${lnxpath}
+    else
+        echo '\\192.168.2.41'${lnxpath}
     fi
 }
 
