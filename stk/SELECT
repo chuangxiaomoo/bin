@@ -259,13 +259,13 @@ function fn_dugu9jian()
         echo "${tbl_super_dive}"
     }
 
-    fn_get_tbl_super_dive
+    fn_get_tbl_super_dive $1
     mysql $mo -t kts <<< "${tbl_super_dive}"
     xt_ret $? "${FUNCNAME}" || return $?
     
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
-    LIMIT=128 fn_get_tbl_super_dive
+    LIMIT=128 fn_get_tbl_super_dive $1
     mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" | \
         tee .soptter.chao | TBL=chao xargs up 7
     xt_ret $? "${FUNCNAME}" || return $?
