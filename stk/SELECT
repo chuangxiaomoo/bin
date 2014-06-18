@@ -265,7 +265,8 @@ function fn_dugu9jian()
     
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
-    LIMIT=128 fn_get_tbl_super_dive $1
+    # COND='nmc<200000 and wchng<-8'
+    fn_get_tbl_super_dive $1 > /dev/null
     mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" | \
         tee .soptter.chao | TBL=chao xargs up 7
     xt_ret $? "${FUNCNAME}" || return $?
