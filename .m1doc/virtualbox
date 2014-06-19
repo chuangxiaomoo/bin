@@ -1,5 +1,11 @@
 # virtualbox
 
+## nat
+
+  > virtualbox的网关是 x.x.x.2
+
+  route add default gw 10.0.3.2
+
 ## usb
 
   两个筛选器都加上

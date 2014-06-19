@@ -89,6 +89,7 @@ function fn_2014_jco()                  { cat annual_2014_jco ;}
 #
 function fn_book()                      { 
 function fn_base()                      { cat book_base ;}
+function fn_wanna()                     { cat book_wanna ;}
 function fn_01_商君书()                 { cat book_01_商君书 ;}
 function fn_02_韩非子()                 { cat book_02_韩非子 ;}
 function fn_aq_如何提问()               { cat book_aq_如何提问 ;}
@@ -107,6 +108,7 @@ function fn_conservatism()              { cat book_conservatism ;
                                           cat read_conservatism ;} 
     local opts=(
         base       
+        wanna                   # 想读的书
         01_商君书
         02_韩非子
         aq_如何提问             # reading
