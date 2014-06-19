@@ -1338,7 +1338,7 @@ function fn_main() {
         vlc
         vs
         vmware
-        virtualbox
+        virtualbox              # usb nat
         web                     # WEB W3School
         w3m
         win
