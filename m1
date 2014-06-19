@@ -18,7 +18,6 @@ function fn_asm()                       { cat asm ;}
 function fn_awk()                       { cat awk ;}
 function fn_sed()                       { cat sed ;}
 function fn_elf()                       { cat elf ;}
-function fn_fdisk()                     { cat fdisk ;}
 function fn_gprof()                     { cat gprof ;}
 function fn_oprofile()                  { cat oprofile ;}
 function fn_gcov()                      { cat gcov ;}
@@ -663,6 +662,7 @@ function fn_tail()                      { cat cmd_tail ;}
         date
         dd
         dialog
+        fdisk
         himm
         hexdump                 # xxd od
         ifconfig
