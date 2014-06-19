@@ -5,11 +5,13 @@ function fn_main()
     filelist=${@:2}
 
     case $1 in
+    a)
+        find ! -name '.' -a -name '*' | xargs -I{} svn add --force {}  | cat -n
+        ;;
     r)
         [ -z "$filelist" ] && echo "Error: file... must be dedicated" && exit
         svn revert $filelist
         ;;
-
     s)
         svn status
         ;;
@@ -19,6 +21,7 @@ function fn_main()
     *)
         echo "
         ----------- Usage --------------
+        a   find ! -name '.' -a -name '*' | xargs -I{} svn add --force {}  | cat -n
         r   revert  [file or directory]
         q   -q status
         s   status
