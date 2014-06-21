@@ -254,7 +254,7 @@ function fn_dugu9jian()
                        ${columns}, c.nmc, chng, round((avrg*.9),2)as buyin, wchng, c.name 
             FROM tbl_9jian as d, cap as c
             WHERE d.code = c.code ${COND} 
-            ORDER by ${1:-wchng} ${ASC:-asc} limit ${LIMIT:-48}
+            ORDER by ${1:-wchng} ${ASC:-asc} limit ${LIMIT:-36}     # COND='nmc<100000 and wchng<-10'
         "
         echo "${tbl_super_dive}"
     }
@@ -265,7 +265,6 @@ function fn_dugu9jian()
     
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
-    # COND='nmc<200000 and wchng<-8'
     fn_get_tbl_super_dive $1 > /dev/null
     mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" | \
         tee .soptter.chao | TBL=chao xargs up 7
