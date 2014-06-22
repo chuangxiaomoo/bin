@@ -1,6 +1,6 @@
 # 是谁派你来投资的？[天命如是](http://news.imeigu.com/a/1306330639828.html)
 
-    I M P O R T A N T -- 我是谁？从哪里来？到哪里去？
+    I M P O R T A N T
 
   **所做的一切，只为从信息大爆炸中逃离。                          **
   **从战略的角度，弃子取势，以价格换确定性。                      **
@@ -12,7 +12,8 @@
 ## 量子力学       .doc/quantum_mechanics.md
 ## 行为心理学     .doc/behaviorism.md
 ## 想看的书       .doc/books.md
-## 决定论         .doc/model.md                 -- 打造自己的交易模型
+## 本质论         .doc/essential.md           -- 我是谁？从哪来？到哪去？
+## 决定论         .doc/model.md               -- 打造自己的交易模型
 
 > 构建体系
 
