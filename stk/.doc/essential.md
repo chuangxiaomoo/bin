@@ -14,3 +14,5 @@
 ## 杠杆决定趋势             .doc/leverage.md    杠杆乃交易本质
 
 ## 15种分时                 .doc/min.md
+
+# 孙子兵法                  .doc/sunzi.md
