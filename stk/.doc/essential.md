@@ -11,6 +11,6 @@
 
 ## 为什么顺势交易也会死     .doc/shun.md
 
-## 顺势与逆势               .doc/reverse.md
+## 杠杆决定趋势             .doc/leverage.md    杠杆乃交易本质
 
 ## 15种分时                 .doc/min.md
