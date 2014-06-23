@@ -77,6 +77,7 @@ function fn_print() {
             $0 @ 2>/dev/null | grep --color '>>>'
             return
         else
+            # 当排行大于10时，可能会显示不到上一级
             $0 @ 2>/dev/null | grep '>>>' | grep -i -B10 -A2 --color ${2}
             return
         fi 
