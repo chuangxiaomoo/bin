@@ -382,6 +382,7 @@ function fn_printf()                    { cat clang_printf ;}
 function fn_bit()                       { cat clang_bit ;}
 function fn_strncpy()                   { cat clang_strncpy ;}
 function fn_snprintf()                  { cat clang_snprintf ;}
+function fn_thread_lock()               { cat clang_thread_lock ;}
 
     local opts=(
         C调用C++链接库
@@ -398,6 +399,8 @@ function fn_snprintf()                  { cat clang_snprintf ;}
         string
         struct
         typedef
+        thread_lock             # 
+        thread_confict_malloc   # fork() and malloc() can't run together
         warning
         macro
         # ------ POSIX ------
