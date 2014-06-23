@@ -350,38 +350,38 @@ function fn_multicast多播()             { cat socket_multicast多播 ;}
     fn_print $@
 }
 
-function fn_c() {
-function fn_C调用C++链接库()            { cat c_C调用C++链接库 ;}
-function fn_cdecl()                     { cat c_cdecl ;}
-function fn_const()                     { cat c_const ;}
-function fn_extern()                    { cat c_extern ;}
-function fn_operator_predcedence()      { cat c_operator_predcedence ;}
-function fn_string()                    { cat c_string ;}
-function fn_struct()                    { cat c_struct ;}
-function fn_typedef()                   { cat c_typedef ;}
-function fn_warning()                   { cat c_warning ;}
-function fn_pointer()                   { cat c_pointer ;}
-function fn_callback()                  { cat c_callback ;}
-function fn_linklist()                  { cat c_linklist ;}
-function fn_package()                   { cat c_package ;}
-function fn_macro()                     { cat c_macro ;}
-function fn_memorylayout()              { cat c_memorylayout ;}
+function fn_clang() {
+function fn_C调用C++链接库()            { cat clang_C调用C++链接库 ;}
+function fn_cdecl()                     { cat clang_cdecl ;}
+function fn_const()                     { cat clang_const ;}
+function fn_extern()                    { cat clang_extern ;}
+function fn_operator_predcedence()      { cat clang_operator_predcedence ;}
+function fn_string()                    { cat clang_string ;}
+function fn_struct()                    { cat clang_struct ;}
+function fn_typedef()                   { cat clang_typedef ;}
+function fn_warning()                   { cat clang_warning ;}
+function fn_pointer()                   { cat clang_pointer ;}
+function fn_callback()                  { cat clang_callback ;}
+function fn_linklist()                  { cat clang_linklist ;}
+function fn_package()                   { cat clang_package ;}
+function fn_macro()                     { cat clang_macro ;}
+function fn_memorylayout()              { cat clang_memorylayout ;}
 # ----- posix -------
-function fn_errno()                     { cat c_errno ;}
-function fn_open()                      { cat c_open ;}
-function fn_syslog()                    { cat c_syslog ;}
-function fn_time()                      { cat c_time ;}
-function fn_non_block_func()            { cat c_non_block_func ;}
-function fn_non_sig_select()            { cat c_non_sig_select ;}
-function fn_signal()                    { cat c_signal ;}
-function fn_coredump()                  { cat c_signal ;}
-function fn_tty()                       { cat c_tty ;}
-function fn_iconv()                     { cat c_iconv ;}
-function fn_md5()                       { cat c_md5 ;}
-function fn_printf()                    { cat c_printf ;}
-function fn_bit()                       { cat c_bit ;}
-function fn_strncpy()                   { cat c_strncpy ;}
-function fn_snprintf()                  { cat c_snprintf ;}
+function fn_errno()                     { cat clang_errno ;}
+function fn_open()                      { cat clang_open ;}
+function fn_syslog()                    { cat clang_syslog ;}
+function fn_time()                      { cat clang_time ;}
+function fn_non_block_func()            { cat clang_non_block_func ;}
+function fn_non_sig_select()            { cat clang_non_sig_select ;}
+function fn_signal()                    { cat clang_signal ;}
+function fn_coredump()                  { cat clang_signal ;}
+function fn_tty()                       { cat clang_tty ;}
+function fn_iconv()                     { cat clang_iconv ;}
+function fn_md5()                       { cat clang_md5 ;}
+function fn_printf()                    { cat clang_printf ;}
+function fn_bit()                       { cat clang_bit ;}
+function fn_strncpy()                   { cat clang_strncpy ;}
+function fn_snprintf()                  { cat clang_snprintf ;}
 
     local opts=(
         C调用C++链接库
@@ -1247,7 +1247,8 @@ function fn_main() {
         bc
         binutils
         busybox
-        c                       # clang
+        clang
+        cxx
         alg                     # link queue tree
         case
         circuit
@@ -1260,7 +1261,6 @@ function fn_main() {
         google
         coreutils
         curl
-        cxx
         cygwin
         msys
         design
