@@ -18,6 +18,10 @@
       * JCOCtrlMsgSvr2App()
       */
 
+    . 视频参数改变通知
+
+        jcpcmd.c -> devvecfg
+
     . 小定制，不需要增加APP，如：中云网眼
 
         PLATFORM_E                      // 定义平台ID，type_common.h
