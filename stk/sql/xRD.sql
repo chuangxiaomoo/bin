@@ -831,7 +831,7 @@ CREATE PROCEDURE sp_dugu9jian(a_code INT(6) ZEROFILL) tag_9jian:BEGIN
     DECLARE v_turnov    DECIMAL(12,2) DEFAULT 0;
 
     call sp_create_tempday();
-    SELECT nmc/close FROM cap WHERE code=a_code INTO v_shares;
+    SELECT nmc/close FROM cap WHERE code=a_code LIMIT 1 INTO v_shares;
 
     -- 可以通过 turnover = latest(volume/shares); 来计算相应日期数 @NUM
     SET @sqls=concat('
