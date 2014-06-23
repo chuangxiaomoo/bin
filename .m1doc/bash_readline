@@ -17,13 +17,19 @@
             "Alt-~":    complete-username 
 
 
-            -- complete-variable --
-            "Alt-$":           # work on Putty
-            "Esc-Tab":         # work on SecureCRT
-
-            -- complete-path --
-            "Esc-<C-E>" 
-
         COMMAND-LINE-EXPAND
             bind -p     | grep 'C-x' 
         
+
+            -- 互换CHAR
+            Ctrl-t   
+
+            -- 互换WORD
+            Alt-t   
+
+            -- 补全环境变量 
+            Tab-Tab or "Alt-$":         # Putty中补全没有被绑架
+            "Esc-Tab":                  # SecureCRT中经常被绑架
+
+            -- complete-path --
+            "Esc-<C-E>" 

@@ -227,7 +227,7 @@ function fn_dugu9jian()
     mysql $mo -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
 
-    SELECT 0
+    SELECT 0 $3
 }
 
 function fn_get_cost()
@@ -239,7 +239,7 @@ function fn_get_cost()
 
     local code=`sed 's/^0*//g' <<< $1 | xargs printf "%06d"`
     TBL=tbl_cost9 up add_codes_2_dzh2tbl ${code}
-    TBL=tbl_cost9 fn_dugu9jian ${2:-$END} ${CYCLE:-240}
+    TBL=tbl_cost9 fn_dugu9jian ${2:-$END} ${CYCLE:-240} ${3:-wchng}
 }
 
 

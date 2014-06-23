@@ -45,8 +45,8 @@ function fn_main()
     echo "
     DROP TABLE IF EXISTS $i;
     CREATE TABLE ${i} (
-        id          INT     PRIMARY key AUTO_INCREMENT NOT NULL,
-        code        INT(6)  ZEROFILL NOT NULL DEFAULT 0,
+        id         INT     PRIMARY key AUTO_INCREMENT NOT NULL,
+        code       INT(6)  ZEROFILL NOT NULL DEFAULT 0,
         tov        DECIMAL(6,2) 
     );
     LOAD DATA LOCAL INFILE '${today}.tov' INTO TABLE ${i} (code,tov);
