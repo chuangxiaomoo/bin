@@ -240,8 +240,8 @@ function fn_stat_change()
 
 
 function fn_dugu9jian()
-{   # date1,date2,
-    columns="off,open,close,amount,turnov"
+{   # date1,date2,amount,
+    columns="off,open,close,turnov"
     columns=${columns:-'*'}
     columns=d.${columns//,/,d.}
 
@@ -250,11 +250,13 @@ function fn_dugu9jian()
     {
         tbl_super_dive="
         SELECT d.code, DATE_FORMAT(date1,'%m-%d') as start, 
-                       DATE_FORMAT(date2,'%m-%d') as end,
-                       ${columns}, c.nmc, chng, round((avrg*.9),2)as buyin, wchng, c.name 
+                       DATE_FORMAT(date2,'%m-%d') as end, ${columns}, c.nmc, chng, 
+                       round((avrg*.9),2) as buyin, 
+                       round(100*(d.low-avrg)/avrg,2) as lchng, 
+                       round(100*(d.close-avrg)/avrg,2) as wchng, c.name 
             FROM tbl_9jian as d, cap as c
-            WHERE d.code = c.code ${COND} 
-            ORDER by ${1:-wchng} ${ASC:-asc} limit ${LIMIT:-36}     # COND='nmc<100000 and wchng<-10'
+            WHERE d.code = c.code HAVING 1 ${COND} 
+            ORDER by ${1:-wchng} ${ASC:-asc} limit ${LIMIT:-36}     # COND='nmc<130000 and wchng<-10'
         "
         echo "${tbl_super_dive}"
     }

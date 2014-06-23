@@ -72,6 +72,16 @@ function fn_tougu_reminder()
 
 function fn_cap()
 {
+    if [ "$1" = "--keep.FIN" ] ; then
+        echo "keep $p_bin/full.FIN"
+    else
+        read -p "
+        Make sure U have down full.FIN?
+        cp /dzh2/Download/FIN/full.FIN $p_bin"
+        cp /dzh2/Download/FIN/full.FIN $p_bin
+        xert $? `$PS8` || return $?
+    fi
+
     $workdir/sina
     xt_ret $? "sina fail" || return $?
 
@@ -97,9 +107,6 @@ function fn_cap()
     TABLE cap(code, date, close, cap, nmc, name);
     " | mysql -u root kts
 
-    read -p "
-    Make sure U have down full.FIN?
-    "
     echo "
     update shares from dzh2 full.FIN...
     UPDATE cap SET nmc=close*shares WHERE nmc/close<shares;
@@ -377,10 +384,6 @@ function fn_add_tbl_codes_2_dzh()
 
 function fn_up_tbl_xRD()
 {
-    p_bin=/root/bin/stk/bin/
-
-    # make -C $p_bin
-
     if [ "$1" = "--keep.PWR" ] ; then
         echo "keep $p_bin/full.PWR"
     else
@@ -621,7 +624,7 @@ function fn_main()
 
     cmdlist=(
     # fixed sequence
-    "cap                                # full.FIN (max(中国石油)=2万亿 sum(nmc)=20万亿)"
+    "cap [--keep.PWR]                   # full.FIN (max(中国石油)=2万亿 sum(nmc)=20万亿)"
     "down_fenbi                         # 下载分笔数据"
     "hexun_day                          # 大盘日线数据 4:00:00 PM"
     "del_hexun_day                      # 删除大盘日线，防止冲突"

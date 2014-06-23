@@ -176,13 +176,13 @@ CREATE PROCEDURE sp_create_tbl_9jian() tag_tbl_9jian:BEGIN
         date2       date NOT NULL DEFAULT 0,
         off         INT  NOT NULL DEFAULT 0,
         open        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        low         DECIMAL(6,2) NOT NULL DEFAULT 0,    -- lchng = (low - avrg)/avrg
         close       DECIMAL(6,2) NOT NULL DEFAULT 0,
         volume      DECIMAL(12,2) NOT NULL DEFAULT 0,
         amount      DECIMAL(12,2) NOT NULL DEFAULT 0,
         turnov      DECIMAL(6,2) NOT NULL DEFAULT 0,    
         avrg        DECIMAL(6,2) NOT NULL DEFAULT 0,    -- avrg = sum(amount) / sum(volume)
-        chng        DECIMAL(6,2) NOT NULL DEFAULT 0,    -- chng = (close-open)/open
-        wchng       DECIMAL(6,2) NOT NULL DEFAULT 0     -- wchng = (close - avrg)/avrg
+        chng        DECIMAL(6,2) NOT NULL DEFAULT 0     -- chng = (close-open)/open
     );
 END tag_tbl_9jian //
 
@@ -819,7 +819,7 @@ CREATE PROCEDURE sp_dugu9jian(a_code INT(6) ZEROFILL) tag_9jian:BEGIN
     DECLARE v_open      DECIMAL(6,2) DEFAULT 0;
     DECLARE v_close     DECIMAL(6,2) DEFAULT 0;
     DECLARE v_chng      DECIMAL(8,2) DEFAULT 0;
-    DECLARE v_wchng     DECIMAL(8,2) DEFAULT 0;
+    DECLARE v_low       DECIMAL(8,2) DEFAULT 0;
     DECLARE v_avrg      DECIMAL(8,2) DEFAULT 0;
     DECLARE v_date1     DATE DEFAULT NULL;
     DECLARE v_date2     DATE DEFAULT NULL;
@@ -841,7 +841,7 @@ CREATE PROCEDURE sp_dugu9jian(a_code INT(6) ZEROFILL) tag_9jian:BEGIN
     PREPARE stmt from @sqls; EXECUTE stmt;
 
     SELECT count(*)   FROM tempday INTO @v_len;
-    SELECT date,close FROM tempday WHERE id=1 INTO v_date2,v_close;
+    SELECT date,close,low FROM tempday WHERE id=1 INTO v_date2,v_close,v_low;
 
     -- 过滤停牌很久的个股
     IF DATE_ADD(v_date2, INTERVAL 5 DAY) < @END THEN LEAVE tag_9jian; END IF;
@@ -857,14 +857,14 @@ CREATE PROCEDURE sp_dugu9jian(a_code INT(6) ZEROFILL) tag_9jian:BEGIN
             SELECT date,yesc FROM tempday WHERE id=(v_id) INTO v_date1,v_open;
             SET v_avrg = (v_sumamount/v_sumvolume);
             SET v_chng = 100*(v_close-v_open)/v_open;
-            SET v_wchng = 100*(v_close-v_avrg)/v_avrg;
             SET v_turnov = 100*v_sumvolume/v_shares;
+            -- SET v_wchng = 100*(v_close-v_avrg)/v_avrg;
             -- SELECT * FROM tempday;
             -- SELECT v_id;
-            INSERT INTO tbl_9jian(code,date1,date2,off,open,close,
-                            amount,volume,turnov,avrg,chng,wchng)
-                     VALUES(a_code,v_date1,v_date2,v_id,v_open,v_close,
-                            v_sumamount,v_sumvolume,v_turnov, v_avrg, v_chng, v_wchng);
+            INSERT INTO tbl_9jian(code,date1,date2,off,open,low,close,
+                            amount,volume,turnov,avrg,chng)
+                     VALUES(a_code,v_date1,v_date2,v_id,v_open,v_low,v_close,
+                            v_sumamount,v_sumvolume,v_turnov, v_avrg, v_chng);
             LEAVE lbl_upto_100; 
         END IF;
 

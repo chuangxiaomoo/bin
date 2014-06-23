@@ -1,5 +1,6 @@
 #! /bin/bash
 
+p_bin='/root/bin/stk/bin/'
 selecap="SELECT code FROM cap"
 helpmsg="
     ------------------------------ 环境变量 -----------------------------

@@ -198,7 +198,7 @@ function fn_export()                    { cat bash_export ;}
         getopts
         kill_trap
         tcpip                           # netcat nc
-        readline
+        readline                        # shortcut 快捷键 -- putty下最好用
         redirection
         string
         tmo_getopts
