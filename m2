@@ -106,6 +106,7 @@ function fn_economic_naturalist()       { cat book_economic_naturalist
 function fn_10years()                   { cat book_10years ;}
 function fn_conservatism()              { cat book_conservatism ;
                                           cat read_conservatism ;} 
+function fn_f1_富同学穷同学()           { cat book_f1_富同学穷同学 ;}
     local opts=(
         base       
         wanna                   # 想读的书
@@ -121,6 +122,8 @@ function fn_conservatism()              { cat book_conservatism ;
         economic_naturalist     # 牛奶可乐
         10years                 # 我的职场十年：修炼
         conservatism            # 保守主义
+
+        f1_富同学穷同学
     )
     fn_print $@
 
