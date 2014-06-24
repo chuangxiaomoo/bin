@@ -1,52 +1,66 @@
-#! /bin/sh 
+# oprofile
 
-if [ $# -eq 0 ]; then 
-    echo "Usage: opgprof.sh exe_file [args]" 
-    exit 1 
-fi 
+# intro
 
-OBJ=$1 
-[ ! -f $OBJ ] && echo "$OBJ not exists, EXIT" && exit 1 
-if  [ "`dirname $OBJ`" == "." ] && [ './' != ${OBJ:0:2} ]; then 
-    echo "Add ./ b4 $OBJ" 
-    OBJ='./'$OBJ 
-fi 
+  [nxp kernel](/opt/ASC884xA_5xA_SDK6.1.1_wk1343/ASC88xx_SDK/LSP/mozart_kernel-1.34)
+  [oprofile 使用之一（build）] (http://blog.csdn.net/green369258/article/details/6894988)
 
-opcontrol --init; 
-opcontrol --no-vmlinux -p all -c 16 
-opcontrol --reset; 
-opcontrol --start; 
-
-$OBJ $2 
+  http://oprofile.sourceforge.net/doc/index.html
+  http://www.ibm.com/developerworks/cn/linux/l-oprof/
+  http://www.ibm.com/developerworks/cn/linux/l-pow-oprofile/
 
 
+# oprofile
 
-function fn_gprof()
-{
-  #$OBJ $2 echo $OBJ ${*:2} $OBJ ${*:2} 
-  # execute to generate gmon.out 
-  FULLOBJ=$OBJ 
-  OBJ=`basename $OBJ` 
-  gprof $FULLOBJ > $OBJ.gpout 
-  # extract the info from gmon.out 
-  gprof2dot.py -n 1.0 $OBJ.gpout > $OBJ.dot 
-  # generate .dot 
-  dot -Tgif -o $OBJ.gif $OBJ.dot 
+    if [ $# -eq 0 ]; then 
+        echo "Usage: opgprof.sh exe_file [args]" 
+        exit 1 
+    fi 
+
+    OBJ=$1 
+    [ ! -f $OBJ ] && echo "$OBJ not exists, EXIT" && exit 1 
+    if  [ "`dirname $OBJ`" == "." ] && [ './' != ${OBJ:0:2} ]; then 
+        echo "Add ./ b4 $OBJ" 
+        OBJ='./'$OBJ 
+    fi 
+
+    opcontrol --init; 
+    opcontrol --no-vmlinux -p all -c 16 
+    opcontrol --reset; 
+    opcontrol --start; 
+
+    $OBJ $2 
+
+# gprof
+
+    function fn_gprof()
+    {
+      #$OBJ $2 echo $OBJ ${*:2} $OBJ ${*:2} 
+      # execute to generate gmon.out 
+      FULLOBJ=$OBJ 
+      OBJ=`basename $OBJ` 
+      gprof $FULLOBJ > $OBJ.gpout 
+      # extract the info from gmon.out 
+      gprof2dot.py -n 1.0 $OBJ.gpout > $OBJ.dot 
+      # generate .dot 
+      dot -Tgif -o $OBJ.gif $OBJ.dot 
 
 
-  # gcc -Wall -g -pg -lc_p  memset_time.c
-  # ./a.out
-  # gprof -b -p -q  a.out gmon.out 
+      # gcc -Wall -g -pg -lc_p  memset_time.c
+      # ./a.out
+      # gprof -b -p -q  a.out gmon.out 
 
-}
+    }
 
-function install_oprofile() 
-{ 
-    cd $workdir 
-    cd ./oprofile/ # copy files mkdir -p /root/bin/ 
-    cp ./gprof2dot.py ./opgprof.sh /root/bin 
-    cp -a ./op_test/ /root/ # install tar -zxvf oprof.tgz -C / mkdir -p /opt/ tar -zxvf graphviz-2.16.1.tar.gz -C /opt/ 
-    cd /opt/graphviz* ./configure --with-mylibgd=yes --with-gdlibdir=/usr/lib && make && make install 
-    echo -e "\nopgprof over, \nEnjoy it!!!\n" 
-} 
+# install    
+
+    function install_oprofile() 
+    { 
+        cd $workdir 
+        cd ./oprofile/ # copy files mkdir -p /root/bin/ 
+        cp ./gprof2dot.py ./opgprof.sh /root/bin 
+        cp -a ./op_test/ /root/ # install tar -zxvf oprof.tgz -C / mkdir -p /opt/ tar -zxvf graphviz-2.16.1.tar.gz -C /opt/ 
+        cd /opt/graphviz* ./configure --with-mylibgd=yes --with-gdlibdir=/usr/lib && make && make install 
+        echo -e "\nopgprof over, \nEnjoy it!!!\n" 
+    } 
 
