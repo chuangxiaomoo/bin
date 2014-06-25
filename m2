@@ -107,6 +107,7 @@ function fn_10years()                   { cat book_10years ;}
 function fn_conservatism()              { cat book_conservatism ;
                                           cat read_conservatism ;} 
 function fn_f1_富同学穷同学()           { cat book_f1_富同学穷同学 ;}
+function fn_f2_海底捞你学不会()         { cat book_f2_海底捞你学不会 ;}
     local opts=(
         base       
         wanna                   # 想读的书
@@ -124,6 +125,7 @@ function fn_f1_富同学穷同学()           { cat book_f1_富同学穷同学 ;
         conservatism            # 保守主义
 
         f1_富同学穷同学
+        f2_海底捞你学不会
     )
     fn_print $@
 
