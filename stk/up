@@ -624,7 +624,7 @@ function fn_main()
 
     cmdlist=(
     # fixed sequence
-    "cap [--keep.PWR]                   # full.FIN (max(中国石油)=2万亿 sum(nmc)=20万亿)"
+    "cap [--keep.FIN]                   # full.FIN (max(中国石油)=2万亿 sum(nmc)=20万亿)"
     "down_fenbi                         # 下载分笔数据"
     "hexun_day                          # 大盘日线数据 4:00:00 PM"
     "del_hexun_day                      # 删除大盘日线，防止冲突"

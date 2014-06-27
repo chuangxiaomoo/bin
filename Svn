@@ -8,6 +8,9 @@ function fn_main()
     a)
         find ! -name '.' -a -name '*' | xargs -I{} svn add --force {}  | cat -n
         ;;
+    c)
+        svn ci $filelist
+        ;;
     r)
         [ -z "$filelist" ] && echo "Error: file... must be dedicated" && exit
         svn revert $filelist
@@ -22,7 +25,8 @@ function fn_main()
         echo "
         ----------- Usage --------------
         a   find ! -name '.' -a -name '*' | xargs -I{} svn add --force {}  | cat -n
-        r   revert  [file or directory]
+        c   ci [files...]
+        r   revert [file or directory]
         q   -q status
         s   status
         "

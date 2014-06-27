@@ -1,16 +1,6 @@
 # tcpip
 
-## netcat nc
-
-  1. listen 
-
-  $ nc -l 1234
-
-  2. connect
-
-  $ nc 127.0.0.1 1234
-
-## dev/net
+# dev/net
 
   /dev/net/tcp
   cat j2box
