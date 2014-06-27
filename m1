@@ -660,6 +660,7 @@ function fn_hexdump()                   { cat cmd_hexdump ;}
 function fn_cpio()                      { cat cmd_cpio ;}
 function fn_head()                      { cat cmd_tail ;}
 function fn_tail()                      { cat cmd_tail ;}
+function fn_nc()                        { cat cmd_nc ;}
     local opts=(
         01_方便之门
         date
@@ -672,6 +673,7 @@ function fn_tail()                      { cat cmd_tail ;}
         ln
         lsof
         mount
+        nc                      # netcat
         patch
         rar
         rcconf                  # ubuntu 默认启动方式 /etc/init/*.conf
