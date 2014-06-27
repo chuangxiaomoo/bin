@@ -1,0 +1,48 @@
+# fwrite
+
+  1. fwrite fprintf() 会缓存
+
+   fflush()
+   fclose()
+   进程正常退出 exit()，进行的正常回收。
+
+   > kill -9 or Ctrl-C 会导致缓存中的内容丢失
+
+  2. write()不会缓存
+
+   write()实时死入
+
+# source 
+
+    int main(int argc, char *argv[])
+    {
+        if (argc != 2) {
+            printf("Usage: %s filepath\n", argv[0]);
+            return -1;
+        }
+
+        static FILE *ftest = NULL;
+        static int fdtest = 0;
+        int nw = 0;
+
+        if (ftest == NULL) {
+            ftest = fopen(argv[1], "w");
+            fdtest = fileno(ftest);
+        }
+
+        char buf[128] = "oh my god 12341314\n";
+
+        nw = fwrite(buf, 1, sizeof(buf), ftest);
+        // write(fdtest, buf ,sizeof(buf));
+        // sync();
+
+        printf("nw is %d\n", nw);
+
+        fflush(ftest);
+        // fclose(ftest);
+
+        sleep(60);
+
+        return 0;
+    }
+
