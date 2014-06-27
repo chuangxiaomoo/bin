@@ -383,6 +383,7 @@ function fn_bit()                       { cat clang_bit ;}
 function fn_strncpy()                   { cat clang_strncpy ;}
 function fn_snprintf()                  { cat clang_snprintf ;}
 function fn_thread_lock()               { cat clang_thread_lock ;}
+function fn_fwrite()                    { cat clang_fwrite ;}
 
     local opts=(
         C调用C++链接库
@@ -409,6 +410,7 @@ function fn_thread_lock()               { cat clang_thread_lock ;}
         syslog
         errno
         open
+        fwrite                  # fprintf
         printf                  # scanf format
         signal
         strncpy                 # string serial
