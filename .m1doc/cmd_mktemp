@@ -1,0 +1,16 @@
+#! /bin/bash
+
+if [ ! -d "$1" ]; then
+	echo "error! $1 should be a directory."
+	exit 1
+fi
+
+MOUNT="/bin/mount"
+TMPDIR=`/bin/mktemp -dt tmpdir.XXXXXX`
+TARGETDIR=$1
+
+$MOUNT tmpfs -t tmpfs $TMPDIR 
+cp -a $TARGETDIR/* $TMPDIR
+$MOUNT --move $TMPDIR $TARGETDIR
+rmdir $TMPDIR
+
