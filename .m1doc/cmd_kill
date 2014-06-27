@@ -1,0 +1,21 @@
+# kill
+
+  信号是进程间通信机制中唯一的异步通信机制，可以看作是异步通知
+
+# kill -0
+
+  “signal 0″ is kind of like a moral equivalent of “ping”.
+
+  Using “kill -0 NNN” in a shell script is a good way to tell if PID “NNN” 
+  is alive or not:
+
+  signal 0 is just used to check process is exists or not.
+
+
+# pppoe
+
+  在与zengy调试pppoe时，
+  若是使用默认信号，会导致其它进程退出。
+  kill -9则不会。
+
+
