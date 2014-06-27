@@ -663,6 +663,7 @@ function fn_cpio()                      { cat cmd_cpio ;}
 function fn_head()                      { cat cmd_tail ;}
 function fn_tail()                      { cat cmd_tail ;}
 function fn_nc()                        { cat cmd_nc ;}
+function fn_mktemp()                    { cat cmd_mktemp ;}
     local opts=(
         01_方便之门
         date
@@ -675,6 +676,7 @@ function fn_nc()                        { cat cmd_nc ;}
         ln
         lsof
         mount
+        mktemp                  # mount_as_tmpfs : 将一个目录mount为tmpfs
         nc                      # netcat
         patch
         rar
