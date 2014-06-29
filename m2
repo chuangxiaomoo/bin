@@ -576,10 +576,12 @@ function fn_finance()                   {
 function fn_base()                      { cat finance_base ;}
 function fn_leverage()                  { cat finance_leverage ;}
 function fn_fortune()                   { cat finance_fortune ;}
+function fn_keynesian()                 { cat finance_keynesian ;}
     local opts=(
         base                            # 利率 汇率 基础概念
         leverage                        # 杠杆
-        fortune                         # 财富
+        fortune                         # 古典自由主义 国富论
+        keynesian                       # 凯恩斯主义经济学
     )
     fn_print $@
 }
