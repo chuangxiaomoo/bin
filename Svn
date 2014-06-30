@@ -13,7 +13,7 @@ function fn_main()
         ;;
     r)
         [ -z "$filelist" ] && echo "Error: file... must be dedicated" && exit
-        svn revert $filelist
+        svn --depth=infinity revert $filelist
         ;;
     s)
         svn status
@@ -26,8 +26,8 @@ function fn_main()
         ----------- Usage --------------
         a   find ! -name '.' -a -name '*' | xargs -I{} svn add --force {}  | cat -n
         c   ci [files...]
-        r   revert [file or directory]
         q   -q status
+        r   revert -R {file|dir}
         s   status
         "
         svn status | sed 's/^/\t/g'
