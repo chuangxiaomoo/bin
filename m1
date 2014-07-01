@@ -920,6 +920,7 @@ function fn_web_howto()                 { cat test_web_howto ;}
 function fn_01_用例设计原则()           { cat test_01_用例设计原则 ;}
 function fn_02_梦想与实现()             { cat test_02_梦想与实现 ;}
 function fn_03_五个要点()               { cat test_03_五个要点 ;}
+function fn_04_集成测试()               { cat test_04_集成测试 ;}
 function fn_11_测试工程师如何提BUG()    { cat test_11_测试工程师如何提BUG ;}
     local opts=(
         gtest
@@ -930,6 +931,7 @@ function fn_11_测试工程师如何提BUG()    { cat test_11_测试工程师如
         01_用例设计原则
         02_梦想与实现
         03_五个要点                     # 测试的第一原则：思维很混乱时查看
+        04_集成测试                     # 
         11_测试工程师如何提BUG
     )
     fn_print $@
