@@ -186,6 +186,26 @@ CREATE PROCEDURE sp_create_tbl_9jian() tag_tbl_9jian:BEGIN
     );
 END tag_tbl_9jian //
 
+DROP PROCEDURE IF EXISTS sp_create_tbl_6mai //
+CREATE PROCEDURE sp_create_tbl_6mai() tag_tbl_6mai:BEGIN 
+    DROP   TABLE IF EXISTS tbl_6mai;
+    CREATE TABLE tbl_6mai (
+        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        date1       date NOT NULL DEFAULT 0,
+        date2       date NOT NULL DEFAULT 0,
+        off         INT  NOT NULL DEFAULT 0,
+        open        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        low         DECIMAL(6,2) NOT NULL DEFAULT 0,    -- lchng = (low - avrg)/avrg
+        close       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        volume      DECIMAL(12,2) NOT NULL DEFAULT 0,
+        amount      DECIMAL(12,2) NOT NULL DEFAULT 0,
+        turnov      DECIMAL(6,2) NOT NULL DEFAULT 0,    
+        avrg        DECIMAL(6,2) NOT NULL DEFAULT 0,    -- avrg = sum(amount) / sum(volume)
+        chng        DECIMAL(6,2) NOT NULL DEFAULT 0     -- chng = (close-open)/open
+    );
+END tag_tbl_6mai //
+
 -- 使用TEMPORARY时效率提升5倍
 -- ERROR 1137 (HY000): Can't reopen table: 'tempday', 因为使用了SELECT嵌套
 -- SELECT close FROM tempday WHERE date=(SELECT max(date) FROM tempday);
@@ -464,6 +484,7 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
     IF a_type = @fn_up_ma240_all    THEN call sp_create_ma240();    END IF;
     IF a_type = @fn_get_down_turnov THEN call sp_create_tbl_sink(); END IF;
     IF a_type = @fn_dugu9jian       THEN call sp_create_tbl_9jian();END IF;
+    IF a_type = @fn_6maishenjian    THEN call sp_create_tbl_6mai(); END IF;
 
     -- visit all codes
     WHILE v_id <= v_len DO
@@ -477,6 +498,7 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
             WHEN @fn_get_ma513         THEN call sp_get_ma513(v_code);
             WHEN @fn_up_ma240_all      THEN call sp_get_ma240(v_code);
             WHEN @fn_up_ma240_34       THEN call sp_up_ma34(v_code);
+            WHEN @fn_6maishenjian      THEN call sp_6maishenjian(v_code);
             ELSE SELECT "no a_type match";
         END CASE;
 
@@ -872,6 +894,71 @@ CREATE PROCEDURE sp_dugu9jian(a_code INT(6) ZEROFILL) tag_9jian:BEGIN
     END WHILE lbl_upto_100;
 END tag_9jian //
 
+DROP PROCEDURE IF EXISTS sp_6maishenjian//
+CREATE PROCEDURE sp_6maishenjian(a_code INT(6) ZEROFILL) tag_6mai:BEGIN
+    -- 6mai
+    DECLARE v_id        INT DEFAULT 1; 
+    DECLARE v_open      DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_close     DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_chng      DECIMAL(8,2) DEFAULT 0;
+    DECLARE v_low       DECIMAL(8,2) DEFAULT 0;
+    DECLARE v_avrg      DECIMAL(8,2) DEFAULT 0;
+    DECLARE v_date1     DATE DEFAULT NULL;
+    DECLARE v_date2     DATE DEFAULT NULL;
+    DECLARE v_datemax   DATE DEFAULT NULL;
+    DECLARE v_shares    INT DEFAULT 0;
+    DECLARE v_volume    DECIMAL(12,2) DEFAULT 0;
+    DECLARE v_amount    DECIMAL(12,2) DEFAULT 0;
+    DECLARE v_sumvolume DECIMAL(12,2) DEFAULT 0;
+    DECLARE v_sumamount DECIMAL(12,2) DEFAULT 0;
+    DECLARE v_turnov    DECIMAL(12,2) DEFAULT 0;
+
+    call sp_create_tempday();
+    SELECT nmc/close FROM cap WHERE code=a_code LIMIT 1 INTO v_shares;
+
+    -- 可以通过 turnover = latest(volume/shares); 来计算相应日期数 @NUM
+    SET @sqls=concat('
+        INSERT INTO tempday(code,date,yesc,open,high,low,close,volume,amount)
+        SELECT code,date,yesc,open,high,low,close,volume,amount FROM day WHERE code=', 
+        a_code, " and date<= '", @END, "' order by date DESC LIMIT ", @NUM);
+    PREPARE stmt from @sqls; EXECUTE stmt;
+
+    SELECT count(*) FROM tempday INTO @v_len;
+    SELECT date     FROM tempday WHERE id=1 INTO v_datemax;
+
+    -- 13日内最低价日
+    SELECT id,date,close,low FROM tempday WHERE id<=13 order by low asc LIMIT 1 
+                                 INTO v_id,v_date2,v_close,v_low;
+
+    -- 过滤停牌很久的个股
+    IF DATE_ADD(v_datemax, INTERVAL 5 DAY) < @END THEN LEAVE tag_6mai; END IF;
+
+    lbl_upto_100: WHILE v_id <= @v_len DO
+        SELECT volume,amount FROM tempday WHERE id=(v_id) INTO v_volume,v_amount;
+
+        SET v_sumvolume = v_sumvolume + v_volume;
+        SET v_sumamount = v_sumamount + v_amount;
+
+        -- upto 100% turnover
+        IF  v_sumvolume >= v_shares THEN 
+            SELECT date,yesc FROM tempday WHERE id=(v_id) INTO v_date1,v_open;
+            SET v_avrg = (v_sumamount/v_sumvolume);
+            SET v_chng = 100*(v_close-v_open)/v_open;
+            SET v_turnov = 100*v_sumvolume/v_shares;
+            -- SET v_wchng = 100*(v_close-v_avrg)/v_avrg;
+            -- SELECT * FROM tempday;
+            -- SELECT v_id;
+            INSERT INTO tbl_6mai(code,date1,date2,off,open,low,close,
+                            amount,volume,turnov,avrg,chng)
+                     VALUES(a_code,v_date1,v_date2,v_id,v_open,v_low,v_close,
+                            v_sumamount,v_sumvolume,v_turnov, v_avrg, v_chng);
+            LEAVE lbl_upto_100; 
+        END IF;
+
+        SET v_id = v_id + 1;
+    END WHILE lbl_upto_100;
+END tag_6mai //
+
 DROP PROCEDURE IF EXISTS sp_get_ma513//
 CREATE PROCEDURE sp_get_ma513(a_code INT(6) ZEROFILL) tag_get_ma513:BEGIN
     DECLARE v_ma5      DECIMAL(6,2)  DEFAULT 0;
@@ -990,6 +1077,7 @@ END tag_get_ma240 //
     SET @fn_up_ma240_all        = 6;
     SET @fn_up_ma240_34         = 7;
     SET @fn_dugu9jian           = 9;
+    SET @fn_6maishenjian        = 10;
     SET @START  = '2013-12-6';
     SET @END    = '2014-06-06';
     SET @CYCLE  = 240;
@@ -1021,4 +1109,5 @@ END tag_get_ma240 //
 --  call sp_count_swing10();
 --  call sp_stat_turnov(2);
 --  call sp_get_down_turnov(2);
-    call sp_visit_tbl('cap', @fn_dugu9jian);
+--  call sp_visit_tbl('cap', @fn_dugu9jian);
+    call sp_visit_tbl('cap', @fn_6maishenjian);

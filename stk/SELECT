@@ -117,7 +117,7 @@ function fn_app_wgt_turnov()
     wgt="(sum-net)"
     field=${1:-wgt}
 
-    # 预筛选:高换手 SELECT 6 --> sel_ma513_ob_vol5
+    # 预筛选:高换手 SELECT sel_vol5_ratio --> sel_ma513_ob_vol5
     COND=${TBL:+and code in (SELECT code FROM $TBL) }${COND}
 
     echo ----- COND: $COND -----
@@ -216,7 +216,7 @@ function fn_stat_change()
 {
     START=${1:-${START}}
     END=${2:-${END}}
-    [ -z "${START}" ] && START=`./SELECT 3 | head -1`
+    [ -z "${START}" ] && START=`./SELECT get_open_days | head -1`
 
     echo "
     From ${START} to ${END}...
@@ -238,6 +238,10 @@ function fn_stat_change()
     return
 }
 
+function fn_6maishenjian()
+{
+    tablex=tbl_6mai fn_dugu9jian ${1}
+}
 
 function fn_dugu9jian()
 {   # date1,date2,amount,
@@ -254,7 +258,7 @@ function fn_dugu9jian()
                        round((avrg*.9),2) as buyin, 
                        round(100*(d.low-avrg)/avrg,2) as lchng, 
                        round(100*(d.close-avrg)/avrg,2) as wchng, c.name 
-            FROM tbl_9jian as d, cap as c
+            FROM ${tablex:-tbl_9jian} as d, cap as c
             WHERE d.code = c.code HAVING 1 ${COND} 
             ORDER by ${1:-wchng} ${ASC:-asc} limit ${LIMIT:-36}     # COND='nmc<130000 and wchng<-10'
         "
@@ -281,9 +285,10 @@ function fn_main()
 
     cmdlist=(
     "dugu9jian          [sortfiled]          # nine sword"
+    "6maishenjian       [sortfiled]          # nine sword"
     "app_wgt_turnov     [sortfiled]          # 追加weight到down_turnov CHAO=1则进zxg"
-    "get_comma_cloumns  [tbl_name:-day]      # 逗分列名"
     "get_open_days      [limit:-13 [desc]]   # 开市日列表"
+    "get_comma_cloumns  [tbl_name:-day]      # 逗分列名"
     "sel_tbl_sink_where [TBL:-zxg_chao513]   # chao ..."
     "sel_vol5_ratio     [sortfiled:-ratio]   # 量比排名"
     "sel_ma513_ob_vol5  [sortfiled]          # 换手率排名"

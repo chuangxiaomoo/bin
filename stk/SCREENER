@@ -178,7 +178,7 @@ function fn_get_down_turnov()
     START=${1:-${START}}
     END=${2:-${END}}
 
-    [ -z "${START}" ] && START=`./SELECT 3 | head -1`
+    [ -z "${START}" ] && START=`./SELECT get_open_days | head -1`
 
     echo "
     From ${START} to ${END}...
@@ -227,10 +227,31 @@ function fn_dugu9jian()
     mysql $mo -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
 
-    SELECT 0 $3
+    SELECT dugu9jian $3
 }
 
-function fn_get_cost()
+function fn_6maishenjian()
+{
+    END=${1:-${END}}
+    TBL=${TBL:-'cap'}
+    NUM=${2:-47}
+
+    echo "
+    To visit `mysql -N kts<<<"SELECT count(*) FROM ${TBL}"` codes on table $TBL...
+    "
+
+    echo "
+    SET @END='$END';
+    SET @NUM=${NUM};
+    call sp_visit_tbl('$TBL', @fn_6maishenjian);
+    " | tee -a $mps_god
+    mysql $mo -t kts <<< "source $mps_god"
+    xt_ret $? "${FUNCNAME}" || return $?
+
+    SELECT 6maishenjian $3
+}
+
+function fn_get_cost_9jian()
 {
     test -n "${1}" && fn_iscode ${1}       
     xt_ret $? "invalid code[$1]" || return $?
@@ -240,6 +261,18 @@ function fn_get_cost()
     local code=`sed 's/^0*//g' <<< $1 | xargs printf "%06d"`
     TBL=tbl_cost9 up add_codes_2_dzh2tbl ${code}
     TBL=tbl_cost9 fn_dugu9jian ${2:-$END} ${CYCLE:-240} ${3:-wchng}
+}
+
+function fn_get_cost_6mai()
+{
+    test -n "${1}" && fn_iscode ${1}       
+    xt_ret $? "invalid code[$1]" || return $?
+    fn_isdate ${2:-$END} 
+    xt_ret $? "invalid date[$2]" || return $?
+
+    local code=`sed 's/^0*//g' <<< $1 | xargs printf "%06d"`
+    TBL=tbl_cost6 up add_codes_2_dzh2tbl ${code}
+    TBL=tbl_cost6 fn_6maishenjian ${2:-$END} ${CYCLE:-240} ${3:-wchng}
 }
 
 
@@ -527,6 +560,7 @@ function fn_main()
     # xet_block_info 为 sp_visit_tbl() 选定相应的BLOCK
     cmdlist=(
     "dugu9jian            [end [offset]]        # cost analyze"
+    "6maishenjian         [end [offset]]        # cost analyze"
     "get_down_turnov      [start:curr-13] [end] # 100%下降净换手"
     "get_ma513            [end]                 # ma 5 13 34 55"
     "ana_ma513            index [end]           # 分析ma 5 13 34 55"
@@ -536,8 +570,9 @@ function fn_main()
     "get_13d_20psink                            # 8日13日SINK超20%"
     "get_1_swing_num      [RISE_PERCENT:-8]     # 单日振幅，小于0计算跌幅"
     "get_n_swing_num      [SWING_PERCENT:-16]   # 双日振幅，小于0计算跌幅"
+    "get_cost_9jian       code [end [field]]    # #{CYCLE}日，个股成本分析"
+    "get_cost_6mai        code [end [field]]    # #{CYCLE}日，个股成本分析"
     "get_stat_turnov      code start [end]      # 个股区间换手统计"
-    "get_cost             code [end]            # #{CYCLE}日，个股成本分析"
     "sort_amount          [LIMIT_NUM:-48]       # --- 成交量排名"
     "sort_turnover        [LIMIT_NUM:-48]       # 最新日换手排名"
     # ----------------    ABOVE FIXED SEQUENCE  -------------------
