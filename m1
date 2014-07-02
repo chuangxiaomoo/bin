@@ -86,14 +86,16 @@ function fn_find()                      { cat find ;}
 function fn_google()                    { cat google ;}
 function fn_chrome()                    { cat chrome ;}
 
-function fn_prog()                      {
-function fn_fundamental()               { cat prog_fundamental ;}
-function fn_01_社会学()                 { cat prog_01_社会学 ;}
-function fn_02_工程学()                 { cat prog_02_工程学 ;}
+function fn_program()                   {
+function fn_fundamental()               { cat program_fundamental ;}
+function fn_guru()                      { cat program_guru ;}
+function fn_01_社会学()                 { cat program_01_社会学 ;}
+function fn_02_工程学()                 { cat program_02_工程学 ;}
     local opts=(
         fundamental
         01_社会学
         02_工程学
+        guru                            # 编程大师
     )
     fn_print $@
 }
@@ -1325,7 +1327,7 @@ function fn_main() {
         perl
         pinfo
         problem                 # question 
-        prog
+        program
         puTTY
         ruby
         python
