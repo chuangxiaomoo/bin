@@ -3,9 +3,9 @@
 Linux:
     /* $route netmask is important when -net
      */
-	route add 192.168.86.21 gw 192.168.1.24
-	route add  -net 192.57.66.0 netmask 255.255.255.0 gw ipx4
-	
+    route add 192.168.86.21 gw 192.168.1.24
+    route add -net 192.57.66.0 netmask 255.255.255.0 gw ipx4
+    route add default gw 192.168.2.1
 xp:
     net: 
     route -p add 10.41.0.0 mask 255.255.0.0 10.27.0.1
