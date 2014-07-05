@@ -730,7 +730,7 @@ function fn_beyondcompare3()            { cat win_beyondcompare3 ;}
 function fn_rightclick()                { cat win_rightclick ;}
 function fn_U盘DOS启动盘制作工具()      { cat win_U盘DOS启动盘制作工具 ;}
     local opts=(
-        01                      # usb systeminfo printer vlc viso
+        01                      # usb systeminfo printer viso
         02_清晰显示
         03_看雪                 # encrypt 加密解密
         win7                    # 快捷键

@@ -85,9 +85,9 @@ function fn_2014_jco()                  { cat annual_2014_jco ;}
 
 #
 # Just like brain sort knowledge always, we need sort contineuously!
-# a book can append with a reflect
+# a BOOK can append with a reflect
 #
-function fn_book()                      { 
+function fn_book()                      {
 function fn_base()                      { cat book_base ;}
 function fn_wanna()                     { cat book_wanna ;}
 function fn_01_商君书()                 { cat book_01_商君书 ;}
@@ -124,11 +124,10 @@ function fn_f2_海底捞你学不会()         { cat book_f2_海底捞你学不�
         10years                 # 我的职场十年：修炼
         conservatism            # 保守主义
 
-        f1_富同学穷同学
         f2_海底捞你学不会
+        f1_富同学穷同学
     )
     fn_print $@
-
 }
 
 function fn_mindhacks()                 { cat mindhacks ;}
