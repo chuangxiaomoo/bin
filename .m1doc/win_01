@@ -39,12 +39,3 @@
     d. select > right click > combine or uncombine.
     e. click logo draw to free the draw hand.
 
-五、VLC
-  1.
-    VLC need to connect in an interval of 5 minutes
-
-    tools -> preference -> show setting all -> input / coder -> separator
-        -> RTP/RTSP
-
-  2.
-    <Ctrl-N> rtsp://192.168.2.44/1/d1
