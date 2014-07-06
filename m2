@@ -587,6 +587,8 @@ function fn_交易与合约()                { cat economic_交易与合约 ;}
     fn_print $@
 }
 
+function fn_dream()                     { cat dream ;}
+
 function fn_finance()                   {
 function fn_base()                      { cat finance_base ;}
 function fn_leverage()                  { cat finance_leverage ;}
@@ -613,6 +615,7 @@ function fn_main() {
         annual
         artical
         book
+        dream
         english
         economic
         finance                         
