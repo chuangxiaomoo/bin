@@ -229,7 +229,6 @@ function fn_15_逐笔_分笔_分时_逐单()    { cat stk_15_逐笔_分笔_分�
 
 function fn_20_fenbi()                  { cat stk_20_fenbi ;}
 
-function fn_jc_行为金融学()             { cat stk_jc_行为金融学 ;}
 function fn_jc_人皆患失()               { cat stk_jc_人皆患失 ;}
 function fn_jc_这不是独家买卖()         { cat stk_jc_这不是独家买卖 ;}
 function fn_jc_Golf智慧_快就是慢()      { cat stk_jc_Golf智慧_快就是慢 ;}
@@ -268,7 +267,6 @@ function fn_rzrq()                      { cat stk_rzrq ;}
 
         20_fenbi
 
-        jc_行为金融学                   # behavioral finance
         jc_人皆患失                     # 决策小分队
         jc_这不是独家买卖
         jc_Golf智慧_快就是慢            # 把目标放在心中；严谨，但不能太认真
@@ -573,16 +571,31 @@ function fn_stock()                     { cat influence_stock ;}
     fn_print $@
 }
 
+function fn_economic()                  {
+function fn_base()                      { cat economic_base ;}
+function fn_currency()                  { cat economic_currency ;}
+function fn_keynesian()                 { cat economic_keynesian ;}
+function fn_fortune()                   { cat economic_fortune ;}
+function fn_交易与合约()                { cat economic_交易与合约 ;}
+    local opts=(
+        base                            # 利率 汇率 基础概念
+        currency                        # 货币经济学
+        keynesian                       # 凯恩斯主义经济学
+        fortune                         # 古典自由主义 国富论
+        交易与合约
+    )
+    fn_print $@
+}
+
 function fn_finance()                   {
 function fn_base()                      { cat finance_base ;}
 function fn_leverage()                  { cat finance_leverage ;}
 function fn_fortune()                   { cat finance_fortune ;}
-function fn_keynesian()                 { cat finance_keynesian ;}
+function fn_behavioral()                { cat finance_behavioral ;}
     local opts=(
         base                            # 利率 汇率 基础概念
         leverage                        # 杠杆
-        fortune                         # 古典自由主义 国富论
-        keynesian                       # 凯恩斯主义经济学
+        behavioral                      # 行为金融学 behavioral finance
     )
     fn_print $@
 }
@@ -601,7 +614,8 @@ function fn_main() {
         artical
         book
         english
-        finance                         # economic
+        economic
+        finance                         
         faith
         family                          # 难念的经
         girl
