@@ -239,8 +239,39 @@ function fn_stat_change()
 }
 
 function fn_6maishenjian()
-{
-    tablex=tbl_6mai fn_dugu9jian ${1}
+{   # date1,date2,amount,
+    columns="off,open,close,turnov"
+    columns=${columns:-'*'}
+    columns=d.${columns//,/,d.}
+
+    echo ----- COND: $COND -----
+    function fn_get_tbl_9jian_dive()
+    {
+        tbl_super_dive="
+        SELECT d.code, DATE_FORMAT(date1,'%m-%d') as start, 
+                       DATE_FORMAT(date2,'%m-%d') as end, ${columns}, c.nmc, chng, 
+                       round(100*(d.close-avrg)/avrg,2) as wchng, 
+                       round(100*(d.low  -avrg)/avrg,2) as lchng, 
+                       round(100*(c.close-avrg)/avrg,2) as push, 
+                       round(100*(c.close- low)/avrg,2) as pop, 
+                       c.name 
+            FROM ${tablex:-tbl_6mai} as d, cap as c
+            WHERE d.code = c.code HAVING 1 ${COND} 
+            ORDER by ${1:-wchng} ${ASC:-asc} limit ${LIMIT:-36}     # COND='nmc<130000 and wchng<-10'
+        "
+        echo "${tbl_super_dive}"
+    }
+
+    fn_get_tbl_9jian_dive $1
+    mysql $mo -t kts <<< "${tbl_super_dive}"
+    xt_ret $? "${FUNCNAME}" || return $?
+    
+    [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
+
+    fn_get_tbl_9jian_dive $1 > /dev/null
+    mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" | \
+        tee .soptter.chao | TBL=chao xargs up 7
+    xt_ret $? "${FUNCNAME}" || return $?
 }
 
 function fn_dugu9jian()
@@ -250,7 +281,7 @@ function fn_dugu9jian()
     columns=d.${columns//,/,d.}
 
     echo ----- COND: $COND -----
-    function fn_get_tbl_super_dive()
+    function fn_get_tbl_9jian_dive()
     {
         tbl_super_dive="
         SELECT d.code, DATE_FORMAT(date1,'%m-%d') as start, 
@@ -265,13 +296,13 @@ function fn_dugu9jian()
         echo "${tbl_super_dive}"
     }
 
-    fn_get_tbl_super_dive $1
+    fn_get_tbl_9jian_dive $1
     mysql $mo -t kts <<< "${tbl_super_dive}"
     xt_ret $? "${FUNCNAME}" || return $?
     
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
-    fn_get_tbl_super_dive $1 > /dev/null
+    fn_get_tbl_9jian_dive $1 > /dev/null
     mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" | \
         tee .soptter.chao | TBL=chao xargs up 7
     xt_ret $? "${FUNCNAME}" || return $?

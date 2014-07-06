@@ -72,7 +72,7 @@ function fn_tougu_reminder()
 
 function fn_cap()
 {
-    if [ "$1" = "--keep.FIN" ] ; then
+    if [ "$1" = "--keep.FIN" ] || [ "$1" = "-k" ]; then
         echo "keep $p_bin/full.FIN"
     else
         read -p "
@@ -384,7 +384,7 @@ function fn_add_tbl_codes_2_dzh()
 
 function fn_up_tbl_xRD()
 {
-    if [ "$1" = "--keep.PWR" ] ; then
+    if [ "$1" = "--keep.PWR" ] || [ "$1" = "-k" ]; then
         echo "keep $p_bin/full.PWR"
     else
         echo "cp /dzh2/Download/PWR/full.PWR $p_bin"
@@ -624,14 +624,14 @@ function fn_main()
 
     cmdlist=(
     # fixed sequence
-    "cap [--keep.FIN]                   # full.FIN (max(中国石油)=2万亿 sum(nmc)=20万亿)"
+    "cap [--keep.FIN -k]                # full.FIN (max(中国石油)=2万亿 sum(nmc)=20万亿)"
     "down_fenbi                         # 下载分笔数据"
     "hexun_day                          # 大盘日线数据 4:00:00 PM"
     "del_hexun_day                      # 删除大盘日线，防止冲突"
     "redo_hexun_day                     # 重做大盘日线数据"
     "redo_hexun_day_fr_min              # 利用已有分线，重做大盘日线"
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
-    "up_tbl_xRD [--keep.PWR]            # --- 使用当前除权数据 --keep.PWR"
+    "up_tbl_xRD [--keep.PWR -k]         # --- 使用当前除权数据 --keep.PWR"
     "add_codes_2_dzh2tbl code...        # 添加CODE到ZXG.BLK，并写表#{TBL:-zxg}"
     "add_tbl_codes_2_dzh                # 添加表#{TBL:-tbl_visit}到dzh2tbl{zxg}"
     "up_rzrq_codes_tbl                  # 更新RZRQ业务数据"
