@@ -559,8 +559,8 @@ function fn_main()
     # SCREENER的宗旨，弃子取势
     # xet_block_info 为 sp_visit_tbl() 选定相应的BLOCK
     cmdlist=(
-    "dugu9jian            [end [offset]]        # cost analyze"
-    "6maishenjian         [end [offset]]        # cost analyze"
+    "dugu9jian            [end [offset]]        # end.close analyze"
+    "6maishenjian         [end [offset]]        # min(close) analyze"
     "get_down_turnov      [start:curr-13] [end] # 100%下降净换手"
     "get_ma513            [end]                 # ma 5 13 34 55"
     "ana_ma513            index [end]           # 分析ma 5 13 34 55"
