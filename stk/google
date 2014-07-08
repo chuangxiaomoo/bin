@@ -49,7 +49,7 @@ function fn_google() {
 
 function fn_main() 
 {
-    # index=2
+    index=2
     fn_google${index}  $@ | tee $go_temp
 
     [ 0 -ne  "${PIPESTATUS[0]}" ] && echo google fail && exit 1
