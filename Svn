@@ -8,7 +8,7 @@ function fn_main()
     a)
         find ! -name '.' -a -name '*' | xargs -I{} svn add --force {}  | cat -n
         ;;
-    c)
+    c|ci)
         svn ci $filelist
         ;;
     r)

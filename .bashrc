@@ -68,6 +68,7 @@ alias   psw3m='ps -ef | grep [w]3m'
 alias  kmysql='mysql kts'
 alias   xgrep="find . -name '*' -type f | xargs grep "
 alias  upconf="rm -f /home/s/fs/opt/conf/config.*; svn up /home/s/fs/opt/conf/config.org;" 
+alias  clrnfs="Svn | grep nfs | awk '{print $2}' | xargs rm -f"
 
 # soptter
 function M()        { m1 $@ | tail -18; } # M() { m1 $@ | nl -w 3 -s' ' | less -i ;}
