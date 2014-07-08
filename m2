@@ -602,6 +602,8 @@ function fn_behavioral()                { cat finance_behavioral ;}
     fn_print $@
 }
 
+function fn_advertisement()             { cat advertisement ;}
+
 # 新教与天主教。信则得救，不信则下地狱 vs 助人行善
 # 一花一世界，一木一浮生，一草一天堂，一叶一如来，
 # 一砂一极乐，一方一净土，一笑一尘缘，一念一清静
@@ -610,6 +612,7 @@ function fn_main() {
         50_interview_faq                # 想想自己的价值？
         01_囧_jiong
         02_如何解题                     # how to solve it, problem_solving
+        advertisement
         aesthetics                      # i:s`θetic 美学
         phi                             # philosophy
         annual
