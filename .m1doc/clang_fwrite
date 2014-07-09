@@ -1,5 +1,7 @@
 # fwrite
 
+# write
+
   1. fwrite fprintf() 会缓存
 
    fflush()
@@ -11,6 +13,23 @@
   2. write()不会缓存
 
    write()实时死入
+
+# man man
+
+  1   Executable programs or shell commands
+  2   System calls (functions provided by the kernel)
+  3   Library calls (functions within program libraries)
+
+
+# sync磁盘同步 
+
+  > man 2 close
+
+  A successful close does not guarantee that  the  data  has  been  successfully
+  saved  to disk, as the kernel defers writes.  It is not common for a file sys‐
+  tem to flush the buffers when the stream is closed.  If you need  to  be  sure
+  that  the data is physically stored use fsync(2).  (It will depend on the disk
+  hardware at this point.)
 
 # source 
 

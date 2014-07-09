@@ -1,5 +1,19 @@
 #! /bin/bash
 
+
+function fn_usage()
+{
+    echo "
+        ----------- Usage --------------
+        a   find ! -name '.' -a -name '*' | xargs -I{} svn add --force {}  | cat -n
+        c   ci [files...]
+        q   -q status
+        r   revert -R {file|dir}
+        s   status
+        u   update
+    "
+}
+
 function fn_main()
 {
     filelist=${@:2}
@@ -11,25 +25,27 @@ function fn_main()
     c|ci)
         svn ci $filelist
         ;;
+    d|diff)
+        svn diff $filelist
+        ;;
     r)
         [ -z "$filelist" ] && echo "Error: file... must be dedicated" && exit
         svn --depth=infinity revert $filelist
         ;;
     s)
-        svn status
+        svn status $filelist
         ;;
     q)
         svn -q status
         ;;
+    u|up)
+        svn up $filelist
+        ;;
+    h)
+        fn_usage
+        ;;
     *)
-        echo "
-        ----------- Usage --------------
-        a   find ! -name '.' -a -name '*' | xargs -I{} svn add --force {}  | cat -n
-        c   ci [files...]
-        q   -q status
-        r   revert -R {file|dir}
-        s   status
-        "
+        fn_usage
         svn status | sed 's/^/\t/g'
         ;;
     esac
