@@ -2,13 +2,19 @@
 
 1. listen 
 
-  nc -l 1234
+  nc -l -p 1234
 
 2. connect
 
   nc 127.0.0.1 1234
 
-3. 模拟文件传输
+3. 设备间文件
+  `
+  nc -l -p 1234 > file.out
+  nc 127.0.0.1 1234 < file.in
+  `
+
+4. 模拟升级
 
   > imitate HTTP update 
 

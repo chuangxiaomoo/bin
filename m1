@@ -412,7 +412,7 @@ function fn_fwrite()                    { cat clang_fwrite ;}
         syslog
         errno
         open
-        fwrite                  # fprintf
+        fwrite                  # fprintf fsync fflush
         printf                  # scanf format
         signal
         strncpy                 # string serial
