@@ -93,6 +93,8 @@ function fn_2014_report()               { cat annual_2014_report ;}
 #
 function fn_book()                      {
 function fn_base()                      { cat book_base ;}
+function fn_sunzi()                     { cat book_sunzi ;}
+function fn_36ji()                      { cat book_36ji ;}
 function fn_wanna()                     { cat book_wanna ;}
 function fn_01_商君书()                 { cat book_01_商君书 ;}
 function fn_02_韩非子()                 { cat book_02_韩非子 ;}
@@ -116,6 +118,8 @@ function fn_f3_教父()                   { cat book_f3_教父 ;}
     local opts=(
         base       
         wanna                   # 想读的书
+        sunzi                   # 孙子兵法
+        36ji                    # 36计
         01_商君书
         02_韩非子
         aq_如何提问             # reading
