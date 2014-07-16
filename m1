@@ -1242,6 +1242,7 @@ function fn_jcp()                       { cat nxp_jcp ;}
     fn_print $@
 }
 
+function fn_hotspot()                   { cat hotspot ;}
 function fn_virtualbox()                { cat virtualbox ;}
 
 function fn_web()                       {
@@ -1310,6 +1311,7 @@ function fn_main() {
         hudson
         mp4                     # GOOGLE `mp4 sample` to get sample file
         h264
+        hotspot                 # wifi便携热点设置
         ideas
         info
         j2box

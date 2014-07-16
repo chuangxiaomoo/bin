@@ -65,6 +65,8 @@ function fn_2013_life()                 { cat annual_2013_life ;}
 function fn_2014_plan()                 { cat annual_2014_plan ;}
 function fn_2014_spring_festival()      { cat annual_2014_spring_festival ;}
 function fn_2014_jco()                  { cat annual_2014_jco ;}
+function fn_2014_life()                 { cat annual_2014_life ;}
+function fn_2014_report()               { cat annual_2014_report ;}
     local opts=(
         plan_what                       # 基于`以终为始`的理念
         report_what
@@ -79,6 +81,8 @@ function fn_2014_jco()                  { cat annual_2014_jco ;}
         2014_plan                       # `多算胜，少算不胜`
         2014_spring_festival
         2014_jco
+        2014_life
+        2014_report
     )
     fn_print $@
 }
@@ -602,7 +606,10 @@ function fn_behavioral()                { cat finance_behavioral ;}
     fn_print $@
 }
 
+function fn_texas_hold_em_poker()       { cat texas_hold_em_poker ;}
 function fn_advertisement()             { cat advertisement ;}
+function fn_architecture()              { cat architecture ;}
+function fn_estate()                    { cat estate ;}
 
 # 新教与天主教。信则得救，不信则下地狱 vs 助人行善
 # 一花一世界，一木一浮生，一草一天堂，一叶一如来，
@@ -612,8 +619,10 @@ function fn_main() {
         50_interview_faq                # 想想自己的价值？
         01_囧_jiong
         02_如何解题                     # how to solve it, problem_solving
+        architecture                    # 建筑
         advertisement
         aesthetics                      # i:s`θetic 美学
+        estate                          # 房地产
         phi                             # philosophy
         annual
         artical
@@ -648,6 +657,7 @@ function fn_main() {
         socrates                        # Socrates 苏格拉底 诘问
         stk
         futures                         # futures trading 期货
+        texas_hold_em_poker
         tick
         traffic
         value                           # 价值
