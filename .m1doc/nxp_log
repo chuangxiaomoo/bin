@@ -1,1 +1,27 @@
 # log
+
+# what
+
+  日志分为3个：
+  * alarmlog        操作日志，可以给客户查看
+  * applog          操作日志，可以给客户查看
+  * syslog          系统的调试及重要系统信息，不给客户查看
+  * upgradelog      升级日志
+
+# 升级日志
+
+  升级日志区别其它3个日志，其是直接写falsh，不需要从内存同步
+
+
+# 日志同步
+
+  * alarmlog applog 定时同步
+
+  * syslog  只在系统重启(DELAY_CMD_REBOOT)时同步到 /opt/log/messages，
+            并保存一份回滚日志/opt/log/messages.1
+            写文件时，使用copyfile();
+
+# 系统异常处理
+
+  * 使用系统命令而非通过jco_server来重启系统
+  * 内核异常，watchdog导致系统启动
