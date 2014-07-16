@@ -6,6 +6,19 @@
 
     svn ls *
 
+# 回退到相应版本
+
+  方案1
+
+    svn up <files > -r NUM;       # when a soft link, choose their-full
+    mkdir .tmp; mv <files> .tmp
+    svn up; mv .tmp/* .
+
+  方案2
+
+    svn merge -r100:99 .   ("."是要的, 然后再 svn commit -m 'revert to version 99')
+    svn merge -c -100  .   (如果版本之间相差1, 还可以用)
+
 # cleanup
 
     svn info
