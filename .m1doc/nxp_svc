@@ -1,0 +1,21 @@
+# svc
+
+  可适性视讯编码(Scalable Video Coding)
+
+  时间  抽帧存储
+  空间  尺寸点
+
+# 需求背景
+
+  号称的低码率，解决移动时的码率飚升，及mosaic
+
+# nxp支持
+
+  编码方式换成svc
+  存录像
+  取帧
+  流传输
+
+# stream
+
+  onvif测出其url，而后用vlc录像
