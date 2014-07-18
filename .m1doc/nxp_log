@@ -19,6 +19,7 @@
 # 升级日志
 
   升级日志区别其它3个日志，其是直接写falsh，不需要从内存同步
+  启用2级回滚日志。
 
 # 脚本日志
 
@@ -30,6 +31,7 @@
   * alarmlog applog 定时同步
 
   * syslog  只在系统重启(DELAY_CMD_REBOOT)时同步到 /opt/log/messages，
+            启用3级回滚日志。异常正电不保存日志。
             并保存一份回滚日志/opt/log/messages.1
             写文件时，使用copyfile();
 

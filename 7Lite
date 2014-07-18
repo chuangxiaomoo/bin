@@ -10,6 +10,23 @@ shopt -s gnu_errfmt
 
 cd ${CWD}
 
+# roll file 
+
+function fn_roll_file()
+{
+    up_tmp=/tmp/upgrade.log
+    up_log=/opt/log/upgrade.log
+    mkdir -p ${up_log%/*}
+    kbs=`du -sk ${up_log} | awk '{print $1}'`
+
+    if [ "${kts:-0}" -gt 512 ] ; then
+        tail -c256000 $up_log > ${up_tmp}
+        mv ${up_tmp} $up_log
+    fi
+    
+    return $?
+}
+
 function fn_ping() 
 {
     if [ "$1" == "-h" ] || [ "$1" == "" ]; then
