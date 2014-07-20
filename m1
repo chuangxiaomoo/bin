@@ -1195,6 +1195,7 @@ function fn_nxp()                       {
 function fn_requirement_analysis()      { cat nxp_requirement_analysis ;}
 function fn_time()                      { cat nxp_time ;}
 function fn_hold()                      { cat nxp_hold ;}
+function fn_heartbeat()                 { cat nxp_heartbeat ;}
 function fn_base()                      { cat nxp_base ;}
 function fn_training()                  { cat nxp_training ;}
 function fn_arch()                      { cat nxp_arch ;}
@@ -1230,6 +1231,7 @@ function fn_svc()                       { cat nxp_svc ;}
         ipc                             # inter-process-communication
         signal                          # 信号处理
         log
+        heartbeat                       # 心跳
         config
         upgrade
         protocol                        # client与server的通信协议

@@ -1,0 +1,13 @@
+# heartbeat
+
+  pid_t bg_exec()
+  {
+    pid_t fork(void);
+  }
+
+  int main()
+  {
+    pid_t pid = bg_exec();
+    kill(pid, 0);
+  }
+
