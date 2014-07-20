@@ -66,6 +66,7 @@ function fn_2014_plan()                 { cat annual_2014_plan ;}
 function fn_2014_spring_festival()      { cat annual_2014_spring_festival ;}
 function fn_2014_jco()                  { cat annual_2014_jco ;}
 function fn_2014_life()                 { cat annual_2014_life ;}
+function fn_2014_grandpa_inlaw()        { cat annual_2014_grandpa_inlaw ;}
 function fn_2014_report()               { cat annual_2014_report ;}
     local opts=(
         plan_what                       # 基于`以终为始`的理念
@@ -82,6 +83,7 @@ function fn_2014_report()               { cat annual_2014_report ;}
         2014_spring_festival
         2014_jco
         2014_life
+        2014_grandpa_inlaw
         2014_report
     )
     fn_print $@

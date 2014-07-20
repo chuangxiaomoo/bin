@@ -2,12 +2,13 @@
 
 # add
 
-  route add default gw 192.168.43.1
+  ifconfig eth1:0 192.168.43.210;
+  route add default gw 192.168.43.1;
   sed -i '1i nameserver 192.168.43.1' /etc/resolv.conf
-  ifconfig eth1:0 192.168.43.210
 
 # del
 
-  route del default gw 192.168.43.1
+  ifconfig eth1:0 down
+  route del default gw 192.168.43.1;
   sed -i '/192.168.43.1/d' /etc/resolv.conf
 
