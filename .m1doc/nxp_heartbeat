@@ -11,3 +11,49 @@
     kill(pid, 0);
   }
 
+# JCOSystem
+
+    int JCOSystem(char *szCmd)
+    {
+      pid_t pid = 0;
+      int ret = SUCCESS;
+      
+      if (NULL == szCmd) {
+        return FAILURE;
+      }
+      
+      if (0 > (pid = fork())) {
+        ret = FAILURE;
+      } else if (0 == pid) {
+        execl("/bin/sh", "sh", "-c", szCmd, NULL);
+        exit(127);
+      } else {
+        while (0 > waitpid(pid, &ret, 0)) {
+          if (EINTR != errno) {
+            ret = FAILURE;
+            break;
+          }
+        }
+      }
+      
+      return ret;
+    }
+
+# bg_exec()
+
+    int bg_exec(const char *command)
+    {
+      pid_t pid = 0;
+      
+      if (NULL == command) {
+        return FAILURE;
+      }
+      
+      if (0 > (pid = fork())) {
+        return FAILURE;
+      } else if (0 == pid) {
+        system(command);
+      } else {
+        return (int)pid;
+      }
+    }

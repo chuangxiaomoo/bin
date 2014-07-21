@@ -1,0 +1,20 @@
+# command
+
+  [](http://blog.csdn.net/wyabc1986/article/details/6989532)
+
+  * 更新本机中的数据库缓存：
+
+  sudo apt-get update
+
+  * 查找包含部分关键字的软件包：
+
+  sudo apt-cache search <你要查找的name>
+
+  * 安装指定的软件：
+
+  sudo apt-get install <你要安装的软件包>
+
+  * 下载软件包源代码（如果有的话）:
+
+  apt-get source <你要下载的源代码包名>
+
