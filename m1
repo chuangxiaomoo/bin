@@ -1106,11 +1106,13 @@ function fn_api.c()                     { cat xml_api.c ;}
 function fn_api.h()                     { cat xml_api.h ;}
 function fn_xsd()                       { cat xml_xsd ;}
 function fn_parser()                    { cat xml_parser ;}
+function fn_xpath()                     { cat xml_xpath ;}
     local opts=(
         base
         api.c 
         api.h
         parser              # xpath xslt 
+        xpath               # perl
         xsd                 # XML Schema xml schema
     )
     fn_print $@
