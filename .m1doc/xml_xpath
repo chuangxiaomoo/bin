@@ -1,0 +1,25 @@
+# xpath
+
+# install
+
+  apt-get install libxml-xpath-perl 
+
+
+# example
+
+    # cd /home/s/fs/opt/conf
+    # head config.org
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <cfg>
+      <eth>
+        <nic>eth0</nic>
+        <ip>192.168.1.217</ip>
+        <mask>255.255.255.0</mask>
+        <gw>192.168.1.1</gw>
+        <dhcpen>0</dhcpen>
+        <dns>202.96.128.86</dns>
+      </eth>
+
+    # xpath -q -e cfg/eth/nic config.org
+    <nic>eth0</nic>
+    
