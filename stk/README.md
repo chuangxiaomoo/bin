@@ -8,7 +8,7 @@
 
 > 前言
 
-## 王大爷的金融   .doc/finance.md
+## 王大爷的金融   .doc/wanghaibin.md
 ## 量子力学       .doc/quantum_mechanics.md
 ## 行为心理学     .doc/behaviorism.md
 ## 想看的书       .doc/books.md
