@@ -990,7 +990,15 @@ function fn_cppncss()                   { cat CC_cppncss ;}
     fn_print $@
 }
 
-function fn_apt-get()                   { cat apt-get ;}
+function fn_apt-get()                   {
+function fn_source()                    { cat apt-get_source ;}
+function fn_command()                   { cat apt-get_command ;}
+    local opts=(
+        source
+        command
+    )
+    fn_print $@
+}
 function fn_java()                      { cat java ;}
 function fn_scp()                       { cat ssh ;}
 function fn_ssh()                       { cat ssh ;}
