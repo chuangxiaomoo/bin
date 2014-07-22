@@ -256,6 +256,7 @@ function fn_32_IE吃掉_mousedown_click() { cat case_32_IE吃掉_mousedown_click
 function fn_33_云台运动步长不一致()     { cat case_33_云台运动步长不一致 ;}
 function fn_34_升级中的错误处理()       { cat case_34_升级中的错误处理 ;}
 function fn_35_jcp_blocked_on_conf()    { cat case_35_jcp_blocked_on_conf ;}
+function fn_36_移动侦测时卡顿()         { cat case_36_移动侦测时卡顿 ;}
 
 function fn_54_ZXWSDK告警丢失()         { cat case_54_ZXWSDK告警丢失 ;}
 function fn_55_bind_失败_No_such_file() { cat case_55_bind_失败_No_such_file ;}
@@ -317,6 +318,7 @@ function fn_56_ini写入时间耗时3秒()     { cat case_56_ini写入时间耗�
         33_云台运动步长不一致           # 问题：你如何知道->量化数据
         34_升级中的错误处理             # 错误处理的原则：忠实还原
         35_jcp_blocked_on_conf          # 当jcp通过conf实现时，阻塞了
+        36_移动侦测时卡顿               # 测试方法论：分治
 
         a0_vobx_tool_filename           # 虚拟机存储映射后WINDOWS文件系统时，filename不区别大小写
         a1_fork_locked                  # fork()阻塞了
