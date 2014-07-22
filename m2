@@ -317,8 +317,10 @@ function fn_02_一朝天子一朝臣()         { cat why_02_一朝天子一朝�
 }
 
 function fn_movie()                     { 
+function fn_100films()                  { cat movie_100films ;}
 function fn_01_Akkila与拼字大赛()       { cat movie_01_Akkila与拼字大赛 ;}
     local opts=(
+        100films
         01_Akkila与拼字大赛
     )
     fn_print $@
@@ -613,10 +615,12 @@ function fn_behavioral()                { cat finance_behavioral ;}
 }
 
 function fn_texaspoker()                { 
+function fn_loser()                     { cat texaspoker_loser ;}
 function fn_xiulian()                   { cat texaspoker_xiulian ;}
 function fn_goldrules()                 { cat texaspoker_goldrules ;}
     local opts=(
         xiulian                         # 修炼
+        loser
         goldrules
     )
     fn_print $@
