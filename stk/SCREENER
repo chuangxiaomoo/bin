@@ -213,7 +213,7 @@ function fn_dugu9jian()
 {
     END=${1:-${END}}
     TBL=${TBL:-'cap'}
-    NUM=${2:-34}
+    NUM=${2:-61}        # 34太小，300104 2014-07-17 被漏掉了
 
     echo "
     To visit `mysql -N kts<<<"SELECT count(*) FROM ${TBL}"` codes on table $TBL...
@@ -234,7 +234,7 @@ function fn_6maishenjian()
 {
     END=${1:-${END}}
     TBL=${TBL:-'cap'}
-    NUM=${2:-47}
+    NUM=${2:-61}
 
     echo "
     To visit `mysql -N kts<<<"SELECT count(*) FROM ${TBL}"` codes on table $TBL...
