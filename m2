@@ -612,7 +612,15 @@ function fn_behavioral()                { cat finance_behavioral ;}
     fn_print $@
 }
 
-function fn_texas_hold_em_poker()       { cat texas_hold_em_poker ;}
+function fn_texaspoker()                { 
+function fn_xiulian()                   { cat texaspoker_xiulian ;}
+function fn_goldrules()                 { cat texaspoker_goldrules ;}
+    local opts=(
+        xiulian                         # 修炼
+        goldrules
+    )
+    fn_print $@
+}
 function fn_advertisement()             { cat advertisement ;}
 function fn_architecture()              { cat architecture ;}
 function fn_estate()                    { cat estate ;}
@@ -663,7 +671,7 @@ function fn_main() {
         socrates                        # Socrates 苏格拉底 诘问
         stk
         futures                         # futures trading 期货
-        texas_hold_em_poker
+        texaspoker                      # texas_hold_em_poker
         tick
         traffic
         value                           # 价值
