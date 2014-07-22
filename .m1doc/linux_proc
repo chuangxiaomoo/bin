@@ -1,33 +1,39 @@
-/* proc */
+# proc
 
-. /proc/sys/debug/alignment
+# /proc/sys/vm/drop_caches
 
-    https://www.kernel.org/doc/Documentation/arm/mem_alignment
+  立即释放cache
 
-    To change the alignment trap behavior, simply echo a number into
-    /proc/cpu/alignment.  The number is made up from various bits:
+    echo 3 > /proc/sys/vm/drop_caches
 
-    bit     behavior when set
-    ---     -----------------
+# /proc/sys/debug/alignment
 
-    0       A user process performing an unaligned memory access
-            will cause the kernel to print a message indicating
-            process name, pid, pc, instruction, address, and the
-            fault code.
+  https://www.kernel.org/doc/Documentation/arm/mem_alignment
 
-    1       The kernel will attempt to fix up the user process
-            performing the unaligned access.  This is of course
-            slow (think about the floating point emulator) and
-            not recommended for production use.
+  To change the alignment trap behavior, simply echo a number into
+  /proc/cpu/alignment.  The number is made up from various bits:
 
-    2       The kernel will send a SIGBUS signal to the user process
-            performing the unaligned access.
+  bit     behavior when set
+  ---     -----------------
 
-    Note that not all combinations are supported - only values 0 through 5.
-    (6 and 7 don't make sense).
+  0       A user process performing an unaligned memory access
+          will cause the kernel to print a message indicating
+          process name, pid, pc, instruction, address, and the
+          fault code.
 
-    For example, the following will turn on the warnings, but without
-    fixing up or sending SIGBUS signals:
+  1       The kernel will attempt to fix up the user process
+          performing the unaligned access.  This is of course
+          slow (think about the floating point emulator) and
+          not recommended for production use.
 
-        echo 1 > /proc/sys/debug/alignment
+  2       The kernel will send a SIGBUS signal to the user process
+          performing the unaligned access.
+
+  Note that not all combinations are supported - only values 0 through 5.
+  (6 and 7 don't make sense).
+
+  For example, the following will turn on the warnings, but without
+  fixing up or sending SIGBUS signals:
+
+      echo 1 > /proc/sys/debug/alignment
 
