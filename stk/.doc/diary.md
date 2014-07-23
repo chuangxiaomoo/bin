@@ -1256,3 +1256,9 @@
   每个帐户都事先布置足量的市值配额，所以散户在挑选时，尽量挑选`单帐户上限低`
   的新股申购，和大户在同样`狭小的空间`内拼运气，而非拼资金。
 
+# 2014-07-23 ETF
+
+  交易不用印花税
+  [](http://weibo.com/2369080114/zyWVL1HCR)
+  [](http://weibo.com/2369080114/zACxG74a9?mod=weibotime#_rnd1406120425516)
+  [](http://www.baidu.com/s?word=ETF)
