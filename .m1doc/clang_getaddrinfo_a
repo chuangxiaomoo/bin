@@ -1,0 +1,30 @@
+# getaddrinfo_a
+
+# getaddrinfo_a
+
+  Link with -lanl.
+
+  [异步 getaddrinfo](http://man7.org/linux/man-pages/man3/getaddrinfo_a.3.html)
+ 
+# sigsetjmp + alarm + siglongjmp
+#
+  [](http://www.cppblog.com/converse/archive/2009/11/07/100349.html)
+
+  不过这个策略还是有问题的,这个API通过alarm函数设定了一个定时器,超时的时候发
+  送一个SIGALARM信号,如果系统中已经存在了通过alarm定制的定时器,如果解决这些
+  定时器可能发生的冲突问题?如果有更好的办法,欢迎提示.
+
+  > ---------------------------------------------------------------
+
+  查了一下 可以通过alarm的返回值来判断是否已经通过alarm定制了定时器
+  SYNOPSIS
+  #include <unistd.h>
+  unsigned alarm(unsigned seconds);
+
+  RETURN VALUE
+  If there is a previous alarm() request with time
+  remaining, alarm() shall return a non-zero value that
+  is the number of seconds until the previous request
+  would have generated a SIGALRM signal. Otherwise,
+  alarm() shall return 0.  
+
