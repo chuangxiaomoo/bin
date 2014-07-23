@@ -244,25 +244,27 @@ function fn_6maishenjian()
     columns=${columns:-'*'}
     columns=t.${columns//,/,t.}
 
+    DATE2=`fn_maxdate`
+
     echo ----- COND: $COND -----
-    function fn_get_tbl_9jian_dive()
+    function fn_get_tbl_6jian_dive()
     {
         tbl_super_dive="
         SELECT t.code, DATE_FORMAT(date1,'%m-%d') as start, 
                        DATE_FORMAT(date2,'%m-%d') as end, ${columns}, c.nmc, chng, 
-                       round(100*(t.close-avrg)/avrg,2) as wchng, 
-                       round(100*(t.low  -avrg)/avrg,2) as lchng, 
-                       round(100*(c.close-avrg)/avrg,2) as push, 
-                       round(100*(c.close- low)/avrg,2) as pop, 
+                       round(100*(t.close- avrg)/avrg,2) as wchng, 
+                       round(100*(t.low  - avrg)/avrg,2) as lchng, 
+                       round(100*(d.close- avrg)/avrg,2) as down, 
+                       round(100*(d.close-t.low)/avrg,2) as up, 
                        c.name 
-            FROM ${tablex:-tbl_6mai} as t, cap as c
-            WHERE t.code = c.code HAVING 1 ${COND} 
+            FROM ${tablex:-tbl_6mai} as t, cap as c, (SELECT * from day where date='${DATE2}') as d
+            WHERE t.code = c.code and t.code = d.code HAVING 1 ${COND} 
             ORDER by ${1:-wchng} ${ASC:-asc} limit ${LIMIT:-36}     # COND='nmc<150000 and lchng<-9.7 and off<14'
         "
         echo "${tbl_super_dive}"
     }
 
-    fn_get_tbl_9jian_dive $1
+    fn_get_tbl_6jian_dive $1
     mysql $mo -t kts <<< "${tbl_super_dive}"
     xt_ret $? "${FUNCNAME}" || return $?
     
