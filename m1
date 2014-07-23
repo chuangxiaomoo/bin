@@ -389,6 +389,7 @@ function fn_strncpy()                   { cat clang_strncpy ;}
 function fn_snprintf()                  { cat clang_snprintf ;}
 function fn_thread_lock()               { cat clang_thread_lock ;}
 function fn_fwrite()                    { cat clang_fwrite ;}
+function fn_getaddrinfo_a()             { cat clang_getaddrinfo_a ;}
 
     local opts=(
         C调用C++链接库
@@ -409,7 +410,7 @@ function fn_fwrite()                    { cat clang_fwrite ;}
         thread_confict_malloc   # fork() and malloc() can't run together
         warning
         macro
-        # ------ POSIX ------
+        # ------ posix ------
         md5                     # 
         iconv                   # utf-8 gbk wide-character handling ascii
         syslog
@@ -425,6 +426,7 @@ function fn_fwrite()                    { cat clang_fwrite ;}
         tty                     # serial port
         non_block_func
         non_sig_select
+        getaddrinfo_a           # getaddrinfo asynchronous 
     )
     fn_print $@
 }
