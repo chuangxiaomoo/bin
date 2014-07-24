@@ -615,13 +615,15 @@ function fn_behavioral()                { cat finance_behavioral ;}
 }
 
 function fn_texaspoker()                { 
-function fn_loser()                     { cat texaspoker_loser ;}
 function fn_xiulian()                   { cat texaspoker_xiulian ;}
+function fn_loser()                     { cat texaspoker_loser ;}
 function fn_goldrules()                 { cat texaspoker_goldrules ;}
+function fn_term()                      { cat texaspoker_term ;}
     local opts=(
         xiulian                         # 修炼
         loser
         goldrules
+        term
     )
     fn_print $@
 }
