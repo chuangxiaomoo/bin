@@ -57,7 +57,7 @@ function fn_xunner()
 
     cat ${js_xunner_stk} | \
         tr -d '\n' | tr "'" '"' | \
-        sed -e 's/^.*= //' -e 's/;.*$//' | \
+        sed -e 's/^.*= *//' -e 's/;.*$//' | \
         sed -e 's/[a-z][a-z][a-z]*/"&"/g' -e 's/;.*//g' | \
         JSON.sh -b | tr -d '"' | \
         awk '{printf "%s\t%.2f\t%.2f\t\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%s\n", 
@@ -72,14 +72,14 @@ function fn_xunner()
 
 function fn_main() 
 {
-    url='http://quote.stock.hexun.com/stockdata/stock_quote.aspx?'
-    url="${url}stocklist=`awk '{print $1}' ${LIST:-'.soptter'} | xargs | sed 's/ /\|/g'`"
+    url='http://quote.stock.hexun.com/stockdata/stock_quote.aspx?stocklist'
+    url="${url}=`awk '{print $1}' ${LIST:-'.soptter'} | xargs | sed 's/ /\|/g'`"
     url="${url}&indexlist=000001_1|399001_2|399006_2"
 
     # trim *ST individuals
 
     while :; do
-        w3m -dump "${url}" 2>&1 | \
+        w3m -dump "${url}" 2>/dev/null | \
             sed -e 's/;indexdataArr/;\nindexdataArr/' \
                 -e 's/*//g'  -e 's/ST//g'  > ${js_xunner} 
         # tee /tmp/xunner 
