@@ -1179,14 +1179,6 @@ function fn_goyo()                      { cat jimxl_goyo;}
     fn_print $@
 }
 
-function fn_point()                     { 
-function fn_01_mode_type_不能保存()     { cat point_01_mode_type_不能保存 ;}
-    local opts=(
-        01_mode_type_不能保存           # 需要加ubootpara force=1
-    )
-    fn_print $@
-}
-
 function fn_alibaba()                   { cat alibaba ;}
 function fn_kitas()                     { cat kitas ;}
 
@@ -1397,7 +1389,6 @@ function fn_main() {
         mxml                    # 
         json
         yum
-        point                   # 较c a s e，这不是错误，是经验知识
         wbs                     # WBS任务分解，与 RDM 协同办公
         rdm                     # 技术管理
         team                    # 团队 老板 同事 下属
