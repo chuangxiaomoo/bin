@@ -479,7 +479,15 @@ function fn_Qi_疾病()                   { cat huawei_Qi_疾病 ;}
     fn_print $@
 }
 
-function fn_humor()                     { cat humor ;}
+function fn_humor()                     { 
+function fn_misc()                      { cat humor_misc ;}
+function fn_animals()                   { cat humor_animals ;}
+    local opts=(
+        misc
+        animals
+    )
+    fn_print $@
+}
 
 function fn_girl()                      {
 function fn_base()                      { cat girl_base ;}
@@ -513,6 +521,7 @@ function fn_sbfm()                      { cat sbfm ;}
 
 function fn_ljsw()                      { 
 function fn_voice()                     { cat ljsw_voice ;}
+function fn_00_曾国藩()                 { cat ljsw_00_曾国藩 ;}
 function fn_01_教育()                   { cat ljsw_01_教育 ;}
 function fn_02_傻帽悲观派()             { cat ljsw_02_傻帽悲观派 ;}
 function fn_04_民主政治()               { cat ljsw_04_民主政治 ;}
@@ -526,6 +535,7 @@ function fn_215_发现你的太平洋()        { cat ljsw_215_发现你的太平
 function fn_x1_你的阅读造就了你()       { cat ljsw_x1_你的阅读造就了你 ;}
     local opts=(
         voice
+        00_曾国藩
         01_教育
         02_傻帽悲观派
         03_成功人士的3个品质            # 优越感、不安全感、自控力
@@ -615,6 +625,7 @@ function fn_behavioral()                { cat finance_behavioral ;}
 }
 
 function fn_texaspoker()                { 
+function fn_life()                      { cat texaspoker_life ;}
 function fn_xiulian()                   { cat texaspoker_xiulian ;}
 function fn_loser()                     { cat texaspoker_loser ;}
 function fn_goldrules()                 { cat texaspoker_goldrules ;}
@@ -622,6 +633,7 @@ function fn_term()                      { cat texaspoker_term ;}
     local opts=(
         xiulian                         # 修炼
         loser
+        life                            # 生活
         goldrules
         term
     )
