@@ -528,6 +528,7 @@ function fn_04_民主政治()               { cat ljsw_04_民主政治 ;}
 function fn_06_胡适()                   { cat ljsw_06_胡适 ;}
 function fn_07_大数据()                 { cat ljsw_07_大数据 ;}
 function fn_08_大家都有拖延症()         { cat ljsw_08_大家都有拖延症 ;}
+function fn_L0_孤独寂寞朋友()           { cat ljsw_L0_孤独寂寞朋友 ;}
 
 function fn_210_右派为什么这么横()      { cat ljsw_210_右派为什么这么横 ;}
 function fn_215_发现你的太平洋()        { cat ljsw_215_发现你的太平洋 ;}
@@ -546,6 +547,7 @@ function fn_x1_你的阅读造就了你()       { cat ljsw_x1_你的阅读造就
         08_大家都有拖延症
         51_右派为什么那么横             # 保守派的3个特性
         x1_你的阅读造就了你             # you are what u read
+        L0_孤独寂寞朋友                 # 
 
         210_右派为什么这么横
         215_发现你的太平洋              # 创业
@@ -630,12 +632,14 @@ function fn_xiulian()                   { cat texaspoker_xiulian ;}
 function fn_loser()                     { cat texaspoker_loser ;}
 function fn_goldrules()                 { cat texaspoker_goldrules ;}
 function fn_term()                      { cat texaspoker_term ;}
+function fn_odds()                      { cat texaspoker_odds ;}
     local opts=(
         xiulian                         # 修炼
         loser
         life                            # 生活
         goldrules
         term
+        odds                            # 成败比 底池成败比
     )
     fn_print $@
 }
