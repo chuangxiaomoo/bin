@@ -51,20 +51,25 @@
     jcp_cmd.c               // JCP命令
     system_config.c         // 配置文件
 
-    SYS_MSG_CMD_E           // 配置Msg TYPE：SYS_MSG_CMD_GET_HWVOIP
-    sys_msg_cmd_get_hwvoip  // 配置发送函数 sys_msg_svr.c           
+    SYS_MSG_CMD_E           // 配置Msg TYPE：SYS_MSG_CMD_GET_NC
 
-	SYS_MSG_CMD_GET_GBADDR,	// 获取国标平台位置参数
-	SYS_MSG_CMD_SET_GBADDR,	// 设置国标平台位置参数
+	SYS_MSG_CMD_GET_NC,	    // 获取南车平台位置参数
+	SYS_MSG_CMD_SET_NC,	    // 设置南车平台位置参数
+                            
+    int sys_msg_cmd_set_nc()// 头文件
+    int sys_msg_cmd_get_nc();
 
+3. 改变通知    
 
-3. pack.sh
+    sys_msg_event_chng_cfg(MSG_TYPE_NC_SVR, SYS_MSG_CMD_GET_NC, 0, 0);
+
+4. pack.sh
     arr_platform_ids        // must
     arr_sys_app             // optional
     platforminfo            // must
     app_mng                 // optional
 
-4. ini文件
+5. ini文件
     config_server.ini
           ->[plt4_name]     // 配置
 
