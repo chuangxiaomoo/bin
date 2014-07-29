@@ -57,8 +57,8 @@ function fn_xunner()
 
     cat ${js_xunner_stk} | \
         tr -d '\n' | tr "'" '"' | \
-        sed -e 's/^.*= *//' -e 's/;.*$//' | \
-        sed -e 's/[a-z][a-z][a-z]*/"&"/g' -e 's/;.*//g' | \
+        sed -e 's/^.*= *//' -e 's/;.*$//' | # purge 'dataArr = '
+        # sed -e 's/[a-z][a-z][a-z]*/"&"/g' | tee /tmp/mid | \
         JSON.sh -b | tr -d '"' | \
         awk '{printf "%s\t%.2f\t%.2f\t\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%s\n", 
                 $1,(100*$3-$10/($9+0.00001))/($3+0.00001),
