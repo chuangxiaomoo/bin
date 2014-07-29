@@ -217,6 +217,7 @@ function fn_ipo_rules()                 { cat stk_ipo_rules ;}
 function fn_urls()                      { cat stk_urls ;}
 function fn_todo()                      { cat stk_todo ;}
 function fn_icase()                     { cat stk_icase ;}
+function fn_cost()                      { cat stk_cost ;}
 function fn_base()                      { cat stk_base ;}
 function fn_tougu()                     { cat stk_tougu ;}
 function fn_xuxiaoming()                { cat stk_xuxiaoming ;}
@@ -248,11 +249,11 @@ function fn_rzrq()                      { cat stk_rzrq ;}
     local opts=(
         ipo_base                        # 新股
         ipo_rules
-
         urls
         todo
         icase
         base                            # 交易规则
+        cost                            # 手续费 佣金
         rzrq                            # 融资融券
         tougu                           # 投顾大赛
         caorenchao                      # 曹仁超
@@ -270,7 +271,6 @@ function fn_rzrq()                      { cat stk_rzrq ;}
         09_银江
         10_dazhihui                     # dzh 大智慧
         11_N_XD_XR_DR                   # 除权除息
-        12_手续费                       # cost
         13_除权后的股票难以上涨
         14_公告                         # 利润分配
         15_逐笔_分笔_分时_逐单          # DDX 大单
