@@ -17,6 +17,8 @@ function fn_roll_file()
     up_tmp=/tmp/upgrade.log
     up_log=/opt/log/upgrade.log
     mkdir -p ${up_log%/*}
+
+    # 文件大小信息：stat -c %s __filename__
     kbs=`du -sk ${up_log} | awk '{print $1}'`
 
     if [ "${kts:-0}" -gt 512 ] ; then
