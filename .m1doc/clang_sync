@@ -1,0 +1,19 @@
+# sync
+
+  [页缓存回写时，导致sync阻塞的问题]()
+  [](http://blog.csdn.net/chenyu105/article/details/8079338)
+
+# 解决方案
+
+  边解压边sync
+
+
+# httpd
+
+  telnet 80 会导致httpd链接异常，
+  致使 curl 及 nc 表现异常。
+
+  { sleep 2; echo;echo;  } | telnet 192.168.2.44 80 2>&1 | 
+  grep "Connection closed" || sleep 10
+
+# 
