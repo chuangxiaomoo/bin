@@ -390,6 +390,7 @@ function fn_snprintf()                  { cat clang_snprintf ;}
 function fn_thread_lock()               { cat clang_thread_lock ;}
 function fn_fwrite()                    { cat clang_fwrite ;}
 function fn_getaddrinfo_a()             { cat clang_getaddrinfo_a ;}
+function fn_sync()                      { cat clang_sync ;}
 
     local opts=(
         C调用C++链接库
@@ -416,6 +417,7 @@ function fn_getaddrinfo_a()             { cat clang_getaddrinfo_a ;}
         syslog
         errno
         open
+        sync                    # blocking
         fwrite                  # fprintf fsync fflush
         printf                  # scanf format
         signal
