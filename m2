@@ -630,14 +630,16 @@ function fn_texaspoker()                {
 function fn_life()                      { cat texaspoker_life ;}
 function fn_xiulian()                   { cat texaspoker_xiulian ;}
 function fn_loser()                     { cat texaspoker_loser ;}
+function fn_trader()                    { cat texaspoker_trader ;}
 function fn_goldrules()                 { cat texaspoker_goldrules ;}
 function fn_term()                      { cat texaspoker_term ;}
 function fn_odds()                      { cat texaspoker_odds ;}
     local opts=(
-        xiulian                         # 修炼
+        xiulian                         # 修行 意志力 情绪管理
         loser
         life                            # 生活
         goldrules
+        trader                          # 交易员
         term
         odds                            # 成败比 底池成败比
     )
