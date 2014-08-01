@@ -628,14 +628,14 @@ function fn_behavioral()                { cat finance_behavioral ;}
 
 function fn_texaspoker()                { 
 function fn_life()                      { cat texaspoker_life ;}
-function fn_xiulian()                   { cat texaspoker_xiulian ;}
+function fn_xiuxing()                   { cat texaspoker_xiuxing ;}
 function fn_loser()                     { cat texaspoker_loser ;}
 function fn_trader()                    { cat texaspoker_trader ;}
 function fn_goldrules()                 { cat texaspoker_goldrules ;}
 function fn_term()                      { cat texaspoker_term ;}
 function fn_odds()                      { cat texaspoker_odds ;}
     local opts=(
-        xiulian                         # 修行 意志力 情绪管理
+        xiuxing                         # 修行 意志力 情绪管理
         loser
         life                            # 生活
         goldrules
