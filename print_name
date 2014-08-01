@@ -1,0 +1,9 @@
+#! /bin/bash
+
+function fn_main()
+{
+    DELM=${1:-':'}    
+    awk -F${DELM} '{print $1}' < /dev/stdin
+}
+
+fn_main $@
