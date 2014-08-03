@@ -277,8 +277,8 @@ function fn_6maishenjian()
 }
 
 function fn_dugu9jian()
-{   # date1,date2,amount,
-    columns="off,open,close,turnov"
+{   # date1,date2,amount,open
+    columns="off,avrg,close,turnov"
     columns=${columns:-'*'}
     columns=t.${columns//,/,t.}
 
