@@ -644,6 +644,7 @@ function fn_life()                      { cat texaspoker_life ;}
 function fn_xiuxing()                   { cat texaspoker_xiuxing ;}
 function fn_emotion_management()        { cat texaspoker_emotion_management ;}
 function fn_loser()                     { cat texaspoker_loser ;}
+function fn_discipline()                { cat texaspoker_discipline ;}
 function fn_trader()                    { cat texaspoker_trader ;}
 function fn_goldrules()                 { cat texaspoker_goldrules ;}
 function fn_term()                      { cat texaspoker_term ;}
@@ -654,6 +655,7 @@ function fn_uncertainty()               { cat texaspoker_uncertainty ;}
         xiuxing                         # 修行 意志力
         emotion_management              # 情绪管理
         loser
+        discipline                      # 纪律
         life                            # 生活
         goldrules
         trader                          # 交易员
