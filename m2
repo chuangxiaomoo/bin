@@ -639,19 +639,25 @@ function fn_behavioral()                { cat finance_behavioral ;}
 }
 
 function fn_texaspoker()                { 
+function fn_philosophy()                { cat texaspoker_philosophy ;}
 function fn_life()                      { cat texaspoker_life ;}
 function fn_xiuxing()                   { cat texaspoker_xiuxing ;}
+function fn_emotion_management()        { cat texaspoker_emotion_management ;}
 function fn_loser()                     { cat texaspoker_loser ;}
 function fn_trader()                    { cat texaspoker_trader ;}
 function fn_goldrules()                 { cat texaspoker_goldrules ;}
 function fn_term()                      { cat texaspoker_term ;}
 function fn_odds()                      { cat texaspoker_odds ;}
+function fn_uncertainty()               { cat texaspoker_uncertainty ;}
     local opts=(
-        xiuxing                         # 修行 意志力 情绪管理
+        philosophy                      # 哲理
+        xiuxing                         # 修行 意志力
+        emotion_management              # 情绪管理
         loser
         life                            # 生活
         goldrules
         trader                          # 交易员
+        uncertainty                     # 不确定性
         term
         odds                            # 成败比 底池成败比
     )
@@ -708,7 +714,7 @@ function fn_main() {
         socrates                        # Socrates 苏格拉底 诘问
         stk
         futures                         # futures trading 期货
-        texaspoker                      # texas_hold_em_poker
+        texaspoker                      # texas_hold_em
         tick
         traffic
         value                           # 价值
