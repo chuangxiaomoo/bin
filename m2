@@ -405,6 +405,18 @@ function fn_epistemology()              { cat phi_epistemology ;}
     fn_print $@
 }
 
+function fn_logic()                     {
+function fn_base()                      { cat logic_base ;}
+function fn_MECE()                      { cat logic_MECE ;}
+function fn_training500()               { cat logic_training500 ;}
+    local opts=(
+        base
+        MECE                            # Mutually Exclusive Collectively Exhaustive
+        training500
+    )
+    fn_print $@
+}
+
 function fn_huawei()                    { 
 function fn_to_sort()                   { cat huawei_to_sort ;}
 function fn_forum()                     { cat huawei_forum ;}
@@ -662,6 +674,7 @@ function fn_main() {
         aesthetics                      # i:s`θetic 美学
         estate                          # 房地产
         phi                             # philosophy
+        logic
         annual
         artical
         book

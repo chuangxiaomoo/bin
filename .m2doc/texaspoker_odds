@@ -2,8 +2,10 @@
 
   [补牌数和成败比](http://blog.sina.com.cn/s/blog_adbe723a0101i0bn.html)
   [补牌数、成牌概率、赔率](http://game.weibo.com/club/read-389429-1)
+  [wiki odds](http://en.wikipedia.org/wiki/Poker_probability_(Texas_hold_%27em))
+  [poker odds](http://www.tightpoker.com/poker_odds.html)
 
-  成牌概率：
+# 成牌概率：
 
   成牌概率就是指翻牌圈的一手听牌，在转牌圈和河牌圈能完成听牌的几率。成牌概率精
   确的计算过程是这样的： 
@@ -18,7 +20,7 @@
 
   而如果我们要计算从翻牌一直开到河牌，开两次公共牌能开到补牌的几率（例如对手在
   翻牌圈对我们全下时），就是这样计算——在翻牌圈开不到补牌的几率，乘以在河牌圈依
-  然开不到补牌的几率，用1去减： `1-(47-8)/47*(46-8)/46=31.4%`。 
+  然开不到补牌的几率，*用1去减*： `1-(47-8)/47*(46-8)/46=31.4%`。 
 
   也就是说我们在翻牌圈所持的这手听牌，到最后有`31.4`的机会完成顺子；在转牌完成
   顺子的几率是17％，如果转牌没成，那么在河牌听成的几率是`17.4%`。 
@@ -46,6 +48,32 @@
   `所罗门法则`（补牌数补牌数大于等于8）：
   四法则-补牌数乘以2再加2；
   二法则-补牌数乘以3再加8。
+
+- 先记住典型，再推算之：-
+- Poker Odds Chart - Calculating Hand Odds In Texas Holde'em Poker -
+
+  Outs One Card  Two Card  One  Two
+  Num.     %         %     Card Card                 Draw Type
+                           Odds Odds
+  1    2%        4%        46   23   Backdoor Straight or Flush (Requires two cards)
+  2    4%        8%        22   12   Pocket Pair to Set
+  3    7%        13%       14   7    One Overcard
+  4    9%        17%       10   5    Inside Straight / Two Pair to Full House
+ `5    11%       20%       8    4    One Pair to Two Pair or Set`
+  6    13%       24%       6.7  3.2  No Pair to Pair / Two Overcards
+  7    15%       28%       5.6  2.6  Set to Full House or Quads
+  8    17%       32%       4.7  2.2  Open Straight
+ `9    19%       35%       4.1  1.9  Flush`
+  10   22%       38%       3.6  1.6  Inside Straight & Two Overcards
+  11   24%       42%       3.2  1.4  Open Straight & One Overcard
+ `12   26%       45%       2.8  1.2  Flush & Inside Straight / Flush & One Overcard`
+  13   28%       48%       2.5  1.1 
+  14   30%       51%       2.3  0.95
+ `15   33%       54%       2.1  0.85 Flush & Open Straight / Flush & Two Overcards`
+  16   34%       57%       1.9  0.75
+  17   37%       60%       1.7  0.66
+  18   41%       65%       1.6  0.6
+
 
 # 底池成败比(Pot Odds) 
 
