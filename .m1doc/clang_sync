@@ -7,6 +7,9 @@
 
   边解压边sync
 
+  [pdflush进程详解](http://www.2cto.com/os/201304/206490.html)
+  /proc/sys/vm/dirty_background_ratio
+  /proc/sys/vm/dirty_writeback_centisecs
 
 # httpd
 
