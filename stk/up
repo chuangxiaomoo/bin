@@ -113,6 +113,7 @@ function fn_cap()
     为兼容旧代码，最后的shares=nmc/close（只更新nmc，不更新shares）
     "
 
+    # 修正 nmc & shares
     cd ${workdir}/bin
     ./fin > /dev/shm/fin
     mysql kts < /dev/shm/fin
@@ -120,6 +121,10 @@ function fn_cap()
     echo "
     UPDATE cap SET nmc=close*shares WHERE nmc/close<shares;
     " | mysql -u root kts
+
+    # update .codelist
+    cd ${workdir}
+    mysql -N -B kts<<<"SELECT code,name FROM cap order by code asc;" > .codelist
 }
 
 function fn_load_f_2_tbl_samename()
