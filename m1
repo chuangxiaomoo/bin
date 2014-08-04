@@ -128,6 +128,7 @@ function fn_time管理()                  { cat linux_time管理 ;}
 function fn_IPC()                       { cat linux_IPC ;}
 function fn_proc()                      { cat linux_proc ;}
 function fn_udev()                      { cat linux_udev ;}
+function fn_mtd()                       { cat linux_mtd ;}
     local opts=(
         fundamental
         kernel
@@ -135,6 +136,7 @@ function fn_udev()                      { cat linux_udev ;}
         ldd3                            # Linux Device Driver Edition3
         IPC
         boot
+        mtd                             # ubi
         udev
         proc
         time管理
