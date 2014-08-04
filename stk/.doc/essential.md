@@ -5,14 +5,21 @@
   个小时连续不间断的工作时光。工作中的乐趣使我们变得格外有耐心，人在放松惬意
   的情况下，更容易取得完美的结果。
 
-## 本与末                   .doc/stock.md 
+# 本与末                   .doc/stock.md 
 
-## 0和游戏-博弈论-琢磨对手  .doc/opponent.md
+# 0和游戏-博弈论-琢磨对手  .doc/opponent.md
 
-## 为什么顺势交易也会死     .doc/shun.md
+# 为什么顺势交易也会死     .doc/shun.md
 
-## 杠杆决定趋势             .doc/leverage.md    杠杆乃交易本质
+# 杠杆决定趋势             .doc/leverage.md    杠杆乃交易本质
 
-## 15种分时                 .doc/min.md
+# 15种分时                 .doc/min.md
 
 # 孙子兵法                  .doc/sunzi.md
+
+# 一个分析师的blog
+
+  http://blog.renren.com/blog/228881439/879873230?bfrom=010203055
+  http://blog.renren.com/blog/228881439/785275585?bfrom=010203055
+  http://blog.renren.com/blog/228881439/886393986?bfrom=010203055
+  http://blog.renren.com/blog/228881439/440605343
