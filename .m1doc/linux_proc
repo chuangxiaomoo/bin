@@ -37,3 +37,9 @@
 
       echo 1 > /proc/sys/debug/alignment
 
+# dirty页缓存回写
+
+  [pdflush进程详解](http://www.2cto.com/os/201304/206490.html)
+  /proc/sys/vm/dirty_background_ratio
+  /proc/sys/vm/dirty_writeback_centisecs
+
