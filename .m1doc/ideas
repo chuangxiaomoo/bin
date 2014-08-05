@@ -1,61 +1,75 @@
-/* ideas */
+# ideas 
 
-. 使用 svn ci 做打包统计计数
-    # make a record
+# 2014-08-05 酷炫的方向盘 
+
+  坐标定位
+  9张图片的拼接 vs 1张大图片
+
+  按钮效果
+  18张图片的拼接 vs 1张静止效果 + 9张按下效果
+
+# 使用 svn ci 做打包统计计数
+
     cd image
     svn --quiet up makerinfo.txt
     fn_makerinfo > makerinfo.txt
     svn --quiet ci --message "auto ci" makerinfo.txt
     xert $? `$PS8` "ATTENTION: svn ci error"
 
-. SERVER 主动请求心跳消息，方便管理 -- 需要考虑突发‘吞吐量’
+# SERVER 主动请求心跳消息，方便管理 -- 需要考虑突发‘吞吐量’
 
-. Linux盲如何配置多NFS文件系统并提交之
-    一份Linux SVN
-    一份Windwox SVN
-    一个工作目录            filesys
-    一个同步脚本            up.sh    
-    一个当前filesys配置     .config
+    kill -0 pid
 
-. 更可靠的系统telnet
-    auto_run.sh: telnet -p 62424
+# Linux盲如何配置多NFS文件系统并提交之
+
+  一份Linux SVN
+  一份Windwox SVN
+  一个工作目录            filesys
+  一个同步脚本            up.sh
+  一个当前filesys配置     .config
+
+# 更可靠的系统telnet
+
+    auto_run.sh: telnetd -p 9527
     jco_server:  kill -9 `ps -ef | grep  "[t]elnet -p 62424"`
 
-. xargs 在命令行上完美替换 for x in ...
+# xargs 在命令行上完美替换 for x in ...
 
-. cif2qvga
+# cif2qvga
 
-    2013-05-08
+  2013-05-08
 
-    抽象与动态绑定：两个重要的特性
+  抽象与动态绑定：两个重要的特性
 
-    既然 CIF 与 QVGA 是互斥的，那么我们没有必要再添加一个 VENC_SIZE，
-    我们只需要在 ENCODER 启动时，动态选择，到底是 CIF or QVGA.
+  既然 CIF 与 QVGA 是互斥的，那么我们没有必要再添加一个 VENC_SIZE，
+  我们只需要在 ENCODER 启动时，动态选择，到底是 CIF or QVGA.
 
-    添加一个新东西，在现有代码中是如此之困难。
+  添加一个新东西，在现有代码中是如此之困难。
 
-. ssh Permission denied
-    
-    root@192.168.2.126's password: 
-    Permission denied, please try again.
+# ssh Permission denied
 
-    改换IP
-    设备重启
-    
-    有人使用了192.168.2.126，IP地址冲突了。    
+  root@192.168.2.126's password: 
+  Permission denied, please try again.
 
-    
-. 修改 cmdline list 中的一个
+  改换IP
+  设备重启
 
-    ip=off root=/dev/mtdblock3 rootfstype=yaffs2  mem=84M mode_type=13 cpu=368 audio=0 audio_chn=1
+  有人使用了192.168.2.126，IP地址冲突了。
 
-    chebiyou:
-        char dataTmp[1024] = {0,};
-        char temp[8] = {0,};
-        char bufTmp[1024] = {0,};
 
-    abstract:
-        cmdline = "lefthand" + "key=value" + "righthand"
+# 修改 cmdline list 中的一个
 
-. sensor mode_type 分离以区别38x38 从而将验证工作分离
+  ip=off root=/dev/mtdblock3 rootfstype=yaffs2  mem=84M mode_type=13 cpu=368 audio=0 audio_chn=1
+
+  chebiyou:
+
+      char dataTmp[1024] = {0,};
+      char temp[8] = {0,};
+      char bufTmp[1024] = {0,};
+
+  abstract:
+
+      cmdline = "lefthand" + "key=value" + "righthand"
+
+# sensor mode_type 分离以区别38x38 从而将验证工作分离
 

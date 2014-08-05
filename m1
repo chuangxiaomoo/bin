@@ -891,6 +891,7 @@ function fn_jcp()                       { cat jco_jcp ;}
 function fn_encode_para()               { cat jco_encode_para ;}
 function fn_record()                    { cat jco_record ;}
 function fn_prerecord()                 { cat jco_prerecord ;}
+function fn_password()                  { cat jco_password ;}
 function fn_zxw()                       { cat jco_zxw ;}
 function fn_3g()                        { cat jco_3g ;}
 function fn_time()                      { cat jco_time ;}
@@ -912,6 +913,7 @@ function fn_upgrade_prog_bar()          { cat jco_upgrade_prog_bar ;}
         upgrade_prog_bar    # 升级进度方案
         jcp
         msg
+        password
         platform
         ptz20
         zxw
@@ -1331,7 +1333,7 @@ function fn_main() {
         mp4                     # GOOGLE `mp4 sample` to get sample file
         h264
         hotspot                 # wifi便携热点设置
-        ideas
+        ideas                   # innovate 创新
         info
         j2box
         java
