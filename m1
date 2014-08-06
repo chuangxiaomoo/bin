@@ -47,8 +47,10 @@ function fn_filter()                    { cat wireshark_filter ;}
 
 function fn_python()                    { 
 function fn_base()                      { cat python_base ;}
+function fn_pydoc()                     { cat python_pydoc ;}
 function fn_huawei()                    { cat python_huawei ;}
     local opts=(
+        pydoc
         base
         huawei              # 未整理
     )
