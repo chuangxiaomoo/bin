@@ -546,6 +546,7 @@ function fn_210_右派为什么这么横()      { cat ljsw_210_右派为什么�
 function fn_215_发现你的太平洋()        { cat ljsw_215_发现你的太平洋 ;}
 
 function fn_x1_你的阅读造就了你()       { cat ljsw_x1_你的阅读造就了你 ;}
+function fn_0802_他拯救了美国？()       { cat ljsw_0802_他拯救了美国？ ;}
     local opts=(
         voice
         00_曾国藩
@@ -563,6 +564,7 @@ function fn_x1_你的阅读造就了你()       { cat ljsw_x1_你的阅读造就
 
         210_右派为什么这么横
         215_发现你的太平洋              # 创业
+        0802_他拯救了美国？
     )
     fn_print $@
 }
