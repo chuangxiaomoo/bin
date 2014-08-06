@@ -6,6 +6,13 @@
 
   [学而优则投机](http://blog.sina.com.cn/s/blog_608e1afd0102e1fu.html)
 
+  [写写股市及其他](http://blog.sina.com.cn/s/blog_608e1afd0102e2f5.html)
+
+  事件冲击，是所有投机行业的必选项。
+  和做证券私募的朋友谈及我的理论，我说左手基于基本面分析，右手基于事件冲击模
+  型。对于股市来说，基本面分析毫无价值，但宏观分析可以起作用。事件冲击则是可
+  行的。
+
 # 建立在量子物理学和人类行为心理学
 
   [市场是心灵的映照 ](http://blog.sina.com.cn/s/blog_608e1afd0102e6l3.html)

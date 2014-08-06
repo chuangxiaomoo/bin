@@ -270,7 +270,7 @@ function fn_6maishenjian()
     
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
-    fn_get_tbl_9jian_dive $1 > /dev/null
+    fn_get_tbl_6jian_dive $1 > /dev/null
     mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" | \
         tee .soptter.chao | TBL=chao xargs up 7
     xt_ret $? "${FUNCNAME}" || return $?
