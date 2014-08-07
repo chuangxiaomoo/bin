@@ -7,6 +7,7 @@ function fn_usage()
         ----------- Usage --------------
         a   find ! -name '.' -a -name '*' | xargs -I{} svn add --force {}  | cat -n
         c   ci [files...]
+        d   diff
         q   -q status
         r   revert -R {file|dir}
         s   status
