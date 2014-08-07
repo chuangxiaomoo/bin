@@ -1158,7 +1158,17 @@ function fn_可观可控可溯设计()          { cat report_可观可控可溯�
     fn_print $@
 }
 
-function fn_team()                      { cat team ;}
+function fn_team()                      {
+function fn_base()                      { cat team_base ;}
+function fn_01_员工对什么不满意()       { cat team_01_员工对什么不满意 ;}
+function fn_02_tobe_狼or狐狸or老鼠()    { cat team_02_tobe_狼or狐狸or老鼠 ;}
+    local opts=(
+        base
+        01_员工对什么不满意
+        02_tobe_狼or狐狸or老鼠
+    )
+    fn_print $@
+}
 function fn_rdm()                       { cat rdm ;}
 
 function fn_chuansong.me()              { cat ../stk/.chuansong.me ;}
