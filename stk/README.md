@@ -43,5 +43,5 @@
 ## 趋势实践       .doc/ma-trade.md              
 ## 疯狂的贱卖     .doc/how-to-sell.md           -- 2014-03-04 天保重装
 
-## 决策纪律       .doc/discipline.md
+## 决策纪律       .doc/discipline.md            -- 目标 & 策略
 ## 操盘日记       .doc/diary.md
