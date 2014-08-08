@@ -1279,10 +1279,12 @@ function fn_svc()                       { cat nxp_svc ;}
 function fn_hotspot()                   { cat hotspot ;}
 
 function fn_web()                       {
+function fn_quick_start_guide()         { cat web_quick_start_guide ;}
 function fn_jQuery()                    { cat web_jQuery ;}
 function fn_node()                      { cat web_node ;}
 function fn_coffee()                    { cat web_coffee ;}
     local opts=(
+        quick_start_guide
         jQuery
         node
         coffee
