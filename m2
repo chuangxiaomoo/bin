@@ -214,70 +214,51 @@ function fn_tick()                      { cat tick.md ;}
 function fn_stk()                       { 
 function fn_ipo_base()                  { cat stk_ipo_base ;}
 function fn_ipo_rules()                 { cat stk_ipo_rules ;}
-function fn_urls()                      { cat stk_urls ;}
-function fn_todo()                      { cat stk_todo ;}
-function fn_icase()                     { cat stk_icase ;}
 function fn_cost()                      { cat stk_cost ;}
+function fn_rzrq()                      { cat stk_rzrq ;}
 function fn_base()                      { cat stk_base ;}
 function fn_tougu()                     { cat stk_tougu ;}
-function fn_xuxiaoming()                { cat stk_xuxiaoming ;}
+function fn_urls()                      { cat stk_urls ;}
 function fn_caorenchao()                { cat stk_caorenchao ;}
-function fn_screener()                  { cat stk_screener ;}
+
 function fn_00_战略()                   { cat stk_00_战略 ;}
 function fn_01_战术()                   { cat stk_01_战术 ;}
 function fn_02_小数据()                 { cat stk_02_小数据 ;}
 function fn_03_大数据()                 { cat stk_03_大数据 ;}
-function fn_04_马云启示录()             { cat stk_04_马云启示录 ;}
-function fn_06_决策心理学()             { cat stk_06_决策心理学 ;}
 function fn_07_牛眼投资法()             { cat stk_07_牛眼投资法 ;}
-function fn_09_银江()                   { cat stk_09_银江 ;}
 function fn_10_dazhihui()               { cat stk_10_dazhihui ;}
 function fn_11_N_XD_XR_DR()             { cat stk_11_N_XD_XR_DR ;}
-function fn_12_手续费()                 { cat stk_12_手续费 ;}
 function fn_13_除权后的股票难以上涨()   { cat stk_13_除权后的股票难以上涨 ;}
-function fn_14_公告()                   { cat stk_14_公告 ;}
 function fn_15_逐笔_分笔_分时_逐单()    { cat stk_15_逐笔_分笔_分时_逐单 ;}
 
 function fn_20_fenbi()                  { cat stk_20_fenbi ;}
 
-function fn_jc_人皆患失()               { cat stk_jc_人皆患失 ;}
 function fn_jc_这不是独家买卖()         { cat stk_jc_这不是独家买卖 ;}
 function fn_jc_Golf智慧_快就是慢()      { cat stk_jc_Golf智慧_快就是慢 ;}
 
-function fn_rzrq()                      { cat stk_rzrq ;}
 
     local opts=(
         ipo_base                        # 新股
         ipo_rules
         urls
-        todo
-        icase
         base                            # 交易规则
         cost                            # 手续费 佣金
         rzrq                            # 融资融券
         tougu                           # 投顾大赛
         caorenchao                      # 曹仁超
-        xuxiaoming                      # 徐小明
-        screener                        # 筛选器设计
 
         00_战略                         # strategy
         01_战术                         # tactics
         02_小数据                       # 个股 data 
         03_大数据                       # macro data
-        04_马云启示录                   # 还是大数据 
-        06_决策心理学                   # decide
         07_牛眼投资法                   # bulleye
 
-        09_银江
         10_dazhihui                     # dzh 大智慧
         11_N_XD_XR_DR                   # 除权除息
         13_除权后的股票难以上涨
-        14_公告                         # 利润分配
         15_逐笔_分笔_分时_逐单          # DDX 大单
-
         20_fenbi
 
-        jc_人皆患失                     # 决策小分队
         jc_这不是独家买卖
         jc_Golf智慧_快就是慢            # 把目标放在心中；严谨，但不能太认真
     )
