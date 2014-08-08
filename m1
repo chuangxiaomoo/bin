@@ -901,6 +901,7 @@ function fn_httpd_n_onvif()             { cat jco_httpd_n_onvif ;}
 function fn_ptz20()                     { cat jco_ptz20 ;}
 function fn_ir()                        { cat jco_ir ;}
 function fn_upgrade_prog_bar()          { cat jco_upgrade_prog_bar ;}
+function fn_pioneer()                   { cat jco_pioneer ;}
 
     local opts=(
         pcb                 # hardware
@@ -918,6 +919,7 @@ function fn_upgrade_prog_bar()          { cat jco_upgrade_prog_bar ;}
         password
         platform
         ptz20
+        pioneer             # 开拓者
         zxw
         record
         prerecord
