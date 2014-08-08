@@ -44,18 +44,12 @@
   2. 2014涨幅限制是基于开盘价open，而不是yesclose
   3. 使用znz.yahoo下载数据会丢失发行价。
 
-
 ## 若日线数据正常工作
 
   1. newstock列表
 
         kmysql -N <<< "SELECT DISTINCT code FROM day WHERE date >= '2014-01-20' and date<= '2014-02-13' and yesc = 0" 
         > /root/bin/stk/.template/codes.ask
-
-  3. znz.yahoo
-        
-        2014-01-20 
-        2014-02-13
 
   2. del
 
@@ -74,8 +68,3 @@
   4. load
 
         ./up load_directory
-
-## 需要实现监测体系
-
-  unfini
-
