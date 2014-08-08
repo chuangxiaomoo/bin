@@ -175,5 +175,6 @@ export LESS_TERMCAP_ue=$'\E[0m'
 export LESS_TERMCAP_us=$'\E[01;32m'
 
 # 
+export PATH=.:~/bin:$PATH
 export CDPATH=.:~:/home:/1
 export SVN_EDITOR=vim
