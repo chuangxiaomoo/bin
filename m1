@@ -1173,8 +1173,6 @@ function fn_02_tobe_狼or狐狸or老鼠()    { cat team_02_tobe_狼or狐狸or老
 }
 function fn_rdm()                       { cat rdm ;}
 
-function fn_chuansong.me()              { cat ../stk/.chuansong.me ;}
-
 function fn_problem()                   { 
 function fn_X-Y_problem()               { cat problem_X-Y_problem ;}
 function fn_sloving()                   { cat problem_sloving ;}
@@ -1414,7 +1412,6 @@ function fn_main() {
         wbs                     # WBS任务分解，与 RDM 协同办公
         rdm                     # 技术管理
         team                    # 团队 老板 同事 下属
-        chuansong.me            # 传送门，只在HOME使用
     )
     fn_print $@
 }
