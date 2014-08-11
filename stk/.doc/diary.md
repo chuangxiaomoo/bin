@@ -1554,3 +1554,32 @@
   马云通过阿里的外贸数据曾预测2008之金融危机。
 
 
+
+
+
+
+function fn_main()
+{
+    # w3m -dump 'http://vol.stock.hexun.com/other/json/trade/price.ashx?m=2&code=000002&callback=hx_json2191407733267150'  > txt
+    # w3m -dump 'http://vol.stock.hexun.com/other/json/trade/price.ashx?m=2&code=002715' > txt
+    # cat txt | sed -e 's/^(//g' -e 's/)$//g' | JSON.sh
+    cat txt  | JSON.sh -b
+
+}
+
+fn_main $@
+
+
+deal
+
+http://webstock.quote.hermes.hexun.com/a/deal?code=szse000002&start=20140811151000&number=-10&callback=callback
+
+trade
+
+http://vol.stock.hexun.com/other/json/trade/Trade.ashx?code=000002&count=9&danzi=0&addby=0&m=2&callback=hx_json351407740273225
+
+price
+
+http://vol.stock.hexun.com/other/json/trade/price.ashx?m=2&code=000002&callback=hx_json361407740273226
+
+http://webstock.quote.hermes.hexun.com/gb/a/quotelist?code=sse000001,szse399001&column=Code,name,Price,UpDownRate,LastClose,PriceWeight&callback=hx_json371407740313900
