@@ -902,6 +902,7 @@ function fn_ptz20()                     { cat jco_ptz20 ;}
 function fn_ir()                        { cat jco_ir ;}
 function fn_upgrade_prog_bar()          { cat jco_upgrade_prog_bar ;}
 function fn_pioneer()                   { cat jco_pioneer ;}
+function fn_dome()                      { cat jco_dome ;}
 
     local opts=(
         pcb                 # hardware
@@ -910,6 +911,7 @@ function fn_pioneer()                   { cat jco_pioneer ;}
         alarm_software
         alarm_motion_detc
         capture
+        dome                # 球机
         delay_service
         encode_para         # devvecfg
         httpd_n_onvif       # 融合方案
