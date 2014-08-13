@@ -115,3 +115,15 @@ CREATE TABLE tempday (
     close       DECIMAL(6,2) NOT NULL,
     INDEX(date)
 );
+
+DROP TABLE IF EXISTS fenbi;
+CREATE TABLE fenbi (
+    code        INT(6) ZEROFILL NOT NULL, 
+    datetime    INT(14) ZEROFILL NOT NULL, 
+    trade       INT(6) ZEROFILL NOT NULL,
+    amount      INT(6) ZEROFILL NOT NULL,
+    volume      INT(6) ZEROFILL NOT NULL,
+    type1       INT(4) ZEROFILL NOT NULL,
+    INDEX(code,datetime)
+);
+
