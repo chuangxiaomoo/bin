@@ -1,0 +1,66 @@
+#! /bin/bash -
+#---------------------------------------------------------------------------
+#          FILE: webstock
+#         USAGE: 
+#   DESCRIPTION: 
+#       OPTIONS: -
+#  REQUIREMENTS: -
+#          BUGS: -
+#         NOTES: -
+#        AUTHOR: chuangxiaomoo (God helps those who help themselves) 
+#  ORGANIZATION: 
+#       CREATED: 2014-08-13 23:39:33
+#      REVISION: 1.0 
+#---------------------------------------------------------------------------
+
+function fn_get_url()
+{
+    # http://webstock.quote.hermes.hexun.com/a/deal?code=szse000002&start=20140813151000&number=-10&callback=callback
+    url0="http://webstock.quote.hermes.hexun.com/a/deal?"
+    [ ${1:0:1} -eq 6 ] && sec=sse || sec=szse 
+    echo "${url0}code=${sec}${1}&start=${2}&number=500"
+}
+
+function fn_rtc() { date +%Y%m%d%H%M%S ;}
+
+function fn_main()
+{
+    code=$1
+    datetime0="`date +%Y%m%d`092500"
+    datetime4="`date +%Y%m%d`112900"
+    datetime5="`date +%Y%m%d`130000"
+    datetime9="`date +%Y%m%d`150000"
+    dt=${datetime0}
+    raw='/tmp/raw'
+    cache='/tmp/cache'
+    buffer='/tmp/buffer'
+
+    >${buffer}
+
+    while :; do
+        rtc=`fn_rtc`
+        if [ ${rtc} -gt "${datetime4}" ] && [ ${rtc} -lt "${datetime5}" ]; then
+            sleep 30; continue
+        fi
+
+        url=`fn_get_url ${code} ${dt}`
+        echo ${url}
+        w3m -dump ${url} > ${raw}
+
+        # w3m -dump ${url} > txt
+        cat ${raw} | sed -n '/Data/,$p' | 
+            sed  -e '1s/^.*\[\[/[[/' -e '$s/]].*$/]]/' | 
+            JSON.sh -b |
+            awk -v code=$code \
+                '{printf "%s\t%s\t%s\t%s\t%s\t%s\n", code,$1,$2,$3,$4,$5 }' > ${cache} 
+
+        [ "${dt}" != "${datetime0}" ] && sed -i '1d' ${cache}
+        cat ${cache} >> ${buffer}
+
+        dt=`tail -1 ${cache} | awk '{print $2}'`
+        [ "${dt}" -ge ${datetime9} ] && break
+        # sleep 10
+    done
+}
+
+fn_main 000002
