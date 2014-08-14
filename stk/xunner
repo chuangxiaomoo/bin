@@ -84,7 +84,7 @@ function fn_main()
                 -e 's/*//g'  -e 's/ST//g'  > ${js_xunner} 
         # tee /tmp/xunner 
 
-        [ -n "`cat ${js_xunner}`" ] && break
+        [ -n "`head -c2 ${js_xunner}`" ] && break
         echo "w3m fail, try again!"
     done
 
