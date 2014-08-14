@@ -120,6 +120,7 @@ function fn_ec_闭包()                   { cat gcc_ec_闭包 ;}
 }
 
 function fn_virtualbox()                { cat virtualbox ;}
+
 function fn_linux()                     { 
 function fn_cron()                      { cat linux_cron ;}
 function fn_fundamental()               { cat linux_fundamental ;}
@@ -131,6 +132,7 @@ function fn_IPC()                       { cat linux_IPC ;}
 function fn_proc()                      { cat linux_proc ;}
 function fn_udev()                      { cat linux_udev ;}
 function fn_mtd()                       { cat linux_mtd ;}
+function fn_lockfile()                  { cat linux_lockfile ;}
     local opts=(
         fundamental
         kernel
@@ -140,6 +142,7 @@ function fn_mtd()                       { cat linux_mtd ;}
         boot
         mtd                             # ubi
         udev
+        lockfile                        # lockfile-progs and flock
         proc
         time管理
     )
