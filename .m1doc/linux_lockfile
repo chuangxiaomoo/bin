@@ -30,5 +30,18 @@
 
 # flock  
 
-  # http://www.liyu8.com/article/63.htm
+  # mode1 命令是必选项
 
+  flock mylockfile ls
+
+  # mode2 http://www.liyu8.com/article/63.htm
+  {
+      flock -n 3
+      [ $? -eq 1 ] && { echo fail; exit; }
+      echo $$
+      sleep 10
+  } 3<>mylockfile
+  
+  使用<>打开mylockfile，原因是定向文件描述符是先于命令执行的。
+  当{}内的语句执行完，mylockfile会自动关闭，并unlock该文件。
+  
