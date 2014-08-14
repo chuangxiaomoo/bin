@@ -1549,23 +1549,24 @@
 
   30.36出手，原因是创业板指数不济，覆巢之下，岂有完卵。
 
-# --------- 清理 m2 stk ---- 实现监控程序 ----
+# 2014-08-14 14:00:08 耐心等待的重要性，你知道吗？
 
-  [实时分笔](http://stockdata.stock.hexun.com/gghq_000002.shtml) 
+  300278  2.63    15.27      `6.86`   -2.45   7.84    8.77    2.02    华昌达
+  002174  1.60    52.89      `6.29`   -1.85   7.17    4.84    3.64    游族网络
+  300328  0.21    24.76      `4.08`   -1.85   4.62    7.37    2.37    宜安科技
+
+  > 14:52:41
+
+  300278   2.78    15.63       9.38    -0.63   10.36   16.44   2.95    华昌达
+  002174   2.50    53.58       7.68    -0.46   8.56    5.88    3.44    游族网络
+  300276   1.81    13.55       5.04    -1.16   6.20    21.88   1.74    三丰智能
+  300328   -0.37   24.61       3.45    -2.48   3.99    8.67    2.15    宜安科技
 
 # 文化大革命，打破利益组织，重现数目字。
 
   马云通过阿里的外贸数据曾预测2008之金融危机。
 
-# 分笔数据对于低换手的票做T+0具有巨大的意义
+# 分笔数据对于低换手的票做T+0具有巨大的意义？
 
-  deal
-  http://webstock.quote.hermes.hexun.com/a/deal?code=szse000002&start=20140811151000&number=-10
-  http://webstock.quote.hermes.hexun.com/gb/a/quotelist?code=sse000001,szse399001&column=Code,name,Price,UpDownRate,LastClose,PriceWeight
-
-  trade
-  http://vol.stock.hexun.com/other/json/trade/Trade.ashx?code=000002&count=9&danzi=0&addby=0&m=2
-
-  price
-  http://vol.stock.hexun.com/other/json/trade/price.ashx?m=2&code=000002
+  [实现监控程序] ----
 

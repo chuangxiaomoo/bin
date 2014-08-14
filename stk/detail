@@ -24,6 +24,8 @@ fn_realtime()
 {
     url='http://quote.stock.hexun.com/stockdata/stock_quote.aspx?stocklist'
     url="${url}=$1"
+    # echo ${url}
+
     while :; do
         w3m -dump "${url}" 2>/dev/null | \
             sed -e 's/;indexdataArr/;\nindexdataArr/' \
@@ -40,7 +42,7 @@ function fn_main()
 {
     mkdir -p ${rt_stdout%/*}
     [ -z "$*" ] && echo "Usage: $0 code" && exit 
-    fn_realtime `printf %06d $1`
+    fn_realtime `echo -n 00000${1} | tail -c6`
 }
 
-fn_main ${@}
+fn_main 2715 ${@}

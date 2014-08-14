@@ -16,6 +16,18 @@
 
     http://stockdata.stock.hexun.com/gghq_000002.shtml 
 
+    deal -- 真正的分笔
+
+    [实时分笔](http://stockdata.stock.hexun.com/gghq_000002.shtml) 
+    http://webstock.quote.hermes.hexun.com/a/deal?code=szse000002&start=20140811151000&number=-10
+    http://webstock.quote.hermes.hexun.com/gb/a/quotelist?code=sse000001,szse399001&column=Code,name,Price,UpDownRate,LastClose,PriceWeight
+
+    trade
+    http://vol.stock.hexun.com/other/json/trade/Trade.ashx?code=000002&count=9&danzi=0&addby=0&m=2
+
+    price
+    http://vol.stock.hexun.com/other/json/trade/price.ashx?m=2&code=000002
+
 /* ---------------------------------------------------------------------- */
 
 . 大富翁数据中心
