@@ -1,0 +1,34 @@
+#! /bin/bash
+
+# lockfile-progs
+
+  lockfile=/some/file
+
+  # /some/file 可以不存在，无选项 --lock-name 时，创建文件 /some/file.lock
+  lockfile-create --lock-name ${lockfile}
+
+  # 因为create后会失效，而被重新create，touch可防止失败
+  lockfile-touch --lock-name ${lockfile}&
+
+  # Save the PID of the lockfile-touch process，可以用 kill -0 或查看之用
+  echo $! > ${lockfile} 
+
+  do_something_important_with ${lockfile} 
+
+  lockfile-remove --lock-name ${lockfile} 
+
+  kill -9 `cat ${lockfile}`
+
+  lockfile-remove --lock-name ${lockfile} 
+
+
+  # 缺点：
+  # lockfile-create (in 5 second increments)*9 = 180s 去尝试create，
+  # 若lockfile占用很久，则下一个lockfile-create不是实时的，会有延时。
+  # 可以用 lockfile-check 来轮询之。
+  #
+
+# flock  
+
+  # http://www.liyu8.com/article/63.htm
+
