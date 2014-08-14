@@ -63,4 +63,5 @@ function fn_main()
     done
 }
 
+# 注意数据的延时
 fn_main 000002
