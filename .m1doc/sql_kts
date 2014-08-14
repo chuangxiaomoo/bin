@@ -118,12 +118,13 @@ CREATE TABLE tempday (
 
 DROP TABLE IF EXISTS fenbi;
 CREATE TABLE fenbi (
+    id          int(6)          PRIMARY key AUTO_INCREMENT NOT NULL,
     code        INT(6) ZEROFILL NOT NULL, 
-    datetime    INT(14) ZEROFILL NOT NULL, 
-    trade       INT(6) ZEROFILL NOT NULL,
+    datetime bigint(14)ZEROFILL NOT NULL, 
+    trade       INT(5)          NOT NULL,
     amount      INT(6) ZEROFILL NOT NULL,
     volume      INT(6) ZEROFILL NOT NULL,
-    type1       INT(4) ZEROFILL NOT NULL,
+    type1       INT(1) ZEROFILL NOT NULL,
     INDEX(code,datetime)
 );
 

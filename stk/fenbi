@@ -18,7 +18,7 @@ function fn_get_url()
     # http://webstock.quote.hermes.hexun.com/a/deal?code=szse000002&start=20140813151000&number=-10&callback=callback
     url0="http://webstock.quote.hermes.hexun.com/a/deal?"
     [ ${1:0:1} -eq 6 ] && sec=sse || sec=szse 
-    echo "${url0}code=${sec}${1}&start=${2}&number=500"
+    echo "${url0}code=${sec}${1}&start=${2}&number=30"
 }
 
 function fn_rtc() { date +%Y%m%d%H%M%S ;}
@@ -34,6 +34,7 @@ function fn_main()
     raw='/tmp/raw'
     cache='/tmp/cache'
     buffer='/tmp/buffer'
+    lockfile='/run/lock/fenbi'
 
     >${buffer}
 
@@ -55,7 +56,14 @@ function fn_main()
                 '{printf "%s\t%s\t%s\t%s\t%s\t%s\n", code,$1,$2,$3,$4,$5 }' > ${cache} 
 
         [ "${dt}" != "${datetime0}" ] && sed -i '1d' ${cache}
-        cat ${cache} >> ${buffer}
+        # cat ${cache} >> ${buffer}
+        {
+            flock 20
+            sqls="LOAD DATA LOCAL INFILE '${cache}' INTO TABLE fenbi
+                  (code, datetime, trade, amount, volume, type1)"
+            mysql -t kts <<< "${sqls}"
+            exit
+        } 20<>${lockfile}
 
         dt=`tail -1 ${cache} | awk '{print $2}'`
         [ "${dt}" -ge ${datetime9} ] && break

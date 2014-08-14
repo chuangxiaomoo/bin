@@ -6,8 +6,8 @@ function fn_main()
 {
     TTY=$(tty)
     TTY=${TTY##/dev/}
-    PTS=(`ps -ef | grep -w [v]i | awk '{print $6}'`)
-    PID=(`ps -ef | grep -w [v]i | grep "$TTY" | awk '{print $2}'`)
+    PTS=(`ps -ef | grep -w [v]i | /usr/bin/awk '{print $6}'`)
+    PID=(`ps -ef | grep -w [v]i | grep "$TTY" | /usr/bin/awk '{print $2}'`)
 
     [ -z "${PTS[*]}" ] && echo -e "\n No vim --Running--! \n" && exit 0
 
@@ -15,7 +15,7 @@ function fn_main()
     if [ 0 -ne ${#PID[@]} ]; then
         local i=
         for i in ${PID[@]}; do
-            cwd=`ls -l /proc/$i/cwd | awk '{print $10}'`
+            cwd=`ls -l /proc/$i/cwd | /usr/bin/awk '{print $10}'`
             echo -e "\n    ---------> running@ $cwd"
         done
         echo
