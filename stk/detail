@@ -1,0 +1,46 @@
+#! /bin/bash
+
+. `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
+. /etc/common.rc
+
+function fn_xunner()
+{
+    printf "%6s\t%s\t%s\t%s\t%s\t%s\t%s\t%-5s\t%5s\t%5s\t%5s\n" \
+            symbol avrg trade chng high pcnt_hi loww pcnt_lo turnov vratio name
+
+    # cat ${rt_stdout} 
+
+    sed -n '1,2p' ${rt_stdout}  | 
+        tr -d '\n' | tr "'" '"' | 
+        sed -e 's/^.*= *//' -e 's/;.*$//' | 
+        JSON.sh -b | tr -d '"' | 
+        awk '{printf "%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%s\n", 
+                $1,(100*$3-$10/($9+0.00001))/($3+0.00001),
+                $3,$4, $7, 100*($3-$7)/$5, $8, 100*($3-$8)/$5, $11, $13, $2
+        }' | sort -g -r -k4
+}
+
+fn_realtime()
+{
+    url='http://quote.stock.hexun.com/stockdata/stock_quote.aspx?stocklist'
+    url="${url}=$1"
+    while :; do
+        w3m -dump "${url}" 2>/dev/null | \
+            sed -e 's/;indexdataArr/;\nindexdataArr/' \
+                -e 's/*//g'  -e 's/ST//g'  > ${rt_stdout} 
+
+        [ -n "`head -c2 ${rt_stdout}`" ] && break
+        echo "w3m fail, try again!"
+    done
+
+    fn_xunner
+}
+
+function fn_main() 
+{
+    mkdir -p ${rt_stdout%/*}
+    [ -z "$*" ] && echo "Usage: $0 code" && exit 
+    fn_realtime `printf %06d $1`
+}
+
+fn_main ${@}
