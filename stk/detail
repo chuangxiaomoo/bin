@@ -29,10 +29,11 @@ fn_realtime()
     while :; do
         w3m -dump "${url}" 2>/dev/null | \
             sed -e 's/;indexdataArr/;\nindexdataArr/' \
-                -e 's/*//g'  -e 's/ST//g'  > ${rt_stdout} 
+                -e 's/*//g'  -e 's/ST//g'  > ${rt_stdout}
 
         [ -n "`head -c2 ${rt_stdout}`" ] && break
         echo "w3m fail, try again!"
+        sleep .5
     done
 
     fn_xunner
