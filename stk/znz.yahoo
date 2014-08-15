@@ -5,6 +5,9 @@
 . `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
 . /etc/common.rc
 
+mkdir -p ${znzday}
+mkdir -p ${day_gether%/*}
+
 function fn_maxyahoo() 
 {
     start_sps=($(date +'%Y %m %d' --date='8 days ago' ))
@@ -47,7 +50,7 @@ function fn_gether_symbol() {
         $W3M -dump "${url}" > ${day_temp} || \
         $W3M -dump "${url}" > ${day_temp}
         if [ 0 -ne "$?" ]; then
-            echo $code >> /root/bin/stk/.template/codes.timeout
+            echo $code >> ${yahootimeout}
             echo "${symbol} timeout at page=${index}" 
             return 1
         fi
@@ -118,16 +121,11 @@ function fn_yahoo()
 
     [ "start" != "$1" ] && echo "$Usage" && exit
 
-    # This script depends on: ./up 3 
-    mkdir -p ${znzday}
-    mkdir -p ${day_gether%/*}
+    # This script depends on: ./up 6
     > $yahootimeout
 
     # for timeout
     [ -z "${NOCLEAN}" ] && rm   -rf ${znzday}/*
-
-    # 
-    # cp codes.timeout codes.ask
 
     local i=
       for i in `cat $yahooask` ; do
