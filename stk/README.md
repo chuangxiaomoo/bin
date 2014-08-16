@@ -40,7 +40,8 @@
 ## 心战           .doc/psywar.md
 ## 总结2013       .doc/2013.md
 ## 笛卡尔实践     .doc/up_down_logic.md         
-## 趋势实践       .doc/ma-trade.md              
+## 建立交易系统   .doc/ma-trade.md
 
-## 决策纪律       .doc/discipline.md            -- 目标 & 策略
+## 目标&策略&纪律 .doc/discipline.md
+## 纲举目张       .doc/teaseout.md
 ## 操盘日记       .doc/diary.md
