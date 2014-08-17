@@ -528,6 +528,9 @@ function fn_215_发现你的太平洋()        { cat ljsw_215_发现你的太平
 
 function fn_x1_你的阅读造就了你()       { cat ljsw_x1_你的阅读造就了你 ;}
 function fn_0802_他拯救了美国？()       { cat ljsw_0802_他拯救了美国？ ;}
+function fn_0809_改变世界的箱子()       { cat ljsw_0809_改变世界的箱子 ;}
+function fn_0815_费马大定理()           { cat ljsw_0815_费马大定理 ;}
+
     local opts=(
         voice
         00_曾国藩
@@ -546,6 +549,9 @@ function fn_0802_他拯救了美国？()       { cat ljsw_0802_他拯救了美�
         210_右派为什么这么横
         215_发现你的太平洋              # 创业
         0802_他拯救了美国？
+        0809_改变世界的箱子
+        0815_费马大定理
+        
     )
     fn_print $@
 }
