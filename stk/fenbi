@@ -23,6 +23,21 @@ function fn_get_url()
     echo "${url0}code=${sec}${1}&start=${2}&number=1000"
 }
 
+
+function fn_main2()
+{
+    dt2=19450815132000
+    echo ${dt2:0:4}
+    echo ${dt2:4:2}
+    echo ${dt2:6:2}
+    echo ${dt2:8:2}
+    echo ${dt2:10:2}
+    echo ${dt2:12:2}
+
+    return $?
+}
+
+
 function fn_rtc() { date +%Y%m%d%H%M%S ;}
 
 function fn_main()
