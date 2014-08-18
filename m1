@@ -865,7 +865,7 @@ function fn_term()                      { cat surveil_term ;}
         op_光学知识
         jc_捷高Style
         video
-        video_resolution
+        video_resolution                # 尺寸
         term                            # 常用参数
         ptz
     )
