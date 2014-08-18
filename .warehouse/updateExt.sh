@@ -2,11 +2,11 @@
 #---------------------------------------------------------------------------
 #          FILE: updateExt.sh
 #         USAGE: ./updateExt.sh 
-#   DESCRIPTION: 
-#       OPTIONS: -
-#  REQUIREMENTS: -
-#          BUGS: -
-#         NOTES: -
+#   DESCRIPTION: 升级分两步进行
+#                1  解压升级包，并nandwrite squshfs
+#                2  正电重启后，替换 web conf 等文件
+#                   a) 进程对文件的引用会导致文件替换失败
+#                   b) 直接rm -rf 会概率性(1/700)导致文件夹及文件的直接丢失
 #        AUTHOR: zhangjian () 
 #  ORGANIZATION: 
 #       CREATED: 2014-04-08 10:18:40 AM
@@ -24,13 +24,13 @@ function fn_prog_bar_start()
 {
     start=`date +%s`
     xtar_secs=${1:-18}          # seconds spent by C
-    total_secs=73               # seconds spent by C + BASH => takes_secs
+    total_secs=54               # seconds spent by C + BASH => takes_secs
     let start=start-xtar_secs
     sync
     echo 3 > /proc/sys/vm/drop_caches
     echo 100 >/proc/sys/vm/dirty_writeback_centisecs
     echo 1500 >/proc/sys/vm/dirty_expire_centisecs
-    echo 120 > /dev/watchdog    # 120s to avoid sync() blocking
+    echo 120 > /dev/watchdog    # 120s to avoid this suite blocking
 }
 
 function fn_prog_bar_set() 
@@ -54,7 +54,6 @@ function fn_prog_bar_succ()
 
     let takes_secs=curr-start
     echo "---- it takes $takes_secs on upgrade ----"
-    sync&
 }
 
 function fn_prog_bar_fail() 
@@ -82,52 +81,6 @@ function fn_do_md5()
     return 0
 }
 
-function fn_up_ubifs() 
-{
-    map=(
-      # ubiconfig.img 7     /opt/conf
-      # ubilog.img    8     /opt/log
-      # ubiweb.img    9     /opt/web
-        ubiapp.img    10    /opt/app
-      # ubimisc.img   11    /opt
-    )
-
-    # umount except /opt 
-    # /usr/sbin/ubimount -u
-
-    local i
-    for (( i=0; i<${#map[@]}; i+=3 )); do
-        let j=i+1
-        let k=j+1
-        idx=${map[$j]}
-        mtd=mtd${idx}
-        img=${map[$i]}
-        mpoint=${map[$k]}
-
-        if [ -f "${img}" ] ; then
-            mountpoint -q ${mpoint} && umount -f ${mpoint}
-            xt_ret $? "mount list: ------- `mount`" || { return $?; }
-
-            echo ubidetach /dev/ubi_ctrl -m ${idx}                       && \
-                 ubidetach /dev/ubi_ctrl -m ${idx}                       && \
-            echo flash_eraseall /dev/${mtd}                              && \
-                 flash_eraseall /dev/${mtd}                              && \
-            echo ubiformat /dev/${mtd} -s 2048 -f ${img}                 && \
-                 ubiformat /dev/${mtd} -s 2048 -f ${img}   >& /dev/null  && \
-            echo ubiattach /dev/ubi_ctrl -m ${idx} -O 2048               && \
-                 ubiattach /dev/ubi_ctrl -m ${idx} -O 2048 >& /dev/null
-
-            xt_ret $? "Fail: idx[${idx}] mtd[${mtd}] img[${img}]" || return $?
-
-            rm -f ${img}
-            echo "Succ: idx[${idx}] mtd[${mtd}] img[${img}]"
-            fn_prog_bar_set
-        fi
-    done
-
-    return 0
-}
-
 function fn_up_sqfs() 
 {
     rootsqfs=rootfs.sqfs
@@ -146,7 +99,6 @@ function fn_up_sqfs()
 
         if [ "${md5_dbg}" = ${md5_sqfs} ]; then
             rm -f ${rootsqfs} ${dbg_sqfs}
-            sync
             return 0
         fi
     done
@@ -155,45 +107,56 @@ function fn_up_sqfs()
 function fn_up_single_files() 
 {
     #
-    # Attention: sub-directory etc/ppp conf/isp
-    # for overwrite, they must before their papa
+    # Attention: sub-directory etc/ppp conf/isp,
+    # for mv overwrite, they must before their papa,
+    # EVEV try rm -rf etc/ppp conf/isp, but __FAIL__ sometimes, so mv is more safe
     #
 
-    # exclude: web log
-    pathes='app  bin  conf  drv  etc  font  lib media'
-
+    # exclude: web log meida
+    pathes='app  bin  conf  drv  etc  font  lib'
     # find -maxdepth 2 -type d  | grep -v web | grep '/.*/'
     pathes="etc/ppp conf/isp ${pathes}"
-    
+
     local i=
     for i in ${pathes}; do
         mkdir -p ${i}
-        if  [ -n "`ls $i/`" ] ; then
-            echo updating ${i}
+        if [ -n "`ls $i/`" ] ; then
+            echo -----updating----- ${i}/* | xargs -n1
             mv ${i}/* /opt/${i}/
             xt_ret $? "mv ${i}" || return $?
         fi
-        rm -rf ${i}
-        fn_prog_bar_set
-    done
+        rm -rf ${i}; sync
+    done 
 
+    # webpage process
+    cd /opt/upgrade/web/
+    echo -----updating----- * | xargs -n1
+
+    pathes=(`find -name '*' -type d`)
+    dest='/opt/web'
+
+    for (( i=${#pathes[@]}-1; i>0; i-- )); do
+        # echo mkdir -p ${dest}/${pathes[$i]}
+        mkdir -p ${dest}/${pathes[$i]}
+        mv ${pathes[$i]}/* ${dest}/${pathes[$i]}/
+        rm -rf ${pathes[$i]}
+        sync
+    done
+    # rm: cannot remove directory: `.'
+    mv ${pathes[$i]}/* ${dest}/${pathes[$i]}/
+    sync
+
+    fn_banner_succ
     return 0
 }
 
 function fn_upgrade0()
 {
-    # fn_prog_bar_set
-    # prepare package
-    # fn_do_md5               ## do in C
-    # xt_ret $? "md5sum fail" || return $?
-
     fn_prog_bar_set
     xtar_start=${curr}
 
-    mkdir -p $xtardir
     rm -rf $xtardir/*
-
-    tar -zxf $package -C $xtardir &
+    tar -zxf $package -C ${xtardir}&
     pid_tar=$!
 
     set +x
@@ -201,9 +164,8 @@ function fn_upgrade0()
         kill -0 ${pid_tar} 2>/dev/null || break
         fn_prog_bar_set
         sleep 3
-        [ "${j:-0}" -eq 0 ] && { sync& }
-        let j=i++%2
-    done; sync&
+    done; 
+    time sync
     set -x
 
     wait $pid_tar
@@ -216,24 +178,15 @@ function fn_upgrade0()
     let xtar_spend=xtar_end-xtar_start
     echo "---- it takes ${xtar_spend}s on tar ----"    # 38s => 3.4s/M
 
-    # update: do one, remove one 
     cd $xtardir
-
-   #fn_up_ubifs
-   #xt_ret $? "Fail: ubifs" || return $?
-   #fn_prog_bar_set
-
     fn_up_sqfs
     xt_ret $? "Fail: sqfs" || return $?
 
-    fn_prog_bar_set
+    # mv the entry file of system
+    mv etc/{auto_run.sh,profile} /opt/etc/
+    xt_ret $? "Fail: sqfs" || return $?
 
-    fn_up_single_files
-    xt_ret $? "Fail: single files" || return $?
-
-    fn_prog_bar_set
-
-    return 0
+    sync
 }
 
 function fn_banner_succ()
@@ -261,11 +214,11 @@ function fn_banner_fail()
 function fn_reboot() 
 {
     # jcli sysctrl -act set -cmd 0
-    ps
-    logger "sync and Delay 20s to reboot."
+    logger "sync and Delay 18s to reboot."
     sync
     sleep 10; 
-    sleep 10; 
+    sleep 5; 
+    sleep 3; 
     logger "Rebooting from updateExt.sh..."
     echo 1 > /dev/watchdog;
     reboot 
@@ -278,35 +231,19 @@ function fn_upgrade()
     shopt -s extglob
 
     package=$1
-    xtardir=/opt/upgrade
     PATH=$xtardir/upTools:$PATH
 
-    # 
     fn_prog_bar_start
-
-    # upgrade
     echo "UPGRADE updateExt.sh exec begin@`date`"
 
-    fn_upgrade0
-    if [ 0 -ne "$?" ] ; then
-        fn_banner_fail; fn_prog_bar_fail;
-    else
-        fn_banner_succ; fn_prog_bar_succ;
-    fi
+    fn_upgrade0 || { 
+        fn_prog_bar_fail; fn_banner_fail; 
+        rm -rf ${xtardir}; return 1; 
+    }
 
     echo "UPGRADE updateExt.sh exec _end_@`date`"
     echo "sleep 4s to keep the 100% status for webpage"; 
-    sleep 4
-
-    # webpage
-    killall -9 jco_httpd
-    sleep 1
-    rm -rf /opt/web/; sync
-    mv web /opt
-    xt_ret $? "-------- mv web ----------" || return $?
-
-    # clean up
-    rm -rf $xtardir/upTools
+    fn_prog_bar_succ; sleep 4; ps
 
     return 0
 }
@@ -314,17 +251,23 @@ function fn_upgrade()
 function fn_main() 
 {
     up_log=/opt/log/upgrade.log
+    xtardir=/opt/upgrade
 
     mkdir -p ${up_log%/*}
-    cp ${up_log} ${up_log}.1
-    grep UPGRADE ${up_log}.1 | grep -v echo | tail -5000 > ${up_log}
+    mkdir -p $xtardir
+    cd ${xtardir}
 
-    jcli update -act set -type 1
-
-    fn_upgrade $@ 2>&1 | tee -a ${up_log} 
-
-    fn_reboot&
+    if [ -n "${1}" ] ; then
+        set -x
+        cp ${up_log} ${up_log}.1
+        grep UPGRADE ${up_log}.1 | grep -v echo | tail -5000 > ${up_log}
+        jcli update -act set -type 1
+        fn_upgrade $@ 2>&1 | tee -a ${up_log} 
+        fn_reboot&
+    else
+        fn_up_single_files 2>&1 | tee -a ${up_log} 
+        xt_ret $? "Fail: single files" || return $?
+    fi
 }
-set -x
-fn_main $@ 
 
+fn_main $@
