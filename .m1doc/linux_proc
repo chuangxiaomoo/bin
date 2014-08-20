@@ -38,7 +38,16 @@
 
 # dirty页缓存回写
 
+  [page cache](http://backend.blog.163.com/blog/static/2022941262013111781643200/)
   [pdflush进程详解](http://www.2cto.com/os/201304/206490.html)
+  [diff dirty_ratio&bg_dirty](http://blog.sina.com.cn/s/blog_448574810101k1va.html)
   /proc/sys/vm/dirty_background_ratio
   /proc/sys/vm/dirty_writeback_centisecs
+  /proc/sys/vm/dirty_ratio                      # 会阻塞write() 
+  /proc/sys/vm/dirty_background_ratio           # 通常是dirty_ratio的1/2
+
+# 
+
+  A buffer is something that has yet to be "written" to disk. 
+  A cache is something that has been "read" from the disk and stored for later use.
 
