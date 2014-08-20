@@ -130,6 +130,7 @@ function fn_boot()                      { cat linux_boot ;}
 function fn_time管理()                  { cat linux_time管理 ;}
 function fn_IPC()                       { cat linux_IPC ;}
 function fn_proc()                      { cat linux_proc ;}
+function fn_free_buffer_cache()         { cat linux_free_buffer_cache ;}
 function fn_udev()                      { cat linux_udev ;}
 function fn_mtd()                       { cat linux_mtd ;}
 function fn_lockfile()                  { cat linux_lockfile ;}
@@ -144,6 +145,7 @@ function fn_lockfile()                  { cat linux_lockfile ;}
         udev
         lockfile                        # lockfile-progs and flock
         proc
+        free_buffer_cache               # 
         time管理
     )
     fn_print $@

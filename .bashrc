@@ -22,6 +22,7 @@ alias   lsd='find `ls -A` -maxdepth 0 -type d | xargs'
 #lias   lsd='find . -maxdepth 1 -name '\''[a-zA-Z]*'\'' -type d | xargs | sed '\''s#\./##g'\'''
 
 alias  ktel="ps -ef | grep [t]elnet | awk '{print \$2}' | xargs kill -9"
+alias  ktel="ps -ef | grep [t]elnet | awk '{print \$2}' | xargs kill -9"
 alias  kpts="ps -ef | grep '[p]ts/[1-9]' | awk '{print \$2}' | xargs kill -9"
 alias    rr='rm -rf'
 alias    rm='rm -i'
@@ -69,6 +70,7 @@ alias  kmysql='mysql kts'
 alias   xgrep="find . -name '*' -type f | xargs grep "
 alias  upconf="rm -f /home/s/fs/opt/conf/config.*; svn up /home/s/fs/opt/conf/config.org;" 
 alias  clrnfs="Svn | grep nfs | awk '{print $2}' | xargs rm -f"
+alias fbcache="sync; echo 3 > /proc/sys/vm/drop_caches"
 
 # soptter
 function M()        { m1 $@ | tail -18; } # M() { m1 $@ | nl -w 3 -s' ' | less -i ;}

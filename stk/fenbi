@@ -20,7 +20,7 @@ function fn_get_url()
     # http://webstock.quote.hermes.hexun.com/a/deal?code=szse000002&start=20140813151000&number=-10&callback=callback
     url0="http://webstock.quote.hermes.hexun.com/a/deal?"
     [ ${1:0:1} -eq 6 ] && sec=sse || sec=szse 
-    echo "${url0}code=${sec}${1}&start=${2}&number=1000"
+    echo "${url0}code=${sec}${1}&start=${2}&number=-1000"
 }
 
 
@@ -58,9 +58,9 @@ function fn_main()
 
     while :; do
         rtc=`fn_rtc`
-        if [ ${rtc} -gt "${datetime4}" ] && [ ${rtc} -lt "${datetime5}" ]; then
-            echo "noon break, sleep 30s"; sleep 30; continue
-        fi
+        # if [ ${rtc} -gt "${datetime4}" ] && [ ${rtc} -lt "${datetime5}" ]; then
+        #     echo "noon break, sleep 30s"; sleep 30; continue
+        # fi
 
         url=`fn_get_url ${code} ${dt}`
         echo ${url}
@@ -69,7 +69,7 @@ function fn_main()
         time cat ${raw} | sed -n '/\[\[/,$p' |      # Data:
             sed  -e '1s/^.*\[\[/[[/' -e '$s/]].*$/]]/' > ${ripe}
 
-        [ "`stat -c%s ripe`" -lt 80 ] && break      # 2 record at list
+        [ "`stat -c%s $ripe`" -lt 80 ] && break      # 2 record at list
         
         cat ${ripe} | JSON.sh -b |
             awk -v code=$code \
@@ -77,8 +77,8 @@ function fn_main()
         xt_ret $? "" || return $?
 
         [ "${dt}" != "${datetime0}" ] && sed -i '1d' ${cache}
-        # cat ${cache} >> ${buffer}
-        {
+        cat ${cache} # >> ${buffer}
+        false && {
             flock 20
             sqls="LOAD DATA LOCAL INFILE '${cache}' INTO TABLE fenbi
                   (code, datetime, trade, amount, volume, type1)"
@@ -92,4 +92,5 @@ function fn_main()
 }
 
 # 数据的延时在30s内
-fn_main 000002
+# fn_main 000002
+fn_main 399006
