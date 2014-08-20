@@ -29,13 +29,15 @@
   |   +-----------+  conf.org  +------- npack.sh
   |   |           +------+-----+
   |   |                  |
-  |   |update            |power-on
+  |   |UPDATE            |power-on
   |   |add del           v
   |   |           +-----------+
   |   +---------->|  conf.xml +<------------+
   |               +---+--+----+             |
   |                   |  |                  |
-  +----FACTORYr-DEF---+  +-----jcpcmd-------+`
+  +----FACTORY-DEF----+  +-----jcpcmd-------+`
+
+  FACTORY-DEF 与 UPDATE 是一对方向相反的操作。
 
 # 需求：
 

@@ -531,6 +531,7 @@ function fn_source()                    { cat gdb_source ;}
 }
 
 function fn_make() {
+function fn_link()                      { cat make_link ;}
 function fn_base()                      { cat make_base ;}
 function fn_func()                      { cat make_func ;}
 function fn_skeleton()                  { cat make_skeleton ;}
@@ -542,6 +543,8 @@ function fn_lib_static()                { cat make_lib_static ;}
 function fn_shell()                     { cat make_shell ;}
 
     local opts=(
+        compile
+        link                            # 链接
         base
         func
         skeleton
