@@ -1,0 +1,101 @@
+/* */
+
+static int pritnt_usage(char *argv[])
+{
+    char *usage_msg = 
+    "\nUsage: %s [OPTION]... [msg]"
+    "\n\t"
+    "\n\tRun %s untill a signal KILL." 
+    "\n\tIf append with msg, show messages and then exit."
+    "\n\t"
+    "\n\toptions:"
+    "\n\t-h, --help          show help"
+    "\n\t-o, --opt_custom <i>   option custom"
+    "\n\t-i, --irshow <intv> interval seconds of show lux multiple messages"
+    "\n\t-q, --quiet {t|a}   disable stdout & stderr, when t, all and a, alarm"
+    "\n\t-t, --tempdata      tempdata, convenient when adjust parameter, e.g. wiper steps"
+    "\n\t-m, --mcudata       mcu data"
+    "\n";
+
+    printf(usage_msg, argv[0], argv[0]);
+
+    return 0;
+}
+
+int parse_opt(int argc, char *argv[])
+{
+   int c;
+   while (1) {
+       int option_index = 0;
+       /* 
+        * name;     has_arg;    flag; val;
+        * {"quiet", 0,          0,      0}
+        *
+        * ATTENTION:
+        *   when has_arg set to 1, a ':' add in "hoq:i:" accordingly
+        *   on cmdline: -q a  <==> -qa
+        */
+       static struct option long_options[] = {
+           {"help"      , 0, 0, 'h'},
+           {"opt_custom", 1, 0, 'o'},
+           {"irshow"    , 1, 0, 'i'},
+           {"quiet"     , 1, 0, 'q'},
+           {"tempdata"  , 1, 0, 't'},
+           {"mcudata"   , 1, 0, 'm'},
+           {0           , 0, 0, 0  }
+       };
+
+       c = getopt_long(argc, argv, "ho:i:q:t:m:", long_options, &option_index);
+       if (c == -1)
+           break;
+
+       switch (c) {
+       case 'q':
+           if (strstr(optarg, "a")) {
+               set_cmdopt(quiet_alarm, TRUE);
+           } else if (strstr(optarg, "t")){
+               set_cmdopt(quiet_team, TRUE);
+           } else {
+               pritnt_usage(argv);
+               exit(0);
+           }
+           break;
+
+       case 'o':
+           set_cmdopt(opt_custom, atoi(optarg));    // optarg from OPT_INDEX
+           break;
+
+       case 'i':
+           set_cmdopt(irshow_intv, atoi(optarg));
+           break;
+
+       case 't':
+           set_cmdopt(tempdata, atoi(optarg));
+           break;
+
+       case 'm':
+           set_cmdopt(show_mcudata, atoi(optarg));
+           break;
+
+       case 'h':
+           pritnt_usage(argv);
+           exit(0);
+       default:
+           pritnt_usage(argv);
+           break;
+       }
+   }
+
+   if (optind < argc) {
+       if (strlen(argv[optind]) == 3 &&  strstr(argv[optind], "msg")) {
+           set_cmdopt(show_messages, TRUE);
+       }
+   }
+
+   // printf("%d %d %d %d\n", 
+   // get_cmdopt(quiet_team),
+   // get_cmdopt(quiet_alarm),
+   // get_cmdopt(show_messages)
+   // );
+   return 0;
+}
