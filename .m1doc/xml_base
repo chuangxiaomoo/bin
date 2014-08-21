@@ -26,8 +26,8 @@
 
 . 代码抽象(节点)
 
-    每一块XML文件中的信息片断(元素、文本、数字)是一个存储在内存中的"节点(nodes)" 
-    .节点使用 mxml_node_t 结构进行定义. 它的type 成员变量定义了节点类型(element, 
+    每一块XML文件中的信息片断(元素、文本、数字)是一个存储在内存中的节点(nodes).
+    节点使用 mxml_node_t 结构进行定义. 它的type 成员变量定义了节点类型(element, 
     integer, opaque, real, or text) 决定了需要从联合(union)类型的成员变量 value 
     中获取的值. 
 
