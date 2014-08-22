@@ -530,6 +530,7 @@ function fn_x1_你的阅读造就了你()       { cat ljsw_x1_你的阅读造就
 function fn_0802_他拯救了美国？()       { cat ljsw_0802_他拯救了美国？ ;}
 function fn_0809_改变世界的箱子()       { cat ljsw_0809_改变世界的箱子 ;}
 function fn_0815_费马大定理()           { cat ljsw_0815_费马大定理 ;}
+function fn_0822_南明为什么扛不住()     { cat ljsw_0822_南明为什么扛不住 ;}
 
     local opts=(
         voice
@@ -551,6 +552,7 @@ function fn_0815_费马大定理()           { cat ljsw_0815_费马大定理 ;}
         0802_他拯救了美国？
         0809_改变世界的箱子
         0815_费马大定理
+        0822_南明为什么扛不住           # 八旗制度 去中心化 海尔创业平台
         
     )
     fn_print $@
