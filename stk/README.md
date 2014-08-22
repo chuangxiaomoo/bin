@@ -45,4 +45,5 @@
 ## 目标&策略&纪律 .doc/discipline.md
 ## 纲举目张       .doc/teaseout.md
 ## 事件冲击       .doc/event.md
+## 板块           .doc/block.md
 ## 操盘日记       .doc/diary.md
