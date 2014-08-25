@@ -320,7 +320,7 @@ function fn_load_directory()
 
 function fn_add_codes_2_dzh2tbl()
 {
-    [ -z "$*" ] && echo "Usage: zixungu code..." && exit 1
+    [ -z "$1" ] && echo "Usage: zixungu {code|file}" && exit 1
     # echo $@ && exit
     # D:\dzh2\USERDATA\block
     # 每个自选股都有自己的独特代码，现以8为实现
@@ -343,7 +343,13 @@ function fn_add_codes_2_dzh2tbl()
         INSERT INTO ${TBL} (code) VALUES
     " > ${sql_temp}
 
-    echo $@ | sed -e 's/^/(/' -e 's/ /),(/g' -e 's/$/);/' >> ${sql_temp}
+    if [ -f "${1}" ]; then
+        lst=(`awk '/^[^#]/{print $1}' ${1}`)
+    else
+        lst=(${1})
+    fi
+    echo ${lst[@]} | sed -e 's/^/(/' -e 's/ /),(/g' -e 's/$/);/' >> ${sql_temp}
+
     mysql kts < ${sql_temp}
     xt_ret $? "${FUNCNAME}" || return $?
 
@@ -354,7 +360,7 @@ function fn_add_codes_2_dzh2tbl()
     {
     echo -n -e $HEAD
     local i=
-    for i in $@; do
+    for i in ${lst[@]}; do
         case $i in
         [67]*)
             echo -n SH$i
@@ -370,7 +376,7 @@ function fn_add_codes_2_dzh2tbl()
     done ;
     } > ${f_zxg}
 
-    echo -e "\n    add ${#@} to ${TBL} over.\n"
+    echo -e "\n    add ${#lst[@]} to ${TBL} over.\n"
 }
 
 
@@ -637,7 +643,7 @@ function fn_main()
     "redo_hexun_day_fr_min              # 利用已有分线，重做大盘日线"
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
     "up_tbl_xRD [--keep.PWR -k]         # --- 使用当前除权数据 --keep.PWR"
-    "add_codes_2_dzh2tbl code...        # 添加CODE到ZXG.BLK，并写表#{TBL:-zxg}"
+    "add_codes_2_dzh2tbl {code|file}    # 添加CODE到ZXG.BLK，并写表#{TBL:-zxg}"
     "add_tbl_codes_2_dzh                # 添加表#{TBL:-tbl_visit}到dzh2tbl{zxg}"
     "up_rzrq_codes_tbl                  # 更新RZRQ业务数据"
     "up_swing10                         # 更新涨跌停6.1%数据"
