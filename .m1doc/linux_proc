@@ -1,5 +1,7 @@
 # proc
 
+  man 5 proc
+
 # 立即释放cache（sync后才有效）
 
   /proc/sys/vm/drop_caches
