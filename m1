@@ -431,10 +431,10 @@ function fn_getopt_long()               { cat clang_getopt_long ;}
         open
         sync                    # blocking
         fwrite                  # fprintf fsync fflush
-        printf                  # scanf format
+        printf                  # sscanf() scanf() format
         signal
         strncpy                 # string serial
-        snprintf                # more safe vs strncpy
+        snprintf                # more safe vs strncpy()
         coredump
         time                    # posix TZ
         tty                     # serial port
