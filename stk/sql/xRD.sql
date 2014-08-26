@@ -637,7 +637,7 @@ CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
 
     INSERT INTO tbl_change(code,date,chng) SELECT 
            code,date,100*(close-yesc)/yesc FROM day 
-            WHERE date>=@START and date<=@END and code>300000 and code<400000;
+            WHERE date>=@START and date<=@END; # and code>300000 and code<400000;
 
     SET v_start=@START;
 
@@ -646,7 +646,7 @@ CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
         SELECT date FROM day WHERE code=900001 and date>v_start limit 1 INTO v_start;
         -- SELECT v_start;
 
-        SELECT count(code) FROM tbl_change WHERE date=v_start and chng>0               INTO v_inc;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng>=0              INTO v_inc;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<0               INTO v_dec0;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng>=8              INTO v_inc8;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<8 and chng>=5   INTO v_inc5;
