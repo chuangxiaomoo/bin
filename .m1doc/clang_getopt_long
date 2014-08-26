@@ -86,16 +86,13 @@ int parse_opt(int argc, char *argv[])
        }
    }
 
+   // optind 表示下一次运行getopt时将读取数组第optind个
+
    if (optind < argc) {
        if (strlen(argv[optind]) == 3 &&  strstr(argv[optind], "msg")) {
            set_cmdopt(show_messages, TRUE);
        }
    }
 
-   // printf("%d %d %d %d\n", 
-   // get_cmdopt(quiet_team),
-   // get_cmdopt(quiet_alarm),
-   // get_cmdopt(show_messages)
-   // );
    return 0;
 }
