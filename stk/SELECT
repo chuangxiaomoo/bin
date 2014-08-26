@@ -214,9 +214,7 @@ function fn_sel_ma513_ob_vol5()
 
 function fn_stat_change()
 {
-    START=${1:-${START}}
-    END=${2:-${END}}
-    [ -z "${START}" ] && START=`./SELECT get_open_days | head -1`
+    START=`./SELECT get_open_days ${1:-13} | head -1`
 
     echo "
     From ${START} to ${END}...
@@ -323,7 +321,7 @@ function fn_main()
     "dugu9jian          [sortfiled]          # nine sword"
     "6maishenjian       [sortfiled]          # nine sword"
     "app_wgt_turnov     [sortfiled]          # 追加weight到down_turnov CHAO=1则进zxg"
-    "get_open_days      [limit:-13 [desc]]   # 开市日列表"
+    "get_open_days      [LIMIT:-13 [desc]]   # 开市日列表"
     "get_comma_cloumns  [tbl_name:-day]      # 逗分列名"
     "sel_tbl_sink_where [TBL:-zxg_chao513]   # chao ..."
     "sel_vol5_ratio     [sortfiled:-ratio]   # 量比排名"
@@ -334,7 +332,7 @@ function fn_main()
     "get_curdate_min    [CODE:-900001]       # --- 当日min \$LIMIT"
     "ls                 {code|symbol}        # 日线数据 \$LIMIT"
     "ls_day_ob_rise     [sortfiled]          # --- END 涨幅排名 \$LIMIT"
-    "stat_change                             # 近期涨跌统计"
+    "stat_change        LIMIT:-13            # 近期涨跌统计"
     )
 
     tailday=`fn_maxdate`
