@@ -40,7 +40,7 @@ http://www.cnblogs.com/peida/archive/2012/11/24/2786049.html
     lsof -u root
     lsof -u 0
 
-◎可配合正规表达式使用
+三、可配合正规表达式使用
 
     表示不包括root用户的信息：
     lsof -u ^root

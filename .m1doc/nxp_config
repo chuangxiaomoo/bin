@@ -78,3 +78,24 @@
   select
   -f 提供批量操作
 
+# 参数定制流程
+
+  1 文件系统级别
+    config.org            # 原始文件
+    factory.kep.list      # 恢复出厂时继承的部分
+    upgrade.add.list      # 新增节点
+    del.list              # `没有del.list`，那样会导致rollback时系统失败
+
+  2 打包npack.sh
+    upgrade.add.pair      # 通过read方法生成upgrade.add.pair
+
+  3 升级成功后继承
+    关闭conf_watch() 
+    嫁接 upgrade.add.pair # 通过write方法，将upgrade.add.pair嫁接到config.xml
+    factory.kep.list      # 不做处理，当前能保证config.xml不被破坏，只在恢复出厂时启用
+
+  4 恢复出厂默认
+    factory.kep.pair      # 通过read方法，-f factory.kep.list > factory.kep.pair
+    factory.kep.pair      # 通过write方法，-f factory.kep.pair 更新到config.org
+    cp config.org config.xml
+

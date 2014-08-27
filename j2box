@@ -151,6 +151,7 @@ function fn_freq_list() {
     "version -act set -platform 0                          # 修改平台为 Normal"
     "xkcd telnetd -p 24                                    # telnetd"
     "xkcd /sbin/debugsys.sh force                          # set debug sys"
+    "sysctrl -act set -cmd 2                               # factory default"
     "audiotestcfg -chn 1/d1 -act set -start 1              # audio loopback test"
     "alarmtest -act set -chn 1/d1 -alarmtype 5 -filter 1   # alarm test 1 md"
     "alarmtest -act set -chn 1/d1 -alarmtype 30 -filter 1  # alarm test 30 spark"
