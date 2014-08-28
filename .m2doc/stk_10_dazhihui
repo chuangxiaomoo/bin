@@ -1,5 +1,10 @@
 /* 00_大智慧 */
 
+. account
+    LVT10782001  
+    931186 
+
+
 . download
     http://www.gw.com.cn/download.shtml
 
