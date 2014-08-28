@@ -118,6 +118,7 @@ function fn_conservatism()              { cat book_conservatism ;
 function fn_f1_富同学穷同学()           { cat book_f1_富同学穷同学 ;}
 function fn_f2_海底捞你学不会()         { cat book_f2_海底捞你学不会 ;}
 function fn_f3_教父()                   { cat book_f3_教父 ;}
+function fn_100_周鸿祎自述()            { cat book_100_周鸿祎自述 ;}
     local opts=(
         base       
         wanna                   # 想读的书
@@ -140,6 +141,8 @@ function fn_f3_教父()                   { cat book_f3_教父 ;}
         f2_海底捞你学不会
         f1_富同学穷同学
         f3_教父
+
+        100_周鸿祎自述
     )
     fn_print $@
 }
