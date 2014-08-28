@@ -320,7 +320,7 @@ function fn_load_directory()
 
 function fn_add_codes_2_dzh2tbl()
 {
-    [ -z "$1" ] && echo "Usage: zixungu {code|file}" && exit 1
+    [ -z "$1" ] && echo "Usage: zixungu {file|code...}" && exit 1
     # echo $@ && exit
     # D:\dzh2\USERDATA\block
     # 每个自选股都有自己的独特代码，现以8为实现
@@ -346,7 +346,7 @@ function fn_add_codes_2_dzh2tbl()
     if [ -f "${1}" ]; then
         lst=(`awk '/^[^#]/{print $1}' ${1}`)
     else
-        lst=(${1})
+        lst=(${@})
     fi
     echo ${lst[@]} | sed -e 's/^/(/' -e 's/ /),(/g' -e 's/$/);/' >> ${sql_temp}
 
