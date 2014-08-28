@@ -129,8 +129,8 @@ function fn_app_wgt_turnov()
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
     LIMIT=128 fn_get_tbl_super_dive
-    mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" | \
-        tee .soptter.chao | TBL=chao xargs up 7
+    mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" > .soptter.chao 
+    TBL=chao up 7 .soptter.chao
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -179,7 +179,8 @@ function fn_sel_vol5_ratio()
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
     field=ratio fn_build_sqls
-    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" | tee ${soptter_zxg} | TBL=zxg xargs up 7
+    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > ${soptter_zxg} 
+    TBL=zxg up 7 ${soptter_zxg}
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -208,7 +209,8 @@ function fn_sel_ma513_ob_vol5()
 
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
-    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" | tee .soptter.chao | TBL=chao xargs up 7
+    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > .soptter.chao 
+    TBL=chao up 7 .soptter.chao
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -269,8 +271,9 @@ function fn_6maishenjian()
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
     fn_get_tbl_6jian_dive $1 > /dev/null
-    mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" | \
-        tee .soptter.chao | TBL=chao xargs up 7
+    mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" > .soptter.chao 
+    TBL=chao up 7 .soptter.chao
+
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -306,8 +309,9 @@ function fn_dugu9jian()
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
     fn_get_tbl_9jian_dive $1 > /dev/null
-    mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" | \
-        tee .soptter.chao | TBL=chao xargs up 7
+    mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" > .soptter.chao 
+    TBL=chao up 7 .soptter.chao
+
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
