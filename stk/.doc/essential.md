@@ -29,8 +29,6 @@
 
 # 15种分时                 .doc/min.md
 
-# 孙子兵法                  .doc/sunzi.md
-
 # 一个分析师的blog
 
   http://blog.renren.com/blog/228881439/879873230?bfrom=010203055

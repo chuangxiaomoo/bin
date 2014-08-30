@@ -101,8 +101,9 @@ fenbi_ripe='/dev/shm/fenbi/ripe'
 
 function fn_iscode()
 {
-    local num=`sed 's/^0*//g' <<< "$1" | grep -E '^[0-9]+$' | xargs printf "%06d"  | wc -c`
-    test ${num:-0} -eq 6
+    # set -x
+    local num=`echo -n $1 | wc -c`
+    [[ "${1}" =~ ^[0-9]+$ ]] && [ "${1}" -ne 0 ] && [ ${num:-0} -le 6 ]
 }
 
 function fn_isdate()
