@@ -11,6 +11,7 @@
   `837728` = 725112 +  28248 +  84368
   `837728` 是真正可用的内存
 
+  > sync; echo 3 > /proc/sys/vm/drop_caches
   > arm-linux
 
   在arm上，没有下列的行，cache的值需要用 top 或 cat /proc/meminfo 来查看。
