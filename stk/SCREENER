@@ -222,6 +222,7 @@ function fn_dugu9jian()
     echo "
     SET @END='$END';
     SET @NUM=${NUM};
+    SET @NMC_PERCENT=${NMC:-1};
     call sp_visit_tbl('$TBL', @fn_dugu9jian);
     " | tee -a $mps_god
     mysql $mo -t kts <<< "source $mps_god"
@@ -559,7 +560,7 @@ function fn_main()
     # SCREENER的宗旨，弃子取势
     # xet_block_info 为 sp_visit_tbl() 选定相应的BLOCK
     cmdlist=(
-    "dugu9jian            [end [offset]]        # end.close analyze"
+    "dugu9jian            [end [offset]]        # .NMC end.close analyze"
     "6maishenjian         [end [offset]]        # min(close) analyze"
     "get_down_turnov      [start:curr-13] [end] # 100%下降净换手"
     "get_ma513            [end]                 # ma 5 13 34 55"

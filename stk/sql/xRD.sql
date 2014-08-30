@@ -846,6 +846,7 @@ CREATE PROCEDURE sp_dugu9jian(a_code INT(6) ZEROFILL) tag_9jian:BEGIN
     DECLARE v_date1     DATE DEFAULT NULL;
     DECLARE v_date2     DATE DEFAULT NULL;
     DECLARE v_shares    INT DEFAULT 0;
+    DECLARE v_shares0   INT DEFAULT 0;
     DECLARE v_volume    DECIMAL(12,2) DEFAULT 0;
     DECLARE v_amount    DECIMAL(12,2) DEFAULT 0;
     DECLARE v_sumvolume DECIMAL(12,2) DEFAULT 0;
@@ -854,7 +855,7 @@ CREATE PROCEDURE sp_dugu9jian(a_code INT(6) ZEROFILL) tag_9jian:BEGIN
 
     call sp_create_tempday();
     SELECT nmc/close FROM cap WHERE code=a_code LIMIT 1 INTO v_shares;
-
+    SET v_shares0 = v_shares * @NMC_PERCENT;
     -- 可以通过 turnover = latest(volume/shares); 来计算相应日期数 @NUM
     SET @sqls=concat('
         INSERT INTO tempday(code,date,yesc,open,high,low,close,volume,amount)
@@ -875,7 +876,7 @@ CREATE PROCEDURE sp_dugu9jian(a_code INT(6) ZEROFILL) tag_9jian:BEGIN
         SET v_sumamount = v_sumamount + v_amount;
 
         -- upto 100% turnover
-        IF  v_sumvolume >= v_shares THEN 
+        IF  v_sumvolume >= v_shares0 THEN 
             SELECT date,yesc FROM tempday WHERE id=(v_id) INTO v_date1,v_open;
             SET v_avrg = (v_sumamount/v_sumvolume);
             SET v_chng = 100*(v_close-v_open)/v_open;
