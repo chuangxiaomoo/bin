@@ -114,7 +114,7 @@ function fn_isdate()
 function fn_write() 
 {
     # wall < /dev/stdin
-    mesg y; write root /dev/pts/0 < /dev/stdin
+    mesg y; write root /dev/pts/0 <<< "${1}"
 }
 
 function fn_timestamp_market() 
@@ -123,9 +123,10 @@ function fn_timestamp_market()
     OPENDATE=${DATETIME[0]}
     OPENTIME=${DATETIME[1]}
     if [ -z "$OPENDATE" ]; then
-        echo "
+        fn_write "
         SINA UNREACHABLE!
-        " | fn_write && return 1
+        "  
+        return 1
     fi 
 
     export DATE=`date +%Y-%m-%d`
