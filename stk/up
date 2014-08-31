@@ -10,7 +10,7 @@
 function fn_tougu_reminder()
 {
     function fn_wall() {
-        echo "
+        fn_write "
         -------------------------------------------------------------------------
 
                     $code         $code        $code        $code
@@ -20,7 +20,7 @@ function fn_tougu_reminder()
                     $code         $code        $code        $code
 
         -------------------------------------------------------------------------
-        " | fn_write
+        " 
         exit
     }
 
@@ -240,7 +240,7 @@ function fn_hexun_day()
     $workdir/hexun || {
         echo "try again..."
         sleep 2; $workdir/hexun || {
-            echo "try 2 times fail" | fn_write;
+            fn_write "try 2 times fail";
             return 1 ;
         }
     }
@@ -498,7 +498,7 @@ function fn_redo_hexun_day_fr_min()
 
     OPENDATE=`$W3M -dump ${url_sh000001} |awk -F',' '{print $(NF-2)}'`
 
-    [ -z "$OPENDATE" ] && echo "    SINA UNREACHABLE!" | fn_write && return 1
+    [ -z "$OPENDATE" ] && fn_write "    SINA UNREACHABLE!" && return 1
     [ "$DATE" != "$OPENDATE" ] && echo "Error: market is close" && return 1
 
 
@@ -536,6 +536,22 @@ function fn_up_rzrq_codes_tbl()
     return 0
 }
 
+
+function fn_windbell_codes()
+{
+    SCREENER 0
+    echo "
+    DROP TABLE IF EXISTS windbell_codes;
+    CREATE TABLE windbell_codes (
+        id      INT(6) PRIMARY key AUTO_INCREMENT NOT NULL,
+        code    INT(6)  ZEROFILL
+    );
+
+    INSERT INTO windbell_codes(code) SELECT DISTINCT code FROM tbl_9jian WHERE close < avrg;
+    " | mysql kts
+    
+    return $?
+}
 
 function fn_up_swing10()
 {
@@ -658,6 +674,7 @@ function fn_main()
     "load_f_2_tbl_samename filepath     # 导入日线到同名表"
     "sel_day_into_znz_dir               # 导出日线"
     "trs_min_2_day                      # 最后一笔分线转日线"
+    "windbell_codes                     # 一天更新一次"
     )
 
     # 存储过程函数文件的最后5行都是注释
