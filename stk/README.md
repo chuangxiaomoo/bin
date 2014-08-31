@@ -35,7 +35,7 @@
 ## 缺口理论       .doc/gap_theory.md
 ## 涨停理论       .doc/swing10.md
 
-> 实践
+> 实践 -- 旧有的技术架构已经不足以支撑更大的梦想
 
 ## 心战           .doc/psywar.md
 ## 总结2013       .doc/2013.md
@@ -43,7 +43,7 @@
 ## 建立交易系统   .doc/ma-trade.md
 
 ## 目标&策略&纪律 .doc/discipline.md
-## 纲举目张       .doc/teaseout.md
+## 独孤九剑       .doc/dugu9jian.md           -- 基于信息进化论提高成功率
 ## 事件冲击       .doc/event.md
 ## 板块           .doc/block.md
 ## 操盘日记       .doc/diary.md
