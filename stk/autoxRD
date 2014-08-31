@@ -11,7 +11,7 @@
 #    进行了除权的股票，得到股票列表(stocklist)
 # 3. 遍历stocklist，下载近12(或15)个月的数据
 
-. znz.yahoo
+. bin/znz.yahoo
 
 function fn_rebuild_list_and_download_from_last_xRD()
 {
