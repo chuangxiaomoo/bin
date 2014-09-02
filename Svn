@@ -28,8 +28,10 @@ function fn_main()
         svn ci $filelist
         ;;
     D)
-        [ -z "$filelist" ] && echo "Warn: use ? as START-CHAR"
-        svn status | grep "^${filelist:-?}" |  awk '{print $2}' | xargs -I{} rm -rf {}
+        {
+        echo "Deleting: "
+        svn status | grep "^${filelist:-?}" | tee /dev/stderr |  awk '{print $2}' | xargs -I{} rm -rf {}
+        } 2>&1 | sed 's/^/\t/g'
         ;;
     d|diff)
         svn diff $filelist
