@@ -18,11 +18,11 @@ function fn_google()
     w3m -dump "http://data.stock.hexun.com/include/AjaxSearch2011.ashx?key=$key" > ${go_rawxml}
     xt_ret $? "NETWORK" || return $?
 
-    cat $go_rawxml | \
-        sed -e 's/*//g'  -e 's/ST//g'  | \
-        tr -d '\n' | tr "'" '"' | \
-        sed -e 's/^.*= //' -e 's/;$//'  | \
-        sed -e 's/[a-z]\{3,\}/"&"/g' -e 's/""/"/g' > $go_ripexml
+    cat $go_rawxml | 
+        sed -e 's/*//g'  -e 's/ST//g' |
+        tr -d '\n' | tr "'" '"' |
+        sed -e 's/^.*= //' -e 's/;$//' |
+        sed -e 's/\<[a-z]\{3,\}\>/"&"/g' -e 's/""/"/g' > $go_ripexml
 
     cat ${go_ripexml} |
         JSON.sh -b | tr -d '"' | grep '^[630][0-9]'
@@ -55,12 +55,16 @@ function fn_google0() {
 function fn_main() 
 {
     # index=2
-    fn_google${index}  $@ | tee $go_temp
 
-    [ 0 -ne  "${PIPESTATUS[0]}" ] && echo google fail && exit 1
-
-    codes=`cat $go_temp | ./1Line 1stcol | xargs`
-    codes=${codes// /,}
+    [ "${#}" -eq 1 ] || { echo "Usage: $0 {code|symbol}"; exit; }
+    if fn_iscode ${1}; then
+        codes=$1
+    else
+        fn_google $@ | tee $go_temp
+        [ 0 -ne  "${PIPESTATUS[0]}" ] && echo google fail && exit 1
+        codes=`cat $go_temp | ./1Line 1stcol | xargs`
+        codes=${codes// /,}
+    fi
 
     [ -z "${codes}" ] && echo "Error: null codelist" && exit 1
     mysql -t kts<<< "SELECT * FROM cap WHERE code in (${codes}) ORDER by nmc" 
