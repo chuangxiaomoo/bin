@@ -55,6 +55,7 @@
   1           首行
   $           尾行
   //          模式匹配到的行，对于地址的概念，大多命令都通用
+  falg:i      不区分大小写（montaVista中sad不区别大小写）
 
 ## 4.2 d
   >  [address1[ ,address2]] d

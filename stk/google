@@ -11,20 +11,25 @@
 . `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
 . /etc/common.rc
 
-function fn_google2() 
+function fn_google() 
 {
     key=$1
     echo "w3m -dump 'http://data.stock.hexun.com/include/AjaxSearch2011.ashx?key=$key'"  > /dev/stderr
-    w3m -dump "http://data.stock.hexun.com/include/AjaxSearch2011.ashx?key=$key" | \
+    w3m -dump "http://data.stock.hexun.com/include/AjaxSearch2011.ashx?key=$key" > ${go_rawxml}
+    xt_ret $? "NETWORK" || return $?
+
+    cat $go_rawxml | \
+        sed -e 's/*//g'  -e 's/ST//g'  | \
         tr -d '\n' | tr "'" '"' | \
         sed -e 's/^.*= //' -e 's/;$//'  | \
-        sed -e 's/[a-z][a-z][a-z]*/"&"/g' -e 's/""/"/g' | \
-        JSON.sh -b | tr -d '"' > $go_rawxml 
-    cat $go_rawxml | grep '^[630][0-9]'
+        sed -e 's/[a-z]\{3,\}/"&"/g' -e 's/""/"/g' > $go_ripexml
+
+    cat ${go_ripexml} |
+        JSON.sh -b | tr -d '"' | grep '^[630][0-9]'
 }
 
 
-function fn_google() {
+function fn_google0() {
     [ -z "$*" ] && echo "Usage: $0 symbole" && exit 
     mkdir -p ${go_rawxml%/*}
 
@@ -49,7 +54,7 @@ function fn_google() {
 
 function fn_main() 
 {
-    index=2
+    # index=2
     fn_google${index}  $@ | tee $go_temp
 
     [ 0 -ne  "${PIPESTATUS[0]}" ] && echo google fail && exit 1
