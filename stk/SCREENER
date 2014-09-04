@@ -249,7 +249,7 @@ function fn_6maishenjian()
     mysql $mo -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
 
-    SELECT 6maishenjian $3
+    SELECT 6maishenjian MAX $3
 }
 
 function fn_get_cost_9jian()
