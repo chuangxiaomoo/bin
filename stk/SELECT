@@ -244,7 +244,13 @@ function fn_6maishenjian()
     columns=${columns:-'*'}
     columns=t.${columns//,/,t.}
 
-    DATE2=`fn_maxdate`
+    if fn_isdate "${1}"; then
+        DATE2=${1}
+    elif [ "${1}" = MAX ]; then
+        DATE2=`fn_maxdate`
+    else
+        xt_ret 1 "date format: {MAX | 2014-09-04}" || return $?
+    fi
 
     echo ----- COND: $COND -----
     function fn_get_tbl_6jian_dive()
@@ -252,8 +258,8 @@ function fn_6maishenjian()
         tbl_super_dive="
         SELECT t.code, DATE_FORMAT(date1,'%m-%d') as start, 
                        DATE_FORMAT(date2,'%m-%d') as end, ${columns}, c.nmc, chng, 
-                       round(100*(t.close- avrg)/avrg,2) as wchng, 
                        round(100*(t.low  - avrg)/avrg,2) as lchng, 
+                       round(100*(t.close- avrg)/avrg,2) as wchng, 
                        round(100*(d.close- avrg)/avrg,2) as down, 
                        round(100*(d.close-t.low)/avrg,2) as up, 
                        c.name 
@@ -264,13 +270,13 @@ function fn_6maishenjian()
         echo "${tbl_super_dive}"
     }
 
-    fn_get_tbl_6jian_dive $1
+    fn_get_tbl_6jian_dive $DATE2
     mysql $mo -t kts <<< "${tbl_super_dive}"
     xt_ret $? "${FUNCNAME}" || return $?
     
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
-    fn_get_tbl_6jian_dive $1 > /dev/null
+    fn_get_tbl_6jian_dive $DATE2 > /dev/null
     mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" > .soptter.chao 
     TBL=chao up 7 .soptter.chao
 
@@ -323,7 +329,7 @@ function fn_main()
 
     cmdlist=(
     "dugu9jian          [sortfiled]          # nine sword"
-    "6maishenjian       [sortfiled]          # nine sword"
+    "6maishenjian       date [sortfiled]     # maxdate when date=MAX"
     "app_wgt_turnov     [sortfiled]          # 追加weight到down_turnov CHAO=1则进zxg"
     "get_open_days      [LIMIT:-13 [desc]]   # 开市日列表"
     "get_comma_cloumns  [tbl_name:-day]      # 逗分列名"
