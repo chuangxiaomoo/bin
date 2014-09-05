@@ -1,5 +1,8 @@
 /* time */
 
+    man tzset
+    man tzfile
+
 1.
     The val of &tz don't influence the behaviour of time() and command date.
     It just change global TZ which can be set and get by this 3 API.
