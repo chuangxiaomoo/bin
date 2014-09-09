@@ -647,19 +647,21 @@ function fn_goldrules()                 { cat texaspoker_goldrules ;}
 function fn_term()                      { cat texaspoker_term ;}
 function fn_odds()                      { cat texaspoker_odds ;}
 function fn_uncertainty()               { cat texaspoker_uncertainty ;}
+function fn_Small_Stakes_Hold_em()      { cat texaspoker_Small_Stakes_Hold_em ;}
     local opts=(
         philosophy                      # 哲理
         xiuxing                         # 修行 意志力
         emotion_management              # 情绪管理
         loser
         sng_master_1st
-        discipline                      # 纪律
+        discipline                      # 观察 纪律
         life                            # 生活
         goldrules
         trader                          # 交易员
         uncertainty                     # 不确定性
         term
         odds                            # 成败比 底池成败比
+        Small_Stakes_Hold_em
     )
     fn_print $@
 }
