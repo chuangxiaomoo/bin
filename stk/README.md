@@ -43,7 +43,7 @@
 ## 建立交易系统   .doc/ma-trade.md
 
 ## 目标&策略&纪律 .doc/discipline.md
-## 独孤九剑       .doc/dugu9jian.md           -- 基于信息进化论提高成功率
+## 独孤九剑       .doc/dugu9jian.md           --基于信息进化论提高成功率
 ## 事件冲击       .doc/event.md
 ## 板块           .doc/block.md
 ## 操盘日记       .doc/diary.md
