@@ -95,7 +95,8 @@ function fn_2014_report()               { cat annual_2014_report ;}
 #
 function fn_book()                      {
 function fn_base()                      { cat book_base ;}
-function fn_sunzi()                     { cat book_sunzi ;}
+function fn_sunzi()                     { cat book_sunzi; 
+                                          cat arch_sunzi ;}
 function fn_liutao()                    { cat book_liutao ;}
 function fn_36ji()                      { cat book_36ji ;}
 function fn_wanna()                     { cat book_wanna ;}
@@ -104,7 +105,7 @@ function fn_02_韩非子()                 { cat book_02_韩非子 ;}
 function fn_aq_如何提问()               { cat book_aq_如何提问 ;}
 function fn_dt_暗时间()                 { cat book_dt_暗时间 ;}
 function fn_tf_把时间当作朋友()         { cat book_tf_把时间当作朋友;
-                                          cat TIME
+                                          cat TIME;
                                           cat read_tf_把时间当作朋友 ;}
 function fn_yl_你的灯亮着吗()           { cat book_yl_你的灯亮着吗 
                                           cat read_yl_你的灯亮着吗 ;}
@@ -536,6 +537,7 @@ function fn_0802_他拯救了美国？()       { cat ljsw_0802_他拯救了美�
 function fn_0809_改变世界的箱子()       { cat ljsw_0809_改变世界的箱子 ;}
 function fn_0815_费马大定理()           { cat ljsw_0815_费马大定理 ;}
 function fn_0822_南明为什么扛不住()     { cat ljsw_0822_南明为什么扛不住 ;}
+function fn_0907_纳粹的毒瘾()           { cat ljsw_0907_纳粹的毒瘾 ;}
 
     local opts=(
         voice
@@ -558,6 +560,7 @@ function fn_0822_南明为什么扛不住()     { cat ljsw_0822_南明为什么�
         0809_改变世界的箱子
         0815_费马大定理
         0822_南明为什么扛不住           # 八旗制度 去中心化 海尔创业平台
+        0907_纳粹的毒瘾                 # 希特勒
         
     )
     fn_print $@

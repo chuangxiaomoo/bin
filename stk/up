@@ -572,7 +572,11 @@ function fn_copy_table_2_table()
 
 function fn_html()
 {
-    timeout 10 ./xunner > ${js_xunner_txt}
+    if [ "${SINA:-0}" -eq 1 ] ; then
+        timeout 10 ./soptter > ${js_xunner_txt}
+    else
+        timeout 10 ./xunner > ${js_xunner_txt}
+    fi
     xt_ret $? "timeout" || return $?
 
     names=(`awk '!/name/ {print $NF}' ${js_xunner_txt}`)

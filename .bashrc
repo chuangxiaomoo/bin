@@ -4,6 +4,7 @@ alias    ..='cd ..'
 alias   ...='cd ../..'
 alias    .b='cd ~/bin'
 alias    .c="let 'CHAO=!CHAO'; echo \$CHAO; export CHAO"
+alias .sina="let 'SINA=!SINA'; echo \$SINA; export SINA"
 alias    .n='. /opt/nxpbash'
 alias    .s='cd ~/bin/stk'
 alias   .ss='cd ~/bin/stk/sql'
