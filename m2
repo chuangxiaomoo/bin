@@ -120,6 +120,7 @@ function fn_f1_富同学穷同学()           { cat book_f1_富同学穷同学 ;
 function fn_f2_海底捞你学不会()         { cat book_f2_海底捞你学不会 ;}
 function fn_f3_教父()                   { cat book_f3_教父 ;}
 function fn_100_周鸿祎自述()            { cat book_100_周鸿祎自述 ;}
+function fn_200_逃不开的经济周期()      { cat book_200_逃不开的经济周期 ;}
     local opts=(
         base       
         wanna                   # 想读的书
@@ -144,6 +145,8 @@ function fn_100_周鸿祎自述()            { cat book_100_周鸿祎自述 ;}
         f3_教父
 
         100_周鸿祎自述
+
+        200_逃不开的经济周期
     )
     fn_print $@
 }
