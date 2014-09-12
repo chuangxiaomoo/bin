@@ -233,25 +233,24 @@ function fn_hexun_day()
     fn_timestamp_market
     xt_ret $? "${FUNCNAME}" || return $?
 
-    echo "
-    add hexun_day ${DATE}...
-    "
+    echo "    add hexun_day ${DATE}..."
 
-    $workdir/hexun || {
-        echo "try again..."
-        sleep 2; $workdir/hexun || {
-            fn_write "try 2 times fail";
-            return 1 ;
+    if [ -d ${p_monta} ] ; then
+        ./sina 
+        xt_ret $? "sina" || return $?
+        cp $sn_ripetxt $hx_dayclose
+    else
+        $workdir/hexun || {
+            echo "try again..."
+            sleep 2; $workdir/hexun || { fn_write "try 2 times fail"; return 1 ; }
         }
-    }
 
-    mysql<<<"INSERT INTO kts.stamp_day values(DEFAULT, '$OPENDATE', '$OPENTIME')"
-    xt_ret $? "" || return $?
+        awk '{
+            printf "%06d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n",
+                      $1, $13, $4, $5,  $6,  $7,  $2, ($8/100), ($9/10000)
+        }'  $hx_ripetxt > $hx_dayclose
+    fi
 
-    awk '{
-        printf "%06d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n",
-                  $1, $13, $4, $5,  $6,  $7,  $2, ($8/100), ($9/10000)
-    }'  $hx_ripetxt > $hx_dayclose
 
     $W3M -dump ${url_sh000001} | awk -F',' '{
         printf "%06d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n",
@@ -264,6 +263,9 @@ function fn_hexun_day()
     xt_ret $? "$hx_lines less than 2000 lines" || return $?
 
     grep -q 900001 $hx_dayclose || { echo "Error: 900001" && return 1 ;}
+
+    mysql<<<"INSERT INTO kts.stamp_day values(DEFAULT, '$OPENDATE', '$OPENTIME')"
+    xt_ret $? "" || return $?
 
     p_hx_day="$warehs/hx_day"
     mkdir -p $p_hx_day
