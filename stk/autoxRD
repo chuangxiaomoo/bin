@@ -40,6 +40,10 @@ function fn_rebuild_list_and_download_from_last_xRD()
     [ -s "$yahooask" ]
     xt_ret $? "empty file $yahooask" || return $?
 
+    echo "
+    going to xRD `wc -l ${yahooask}` codes
+    "
+
     ## begin to download
     start_sps=($(date +'%Y %m %d' --date='365 days ago' ))
     endin_sps=($(date +'%Y %m %d'))
