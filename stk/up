@@ -378,7 +378,7 @@ function fn_add_codes_2_dzh2tbl()
     done ;
     } > ${f_zxg}
 
-    echo -e "\n    add ${#lst[@]} to ${TBL} over.\n"
+    echo "    add ${#lst[@]} to ${TBL} over."
 }
 
 
@@ -635,6 +635,19 @@ function fn_up_tbl_ma240_all()
     mysql $mo -t kts <<< "source $mps_god"
 }
 
+function fn_up_tbl_ma144_all()
+{
+    echo "
+    ${FUNCNAME} ...
+    "
+    echo "
+    SET @END='$END';
+    SET @CYCLE=${CYCLE:-144};
+    call sp_visit_tbl('${TBL:-cap}', @fn_up_ma144_all);
+    " | tee -a $mps_god
+    mysql $mo -t kts <<< "source $mps_god"
+}
+
 function fn_up_tbl_ma240_34()
 {
     if ! mysql kts<<<"SHOW TABLES" | grep -q 'tbl_ma240'; then
@@ -671,6 +684,7 @@ function fn_main()
     "up_swing10                         # 更新涨跌停6.1%数据"
     "up_tbl_ma240_all                   # --- 更新tbl_ma240"
     "up_tbl_ma240_34                    # 更新tbl_ma240中的ma34"
+    "up_tbl_ma144_all                   # --- 更新tbl_ma144"
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
     "html                               # convert #{LIST:-.soptter} to html"
     "copy_table_2_table src dst         # --- 使用 1 1 做为代号"
