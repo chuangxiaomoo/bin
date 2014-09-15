@@ -1,5 +1,24 @@
 # arch
 
+  IPC基础服务 -- 系统运行环境（time, networking, log）
+
+  - - - servers -- a thread or a process
+
+  配置
+
+  JCP命令服务（与外部client交互）
+
+  消息服务（与内部各模块交互）
+
+  - - - servers -- a listen socket on schedule
+
+  升级 设备发现
+
+
+  - - - clients -- a timer task
+
+  定时任务（watchdog ntpdate heartbeat）
+
 
 ## 纵
 
