@@ -247,6 +247,23 @@ CREATE PROCEDURE sp_create_ma513() tag_ma513:BEGIN
     );
 END tag_ma513 //
 
+DROP PROCEDURE IF EXISTS sp_create_ma144 //
+CREATE PROCEDURE sp_create_ma144() tag_ma144:BEGIN 
+    DROP TABLE IF EXISTS tbl_ma144; -- for visit output
+    CREATE TABLE tbl_ma144(
+        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        date        date NOT NULL,
+        low         DECIMAL(6,2) NOT NULL DEFAULT 0,
+        high        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        low13       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        close       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        ma13        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        ma34        DECIMAL(6,2) NOT NULL DEFAULT 0,        
+        ma144       DECIMAL(6,2) NOT NULL DEFAULT 0 
+    );
+END tag_ma144 //
+
 DROP PROCEDURE IF EXISTS sp_create_ma240 //
 CREATE PROCEDURE sp_create_ma240() tag_ma240:BEGIN 
     DROP TABLE IF EXISTS tbl_ma240; -- for visit output
@@ -485,6 +502,7 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
     IF a_type = @fn_get_down_turnov THEN call sp_create_tbl_sink(); END IF;
     IF a_type = @fn_dugu9jian       THEN call sp_create_tbl_9jian();END IF;
     IF a_type = @fn_6maishenjian    THEN call sp_create_tbl_6mai(); END IF;
+    IF a_type = @fn_up_ma144_all    THEN call sp_create_ma144();    END IF;
 
     -- visit all codes
     WHILE v_id <= v_len DO
@@ -499,6 +517,7 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
             WHEN @fn_up_ma240_all      THEN call sp_get_ma240(v_code);
             WHEN @fn_up_ma240_34       THEN call sp_up_ma34(v_code);
             WHEN @fn_6maishenjian      THEN call sp_6maishenjian(v_code);
+            WHEN @fn_up_ma144_all      THEN call sp_get_ma144(v_code);
             ELSE SELECT "no a_type match";
         END CASE;
 
@@ -1067,6 +1086,41 @@ CREATE PROCEDURE sp_get_ma240(a_code INT(6) ZEROFILL) tag_get_ma240:BEGIN
                     VALUES(a_code, v_date,v_low,v_high,v_close,v_ma34,v_ma60, v_ma120, v_ma240);
 END tag_get_ma240 //
 
+DROP PROCEDURE IF EXISTS sp_get_ma144//
+CREATE PROCEDURE sp_get_ma144(a_code INT(6) ZEROFILL) tag_get_ma144:BEGIN
+    DECLARE v_date     DATE;
+    DECLARE v_low      DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_low13    DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_high     DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_close    DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_ma13     DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_ma34     DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_ma144    DECIMAL(6,2) DEFAULT 0;
+
+    call sp_create_tempday();
+
+    SELECT date FROM day WHERE code=a_code and date<=@END ORDER by 
+           date DESC limit 144,1 INTO @START;
+
+    INSERT INTO tempday(code,date,close) SELECT 
+           code,date,close FROM day WHERE code=a_code and date>=@START and date<=@END;
+
+    -- via high, induct is a long-CYCLE invaste one
+    SELECT count(*)   FROM tempday INTO @v_len;
+    SELECT date,close FROM tempday WHERE id=@v_len INTO v_date,v_close;
+
+    IF @v_len < 144 THEN LEAVE tag_get_ma144; END IF;
+
+    SELECT min(close),max(close) 
+                           FROM tempday WHERE id>(@v_len-@CYCLE) INTO v_low,v_high;
+    SELECT min(close)      FROM tempday WHERE id>(@v_len-13)    INTO v_low13;
+    SELECT SUM(close)/13   FROM tempday WHERE id>(@v_len-13)    INTO v_ma13 ;
+    SELECT SUM(close)/34   FROM tempday WHERE id>(@v_len-34)    INTO v_ma34 ;
+    SELECT SUM(close)/144  FROM tempday WHERE id>(@v_len-144)   INTO v_ma144;
+
+    INSERT INTO tbl_ma144 (code,     date,  low,  low13,  high,  close,  ma13,  ma34,  ma144)
+                    VALUES(a_code, v_date,v_low,v_low13,v_high,v_close,v_ma13,v_ma34,v_ma144);
+END tag_get_ma144 //
 
 -- 一些需要与shell通信的系统变量
 
@@ -1075,10 +1129,11 @@ END tag_get_ma240 //
     SET @fn_flt_n_day_change    = 3;
     SET @fn_get_down_turnov     = 4;
     SET @fn_get_ma513           = 5;
-    SET @fn_up_ma240_all        = 6;
     SET @fn_up_ma240_34         = 7;
-    SET @fn_dugu9jian           = 9;
-    SET @fn_6maishenjian        = 10;
+    SET @fn_up_ma144_all        = 8;
+    SET @fn_up_ma240_all        = 9;
+    SET @fn_dugu9jian           = 10;
+    SET @fn_6maishenjian        = 11;
     SET @START  = '2013-12-6';
     SET @END    = '2014-06-06';
     SET @CYCLE  = 240;

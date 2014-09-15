@@ -538,7 +538,7 @@ function fn_ana_ma240()
     local conds=(                                           # 2014-04-14
         's.code=l.code and'                                 # 关联code
         '(l.high-l.low)/l.low<.23 and'                      # 年振幅45%，参照佛山照明、福建水泥
-        's.ma5>s.ma13 and (s.close-s.ma13)/s.ma13<.05 and'    # 345中线：ma5上穿ma13
+        's.ma5>s.ma13 and (s.close-s.ma13)/s.ma13<.05 and'  # 345中线：ma5上穿ma13
         '(s.close-l.low)/l.low<.05 and'    # 345中线：ma5上穿ma13
        #'s.ma13>l.ma34 and (s.ma13-l.ma34)/l.ma34<.05 and'  # 345长线：ma13上穿ma34
         's.close>3'                                         # 价格无关，上海莱士，福建水泥
@@ -547,6 +547,32 @@ function fn_ana_ma240()
 
     mysql -N kts<<<"${sqls} WHERE ${conds[@]}" |
                 xargs -n6 | tee /dev/stderr | xargs up add_codes_2_dzh2tbl
+    xt_ret $? "${FUNCNAME}" || return $?
+
+    return 0
+}
+
+function fn_ana_ma144()
+{
+    # 上海莱士，福建水泥
+    # 若开涨了，预估起点与终点 
+
+    local sqls="SELECT code FROM tbl_ma144"
+    local conds=(
+        "close > ma13 and ma13>ma34*0.99 and "
+        "close > ma144*.9 and "                  # close接近ma144
+        "close < ma144*${RISED:-1.07}"            # +10%涨幅内
+    )
+
+    local codes=(`mysql -N kts<<<"${sqls} WHERE ${conds[@]}"`)
+    xt_ret $? "${FUNCNAME}" || return $?
+
+    up add_codes_2_dzh2tbl ${codes[@]}
+    xt_ret $? "${FUNCNAME}" || return $?
+
+    codes=${codes[@]}
+    sqls="SELECT code,(high-low)/high FROM tbl_ma144 WHERE code in (${codes// /,})"
+    mysql -N kts<<<"${sqls}" | xargs -n8
     xt_ret $? "${FUNCNAME}" || return $?
 
     return 0
@@ -573,6 +599,7 @@ function fn_main()
     "get_n_swing_num      [SWING_PERCENT:-16]   # 双日振幅，小于0计算跌幅"
     "get_cost_9jian       code [end [field]]    # #{CYCLE}日，个股成本分析"
     "get_cost_6mai        code [end [field]]    # #{CYCLE}日，个股成本分析"
+    "ana_ma144                                  # 分析ma144"
     "get_stat_turnov      code start [end]      # 个股区间换手统计"
     "sort_amount          [LIMIT_NUM:-48]       # --- 成交量排名"
     "sort_turnover        [LIMIT_NUM:-48]       # 最新日换手排名"
