@@ -256,7 +256,7 @@ CREATE PROCEDURE sp_create_ma144() tag_ma144:BEGIN
         date        date NOT NULL,
         low         DECIMAL(6,2) NOT NULL DEFAULT 0,
         high        DECIMAL(6,2) NOT NULL DEFAULT 0,
-        low13       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        width       DECIMAL(6,2) NOT NULL DEFAULT 0,
         close       DECIMAL(6,2) NOT NULL DEFAULT 0,
         ma13        DECIMAL(6,2) NOT NULL DEFAULT 0,
         ma34        DECIMAL(6,2) NOT NULL DEFAULT 0,        
@@ -1090,7 +1090,7 @@ DROP PROCEDURE IF EXISTS sp_get_ma144//
 CREATE PROCEDURE sp_get_ma144(a_code INT(6) ZEROFILL) tag_get_ma144:BEGIN
     DECLARE v_date     DATE;
     DECLARE v_low      DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_low13    DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_width    DECIMAL(6,2) DEFAULT 0;
     DECLARE v_high     DECIMAL(6,2) DEFAULT 0;
     DECLARE v_close    DECIMAL(6,2) DEFAULT 0;
     DECLARE v_ma13     DECIMAL(6,2) DEFAULT 0;
@@ -1113,13 +1113,13 @@ CREATE PROCEDURE sp_get_ma144(a_code INT(6) ZEROFILL) tag_get_ma144:BEGIN
 
     SELECT min(close),max(close) 
                            FROM tempday WHERE id>(@v_len-@CYCLE) INTO v_low,v_high;
-    SELECT min(close)      FROM tempday WHERE id>(@v_len-13)    INTO v_low13;
     SELECT SUM(close)/13   FROM tempday WHERE id>(@v_len-13)    INTO v_ma13 ;
     SELECT SUM(close)/34   FROM tempday WHERE id>(@v_len-34)    INTO v_ma34 ;
     SELECT SUM(close)/144  FROM tempday WHERE id>(@v_len-144)   INTO v_ma144;
 
-    INSERT INTO tbl_ma144 (code,     date,  low,  low13,  high,  close,  ma13,  ma34,  ma144)
-                    VALUES(a_code, v_date,v_low,v_low13,v_high,v_close,v_ma13,v_ma34,v_ma144);
+    SET v_width = 2*(v_high-v_low)/(v_high+v_low);      -- .2之内为比较好的值
+    INSERT INTO tbl_ma144 (code,     date,  low,  width,  high,  close,  ma13,  ma34,  ma144)
+                    VALUES(a_code, v_date,v_low,v_width,v_high,v_close,v_ma13,v_ma34,v_ma144);
 END tag_get_ma144 //
 
 -- 一些需要与shell通信的系统变量

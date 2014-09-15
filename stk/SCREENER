@@ -213,7 +213,7 @@ function fn_dugu9jian()
 {
     END=${1:-${END}}
     TBL=${TBL:-'cap'}
-    NUM=${2:-61}        # 34太小，300104 2014-07-17 被漏掉了
+    NUM=${NUM:-61}        # 34太小，300104 2014-07-17 被漏掉了
 
     echo "
     To visit `mysql -N kts<<<"SELECT count(*) FROM ${TBL}"` codes on table $TBL...
@@ -235,7 +235,7 @@ function fn_6maishenjian()
 {
     END=${1:-${END}}
     TBL=${TBL:-'cap'}
-    NUM=${2:-61}
+    NUM=${NUM:-61}
 
     echo "
     To visit `mysql -N kts<<<"SELECT count(*) FROM ${TBL}"` codes on table $TBL...
@@ -556,12 +556,17 @@ function fn_ana_ma144()
 {
     # 上海莱士，福建水泥
     # 若开涨了，预估起点与终点 
+    #
+    # 1. 
+    #
+    #
 
-    local sqls="SELECT code FROM tbl_ma144"
+    local sqls="SELECT code FROM tbl_ma144 as m"
     local conds=(
-        "close > ma13 and ma13>ma34*0.99 and "
-        "close > ma144*.9 and "                  # close接近ma144
-        "close < ma144*${RISED:-1.07}"            # +10%涨幅内
+        "m.close > ma13 and ma13>ma34*0.99 and "
+        "m.width < .2 and "                       # 窄幅振荡
+        "m.close > ma144*.9 and "                 # close接近ma144
+        "m.close < ma144*${RISED:-1.10}"          # +10%涨幅内
     )
 
     local codes=(`mysql -N kts<<<"${sqls} WHERE ${conds[@]}"`)
@@ -586,8 +591,8 @@ function fn_main()
     # SCREENER的宗旨，弃子取势
     # xet_block_info 为 sp_visit_tbl() 选定相应的BLOCK
     cmdlist=(
-    "dugu9jian            [end [offset]]        # .NMC end.close analyze"
-    "6maishenjian         [end [offset]]        # min(close) analyze"
+    "dugu9jian            [end]                 # NUM=61 .NMC end.close analyze"
+    "6maishenjian         [end]                 # NUM=61 min(close) analyze"
     "get_down_turnov      [start:curr-13] [end] # 100%下降净换手"
     "get_ma513            [end]                 # ma 5 13 34 55"
     "ana_ma513            index [end]           # 分析ma 5 13 34 55"
