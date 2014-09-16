@@ -539,7 +539,7 @@ function fn_ana_ma240()
         's.code=l.code and'                                 # 关联code
         '(l.high-l.low)/l.low<.23 and'                      # 年振幅45%，参照佛山照明、福建水泥
         's.ma5>s.ma13 and (s.close-s.ma13)/s.ma13<.05 and'  # 345中线：ma5上穿ma13
-        '(s.close-l.low)/l.low<.05 and'    # 345中线：ma5上穿ma13
+        '(s.close-l.low)/l.low<.05 and'                     # 345中线：ma5上穿ma13
        #'s.ma13>l.ma34 and (s.ma13-l.ma34)/l.ma34<.05 and'  # 345长线：ma13上穿ma34
         's.close>3'                                         # 价格无关，上海莱士，福建水泥
     )
@@ -576,7 +576,7 @@ function fn_ana_ma144()
     xt_ret $? "${FUNCNAME}" || return $?
 
     codes=${codes[@]}
-    sqls="SELECT code,(high-low)/high FROM tbl_ma144 WHERE code in (${codes// /,})"
+    sqls="SELECT code,width FROM tbl_ma144 WHERE code in (${codes// /,}) ORDER by width ASC"
     mysql -N kts<<<"${sqls}" | xargs -n8
     xt_ret $? "${FUNCNAME}" || return $?
 
