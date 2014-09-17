@@ -235,7 +235,7 @@ function fn_hexun_day()
 
     echo "    add hexun_day ${DATE}..."
 
-    if [ -d ${p_monta} ] ; then
+    if [ "${SINA:-0}" -eq 1 ] ; then
         ./sina 
         xt_ret $? "sina" || return $?
         cp $sn_ripetxt $hx_dayclose

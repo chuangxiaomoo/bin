@@ -1822,3 +1822,9 @@
 
   K线只是表相，利益博弈才是根源。
 
+# 2014-09-17
+
+  使用nc和vlc实现linux之间的通信
+
+    nc 192.168.2.49 1234 <<< "my god"
+    D:\tools\VLC>netcat -l -p 1234 && vlc.exe o23.mp4

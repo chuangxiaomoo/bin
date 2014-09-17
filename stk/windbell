@@ -44,8 +44,8 @@ function fn_main()
 {
     # up 21 (windbell_codes) to accelerate
     export inwind=1
-        COND='and lchng<-14 and up>.6' fn_dugu9jian
-        exit
+        # COND='and lchng<-14 and up>.6' fn_dugu9jian
+        # exit
 
     while :; do
         up 4
