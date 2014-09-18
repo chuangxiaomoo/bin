@@ -88,12 +88,12 @@ function fn_find()                      { cat find ;}
 function fn_google()                    { cat google ;}
 function fn_chrome()                    { cat chrome ;}
 
-function fn_program()                   {
-function fn_fundamental()               { cat program_fundamental ;}
-function fn_guru()                      { cat program_guru ;}
-function fn_01_社会学()                 { cat program_01_社会学 ;}
-function fn_02_工程学()                 { cat program_02_工程学 ;}
-function fn_03_软件过程改进建议()       { cat program_03_软件过程改进建议 ;}
+function fn_software()                   {
+function fn_fundamental()               { cat software_fundamental ;}
+function fn_guru()                      { cat software_guru ;}
+function fn_01_社会学()                 { cat software_01_社会学 ;}
+function fn_02_工程学()                 { cat software_02_工程学 ;}
+function fn_03_软件过程改进建议()       { cat software_03_软件过程改进建议 ;}
     local opts=(
         fundamental
         01_社会学
@@ -547,6 +547,7 @@ function fn_var_inner()                 { cat make_var_inner ;}
 function fn_lib_dynamic()               { cat make_lib_dynamic ;}
 function fn_lib_static()                { cat make_lib_static ;}
 function fn_shell()                     { cat make_shell ;}
+function fn_make-C()                    { cat make_make-C ;}
 
     local opts=(
         compile
@@ -555,6 +556,7 @@ function fn_shell()                     { cat make_shell ;}
         func
         skeleton
         shell
+        make-C
 
         lib_dynamic
         lib_static
@@ -693,6 +695,7 @@ function fn_tail()                      { cat cmd_tail ;}
 function fn_nc()                        { cat cmd_nc ;}
 function fn_mktemp()                    { cat cmd_mktemp ;}
 function fn_kill()                      { cat cmd_kill ;}
+function fn_install()                   { cat cmd_install ;}
     local opts=(
         01_方便之门
         arping                  # arp -D 检测IP冲突
@@ -703,6 +706,7 @@ function fn_kill()                      { cat cmd_kill ;}
         himm
         hexdump                 # xxd od
         ifconfig
+        install
         ln
         lsof
         mount
@@ -1384,7 +1388,7 @@ function fn_main() {
         perl
         pinfo
         problem                 # question 
-        program
+        software
         puTTY
         ruby
         python

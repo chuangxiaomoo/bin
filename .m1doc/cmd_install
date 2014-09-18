@@ -1,0 +1,29 @@
+# install
+
+  install 是集 rm cp diff chmod touch mkdir 于一身的BOSS
+
+# -d 参数不能是已经存在的文件
+
+    install -d 1/2 3/4
+  > mkdir -p 1/2 3/4
+
+# -C
+
+    install -C a b
+  > a b 两个文件内容及权限同时相同时，不做任何处理
+
+# -b
+
+  如果DEST存在，备份为`~DEST`
+
+# 复杂一点的
+
+  @install -p -D -m 0755 targets /usr/bin
+
+  相当于
+
+  @mkdir -p /usr/               <-D 类似mkdir+dirname>
+  @cp targets /usr/bin
+  @chmod 755 /usr/bin/targets   <-m 不指定时，默认也使用755>
+  @touch /usr/bin/tagets        <-p 更新文件时间戳>
+

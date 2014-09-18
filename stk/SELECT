@@ -309,8 +309,8 @@ function fn_dugu9jian()
     }
 
     fn_get_tbl_9jian_dive $1
-    mysql $mo -t kts <<< "${tbl_super_dive}"
-    xt_ret $? "${FUNCNAME}" || return $?
+    mysql $mo -t kts <<< "${tbl_super_dive}" | grep -v -f .soptter.exclude
+    xt_ret ${PIPESTATUS[0]} "${FUNCNAME}" || return $?
     
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 

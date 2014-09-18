@@ -46,4 +46,4 @@ function fn_main()
     fn_realtime `echo -n 00000${1} | tail -c6`
 }
 
-fn_main ${@:-2715}
+fn_main ${@}
