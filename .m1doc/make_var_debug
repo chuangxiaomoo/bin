@@ -1,7 +1,7 @@
 #! /usr/bin/make
 #
 # Usage: 
-#		@-include ~/bin/.m1doc/make_watch_var
+#		@-include ~/bin/.m1doc/make_var_debug
 #		make VARNAME
 #
 
