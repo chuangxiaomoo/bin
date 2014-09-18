@@ -88,12 +88,12 @@ function fn_find()                      { cat find ;}
 function fn_google()                    { cat google ;}
 function fn_chrome()                    { cat chrome ;}
 
-function fn_program()                   {
-function fn_fundamental()               { cat program_fundamental ;}
-function fn_guru()                      { cat program_guru ;}
-function fn_01_社会学()                 { cat program_01_社会学 ;}
-function fn_02_工程学()                 { cat program_02_工程学 ;}
-function fn_03_软件过程改进建议()       { cat program_03_软件过程改进建议 ;}
+function fn_software()                   {
+function fn_fundamental()               { cat software_fundamental ;}
+function fn_guru()                      { cat software_guru ;}
+function fn_01_社会学()                 { cat software_01_社会学 ;}
+function fn_02_工程学()                 { cat software_02_工程学 ;}
+function fn_03_软件过程改进建议()       { cat software_03_软件过程改进建议 ;}
     local opts=(
         fundamental
         01_社会学
@@ -1384,7 +1384,7 @@ function fn_main() {
         perl
         pinfo
         problem                 # question 
-        program
+        software
         puTTY
         ruby
         python

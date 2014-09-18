@@ -1,7 +1,7 @@
 
 . 删除某行
 
-    DELETE FROM Person WHERE LastName = 'Wilson' 
+    DELETE FROM day WHERE date = '2014-09-' 
 
 . 删除所有行
 
