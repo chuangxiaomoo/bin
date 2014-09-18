@@ -1,0 +1,13 @@
+# make-C
+
+root@Moo64:~# cat mk/Makefile 
+
+CWD=$(shell pwd)
+
+all:
+        @echo $(PWD) $(CWD)           <PWD是没有cd前的目录>
+
+root@Moo64:~# make -C mk
+make: Entering directory `/root/mk'
+/root /root/mk
+make: Leaving directory `/root/mk'
