@@ -50,7 +50,8 @@ function fn_main()
     while :; do
         up 4
         TBL=windbell_codes SCREENER 0
-        COND='and lchng<-14 and up>.6' fn_dugu9jian
+        COND='and wchng<-13 and up>.3' fn_dugu9jian
+        COND='and wchng<-14 and up>.2' fn_dugu9jian
         sleep 25
     done
 }
