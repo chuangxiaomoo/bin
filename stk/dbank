@@ -81,6 +81,7 @@ sn_cap_nmc='/dev/shm/sina/cap_nmc'
 go_rawxml='/dev/shm/google/rawxml'
 go_ripexml='/dev/shm/google/ripexml'
 go_temp='/dev/shm/google/temp'
+windout='/dev/shm/windbell/temp'
 
 js_xunner='/dev/shm/xunner.js'
 js_xunner_idx='/dev/shm/xunner.idx'
