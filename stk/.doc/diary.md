@@ -1838,7 +1838,7 @@
 
   使用nc和vlc实现linux之间的通信
 
-    nc 192.168.2.49 1234 <<< "my god"
+    nc 192.168.2.49 1234 <<< "ooh my god"
     D:\tools\VLC>netcat -l -p 1234 && vlc.exe o23.mp4
 
 # 2014-09-18

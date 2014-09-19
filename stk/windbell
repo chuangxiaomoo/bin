@@ -29,14 +29,16 @@ function fn_dugu9jian()
     }
 
     fn_get_tbl_9jian_dive $1
-    lines=`mysql $mo -N kts <<< "${tbl_super_dive}" | wc -l`
-
-    if [ "${lines}" -ge 1 ] ; then
-        fn_write "
-        ---------------------------
-            ${lines} catched!!!
-        ---------------------------
-        "
+    mysql -N kts <<<"${tbl_super_dive}" | grep -v -f .soptter.exclude > ${windout}
+    nr=`cat ${windout} | wc -l`
+    if [ "${nr}" -ge 1 ] ; then
+        nc 192.168.2.49 1234 <<< "ooh my god"
+        cat ${windout}
+        #fn_write "
+        #---------------------------
+        #    ${lines} catched!!!
+        #---------------------------
+        #"
     fi
 }
 
@@ -50,9 +52,12 @@ function fn_main()
     while :; do
         up 4
         TBL=windbell_codes SCREENER 0
+        # COND='and wchng<-10.5 and up>.3' fn_dugu9jian
         COND='and wchng<-13 and up>.3' fn_dugu9jian
         COND='and wchng<-14 and up>.2' fn_dugu9jian
-        sleep 25
+        secs=${secs:-150}
+        echo ------------ sleep ${secs} -----------
+        sleep ${secs}
     done
 }
 

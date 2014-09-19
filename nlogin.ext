@@ -9,6 +9,8 @@ if {$argc != 1} {
     spawn telnet $argv 24
     expect  "login:"
     send    "root\n"
+    expect  "Password:"
+    send    "jco88888\n"
 
     interact {
         timeout 30 { send "" }
