@@ -541,7 +541,7 @@ function fn_0809_改变世界的箱子()       { cat ljsw_0809_改变世界的�
 function fn_0815_费马大定理()           { cat ljsw_0815_费马大定理 ;}
 function fn_0822_南明为什么扛不住()     { cat ljsw_0822_南明为什么扛不住 ;}
 function fn_0907_纳粹的毒瘾()           { cat ljsw_0907_纳粹的毒瘾 ;}
-
+function fn_0920_3D打印()               { cat ljsw_0920_3D打印 ;}
     local opts=(
         voice
         00_曾国藩
@@ -564,7 +564,7 @@ function fn_0907_纳粹的毒瘾()           { cat ljsw_0907_纳粹的毒瘾 ;}
         0815_费马大定理
         0822_南明为什么扛不住           # 八旗制度 去中心化 海尔创业平台
         0907_纳粹的毒瘾                 # 希特勒
-        
+        0920_3D打印                     # 
     )
     fn_print $@
 }
