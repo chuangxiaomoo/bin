@@ -593,6 +593,8 @@ function fn_main()
     cmdlist=(
     "dugu9jian            [end]                 # NUM=61 .NMC end.close analyze"
     "6maishenjian         [end]                 # NUM=61 min(close) analyze"
+    "get_cost_9jian       code [end [field]]    # #{CYCLE}日，个股成本分析"
+    "get_cost_6mai        code [end [field]]    # #{CYCLE}日，个股成本分析"
     "get_down_turnov      [start:curr-13] [end] # 100%下降净换手"
     "get_ma513            [end]                 # ma 5 13 34 55"
     "ana_ma513            index [end]           # 分析ma 5 13 34 55"
@@ -602,8 +604,6 @@ function fn_main()
     "get_13d_20psink                            # 8日13日SINK超20%"
     "get_1_swing_num      [RISE_PERCENT:-8]     # 单日振幅，小于0计算跌幅"
     "get_n_swing_num      [SWING_PERCENT:-16]   # 双日振幅，小于0计算跌幅"
-    "get_cost_9jian       code [end [field]]    # #{CYCLE}日，个股成本分析"
-    "get_cost_6mai        code [end [field]]    # #{CYCLE}日，个股成本分析"
     "ana_ma144                                  # 分析ma144"
     "get_stat_turnov      code start [end]      # 个股区间换手统计"
     "sort_amount          [LIMIT_NUM:-48]       # --- 成交量排名"
