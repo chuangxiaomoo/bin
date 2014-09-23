@@ -3,3 +3,6 @@
 # 修改MAC地址, 其不能以非 00: 打头
 ifconfig eth0 hw ether 00:AB:AC:C2:AB:02
 
+# 换了网卡，删除下面文件中相应eth0的行，udev再自动探测
+/etc/udev/rules.d/70-persistent-net.rules
+

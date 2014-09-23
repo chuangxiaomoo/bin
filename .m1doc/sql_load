@@ -4,13 +4,13 @@
     ERROR 1085 (HY000): The file 'xxx' must be in the database directory or be readable by all
     chmod 777 xxx
 
-    LOAD DATA LOCAL INFILE '/file' INTO TABLE tbl_name
+    LOAD DATA LOCAL INFILE '/tmp/day.txt' INTO TABLE day;
 
         -- 分界同 SELECT，默认如下
-        FIELDS TERMINATED BY '\t' 
-        ENCLOSED BY '' 
+        FIELDS TERMINATED BY '\t'
+        ENCLOSED BY ''
         ESCAPED BY '\\'
-        LINES TERMINATED BY '\n' 
+        LINES TERMINATED BY '\n'
         ;
 
 . 定制列 

@@ -32,6 +32,7 @@ function fn_dugu9jian()
     mysql -N kts <<<"${tbl_super_dive}" | grep -v -f .soptter.exclude > ${windout}
     nr=`cat ${windout} | wc -l`
     if [ "${nr}" -ge 1 ] ; then
+        # close 360安全卫士
         nc 192.168.2.49 1234 <<< "ooh my god"
         cat ${windout}
         #fn_write "
@@ -55,7 +56,7 @@ function fn_main()
         # COND='and wchng<-10.5 and up>.3' fn_dugu9jian
         COND='and wchng<-13 and up>.3' fn_dugu9jian
         COND='and wchng<-14 and up>.2' fn_dugu9jian
-        secs=${secs:-150}
+        secs=${secs:-180}
         echo ------------ sleep ${secs} -----------
         sleep ${secs}
     done
