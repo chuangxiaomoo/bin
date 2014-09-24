@@ -54,8 +54,8 @@ function fn_main()
         up 4
         TBL=windbell_codes SCREENER 0
         # COND='and wchng<-10.5 and up>.3' fn_dugu9jian
-        COND='and wchng<-13 and up>.3' fn_dugu9jian
-        COND='and wchng<-14 and up>.2' fn_dugu9jian
+        COND='and wchng<-12.5 and up>.3' fn_dugu9jian
+        COND='and wchng<-13.5 and up>.2' fn_dugu9jian
         secs=${secs:-180}
         echo ------------ sleep ${secs} -----------
         sleep ${secs}
