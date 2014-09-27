@@ -542,6 +542,7 @@ function fn_0815_费马大定理()           { cat ljsw_0815_费马大定理 ;}
 function fn_0822_南明为什么扛不住()     { cat ljsw_0822_南明为什么扛不住 ;}
 function fn_0907_纳粹的毒瘾()           { cat ljsw_0907_纳粹的毒瘾 ;}
 function fn_0920_3D打印()               { cat ljsw_0920_3D打印 ;}
+function fn_0926_领导，你为啥不信我？() { cat ljsw_0926_领导，你为啥不信我？ ;}
     local opts=(
         voice
         00_曾国藩
@@ -565,6 +566,7 @@ function fn_0920_3D打印()               { cat ljsw_0920_3D打印 ;}
         0822_南明为什么扛不住           # 八旗制度 去中心化 海尔创业平台
         0907_纳粹的毒瘾                 # 希特勒
         0920_3D打印                     # 
+        0926_领导，你为啥不信我？       # 权力
     )
     fn_print $@
 }
