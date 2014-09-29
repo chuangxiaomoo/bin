@@ -19,8 +19,10 @@
       */
 
     . 视频参数改变通知
-
         jcpcmd.c -> devvecfg
+
+    . 告警通知
+        jco_alarm
 
     . 小定制，不需要增加APP，如：中云网眼
 
