@@ -1,3 +1,5 @@
+# run
+
 (1) start
    gdb program
    gdb program core
@@ -18,7 +20,7 @@
     set args 
      (1) gdb命令行的                –args 参数
      (2) gdb环境中                  set args 
-     (3) gdb中，run后加参数，       run 1 2(r 1 2)
+     (3) gdb中，run后加参数，       `run 1 2`(r 1 2)
 
 (4) terminal
     run  > logfile
