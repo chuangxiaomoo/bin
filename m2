@@ -525,7 +525,7 @@ function fn_11_Geek与产品机器()         { cat prof_11_Geek与产品机器 ;
 
 function fn_sbfm()                      { cat sbfm ;}
 
-function fn_ljsw()                      { 
+function fn_ljsw()                      {
 function fn_voice()                     { cat ljsw_voice ;}
 function fn_00_曾国藩()                 { cat ljsw_00_曾国藩 ;}
 function fn_01_教育()                   { cat ljsw_01_教育 ;}
@@ -546,7 +546,8 @@ function fn_0815_费马大定理()           { cat ljsw_0815_费马大定理 ;}
 function fn_0822_南明为什么扛不住()     { cat ljsw_0822_南明为什么扛不住 ;}
 function fn_0907_纳粹的毒瘾()           { cat ljsw_0907_纳粹的毒瘾 ;}
 function fn_0920_3D打印()               { cat ljsw_0920_3D打印 ;}
-function fn_0926_领导，你为啥不信我？() { cat ljsw_0926_领导，你为啥不信我？ ;}
+function fn_0926_领导，你为啥不信我？() { cat ljsw_0926_领导，你为啥不信我？;}
+function fn_1003_张勋复辟()             { cat ljsw_1003_张勋复辟 ;}
     local opts=(
         voice
         00_曾国藩
@@ -571,6 +572,7 @@ function fn_0926_领导，你为啥不信我？() { cat ljsw_0926_领导，你�
         0907_纳粹的毒瘾                 # 希特勒
         0920_3D打印                     # 
         0926_领导，你为啥不信我？       # 权力
+        1003_张勋复辟                   # 权力2
     )
     fn_print $@
 }
