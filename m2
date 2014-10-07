@@ -68,6 +68,7 @@ function fn_2014_jco()                  { cat annual_2014_jco ;}
 function fn_2014_life()                 { cat annual_2014_life ;}
 function fn_2014_grandpa_inlaw()        { cat annual_2014_grandpa_inlaw ;}
 function fn_2014_report()               { cat annual_2014_report ;}
+function fn_2014_national_day()         { cat annual_2014_national_day ;}
     local opts=(
         plan_what                       # 基于`以终为始`的理念
         report_what
@@ -85,6 +86,7 @@ function fn_2014_report()               { cat annual_2014_report ;}
         2014_life
         2014_grandpa_inlaw
         2014_report
+        2014_national_day               # NationalDay
     )
     fn_print $@
 }
@@ -121,12 +123,14 @@ function fn_f2_海底捞你学不会()         { cat book_f2_海底捞你学不�
 function fn_f3_教父()                   { cat book_f3_教父 ;}
 function fn_100_周鸿祎自述()            { cat book_100_周鸿祎自述 ;}
 function fn_200_逃不开的经济周期()      { cat book_200_逃不开的经济周期 ;}
+function fn_lunyu()                     { cat book_lunyu ;}
     local opts=(
         base       
         wanna                   # 想读的书
         sunzi                   # 孙子兵法
         liutao                  # 六韬
         36ji                    # 36计
+        lunyu                   # 论语
         01_商君书
         02_韩非子
         aq_如何提问             # reading
