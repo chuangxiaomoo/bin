@@ -894,8 +894,8 @@ CREATE PROCEDURE sp_dugu9jian(a_code INT(6) ZEROFILL) tag_9jian:BEGIN
         SET v_sumvolume = v_sumvolume + v_volume;
         SET v_sumamount = v_sumamount + v_amount;
 
-        -- upto 100% turnover
-        IF  v_sumvolume >= v_shares0 THEN 
+        -- upto 100% turnover or 双周浮盈计算
+        IF  v_sumvolume >= v_shares0 OR ((@NUM < 10) AND (v_id = @v_len)) THEN 
             SELECT date,yesc FROM tempday WHERE id=(v_id) INTO v_date1,v_open;
             SET v_avrg = (v_sumamount/v_sumvolume);
             SET v_chng = 100*(v_close-v_open)/v_open;
