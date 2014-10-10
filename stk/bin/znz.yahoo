@@ -23,7 +23,7 @@ function fn_maxyahoo()
 
 function fn_gether_symbol() {
     local code=$1
-    local url='http://yahoo.compass.cn/stock/frames/frmHistoryDetail.php?'
+    local ur0='http://yahoo.compass.cn/stock/frames/frmHistoryDetail.php?'
     local header=${1:0:1}
     local symbol=
     case $header in
@@ -41,7 +41,7 @@ function fn_gether_symbol() {
 
     # 一页未满时最后一行为空
     while [ $index -le ${last:-1} ]; do
-        url="${url}start_year=$start_year&start_month=$start_month&start_day=$start_day&"
+        url="${ur0}start_year=$start_year&start_month=$start_month&start_day=$start_day&"
         url="${url}end_year=$endin_year&end_month=$endin_month&end_day=$endin_day&"
         url="${url}code=${symbol}&his_type=day&page=${index}"
 
