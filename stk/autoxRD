@@ -30,12 +30,14 @@ function fn_rebuild_list_and_download_from_last_xRD()
     fi
 
     # echo $last_xRD mygod ;exit
-
     ## rebuild $yahooask
     echo "
     SELECT code FROM xRD WHERE date > '${last_xRD}' and date <= '${date_maxyahoo}';
     " | mysql -u root -N kts > $yahooask
     xt_ret $? "mysql" || return $?
+
+    # tag_try_2_times_fail 强制执行失败的个例
+    # echo "002394 300232 300377" > $yahooask
 
     [ -s "$yahooask" ]
     xt_ret $? "empty file $yahooask" || return $?
@@ -55,6 +57,9 @@ function fn_rebuild_list_and_download_from_last_xRD()
     echo "    Redoing the timeout ones[`cat $yahootimeout`]..."
     cp $yahootimeout $yahooask
     NOCLEAN=1 fn_yahoo start
+
+    test -z "`cat $yahootimeout`"
+    xt_ret $? "ask_help_to tag_try_2_times_fail" || return 0
 }
 
 
