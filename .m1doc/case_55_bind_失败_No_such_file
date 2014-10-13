@@ -10,7 +10,10 @@
   > xkcd telnetd -p 24
 
   如此会导致fd的继承而占用8006. 
-  解决方案：先fork(); 而后使用 fcntl() FD_CLOEXEC(close-on-exec)
+
+  解决方案：
+  先fork(); 而后使用 fcntl() FD_CLOEXEC(close-on-exec)
+  而不是用popen() system()来实现
 
 # xt_log() 之殇
 
