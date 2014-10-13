@@ -1123,22 +1123,59 @@ CREATE PROCEDURE sp_get_ma144(a_code INT(6) ZEROFILL) tag_get_ma144:BEGIN
 END tag_get_ma144 //
 
 DROP PROCEDURE IF EXISTS sp_stat_linqi//
-CREATE PROCEDURE sp_stat_linqi(a_code INT(6) ZEROFILL) tag_stat_linqi:BEGIN
+CREATE PROCEDURE sp_stat_linqi() tag_stat_linqi:BEGIN
+    DECLARE v_membs INT; 
     DECLARE v_len   INT; /* CURSOR and HANDLER declare in end of declaration */
     DECLARE v_id    INT DEFAULT 1; 
     DECLARE v_date  date DEFAULT 0; 
+    DECLARE v_yesc  DECIMAL(6,2) DEFAULT 1000;
+    DECLARE v_open  DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_close DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_high  DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_low   DECIMAL(6,2) DEFAULT 0;
 
-    DROP TABLE IF EXISTS dlinqi;
+    DROP TABLE IF EXISTS dlinqi;                /* open days */
     CREATE TABLE dlinqi (
         id          INT(6) PRIMARY key AUTO_INCREMENT NOT NULL,
         date        date NOT NULL,
         INDEX(date)
     );
-    INSERT INTO dlinqi (date) SELECT date from day WHERE code = 900001 and date>='2014-08-01';
+
+    DROP   TABLE IF EXISTS ilinqi;    /* index of linqi */
+    CREATE TABLE ilinqi (
+        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+        date        date NOT NULL,
+        yesc        DECIMAL(6,2) NOT NULL,
+        open        DECIMAL(6,2) NOT NULL,
+        high        DECIMAL(6,2) NOT NULL,
+        low         DECIMAL(6,2) NOT NULL,
+        close       DECIMAL(6,2) NOT NULL,
+        INDEX(date)
+    );
+
+    SET @start_linqi = '2014-08-01';
+    call sp_create_tempday();
+    INSERT INTO tempday(code,date,yesc,open,high,low,close,volume)
+        SELECT d.code,d.date,yesc,open,high,low,close,volume FROM day as d,linqi as l 
+        WHERE d.date >= @start_linqi and d.code = l.code;
+    INSERT INTO dlinqi (date) SELECT date from day WHERE code = 900001 and date>=@start_linqi;
 
     SELECT max(id)   FROM dlinqi INTO v_len;
+    SELECT count(*)  FROM linqi  INTO v_membs;
+
+    SELECT v_len;
+    # SELECT * from tempday;
+
     WHILE v_id <= v_len DO
         SELECT date FROM dlinqi WHERE id=(v_id) INTO v_date;
+        SELECT (sum( open/yesc)+(v_membs-count(*)))/v_membs*v_yesc FROM tempday WHERE date=v_date INTO v_open;
+        SELECT (sum(close/yesc)+(v_membs-count(*)))/v_membs*v_yesc FROM tempday WHERE date=v_date INTO v_close;
+        SELECT (sum( high/yesc)+(v_membs-count(*)))/v_membs*v_yesc FROM tempday WHERE date=v_date INTO v_high;
+        SELECT (sum( low /yesc)+(v_membs-count(*)))/v_membs*v_yesc FROM tempday WHERE date=v_date INTO v_low;
+        INSERT INTO ilinqi (date,  yesc, open,  high, low, close)
+                    VALUES(v_date,v_yesc, v_open, v_high,v_low,v_close);
+        SET v_yesc = v_close;
+        SET v_id = v_id + 1;
     END WHILE;
 
 END tag_stat_linqi //
@@ -1187,4 +1224,5 @@ END tag_stat_linqi //
 --  call sp_stat_turnov(2);
 --  call sp_get_down_turnov(2);
 --  call sp_visit_tbl('cap', @fn_dugu9jian);
-    call sp_visit_tbl('cap', @fn_6maishenjian);
+--  call sp_visit_tbl('cap', @fn_6maishenjian);
+    call sp_stat_linqi();
