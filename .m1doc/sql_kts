@@ -128,3 +128,10 @@ CREATE TABLE fenbi (
     INDEX(code,datetime)
 );
 
+DROP TABLE IF EXISTS linqi;
+CREATE TABLE linqi (
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL, 
+    INDEX(date)
+);
+

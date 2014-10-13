@@ -1122,6 +1122,27 @@ CREATE PROCEDURE sp_get_ma144(a_code INT(6) ZEROFILL) tag_get_ma144:BEGIN
                     VALUES(a_code, v_date,v_low,v_width,v_high,v_close,v_ma13,v_ma34,v_ma144);
 END tag_get_ma144 //
 
+DROP PROCEDURE IF EXISTS sp_stat_linqi//
+CREATE PROCEDURE sp_stat_linqi(a_code INT(6) ZEROFILL) tag_stat_linqi:BEGIN
+    DECLARE v_len   INT; /* CURSOR and HANDLER declare in end of declaration */
+    DECLARE v_id    INT DEFAULT 1; 
+    DECLARE v_date  date DEFAULT 0; 
+
+    DROP TABLE IF EXISTS dlinqi;
+    CREATE TABLE dlinqi (
+        id          INT(6) PRIMARY key AUTO_INCREMENT NOT NULL,
+        date        date NOT NULL,
+        INDEX(date)
+    );
+    INSERT INTO dlinqi (date) SELECT date from day WHERE code = 900001 and date>='2014-08-01';
+
+    SELECT max(id)   FROM dlinqi INTO v_len;
+    WHILE v_id <= v_len DO
+        SELECT date FROM dlinqi WHERE id=(v_id) INTO v_date;
+    END WHILE;
+
+END tag_stat_linqi //
+
 -- 一些需要与shell通信的系统变量
 
     SET @fn_flt_kdj_up          = 1;   

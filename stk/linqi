@@ -3,9 +3,20 @@
 . `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
 . /etc/common.rc
 
+# CREATE TABLE linqi (
+#     date        date NOT NULL, 
+#     code        INT(6) ZEROFILL NOT NULL, 
+#     INDEX(date)
+# );
+
 function fn_main()
 {
-
+    DATE='2014-08-01'
+    codes=`cat .soptter.lin | grep -v 159915`
+    local i=
+    for i in ${codes}; do
+        echo "INSERT INTO linqi VALUES ('${DATE}',${i});"
+    done | mysql -u root kts
 }
 
 fn_main "$@"
