@@ -124,6 +124,7 @@ function fn_f3_教父()                   { cat book_f3_教父 ;}
 function fn_100_周鸿祎自述()            { cat book_100_周鸿祎自述 ;}
 function fn_200_逃不开的经济周期()      { cat book_200_逃不开的经济周期 ;}
 function fn_lunyu()                     { cat book_lunyu ;}
+function fn_shenglvqimeng()             { cat book_shenglvqimeng ;}
     local opts=(
         base       
         wanna                   # 想读的书
@@ -131,6 +132,7 @@ function fn_lunyu()                     { cat book_lunyu ;}
         liutao                  # 六韬
         36ji                    # 36计
         lunyu                   # 论语
+        shenglvqimeng           # 声律启蒙
         01_商君书
         02_韩非子
         aq_如何提问             # reading

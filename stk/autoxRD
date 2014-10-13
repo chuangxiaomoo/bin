@@ -37,7 +37,7 @@ function fn_rebuild_list_and_download_from_last_xRD()
     xt_ret $? "mysql" || return $?
 
     # tag_try_2_times_fail 强制执行失败的个例
-    # echo "002394 300232 300377" > $yahooask
+    # echo "002583 002548" > $yahooask
 
     [ -s "$yahooask" ]
     xt_ret $? "empty file $yahooask" || return $?
