@@ -1,5 +1,7 @@
 # . ~/bin/.bashrc
 
+alias   ASC=''
+alias LIMIT=''
 alias    ..='cd ..'
 alias   ...='cd ../..'
 alias    .b='cd ~/bin'
@@ -66,6 +68,7 @@ alias   ltmux='TERM=xterm /usr/local/bin/tmux'
 alias    tmux='TERM=xterm /usr/bin/tmux'
 alias  dialog='TERM=linux dialog'
 alias psmysql='ps -ef | grep [m]ysql'
+alias  psgrep='ps -ef | grep '
 alias   psw3m='ps -ef | grep [w]3m'
 alias  kmysql='mysql kts'
 alias   xgrep="find . -name '*' -type f | xargs grep "
