@@ -686,6 +686,7 @@ function fn_Small_Stakes_Hold_em()      { cat texaspoker_Small_Stakes_Hold_em ;}
 function fn_advertisement()             { cat advertisement ;}
 function fn_architecture()              { cat architecture ;}
 function fn_estate()                    { cat estate ;}
+function fn_driver()                    { cat driver ;}
 
 # 新教与天主教。信则得救，不信则下地狱 vs 助人行善
 # 一花一世界，一木一浮生，一草一天堂，一叶一如来，
@@ -705,6 +706,7 @@ function fn_main() {
         artical
         book
         dream
+        driver
         english
         economic
         finance                         
