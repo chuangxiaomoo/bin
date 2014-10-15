@@ -122,6 +122,7 @@ function fn_f1_富同学穷同学()           { cat book_f1_富同学穷同学 ;
 function fn_f2_海底捞你学不会()         { cat book_f2_海底捞你学不会 ;}
 function fn_f3_教父()                   { cat book_f3_教父 ;}
 function fn_100_周鸿祎自述()            { cat book_100_周鸿祎自述 ;}
+function fn_101_livermore()             { cat book_101_livermore ;}
 function fn_200_逃不开的经济周期()      { cat book_200_逃不开的经济周期 ;}
 function fn_lunyu()                     { cat book_lunyu ;}
 function fn_shenglvqimeng()             { cat book_shenglvqimeng ;}
@@ -151,6 +152,7 @@ function fn_shenglvqimeng()             { cat book_shenglvqimeng ;}
         f3_教父
 
         100_周鸿祎自述
+        101_livermore
 
         200_逃不开的经济周期
     )
