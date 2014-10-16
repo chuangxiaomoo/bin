@@ -1,6 +1,7 @@
 # . ~/bin/.bashrc
 
 alias   ASC=''
+alias  COND=''
 alias LIMIT=''
 alias    ..='cd ..'
 alias   ...='cd ../..'
