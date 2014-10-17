@@ -2,6 +2,7 @@
 
 alias   ASC=''
 alias  COND=''
+alias  SINA=''
 alias LIMIT=''
 alias    ..='cd ..'
 alias   ...='cd ../..'

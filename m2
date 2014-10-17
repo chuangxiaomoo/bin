@@ -683,6 +683,8 @@ function fn_Small_Stakes_Hold_em()      { cat texaspoker_Small_Stakes_Hold_em ;}
     )
     fn_print $@
 }
+
+function fn_debate_competition()        { cat debate_competition ;}
 function fn_advertisement()             { cat advertisement ;}
 function fn_architecture()              { cat architecture ;}
 function fn_estate()                    { cat estate ;}
@@ -705,6 +707,7 @@ function fn_main() {
         annual
         artical
         book
+        debate_competition
         dream
         driver
         english
