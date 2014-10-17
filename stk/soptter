@@ -106,7 +106,7 @@ fn_realtime()
 function fn_main() 
 {
     mkdir -p ${rt_stdout%/*}
-    LIST=${LIST:-'.soptter.focus'}
+    LIST=${LIST:-'.soptter.lin'}
     codelist=`cat ${LIST}|awk '{print $1}'`
     thrxhold=.01               # .00382 .00618 .01 .01618
 
