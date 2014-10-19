@@ -552,6 +552,7 @@ function fn_0907_纳粹的毒瘾()           { cat ljsw_0907_纳粹的毒瘾 ;}
 function fn_0920_3D打印()               { cat ljsw_0920_3D打印 ;}
 function fn_0926_领导，你为啥不信我？() { cat ljsw_0926_领导，你为啥不信我？;}
 function fn_1003_张勋复辟()             { cat ljsw_1003_张勋复辟 ;}
+function fn_1017_外交()                 { cat ljsw_1017_外交 ;}
     local opts=(
         voice
         00_曾国藩
@@ -577,6 +578,7 @@ function fn_1003_张勋复辟()             { cat ljsw_1003_张勋复辟 ;}
         0920_3D打印                     # 
         0926_领导，你为啥不信我？       # 权力
         1003_张勋复辟                   # 权力2
+        1017_外交                       # 强国思维
     )
     fn_print $@
 }
@@ -685,6 +687,7 @@ function fn_Small_Stakes_Hold_em()      { cat texaspoker_Small_Stakes_Hold_em ;}
 }
 
 function fn_debate_competition()        { cat debate_competition ;}
+function fn_super_speech()              { cat super_speech ;}
 function fn_advertisement()             { cat advertisement ;}
 function fn_architecture()              { cat architecture ;}
 function fn_estate()                    { cat estate ;}
@@ -708,6 +711,7 @@ function fn_main() {
         artical
         book
         debate_competition
+        super_speech
         dream
         driver
         english
