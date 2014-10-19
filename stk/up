@@ -371,7 +371,7 @@ function fn_add_codes_2_dzh2tbl()
             echo -n SZ$i
             ;;
         *)
-            echo -e "\n    Invalide code $i, exit\n" > /dev/stderr && exit
+            echo -e "\n    Invalide code $i, exit\n" > /dev/stderr && exit # 上面的数据库添加时没有做检查
             ;;
         esac
         echo -n -e $DELI

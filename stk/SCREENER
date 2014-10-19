@@ -222,7 +222,7 @@ function fn_dugu9jian()
     echo "
     SET @END='$END';
     SET @NUM=${NUM};
-    SET @NMC_PERCENT=${NMC:-1};
+    SET @NMC_RATIO=${NMC_RATIO:-1};
     call sp_visit_tbl('$TBL', @fn_dugu9jian);
     " | tee -a $mps_god
     mysql $mo -t kts <<< "source $mps_god"
@@ -252,7 +252,7 @@ function fn_6maishenjian()
     SELECT 6maishenjian MAX $3
 }
 
-function fn_get_cost_9jian()
+function fn_9jian()
 {
     test -n "${1}" && fn_iscode ${1}       
     xt_ret $? "invalid code[$1]" || return $?
@@ -264,7 +264,7 @@ function fn_get_cost_9jian()
     TBL=tbl_cost9 fn_dugu9jian ${2:-$END} ${CYCLE:-240} ${3:-wchng}
 }
 
-function fn_get_cost_6mai()
+function fn_6jian()
 {
     test -n "${1}" && fn_iscode ${1}       
     xt_ret $? "invalid code[$1]" || return $?
@@ -552,14 +552,31 @@ function fn_ana_ma240()
     return 0
 }
 
+function fn_c144()
+{
+    fn_iscode $1 
+    xt_ret $? "" || { echo "Usage: 144 code {END}" && exit; }
+
+    codes=(`xargs -n1 <<<"${*}" | sed 's/^0*//g' | xargs printf "%06d "`)
+
+    up add_codes_2_dzh2tbl ${codes[@]}
+    END=${END} TBL=zxg up up_tbl_ma144_all
+
+    sqls="SELECT t.code,t.date,t.close,ma144,100*(t.close-ma144)/ma144 as rise, c.name "
+    sqls="${sqls} FROM tbl_ma144 as t, cap as c, zxg  WHERE t.code = c.code and t.code = zxg.code"
+    sqls="${sqls} ${HAVING} ORDER by ${ASC:-zxg.id}"
+    mysql -t kts<<<"${sqls}"
+    xt_ret $? "${FUNCNAME}" || return $?
+
+    return 0
+}
+
 function fn_ana_ma144()
 {
     # 上海莱士，福建水泥
     # 若开涨了，预估起点与终点 
     #
     # 1. 
-    #
-    #
 
     local sqls="SELECT code FROM tbl_ma144 as m"
     local conds=(
@@ -593,8 +610,9 @@ function fn_main()
     cmdlist=(
     "dugu9jian            [end]                 # NUM=61 .NMC end.close analyze"
     "6maishenjian         [end]                 # NUM=61 min(close) analyze"
-    "get_cost_9jian       code [end [field]]    # #{CYCLE}日，个股成本分析"
-    "get_cost_6mai        code [end [field]]    # #{CYCLE}日，个股成本分析"
+    "9jian                code [end [field]]    # #{CYCLE}日，个股成本分析"
+    "6jian                code [end [field]]    # #{CYCLE}日，个股成本分析"
+    "c144                 code [end]            # ma144成本分析"
     "get_down_turnov      [start:curr-13] [end] # 100%下降净换手"
     "get_ma513            [end]                 # ma 5 13 34 55"
     "ana_ma513            index [end]           # 分析ma 5 13 34 55"

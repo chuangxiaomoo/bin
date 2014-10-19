@@ -874,7 +874,7 @@ CREATE PROCEDURE sp_dugu9jian(a_code INT(6) ZEROFILL) tag_9jian:BEGIN
 
     call sp_create_tempday();
     SELECT nmc/close FROM cap WHERE code=a_code LIMIT 1 INTO v_shares;
-    SET v_shares0 = v_shares * @NMC_PERCENT;
+    SET v_shares0 = v_shares * @NMC_RATIO;
     -- 可以通过 turnover = latest(volume/shares); 来计算相应日期数 @NUM
     SET @sqls=concat('
         INSERT INTO tempday(code,date,yesc,open,high,low,close,volume,amount)
@@ -1073,7 +1073,7 @@ CREATE PROCEDURE sp_get_ma240(a_code INT(6) ZEROFILL) tag_get_ma240:BEGIN
 
     IF @v_len < 240 THEN LEAVE tag_get_ma240; END IF;
 
-    SELECT min(close),max(close) 
+    SELECT min(close),max(close)
                            FROM tempday WHERE id>(@v_len-@CYCLE) INTO v_low,v_high;
     SELECT SUM(close)/34   FROM tempday WHERE id>(@v_len-34)    INTO v_ma34 ;
     SELECT SUM(close)/60   FROM tempday WHERE id>(@v_len-60)    INTO v_ma60 ;
