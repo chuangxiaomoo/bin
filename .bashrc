@@ -5,8 +5,9 @@ alias   END=''
 alias   NUM=''
 alias   TBL=''
 alias  COND=''
-alias  SINA=''
+alias  FINA=''      # S_I_N_A conflict with Svn
 alias LIMIT=''
+alias   wup='.s; SINA=1 up 4; TBL=windbell_codes SCREENER 0;'
 
 alias    ..='cd ..'
 alias   ...='cd ../..'
