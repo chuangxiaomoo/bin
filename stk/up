@@ -235,7 +235,7 @@ function fn_hexun_day()
 
     echo "    add hexun_day ${DATE}..."
 
-    if [ "${SINA:-0}" -eq 1 ] ; then
+    if [ "${FINA:-0}" -eq 1 ] ; then
         ./sina 
         xt_ret $? "sina" || return $?
         cp $sn_ripetxt $hx_dayclose
@@ -500,7 +500,7 @@ function fn_redo_hexun_day_fr_min()
 
     OPENDATE=`$W3M -dump ${url_sh000001} |awk -F',' '{print $(NF-2)}'`
 
-    [ -z "$OPENDATE" ] && fn_write "    SINA UNREACHABLE!" && return 1
+    [ -z "$OPENDATE" ] && fn_write "    FINA UNREACHABLE!" && return 1
     [ "$DATE" != "$OPENDATE" ] && echo "Error: market is close" && return 1
 
 
@@ -574,7 +574,7 @@ function fn_copy_table_2_table()
 
 function fn_html()
 {
-    if [ "${SINA:-0}" -eq 1 ] ; then
+    if [ "${FINA:-0}" -eq 1 ] ; then
         timeout 10 ./soptter > ${js_xunner_txt}
     else
         timeout 10 ./xunner > ${js_xunner_txt}

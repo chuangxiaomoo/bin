@@ -51,7 +51,7 @@ function fn_main()
         # exit
 
     while :; do
-        up 4
+        FINA=1 up 4
         TBL=windbell_codes SCREENER 0
         # COND='and wchng<-10.5 and up>.3' fn_dugu9jian
         COND='and wchng<-12.5 and up>.3' fn_dugu9jian
