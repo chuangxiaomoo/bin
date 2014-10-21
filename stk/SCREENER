@@ -228,7 +228,7 @@ function fn_dugu9jian()
     mysql $mo -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
 
-    [ "${inwind}" = 1 ] || SELECT dugu9jian $3
+    [ "${inwind}" = 1 ] || SELECT dugu9jian wchng
 }
 
 function fn_6maishenjian()

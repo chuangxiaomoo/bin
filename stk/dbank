@@ -125,7 +125,7 @@ function fn_timestamp_market()
     OPENTIME=${DATETIME[1]}
     if [ -z "$OPENDATE" ]; then
         fn_write "
-        SINA UNREACHABLE!
+        FINA UNREACHABLE!
         "  
         return 1
     fi 
