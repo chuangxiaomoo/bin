@@ -303,7 +303,7 @@ function fn_dugu9jian()
                         round(100*(t.close-avrg)/avrg,2) as wchng, c.name 
            FROM ${tablex:-tbl_9jian} as t, cap as c, (SELECT * from day where date='${DATE2}') as d
            WHERE t.code = c.code and t.code = d.code HAVING 1 ${COND} 
-           ORDER by ${1:-lchng} ${ASC:-asc} limit ${LIMIT:-36}      # COND='nmc<250000 and lchng<-9.7 and off<21' 
+           ORDER by ${1:-lchng} ${ASC:-asc} limit ${LIMIT:-24}      # COND='nmc<250000 and lchng<-9.7 and off<21' 
         "
         echo "${tbl_super_dive}"
     }

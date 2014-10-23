@@ -45,7 +45,7 @@ fn_realtime()
 {
     comma_sepa_list=`echo $@ | awk '{
         for (i=1; i<=NF; i++) {
-            if ($i ~ /^6/) {
+            if ($i ~ /^[56]/) {
                 printf "sh%s ", $i
             } else {
                 printf "sz%s ", $i
@@ -106,7 +106,7 @@ fn_realtime()
 function fn_main() 
 {
     mkdir -p ${rt_stdout%/*}
-    LIST=${LIST:-'.soptter.focus'}
+    LIST=${LIST:-'.soptter.lin'}
     codelist=`cat ${LIST}|awk '{print $1}'`
     thrxhold=.01               # .00382 .00618 .01 .01618
 
