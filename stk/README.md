@@ -9,7 +9,7 @@
 > 前言
 
 ## 王大爷的金融   .doc/wanghaibin.md
-## 量子力学       .doc/quantum_mechanics.md
+## 量子力学       .doc/quantum_meCHANics.md
 ## 行为心理学     .doc/behaviorism.md
 ## 想看的书       .doc/books.md
 ## 本质论         .doc/essential.md           -- 我是谁？从哪来？到哪去？
@@ -46,5 +46,5 @@
 ## 独孤九剑       .doc/dugu9jian.md     --基于信息进化论.解N变量方程组
 ## 事件冲击       .doc/event.md
 ## 板块           .doc/block.md
-## chan           .doc/chan.md
+## 缠中说禅       .doc/chan.md
 ## 操盘日记       .doc/diary.md
