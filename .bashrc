@@ -7,7 +7,7 @@ alias   TBL=''
 alias  COND=''
 alias  FINA=''      # S_I_N_A conflict with Svn
 alias LIMIT=''
-alias   wup='.s; FINA=1 up 4; TBL=windbell_codes SCREENER 0;'
+alias   wup='.s; FINA=1 up 4; TBL=windbell_codes SCREENER 0'
 
 alias    ..='cd ..'
 alias   ...='cd ../..'
