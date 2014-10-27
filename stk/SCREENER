@@ -555,7 +555,7 @@ function fn_ana_ma240()
 function fn_c144()
 {
     fn_iscode $1 
-    xt_ret $? "" || { echo "Usage: 144 code {END}" && exit; }
+    xt_ret $? "" || { echo "Usage: 144 code... {END}" && exit; }
 
     codes=(`xargs -n1 <<<"${*}" | sed 's/^0*//g' | xargs printf "%06d "`)
 
@@ -612,7 +612,7 @@ function fn_main()
     "6maishenjian         [end]                 # NUM=61 min(close) analyze"
     "9jian                code [end [field]]    # #{CYCLE}日，个股成本分析"
     "6jian                code [end [field]]    # #{CYCLE}日，个股成本分析"
-    "c144                 code [end]            # ma144成本分析"
+    "c144                 code... [end]         # cost:ma144 & sort by #{ASC:id}"
     "get_down_turnov      [start:curr-13] [end] # 100%下降净换手"
     "get_ma513            [end]                 # ma 5 13 34 55"
     "ana_ma513            index [end]           # 分析ma 5 13 34 55"
