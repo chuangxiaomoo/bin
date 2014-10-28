@@ -680,7 +680,7 @@ function fn_main()
     "redo_hexun_day_fr_min              # 利用已有分线，重做大盘日线"
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
     "up_tbl_xRD [--keep.PWR -k]         # --- 使用当前除权数据 --keep.PWR"
-    "add_codes_2_dzh2tbl {code|file}    # 添加CODE到ZXG.BLK，并写表#{TBL:-zxg}"
+    "add_codes_2_dzh2tbl {code...|file} # 添加CODE到ZXG.BLK，并写表#{TBL:-zxg}"
     "add_tbl_codes_2_dzh                # 添加表#{TBL:-tbl_visit}到dzh2tbl{zxg}"
     "up_rzrq_codes_tbl                  # 更新RZRQ业务数据"
     "up_swing10                         # 更新涨跌停6.1%数据"
