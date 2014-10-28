@@ -229,6 +229,8 @@ function fn_add_yesclose()
 
 function fn_hexun_day()
 {
+    mkdir -p ${hx_dayclose%/*}
+
     unarm_close_forbid=true \
     fn_timestamp_market
     xt_ret $? "${FUNCNAME}" || return $?
