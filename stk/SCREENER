@@ -215,6 +215,9 @@ function fn_dugu9jian()
     TBL=${TBL:-'cap'}
     NUM=${NUM:-61}        # 34太小，300104 2014-07-17 被漏掉了
 
+    fn_isdate ${END} 
+    xt_ret $? "    Usage: #{1} must be date like 2008-08-08" || return $?
+
     echo "
     To visit `mysql -N kts<<<"SELECT count(*) FROM ${TBL}"` codes on table $TBL...
     "
@@ -228,7 +231,7 @@ function fn_dugu9jian()
     mysql $mo -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
 
-    [ "${inwind}" = 1 ] || SELECT dugu9jian wchng
+    [ "${inwind}" = 1 ] || SELECT dugu9jian ${2:-wchng}
 }
 
 function fn_6maishenjian()
@@ -236,6 +239,9 @@ function fn_6maishenjian()
     END=${1:-${END}}
     TBL=${TBL:-'cap'}
     NUM=${NUM:-61}
+
+    fn_isdate ${END} 
+    xt_ret $? "    Usage: #{1} must be date like 2008-08-08" || return $?
 
     echo "
     To visit `mysql -N kts<<<"SELECT count(*) FROM ${TBL}"` codes on table $TBL...
@@ -249,7 +255,7 @@ function fn_6maishenjian()
     mysql $mo -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
 
-    SELECT 6maishenjian MAX ${COL}
+    SELECT 6maishenjian ${2:-down}
 }
 
 function fn_9jian()
@@ -261,7 +267,7 @@ function fn_9jian()
 
     local code=`sed 's/^0*//g' <<< $1 | xargs printf "%06d"`
     TBL=tbl_cost9 up add_codes_2_dzh2tbl ${code}
-    TBL=tbl_cost9 fn_dugu9jian ${2:-$END} ${CYCLE:-240} ${3:-wchng}
+    TBL=tbl_cost9 NUM=${NUM:-240} fn_dugu9jian ${2:-$END} ${3:-wchng}
 }
 
 function fn_6jian()
@@ -273,7 +279,7 @@ function fn_6jian()
 
     local code=`sed 's/^0*//g' <<< $1 | xargs printf "%06d"`
     TBL=tbl_cost6 up add_codes_2_dzh2tbl ${code}
-    TBL=tbl_cost6 fn_6maishenjian ${2:-$END} ${CYCLE:-240} ${3:-wchng}
+    TBL=tbl_cost6 NUM=${NUM:-240} fn_6maishenjian ${2:-$END} ${3:-wchng}
 }
 
 
@@ -603,13 +609,13 @@ function fn_ana_ma144()
 
 function fn_focus()
 {
-    local file=${1:-'.soptter.focus'}
+    local file=${LIST:-'.soptter.focus'}
 
     test -f ${file}
     xt_ret $? "${file} not exist" || return $?
 
     up add_codes_2_dzh2tbl ${file}
-    TBL=zxg fn_dugu9jian
+    TBL=zxg fn_dugu9jian ${END} ${2:-wchng}
 
     return $?
 }
@@ -622,12 +628,12 @@ function fn_main()
     # SCREENER的宗旨，弃子取势
     # xet_block_info 为 sp_visit_tbl() 选定相应的BLOCK
     cmdlist=(
-    "dugu9jian            [end]                 # NUM=61 .NMC end.close analyze"
-    "6maishenjian         [end]                 # NUM=61 min(close) sort by #{COL}"
+    "dugu9jian            [end [field]]         # NUM=61 .NMC end.close analyze"
+    "6maishenjian         [end [field]]         # NUM=61 min(close) sort by #{COL}"
     "9jian                code [end [field]]    # #{CYCLE}日，个股成本分析"
     "6jian                code [end [field]]    # #{CYCLE}日，个股成本分析"
     "c144                 code... [end]         # cost:ma144 & sort by #{ASC:id}"
-    "focus                [.soptter.focus]      # add to zxg and 9jian"
+    "focus                [field]               # #{list:-.soptter.focus}->zxg and 9jian"
     "get_down_turnov      [start:curr-13] [end] # 100%下降净换手"
     "get_ma513            [end]                 # ma 5 13 34 55"
     "ana_ma513            index [end]           # 分析ma 5 13 34 55"
