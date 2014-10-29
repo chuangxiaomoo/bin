@@ -631,7 +631,7 @@ function fn_up_tbl_ma240_all()
     "
     echo "
     SET @END='$END';
-    SET @CYCLE=${CYCLE:-240};
+    SET @CYCLE=${NUM:-240};
     call sp_visit_tbl('${TBL:-cap}', @fn_up_ma240_all);
     " | tee -a $mps_god
     mysql $mo -t kts <<< "source $mps_god"
@@ -644,7 +644,7 @@ function fn_up_tbl_ma144_all()
     "
     echo "
     SET @END='$END';
-    SET @CYCLE=${CYCLE:-144};
+    SET @CYCLE=${NUM:-144};
     call sp_visit_tbl('${TBL:-cap}', @fn_up_ma144_all);
     " | tee -a $mps_god
     mysql $mo -t kts <<< "source $mps_god"
@@ -659,7 +659,7 @@ function fn_up_tbl_ma240_34()
 
     echo "
     SET @END='$END';
-    SET @CYCLE=${CYCLE:-240};
+    SET @CYCLE=${NUM:-240};
     call sp_visit_tbl('${TBL:-cap}', @fn_up_ma240_34);
     " | tee -a $mps_god
     mysql $mo -t kts <<< "source $mps_god"

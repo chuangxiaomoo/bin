@@ -630,8 +630,8 @@ function fn_main()
     cmdlist=(
     "dugu9jian            [end [field]]         # NUM=61 .NMC end.close analyze"
     "6maishenjian         [end [field]]         # NUM=61 min(close) sort by #{COL}"
-    "9jian                code [end [field]]    # #{CYCLE}日，个股成本分析"
-    "6jian                code [end [field]]    # #{CYCLE}日，个股成本分析"
+    "9jian                code [end [field]]    # #{NUM}日，个股成本分析"
+    "6jian                code [end [field]]    # #{NUM}日，个股成本分析"
     "c144                 code... [end]         # cost:ma144 & sort by #{ASC:id}"
     "focus                [field]               # #{list:-.soptter.focus}->zxg and 9jian"
     "get_down_turnov      [start:curr-13] [end] # 100%下降净换手"
