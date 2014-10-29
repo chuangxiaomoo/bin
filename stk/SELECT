@@ -246,7 +246,7 @@ function fn_6maishenjian()
 
     if fn_isdate "${1}"; then
         DATE2=${1}
-    elif [ "${1}" = MAX ]; then
+    elif [ "${1:-MAX}" = MAX ]; then
         DATE2=`fn_maxdate`
     else
         xt_ret 1 "date format: {MAX | 2014-09-04}" || return $?

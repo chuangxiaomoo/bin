@@ -249,7 +249,7 @@ function fn_6maishenjian()
     mysql $mo -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
 
-    SELECT 6maishenjian MAX $3
+    SELECT 6maishenjian MAX ${COL}
 }
 
 function fn_9jian()
@@ -600,6 +600,20 @@ function fn_ana_ma144()
     return 0
 }
 
+
+function fn_focus()
+{
+    local file=${1:-'.soptter.focus'}
+
+    test -f ${file}
+    xt_ret $? "${file} not exist" || return $?
+
+    up add_codes_2_dzh2tbl ${file}
+    TBL=zxg fn_dugu9jian
+
+    return $?
+}
+
 function fn_main()
 {
     CURR=`fn_maxdate`
@@ -609,10 +623,11 @@ function fn_main()
     # xet_block_info 为 sp_visit_tbl() 选定相应的BLOCK
     cmdlist=(
     "dugu9jian            [end]                 # NUM=61 .NMC end.close analyze"
-    "6maishenjian         [end]                 # NUM=61 min(close) analyze"
+    "6maishenjian         [end]                 # NUM=61 min(close) sort by #{COL}"
     "9jian                code [end [field]]    # #{CYCLE}日，个股成本分析"
     "6jian                code [end [field]]    # #{CYCLE}日，个股成本分析"
     "c144                 code... [end]         # cost:ma144 & sort by #{ASC:id}"
+    "focus                [.soptter.focus]      # add to zxg and 9jian"
     "get_down_turnov      [start:curr-13] [end] # 100%下降净换手"
     "get_ma513            [end]                 # ma 5 13 34 55"
     "ana_ma513            index [end]           # 分析ma 5 13 34 55"
