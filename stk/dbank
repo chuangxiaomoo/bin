@@ -13,7 +13,7 @@ helpmsg="
     LIST    code列表文件
     START   时间范围的左值
     TBL     操作表，默认使用'tbl_visit'
-    CYCLE   振幅分析周期(60 120 240...)，默认使用240
+    NUM     振幅分析周期(60 120 240...)，默认使用240
     XTBL    EXCLEDE表，SELECT时使用，默认为空
 
     表zxg更新
