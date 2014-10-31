@@ -2,3 +2,18 @@
 
 [详解udev](http://www.cnblogs.com/sopost/archive/2013/01/09/2853200.html)
 
+[udev规则](http://zhumeng8337797.blog.163.com/blog/static/1007689142010836613486)
+
+简单的工作原理
+
+# man udev
+
+1. /etc/udev/rules.d/下面的文件通过lexical顺序解析
+
+10-persistent-mmc.rules
+
+2. 一个设备可以被多条规则匹配到，这有着很实用的优点
+
+例如, 我们可以写两个匹配同一个设备的规则, 每一个规则为设备提供了它自己的可选命名.
+
+
