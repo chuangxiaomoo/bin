@@ -2720,6 +2720,17 @@
 # 2014-11-xx oracle
 
   0. keep
+
+  1. buy(排在首位的最重要t
+
+  百隆东方(601339)
+
+  2. sell
+  3. review 
+
+# 2014-11-xx oracle
+
+  0. keep
   1. buy(排在首位的最重要)
   2. sell
   3. review 
