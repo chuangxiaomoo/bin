@@ -2717,7 +2717,7 @@
   星期线          >> 周五无行情，因为再无钱输入买票。
   解套比例线      >> 营利比例达到30%(登云股份2014-10-31)
 
-# 2014-11-xx oracle
+# 2014-11-03 oracle
 
   0. keep
 
@@ -2728,7 +2728,10 @@
   2. sell
   3. review 
 
-# 2014-11-xx oracle
+  SELECT date,sum(amount) FROM day WHERE code < 900000 and date > '2014-07-13' GROUP by date;
+  `2014-07-11`需要补充
+
+# 2014-11-0x oracle
 
   0. keep
   1. buy(排在首位的最重要)
