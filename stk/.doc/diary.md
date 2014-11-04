@@ -2483,12 +2483,18 @@
         call sp_ema('macd', 'close', 'long_ema',  26);    # 单月交易日
         UPDATE  macd SET dif  = short_ema-long_ema;
         call sp_ema('macd', 'dif'  , 'dea',       9);
-        UPDATE  macd SET macd = (dif -dea) * 2 ;
+        UPDATE  macd SET macd = (dif - dea) * 2 ;
         ---
         EMA12 = 前一日EMA12 X 11/13 + 今日收盘 X 2/13
         EMA26 = 前一日EMA26 X 25/27 + 今日收盘 X 2/27
         DIF   = EMA12 - EMA26 。
         DEA   = 前一日DIF   X 8/10  + 今日DIF X 2/10
+
+  macd的物理意义
+        a=(v1 - v2)/t 
+         =(s1/t - s2/t)/t     >>> t时间轴之常量
+         =short_ema-long_ema
+        macd = (dif-dea) * 2  >>> a的差分 
 
   > 总结
 
