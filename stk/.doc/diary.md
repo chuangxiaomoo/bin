@@ -2491,13 +2491,12 @@
         DEA   = 前一日DIF   X 8/10  + 今日DIF X 2/10
 
   macd的物理意义
-        a
+        dif                   >>> __加速度a__
         = (v1 - v2)/t 
         = (s1/t - s2/t)/t     >>> t时间轴之常量
         = short_ema-long_ema
-        = dif
         macd 
-        = (dif-dea) * 2       >>> a的差分 
+        = (dif-dea) * 2       >>> __a的差分亦即加速度的加速度__
 
   > 总结
 
