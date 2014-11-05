@@ -1,4 +1,4 @@
-# c_macro 
+/* c_macro */
 
 # 系统里的宏
 
@@ -8,12 +8,16 @@
     __DATE__
     __TIME__
 
+# ## and #
+
+  ## 拼接 identifier
+  #  把 identifier 变成字串
+
 # 随机数 -- 找到一个不可重复的数 -- time()
 
     srandom((unsigned)time(NULL));
     printf("%ld\n", random());
     printf("%ld\n", random());
-
 
 # ifdef
 
@@ -41,7 +45,6 @@
     basename((char *)__FILE__)
     basename 在原有路径上找到偏移
     dirname  会修改传入的路径，若是常量，则有 segfault, 所以用之前先 strdup()
- 
 
 # more 
 

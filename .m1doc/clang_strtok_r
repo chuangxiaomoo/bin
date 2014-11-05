@@ -1,0 +1,39 @@
+/* strtok_r */
+
+
+#include </usr/include/xt_macro.h>
+
+int parser(char *cmdbuf, char *argv[])
+{
+    return_val_if_fail(cmdbuf != NULL, 0);
+
+    int  argc = 0;
+    char *ptr = NULL;
+    char *saveptr = NULL;
+    char *delim = " ";
+
+    // strtok 会修改第一个参数haystack的内容，请处理先做好备份
+    if (null != (ptr = strtok_r(cmdbuf, delim, &saveptr))) {
+        do {
+            argv[argc++] = ptr;
+        } while (null != (ptr = strtok_r(null, delim, &saveptr)));
+    }
+    return argc;
+}
+
+int main(int argc, char *argv[])
+{
+    char cmdbuf[] = "1 2 3 4 5 6 7 ";
+    
+    int argc0;
+    char *argv0[64];
+
+    // cmdbuf will be modified
+    argc0 = parser(cmdbuf, argv0);
+
+    int i;
+    for (i = 0; i < argc0; i++) {
+        printf("%s\n", argv0[i]);
+    }
+    return 0;
+}
