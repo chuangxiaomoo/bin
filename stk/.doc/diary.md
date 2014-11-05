@@ -2735,6 +2735,8 @@
   SELECT date,sum(amount) FROM day WHERE code<900000 and date>'2014-07-13' GROUP by date; >>> `2014-07-11`需要补充
   充分感受小散的心理：(1) 为到成本线时的焦虑 (2) 亏损时上涨一分钱就焦虑卖掉 (3) 盈利时不舍得卖 (4) 急跌时又跟风
 
+# 2014-11-05 avrg(平均振幅) 登云股份
+
 # 2014-11-0x oracle
 
   0. keep
