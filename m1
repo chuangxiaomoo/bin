@@ -375,6 +375,7 @@ function fn_const()                     { cat clang_const ;}
 function fn_extern()                    { cat clang_extern ;}
 function fn_operator_predcedence()      { cat clang_operator_predcedence ;}
 function fn_string()                    { cat clang_string ;}
+function fn_strtok_r()                  { cat clang_strtok_r ;}
 function fn_struct()                    { cat clang_struct ;}
 function fn_typedef()                   { cat clang_typedef ;}
 function fn_warning()                   { cat clang_warning ;}
@@ -436,6 +437,7 @@ function fn_getopt_long()               { cat clang_getopt_long ;}
         printf                  # sscanf() scanf() format
         signal
         strncpy                 # string serial
+        strtok_r
         snprintf                # more safe vs strncpy()
         coredump
         time                    # posix TZ

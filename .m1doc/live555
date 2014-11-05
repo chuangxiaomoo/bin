@@ -1,76 +1,92 @@
-/* live555 */
+# live555 
 
-live555学习笔记3－消息循环
-http://blog.csdn.net/niu_gao/article/details/6907493
+  我们且把三种任务命名为：socket handler,event handler,delay task。
 
-. doEventLoop 中的 SingleStep()
+  这三种任务的特点是，前两个加入执行队列后会一直存在，而delay task在执行完一次
+  后会立即弃掉。
 
-    循环中每次走一步：SingleStep()。这走一步中都做些什么呢？
+* socket handler
 
-    总结为以下四步：
+  typedef void BackgroundHandlerProc(void* clientData, int mask);
+  void setBackgroundHandling(int socketNum, int conditionSet, BackgroundHandlerProc* handlerProc, void* clientData)
 
-    １为所有需要操作的socket执行select。
+* event handler 
 
-    ２找出第一个应执行的socket任务(handler)并执行之。
+  typedef void TaskFunc(void* clientData);
+  EventTriggerId createEventTrigger(TaskFunc* eventHandlerProc)
 
-    ３找到第一个应响应的事件，并执行之。
+* delay task    
 
-    ４找到第一个应执行的延迟任务并执行之。
+  typedef void TaskFunc(void* clientData);//跟event handler一样。
+  TaskToken scheduleDelayedTask(int64_t microseconds, TaskFunc* proc,void* clientData)
 
-    /*  所有的task的执行时间都不可以太长，若有执行时间太长的task，可以：
-     *  1   建线程来处理
-     *  2   BasicTaskScheduler::createNew() 以在不同的 TaskScheduler 中做。
-     **/
+[live555学习笔记3－消息循环](http://blog.csdn.net/niu_gao/article/details/6907493)
 
-live555学习笔记4－计划任务(TaskScheduler)深入探讨
-http://blog.csdn.net/niu_gao/article/details/6910549
+1. doEventLoop 中的 SingleStep()
+
+  循环中每次走一步：SingleStep()。这走一步中都做些什么呢？
+
+  总结为以下四步：
+
+  １为所有需要操作的socket执行select。
+
+  ２找出第一个应执行的socket任务(handler)并执行之。
+
+  ３找到第一个应响应的事件，并执行之。
+
+  ４找到第一个应执行的延迟任务并执行之。
+
+  所有的task的执行时间都不可以太长，若有执行时间太长的task，可以：
+  1   建线程来处理
+  2   BasicTaskScheduler::createNew() 以在不同的 TaskScheduler 中做。
+
+[live555学习笔记4－计划任务(TaskScheduler)深入探讨](http://blog.csdn.net/niu_gao/article/details/6910549)
 
 
-. 延时执行任务，通常用来作错误的循环处理
+2. 延时执行任务，通常用来作错误的循环处理
 
-    scheduleDelayedTask(延时时间, 函数指针)
+  scheduleDelayedTask(延时时间, 函数指针)
 
-    通常初始化函数被两个上层函数调用：
+  通常初始化函数被两个上层函数调用：
 
-    一个是构造函数，
-    另一个则是scheduleDelayedTask()的参数TaskFunc *指针指向的函数，以保证错误重试。
+  一个是构造函数，
+  另一个则是scheduleDelayedTask()的参数TaskFunc * 指针指向的函数，以保证错误重试。
 
 
-. Background，对socket的监听，以事件的形式真正的替代循环
+3. Background，对socket的监听，以事件的形式真正的替代循环
 
-    /*
-     * RTSPServer构造，按顺序，一步都不能少
-     * socket, 
-     * setsoketopt(SO_REUSEADDR), 
-     * bind，
-     * makeNonBlocking(fcntl F_GETFL) , 
-     * makeNonBlocking(fcntl F_SETFL) , 
-     * listen
-     * turnOnBackgroundReadHandling(incomingConnectionHandler)
-     **/
-    turnOnBackgroundReadHandling(socket, )
-    setBackgroundHandling()
+  RTSPServer构造，按顺序，一步都不能少
+  socket, 
+  setsoketopt(SO_REUSEADDR), 
+  bind，
+  makeNonBlocking(fcntl F_GETFL) , 
+  makeNonBlocking(fcntl F_SETFL) , 
+  listen
+  turnOnBackgroundReadHandling(incomingConnectionHandler)
 
-. Event
+  turnOnBackgroundReadHandling(socket, )
+  setBackgroundHandling()
 
-    triggerEvent 只是SET了一个标志位，然后在 doEventLoop中检查罢了。
+4. Event
 
-    upgradeTaskID = theScheduler->createEventTrigger(JPtzService::dmUpgradeTask);
-    theScheduler->triggerEvent(upgradeTaskID, this);
+  triggerEvent 只是SET了一个标志位，然后在 doEventLoop中检查罢了。
 
-. TaskScheduler执行圈圈
+  upgradeTaskID = theScheduler->createEventTrigger(JPtzService::dmUpgradeTask);
+  theScheduler->triggerEvent(upgradeTaskID, this);
 
-    TaskScheduler* theScheduler = BasicTaskScheduler::createNew();
+5. TaskScheduler执行圈圈
 
-    theScheduler->doEventLoop(&flag); 
+  TaskScheduler* theScheduler = BasicTaskScheduler::createNew();
 
-    void BasicTaskScheduler0::doEventLoop(char* watchVariable) 
-    {
-        // Repeatedly loop, handling readble sockets and timed events:
-        while (1) {
-            if (watchVariable != NULL && *watchVariable != 0)
-                break;
-            SingleStep();
-        }
-    }
+  theScheduler->doEventLoop(&flag); 
+
+  void BasicTaskScheduler0::doEventLoop(char* watchVariable) 
+  {
+      // Repeatedly loop, handling readble sockets and timed events:
+      while (1) {
+          if (watchVariable != NULL && * watchVariable != 0)
+              break;
+          SingleStep();
+      }
+  }
 
