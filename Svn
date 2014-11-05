@@ -9,6 +9,7 @@ function fn_usage()
         c   ci [files...]
         D   {?|M}
         d   diff
+        dp  diff -r 'PREV'
         q   -q status
         r   revert -R {file|dir}
         s   status
@@ -35,6 +36,9 @@ function fn_main()
         ;;
     d|diff)
         svn diff $filelist
+        ;;
+    dp)
+        svn diff -r 'PREV' $filelist
         ;;
     r)
         [ -z "$filelist" ] && echo "Error: file... must be dedicated" && exit
