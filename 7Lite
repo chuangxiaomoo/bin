@@ -543,11 +543,13 @@ function fn_genheader()
 	#ifdef __cplusplus 
 	extern "C" {
 	#endif
+
 	/* macro */
 
 	/* typedef */
 
 	/* declaration */
+
 	#ifdef __cplusplus
 	}
 	#endif
