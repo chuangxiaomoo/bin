@@ -1,0 +1,15 @@
+/* error */
+
+# error: invalid conversion from 'int' to 'OTYPE_E'
+
+  opts[i].otype |= OTYPE_CATCH_OPT;
+
+  typedef struct {
+    const char* opt;				// 命令参数识别字符
+    int         otype;			// OTYPE_E 数据类型时导致上述 |= 需要强转
+    const char* oscope;		  // 取值范围
+    void*		    addr;		    // 传过来的参数
+    int 		    oszie;		  // 数据空间大小
+  } optinfo_t;
+
+# error
