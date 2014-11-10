@@ -315,6 +315,13 @@ function fn_dugu9jian()
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
+
+function fn_avrg_high_n()
+{
+    # SELECT sum((high-yesc)/yesc) FROM day WHERE code = 2 and date > '2014-11-03'; 
+    return $?
+}
+
 function fn_main()
 {
     CURR=`fn_maxdate`
@@ -337,6 +344,7 @@ function fn_main()
     "ls                 {code|symbol}        # 日线数据 \$LIMIT"
     "ls_day_ob_rise     [sortfiled]          # --- END 涨幅排名 \$LIMIT"
     "stat_change        LIMIT:-13            # 近期涨跌统计"
+    "avrg_high_n        [high [n]]           # 5日平均以T+0"
     )
 
     tailday=`fn_maxdate`
