@@ -211,6 +211,11 @@ function fn_get_down_turnov()
 
 function fn_dugu9jian()
 {
+    if [ "${TBL}" = windbell_codes ] && [ "`cat ${filewb}`" != ${CURR} ]; then
+        echo "windbell_codes is out of day. continue to run [./up 22]"
+        exit
+    fi
+
     END=${1:-${END}}
     TBL=${TBL:-'cap'}
     NUM=${NUM:-61}        # 34太小，300104 2014-07-17 被漏掉了
@@ -633,7 +638,7 @@ function fn_main()
     "9jian                code [end [field]]    # #{NUM}日，个股成本分析"
     "6jian                code [end [field]]    # #{NUM}日，个股成本分析"
     "c144                 code... [end]         # cost:ma144 & sort by #{ASC:id}"
-    "focus                [field]               # #{list:-.soptter.focus}->zxg and 9jian"
+    "focus                [field]               # #{LIST:-.soptter.focus}->zxg and 9jian"
     "get_down_turnov      [start:curr-13] [end] # 100%下降净换手"
     "get_ma513            [end]                 # ma 5 13 34 55"
     "ana_ma513            index [end]           # 分析ma 5 13 34 55"

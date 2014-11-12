@@ -543,6 +543,8 @@ function fn_up_rzrq_codes_tbl()
 
 function fn_windbell_codes()
 {
+    filewb='/tmp/filewb'
+    echo -n ${CURR} > ${filewb}
     SCREENER 0
     echo "
     DROP TABLE IF EXISTS windbell_codes;
