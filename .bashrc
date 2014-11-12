@@ -1,13 +1,14 @@
 # . ~/bin/.bashrc
 
-alias   ASC=''
-alias   END=''
-alias   NUM=''
-alias   TBL=''
-alias  COND=''
-alias  FINA=''      # S_I_N_A conflict with Svn
-alias LIMIT=''
-alias   wup='.s; FINA=1 up 4; TBL=windbell_codes SCREENER 0'
+alias       ASC=''
+alias       END=''
+alias       NUM=''
+alias       TBL=''
+alias      COND=''
+alias      FINA=''      # S_I_N_A conflict with Svn
+alias     LIMIT=''
+alias NMC_RATIO=''
+alias       wup='.s; FINA=1 up 4; TBL=windbell_codes SCREENER 0'
 
 alias    ..='cd ..'
 alias   ...='cd ../..'
