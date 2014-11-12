@@ -1,5 +1,6 @@
 #! /bin/bash
 
+filewb='/tmp/filewb'
 p_bin='/root/bin/stk/bin/'
 selecap="SELECT code FROM cap"
 helpmsg="
