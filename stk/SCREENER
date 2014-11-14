@@ -614,7 +614,7 @@ function fn_ana_ma144()
 
 function fn_focus()
 {
-    local file=${LIST:-'.soptter.focus'}
+    local file=${YIST:-'.soptter.focus'}
 
     test -f ${file}
     xt_ret $? "${file} not exist" || return $?
@@ -638,7 +638,7 @@ function fn_main()
     "9jian                code [end [field]]    # #{NUM}日，个股成本分析"
     "6jian                code [end [field]]    # #{NUM}日，个股成本分析"
     "c144                 code... [end]         # cost:ma144 & sort by #{ASC:id}"
-    "focus                [field]               # #{LIST:-.soptter.focus}->zxg and 9jian"
+    "focus                [field]               # #{YIST:-.soptter.focus}->zxg and 9jian"
     "get_down_turnov      [start:curr-13] [end] # 100%下降净换手"
     "get_ma513            [end]                 # ma 5 13 34 55"
     "ana_ma513            index [end]           # 分析ma 5 13 34 55"
