@@ -348,7 +348,7 @@ function fn_add_codes_2_dzh2tbl()
     " > ${sql_temp}
 
     if [ -f "${1}" ]; then
-        lst=(`awk '/^[^#]/{print $1}' ${1}`)
+        lst=(`awk '/^[^#]/{print $1}' ${*} | sort -u`)
     else
         lst=(${@})
     fi
