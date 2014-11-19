@@ -218,7 +218,7 @@ function fn_dugu9jian()
 
     END=${1:-${END}}
     TBL=${TBL:-'cap'}
-    NUM=${NUM:-61}        # 34太小，300104 2014-07-17 被漏掉了
+    NUM=${NUM:-81}        # 34太小，300104 2014-07-17 被漏掉了
 
     fn_isdate ${END} 
     xt_ret $? "    Usage: #{1} must be date like 2008-08-08" || return $?
