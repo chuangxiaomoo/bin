@@ -886,7 +886,10 @@ CREATE PROCEDURE sp_dugu9jian(a_code INT(6) ZEROFILL) tag_9jian:BEGIN
     SELECT date,close,low FROM tempday WHERE id=1 INTO v_date2,v_close,v_low;
 
     -- 过滤停牌很久的个股
-    IF DATE_ADD(v_date2, INTERVAL 5 DAY) < @END THEN LEAVE tag_9jian; END IF;
+    IF DATE_ADD(v_date2, INTERVAL 5 DAY) < @END THEN 
+        # SELECT a_code, "a stop one";
+        LEAVE tag_9jian; 
+    END IF;
 
     lbl_upto_100: WHILE v_id <= @v_len DO
         SELECT volume,amount FROM tempday WHERE id=(v_id) INTO v_volume,v_amount;
