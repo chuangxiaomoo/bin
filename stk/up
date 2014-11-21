@@ -690,7 +690,7 @@ function fn_main()
     "up_tbl_ma240_34                    # 更新tbl_ma240中的ma34"
     "up_tbl_ma144_all                   # --- 更新tbl_ma144"
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
-    "html                               # convert #{YIST:-.soptter} to html"
+    "html                               # flush YIST=.soptter.xxx soptter result into html"
     "copy_table_2_table src dst         # --- 使用 1 1 做为代号"
     "tougu_reminder                     # --- 投顾大赛提醒器，5分钟延时"
     "add_yesclose                       # 为yahoo.指南针数据添加yesclose"

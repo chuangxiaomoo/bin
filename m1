@@ -407,6 +407,7 @@ function fn_fwrite()                    { cat clang_fwrite ;}
 function fn_getaddrinfo_a()             { cat clang_getaddrinfo_a ;}
 function fn_sync()                      { cat clang_sync ;}
 function fn_getopt_long()               { cat clang_getopt_long ;}
+function fn_strtol()                    { cat clang_strtol ;}
 
     local opts=(
         C调用C++链接库
@@ -429,6 +430,7 @@ function fn_getopt_long()               { cat clang_getopt_long ;}
         macro
         # ------ posix ------
         md5                     # 
+        strtol                  # hex work well
         iconv                   # utf-8 gbk wide-character handling ascii
         syslog
         error                   # 编译错误信息
