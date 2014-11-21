@@ -1,0 +1,12 @@
+/* strtol */
+
+int main(int argc, char *argv[])
+{
+    printf("%ld\n", strtol("0x10", NULL, 0));
+    return 0;
+}
+
+/* 
+|| ./a.out
+|| 16 
+*/
