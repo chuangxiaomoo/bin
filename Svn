@@ -23,7 +23,7 @@ function fn_main()
 
     case $1 in
     a)
-        find ! -name '.' -a -name '*' | xargs -I{} svn add --force {}  | cat -n
+        /usr/bin/find ! -name '.' -a -name '*' | xargs -I{} svn add --force {}  | cat -n
         ;;
     c|ci)
         svn ci $filelist
