@@ -46,5 +46,5 @@
 ## 独孤九剑       .doc/dugu9jian.md     --基于信息进化论.解N变量方程组
 ## 事件冲击       .doc/event.md
 ## 板块           .doc/block.md
-## 缠中说禅       .doc/chan.md
+## 缠中说禅       .chan/chan.md
 ## 操盘日记       .doc/diary.md
