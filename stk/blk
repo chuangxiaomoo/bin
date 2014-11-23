@@ -1,0 +1,25 @@
+#! /bin/bash
+
+function fn_main()
+{
+    CWD=${PWD}
+    BLK=/dzh2/USERDATA/block
+    maps=(
+    深成40.BLK      .blk.sc40
+    创业板指.BLK    .blk.cybz
+    深证300P.BLK    .blk.sz300p
+    军工指数.BLK    .blk.jgzs
+    融资融券.BLK    .blk.rzrq
+    )
+    local i j
+    for (( i=0,j=1; i<${#maps[@]}; i+=2,j+=2 )); do
+        test ${maps[${j}]} -nt ${maps[${i}]} && continue
+        echo ${maps[${i}]} ${maps[${j}]}
+        cat ${BLK}/${maps[${i}]} | \
+            tr -cd '[0-9SZH]' | sed 's/S[HZ]/\n/g'| \
+            tail -n+2 | sort -g > ${maps[${j}]}
+    done
+    return $?
+}
+
+fn_main
