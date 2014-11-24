@@ -635,6 +635,36 @@ function fn_count_frame()
     done
 }
 
+
+function fn_grep()
+{
+    # abc
+    # abc
+    # d 时找寻 bcd 将会失败
+    local regp=$1
+    local head=${regp:0:1}
+    if test -f ${2}; then
+        sed  "/${head}$/N;s/\n//g"  ${2}  
+    else
+        sed  "/${head}$/N;s/\n//g"  /dev/stdin 
+    fi | grep --color -n ${regp} && echo -e "bingo-> ${2:-/dev/stdin}\n"
+
+    return $?
+}
+
+function fn_rgrep()
+{
+    test -n "$1"
+    xt_ret $? "" || return $?
+
+    local f
+    for f in `find -name '*' -type f`; do
+        fn_grep $1 ${f}
+    done
+
+    return $?
+}
+
 function fn_main() 
 {
     cmdlist=(
@@ -663,6 +693,8 @@ function fn_main()
     "78cols_text      FILE  # 为大于78字符的行换行"
     "bbox_cmdlist           # all cmd link to busybox"
     "count_frame            # 计算帧"
+    "grep   regExp file     # 换行grep"
+    "rgrep  regExp          # 换行grep -r <regExp> *"
     )
 
     fn_execute "$@"
