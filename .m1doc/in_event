@@ -1,0 +1,23 @@
+# in_event
+
+  事件通知器 = 方法 + 数据结构
+
+1. 方法
+
+  ev_attach()
+  ev_detach()
+  ev_send()
+  ev_send_delay()
+
+2. DATA
+
+  array[max(PARAM_ID)] (每个成员是一个链表头指针)
+
+  init()  >>> malloc()
+  add()   >>> attach()
+  del()   >>> detach()
+
+3. 关于ev_send_delay()
+
+  可使用live555以创建一个delay_task, 如此就完美了
+

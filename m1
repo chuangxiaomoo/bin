@@ -1045,6 +1045,7 @@ function fn_java()                      { cat java ;}
 function fn_scp()                       { cat ssh ;}
 function fn_ssh()                       { cat ssh ;}
 function fn_libevent()                  { cat libevent ;}
+function fn_in_event()                  { cat in_event ;}
 function fn_live555()                   { cat live555 ;}
 function fn_time_call_engine()          { cat time_call_engine ;}
 function fn_hudson()                    { cat hudson ;}
@@ -1385,7 +1386,8 @@ function fn_main() {
         kernel
         lcov
         libevent
-        live555
+        live555                 # 
+        in_event                   # 基于进程内的事件通知
         time_call_engine
         linux
         hisi
