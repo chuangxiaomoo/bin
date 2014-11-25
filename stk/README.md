@@ -44,7 +44,7 @@
 
 ## 目标&策略&纪律 .doc/discipline.md
 ## 独孤九剑       .doc/dugu9jian.md     --基于信息进化论.解N变量方程组
-## 事件冲击       .doc/event.md         --高管增持 
 ## 板块           .doc/block.md
+## 事件冲击       .doc/event.md         --高管增持 定向增发 银行加息
 ## 缠中说禅       .chan/chan.md
 ## 操盘日记       .doc/diary.md
