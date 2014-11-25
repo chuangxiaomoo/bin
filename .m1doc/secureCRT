@@ -8,7 +8,12 @@
     更改自己目录下的.bashrc文件，新加一句：
     export LANG= zh_CN.GBK
     再检查下secureCRT下Session Option->Appearance->character:default
-    OK啦！可以输入中文啦！ 
+    OK啦!!可以输入中文啦！ 
+
+. GBK输出
+
+    会话选项 终端 外观 字符编码 （下拉到最后倒数第2个：简体中文GB2312）
+    jcli showweb -?
 
 . 6.5版本
 

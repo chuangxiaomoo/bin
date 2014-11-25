@@ -24,10 +24,11 @@ alias   .ps='PS1="[\w]\n\u-> \[\033[0m\]"'
 alias    .isoptter='vi /root/bin/stk/.soptter'   
 function .asoptter(){ [ -n "$@" ] && echo $@ | xargs -n1 >>/root/bin/stk/.soptter ;}
 
+alias     f='find'
+alias     l='ls -CF'
 alias    ls='ls --color=auto'
 alias    ll='ls -AlF'
 alias    la='ls -A'
-alias     l='ls -CF'
 alias   lsf='find `ls -A` -maxdepth 0 -type f | xargs'
 alias   lsd='find `ls -A` -maxdepth 0 -type d | xargs'
 #lias   lsf='find . -maxdepth 1 -type f | sed 's#\./##g' | xargs'
