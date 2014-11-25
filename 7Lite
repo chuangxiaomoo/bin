@@ -644,9 +644,9 @@ function fn_grep()
     local regp=$1
     local head=${regp:0:1}
     if test -f ${2}; then
-        sed  "/${head}$/N;s/\n//g"  ${2}  
+        sed  "/${head}$/N;s/\n *//g"  ${2}  
     else
-        sed  "/${head}$/N;s/\n//g"  /dev/stdin 
+        sed  "/${head}$/N;s/\n *//g"  /dev/stdin 
     fi | grep --color -n ${regp} && echo -e "bingo-> ${2:-/dev/stdin}\n"
 
     return $?
