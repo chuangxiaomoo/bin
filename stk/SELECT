@@ -315,6 +315,30 @@ function fn_dugu9jian()
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
+function fn_taox_ratio()
+{
+   #columns=date_p,date_c,off_p,off_c,turnov_p,turnov_c,avrg_p,avrg_c,ratio
+    columns=date_p,off_p,date_c,off_c,turnov_c,avrg_p,avrg_c,ratio,wchng
+    columns=${columns:-'*'}
+    columns=t.${columns//,/,t.}
+
+    echo ----- COND: $COND -----
+    function fn_get_tbl_taox_dive()
+    {
+        tbl_super_dive="
+        SELECT t.code,  ${columns}, c.nmc,c.name 
+           FROM ${tablex:-tbl_taox} as t, cap as c 
+           WHERE t.code = c.code HAVING 1 ${COND} 
+           ORDER by ${1:-ratio} ${ASC:-asc} limit ${LIMIT:-24}
+        "
+        echo "${tbl_super_dive}"
+    }
+
+    fn_get_tbl_taox_dive $1
+    mysql $mo -t kts <<< "${tbl_super_dive}" | grep -v -f .soptter.exclude
+    xt_ret ${PIPESTATUS[0]} "${FUNCNAME}" || return $?
+}
+
 
 function fn_avrg_high_n()
 {
@@ -331,8 +355,9 @@ function fn_main()
     cmdlist=(
     "dugu9jian          [sortfiled]          # nine sword"
     "6maishenjian       [sortfiled]          # #{END} to specify diff-day"
-    "app_wgt_turnov     [sortfiled]          # 追加weight到down_turnov CHAO=1则进zxg"
+    "taox_ratio         [sortfiled]          # taoxian"
     "get_open_days      [LIMIT:-13 [desc]]   # 开市日列表"
+    "app_wgt_turnov     [sortfiled]          # 追加weight到down_turnov CHAO=1则进zxg"
     "get_comma_cloumns  [tbl_name:-day]      # 逗分列名"
     "sel_tbl_sink_where [TBL:-zxg_chao513]   # chao ..."
     "sel_vol5_ratio     [sortfiled:-ratio]   # 量比排名"
