@@ -111,7 +111,7 @@ function fn_iscode()
 
 function fn_isdate()
 {
-    echo -n $1 | grep -E '^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$'
+    echo -n $1 | grep -q -E '^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$'
 }
 
 function fn_write() 

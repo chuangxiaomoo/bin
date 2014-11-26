@@ -263,6 +263,31 @@ function fn_6maishenjian()
     SELECT 6maishenjian ${2:-down}
 }
 
+function fn_taox_ratio()
+{
+    END=${1:-${END}}
+    TBL=${TBL:-'cap'}
+    NUM=${NUM:-240}        # 需要200%，所以应该比较大
+
+    fn_isdate ${END} 
+    xt_ret $? "    Usage: #{1} must be date like 2008-08-08" || return $?
+
+    echo "
+    To visit `mysql -N kts<<<"SELECT count(*) FROM ${TBL}"` codes on table $TBL...
+    "
+
+    echo "
+    SET @END='$END';
+    SET @NUM=${NUM};
+    SET @NMC_RATIO=${NMC_RATIO:-1};
+    call sp_visit_tbl('$TBL', @fn_taox_ratio);
+    " | tee -a $mps_god
+    mysql $mo -t kts <<< "source $mps_god"
+    xt_ret $? "${FUNCNAME}" || return $?
+
+    SELECT taox_ratio ${2:-ratio}
+}
+
 function fn_9jian()
 {
     test -n "${1}" && fn_iscode ${1}       
@@ -285,6 +310,44 @@ function fn_6jian()
     local code=`sed 's/^0*//g' <<< $1 | xargs printf "%06d"`
     TBL=tbl_cost6 up add_codes_2_dzh2tbl ${code}
     TBL=tbl_cost6 NUM=${NUM:-240} fn_6maishenjian ${2:-$END} ${3:-wchng}
+}
+
+function fn_tao()
+{
+    test -n "${1}" && fn_iscode ${1}       
+    xt_ret $? "invalid code[$1]" || return $?
+    fn_isdate ${2:-$END} 
+    xt_ret $? "invalid date[$2]" || return $?
+
+    local code=`sed 's/^0*//g' <<< $1 | xargs printf "%06d"`
+    TBL=tbl_tao1 up add_codes_2_dzh2tbl ${code}
+
+    TBL=tbl_tao1 NUM=${NUM:-240} fn_taox_ratio ${2:-$END} ${3:-ratio}
+}
+
+function fn_tao5()
+{
+    test -n "${1}" && fn_iscode ${1}       
+    xt_ret $? "invalid code[$1]" || return $?
+    END=${2:-$END}
+    fn_isdate ${END} 
+    xt_ret $? "invalid date[$2]" || return $?
+
+    local code=`sed 's/^0*//g' <<< $1 | xargs printf "%06d"`
+    TBL=tbl_tao1 up add_codes_2_dzh2tbl ${code}
+
+    local sql="SELECT date from day WHERE code = 900001 and date<='${END}'"
+    dates=(`mysql -N kts <<< "${sql} ORDER by date DESC limit ${LIMIT:-100}" | \
+            xargs -n5 | awk '{print $1}'`)
+
+    # echo ${dates[@]}; exit
+
+    local i=0
+    TBL=tbl_tao1 NUM=${NUM:-240} fn_taox_ratio ${dates[$i]}
+
+    for (( i=1; i<${#dates[@]}; i+=1 )); do
+        TBL=tbl_tao1 NUM=${NUM:-240} fn_taox_ratio ${dates[$i]} | grep ${code}
+    done
 }
 
 
@@ -635,10 +698,11 @@ function fn_main()
     cmdlist=(
     "dugu9jian            [end [field]]         # NUM=61 .NMC end.close analyze"
     "6maishenjian         [end [field]]         # NUM=61 min(close) sort by #{COL}"
-    "taoliratio           [end [field]]         # NUM=61 套现比例分析"
+    "taox_ratio           [end [field]]         # NUM=61 套现比例分析"
     "9jian                code [end [field]]    # #{NUM}日，个股成本分析"
     "6jian                code [end [field]]    # #{NUM}日，个股成本分析"
     "tao                  code [end [field]]    # #{NUM}日，套现比例分析"
+    "tao5                 code [end ]           # #{NUM}日，套现比例分析"
     "c144                 code... [end]         # cost:ma144 & sort by #{ASC:id}"
     "focus                [field]               # #{YIST:-.soptter.focus}->zxg and 9jian"
     "get_down_turnov      [start:curr-13] [end] # 100%下降净换手"

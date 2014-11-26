@@ -206,6 +206,25 @@ CREATE PROCEDURE sp_create_tbl_6mai() tag_tbl_6mai:BEGIN
     );
 END tag_tbl_6mai //
 
+DROP PROCEDURE IF EXISTS sp_create_tbl_taox //
+CREATE PROCEDURE sp_create_tbl_taox() tag_tbl_taox:BEGIN 
+    DROP   TABLE IF EXISTS tbl_taox;
+    CREATE TABLE tbl_taox (
+        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        date_p      date NOT NULL DEFAULT 0,
+        date_c      date NOT NULL DEFAULT 0,
+        off_p       INT  NOT NULL DEFAULT 0,
+        off_c       INT  NOT NULL DEFAULT 0,
+        turnov_p    DECIMAL(6,2) NOT NULL DEFAULT 0,    
+        turnov_c    DECIMAL(6,2) NOT NULL DEFAULT 0,    
+        avrg_p      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- previous 
+        avrg_c      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- curr avrg = sum(amount) / sum(volume)
+        ratio       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        wchng       DECIMAL(6,2) NOT NULL DEFAULT 0
+    );
+END tag_tbl_taox //
+
 -- 使用TEMPORARY时效率提升5倍
 -- ERROR 1137 (HY000): Can't reopen table: 'tempday', 因为使用了SELECT嵌套
 -- SELECT close FROM tempday WHERE date=(SELECT max(date) FROM tempday);
@@ -502,6 +521,7 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
     IF a_type = @fn_get_down_turnov THEN call sp_create_tbl_sink(); END IF;
     IF a_type = @fn_dugu9jian       THEN call sp_create_tbl_9jian();END IF;
     IF a_type = @fn_6maishenjian    THEN call sp_create_tbl_6mai(); END IF;
+    IF a_type = @fn_taox_ratio      THEN call sp_create_tbl_taox(); END IF;
     IF a_type = @fn_up_ma144_all    THEN call sp_create_ma144();    END IF;
 
     -- visit all codes
@@ -517,6 +537,7 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
             WHEN @fn_up_ma240_all      THEN call sp_get_ma240(v_code);
             WHEN @fn_up_ma240_34       THEN call sp_up_ma34(v_code);
             WHEN @fn_6maishenjian      THEN call sp_6maishenjian(v_code);
+            WHEN @fn_taox_ratio        THEN call sp_taox(v_code);
             WHEN @fn_up_ma144_all      THEN call sp_get_ma144(v_code);
             ELSE SELECT "no a_type match";
         END CASE;
@@ -917,6 +938,106 @@ CREATE PROCEDURE sp_dugu9jian(a_code INT(6) ZEROFILL) tag_9jian:BEGIN
     END WHILE lbl_upto_100;
 END tag_9jian //
 
+DROP PROCEDURE IF EXISTS sp_taox//
+CREATE PROCEDURE sp_taox(a_code INT(6) ZEROFILL) tag_taox:BEGIN
+    -- taox
+    DECLARE v_cnt100    INT DEFAULT 0; 
+    DECLARE v_id        INT DEFAULT 1; 
+    DECLARE v_off_c     INT DEFAULT 1; 
+    DECLARE v_off_p     INT DEFAULT 1; 
+
+    DECLARE v_close     DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_ratio     DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_wchng     DECIMAL(6,2) DEFAULT 0;
+
+    DECLARE v_avrg      DECIMAL(8,2) DEFAULT 0;
+    DECLARE v_avrg_c    DECIMAL(8,2) DEFAULT 0;
+    DECLARE v_avrg_p    DECIMAL(8,2) DEFAULT 0;
+
+    DECLARE v_date      DATE DEFAULT NULL;
+    DECLARE v_date_c    DATE DEFAULT NULL;
+    DECLARE v_date_p    DATE DEFAULT NULL;
+
+    DECLARE v_turnov    DECIMAL(12,2) DEFAULT 0;
+    DECLARE v_turnov_c  DECIMAL(12,2) DEFAULT 0;
+    DECLARE v_turnov_p  DECIMAL(12,2) DEFAULT 0;
+
+    DECLARE v_shares    INT DEFAULT 0;
+    DECLARE v_shares0   INT DEFAULT 0;
+    DECLARE v_volume    DECIMAL(12,2) DEFAULT 0;
+    DECLARE v_amount    DECIMAL(12,2) DEFAULT 0;
+    DECLARE v_sumvolume DECIMAL(12,2) DEFAULT 0;
+    DECLARE v_sumamount DECIMAL(12,2) DEFAULT 0;
+
+
+    call sp_create_tempday();
+    SELECT nmc/close FROM cap WHERE code=a_code LIMIT 1 INTO v_shares;
+    SET v_shares0 = v_shares * @NMC_RATIO;
+    -- 可以通过 turnover = latest(volume/shares); 来计算相应日期数 @NUM
+    SET @sqls=concat('
+        INSERT INTO tempday(code,date,yesc,open,high,low,close,volume,amount)
+        SELECT code,date,yesc,open,high,low,close,volume,amount FROM day WHERE code=', 
+        a_code, " and date<= '", @END, "' order by date DESC LIMIT ", @NUM);
+    PREPARE stmt from @sqls; EXECUTE stmt;
+
+    SELECT count(*)   FROM tempday INTO @v_len;
+    SELECT date,close FROM tempday WHERE id=1 INTO v_date,v_close;
+
+    -- 过滤停牌很久的个股
+    IF DATE_ADD(v_date, INTERVAL 5 DAY) < @END THEN 
+        SELECT a_code, "a stop one";
+        LEAVE tag_taox; 
+    END IF;
+
+    -- SELECT  v_shares0;
+
+    lbl_upto_100: WHILE v_id <= @v_len DO
+        SELECT volume,amount FROM tempday WHERE id=(v_id) INTO v_volume,v_amount;
+
+        SET v_sumvolume = v_sumvolume + v_volume;
+        SET v_sumamount = v_sumamount + v_amount;
+
+        -- SELECT  v_sumvolume,v_sumamount;
+
+        -- upto 100% turnover or 双周浮盈计算
+        IF  v_sumvolume >= v_shares0 THEN 
+            SET v_avrg = (v_sumamount/v_sumvolume);
+            SET v_turnov = 100*v_sumvolume/v_shares;
+            SET v_sumvolume = 0;
+            SET v_sumamount = 0;
+
+            IF  v_cnt100 = 0 THEN 
+                -- SELECT v_id;
+                SET v_cnt100 = 1;
+                SET v_avrg_c    = v_avrg;
+                SET v_turnov_c  = v_turnov;
+                set v_off_c     = v_id;
+                set v_date_c    = v_date;
+                SET v_wchng     = 100 * (v_close-v_avrg_c)/v_avrg_c;
+            ELSE
+                SELECT date FROM tempday WHERE id=(v_id) INTO v_date;
+                SET v_cnt100 = 2;
+                SET v_avrg_p    = v_avrg;
+                SET v_turnov_p  = v_turnov;
+                SET v_off_p     = v_id - v_off_c;
+                set v_date_p    = v_date;
+
+                SET v_ratio     = 100 * (v_avrg_c-v_avrg_p) / v_avrg_c;
+                INSERT INTO tbl_taox(code,  date_p,off_p,avrg_p,turnov_p, 
+                                            date_c,off_c,avrg_c,turnov_c,ratio,wchng)
+                         VALUES(a_code,   v_date_p,v_off_p,v_avrg_p,v_turnov_p, 
+                                          v_date_c,v_off_c,v_avrg_c,v_turnov_c,v_ratio,v_wchng);
+                LEAVE lbl_upto_100; 
+            END IF;
+
+        END IF;
+
+        SET v_id = v_id + 1;
+    END WHILE lbl_upto_100;
+
+    -- SELECT v_cnt100;
+END tag_taox //
+
 DROP PROCEDURE IF EXISTS sp_6maishenjian//
 CREATE PROCEDURE sp_6maishenjian(a_code INT(6) ZEROFILL) tag_6mai:BEGIN
     -- 6mai
@@ -1036,7 +1157,7 @@ CREATE PROCEDURE sp_up_ma34(a_code INT(6) ZEROFILL) tag_up_ma34:BEGIN
     INSERT INTO tempday(code,date,close) SELECT 
            code,date,close FROM day WHERE code=a_code and date>=@START and date<=@END;
 
-    -- via high, induct is a long-CYCLE invaste one
+    -- via high, induct is a long-cycle invaste one
     SELECT count(*)   FROM tempday INTO @v_len;
     SELECT date,close FROM tempday WHERE id=@v_len INTO v_date,v_close;
 
@@ -1070,7 +1191,7 @@ CREATE PROCEDURE sp_get_ma240(a_code INT(6) ZEROFILL) tag_get_ma240:BEGIN
     INSERT INTO tempday(code,date,close) SELECT 
            code,date,close FROM day WHERE code=a_code and date>=@START and date<=@END;
 
-    -- via high, induct is a long-CYCLE invaste one
+    -- via high, induct is a long-cycle invaste one
     SELECT count(*)   FROM tempday INTO @v_len;
     SELECT date,close FROM tempday WHERE id=@v_len INTO v_date,v_close;
 
@@ -1108,7 +1229,7 @@ CREATE PROCEDURE sp_get_ma144(a_code INT(6) ZEROFILL) tag_get_ma144:BEGIN
     INSERT INTO tempday(code,date,close) SELECT 
            code,date,close FROM day WHERE code=a_code and date>=@START and date<=@END;
 
-    -- via high, induct is a long-CYCLE invaste one
+    -- via high, induct is a long-cycle invaste one
     SELECT count(*)   FROM tempday INTO @v_len;
     SELECT date,close FROM tempday WHERE id=@v_len INTO v_date,v_close;
 
@@ -1195,10 +1316,11 @@ END tag_stat_linqi //
     SET @fn_up_ma240_all        = 9;
     SET @fn_dugu9jian           = 10;
     SET @fn_6maishenjian        = 11;
-    SET @START  = '2013-12-6';
-    SET @END    = '2014-06-06';
-    SET @CYCLE  = 240;
-    SET @NUM    = 15;
+    SET @fn_taox_ratio          = 12;
+    SET @START      = '2013-12-6';
+    SET @END        = '2014-11-26';
+    SET @NUM        = 240;
+    SET @NMC_RATIO  = 1;
     
 -- 若要计算3日，argv_n为3
 
@@ -1223,9 +1345,10 @@ END tag_stat_linqi //
 --  call sp_visit_tbl('cap', @fn_flt_13d_sink); 
 --  call sp_visit_tbl('cap', @fn_flt_n_day_change);
     
+--  call sp_stat_linqi();
 --  call sp_count_swing10();
 --  call sp_stat_turnov(2);
 --  call sp_get_down_turnov(2);
 --  call sp_visit_tbl('cap', @fn_dugu9jian);
 --  call sp_visit_tbl('cap', @fn_6maishenjian);
-    call sp_stat_linqi();
+    call sp_visit_tbl('zxg', @fn_taox_ratio);
