@@ -172,6 +172,16 @@ activate_eth5()
     fi
 }
 
+pskill()
+{
+    test -n "$1" || { echo "Usage: psgrep name" && return 1 ;}
+    head=${1:0:1}
+    body=${1:1}
+
+    # echo $head ${tail}
+    ps -ef | grep -E "[${head}]${body}\>" | awk '{print $2}' | xargs kill -9
+}
+
 .orgpath() { export PATH=$ORGPATH; }
 .monpath() { export PATH=$MONPATH; }
 
