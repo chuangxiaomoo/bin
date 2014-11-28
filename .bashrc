@@ -1,5 +1,7 @@
 # . ~/bin/.bashrc
 
+# make sure no space b4 the 2nd '
+
 alias       ASC=''
 alias       END=''
 alias       NUM=''
@@ -78,7 +80,6 @@ alias   ltmux='TERM=xterm /usr/local/bin/tmux'
 alias    tmux='TERM=xterm /usr/bin/tmux'
 alias  dialog='TERM=linux dialog'
 alias psmysql='ps -ef | grep [m]ysql'
-alias  psgrep='ps -ef | grep '
 alias   psw3m='ps -ef | grep [w]3m'
 alias  kmysql='mysql kts'
 alias   xgrep="find . -name '*' -type f | xargs grep "
@@ -172,9 +173,19 @@ activate_eth5()
     fi
 }
 
+psgrep()
+{
+    test -n "$1" || { echo "Usage: pskill name" && return 1 ;}
+    head=${1:0:1}
+    body=${1:1}
+
+    # psgrep='ps -ef | grep'
+    ps -ef | grep -E --color "[${head}]${body}"
+}
+
 pskill()
 {
-    test -n "$1" || { echo "Usage: psgrep name" && return 1 ;}
+    test -n "$1" || { echo "Usage: pskill name" && return 1 ;}
     head=${1:0:1}
     body=${1:1}
 

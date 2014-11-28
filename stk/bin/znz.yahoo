@@ -2,7 +2,7 @@
 # CREATED: 2013-10-06 05:56:37 CST
 # znz.yahoo从yahoo收集历史日线数据，这是整个股票系统的开始
 
-. `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
+. ${PWD}/'dbank' || { echo "dbank err" && exit; }
 . /etc/common.rc
 
 mkdir -p ${znzday}
@@ -21,7 +21,8 @@ function fn_maxyahoo()
     date_maxyahoo=`tail -1 ${znzday}/900001 | awk '{print $2}'`
 }
 
-function fn_gether_symbol() {
+function fn_gether_symbol() 
+{
     local code=$1
     local ur0='http://yahoo.compass.cn/stock/frames/frmHistoryDetail.php?'
     local header=${1:0:1}
@@ -85,7 +86,7 @@ function fn_gether_symbol() {
                   icode, $1, iyesc, $2, $3, $4, $5, $7/$5, $7;
         iyesc=$5
     }' | sed "/${start_date}/d" > ${znzday}/$code
-   #}' | sed '1d' > ${znzday}/$code
+    #' | sed '1d' > ${znzday}/$code
 }
 
 function fn_yahoo()
@@ -139,15 +140,29 @@ function fn_yahoo()
 
 function fn_main() 
 {
-    fn_maxyahoo
-    [ -n "${date_maxyahoo}" ]
-    xt_ret $? "date_maxyahoo is NULL" || return $?
+    # fn_maxyahoo 会修改 $yahooask, 必须再手动构建 $yahooask 
+    # 以下4行指定单个code及date区间
+    codes="002241"
 
-    # fn_maxyahoo 会修改 $yahooask, 必须在手动构建 $yahooask 之前
-    echo 300267 000690 002245 300181 > $yahooask
+    if [ -n "${codes}" ] ; then
+        fn_echo_succ "update dedicate code..."
+        echo ${codes} > $yahooask
+        endin_sps=(2013 05 21)
+        max_dbday=${endin_sps[@]}
+        max_dbday=${max_dbday// /-}
+        start_sps=($(date +'%Y %m %d' --date="${max_dbday} 365 days ago" ))
+    else
+        fn_echo_succ "update maxyahoo..."
 
-    start_sps=($(date +'%Y %m %d' --date='365 days ago' ))
-    endin_sps=($(date +'%Y %m %d'))
+        fn_maxyahoo
+        [ -n "${date_maxyahoo}" ]
+        xt_ret $? "date_maxyahoo is NULL" || return $?
+
+        start_sps=($(date +'%Y %m %d' --date='365 days ago' ))
+        endin_sps=($(date +'%Y %m %d'))
+        max_dbday=${date_maxyahoo}
+    fi
+
     start_year=${start_sps[0]}; start_month=${start_sps[1]}; start_day=${start_sps[2]}
     endin_year=${endin_sps[0]}; endin_month=${endin_sps[1]}; endin_day=${endin_sps[2]}
 
@@ -155,7 +170,7 @@ function fn_main()
 
     local i=
     for i in `cat ${yahooask}`; do
-        echo "DELETE FROM day WHERE code=$i and date <='${date_maxyahoo}';" | mysql -N kts 
+        echo "DELETE FROM day WHERE code=$i and date <='${max_dbday}';" | mysql -N kts 
         xt_ret $? "mysql" || return $?
     done
 

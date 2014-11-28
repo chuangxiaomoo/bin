@@ -12,6 +12,7 @@
 
    * To print the date of the day before yesterday:
         date --date='2 days ago' +'%F'
+        date --date='2014-11-12 2 days ago' +'%F'
 
    * To print the date of the day three months and one day hence:
         date --date='3 months 1 day'   

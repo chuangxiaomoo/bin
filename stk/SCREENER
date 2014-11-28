@@ -337,7 +337,7 @@ function fn_tao5()
     TBL=tbl_tao1 up add_codes_2_dzh2tbl ${code}
 
     local sql="SELECT date from day WHERE code = 900001 and date<='${END}'"
-    dates=(`mysql -N kts <<< "${sql} ORDER by date DESC limit ${LIMIT:-100}" | \
+    dates=(`mysql -N kts <<< "${sql} ORDER by date DESC limit ${LIMIT:-120}" | \
             xargs -n5 | awk '{print $1}'`)
 
     # echo ${dates[@]}; exit
