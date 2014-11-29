@@ -279,6 +279,7 @@ function fn_taox_ratio()
     echo "
     SET @END='$END';
     SET @NUM=${NUM};
+    SET @FORCE=${FORCE:-0};
     SET @NMC_RATIO=${NMC_RATIO:-1};
     call sp_visit_tbl('$TBL', @fn_taox_ratio);
     " | tee -a $mps_god
@@ -336,17 +337,44 @@ function fn_tao5()
     local code=`sed 's/^0*//g' <<< $1 | xargs printf "%06d"`
     TBL=tbl_tao1 up add_codes_2_dzh2tbl ${code}
 
-    local sql="SELECT date from day WHERE code = 900001 and date<='${END}'"
-    dates=(`mysql -N kts <<< "${sql} ORDER by date DESC limit ${LIMIT:-120}" | \
-            xargs -n5 | awk '{print $1}'`)
+    # count off
+    offset=`mo=-B NMC_RATIO=1.5 fn_9jian ${code} ${END} | awk /${code}/'{print $4}'`
+    offset=${offset:-100}
 
-    # echo ${dates[@]}; exit
+    if [ "${offset}" -lt 15 ] ; then        # turnover 10%   5%单位为一组
+        grp=1
+    elif [ "${offset}" -lt 30 ] ; then      # turnover 5%
+        grp=2
+    elif [ "${offset}" -lt 60 ] ; then      # turnover 2.5%
+        grp=4
+    elif [ "${offset}" -lt 100 ] ; then     # turnover 1.5%
+        grp=7
+    else                                    # turnover < 1.5%
+        grp=5
+    fi
+
+    #   grp=5                               # 强制 grp 以查看更广的ratio变化
+    let iLIMIT=offset*${grp}*4              # 默认 2时为300%，调整以查看更多
+
+    local sql="SELECT date from day WHERE code = ${code} and date<='${END}'"
+    dates=(`mysql -N kts <<< "${sql} ORDER by date DESC limit ${iLIMIT:-240}" | \
+            xargs -n${grp} | awk '{print $1}'`)
+
+    local len=${#dates[@]}
+    local idx=`expr ${len} - 1`
+    echo "    
+    off: ${offset} grp: ${grp}
+    going to list ${len} recodrs ${dates[$idx]} ~ ${dates[0]} ..."
 
     local i=0
-    TBL=tbl_tao1 NUM=${NUM:-240} fn_taox_ratio ${dates[$i]}
+    local iNUM=${NUM:-240}
+    TBL=tbl_tao1 NUM=${iNUM} fn_taox_ratio ${dates[$i]}
+    xt_ret $? "" || return $?
 
-    for (( i=1; i<${#dates[@]}; i+=1 )); do
-        TBL=tbl_tao1 NUM=${NUM:-240} fn_taox_ratio ${dates[$i]} | grep ${code}
+    for (( i=1; i<${len}; i+=1 )); do
+        FORCE=1 TBL=tbl_tao1 NUM=${iNUM} fn_taox_ratio ${dates[$i]} | \
+            grep ${code} | tee -a /dev/stderr | grep -q "so_little_taox_data"
+        [ "${?}" -eq 0 ] && { echo so_little_taox_data@${dates[$i]}; return ;}
     done
 }
 

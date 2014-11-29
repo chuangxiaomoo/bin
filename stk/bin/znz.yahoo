@@ -142,12 +142,12 @@ function fn_main()
 {
     # fn_maxyahoo 会修改 $yahooask, 必须再手动构建 $yahooask 
     # 以下4行指定单个code及date区间
-    codes="002241"
+    codes="000002"
 
     if [ -n "${codes}" ] ; then
-        fn_echo_succ "update dedicate code..."
+        fn_echo_succ "update ${codes}..."
         echo ${codes} > $yahooask
-        endin_sps=(2013 05 21)
+        endin_sps=(2011 01 07)
         max_dbday=${endin_sps[@]}
         max_dbday=${max_dbday// /-}
         start_sps=($(date +'%Y %m %d' --date="${max_dbday} 365 days ago" ))
@@ -169,15 +169,13 @@ function fn_main()
     fn_yahoo start
 
     local i=
-    for i in `cat ${yahooask}`; do
+    for i in `ls ${znzday}`; do
         echo "DELETE FROM day WHERE code=$i and date <='${max_dbday}';" | mysql -N kts 
         xt_ret $? "mysql" || return $?
+        echo "DELETE code=$i and date <='${max_dbday}' over"
     done
 
-    echo "DELETE over"
-
-    rm -f ${znzday}/900001
-
+    # rm -f ${znzday}/900001
     up load_directory
     xt_ret $? "load znzday fail" || return $?
 
