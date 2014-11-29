@@ -123,6 +123,7 @@ function fn_f2_海底捞你学不会()         { cat book_f2_海底捞你学不�
 function fn_f3_教父()                   { cat book_f3_教父 ;}
 function fn_100_周鸿祎自述()            { cat book_100_周鸿祎自述 ;}
 function fn_101_livermore()             { cat book_101_livermore ;}
+function fn_102_谈我对在校学习的看法()  { cat book_102_谈我对在校学习的看法 ;}
 function fn_200_逃不开的经济周期()      { cat book_200_逃不开的经济周期 ;}
 function fn_lunyu()                     { cat book_lunyu ;}
 function fn_shenglvqimeng()             { cat book_shenglvqimeng ;}
@@ -153,6 +154,7 @@ function fn_shenglvqimeng()             { cat book_shenglvqimeng ;}
 
         100_周鸿祎自述
         101_livermore
+        102_谈我对在校学习的看法    # 黄晓捷
 
         200_逃不开的经济周期
     )
@@ -606,6 +608,7 @@ function fn_ideas()                     { cat ideas ;}
 function fn_idealism()                  { cat idealism ;}
 function fn_sanxing三省()               { cat sanxing三省 ;}
 function fn_yufen()                     { cat yufen ;}
+function fn_rose()                      { cat rose ;}
 function fn_50_interview_faq()          { cat 50_interview_faq ;}
 function fn_traffic()                   { cat traffic ;}
 
@@ -750,6 +753,7 @@ function fn_main() {
         why
         words
         yufen
+        rose                            # 
         zhihu
         zhenhuan        # 甄嬛体
         sanxing三省
