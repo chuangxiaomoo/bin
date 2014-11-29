@@ -984,8 +984,8 @@ CREATE PROCEDURE sp_taox(a_code INT(6) ZEROFILL) tag_taox:BEGIN
     SELECT date,close FROM tempday WHERE id=1 INTO v_date,v_close;
 
     -- 过滤停牌很久的个股
-    IF DATE_ADD(v_date, INTERVAL 5 DAY) < @END THEN 
-        SELECT a_code, "a stop one";
+    IF DATE_ADD(v_date, INTERVAL 5 DAY) < @END and @FORCE <> 1 THEN 
+        SELECT a_code, @END, "a stop one";
         LEAVE tag_taox; 
     END IF;
 
@@ -1035,6 +1035,9 @@ CREATE PROCEDURE sp_taox(a_code INT(6) ZEROFILL) tag_taox:BEGIN
         SET v_id = v_id + 1;
     END WHILE lbl_upto_100;
 
+    IF v_cnt100 < 2 THEN
+        SELECT a_code, "so_little_taox_data";
+    END IF;
     -- SELECT v_cnt100;
 END tag_taox //
 
@@ -1317,6 +1320,7 @@ END tag_stat_linqi //
     SET @fn_dugu9jian           = 10;
     SET @fn_6maishenjian        = 11;
     SET @fn_taox_ratio          = 12;
+    SET @FORCE                  = 0;    -- 1时强制计算过滤停牌很久的个股
     SET @START      = '2013-12-6';
     SET @END        = '2014-11-26';
     SET @NUM        = 240;
