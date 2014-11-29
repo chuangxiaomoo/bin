@@ -2968,11 +2968,23 @@
 
 # 2014-11-27 taox及背驰 & Thanksgiving
 
-  大数据 : .template/taox.gesx.md
-  avrg_p : 上个换手周期的avrg
-  avrg_c : 当下换手周期的avrg
-  wchng  : 当下换手周期的浮盈 = 100(close-argv_c)/argv_c 
-  ratio  : 换手周期同比增长率 = 100(avrg_c-avrg_p)/avrg_p
+  大数据: .template/taox.gesx.md
+  avrg_p: 上个换手周期的avrg
+  avrg_c: 当下换手周期的avrg
+  wchng : 当下换手周期的浮盈 = 100(close-argv_c)/argv_c 
+  ratio : 换手周期同比增长率 = 100(avrg_c-avrg_p)/avrg_p
+          ratio是价格变化的加速度 
+          ratio<0时表明有人在割肉，以低于前人的价格出货，
+          ratio>0时表明有人在屯货，以更高前人的价格买入，此时其必承受相应抛压
+
+  走势  : diff(ratio)=0时盘整
+          diff(ratio)<0时下跌趋势
+          diff(ratio)>0时上涨趋势
+          diff(ratio) = 0, max(+ratio)价格之顶
+          diff(ratio) = 0, ratio = 0  价格之底
+
+  背驰  ：diff(ratio) ^ wchng
+          wchng<-10% diff(ratio)>0
 
 # 2014-11-28 趋势
 
@@ -2988,7 +3000,7 @@
   ，然后没事只能买房子，一套两套三四套，然后就发现那些国外读了n年的书的同学们
   可能就比较悲催了，回国可能一套房子也买不起。
 
-  是我们能力强么？不是的，`是因为我们赶上了好时候`，中国大发展都格局里，能力其
+  是我们能力强么？不是的，`是因为我们赶上了好时候`，中国大发展的格局里，能力其
   实是不需要的，我们自己也很悲催的发现，回老家去，甚至不如那些没考上大学的同学
   们。
 

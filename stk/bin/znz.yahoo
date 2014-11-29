@@ -141,13 +141,14 @@ function fn_yahoo()
 function fn_main() 
 {
     # fn_maxyahoo 会修改 $yahooask, 必须再手动构建 $yahooask 
-    # 以下4行指定单个code及date区间
-    codes="000002"
+    # 以下4行指定单个code及date区间 sh000001为上证
+    codes="002241"
 
     if [ -n "${codes}" ] ; then
         fn_echo_succ "update ${codes}..."
         echo ${codes} > $yahooask
-        endin_sps=(2011 01 07)
+        endin_org=(2013-04-08)
+        endin_sps=(${endin_org//-/ })
         max_dbday=${endin_sps[@]}
         max_dbday=${max_dbday// /-}
         start_sps=($(date +'%Y %m %d' --date="${max_dbday} 365 days ago" ))
