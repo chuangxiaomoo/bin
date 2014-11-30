@@ -1015,7 +1015,7 @@ CREATE PROCEDURE sp_taox(a_code INT(6) ZEROFILL) tag_taox:BEGIN
                 set v_date_c    = v_date;
                 SET v_wchng     = 100 * (v_close-v_avrg_c)/v_avrg_c;
             ELSE
-                SELECT date FROM tempday WHERE id=(v_id) INTO v_date;
+                SELECT date FROM tempday WHERE id=(v_off_c+1) INTO v_date;
                 SET v_cnt100 = 2;
                 SET v_avrg_p    = v_avrg;
                 SET v_turnov_p  = v_turnov;

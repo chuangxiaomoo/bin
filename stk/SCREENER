@@ -339,15 +339,20 @@ function fn_tao5()
 
     # count off
     offset=`mo=-B NMC_RATIO=1.5 fn_9jian ${code} ${END} | awk /${code}/'{print $4}'`
-    offset=${offset:-100}
+    if [ -z "${offset}" ]; then
+        local sql="SELECT date from day WHERE code=${code}"
+        date=`mysql -N -B kts <<< "${sql} ORDER by date ASC LIMIT 1"`
+        echo "so_little_taox_data: ${date} ~ ${END}"
+        return 1
+    fi
 
-    if [ "${offset}" -lt 15 ] ; then        # turnover 10%   5%单位为一组
+    if [ "${offset}" -lt 15 ]; then        # turnover 10%   5%单位为一组
         grp=1
-    elif [ "${offset}" -lt 30 ] ; then      # turnover 5%
+    elif [ "${offset}" -lt 30 ]; then      # turnover 5%
         grp=2
-    elif [ "${offset}" -lt 60 ] ; then      # turnover 2.5%
+    elif [ "${offset}" -lt 60 ]; then      # turnover 2.5%
         grp=4
-    elif [ "${offset}" -lt 100 ] ; then     # turnover 1.5%
+    elif [ "${offset}" -lt 100 ]; then     # turnover 1.5%
         grp=7
     else                                    # turnover < 1.5%
         grp=5
@@ -374,10 +379,12 @@ function fn_tao5()
     for (( i=1; i<${len}; i+=1 )); do
         FORCE=1 TBL=tbl_tao1 NUM=${iNUM} fn_taox_ratio ${dates[$i]} | \
             grep ${code} | tee -a /dev/stderr | grep -q "so_little_taox_data"
-        [ "${?}" -eq 0 ] && { echo so_little_taox_data@${dates[$i]}; return ;}
+        [ "${?}" -eq 0 ] && { 
+            echo so_little_taox_data, try: up day ${code} ${dates[$idx]}
+            return
+        }
     done
 }
-
 
 function fn_get_rise_turnov()
 {
