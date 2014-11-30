@@ -667,6 +667,12 @@ function fn_up_tbl_ma240_34()
     mysql $mo -t kts <<< "source $mps_god"
 }
 
+function fn_day()
+{
+    bin/znz.yahoo $@
+    xt_ret $? "Usage: fn_day code dateEND num" || return $?
+}
+
 function fn_main()
 {
     CURR=`fn_maxdate`
@@ -690,6 +696,7 @@ function fn_main()
     "up_tbl_ma240_34                    # 更新tbl_ma240中的ma34"
     "up_tbl_ma144_all                   # --- 更新tbl_ma144"
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
+    "day code dateEND {num:365}         # from znz"
     "html                               # flush YIST=.soptter.xxx soptter result into html"
     "copy_table_2_table src dst         # --- 使用 1 1 做为代号"
     "tougu_reminder                     # --- 投顾大赛提醒器，5分钟延时"

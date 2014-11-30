@@ -2969,12 +2969,14 @@
 # 2014-11-27 taox及背驰 & Thanksgiving
 
   大数据: .template/taox.gesx.md
+
   avrg_p: 上个换手周期的avrg
   avrg_c: 当下换手周期的avrg
   wchng : 当下换手周期的浮盈 = 100(close-argv_c)/argv_c 
   ratio : 换手周期同比增长率 = 100(avrg_c-avrg_p)/avrg_p
           ratio是价格变化的加速度 
           ratio<0时表明有人在割肉，以低于前人的价格出货，
+          ratio=max(-)时，上个换手周期的start，即在上一轮顶点，diff(wchng)最大
           ratio>0时表明有人在屯货，以更高前人的价格买入，此时其必承受相应抛压
 
   走势  : diff(ratio)=0时盘整

@@ -154,7 +154,7 @@ function fn_shenglvqimeng()             { cat book_shenglvqimeng ;}
 
         100_周鸿祎自述
         101_livermore
-        102_谈我对在校学习的看法    # 黄晓捷
+        102_谈我对在校学习的看法    # 黄晓捷 huangxiaojie
 
         200_逃不开的经济周期
     )

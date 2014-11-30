@@ -140,18 +140,28 @@ function fn_yahoo()
 
 function fn_main() 
 {
+    fn_iscode $1
+    xt_ret $? "<$1> not code" || return $?
+    fn_isdate ${2} 
+    xt_ret $? "<$2> must be date like 2008-08-08" || return $?
+    codes=$1
+    endin_org=($2)      
+    number=${3:-365}
+    # (2013-04-08)
     # fn_maxyahoo 会修改 $yahooask, 必须再手动构建 $yahooask 
     # 以下4行指定单个code及date区间 sh000001为上证
-    codes="002241"
+    # codes="002241"
+
+
+    xt_ret $? "" || { echo "Usage: 144 code... {END}" && exit; }
 
     if [ -n "${codes}" ] ; then
         fn_echo_succ "update ${codes}..."
         echo ${codes} > $yahooask
-        endin_org=(2013-04-08)
         endin_sps=(${endin_org//-/ })
         max_dbday=${endin_sps[@]}
         max_dbday=${max_dbday// /-}
-        start_sps=($(date +'%Y %m %d' --date="${max_dbday} 365 days ago" ))
+        start_sps=($(date +'%Y %m %d' --date="${max_dbday} ${number} days ago" ))
     else
         fn_echo_succ "update maxyahoo..."
 
