@@ -354,12 +354,12 @@ function fn_tao5()
         grp=4
     elif [ "${offset}" -lt 100 ]; then     # turnover 1.5%
         grp=7
-    else                                    # turnover < 1.5%
-        grp=5
+    else                                   # turnover < 1.5%
+        grp=9
     fi
 
     #   grp=5                               # 强制 grp 以查看更广的ratio变化
-    let iLIMIT=offset*${grp}*4              # 默认 2时为300%，调整以查看更多
+    let iLIMIT=offset*${grp}*2              # 默认 2时为300%，调整以查看更多
 
     local sql="SELECT date from day WHERE code = ${code} and date<='${END}'"
     dates=(`mysql -N kts <<< "${sql} ORDER by date DESC limit ${iLIMIT:-240}" | \
@@ -373,7 +373,7 @@ function fn_tao5()
 
     local i=0
     local iNUM=${NUM:-240}
-    TBL=tbl_tao1 NUM=${iNUM} fn_taox_ratio ${dates[$i]}
+    TBL=tbl_tao1 NUM=${iNUM} fn_taox_ratio ${dates[$i]} | grep -B3 ${code}
     xt_ret $? "" || return $?
 
     for (( i=1; i<${len}; i+=1 )); do
@@ -383,7 +383,8 @@ function fn_tao5()
             echo so_little_taox_data, try: up day ${code} ${dates[$idx]}
             return
         }
-    done
+        [ "${i}" -eq 1 ] && return      # for preview
+    done 
 }
 
 function fn_get_rise_turnov()
