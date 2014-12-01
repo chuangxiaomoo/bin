@@ -2988,6 +2988,28 @@
   背驰  ：diff(ratio) ^ wchng
           wchng<-10% diff(ratio)>0
 
+# 2014-12-01 背驰修订
+
+  | code   | date       | yesc  | open  | high  | low   | close | volume  | amount   |
+  | 002441 | 2014-09-03 | 17.51 | 17.56 | 18.00 | 17.30 | 17.95 |  367.54 |  6487.68 |
+  | 002441 | 2014-09-12 | 17.95 | 18.85 | 19.68 | 18.02 | 18.97 |  959.19 | 18073.23 |
+  | 002441 | 2014-09-15 | 18.97 | 19.00 | 20.87 | 19.00 | 20.87 | 1261.56 | 25565.04 |
+  | 002441 | 2014-09-16 | 20.87 | 20.21 | 22.80 | 20.12 | 21.67 | 1440.16 | 30818.66 |
+
+  UPDATE day SET volume = 367.54, amount = 6487.68 WHERE date = '2014-09-12' and code=002441;
+  UPDATE day SET volume = 367.54, amount = 6487.68 WHERE date = '2014-09-15' and code=002441;
+  UPDATE day SET volume = 367.54, amount = 6487.68 WHERE date = '2014-09-16' and code=002441;
+
+  UPDATE day SET volume =  959.19, amount = 18073.23 WHERE date = '2014-09-12' and code=002441;
+  UPDATE day SET volume = 1261.56, amount = 25565.04 WHERE date = '2014-09-15' and code=002441;
+  UPDATE day SET volume = 1440.16, amount = 30818.66 WHERE date = '2014-09-16' and code=002441;
+
+  由于利好消息打乱了数据结构，利用上面的数据修复，便可准确得到 2014-11-07 顶
+
+  修订版: .template/taox.zyd.md
+
+  - 2014-09-12 时 cond: code=002441 被忘记加，因此明天需要重新修复。
+
 # 2014-11-28 趋势
 
   作为昔日时代的王者，因为你做的再好再好，人们都不回来了，都不需要你了。
