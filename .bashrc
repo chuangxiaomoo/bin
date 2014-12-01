@@ -175,12 +175,13 @@ activate_eth5()
 
 psgrep()
 {
-    test -n "$1" || { echo "Usage: pskill name" && return 1 ;}
+    test -z "$1" && { echo "Usage: pskill name" && return 1 ;}
     head=${1:0:1}
     body=${1:1}
 
     # psgrep='ps -ef | grep'
-    ps -ef | grep -E --color "[${head}]${body}"
+    echo "ps -ef | /bin/grep -E --color [${head}]${body}"
+    ps -ef | /bin/grep -E --color "[${head}]${body}"
 }
 
 pskill()
