@@ -376,6 +376,7 @@ function fn_tao5()
     TBL=tbl_tao1 NUM=${iNUM} fn_taox_ratio ${dates[$i]} | grep -B3 ${code}
     xt_ret $? "" || return $?
 
+    len=20
     for (( i=1; i<${len}; i+=1 )); do
         FORCE=1 TBL=tbl_tao1 NUM=${iNUM} fn_taox_ratio ${dates[$i]} | \
             grep ${code} | tee -a /dev/stderr | grep -q "so_little_taox_data"
