@@ -33,6 +33,9 @@
   +--------+------------+------------+
   3 rows in set (0.08 sec)
 
+  # statistics if 缺席 on date
+  SELECT date, count(close) FROM day WHERE date> '2014-06-06' GROUP by date;
+
 . WHERE and HAVING
 
   # WHERE 子句中不能有函数及计算引用，但是 HAVING 可以有。

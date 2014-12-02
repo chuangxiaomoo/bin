@@ -3065,6 +3065,11 @@
 
   杀人的不是武器，是人的思维
 
+# 缺席 & 补充 & stat
+
+  SELECT date, count(close) FROM day WHERE date> '2014-06-06' GROUP by date;
+  | 2014-07-11 |          383 |
+
 # 2014-11-x oracle for ur reason
   0. keep+buy
   1. sell
