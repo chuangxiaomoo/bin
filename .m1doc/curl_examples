@@ -12,6 +12,10 @@
   (3) curl对应的命令
     curl -F "file=@normal.d.2013_01_28.tgz;" 192.168.2.45/webs/updateCfg
 
+  (4) 通过脚本发送post请求。
+    curl -d "address=192.168.2.121&size=16" "http://192.168.2.44/webs/netchkCfg" 
+
+
 二、关于POST
 
                  
