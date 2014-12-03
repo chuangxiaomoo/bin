@@ -6,11 +6,16 @@
 function fn_main()
 {
     [ -z "${*}" ] && echo Usage: bei codes... && exit 1
+    echo "
+    to visit ${#} codes,
+    taif -f /tmp/bei.md
+    "
+
     local i=
     for i in $@; do
-        echo "# $i"
-        SIZE=10 SCREENER tao5 ${i}
-    done # >& /tmp/bei.md
+        echo "# $i" | tee /dev/stderr
+        SIZE=5 SCREENER tao5 ${i}
+    done > /tmp/bei.md
     return $?
 }
 

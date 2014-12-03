@@ -349,8 +349,28 @@ function fn_days_of_10percent()
     return $?
 }
 
+
+function fn_clr_exitcode()
+{
+    echo "
+     CREATE table IF NOT EXISTS exitcode (
+     code        INT(6) ZEROFILL NOT NULL DEFAULT 0
+     );
+     truncate TABLE exitcode;
+    " | mysql kts
+    return $?
+}
+
+function fn_sql_exitsucc()
+{
+    return `mysql -N -B kts <<<"SELECT count(code) FROM exitcode"`
+}
+
 function fn_tao5()
 {
+    fn_clr_exitcode
+    xt_ret $? "" || return $?
+
     test -n "${1}" && fn_iscode ${1}       
     xt_ret $? "invalid code[$1]" || return $?
     END=${2:-$END}
@@ -379,17 +399,17 @@ function fn_tao5()
 
     local i=0
     local iNUM=${NUM:-240}
-    TBL=tbl_tao1 NUM=${iNUM} fn_taox_ratio ${dates[$i]} | grep -B3 ${code}
-    xt_ret $? "" || return $?
+    fn_clr_exitcode
 
-    for (( i=1; i<${size}; i+=1 )); do
-        FORCE=1 TBL=tbl_tao1 NUM=${iNUM} fn_taox_ratio ${dates[$i]} | \
-            grep ${code} | tee -a /dev/stderr | grep -q "so_little_taox_data"
-        [ "${?}" -eq 0 ] && { 
-            echo so_little_taox_data, try: up day ${code} ${dates[$idx]}
+    for (( i=0; i<${size}; i+=1 )); do
+        [ "${i}" -eq 0 ] && b4=3 || b4=0
+        FORCE=1 TBL=tbl_tao1 NUM=${iNUM} fn_taox_ratio ${dates[$i]} | grep -B${b4} ${code}
+        xt_ret ${PIPESTATUS[0]} "" || return $?
+
+        if ! fn_sql_exitsucc; then
+            echo "    so_little_taox_data, try: up day ${code} ${dates[$idx]}"
             return
-        }
-        # [ "${i}" -eq 1 ] && return      # for preview
+        fi
     done 
 }
 
