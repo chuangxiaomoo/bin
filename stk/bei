@@ -11,6 +11,8 @@ function fn_main()
     taif -f /tmp/bei.md
     "
 
+    mysql kts <<<"truncate table tbl_rdiff;"
+
     local i=
     for i in $@; do
         echo "# $i" | tee /dev/stderr

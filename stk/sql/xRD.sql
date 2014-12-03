@@ -223,6 +223,22 @@ CREATE PROCEDURE sp_create_tbl_taox() tag_tbl_taox:BEGIN
         ratio       DECIMAL(6,2) NOT NULL DEFAULT 0,
         wchng       DECIMAL(6,2) NOT NULL DEFAULT 0
     );
+    CREATE TABLE IF NOT EXISTS tbl_rdiff (
+        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        date_p      date NOT NULL DEFAULT 0,
+        date_c      date NOT NULL DEFAULT 0,
+        off_p       INT  NOT NULL DEFAULT 0,
+        off_c       INT  NOT NULL DEFAULT 0,
+        turnov_p    DECIMAL(6,2) NOT NULL DEFAULT 0,    
+        turnov_c    DECIMAL(6,2) NOT NULL DEFAULT 0,    
+        avrg_p      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- previous 
+        avrg_c      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- curr avrg = sum(amount) / sum(volume)
+        ratio       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        wchng       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        rdiff       DECIMAL(6,2) NOT NULL DEFAULT 0 
+    );
+    CREATE TABLE IF NOT EXISTS tbl_tao5 LIKE tbl_taox;
 END tag_tbl_taox //
 
 -- 使用TEMPORARY时效率提升5倍
@@ -999,7 +1015,7 @@ CREATE PROCEDURE sp_taox(a_code INT(6) ZEROFILL) tag_taox:BEGIN
 
         -- SELECT  v_sumvolume,v_sumamount;
 
-        -- upto 100% turnover or 双周浮盈计算
+        -- upto 100% turnover
         IF  v_sumvolume >= v_shares0 THEN 
             SET v_avrg = (v_sumamount/v_sumvolume);
             SET v_turnov = 100*v_sumvolume/v_shares;
@@ -1027,7 +1043,12 @@ CREATE PROCEDURE sp_taox(a_code INT(6) ZEROFILL) tag_taox:BEGIN
                                             date_c,off_c,avrg_c,turnov_c,ratio,wchng)
                          VALUES(a_code,   v_date_p,v_off_p,v_avrg_p,v_turnov_p, 
                                           v_date_c,v_off_c,v_avrg_c,v_turnov_c,v_ratio,v_wchng);
-                LEAVE lbl_upto_100; 
+
+                INSERT INTO tbl_tao5(code,  date_p,off_p,avrg_p,turnov_p, 
+                                            date_c,off_c,avrg_c,turnov_c,ratio,wchng)
+                         VALUES(a_code,   v_date_p,v_off_p,v_avrg_p,v_turnov_p, 
+                                          v_date_c,v_off_c,v_avrg_c,v_turnov_c,v_ratio,v_wchng);
+                LEAVE lbl_upto_100;
             END IF;
 
         END IF;

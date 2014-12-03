@@ -277,6 +277,7 @@ function fn_taox_ratio()
     To visit `mysql -N kts<<<"SELECT count(*) FROM ${TBL}"` codes on table $TBL...
     "
 
+    head -n -5 $mps_org > $mps_god
     echo "
     SET @END='$END';
     SET @NUM=${NUM};
@@ -357,6 +358,7 @@ function fn_clr_exitcode()
      code        INT(6) ZEROFILL NOT NULL DEFAULT 0
      );
      truncate TABLE exitcode;
+     truncate TABLE tbl_tao5;
     " | mysql kts
     return $?
 }
@@ -392,15 +394,15 @@ function fn_tao5()
     local size=${#dates[@]}
     let   idx=${size}-1
           size=${SIZE:-${size}}
+    local iNUM=${NUM:-240}
 
     echo "
-    size: ${idx}+1 nmemb: ${nmemb}
+    size: ${idx}+1 nmemb: ${nmemb} iNUM:${iNUM}
     going to list ${size} recodrs ${dates[$idx]} ~ ${dates[0]} ..."
 
-    local i=0
-    local iNUM=${NUM:-240}
     fn_clr_exitcode
 
+    local i=0
     for (( i=0; i<${size}; i+=1 )); do
         [ "${i}" -eq 0 ] && b4=3 || b4=0
         FORCE=1 TBL=tbl_tao1 NUM=${iNUM} fn_taox_ratio ${dates[$i]} | grep -B${b4} ${code}
@@ -411,6 +413,16 @@ function fn_tao5()
             return
         fi
     done 
+
+    # truncate table tbl_rdiff;
+    col='code,date_p,date_c,off_p,off_c,turnov_p,turnov_c'
+    col="${col},avrg_p,avrg_c,ratio,wchng"
+    colA="A.${col//,/,A.}"
+    echo "
+    INSERT INTO tbl_rdiff(${col},rdiff)
+    SELECT ${colA},(A.ratio-B.ratio) as rdiff FROM tbl_tao5 A 
+    INNER JOIN tbl_tao5 B on(A.id<B.id) GROUP BY A.id;
+    " | mysql -N kts
 }
 
 function fn_get_rise_turnov()
