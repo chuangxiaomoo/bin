@@ -2986,7 +2986,12 @@
           diff(ratio) = 0, ratio = 0  价格之底
 
   背驰  ：diff(ratio) ^ wchng
-          wchng<-10% diff(ratio)>0
+          wchng<0% && diff(ratio)>0
+
+  买1   ：ratio<0 wchng<-10% && diff(ratio)>0
+  买2   ：ratio=0 wchng<-10% && diff(ratio)>0
+          做空头，不要卖出你没有的；
+          做多头，不要买进你卖不掉的。
 
 # 2014-12-01 背驰修订
 
@@ -3069,6 +3074,10 @@
 
   SELECT date, count(close) FROM day WHERE date> '2014-06-06' GROUP by date;
   | 2014-07-11 |          383 |
+
+
+300347
+300058
 
 # 2014-11-x oracle for ur reason
   0. keep+buy
