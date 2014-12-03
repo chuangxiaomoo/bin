@@ -216,7 +216,7 @@ function fn_export()                    { cat bash_export ;}
         kill_trap
         tcpip                           # netcat nc
         readline                        # shortcut 快捷键 -- putty下最好用
-        redirection
+        redirection                     # stdout stderr
         string
         array
         tmo_getopts
@@ -1119,7 +1119,7 @@ function fn_variable()                  { cat sql_variable ;}
         insert              # 
         update
         select
-        limit               # head -n
+        limit               # 取最后10条记录：tail & head -n
         nest_select         # 这个哥们的blog很清晰
         show
         load
