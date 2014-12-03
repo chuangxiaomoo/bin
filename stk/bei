@@ -1,0 +1,17 @@
+#! /bin/bash
+
+. `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
+. /etc/common.rc
+
+function fn_main()
+{
+    [ -z "${*}" ] && echo Usage: bei codes... && exit 1
+    local i=
+    for i in $@; do
+        echo "# $i"
+        SIZE=10 SCREENER tao5 ${i}
+    done # >& /tmp/bei.md
+    return $?
+}
+
+fn_main $@ 

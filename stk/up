@@ -474,7 +474,8 @@ function fn_sel_day_into_znz_dir()
 function fn_trs_min_2_day()
 {
     # 指南针数据是经过除权的数据，每次使用znz后要记住除权时间.
-    # [ -z "$1" ] && echo "Usage: $FUNCNAME date" && exit
+
+    [ -z "$1" ] && echo "Usage: $FUNCNAME date" && exit
     DATE=2013-12-12
 
     # SELECT code,date,yesc,open,high,low,close,volume,amount
@@ -696,7 +697,6 @@ function fn_main()
     "up_tbl_ma240_34                    # 更新tbl_ma240中的ma34"
     "up_tbl_ma144_all                   # --- 更新tbl_ma144"
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
-    "day code dateEND {num:365}         # from znz"
     "html                               # flush YIST=.soptter.xxx soptter result into html"
     "copy_table_2_table src dst         # --- 使用 1 1 做为代号"
     "tougu_reminder                     # --- 投顾大赛提醒器，5分钟延时"
@@ -706,6 +706,7 @@ function fn_main()
     "sel_day_into_znz_dir               # 导出日线"
     "trs_min_2_day                      # 最后一笔分线转日线"
     "windbell_codes                     # 一天更新一次"
+    "day code dateEND {num:365}         # from znz"
     )
 
     # 存储过程函数文件的最后5行都是注释
