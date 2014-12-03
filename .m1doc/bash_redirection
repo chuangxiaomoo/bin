@@ -1,46 +1,72 @@
-#! /bin/bash
+# /bin/bash
 
-    REDIRECTION
-        File descriptor 5 is held open often, always we use FD start from 6 
-        File descriptor in BASH is like a pointer var as FILE *fp, FILE handler
-        File descriptor inherit from parenet
+1. Redirecting Standard Output and Standard Error
 
-        EXAMPLE
-            exec 6>&1                       # FILE *fp = STDOUT;
-            exec 1> $LOGFILE
-            echo '----start of log----'
-            date
-            echo '----end   of log----'
-            exec 1>&6 6>&-
-        
-        REDIRECT-STDOUT
-            [:]> FILE     truncate FILE len to 0
-              &> FILE     also >& FILE, STDOUT and STDERR both redirect to FILE
+  This  construct  allows both the standard output (file descriptor 1) and the 
+  standard error output (file descriptor 2) to be redirected to the file whose 
+  name is the
+  expansion of word.
 
-        REDIRECT-STDIN
-            cat <FILE
-            cat <<-FILE
+  There are two formats for redirecting standard output and standard error:
 
-            [dmtsai@linux ~]$ find /home -name testing > list 2> list  <==错误写法
-            [dmtsai@linux ~]$ find /home -name testing > list 2>&1     <==正确写法
-            FILE
+        &>word    # 与&>>word一致
+  and
+        >&word
 
-        OPEN
-            exec [n]< FILE      read, U can't write
-            exec [n]> FILE      write, U can't read 
-            exec [n]>>FILE      append, U can't read 
-            exec [n]<> FILE     read/write, no need close twice except /dev/tcp
-            exec {logfd}>g.log  write, var logfd will be a fd >= 10
-        
-        CLOSE
-            exec [n]<&-         close FD ___input and output___
-            exec [n]>&-         close FD ___input and output___
-            exec [0]<&-         close STDIN
-            exec [1]>&-         close STDOUT
+  Of the two forms, the first is preferred.  This is semantically equivalent to
 
-        FD-OPERATE
-            open(file, O_RDWR)        exec fd<> FILe
-            read(fd, len)             read -n len <& fd
-            write(fd)                 echo -n "Hello world!" >& fd
-            close(fd)                 exec fd>&-
-                                      exec fd<&-
+        >word 2>&1
+        find /home -name testing > list 2> list  <==错误写法
+        find /home -name testing > list 2>&1     <==正确写法
+
+
+2. Appending Standard Output and Standard Error
+
+  This construct allows both the standard output (file descriptor 1) and the 
+  standard error output (file descriptor 2) to be appended to the file  whose  
+  name is the expansion of word.
+
+  The format for appending standard output and standard error is:
+
+        &>>word
+
+  This is semantically equivalent to
+
+        >>word 2>&1
+
+
+3. OPEN
+
+  File descriptor 5 is held open often, always we use FD start from 6 
+  File descriptor in BASH is like a pointer var as FILE * fp, FILE handler
+  File descriptor inherit from parenet
+
+  EXAMPLE
+    exec 6>&1                       # FILE * fp = STDOUT;
+    exec 1> $LOGFILE
+    echo '----start of log----'
+    date
+    echo '----end   of log----'
+    exec 1>&6 6>&-
+
+    exec [n]< FILE      read, U can't write
+    exec [n]> FILE      write, U can't read 
+    exec [n]>>FILE      append, U can't read 
+    exec [n]<> FILE     read/write, no need close twice except /dev/tcp
+    exec {logfd}>g.log  write, var logfd will be a fd >= 10
+
+4. CLOSE
+
+
+    exec [n]<&-         close FD ___input and output___
+    exec [n]>&-         close FD ___input and output___
+    exec [0]<&-         close STDIN
+    exec [1]>&-         close STDOUT
+
+5. FD-OPERATE
+
+  open(file, O_RDWR)        exec fd<> FILe
+  read(fd, len)             read -n len <& fd
+  write(fd)                 echo -n "Hello world!" >& fd
+  close(fd)                 exec fd>&-
+                            exec fd<&-
