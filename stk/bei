@@ -16,7 +16,7 @@ function fn_main()
     local i=
     for i in $@; do
         echo "# $i" | tee /dev/stderr
-        SIZE=5 SCREENER tao5 ${i}
+        ZIZE=5 SCREENER tao5 ${i}
     done > /tmp/bei.md
     return $?
 }

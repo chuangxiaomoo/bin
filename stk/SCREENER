@@ -386,14 +386,14 @@ function fn_tao5()
     xt_ret $? "" || return $?
 
     # nmemb=5           # 强制 nmemb 以改变ratio粒度
-      SIZE=${SIZE:-10}  # 默认 2时为300%，调整以查看更多
+      ZIZE=${ZIZE:-10}  # 默认 2时为300%，调整以查看更多
 
     local sql="SELECT date from day WHERE code = ${code} and date<='${END}'"
     dates=(`mysql -N kts <<< "${sql} ORDER by date DESC" | xargs -n${nmemb} | awk '{print $1}'`)
 
     local size=${#dates[@]}
     let   idx=${size}-1
-          size=${SIZE:-${size}}
+          size=${ZIZE:-${size}}
     local iNUM=${NUM:-240}
 
     echo "
