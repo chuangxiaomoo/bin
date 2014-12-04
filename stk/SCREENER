@@ -266,11 +266,11 @@ function fn_6maishenjian()
 
 function fn_taox_ratio()
 {
-    END=${1:-${END}}
+    iEND=${1:-${END}}
     TBL=${TBL:-'cap'}
     NUM=${NUM:-240}        # 需要200%，所以应该比较大
 
-    fn_isdate ${END} 
+    fn_isdate ${iEND} 
     xt_ret $? "    Usage: #{1} must be date like 2008-08-08" || return $?
 
     # echo "
@@ -279,7 +279,7 @@ function fn_taox_ratio()
 
     head -n -5 $mps_org > $mps_god
     echo "
-    SET @END='$END';
+    SET @END='$iEND';
     SET @NUM=${NUM};
     SET @FORCE=${FORCE:-0};
     SET @NMC_RATIO=${NMC_RATIO:-1};
@@ -352,14 +352,6 @@ function fn_nmemb_of_10percent()
     SELECT TRUNCATE(${percent:-10}/(@sum_vol/shares), 0) FROM cap WHERE code = ${code};
     " | mysql -N -B kts`
 
-    # count off
-    # offset=`mo=-B NMC_RATIO=1.5 fn_9jian ${code} ${END} | awk /${code}/'{print $4}'`
-    # if [ -z "${offset}" ]; then
-    #     local sql="SELECT date from day WHERE code=${code}"
-    #     date=`mysql -N -B kts <<< "${sql} ORDER by date ASC LIMIT 1"`
-    #     echo "so_little_taox_data: ${date} ~ ${END}"
-    #     return 1
-    # fi
     return $?
 }
 
@@ -385,7 +377,7 @@ function fn_tao5()
 {
     test -n "${1}" && fn_iscode ${1}       
     xt_ret $? "invalid code[$1]" || return $?
-    END=${2:-$END}
+    local END=${2:-$END}
     fn_isdate ${END} 
     xt_ret $? "invalid date[$2]" || return $?
 
@@ -408,7 +400,8 @@ function fn_tao5()
 
     echo "
     size: ${idx}+1 nmemb: ${nmemb} iNUM:${iNUM}
-    going to list ${size} recodrs ${dates[$idx]} ~ ${dates[0]} ..."
+    going to list ${size} recodrs ${dates[$idx]} ~ ${dates[0]} ...
+    "
 
     fn_clr_exitcode
     xt_ret $? "try create tbl_tao5: SCREENER tao 2" || return $?
@@ -420,13 +413,13 @@ function fn_tao5()
         xt_ret ${PIPESTATUS[0]} "" || return $?
 
         if ! fn_sql_exitsucc; then
-            echo "    so_little_taox_data, try: up day ${code} ${dates[$idx]}"
-            RETCODE=1
+            fn_echo_warn "    so_little_data[$i ${dates[$i]}], try: up day ${code} ${dates[$idx]}\n"
+            local RETCODE=1
             break
         fi
-    done 
+    done
 
-    [ "fn_bei" = ${FUNCNAME[1]} ] || \
+    [ "fn_bei" = "${call}" ] || \
     SELECT tao5
     xt_ret $? "" || return $?
 
@@ -462,8 +455,8 @@ function fn_bei()
     local i=
     for i in ${lst[@]}; do
         echo "# $i" # | tee /dev/stderr
-        ZIZE=${ZIZE:-5} fn_tao5 ${i}
-        xt_ret $? "" || break
+       #ZIZE=${ZIZE:-5} call=fn_bei SCREENER tao5 ${i}
+        ZIZE=${ZIZE:-5} call=fn_bei fn_tao5 ${i}
     done
 
     SELECT rdiff
