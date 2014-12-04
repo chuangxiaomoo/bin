@@ -426,6 +426,34 @@ function fn_tao5()
     " | mysql -N kts
 }
 
+function fn_bei()
+{
+    [ -z "$1" ] && echo "Usage: bei {file|code...}" && exit 1
+
+    if [ -f "${1}" ]; then
+        lst=(`awk '/^[^#]/{print $1}' ${*} | sort -u`)
+    else
+        lst=(${@})
+    fi
+
+    echo "
+    to visit ${#lst[@]} codes,
+    taif -f /tmp/bei.md
+    "
+
+    mysql kts <<<"truncate table tbl_rdiff;"
+    xt_ret $? "try create tbl_rdiff: SCREENER tao 2" || return $?
+
+    local i=
+    for i in ${lst[@]}; do
+        echo "# $i" | tee /dev/stderr
+        ZIZE=${ZIZE:-5} fn_tao5 ${i}
+    done > /tmp/bei.md
+
+    SELECT rdiff
+    return $?
+}
+
 function fn_get_rise_turnov()
 {
     DOWNSLOPE=0
@@ -773,11 +801,12 @@ function fn_main()
     cmdlist=(
     "dugu9jian            [end [field]]         # NUM=61 .NMC end.close analyze"
     "6maishenjian         [end [field]]         # NUM=61 min(close) sort by #{COL}"
-    "taox_ratio           [end [field]]         # NUM=61 套现比例分析"
-    "tao                  code [end [field]]    # #{NUM}日，套现比例分析"
+    "taox_ratio           [end [field]]         # TBL套现比例分析"
+    "tao                  code [end [field]]    # #{nmemb}"
     "c144                 code... [end]         # cost:ma144 & sort by #{ASC:id}"
     "focus                [field]               # #{YIST:-.soptter.focus}->zxg and 9jian"
-    "tao5                 code [end ]           # #{nmemb}，套现比例分析"
+    "tao5                 code [end]            # #{nmemb} #{ZIZE}"
+    "bei                  {code...|file}        # #{nmemb} #{ZIZE}"
     "9jian                code [end [field]]    # #{NUM}日，个股成本分析"
     "6jian                code [end [field]]    # #{NUM}日，个股成本分析"
     "get_down_turnov      [start:curr-13] [end] # 100%下降净换手"
