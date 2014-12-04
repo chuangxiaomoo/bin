@@ -9,6 +9,10 @@
 > 前言
 
 ## 王大爷的金融   .doc/wanghaibin.md
+## 橡胶的混沌时段 .doc/wang_oak.md
+## 交易的哲学体系 .doc/wang_trade.md
+## 交易的哲学2    .doc/wang_trade2.md
+
 ## 量子力学       .doc/quantum_meCHANics.md
 ## 行为心理学     .doc/behaviorism.md
 ## 想看的书       .doc/books.md
