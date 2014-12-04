@@ -335,10 +335,56 @@ function fn_taox_ratio()
     }
 
     fn_get_tbl_taox_dive $1
-    mysql $mo -t kts <<< "${tbl_super_dive}" | grep -v -f .soptter.exclude
+    mysql $mo -t kts <<< "${tbl_super_dive}"
     xt_ret ${PIPESTATUS[0]} "${FUNCNAME}" || return $?
 }
 
+function fn_tao5()
+{
+   #columns=date_p,date_c,off_p,off_c,turnov_p,turnov_c,avrg_p,avrg_c,ratio
+    columns=date_p,off_p,date_c,off_c,turnov_c,avrg_p,avrg_c,ratio,wchng
+    columns=${columns:-'*'}
+    columns=t.${columns//,/,t.}
+
+    echo ----- COND: $COND -----
+    function fn_get_tbl_tao5_dive()
+    {
+        tbl_super_dive="
+        SELECT t.code, ${columns}, c.nmc,c.name 
+           FROM ${tablex:-tbl_tao5} as t, cap as c 
+           WHERE t.code = c.code HAVING 1 ${COND} limit ${LIMIT:-24}
+        "
+        echo "${tbl_super_dive}"
+    }
+
+    fn_get_tbl_tao5_dive $1
+    mysql $mo -t kts <<< "${tbl_super_dive}"
+    xt_ret ${PIPESTATUS[0]} "${FUNCNAME}" || return $?
+}
+
+function fn_rdiff()
+{
+   #columns=date_p,date_c,off_p,off_c,turnov_p,turnov_c,avrg_p,avrg_c,ratio
+    columns=date_p,off_p,date_c,off_c,turnov_c,avrg_p,avrg_c,ratio,wchng,rdiff
+    columns=${columns:-'*'}
+    columns=t.${columns//,/,t.}
+
+    echo ----- COND: $COND -----
+    function fn_get_tbl_rdiff_dive()
+    {
+        tbl_super_dive="
+        SELECT t.code, ${columns}, c.nmc, c.name
+           FROM ${tablex:-tbl_rdiff} as t, cap as c 
+           WHERE t.code = c.code HAVING 1 ${COND} limit ${LIMIT:-24}
+        "
+        echo "${tbl_super_dive}"
+    }
+
+    fn_get_tbl_rdiff_dive $1
+    mysql $mo -t kts <<< "${tbl_super_dive}" | \
+        sed -e '1,3s/----+$/\+/g' -e '$s/----+$/\+/g' -e '2s/    |$/|/g'
+    xt_ret ${PIPESTATUS[0]} "${FUNCNAME}" || return $?
+}
 
 function fn_avrg_high_n()
 {
@@ -370,6 +416,8 @@ function fn_main()
     "ls_day_ob_rise     [sortfiled]          # --- END 涨幅排名 \$LIMIT"
     "stat_change        LIMIT:-13            # 近期涨跌统计"
     "avrg_high_n        [high [n]]           # 5日平均以T+0"
+    "tao5                                    # "
+    "rdiff                                   # tbl_rdiff"
     )
 
     tailday=`fn_maxdate`

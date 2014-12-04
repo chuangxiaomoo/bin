@@ -413,7 +413,9 @@ function fn_tao5()
         fi
     done 
 
-    # truncate table tbl_rdiff;
+    SELECT tao5
+    xt_ret $? "" || return $?
+
     col='code,date_p,date_c,off_p,off_c,turnov_p,turnov_c'
     col="${col},avrg_p,avrg_c,ratio,wchng"
     colA="A.${col//,/,A.}"
