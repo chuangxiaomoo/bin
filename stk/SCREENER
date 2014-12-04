@@ -392,7 +392,7 @@ function fn_tao5()
     local size=${#dates[@]}
     let   idx=${size}-1
           size=${ZIZE:-${size}}
-    local iNUM=${NUM:-240}
+    local iNUM=${NUM:-300}
 
     echo "
     size: ${idx}+1 nmemb: ${nmemb} iNUM:${iNUM}
