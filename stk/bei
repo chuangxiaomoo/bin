@@ -12,6 +12,7 @@ function fn_main()
     "
 
     mysql kts <<<"truncate table tbl_rdiff;"
+    xt_ret $? "try create tbl_rdiff: SCREENER tao 2" || return $?
 
     local i=
     for i in $@; do

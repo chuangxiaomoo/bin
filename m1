@@ -1105,6 +1105,7 @@ function fn_cp()                        { cat sql_cp ;}
 function fn_where_in()                  { cat sql_where_in ;}
 function fn_limit()                     { cat sql_limit ;}
 function fn_variable()                  { cat sql_variable ;}
+function fn_truncate()                  { cat sql_truncate ;}
     local opts=(
         kts
         min
@@ -1138,6 +1139,7 @@ function fn_variable()                  { cat sql_variable ;}
         operator
         optimize            # 优化
         order
+        truncate            # 
         array
         tbl_create          # 以表为操作
         tbl_temp            # 临时表 内存表(HEAP) 

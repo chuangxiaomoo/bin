@@ -1,0 +1,17 @@
+# truncate
+
+1. MySQL: IF table exists, truncate and insert ELSE create
+
+    # 
+
+    create table <tablename> if not exists . . .;
+
+    truncate table <tablename>;
+
+    insert into <tablename>(cols)
+        select blah blahblah . . .;
+
+2. TRUNCATE TABLE table1 
+
+    # 不可与 IF EXIST 联合使用
+
