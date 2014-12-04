@@ -9,7 +9,7 @@ alias       TBL=''
 alias      COND=''
 alias      FINA=''      # S_I_N_A conflict with Svn
 alias      YIST=''
-alias      SIZE=''
+alias      ZIZE=''
 alias     LIMIT=''
 alias NMC_RATIO=''
 alias       wup='.s; FINA=1 up 4; TBL=windbell_codes SCREENER 0'
