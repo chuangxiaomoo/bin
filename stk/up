@@ -706,7 +706,7 @@ function fn_main()
     "sel_day_into_znz_dir               # 导出日线"
     "trs_min_2_day                      # 最后一笔分线转日线"
     "windbell_codes                     # 一天更新一次"
-    "day code dateEND {num:365}         # from znz"
+    "day code dateEND {num:365}         # DL day data from znz"
     )
 
     # 存储过程函数文件的最后5行都是注释

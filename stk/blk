@@ -10,6 +10,7 @@ function fn_main()
     深证300P.BLK    .blk.sz300p
     军工指数.BLK    .blk.jgzs
     融资融券.BLK    .blk.rzrq
+    券商.BLK        .blk.qs
     )
     local i j
     for (( i=0,j=1; i<${#maps[@]}; i+=2,j+=2 )); do
