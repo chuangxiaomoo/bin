@@ -2,14 +2,12 @@
 
 1. MySQL: IF table exists, truncate and insert ELSE create
 
-    # 
-
-    create table <tablename> if not exists . . .;
-
-    truncate table <tablename>;
-
-    insert into <tablename>(cols)
-        select blah blahblah . . .;
+    CREATE TABLE IF NOT EXISTS ${TBL} (
+        id   INT PRIMARY key AUTO_INCREMENT NOT NULL,
+        code INT(6) ZEROFILL NOT NULL DEFAULT 0
+    );
+    TRUNCATE TABLE ${TBL};
+    INSERT INTO ${TBL}(code) VALUES(${1});
 
 2. TRUNCATE TABLE table1 
 

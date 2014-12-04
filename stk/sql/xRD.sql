@@ -216,8 +216,8 @@ CREATE PROCEDURE sp_create_tbl_taox() tag_tbl_taox:BEGIN
         date_c      date NOT NULL DEFAULT 0,
         off_p       INT  NOT NULL DEFAULT 0,
         off_c       INT  NOT NULL DEFAULT 0,
-        turnov_p    DECIMAL(6,2) NOT NULL DEFAULT 0,    
-        turnov_c    DECIMAL(6,2) NOT NULL DEFAULT 0,    
+        tnov_p    DECIMAL(6,2) NOT NULL DEFAULT 0,    
+        tnov_c    DECIMAL(6,2) NOT NULL DEFAULT 0,    
         avrg_p      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- previous 
         avrg_c      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- curr avrg = sum(amount) / sum(volume)
         ratio       DECIMAL(6,2) NOT NULL DEFAULT 0,
@@ -230,8 +230,8 @@ CREATE PROCEDURE sp_create_tbl_taox() tag_tbl_taox:BEGIN
         date_c      date NOT NULL DEFAULT 0,
         off_p       INT  NOT NULL DEFAULT 0,
         off_c       INT  NOT NULL DEFAULT 0,
-        turnov_p    DECIMAL(6,2) NOT NULL DEFAULT 0,    
-        turnov_c    DECIMAL(6,2) NOT NULL DEFAULT 0,    
+        tnov_p    DECIMAL(6,2) NOT NULL DEFAULT 0,    
+        tnov_c    DECIMAL(6,2) NOT NULL DEFAULT 0,    
         avrg_p      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- previous 
         avrg_c      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- curr avrg = sum(amount) / sum(volume)
         ratio       DECIMAL(6,2) NOT NULL DEFAULT 0,
@@ -975,8 +975,8 @@ CREATE PROCEDURE sp_taox(a_code INT(6) ZEROFILL) tag_taox:BEGIN
     DECLARE v_date_p    DATE DEFAULT NULL;
 
     DECLARE v_turnov    DECIMAL(12,2) DEFAULT 0;
-    DECLARE v_turnov_c  DECIMAL(12,2) DEFAULT 0;
-    DECLARE v_turnov_p  DECIMAL(12,2) DEFAULT 0;
+    DECLARE v_tnov_c  DECIMAL(12,2) DEFAULT 0;
+    DECLARE v_tnov_p  DECIMAL(12,2) DEFAULT 0;
 
     DECLARE v_shares    INT DEFAULT 0;
     DECLARE v_shares0   INT DEFAULT 0;
@@ -1026,7 +1026,7 @@ CREATE PROCEDURE sp_taox(a_code INT(6) ZEROFILL) tag_taox:BEGIN
                 -- SELECT v_id;
                 SET v_cnt100 = 1;
                 SET v_avrg_c    = v_avrg;
-                SET v_turnov_c  = v_turnov;
+                SET v_tnov_c  = v_turnov;
                 set v_off_c     = v_id;
                 set v_date_c    = v_date;
                 SET v_wchng     = 100 * (v_close-v_avrg_c)/v_avrg_c;
@@ -1034,20 +1034,20 @@ CREATE PROCEDURE sp_taox(a_code INT(6) ZEROFILL) tag_taox:BEGIN
                 SELECT date FROM tempday WHERE id=(v_off_c+1) INTO v_date;
                 SET v_cnt100 = 2;
                 SET v_avrg_p    = v_avrg;
-                SET v_turnov_p  = v_turnov;
+                SET v_tnov_p  = v_turnov;
                 SET v_off_p     = v_id - v_off_c;
                 set v_date_p    = v_date;
 
                 SET v_ratio     = 100 * (v_avrg_c-v_avrg_p) / v_avrg_c;
-                INSERT INTO tbl_taox(code,  date_p,off_p,avrg_p,turnov_p, 
-                                            date_c,off_c,avrg_c,turnov_c,ratio,wchng)
-                         VALUES(a_code,   v_date_p,v_off_p,v_avrg_p,v_turnov_p, 
-                                          v_date_c,v_off_c,v_avrg_c,v_turnov_c,v_ratio,v_wchng);
+                INSERT INTO tbl_taox(code,  date_p,off_p,avrg_p,tnov_p, 
+                                            date_c,off_c,avrg_c,tnov_c,ratio,wchng)
+                         VALUES(a_code,   v_date_p,v_off_p,v_avrg_p,v_tnov_p, 
+                                          v_date_c,v_off_c,v_avrg_c,v_tnov_c,v_ratio,v_wchng);
 
-                INSERT INTO tbl_tao5(code,  date_p,off_p,avrg_p,turnov_p, 
-                                            date_c,off_c,avrg_c,turnov_c,ratio,wchng)
-                         VALUES(a_code,   v_date_p,v_off_p,v_avrg_p,v_turnov_p, 
-                                          v_date_c,v_off_c,v_avrg_c,v_turnov_c,v_ratio,v_wchng);
+                INSERT INTO tbl_tao5(code,  date_p,off_p,avrg_p,tnov_p, 
+                                            date_c,off_c,avrg_c,tnov_c,ratio,wchng)
+                         VALUES(a_code,   v_date_p,v_off_p,v_avrg_p,v_tnov_p, 
+                                          v_date_c,v_off_c,v_avrg_c,v_tnov_c,v_ratio,v_wchng);
                 LEAVE lbl_upto_100;
             END IF;
 
