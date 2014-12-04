@@ -316,6 +316,20 @@ function fn_6jian()
     TBL=tbl_cost6 NUM=${NUM:-240} fn_6maishenjian ${2:-$END} ${3:-wchng}
 }
 
+function fn_flush_code()
+{
+    echo "
+    CREATE TABLE IF NOT EXISTS ${TBL} (
+        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0
+    );
+    TRUNCATE TABLE ${TBL};
+    INSERT INTO ${TBL}(code) VALUES(${1});
+    " | mysql -N -B kts
+    
+    return $?
+}
+
 function fn_tao()
 {
     test -n "${1}" && fn_iscode ${1}       
@@ -324,11 +338,9 @@ function fn_tao()
     xt_ret $? "invalid date[$2]" || return $?
 
     local code=`sed 's/^0*//g' <<< $1 | xargs printf "%06d"`
-    TBL=tbl_tao1 up add_codes_2_dzh2tbl ${code}
-
+    TBL=tbl_tao1 fn_flush_code ${code}
     TBL=tbl_tao1 NUM=${NUM:-240} fn_taox_ratio ${2:-$END} ${3:-ratio}
 }
-
 
 function fn_nmemb_of_10percent()
 {
@@ -378,7 +390,7 @@ function fn_tao5()
     xt_ret $? "invalid date[$2]" || return $?
 
     local code=`sed 's/^0*//g' <<< $1 | xargs printf "%06d"`
-    TBL=tbl_tao1 up add_codes_2_dzh2tbl ${code}
+    TBL=tbl_tao1 fn_flush_code ${code}
 
     # 强制 nmemb 以改变ratio粒度
     test -n "$nmemb" || fn_nmemb_of_10percent
@@ -409,14 +421,16 @@ function fn_tao5()
 
         if ! fn_sql_exitsucc; then
             echo "    so_little_taox_data, try: up day ${code} ${dates[$idx]}"
+            RETCODE=1
             break
         fi
     done 
 
+    [ "fn_bei" = ${FUNCNAME[1]} ] || \
     SELECT tao5
     xt_ret $? "" || return $?
 
-    col='code,date_p,date_c,off_p,off_c,turnov_p,turnov_c'
+    col='code,date_p,date_c,off_p,off_c,tnov_p,tnov_c'
     col="${col},avrg_p,avrg_c,ratio,wchng"
     colA="A.${col//,/,A.}"
     echo "
@@ -424,6 +438,8 @@ function fn_tao5()
     SELECT ${colA},(A.ratio-B.ratio) as rdiff FROM tbl_tao5 A 
     INNER JOIN tbl_tao5 B on(A.id<B.id) GROUP BY A.id;
     " | mysql -N kts
+
+    return ${RETCODE:-0}
 }
 
 function fn_bei()
@@ -437,8 +453,7 @@ function fn_bei()
     fi
 
     echo "
-    to visit ${#lst[@]} codes,
-    taif -f /tmp/bei.md
+    to visit ${#lst[@]} codes
     "
 
     mysql kts <<<"truncate table tbl_rdiff;"
@@ -446,9 +461,10 @@ function fn_bei()
 
     local i=
     for i in ${lst[@]}; do
-        echo "# $i" | tee /dev/stderr
+        echo "# $i" # | tee /dev/stderr
         ZIZE=${ZIZE:-5} fn_tao5 ${i}
-    done > /tmp/bei.md
+        xt_ret $? "" || break
+    done
 
     SELECT rdiff
     return $?

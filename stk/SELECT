@@ -317,8 +317,8 @@ function fn_dugu9jian()
 
 function fn_taox_ratio()
 {
-   #columns=date_p,date_c,off_p,off_c,turnov_p,turnov_c,avrg_p,avrg_c,ratio
-    columns=date_p,off_p,date_c,off_c,turnov_c,avrg_p,avrg_c,ratio,wchng
+   #columns=date_p,date_c,off_p,off_c,tnov_p,tnov_c,avrg_p,avrg_c,ratio
+    columns=date_p,off_p,date_c,off_c,tnov_c,avrg_p,avrg_c,ratio,wchng
     columns=${columns:-'*'}
     columns=t.${columns//,/,t.}
 
@@ -342,8 +342,8 @@ function fn_taox_ratio()
 
 function fn_tao5()
 {
-   #columns=date_p,date_c,off_p,off_c,turnov_p,turnov_c,avrg_p,avrg_c,ratio
-    columns=date_p,off_p,date_c,off_c,turnov_c,avrg_p,avrg_c,ratio,wchng
+   #columns=date_p,date_c,off_p,off_c,tnov_p,tnov_c,avrg_p,avrg_c,ratio
+    columns=date_p,off_p,date_c,off_c,tnov_c,avrg_p,avrg_c,ratio,wchng
     columns=${columns:-'*'}
     columns=t.${columns//,/,t.}
 
@@ -366,8 +366,8 @@ function fn_tao5()
 
 function fn_rdiff()
 {
-   #columns=date_p,date_c,off_p,off_c,turnov_p,turnov_c,avrg_p,avrg_c,ratio
-    columns=date_p,off_p,date_c,off_c,turnov_c,avrg_p,avrg_c,ratio,wchng,rdiff
+   #columns=date_p,date_c,off_p,off_c,tnov_p,tnov_c,avrg_p,avrg_c,ratio
+    columns=date_p,off_p,date_c,off_c,tnov_c,avrg_p,avrg_c,ratio,wchng,rdiff
     columns=${columns:-'*'}
     columns=t.${columns//,/,t.}
 
