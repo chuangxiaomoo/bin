@@ -335,7 +335,7 @@ function fn_taox_ratio()
     }
 
     fn_get_tbl_taox_dive $1
-    mysql $mo -t kts <<< "${tbl_super_dive}"
+    mysql $mo -t kts <<< "${tbl_super_dive}" |\
         sed -e '1,3s/----+$/\+/g' -e '$s/----+$/\+/g' -e '2s/    |$/|/g'
     xt_ret ${PIPESTATUS[0]} "${FUNCNAME}" || return $?
 }
