@@ -7,6 +7,7 @@ function fn_usage()
         ----------- Usage --------------
         a   find ! -name '.' -a -name '*' | xargs -I{} svn add --force {}  | cat -n
         c   ci [files...]
+        cf  conflict
         D   {?|M}
         d   diff
         dp  diff -r 'PREV'
@@ -27,6 +28,14 @@ function fn_main()
         ;;
     c|ci)
         svn ci $filelist
+        ;;
+    cf|conflict)
+        echo "
+        1 svn update {df|edit|resolved}
+        2 svn resolve --accept base
+        3 vim ; svn resolved
+        4 svn revert
+        "
         ;;
     D)
         {
