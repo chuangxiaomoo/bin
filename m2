@@ -124,6 +124,7 @@ function fn_f3_教父()                   { cat book_f3_教父 ;}
 function fn_100_周鸿祎自述()            { cat book_100_周鸿祎自述 ;}
 function fn_101_livermore()             { cat book_101_livermore ;}
 function fn_102_谈我对在校学习的看法()  { cat book_102_谈我对在校学习的看法 ;}
+function fn_103_雷军的第二个四年()      { cat book_103_雷军的第二个四年 ;}
 function fn_200_逃不开的经济周期()      { cat book_200_逃不开的经济周期 ;}
 function fn_lunyu()                     { cat book_lunyu ;}
 function fn_shenglvqimeng()             { cat book_shenglvqimeng ;}
@@ -155,6 +156,7 @@ function fn_shenglvqimeng()             { cat book_shenglvqimeng ;}
         100_周鸿祎自述
         101_livermore
         102_谈我对在校学习的看法    # 黄晓捷 huangxiaojie
+        103_雷军的第二个四年
 
         200_逃不开的经济周期
     )
