@@ -2966,7 +2966,7 @@
   越小。如果你实在手痒，我之前给过一个建议，t+0，10日线上只做先买后卖，10日线
   下只做先卖后买，遵循这个原则会大幅改善T+0操作的效率。
 
-# 2014-11-27 taox及背驰 & Thanksgiving
+# 2014-11-27 taox及背驰 & Thanksgiving & 吾道一以贯之
 
   大数据: .template/taox.gesx.md
 
@@ -2985,13 +2985,16 @@
           diff(ratio) = 0, max(+ratio)价格之顶
           diff(ratio) = 0, ratio = 0  价格之底
 
-  背驰  ：diff(ratio) ^ wchng
+  背驰  ：rdiff = diff(ratio)
+          diff(ratio) ^ wchng
           wchng<0% && diff(ratio)>0
 
   买1   ：ratio<0 wchng<-10% && diff(ratio)>0
   买2   ：ratio=0 wchng<-10% && diff(ratio)>0
           做空头，不要卖出你没有的；
           做多头，不要买进你卖不掉的。
+
+  一道  ：量价不下来，速度停不下来。以(?)此来测算整个市场。
 
 # 2014-12-01 背驰修订
 
@@ -3075,11 +3078,18 @@
   SELECT date, count(close) FROM day WHERE date> '2014-06-06' GROUP by date;
   | 2014-07-11 |          383 |
 
-
-300347
-300058
+  300347
+  300058
 
 # 2014-12-04 不要高估你的汉语表达能力或者我的汉语理解能力
+
+  测算`中科云网`+10%表现
+
+# 2014-12-05 量价齐升是涨的基础 -- 测算整个市场
+
+  风险是不患的，有些人总是意淫票会跌，但说实在，真跌到底，其也不敢买。
+  但操作是患的，确定筹码问题，结合odd及时机，来决定策略。
+
 
 # 2014-11-x oracle for ur reason
   0. keep+buy

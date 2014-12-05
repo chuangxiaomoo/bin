@@ -438,17 +438,16 @@ function fn_tao5()
 function fn_bei()
 {
     [ -z "$1" ] && echo "Usage: bei {file|code...}" && exit 1
-
-    if [ -f "${1}" ]; then
-        lst=(`awk '/^[^#]/{print $1}' ${*} | sort -u`)
-    else
-        lst=(${@})
-    fi
+    [ -f "${1}" ] && lst=(`awk '/^[^#]/{print $1}' ${*} | sort -u`) || lst=(${@})
 
     echo "
     to visit ${#lst[@]} codes
     "
 
+    # DROP TABLE tbl_tao5;
+    # DROP TABLE tbl_tao1;
+    # DROP TABLE tbl_taox;
+    # DROP TABLE tbl_rdiff;
     mysql kts <<<"truncate table tbl_rdiff;"
     xt_ret $? "try create tbl_rdiff: SCREENER tao 2" || return $?
 

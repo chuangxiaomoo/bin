@@ -1,2 +1,0 @@
-SELECT * FROM  tbl_ma345 WHERE  close>ma13 and ma13>ma34 and (ma13-ma34)/ma34 < .05;
-
