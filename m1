@@ -1391,10 +1391,10 @@ function fn_main() {
         lcov
         libevent
         live555                 # 
-        in_event                   # 基于进程内的事件通知
+        in_event                # 基于进程内的事件通知
         time_call_engine
         linux
-        hisi
+        hisi                    # nvr
         nxp
         make
         pandoc                  # johnmacfarlane.net/pandoc/try/

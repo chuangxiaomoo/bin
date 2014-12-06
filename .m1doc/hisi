@@ -23,3 +23,42 @@
 
   谢谢！
 
+# config
+
+  利用现有技术及资源，加上一次缓存存储，解决可读性与存储效率问题。
+  config.org config.xml config.bin
+
+1. startup 1st time
+
+  > after upgrade, config.xml is kept
+
+  if not exists config.xml  ==>>> cp config.org config.xml
+
+  load_2_struct_from_xml(config.xml)
+  writeback(config.bin)
+
+  while(sync)
+
+2. startup 2nd time
+
+  load_2_struct_from_bin()
+  while(sync)
+
+3. upgrade
+
+  dump_struct_2_xml(struct, config.xml)
+
+  cp config.org /opt/conf/config.org
+
+  xml_hammer -c a -f add.pair config.xml
+  rm -f config.bin
+
+4. factory-default
+
+  dump_struct_2_xml(struct, config.xml)
+  xml_hammer -c r -f kep.list config.xml > kep.pair
+  xml_hammer -c w -f kep.pair config.org 
+
+  rm -f conifg.xml config.bin
+  reboot
+

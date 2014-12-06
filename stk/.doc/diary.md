@@ -2986,7 +2986,7 @@
           diff(ratio) = 0, ratio = 0  价格之底
 
   背驰  ：rdiff = diff(ratio)
-          diff(ratio) ^ wchng
+          if diff(rdiff) = 0 then climax come?
           wchng<0% && diff(ratio)>0
 
   买1   ：ratio<0 wchng<-10% && diff(ratio)>0
@@ -3090,6 +3090,11 @@
   风险是不患的，有些人总是意淫票会跌，但说实在，真跌到底，其也不敢买。
   但操作是患的，确定筹码问题，结合odd及时机，来决定策略。
 
+# 雷殿生 人生是一场旅行
+
+  10年里，他只曾再次改变原有的计划。
+  我们不能只顾旅途的风景，而忘记最终的目的。
+  因粮于敌，即是做短线，以不断降低自己的成本。
 
 # 2014-11-x oracle for ur reason
   0. keep+buy
