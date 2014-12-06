@@ -349,9 +349,9 @@ function fn_nmemb_of_10percent()
     SELECT sum(volume) FROM 
         (SELECT * FROM day WHERE code=${code} and date<='${END}' ORDER by date DESC LIMIT 100)
         as tbl INTO @sum_vol;
-    SELECT TRUNCATE(${percent:-10}/(@sum_vol/shares), 0) FROM cap WHERE code = ${code};
+    SELECT floor(${percent:-10}/(@sum_vol/shares)) FROM cap WHERE code = ${code};
     " | mysql -N -B kts`
-
+    [ "${nmemb}" -ne 0 ] || nmemb=1
     return $?
 }
 

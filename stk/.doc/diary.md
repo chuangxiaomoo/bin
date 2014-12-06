@@ -2966,7 +2966,7 @@
   越小。如果你实在手痒，我之前给过一个建议，t+0，10日线上只做先买后卖，10日线
   下只做先卖后买，遵循这个原则会大幅改善T+0操作的效率。
 
-# 2014-11-27 taox及背驰 & Thanksgiving & 吾道一以贯之
+# 2014-11-27 taox & 背驰 rdiff & Thanksgiving & 吾道一以贯之
 
   大数据: .template/taox.gesx.md
 
@@ -2986,7 +2986,7 @@
           diff(ratio) = 0, ratio = 0  价格之底
 
   背驰  ：rdiff = diff(ratio)
-          if diff(rdiff) = 0 then climax come?
+          if diff(rdiff) = 0 then climax come? -- it take effect at botton e.g. ywg
           wchng<0% && diff(ratio)>0
 
   买1   ：ratio<0 wchng<-10% && diff(ratio)>0
