@@ -353,7 +353,7 @@ function fn_tao5()
         tbl_super_dive="
         SELECT t.code, ${columns}, c.nmc,c.name 
            FROM ${tablex:-tbl_tao5} as t, cap as c 
-           WHERE t.code = c.code HAVING 1 ${COND} limit ${LIMIT:-24}
+           WHERE t.code = c.code HAVING 1 ${COND} limit ${LIMIT:-144}
         "
         echo "${tbl_super_dive}"
     }
@@ -377,7 +377,7 @@ function fn_rdiff()
         tbl_super_dive="
         SELECT t.code, ${columns}, c.nmc, c.name
            FROM ${tablex:-tbl_rdiff} as t, cap as c 
-           WHERE t.code = c.code HAVING 1 ${COND} limit ${LIMIT:-24}
+           WHERE t.code = c.code HAVING 1 ${COND} limit ${LIMIT:-144}
         "
         echo "${tbl_super_dive}"
     }
