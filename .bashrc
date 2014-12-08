@@ -13,7 +13,7 @@ alias      ZIZE=''
 alias     LIMIT=''
 alias     nmemb=''
 alias NMC_RATIO=''
-alias       wup='.s; FINA=1 up 4; TBL=windbell_codes SCREENER 0'
+alias       wup='.s; FINA=1 up 4; TBL=windbell_codes SCREENER 0 || up 22'
 
 alias    ..='cd ..'
 alias   ...='cd ../..'
