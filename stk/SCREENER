@@ -213,7 +213,7 @@ function fn_dugu9jian()
 {
     if [ "${TBL}" = windbell_codes ] && [ "`cat ${filewb}`" != ${CURR} ]; then
         echo "windbell_codes is out of day. continue to run [./up 22]"
-        exit
+        exit 1
     fi
 
     END=${1:-${END}}
