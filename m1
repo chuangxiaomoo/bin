@@ -604,6 +604,7 @@ function fn_subconf()                   { cat git_subconf ;}
 function fn_svn() {
 function fn_fundamental()               { cat svn_fundamental ;}
 function fn_cleanup()                   { cat svn_cleanup ;}
+function fn_lock()                      { cat svn_lock ;}
 function fn_help()                      { cat svn_help ;}
 function fn_merge()                     { cat svn_merge ;}
 function fn_visual_svn_server()         { cat svn_visual_svn_server ;}
@@ -618,6 +619,7 @@ function fn_relocate()                  { cat svn_relocate ;}
     local opts=(
         fundamental
         add
+        lock
         cleanup
         revision
         stat
