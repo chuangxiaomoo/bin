@@ -158,7 +158,7 @@ function fn_shenglvqimeng()             { cat book_shenglvqimeng ;}
         101_livermore
         102_谈我对在校学习的看法    # 黄晓捷 huangxiaojie
         103_雷军的第二个四年
-        104_罗永浩天生骄傲
+        104_罗永浩天生骄傲          # kaiwu
 
         200_逃不开的经济周期
     )
