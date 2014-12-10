@@ -2983,6 +2983,7 @@
 
 # 2014-11-27 taox & 背驰 rdiff & Thanksgiving & 吾道一以贯之
 
+  特殊点: .template/taox.sdl.md
   大数据: .template/taox.gesx.md
 
   avrg_p: 上个换手周期的avrg
@@ -2991,7 +2992,7 @@
   ratio : 换手周期同比增长率 = 100(avrg_c-avrg_p)/avrg_p
           ratio是价格变化的加速度 
           ratio<0时表明有人在割肉，以低于前人的价格出货，
-          ratio=max(-)时，上个换手周期的start，即在上一轮顶点，diff(wchng)最大
+          ratio=max(-)时，上个换手周期的start，即在上一轮顶点，diff(avrg)最大
           ratio>0时表明有人在屯货，以更高前人的价格买入，此时其必承受相应抛压
 
   走势  : diff(ratio)=0时盘整
@@ -3145,6 +3146,10 @@
   1 巴菲特的伟大之处不在于他75岁的时候拥有了450亿美元的财富，而在于他年轻的时候
     想明白了许多道理，然后用一生的岁月去坚守。
   2 不嫉妒他人的财富…你也会成功。
+
+# 拒绝调整 2014-12-11 这几日在 歌尔声学 没有在买卖点上，浪费了很多时间和金钱
+
+  请耐心等待，机会会来的
 
 # 2014-11-x oracle for ur reason
   0. keep+buy
