@@ -345,6 +345,14 @@ function fn_tao()
 function fn_nmemb_of_10percent()
 {
     # percent=5
+    turnov200="
+    SELECT sum(volume) FROM 
+        (SELECT * FROM day WHERE code=${code} and date<='${END}' ORDER by date DESC LIMIT 200)
+        as tbl INTO @sum_vol_200d;
+        SELECT round((100*@sum_vol_200d/shares),2) FROM cap WHERE code = ${code};
+    " 
+    # mysql -N -B kts <<< "${turnov200}" ;exit
+
     nmemb=`echo "
     SELECT sum(volume) FROM 
         (SELECT * FROM day WHERE code=${code} and date<='${END}' ORDER by date DESC LIMIT 100)
@@ -413,7 +421,7 @@ function fn_tao5()
         xt_ret ${PIPESTATUS[0]} "" || return $?
 
         if ! fn_sql_exitsucc; then
-            fn_echo_warn "    so_little_data[$i ${dates[$i]}], try: up day ${code} ${dates[$idx]}\n"
+            fn_echo_warn "    so_little_data[$i ${dates[$i]}], try: up day ${code} ${dates[$idx]} 600\n"
             local RETCODE=1
             break
         fi
