@@ -2983,7 +2983,7 @@
 
 # 2014-11-27 taox & 背驰 rdiff & Thanksgiving & 吾道一以贯之
 
-  特殊点: .template/taox.sdl.md
+  奇点论: .template/taox.sdl.md
   中枢论: .template/taox.sdl2.md
   大数据: .template/taox.gesx.md
 
