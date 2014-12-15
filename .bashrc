@@ -58,10 +58,10 @@ alias    xx='tar -zxvf'
 alias   irc='vi /root/.bashrc; . /root/.bashrc'
 alias    ct='cd ~/sh/t'
 alias   cwd='pwd >> ~/.env;vi ~/.env; .rc'
-alias   swd='pwd > ~/.swd'                          # save pwd
+alias   swd='pwd > ~/.swd'                          # save pwd, [pushd .]
 alias   awd='cp ~/.awd /dev/shm/.awd && pwd > ~/.awd && cat /dev/shm/.awd >> ~/.awd'   
 alias   iwd='vi /root/.awd'   
-alias   gwd='cd `cat ~/.swd`'                       # save pwd
+alias   gwd='cd `cat ~/.swd`'                       # save pwd  [popd]
 alias    cs='cscope -Rbq *'
 alias vboxr='/etc/init.d/vboxadd-service restart'   # ;umount -a 2>/dev/null; mount -a
 
