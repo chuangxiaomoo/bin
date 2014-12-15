@@ -435,10 +435,12 @@ function fn_tao5()
     col="${col},avrg_p,avrg_c,ratio,wchng"
     colA="A.${col//,/,A.}"
     echo "
-    INSERT INTO tbl_rdiff(${col},rdiff)
-    SELECT ${colA},(A.ratio-B.ratio) as rdiff FROM tbl_tao5 A 
+    INSERT INTO tbl_rdiff(${col},rdiff,dbrat)
+    SELECT ${colA},(A.ratio-B.ratio) as rdiff, 
+                    (A.ratio+A.wchng) as dbrat FROM tbl_tao5 A 
     INNER JOIN tbl_tao5 B on(A.id<B.id) GROUP BY A.id;
     " | mysql -N kts
+    xt_ret $? "" || return $?
 
     return ${RETCODE:-0}
 }
