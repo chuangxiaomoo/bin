@@ -244,6 +244,10 @@ END tag_tbl_taox //
 -- 使用TEMPORARY时效率提升5倍
 -- ERROR 1137 (HY000): Can't reopen table: 'tempday', 因为使用了SELECT嵌套
 -- SELECT close FROM tempday WHERE date=(SELECT max(date) FROM tempday);
+
+-- ERROR 1005 (HY000): Can't create table 'tempday' (errno: 13)
+-- chmod 0777 /tmp 以解决之
+
 DROP PROCEDURE IF EXISTS sp_create_tempday //
 CREATE PROCEDURE sp_create_tempday() tag_tempday:BEGIN 
     DROP   TEMPORARY TABLE IF EXISTS tempday;
