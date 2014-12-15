@@ -2972,20 +2972,9 @@
   越小。如果你实在手痒，我之前给过一个建议，t+0，10日线上只做先买后卖，10日线
   下只做先卖后买，遵循这个原则会大幅改善T+0操作的效率。
 
-# 2014-12-07 那些年，我们这样选股
+# 2014-12-07 那些年，我们这样选股 
 
-  .template/gu.select.md
-
-  1 rdiff 在min(ratio) 只要求 >-.5
-  2 前期高点/2 往往是 vally，以 歌尔声学 北京君正 为证
-  3 一个势起，常以100%换手
-  4 起分别心
-    etf180
-
-  5 小米的生存，高通与hisi的竞争，必以小米为他的生态链中的一员，以军团为单位的战争，
-    找到自己的定位。
-
-  6
+  [rdiff & dbrat](.template/gu.select.md)
 
 # 2014-11-27 taox & 背驰 rdiff & Thanksgiving & 吾道一以贯之
 
@@ -3005,8 +2994,8 @@
   走势  : diff(ratio)=0时盘整
           diff(ratio)<0时下跌趋势
           diff(ratio)>0时上涨趋势
-          diff(ratio) = 0, max(+ratio)价格之顶
-          diff(ratio) = 0, ratio = 0  价格之底
+          diff(ratio) = 0, max(+ratio)价格之`顶`
+          diff(ratio) = 0, ratio = 0  价格之`底`
 
   背驰  ：rdiff = diff(ratio)
           if diff(rdiff) = 0 then climax come? -- it take effect at botton e.g. ywg
@@ -3017,7 +3006,7 @@
           做空头，不要卖出你没有的；
           做多头，不要买进你卖不掉的。
 
-  一道  ：量价不下来，速度停不下来。以(?)此来测算整个市场。
+  道一  ：量价不下来，速度停不下来。以(?)此来测算整个市场。
 
 # 2014-12-01 背驰修订
 

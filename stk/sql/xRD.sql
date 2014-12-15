@@ -236,7 +236,8 @@ CREATE PROCEDURE sp_create_tbl_taox() tag_tbl_taox:BEGIN
         avrg_c      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- curr avrg = sum(amount) / sum(volume)
         ratio       DECIMAL(6,2) NOT NULL DEFAULT 0,
         wchng       DECIMAL(6,2) NOT NULL DEFAULT 0,
-        rdiff       DECIMAL(6,2) NOT NULL DEFAULT 0 
+        rdiff       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        dbrat        DECIMAL(6,2) NOT NULL DEFAULT 0 
     );
     CREATE TABLE IF NOT EXISTS tbl_tao5 LIKE tbl_taox;
 END tag_tbl_taox //
