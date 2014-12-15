@@ -1,0 +1,14 @@
+#! /bin/bash
+
+# /1/svn/up.sh
+branch='rtsp0913'
+branch='t'
+
+local_bin="/1/svn/bin.${branch}"
+local_filesys="/1/svn/filesys.${branch}"
+local_package="/1/svn/package.${branch}"
+local_release="/1/svn/web.apd"
+
+svn_bin=https://jabscodevsvn/svn/dm36xPro/trunk/bin
+svn_filesys=https://jabscodevsvn/svn/dm36xPro/trunk/filesys
+svn_origin=https://jabscodevsvn/svn/dm36xPro/trunk

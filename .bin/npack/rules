@@ -1,0 +1,14 @@
+#! /bin/bash
+
+#ocal_webpage="/run/web/"
+#ocal_image="/home/s/n.fs/images.r611"
+#ocal_image="/home/s/n.fs/images.r690"
+local_image="/home/s/trunk/filesys/images"
+local_image_spi="/home/s/trunk/filesys/images.spi"
+local_filesys="/home/s/trunk/filesys/squashfs-root"
+local_uptools="/home/s/trunk/filesys/script/upTools"
+local_newweb="/home/s/trunk/web.apd"
+
+svn_image="https://jabscodevsvn/svn/nxpPro/trunk/filesys/images"
+svn_filesys=https://jabscodevsvn/svn/dm36xPro/trunk/filesys
+svn_uptool=""
