@@ -563,7 +563,6 @@ function fn_svncat()
     pattern="${2:-osdstyle}"
     [ -z "$url" ] && echo "Error: url is null" && exit
 
-    # -v 反转搜索
     function fn_if_found() { svn cat $url@$1 | grep -i -q "$pattern" ;}
 
     # svn log -l 50 最近的50条，版本号最大在第一条
@@ -576,9 +575,9 @@ function fn_svncat()
     local start_v=0
     for (( i=${start_v}; i<${#versions[@]}; i+=1 )); do
         echo "-- version ${versions[${i}]} ---"
-        # ! or null
         echo $url@${versions[${i}]}
-        if fn_if_found ${versions[${i}]}; then
+        # ! to 反转搜索
+        if  fn_if_found ${versions[${i}]}; then
             { fn_echo_succ 'bingo'; exit ;}
         fi 
     done
