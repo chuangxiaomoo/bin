@@ -8,11 +8,15 @@
   1. 前期高点/2 往往是 vally，以 歌尔声学 北京君正 为证
   2. 一个势起，常以100%换手 etf180
 
-# 顶的一些条件
+# 启动特征
 
-  dbrat(n) -lt dbrat(n-2)
-  rdiff -lt 1.00           *以5%为单位diff*
-  wchng -gt 10 and ratio -gt 10 and sum(wchng+ratio) -gt 30
+  1. 5日量比或10%所用时间比翻倍
+
+# 顶之特征
+
+  1. dbrat(n) -lt dbrat(n-2)
+  2. rdiff -lt 1.00           *以5%为单位diff*
+  3. wchng -gt 10 and ratio -gt 10 and sum(wchng+ratio) -gt 30
 
 +--------+------------+------------+-------+--------+--------+--------+-------+-------+-------+-------+--------+----------+
 | code   | date_p     | date_c     | off_c | tnov_c | avrg_p | avrg_c | ratio | wchng | rdiff | dbrat | nmc    | name     |
