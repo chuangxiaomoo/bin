@@ -1,0 +1,13 @@
+/* atoi */
+
+/* know that the sscanf(ptr, "%15s%d%7s%d%6s%d%5s%d", ...), 
+ * the "," must not be in the format seqence "%%%%%", it's the trouble.
+ */
+
+int atoi(char *str) {
+    int var_int;
+    sscanf(str, "%d", &var_int);
+    return var_int;
+}
+
+

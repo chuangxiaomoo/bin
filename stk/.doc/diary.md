@@ -3207,6 +3207,11 @@
   我炒小票时涨大票
   我炒`歌尔声学`时涨小票
 
+# 2014-12-17
+
+  大智慧 5分钟数据结构
+  http://bbs.macd.cn/thread-1541478-1-1.html
+
 # 2014-11-x oracle for ur reason
   0. keep+buy
   1. sell

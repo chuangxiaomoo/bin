@@ -17,6 +17,7 @@
 
 function fn_get_url()
 {
+    # fenbi只能下载当天数据
     # http://webstock.quote.hermes.hexun.com/a/deal?code=szse000002&start=20140813151000&number=-10&callback=callback
     url0="http://webstock.quote.hermes.hexun.com/a/deal?"
     [ ${1:0:1} -eq 6 ] && sec=sse || sec=szse 

@@ -410,6 +410,7 @@ function fn_getaddrinfo_a()             { cat clang_getaddrinfo_a ;}
 function fn_sync()                      { cat clang_sync ;}
 function fn_getopt_long()               { cat clang_getopt_long ;}
 function fn_strtol()                    { cat clang_strtol ;}
+function fn_atoi()                      { cat clang_atoi ;}
 
     local opts=(
         C调用C++链接库
@@ -431,6 +432,7 @@ function fn_strtol()                    { cat clang_strtol ;}
         warning
         macro
         # ------ posix ------
+        atoi                    # atou
         md5                     # 
         strtol                  # hex work well
         iconv                   # utf-8 gbk wide-character handling ascii
