@@ -13,11 +13,12 @@ CFLAGS 	:= -g -Wall
 CPPFLAGS:= -g
 LDFLAGS := -lrt -lpthread
 
-all: $(OBJS) $(CPPOBJS)
+all: 
+	gcc min5.c
 
 
 run r:
-	./dzh2_blk_parser
+	./a.out
 
 clean c:
 	rm -f a.out $(OBJS) $(OBJS:%=%.o)
