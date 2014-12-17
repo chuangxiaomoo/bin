@@ -3212,6 +3212,8 @@
   大智慧 5分钟数据结构
   http://bbs.macd.cn/thread-1541478-1-1.html
 
+  大智慧数据格式
+  http://blog.163.com/da7_1@126/blog/static/104072678201211104629929/
 # 2014-11-x oracle for ur reason
   0. keep+buy
   1. sell
