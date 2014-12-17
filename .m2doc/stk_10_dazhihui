@@ -1,5 +1,11 @@
 /* 00_大智慧 */
 
+# 不升级 
+
+    你现在使用的大智慧就可以不用升级，打开大智慧文件，
+    找到market_client.ini和dzhhqserver.ini文件，分别点击右键，
+    属性，给只读打勾，应用，确定，就不再升级了。
+
 . account
     LVT10782001  
     931186 
@@ -7,6 +13,8 @@
 
 . download
     http://www.gw.com.cn/download.shtml
+
+    http://down.tech.sina.com.cn/page/11336.html
 
 . 显示方案    
 
