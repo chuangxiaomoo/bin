@@ -21,7 +21,7 @@ run r:
 	./a.out
 
 clean c:
-	rm -f a.out $(OBJS) $(OBJS:%=%.o)
+	rm -f a.out $(OBJS:%=%.o) # $(OBJS)
 
 %.o:%.c
 	@echo "----------compile $@------"
