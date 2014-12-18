@@ -34,7 +34,7 @@ struct head {
     int resv2;
 } head_t;
 
-struct record {
+typedef struct {
     int  resv1;
     char symble[8];
     int  resv2;
@@ -48,16 +48,26 @@ struct record {
     float volumn;
     float amount;
     int  resv4;
-};
+} Record;
+
+
+int record24_to_48(Record *p24, Record *p48)
+{
+    int i;
+    for (i = 0; i < 24; i++) {
+        memcpy(&p48[i*2], &p24[i], sizeof(Record))
+    }
+    return SUCCESS;
+}
 
 int main(int argc, char *argv[])
 {
     int ret;
     int len;
-    // int offset = 0;
-    struct head head;
+    struct head head = {0};
     struct stat filestat;
-    struct record record;
+    Record record24[24];
+    Record record48[48];
 
     if (0 == stat("full.PWR", &filestat)) {
         len = filestat.st_size;
@@ -66,7 +76,8 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    FILE *fp = fopen("/dzh2/SUPERSTK.DAD", "r");
+  //FILE *fp = fopen("/dzh2/SUPERSTK.DAD", "r");
+    FILE *fp = fopen("SUPERSTK1.DAD", "r");
     return_val_if_fail(NULL != fp, FAILURE);
 
     fseek(fp, 0L, SEEK_SET);
@@ -80,14 +91,23 @@ int main(int argc, char *argv[])
     float v1 = 0; 
     float a1 = 0;
 
-      for (i = 0; ; i++) {
-        memset(&record, 0, sizeof(record));
-        ret = fread(&record, 1, sizeof(struct record), fp); 
+    ret = fread(&record24, 1, sizeof(record24), fp); 
 
-        printf("read %d\n", ret);
-        if (ret < sizeof(struct record)) {
-             break;
-        }
+    if (rec < sizeof(record24)) {
+        printf("end of file\n");
+        return SUCCESS;
+    }
+    record24_to_48(record24, record48);
+
+    for (i = 1; i < 48-1; i+=2) {
+        record48[i].close =  (record48[i-1].close + record48[i+1].close  )/2;
+        record48[i].volumn = (record48[i-1].volumn + record48[i+1].volumn)/2;
+        record48[i].amount = (record48[i-1].amount + record48[i+1].amount)/2;
+        record48[i].date = record48[i-1].date + 300;
+    }
+    memcpy(&record48[i], &record48[i-1], sizeof(Record));
+    record48[i].date += 300;
+
         // printf("symble %s\n", record.symble);
         char date[32];
         ret = strftime(date, sizeof(date), "%F %T", gmtime((time_t *)&record.date));
@@ -110,7 +130,7 @@ int main(int argc, char *argv[])
 
         a1 = record.amount;
         v1 = record.volumn;
-      }
+    }
 
     // int i;
     // unsigned char *p = (void *)&head;
