@@ -10,21 +10,10 @@ function fn_get_url()
     # http://webstock.quote.hermes.hexun.com/a/deal?code=szse000002&start=20140813151000&number=-10&callback=callback
     url0="http://webstock.quote.hermes.hexun.com/a/deal?"
     [ ${1:0:1} -eq 6 ] && sec=sse || sec=szse 
-    echo "${url0}code=${sec}${1}&start=${2}&number=-1000"
+    echo "${url0}code=${sec}${1}&start=${2}&number=1000"
 }
 
-function fn_str_2_datetime()
-{
-    dt2=19450815132000
-    echo ${dt2:0:4}
-    echo ${dt2:4:2}
-    echo ${dt2:6:2}
-    echo ${dt2:8:2}
-    echo ${dt2:10:2}
-    echo ${dt2:12:2}
-}
-
-function fn_main()
+function fn_hexun()
 {
     code=$1
     date=`date +%Y%m%d`
@@ -33,48 +22,86 @@ function fn_main()
     datetime4="${date}112900"
     datetime5="${date}130000"
     datetime9="${date}150000"
-    dt=${date}135000         # init from mysql
-    raw='/tmp/raw'
-    ripe='/tmp/ripe'
-    cache='/tmp/cache'
-    buffer='/tmp/buffer'
     lockfile='/run/lock/fenbi'
 
     >${buffer}
 
+    # echo ${dt}; exit
+    dt=`mysql -N kts <<<"SELECT max(datetime) from fenbi"`
+
     while :; do
         url=`fn_get_url ${code} ${dt}`
-        echo ${url}
-        timeout 30 w3m -dump ${url} > ${raw}
+
+        echo ${url}; # exit
+        timeout 30 w3m -dump ${url} > ${fenbi_raw}
         xt_ret $? "timeout" || return $?
 
-        time cat ${raw} | sed -n '/\[\[/,$p' |      # Data:
-            sed  -e '1s/^.*\[\[/[[/' -e '$s/]].*$/]]/' > ${ripe}
+        time cat ${fenbi_raw} | sed -n '/\[\[/,$p' |      # Data:
+            sed  -e '1s/^.*\[\[/[[/' -e '$s/]].*$/]]/' > ${fenbi_ripe}
 
-        [ "`stat -c%s $ripe`" -lt 80 ] && break      # 2 record at list
+        [ "`stat -c%s $fenbi_ripe`" -gt 80 ]
+        xt_ret $? "no data" || return $?
         
-        cat ${ripe} | JSON.sh -b |
-            awk -v code=$code \
-                '{printf "%s\t%s\t%s\t%s\t%s\t%s\n", code,$1,$2,$3,$4,$5 }'>${cache} 
+        cat ${fenbi_ripe} | JSON.sh -b |
+            awk -v code=$code '{
+                printf "%s\t%s\t%.2f\t%.2f\t%.2f\n", 
+                code,$1,$2/100,$4/100,$3/100
+        }' | sed "/${dt}/D" >${cache} 
         xt_ret $? "" || return $?
 
-        [ "${dt}" != "${datetime0}" ] && sed -i '1d' ${cache}
-        cat ${cache} # >> ${buffer}
+        # cat ${cache} >> ${buffer}
         true && {
             flock 20
-            sqls="LOAD DATA LOCAL INFILE '${cache}' INTO TABLE fenbi
-                  (code, datetime, trade, amount, volume, type1)"
-            mysql -t kts <<< "${sqls}"
-            # exit
+            echo "
+            TRUNCATE TABLE tmpfb;
+            LOAD DATA LOCAL INFILE '${cache}' INTO TABLE tmpfb;
+            INSERT INTO fenbi(code, datetime, trade, volume, amount)
+              SELECT code,datetime,trade,sum(volume),sum(amount) FROM 
+                (SELECT *,round(datetime%1000000/200,0) as grp from tmpfb ORDER by datetime DESC) 
+                    as newfb GROUP by grp ORDER by datetime;
+            " | mysql -t kts 
+            xt_ret $? "" || return $?
         } 20<>${lockfile}
 
         dt=`tail -1 ${cache} | awk '{print $2}'`
-        [ "${dt}" -ge ${datetime9} ] && break
+        end=`tail -1 /dev/shm/fenbi/raw | awk -F',' '{print $12}'`
+        [ "${dt}" -ge ${end} ] && break
 
         # exit # uncomment to w3m once
     done
 }
 
+function fn_main()
+{
+    code=${1:-002241}
+    fn_iscode ${code}
+    xt_ret $? "" || return $?
+
+    today=`date +%F`
+    sql="SELECT max(datetime) FROM fenbi WHERE code=${code}"
+    datetime=`mysql -N kts <<< "${sql}"`
+    fmaxdate=`fn_str_2_date ${datetime}`
+    # echo ${datetime}
+
+    if [ "${datetime}" = NULL ]; then
+        echo "NULL database, run ./mi5 first"
+    else
+        sql="SELECT date FROM day WHERE code=${code} and date>'${fmaxdate}' and date<'${today}';"
+        dates=(`mysql -N kts <<< "${sql}"`)
+
+        if [ ${#dates[@]} -ne 0 ]; then
+            echo "There are dates(${dates[@]}) not update, run ./mi5 first"
+        else
+            echo "Going to update data today"
+        fi
+    fi
+
+    read -p "type any key to continue, Ctrl-C to interrupt"
+    
+    # DELETE FROM  fenbi WHERE  datetime > 20141219000000
+
+    fn_hexun $code
+    return $?
+}
 # 数据的延时在30s内
-fn_main 000002
-# fn_main 399006
+fn_main

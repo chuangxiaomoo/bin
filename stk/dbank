@@ -102,7 +102,19 @@ yahooask='/dev/shm/day/yahoo.ask'
 yahootimeout='/dev/shm/day/yahoo.ask.timeout'
 
 fenbi_raw='/dev/shm/fenbi/raw'
+fenbi_raw1='/dev/shm/fenbi/raw1'
 fenbi_ripe='/dev/shm/fenbi/ripe'
+mkdir -p ${fenbi_raw%/*}
+
+cache='/tmp/cache'
+buffer='/tmp/buffer'
+
+function fn_str_2_date()
+{
+    dt2=$1
+    echo ${dt2:0:4}-${dt2:4:2}-${dt2:6:2}
+    # echo ${dt2:8:2}:${dt2:10:2}:${dt2:12:2}
+}
 
 function fn_iscode()
 {
