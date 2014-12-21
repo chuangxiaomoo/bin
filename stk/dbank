@@ -93,6 +93,8 @@ js_xunner_txt='/dev/shm/xunner.txt'
 rt_stdout='/dev/shm/realtime/stdout'
 rt_ripetxt='/dev/shm/realtime/ripetxt'
 
+mi5_day='/dev/shm/mi5/day'
+mi5_min='/dev/shm/mi5/min'
 day_temp='/dev/shm/day/temp'
 day_ripe='/dev/shm/day/ripe'
 day_gether='/dev/shm/day/gether'

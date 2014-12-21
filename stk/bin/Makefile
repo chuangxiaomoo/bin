@@ -18,7 +18,7 @@ all:
 
 
 run r:
-	./a.out
+	./a.out 1 1 1 > /tmp/stdout
 
 clean c:
 	rm -f a.out $(OBJS:%=%.o) # $(OBJS)
