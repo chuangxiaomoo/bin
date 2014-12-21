@@ -440,7 +440,7 @@ function fn_down_fenbi()
     mkdir -p `dirname $fenbi_raw`
 
     host="http://hqdigi2.eastmoney.com/EM_Quote2010NumericApplication/CompatiblePage.aspx?"
-    para="Type=OB&stk=0000022&Reference=xml&limit=0&page="
+    para="Type=OB&stk=000002&Reference=xml&limit=0&page="
 
     page_cnt=`$W3M -dump "$host${para}1" 2>/dev/null | head -1 | awk -F"[:,]" '{print $2}'`
     [ -z "$page_cnt" ] && echo "error: null page_cnt" && exit
