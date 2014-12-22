@@ -17,7 +17,7 @@ function fn_hexun()
 {
     code=$1
     date=`date +%Y%m%d`
-    date=`fn_maxdate|sed 's/-//g'`  # uncomment when weekend
+    #date=`fn_maxdate|sed 's/-//g'`  # uncomment when weekend
     datetime0="${date}092500"
     datetime4="${date}112900"
     datetime5="${date}130000"
@@ -25,9 +25,8 @@ function fn_hexun()
     lockfile='/run/lock/fenbi'
 
     >${buffer}
-
-    # echo ${dt}; exit
-    dt=`mysql -N kts <<<"SELECT max(datetime) from fenbi"`
+    [ "${dt}" -lt ${datetime9} ]
+    xt_ret $? "It's latest" || return $?
 
     while :; do
         url=`fn_get_url ${code} ${dt}`
@@ -36,7 +35,7 @@ function fn_hexun()
         timeout 30 w3m -dump ${url} > ${fenbi_raw}
         xt_ret $? "timeout" || return $?
 
-        time cat ${fenbi_raw} | sed -n '/\[\[/,$p' |      # Data:
+        cat ${fenbi_raw} | sed -n '/\[\[/,$p' |
             sed  -e '1s/^.*\[\[/[[/' -e '$s/]].*$/]]/' > ${fenbi_ripe}
 
         [ "`stat -c%s $fenbi_ripe`" -gt 80 ]
@@ -49,26 +48,26 @@ function fn_hexun()
         }' | sed "/${dt}/D" >${cache} 
         xt_ret $? "" || return $?
 
-        # cat ${cache} >> ${buffer}
-        true && {
-            flock 20
-            echo "
-            TRUNCATE TABLE tmpfb;
-            LOAD DATA LOCAL INFILE '${cache}' INTO TABLE tmpfb;
-            INSERT INTO fenbi(code, datetime, trade, volume, amount)
-              SELECT code,datetime,trade,sum(volume),sum(amount) FROM 
-                (SELECT *,round(datetime%1000000/200,0) as grp from tmpfb ORDER by datetime DESC) 
-                    as newfb GROUP by grp ORDER by datetime;
-            " | mysql -t kts 
-            xt_ret $? "" || return $?
-        } 20<>${lockfile}
-
+        cat ${cache} >> ${buffer}
         dt=`tail -1 ${cache} | awk '{print $2}'`
         end=`tail -1 /dev/shm/fenbi/raw | awk -F',' '{print $12}'`
         [ "${dt}" -ge ${end} ] && break
 
         # exit # uncomment to w3m once
     done
+
+    true && {
+        flock 20
+        echo "
+        TRUNCATE TABLE tmpfb;
+        LOAD DATA LOCAL INFILE '${buffer}' INTO TABLE tmpfb;
+        INSERT INTO fenbi(code, datetime, trade, volume, amount)
+          SELECT code,datetime,trade,sum(volume),sum(amount) FROM 
+            (SELECT *,round(datetime%1000000/200,0) as grp from tmpfb ORDER by datetime DESC) 
+                as newfb GROUP by grp ORDER by datetime;
+        " | mysql -t kts 
+        xt_ret $? "" || return $?
+    } 20<>${lockfile}
 }
 
 function fn_main()
@@ -79,11 +78,11 @@ function fn_main()
 
     today=`date +%F`
     sql="SELECT max(datetime) FROM fenbi WHERE code=${code}"
-    datetime=`mysql -N kts <<< "${sql}"`
-    fmaxdate=`fn_str_2_date ${datetime}`
-    # echo ${datetime}
+    dt=`mysql -N kts <<< "${sql}"`
+    fmaxdate=`fn_str_2_date ${dt}`
+    # echo ${dt}
 
-    if [ "${datetime}" = NULL ]; then
+    if [ "${dt}" = NULL ]; then
         echo "NULL database, run ./mi5 first"
     else
         sql="SELECT date FROM day WHERE code=${code} and date>'${fmaxdate}' and date<'${today}';"
@@ -96,7 +95,7 @@ function fn_main()
         fi
     fi
 
-    read -p "type any key to continue, Ctrl-C to interrupt"
+    read -p "Type any key to continue, Ctrl-C to interrupt"
     
     # DELETE FROM  fenbi WHERE  datetime > 20141219000000
 
