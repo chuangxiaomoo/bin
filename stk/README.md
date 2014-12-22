@@ -46,6 +46,7 @@
 ## 笛卡尔实践     .doc/up_down_logic.md
 ## 建立交易系统   .doc/ma-trade.md
 
+## 防守           .doc/defense.md
 ## 目标&策略&纪律 .doc/discipline.md
 ## 独孤九剑       .doc/dugu9jian.md     --基于信息进化论.解N变量方程组
 ## 板块           .doc/block.md
