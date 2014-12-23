@@ -388,8 +388,18 @@ function fn_rdiff()
     xt_ret ${PIPESTATUS[0]} "${FUNCNAME}" || return $?
 }
 
-function fn_avrg_high_n()
+function fn_pma()
 {
+    fn_iscode $1
+    xt_ret $? "" || return $?
+
+    END=${END:-`fn_maxdate`}
+    echo ${END}
+
+    echo "
+    SELECT code, sum(amount)/sum(volume) as ma${NUM:-5}
+        FROM (SELECT * FROM day WHERE code=$1 and date<='$END' ORDER by date DESC LIMIT ${NUM:-5}) as tbl;
+    " | mysql kts
     # SELECT sum((high-yesc)/yesc) FROM day WHERE code = 2 and date > '2014-11-03'; 
     return $?
 }
@@ -417,7 +427,8 @@ function fn_main()
     "ls                 {code|symbol}        # 日线数据 \$LIMIT"
     "ls_day_ob_rise     [sortfiled]          # --- END 涨幅排名 \$LIMIT"
     "stat_change        LIMIT:-13            # 近期涨跌统计"
-    "avrg_high_n        [high [n]]           # 5日平均以T+0"
+    "pma                code                 # NUM=5日平均"
+    "fbi                                     # tbl_fbi"
     "tao5                                    # "
     "rdiff                                   # tbl_rdiff"
     )
