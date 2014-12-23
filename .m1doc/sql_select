@@ -44,6 +44,8 @@
 . LIMIT
 
     LIMIT 结合 ASC DESC 可以得到 shell head tail 的效果。
+    -- tail 5
+    SELECT * FROM (SELECT * FROM ma ORDER by date DESC LIMIT 5) as tbl ORDER by date ASC;
 
 . 联合查询
 
@@ -55,9 +57,6 @@
     -- 最大id的记录
     SELECT * FROM stamp_min order by id DESC limit 1;
     SELECT * FROM stamp_min where id = (SELECT max(id) FROM stamp_min);
-
-    -- tail 5
-    SELECT * FROM (SELECT * FROM ma ORDER by date DESC LIMIT 5) as tbl ORDER by date ASC;
 
 . 唯一(UNIQUE)
 
