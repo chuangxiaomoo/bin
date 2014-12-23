@@ -825,6 +825,7 @@ function fn_main()
     "focus                [field]               # #{YIST:-.soptter.focus}->zxg and 9jian"
     "tao5                 code [end]            # #{nmemb} #{ZIZE}"
     "bei                  {code...|file}        # #{nmemb} #{ZIZE}"
+    "fbi                  {code...|file}        # #{nmemb} #{ZIZE}"
     "9jian                code [end [field]]    # #{NUM}日，个股成本分析"
     "6jian                code [end [field]]    # #{NUM}日，个股成本分析"
     "get_down_turnov      [start:curr-13] [end] # 100%下降净换手"
