@@ -809,6 +809,12 @@ function fn_focus()
     return $?
 }
 
+function fn_fbi()
+{
+    
+    return $?
+}
+
 function fn_main()
 {
     CURR=`fn_maxdate`

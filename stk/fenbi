@@ -89,9 +89,9 @@ function fn_main()
         dates=(`mysql -N kts <<< "${sql}"`)
 
         if [ ${#dates[@]} -ne 0 ]; then
-            echo "There are dates(${dates[@]}) not update, run ./mi5 first"
+            echo "There are dates(${dates[@]}) of ${code} absent, ./mi5 first"
         else
-            echo "Going to update data today"
+            echo "Going to update data of ${code}"
         fi
     fi
 
