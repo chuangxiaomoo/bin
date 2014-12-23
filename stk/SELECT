@@ -394,12 +394,14 @@ function fn_pma()
     xt_ret $? "" || return $?
 
     END=${END:-`fn_maxdate`}
-    echo ${END}
 
     echo "
-    SELECT code, sum(amount)/sum(volume) as ma${NUM:-5}
-        FROM (SELECT * FROM day WHERE code=$1 and date<='$END' ORDER by date DESC LIMIT ${NUM:-5}) as tbl;
-    " | mysql kts
+    SELECT close FROM day WHERE code=$1 and date='$END' INTO @iclose;
+    SELECT code, sum(amount)/sum(volume) as ma${NUM:-5}, @iclose
+    ,round(100 * (@iclose-sum(amount)/sum(volume))/@iclose, 2) as pcnt
+        FROM 
+        (SELECT * FROM day WHERE code=$1 and date<='$END' ORDER by date DESC LIMIT ${NUM:-5}) as tbl;
+    " | mysql -t kts
     # SELECT sum((high-yesc)/yesc) FROM day WHERE code = 2 and date > '2014-11-03'; 
     return $?
 }
