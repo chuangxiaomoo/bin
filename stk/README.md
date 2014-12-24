@@ -33,7 +33,7 @@
 
 > 杂论
 
-## 走势消息论     .doc/excitation_response.md
+## 追风消息论     .doc/excitation_response.md
 ## 谋“势”战略     .doc/围棋谋势.md
 ## 筹码分析法     .doc/六道轮回.千古兴衰.md
 ## 缺口理论       .doc/gap_theory.md
