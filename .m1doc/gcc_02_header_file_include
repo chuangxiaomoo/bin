@@ -58,11 +58,19 @@
 
 
 # -D 形成依赖文件 .d
-  > gcc -MMD jco_update.c -o upgrade/jco_update.d
+  > gcc -MM jco_update.c -o upgrade/jco_update.d
 
   upgrade/jco_update.d: upgrade/jco_update.c \
     upgrade/jco_update.h /opt/s/n/libs/utils/inc/utils.h \
     /opt/s/n/libs/include/debug.h /opt/s/n/apis/inc/logapi.h 
+
+# dep
+
+%.d:%.cpp
+	@set -e; rm -f $@; \
+	$(XX) -MM $(CPPFLAGS) $< > $@.$$$$; \
+	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
+	rm -f $@.$$$$
 
 # -E 查找精确依赖，还是用预处理输出
 
