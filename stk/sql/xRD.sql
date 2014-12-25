@@ -216,8 +216,8 @@ CREATE PROCEDURE sp_create_tbl_taox() tag_tbl_taox:BEGIN
         date_c      date NOT NULL DEFAULT 0,
         off_p       INT  NOT NULL DEFAULT 0,
         off_c       INT  NOT NULL DEFAULT 0,
-        tnov_p    DECIMAL(6,2) NOT NULL DEFAULT 0,    
-        tnov_c    DECIMAL(6,2) NOT NULL DEFAULT 0,    
+        tnov_p      DECIMAL(6,2) NOT NULL DEFAULT 0,    
+        tnov_c      DECIMAL(6,2) NOT NULL DEFAULT 0,    
         avrg_p      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- previous 
         avrg_c      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- curr avrg = sum(amount) / sum(volume)
         ratio       DECIMAL(6,2) NOT NULL DEFAULT 0,
@@ -230,8 +230,8 @@ CREATE PROCEDURE sp_create_tbl_taox() tag_tbl_taox:BEGIN
         date_c      date NOT NULL DEFAULT 0,
         off_p       INT  NOT NULL DEFAULT 0,
         off_c       INT  NOT NULL DEFAULT 0,
-        tnov_p    DECIMAL(6,2) NOT NULL DEFAULT 0,    
-        tnov_c    DECIMAL(6,2) NOT NULL DEFAULT 0,    
+        tnov_p      DECIMAL(6,2) NOT NULL DEFAULT 0,    
+        tnov_c      DECIMAL(6,2) NOT NULL DEFAULT 0,    
         avrg_p      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- previous 
         avrg_c      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- curr avrg = sum(amount) / sum(volume)
         ratio       DECIMAL(6,2) NOT NULL DEFAULT 0,
@@ -241,6 +241,55 @@ CREATE PROCEDURE sp_create_tbl_taox() tag_tbl_taox:BEGIN
     );
     CREATE TABLE IF NOT EXISTS tbl_tao5 LIKE tbl_taox;
 END tag_tbl_taox //
+
+DROP PROCEDURE IF EXISTS sp_create_tbl_fbi //
+CREATE PROCEDURE sp_create_tbl_fbi() tag_tbl_fbi:BEGIN 
+
+    DROP   TEMPORARY TABLE IF EXISTS tempfb;
+    CREATE TEMPORARY TABLE tempfb (
+        id          int(6)          PRIMARY key AUTO_INCREMENT NOT NULL,
+        code        INT(6)          ZEROFILL NOT NULL, 
+        datetime    bigint(14)      NOT NULL DEFAULT 0, 
+        trade       DECIMAL(6,2)    NOT NULL,
+        volume      DECIMAL(10,2)   NOT NULL,
+        amount      DECIMAL(12,2)   NOT NULL,
+        INDEX(code,datetime)
+    );
+
+    DROP   TABLE IF EXISTS tbl_fbi;
+    CREATE TABLE tbl_fbi (
+        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        date_p      bigint(14)      NOT NULL DEFAULT 0,
+        date_c      bigint(14)      NOT NULL DEFAULT 0,
+        off_p       INT  NOT NULL DEFAULT 0,
+        off_c       INT  NOT NULL DEFAULT 0,
+        tnov_p      DECIMAL(6,2) NOT NULL DEFAULT 0,    
+        tnov_c      DECIMAL(6,2) NOT NULL DEFAULT 0,    
+        avrg_p      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- previous 
+        avrg_c      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- curr avrg = sum(amount) / sum(volume)
+        ratio       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        wchng       DECIMAL(6,2) NOT NULL DEFAULT 0
+    );
+
+    CREATE TABLE IF NOT EXISTS tbl_fdiff (
+        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        date_p      bigint(14)      NOT NULL DEFAULT 0,
+        date_c      bigint(14)      NOT NULL DEFAULT 0,
+        off_p       INT  NOT NULL DEFAULT 0,
+        off_c       INT  NOT NULL DEFAULT 0,
+        tnov_p      DECIMAL(6,2) NOT NULL DEFAULT 0,    
+        tnov_c      DECIMAL(6,2) NOT NULL DEFAULT 0,    
+        avrg_p      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- previous 
+        avrg_c      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- curr avrg = sum(amount) / sum(volume)
+        ratio       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        wchng       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        rdiff       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        dbrat        DECIMAL(6,2) NOT NULL DEFAULT 0 
+    );
+    -- CREATE TABLE IF NOT EXISTS tbl_tao5 LIKE tbl_fbi;
+END tag_tbl_fbi //
 
 -- 使用TEMPORARY时效率提升5倍
 -- ERROR 1137 (HY000): Can't reopen table: 'tempday', 因为使用了SELECT嵌套
@@ -543,6 +592,7 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
     IF a_type = @fn_dugu9jian       THEN call sp_create_tbl_9jian();END IF;
     IF a_type = @fn_6maishenjian    THEN call sp_create_tbl_6mai(); END IF;
     IF a_type = @fn_taox_ratio      THEN call sp_create_tbl_taox(); END IF;
+    IF a_type = @fn_fbi_ratio       THEN call sp_create_tbl_fbi();  END IF;
     IF a_type = @fn_up_ma144_all    THEN call sp_create_ma144();    END IF;
 
     -- visit all codes
