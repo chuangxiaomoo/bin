@@ -128,6 +128,11 @@ function fn_isdate()
     echo -n $1 | grep -q -E '^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$'
 }
 
+function fn_isdatetime()
+{
+    ${#1} -eq 14
+}
+
 function fn_write() 
 {
     # wall < /dev/stdin
