@@ -260,8 +260,8 @@ CREATE PROCEDURE sp_create_tbl_fbi() tag_tbl_fbi:BEGIN
     CREATE TABLE tbl_fbi (
         id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
-        date_p      bigint(14)      NOT NULL DEFAULT 0,
-        date_c      bigint(14)      NOT NULL DEFAULT 0,
+        datetime_p  bigint(14)      NOT NULL DEFAULT 0,
+        datetime_c  bigint(14)      NOT NULL DEFAULT 0,
         off_p       INT  NOT NULL DEFAULT 0,
         off_c       INT  NOT NULL DEFAULT 0,
         tnov_p      DECIMAL(6,2) NOT NULL DEFAULT 0,    
@@ -288,7 +288,9 @@ CREATE PROCEDURE sp_create_tbl_fbi() tag_tbl_fbi:BEGIN
         rdiff       DECIMAL(6,2) NOT NULL DEFAULT 0,
         dbrat        DECIMAL(6,2) NOT NULL DEFAULT 0 
     );
-    -- CREATE TABLE IF NOT EXISTS tbl_tao5 LIKE tbl_fbi;
+
+    CREATE TABLE IF NOT EXISTS tbl_fbi5 LIKE tbl_fbi;
+
 END tag_tbl_fbi //
 
 -- 使用TEMPORARY时效率提升5倍
@@ -609,6 +611,7 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
             WHEN @fn_up_ma240_34       THEN call sp_up_ma34(v_code);
             WHEN @fn_6maishenjian      THEN call sp_6maishenjian(v_code);
             WHEN @fn_taox_ratio        THEN call sp_taox(v_code);
+            WHEN @fn_fbi_ratio         THEN call sp_fbi(v_code);
             WHEN @fn_up_ma144_all      THEN call sp_get_ma144(v_code);
             ELSE SELECT "no a_type match";
         END CASE;
@@ -1119,6 +1122,103 @@ CREATE PROCEDURE sp_taox(a_code INT(6) ZEROFILL) tag_taox:BEGIN
     -- SELECT v_cnt100;
 END tag_taox //
 
+DROP PROCEDURE IF EXISTS sp_fbi//
+CREATE PROCEDURE sp_fbi(a_code INT(6) ZEROFILL) tag_fbi:BEGIN
+    -- fbi
+    DECLARE v_cnt100    INT DEFAULT 0;
+    DECLARE v_id        INT DEFAULT 1;
+    DECLARE v_off_c     INT DEFAULT 1;
+    DECLARE v_off_p     INT DEFAULT 1;
+
+    DECLARE v_trade     DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_ratio     DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_wchng     DECIMAL(6,2) DEFAULT 0;
+
+    DECLARE v_avrg      DECIMAL(8,2) DEFAULT 0;
+    DECLARE v_avrg_c    DECIMAL(8,2) DEFAULT 0;
+    DECLARE v_avrg_p    DECIMAL(8,2) DEFAULT 0;
+
+    DECLARE v_datetime   bigint(14) DEFAULT 0;
+    DECLARE v_datetime_c bigint(14) DEFAULT 0;
+    DECLARE v_datetime_p bigint(14) DEFAULT 0;
+
+    DECLARE v_turnov    DECIMAL(12,2) DEFAULT 0;
+    DECLARE v_tnov_c  DECIMAL(12,2) DEFAULT 0;
+    DECLARE v_tnov_p  DECIMAL(12,2) DEFAULT 0;
+
+    DECLARE v_shares    INT DEFAULT 0;
+    DECLARE v_shares0   INT DEFAULT 0;
+    DECLARE v_volume    DECIMAL(12,2) DEFAULT 0;
+    DECLARE v_amount    DECIMAL(12,2) DEFAULT 0;
+    DECLARE v_sumvolume DECIMAL(12,2) DEFAULT 0;
+    DECLARE v_sumamount DECIMAL(12,2) DEFAULT 0;
+
+    SELECT nmc/close FROM cap WHERE code=a_code LIMIT 1 INTO v_shares;
+    SET v_shares0 = 100 * v_shares * @NMC_RATIO;
+    -- 可以通过 turnover = latest(volume/shares); 来计算相应日期数 @NUM
+    SET @sqls=concat('
+        INSERT INTO tempfb(code,datetime,trade,volume,amount)
+        SELECT code,datetime,trade,volume,amount FROM fenbi WHERE code=', 
+        a_code, " and datetime<= ", @END, " order by datetime DESC LIMIT ", @NUM);
+    PREPARE stmt from @sqls; EXECUTE stmt;
+
+    SELECT count(*)   FROM tempfb INTO @v_len;
+    SELECT datetime,trade FROM tempfb WHERE id=1 INTO v_datetime,v_trade;
+
+    -- SELECT  v_shares0;
+
+    lbl_upto_100: WHILE v_id <= @v_len DO
+        SELECT volume,amount FROM tempfb WHERE id=(v_id) INTO v_volume,v_amount;
+
+        SET v_sumvolume = v_sumvolume + v_volume;
+        SET v_sumamount = v_sumamount + v_amount;
+
+        -- SELECT  v_sumvolume,v_sumamount;
+
+        -- upto 100% turnover
+        IF  v_sumvolume >= v_shares0 THEN 
+            SET v_avrg = (v_sumamount/v_sumvolume);
+            SET v_turnov = v_sumvolume/v_shares;
+            SET v_sumvolume = 0;
+            SET v_sumamount = 0;
+
+            IF  v_cnt100 = 0 THEN 
+                -- SELECT v_id;
+                SET v_cnt100 = 1;
+                SET v_avrg_c    = v_avrg;
+                SET v_tnov_c    = v_turnov;
+                set v_off_c     = v_id;
+                set v_datetime_c= v_datetime;
+                SET v_wchng     = 100 * (v_trade-v_avrg_c)/v_avrg_c;
+            ELSE
+                SELECT datetime FROM tempfb WHERE id=(v_off_c+1) INTO v_datetime;
+                SET v_cnt100 = 2;
+                SET v_avrg_p    = v_avrg;
+                SET v_tnov_p    = v_turnov;
+                SET v_off_p     = v_id - v_off_c;
+                set v_datetime_p= v_datetime;
+
+                SET v_ratio     = 100 * (v_avrg_c-v_avrg_p) / v_avrg_c;
+                INSERT INTO tbl_fbi5(code,  datetime_p,off_p,avrg_p,tnov_p, 
+                                           datetime_c,off_c,avrg_c,tnov_c,ratio,wchng)
+                         VALUES(a_code,   v_datetime_p,v_off_p,v_avrg_p,v_tnov_p, 
+                                          v_datetime_c,v_off_c,v_avrg_c,v_tnov_c,v_ratio,v_wchng);
+                LEAVE lbl_upto_100;
+            END IF;
+
+        END IF;
+
+        SET v_id = v_id + 1;
+    END WHILE lbl_upto_100;
+
+    IF v_cnt100 < 2 THEN
+        -- 使用数据库文件实现EXIT_CODE
+        -- SELECT a_code, "so_little_fbi_data";
+        INSERT INTO exitcode VALUES (1);
+    END IF;
+    -- SELECT v_cnt100;
+END tag_fbi //
+
 DROP PROCEDURE IF EXISTS sp_6maishenjian//
 CREATE PROCEDURE sp_6maishenjian(a_code INT(6) ZEROFILL) tag_6mai:BEGIN
     -- 6mai
@@ -1400,6 +1500,7 @@ END tag_stat_linqi //
     SET @fn_dugu9jian           = 10;
     SET @fn_6maishenjian        = 11;
     SET @fn_taox_ratio          = 12;
+    SET @fn_fbi_ratio           = 13;
     SET @FORCE                  = 0;    -- 1时强制计算过滤停牌很久的个股
     SET @START      = '2013-12-6';
     SET @END        = '2014-11-26';
