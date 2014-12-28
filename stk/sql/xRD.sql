@@ -275,8 +275,8 @@ CREATE PROCEDURE sp_create_tbl_fbi() tag_tbl_fbi:BEGIN
     CREATE TABLE IF NOT EXISTS tbl_fdiff (
         id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
-        date_p      bigint(14)      NOT NULL DEFAULT 0,
-        date_c      bigint(14)      NOT NULL DEFAULT 0,
+        datetime_p  bigint(14)      NOT NULL DEFAULT 0,
+        datetime_c  bigint(14)      NOT NULL DEFAULT 0,
         off_p       INT  NOT NULL DEFAULT 0,
         off_c       INT  NOT NULL DEFAULT 0,
         tnov_p      DECIMAL(6,2) NOT NULL DEFAULT 0,    

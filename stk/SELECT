@@ -397,10 +397,11 @@ function fn_pma()
 
     echo "
     SELECT close FROM day WHERE code=$1 and date='$END' INTO @iclose;
-    SELECT code, sum(amount)/sum(volume) as ma${NUM:-5}, @iclose
-    ,round(100 * (@iclose-sum(amount)/sum(volume))/@iclose, 2) as pcnt
-        FROM 
-        (SELECT * FROM day WHERE code=$1 and date<='$END' ORDER by date DESC LIMIT ${NUM:-5}) as tbl;
+    SELECT d.code, sum(amount)/sum(volume) as ma${NUM:-5}, @iclose,
+        round(100 * (@iclose-sum(amount)/sum(volume))/@iclose, 2) as pcnt,
+        round(100*sum(volume)/cap.shares, 2) as turnov
+        FROM (SELECT * FROM day WHERE code=$1 and date<='$END' 
+            ORDER by date DESC LIMIT ${NUM:-5}) as d, cap WHERE d.code = cap.code ;
     " | mysql -t kts
     # SELECT sum((high-yesc)/yesc) FROM day WHERE code = 2 and date > '2014-11-03'; 
     return $?
