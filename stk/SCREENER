@@ -841,8 +841,10 @@ function fn_fbi()
     local code=`sed 's/^0*//g' <<< $1 | xargs printf "%06d"`
     TBL=tbl_fbi1 fn_flush_code ${code}
 
-    ZIZE=${ZIZE:-20}  # 默认 2时为300%，调整以查看更多
-    nmemb=${nmemb:-2}
+    # 默认 2时为300%，调整以查看更多
+    ZIZE=${ZIZE:-20}  
+    #
+    nmemb=${nmemb:-1}
 
     local sql="SELECT datetime from fenbi WHERE code = ${code} and datetime<=${END}"
     dates=(`mysql -N kts <<< "${sql} ORDER by datetime DESC" | xargs -n${nmemb} | awk '{print $1}'`)
@@ -859,7 +861,7 @@ function fn_fbi()
     going to list ${size} recodrs ${dates[$idx]} ~ ${dates[0]} ...
     "
 
-    mysql kts <<<"truncate TABLE tbl_fbi5"
+    mysql kts <<<"truncate TABLE tbl_fbi5; truncate TABLE tbl_fdiff;"
     xt_ret $? "Don't worry, this error show when run 1st time"
     fn_clr_exitcode
     xt_ret $? "clr exitcode" || return $?
@@ -876,14 +878,14 @@ function fn_fbi()
         fi
     done
 
-    col='code,date_p,date_c,off_p,off_c,tnov_p,tnov_c'
+    col='code,datetime_p,datetime_c,off_p,off_c,tnov_p,tnov_c'
     col="${col},avrg_p,avrg_c,ratio,wchng"
     colA="A.${col//,/,A.}"
     echo "
-    INSERT INTO tbl_rdiff(${col},rdiff,dbrat)
+    INSERT INTO tbl_fdiff(${col},rdiff,dbrat)
     SELECT ${colA},(A.ratio-B.ratio) as rdiff, 
-                    (A.ratio+A.wchng) as dbrat FROM tbl_tao5 A 
-    INNER JOIN tbl_tao5 B on(A.id<B.id) GROUP BY A.id;
+                    (A.ratio+A.wchng) as dbrat FROM tbl_fbi5 A 
+    INNER JOIN tbl_fbi5 B on(A.id<B.id) GROUP BY A.id;
     " | mysql -N kts
     xt_ret $? "" || return $?
 
