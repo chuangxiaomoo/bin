@@ -177,4 +177,36 @@ function fn_load_rzrq_history()
 # fn_load_rzrq_history
 # fn_main $@
 
-  fn_dl_rzrq_today
+# fn_dl_rzrq_today
+# --------------------------------------------------------------------------
+
+function fn_dl_rzrq()
+{
+    code=$1
+    sd=`mysql -N kts <<< "SELECT date from day WHERE code = $code ORDER by date DESC LIMIT ${NUM:-40}" | tail -1`
+    #echo ${sd}
+    w3m -dump "http://q.stock.sohu.com/app2/mpssTrade.up?code=${code}&sd=${sd}&ed=" | 
+        awk '/^201/{
+            printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", $2, $1, $4, $6, $7, $9, $10, $11
+        }' | sed 's/,//g'
+
+    echo "
+    DROP TABLE IF EXISTS rzrq_day;
+    CREATE TABLE rzrq_day (
+        date        DATE NOT NULL,
+        code        INT(6) ZEROFILL NOT NULL, 
+        fin_bala    DECIMAL(10,2) NOT NULL,
+        fin_buy     DECIMAL(10,2) NOT NULL,
+        fin_pay     DECIMAL(10,2) NOT NULL,
+        alw_bala    DECIMAL(10,2) NOT NULL,
+        alw_sell    DECIMAL(10,2) NOT NULL,
+        alw_payb    DECIMAL(10,2) NOT NULL,
+        sec_bala    DECIMAL(10,2) NOT NULL,
+        sec_diff    DECIMAL(10,2) NOT NULL,
+        turnover    DECIMAL(10,2) NOT NULL,
+        INDEX(date),
+        INDEX(code,date)
+    );
+    " | mysql kts
+}
+fn_dl_rzrq 002241
