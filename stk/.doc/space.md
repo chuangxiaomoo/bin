@@ -1,5 +1,6 @@
 # time and space transmit
 
+  费雪公式：MV=PQ
   量化，通俗讲，即成交量之数字化
 
 # 鸿观
