@@ -183,30 +183,35 @@ function fn_load_rzrq_history()
 function fn_dl_rzrq()
 {
     code=$1
-    sd=`mysql -N kts <<< "SELECT date from day WHERE code = $code ORDER by date DESC LIMIT ${NUM:-40}" | tail -1`
+    rdata='/tmp/rzrq'
+    NUM=${NUM:-100}
+    sd=`mysql -N kts <<< "SELECT date from day WHERE code = $code ORDER by date DESC LIMIT ${NUM}" | tail -1`
+    > ${rdata}
     #echo ${sd}
-    w3m -dump "http://q.stock.sohu.com/app2/mpssTrade.up?code=${code}&sd=${sd}&ed=" | 
-        awk '/^201/{
-            printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", $2, $1, $4, $6, $7, $9, $10, $11
-        }' | sed 's/,//g'
+
+    local i
+    for (( i=1; (i-1)*30<${NUM}; i+=1 )); do
+        w3m -dump "http://q.stock.sohu.com/app2/mpssTrade.up?code=${code}&sd=${sd}&ed=&p=${i}" | 
+            awk '/^201/{
+                printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", $2, $1, $4, $6, $7, $9, $10, $11
+            }' | sed 's/,//g' >> ${rdata}
+    done
 
     echo "
     DROP TABLE IF EXISTS rzrq_day;
     CREATE TABLE rzrq_day (
-        date        DATE NOT NULL,
         code        INT(6) ZEROFILL NOT NULL, 
-        fin_bala    DECIMAL(10,2) NOT NULL,
-        fin_buy     DECIMAL(10,2) NOT NULL,
-        fin_pay     DECIMAL(10,2) NOT NULL,
-        alw_bala    DECIMAL(10,2) NOT NULL,
-        alw_sell    DECIMAL(10,2) NOT NULL,
-        alw_payb    DECIMAL(10,2) NOT NULL,
-        sec_bala    DECIMAL(10,2) NOT NULL,
-        sec_diff    DECIMAL(10,2) NOT NULL,
-        turnover    DECIMAL(10,2) NOT NULL,
+        date        DATE NOT NULL,
+        fin_buy     bigint(14) NOT NULL,         # 融资买入额
+        fin_bala    bigint(14) NOT NULL,         # 融资余额
+        alw_sell    bigint(14) NOT NULL,         # 融券卖出量
+        alw_bala    bigint(14) NOT NULL,         # 融券余量
+        alw_amount  bigint(14) NOT NULL,         # 融券余额 = alw_bala * trade
+        sec_bala    bigint(14) NOT NULL,         # 融资融券余额 = 融资余额 + 融券余额
         INDEX(date),
         INDEX(code,date)
     );
+    LOAD DATA LOCAL INFILE '$rdata' INTO TABLE rzrq_day;
     " | mysql kts
 }
 fn_dl_rzrq 002241
