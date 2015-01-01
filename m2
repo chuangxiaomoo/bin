@@ -69,6 +69,7 @@ function fn_2014_life()                 { cat annual_2014_life ;}
 function fn_2014_grandpa_inlaw()        { cat annual_2014_grandpa_inlaw ;}
 function fn_2014_report()               { cat annual_2014_report ;}
 function fn_2014_national_day()         { cat annual_2014_national_day ;}
+function fn_2015_plan()                 { cat annual_2015_plan ;}
     local opts=(
         plan_what                       # 基于`以终为始`的理念
         report_what
@@ -87,6 +88,7 @@ function fn_2014_national_day()         { cat annual_2014_national_day ;}
         2014_grandpa_inlaw
         2014_report
         2014_national_day               # NationalDay
+        2015_plan
     )
     fn_print $@
 }
