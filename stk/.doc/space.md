@@ -119,6 +119,20 @@
   好的票，你不可能用低价买到。
   用低价买到的，一定不是好票。
 
+  `歌尔声学
+  mysql> SELECT count(*) FROM day WHERE (open-yesc)/yesc<-.009 and date > '2014-01-01';
+  mysql> SELECT count(*) FROM day WHERE (open-yesc)/yesc<-.009 and date > '2014-01-01' and close>yesc;
+  mysql> SELECT count(*) FROM day WHERE (open-yesc)/yesc<-.009 and date > '2014-01-01' and close<=yesc;
+  +----------+
+  | count(*) |
+  +----------+
+  |    55835 |
+  |    18480 |
+  |    37355 |  低开的股票大概率(60%)当天会跌。
+  +----------+`
+
+# 2015-01-01 
+
 # 抓股票飞猪独家技巧（一）
 
   2014年12月30日 06:07
