@@ -41,7 +41,7 @@
 
 > 实践 -- 旧有的技术架构已经不足以支撑更大的梦想
 
-## 心战           .doc/psywar.md
+## 心战           .doc/psy.md
 ## 总结2013       .doc/2013.md
 ## 笛卡尔实践     .doc/up_down_logic.md
 ## 建立交易系统   .doc/ma-trade.md
