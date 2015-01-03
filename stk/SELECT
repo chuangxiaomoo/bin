@@ -117,7 +117,7 @@ function fn_app_wgt_turnov()
     wgt="(sum-net)"
     field=${1:-wgt}
 
-    # 预筛选:高换手 SELECT sel_vol5_ratio --> sel_ma513_ob_vol5
+    # 预筛选:高换手 SELECT get_vol_rat_152468 --> sel_ma513_ob_vol5
     COND=${TBL:+and code in (SELECT code FROM $TBL) }${COND}
 
     echo ----- COND: $COND -----
@@ -159,15 +159,23 @@ function fn_get_comma_cloumns()
     # code,date,yesc,open,high,low,close,volume,amount
 }
 
-function fn_sel_vol5_ratio()
+function fn_get_vol_rat_152468()
 {
     function fn_build_sqls() {
     sqls="
-    SELECT d.*,  ${ratio} as ratio, c.name FROM tbl_ma513 as ma, ${tbl_day} as d, cap as c
-        where ma.code=d.code and ma.code=c.code ${COND} ORDER by ${field} DESC limit ${LIMIT:-24}" 
+    SELECT d.code,d.date,d.yesc,d.open,d.high,d.low,d.close,
+        round(100*(d.close-d.yesc)/d.yesc,2) as rise, 
+        ${rat15} as rat15, 
+        ${rat24} as rat24, 
+        ${rat68} as rat68,
+        c.name FROM tbl_ma513 as ma, ${tbl_day} as d, cap as c
+        WHERE ma.code=d.code and ma.code=c.code HAVING 1 ${COND} ORDER by ${field} DESC limit ${LIMIT:-24}" 
     }
-    field=${1:-ratio}
-    ratio="5*d.volume/ma.vol5*`fn_get_ratio_close2open`"
+    field=${1:-rat15}
+    SCALE=`fn_get_ratio_close2open`
+    rat15="round(5*d.volume/ma.vol5*${SCALE},2)"
+    rat24="round(2*(d.volume*${SCALE}+ma.vol)/(ma.vol5-ma.vol),2)"
+    rat68="round((8/6)*(d.volume*${SCALE}+ma.vol5)/(ma.vol13-ma.vol5),2)"
 
     ./SCREENER get_ma513 ${PREV}
     xt_ret $? "${FUNCNAME}" || return $?
@@ -178,7 +186,7 @@ function fn_sel_vol5_ratio()
 
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
-    field=ratio fn_build_sqls
+    field=rat15 fn_build_sqls
     mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > ${soptter_zxg} 
     TBL=zxg up 7 ${soptter_zxg}
     xt_ret $? "${FUNCNAME}" || return $?
@@ -421,7 +429,7 @@ function fn_main()
     "app_wgt_turnov     [sortfiled]          # 追加weight到down_turnov CHAO=1则进zxg"
     "get_comma_cloumns  [tbl_name:-day]      # 逗分列名"
     "sel_tbl_sink_where [TBL:-zxg_chao513]   # chao ..."
-    "sel_vol5_ratio     [sortfiled:-ratio]   # 量比排名"
+    "get_vol_rat_152468 [sortfiled:-ratio]   # 量比排名"
     "sel_ma513_ob_vol5  [sortfiled]          # 换手率排名"
     "get_open_days_min                       # 分钟日列表 \$LIMIT"
     "app_nmc_name       [sortfiled]          # 追加股票名到表TBL"
