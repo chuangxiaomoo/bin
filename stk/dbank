@@ -106,6 +106,9 @@ fenbi_raw1='/dev/shm/fenbi/raw1'
 fenbi_ripe='/dev/shm/fenbi/ripe'
 mkdir -p ${fenbi_raw%/*}
 
+yjbb_raw='/dev/shm/yjbb_raw'
+yjbb_rip='/dev/shm/yjbb_rip'
+
 cache='/tmp/cache'
 buffer='/tmp/buffer'
 
