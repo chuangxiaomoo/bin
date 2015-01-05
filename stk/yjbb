@@ -1,0 +1,89 @@
+#! /bin/bash -
+
+. `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
+. /etc/common.rc
+
+function fn_get_url()
+{
+    url="http://data.eastmoney.com/bbsj/stock${code}/yjbb.html"
+
+    if [ "${RAW}" == 1 ]; then
+        w3m -dump ${url} | grep -A24 "点击进入年报大全"
+        return 0
+    else
+        earning=(`w3m -dump ${url} | grep -m1 '^1[345]' | awk '{print $2, $8}'`)
+        test -n "${earning[*]}"
+        xt_ret $? "" || return $?
+
+        echo "
+        SELECT cap.name, d.code, round(d.close/${earning[0]},2) as EPS, 
+            round(d.close/${earning[0]}/${earning[1]},2) as PEG,
+            cap.nmc FROM day as d, cap
+            WHERE  d.code=${code} and d.date='${END}' and d.code=cap.code;
+        " | mysql -N kts
+        xt_ret $? "" || return $?
+    fi
+}
+
+function fn_code()
+{
+    CURR=`fn_maxdate`
+    END=${END:-${CURR}}
+
+    for code in $@; do
+        fn_iscode ${code}
+        xt_ret $? "" || return $?
+
+        fn_get_url
+        return $?
+    done
+}
+
+function fn_all()
+{
+    fn_url() { url0="http://data.eastmoney.com/bbsj/${date}/yjbb/ggrq/desc/${i}.html"; }
+    date='201409'
+    pages=3
+    for (( i=1; i<=${pages}; i+=1 )); do
+        fn_url
+        w3m -dump ${url0} > ${yjbb_raw}
+        if [ "${i}" -eq 1 ]; then
+            pages=`grep '下一页' ${yjbb_raw} | sed 's/下一页.*//g' | awk '{print $NF}'`
+        fi
+        # code eps 
+        # orevenue r_growth_y r_growth_q 
+        # profit p_growth_y p_growth_q
+        # net_assets ROE cash_flow gross_margin
+        grep '详细股吧' ${yjbb_raw} | 
+        awk '{
+            printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
+            $2, $5, 
+            $6,$7,$8,
+            $9,$10,$11,
+            $12,$13,$14,$15
+        }' | sed 's/-$/0/' | grep "^[036]" 
+    done > ${yjbb_rip}
+    sed -i "s/^/${date}\t/" ${yjbb_rip}
+    sort -g -k2 ${yjbb_rip} -o ${yjbb_rip}
+    return $?
+}
+
+function fn_main()
+{
+    
+    case $1 in
+        1|code)
+            fn_code "${@:2}"
+            ;;
+        2|all)
+            fn_all
+            ;;
+        *)
+            echo "Usage: yjbb {1|2} [code]"
+            ;;
+    esac
+
+    return $?
+}
+# 数据的延时在30s内
+fn_main 2
