@@ -3006,6 +3006,10 @@
           diff(ratio)<0时下跌趋势
           diff(ratio)>0时上涨趋势
           diff(ratio) = 0, max(+ratio)价格之`顶`
+              dbrat(n) -lt dbrat(n-2)
+              rdiff -lt 1.00           *以5%为单位diff*
+              wchng -gt 10 and ratio -gt 10 and sum(wchng+ratio) -gt 30
+              参考数据: .template/taox.gesx.md|顶之特征|
           diff(ratio) = 0, ratio = 0  价格之`底`
 
   背驰  ：rdiff = diff(ratio)

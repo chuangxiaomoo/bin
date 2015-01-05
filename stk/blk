@@ -3,7 +3,7 @@
 function fn_main()
 {
     CWD=${PWD}
-    BLK=/dzh2/USERDATA/block
+    BLK='/dzh2/USERDATA/block'
     maps=(
     深成40.BLK      .blk.sc40
     创业板指.BLK    .blk.cybz
@@ -11,6 +11,9 @@ function fn_main()
     军工指数.BLK    .blk.jgzs
     融资融券.BLK    .blk.rzrq
     券商.BLK        .blk.qs
+    银行业.BLK      .blk.yhy
+    房地产.BLK      .blk.fdc
+    300地产.BLK     .blk.300dc
     )
     local i j
     for (( i=0,j=1; i<${#maps[@]}; i+=2,j+=2 )); do
@@ -18,7 +21,7 @@ function fn_main()
         echo ${maps[${i}]} ${maps[${j}]}
         cat ${BLK}/${maps[${i}]} | \
             tr -cd '[0-9SZH]' | sed 's/S[HZ]/\n/g'| \
-            tail -n+2 | sort -g > ${maps[${j}]}
+            tail -n+2 | sort -g | grep -v '^9' > ${maps[${j}]}
     done
     return $?
 }
