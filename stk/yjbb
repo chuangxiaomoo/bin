@@ -39,6 +39,36 @@ function fn_code()
     done
 }
 
+
+function fn_load()
+{
+    if [ ! -f "${1}" ]; then
+        echo "Usage: load .template/yjbb_rip or ${yjbb_rip}"; exit 1
+    fi
+    echo "
+    DROP TABLE IF EXISTS tbl_yjbb;
+    CREATE TABLE IF NOT EXISTS tbl_yjbb (
+        date        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        EPS         DECIMAL(10,4) NOT NULL DEFAULT 0,
+        revenue     DECIMAL(12,2) NOT NULL DEFAULT 0,
+        r_grw_y     DECIMAL(10,2) NOT NULL DEFAULT 0,
+        r_grw_q     DECIMAL(10,2) NOT NULL DEFAULT 0,
+        profit      DECIMAL(12,2) NOT NULL DEFAULT 0,
+        p_grw_y     DECIMAL(10,2) NOT NULL DEFAULT 0,
+        p_grw_q     DECIMAL(10,2) NOT NULL DEFAULT 0,
+        netassets   DECIMAL(10,4) NOT NULL DEFAULT 0,
+        ROE         DECIMAL(10,2) NOT NULL DEFAULT 0,
+        cashflow    DECIMAL(10,2) NOT NULL DEFAULT 0 
+    --  grossMgn    DECIMAL(10,2) NOT NULL DEFAULT 0
+    );
+    TRUNCATE tbl_yjbb;
+    LOAD DATA LOCAL INFILE '$1' INTO TABLE tbl_yjbb;
+    " | mysql kts
+    
+    return $?
+}
+
 function fn_all()
 {
     fn_url() { url0="http://data.eastmoney.com/bbsj/${date}/yjbb/ggrq/desc/${i}.html"; }
@@ -56,11 +86,11 @@ function fn_all()
         # net_assets ROE cash_flow gross_margin
         grep '详细股吧' ${yjbb_raw} | 
         awk '{
-            printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
+            printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
             $2, $5, 
             $6,$7,$8,
             $9,$10,$11,
-            $12,$13,$14,$15
+            $12,$13,$14
         }' | sed 's/-$/0/' | grep "^[036]" 
     done > ${yjbb_rip}
     sed -i "s/^/${date}\t/" ${yjbb_rip}
@@ -71,15 +101,22 @@ function fn_all()
 function fn_main()
 {
     case $1 in
-        1|code)
-            fn_code "${@:2}"
-            ;;
-        2|all)
-            fn_all
-            ;;
-        *)
-            echo "Usage: yjbb {1 code | 2}"
-            ;;
+    1|code)
+        fn_code "${@:2}"
+        ;;
+    2|load)
+        fn_load "${@:2}"
+        ;;
+    3|all)
+        fn_all 
+        ;;
+    *)
+        echo "Usage: 
+        yjbb {1|code} code  (1st form)
+        yjbb {2|load} file  (2nd form)
+        yjbb {3|all }       (3rd from)
+        "
+        ;;
     esac
 
     return $?
