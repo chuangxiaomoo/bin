@@ -691,10 +691,10 @@ function fn_main()
     "hex2dec <hex>          # xslt hex 2 decimal, hex list are seperated by ' '"
     "conv from to <data>    # use mysql to conv between binary decimal heximal"
     "dec2bin decimal_data   # "
-    "split2files            # split a file to files accord to delim_expression"
     "cp_as_tar f src dst    # login.asp web_jssj/ /1/svn/filesys.t/app/vs/web_nu"
     "cp_for_in f to...      # cp less filesys.*/dir"
     "genheader <.h file>    # define MACRO in header file"                        # 16
+    "split2files            # split a file to files accord to delim_expression"
     "svncat <url> <pattern> # svn cat <url> | grep <pattern>"
     "insert_blankline FILE  # 为小于78字符的行换行" 
     "78cols_text      FILE  # 为大于78字符的行换行"

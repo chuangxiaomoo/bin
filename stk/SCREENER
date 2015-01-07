@@ -904,7 +904,7 @@ function fn_main()
     "6maishenjian         [end [field]]         # NUM=61 min(close) sort by #{COL}"
     "taox_ratio           [end [field]]         # TBL套现比例分析"
     "tao                  code [end [field]]    # #{nmemb}"
-    "c144                 code... [end]         # cost:ma144 & sort by #{ASC:id}"
+    "c144                 code...               # cost:ma144 & sort by #{ASC:id}"
     "focus                [field]               # #{YIST:-.soptter.focus}->zxg and 9jian"
     "tao5                 code [end]            # #{nmemb} #{ZIZE}"
     "bei                  {code...|file}        # #{nmemb} #{ZIZE}"
