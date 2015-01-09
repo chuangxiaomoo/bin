@@ -117,7 +117,7 @@ function fn_app_wgt_turnov()
     wgt="(sum-net)"
     field=${1:-wgt}
 
-    # 预筛选:高换手 SELECT get_vol_rat_152468 --> sel_ma513_ob_vol5
+    # 预筛选:高换手 SELECT get_vol_rat_152468 --> get_ma513
     COND=${TBL:+and code in (SELECT code FROM $TBL) }${COND}
 
     echo ----- COND: $COND -----
@@ -198,7 +198,7 @@ function fn_sel_tbl_sink_where()
     echo
 }
 
-function fn_sel_ma513_ob_vol5()
+function fn_get_ma513()
 {
     # read -p "U've done [SCREENER 2]?"
     SCALE=`fn_get_ratio_close2open`
@@ -210,7 +210,7 @@ function fn_sel_ma513_ob_vol5()
     round(100*vol13/(c.nmc/c.close),2) as tov13, 
     round(${SCALE}*4*vol/(vol5-vol),2) as ratio,
     c.nmc, c.name
-    FROM tbl_ma513 as t, cap as c WHERE t.code=c.code ${HAVING}
+    FROM tbl_ma513 as t, cap as c WHERE t.code=c.code HAVING 1 ${COND}
     ORDER by ${1:-tov5} ${ASC:-DESC} LIMIT ${LIMIT:-24}
     " 
     echo "${sqls}" | tee /dev/stderr | mysql $mo -t kts
@@ -430,7 +430,7 @@ function fn_main()
     "get_comma_cloumns  [tbl_name:-day]      # 逗分列名"
     "sel_tbl_sink_where [TBL:-zxg_chao513]   # chao ..."
     "get_vol_rat_152468 [sortfiled:-ratio]   # 量比排名"
-    "sel_ma513_ob_vol5  [sortfiled]          # 换手率排名"
+    "get_ma513          [sortfiled:tov5]     # 换手率[tov5]排名"
     "get_open_days_min                       # 分钟日列表 \$LIMIT"
     "app_nmc_name       [sortfiled]          # 追加股票名到表TBL"
     # ----------------  ABOVE IS FIXED SEQUENCE --------------------
