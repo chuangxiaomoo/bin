@@ -375,7 +375,7 @@ function fn_tao5()
 function fn_rdiff()
 {
    #columns=date_p,date_c,off_p,off_c,tnov_p,tnov_c,avrg_p,avrg_c,ratio
-    columns=date_p,date_c,off_c,tnov_c,avrg_p,avrg_c,ratio,wchng,rdiff,dbrat
+    columns=date_c,off_c,tnov_c,avrg_p,avrg_c,ratio,wchng,rdiff,dbrat
     columns=${columns:-'*'}
     columns=t.${columns//,/,t.}
 
@@ -383,7 +383,7 @@ function fn_rdiff()
     function fn_get_tbl_rdiff_dive()
     {
         tbl_super_dive="
-        SELECT t.code, ${columns}, c.nmc, c.name
+        SELECT t.code, DATE_FORMAT(date_p,'%m-%d') as date_p, ${columns}, c.nmc, c.name
            FROM ${tablex:-tbl_rdiff} as t, cap as c 
            WHERE t.code = c.code HAVING 1 ${COND} limit ${LIMIT:-144}
         "
@@ -405,7 +405,7 @@ function fn_pma()
 
     echo "
     SELECT close FROM day WHERE code=$1 and date='$END' INTO @iclose;
-    SELECT d.code, sum(amount)/sum(volume) as ma${NUM:-5}, @iclose,
+    SELECT d.code, '${END}' as date, sum(amount)/sum(volume) as ma${NUM:-5}, @iclose,
         round(100 * (@iclose-sum(amount)/sum(volume))/@iclose, 2) as pcnt,
         round(100*sum(volume)/cap.shares, 2) as turnov
         FROM (SELECT * FROM day WHERE code=$1 and date<='$END' 
