@@ -8,6 +8,10 @@ zip
     zip -r archive_name.zip directory_to_compress
     unzip archive_name.zip [-d exdir]
 
+zip 加密
+    zip -re dir.zip dir
+    unzip dir.zip
+
 tar 
     /* Copying an Entire Directory Tree Without GNU cp, 
      * the '-' is stand for the stdin & stdout, or understand to a
