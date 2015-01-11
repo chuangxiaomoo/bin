@@ -69,7 +69,7 @@ function fn_load()
     return $?
 }
 
-function fn_all()
+function fn_dl_all()
 {
     fn_url() { url0="http://data.eastmoney.com/bbsj/${date}/yjbb/ggrq/desc/${i}.html"; }
     date='201409'
@@ -98,6 +98,13 @@ function fn_all()
     return $?
 }
 
+
+function fn_select()
+{
+    
+    return $?
+}
+
 function fn_main()
 {
     case $1 in
@@ -107,14 +114,18 @@ function fn_main()
     2|load)
         fn_load "${@:2}"
         ;;
-    3|all)
-        fn_all 
+    3|dl_all)
+        fn_dl_all 
+        ;;
+    4|select)
+        fn_select "${@:2}"
         ;;
     *)
         echo "Usage: 
         yjbb {1|code} code  (1st form)
         yjbb {2|load} file  (2nd form)
-        yjbb {3|all }       (3rd from)
+        yjbb {3|dl_all}     (3rd from)
+        yjbb {4|select}     (4th from)
         "
         ;;
     esac
