@@ -296,13 +296,13 @@ function fn_fbi_ratio()
 {
     iEND=${1:-${END}}
     TBL=${TBL:-'cap'}
-    NUM=${NUM:-240}        # 需要200%，所以应该比较大
+    NUM=${NUM:-900}        # 30/day
 
     head -n -5 $mps_org > $mps_god
     echo "
     SET @END=$iEND;
     SET @NUM=${NUM};
-    SET @NMC_RATIO=${NMC_RATIO:-.1};
+    SET @NMC_RATIO=${NMC_RATIO};
     call sp_visit_tbl('$TBL', @fn_fbi_ratio);
     " >> $mps_god
     mysql $mo -t kts <<< "source $mps_god"
@@ -412,10 +412,11 @@ function fn_tao5()
     test -n "$nmemb" || fn_nmemb_of_10percent
     xt_ret $? "" || return $?
 
-      ZIZE=${ZIZE:-10}  # 默认 2时为300%，调整以查看更多
+    ZIZE=${ZIZE:-10}  # 默认 2时为300%，调整以查看更多
 
     local sql="SELECT date from day WHERE code = ${code} and date<='${END}'"
-    dates=(`mysql -N kts <<< "${sql} ORDER by date DESC" | xargs -n${nmemb} | awk '{print $1}'`)
+    dates=(`mysql -N kts <<< "${sql} ORDER by date DESC" | 
+                awk -v nmemb=${nmemb} '{if (! (a++%nmemb) ) print $1}'`)
 
     local size=${#dates[@]}
     let   idx=${size}-1
@@ -827,8 +828,34 @@ function fn_focus()
     return $?
 }
 
+
+function fn_auto_nmemb()
+{
+    [ -z "${NMC_RATIO}" ] && return
+    nrat=`mysql -N<<<"SELECT round(100*${NMC_RATIO}, 0)"`
+
+    if [ "${nrat}" -lt 20 ]; then
+        let nmemb0=150/${nrat}
+    fi
+
+    nmemb=${nmemb:-${nmemb0}}
+    #echo ${nmemb}; exit
+    return $?
+}
+
 function fn_fbi()
 {
+    # 默认 2时为300%，调整以查看更多
+    # 最大日换手为20%，以1%为粒度，可以得出`10min`是一个很好的单位，得日数据25单位
+    # 若是日换手为4%，以nmemb=7.5=30/4
+    # 取mi5的NUM=30，即便是歌尔日换手1%，亦可得到10组diff数据
+    # NMC_RATIO即tov5
+    # nmemb = 25/最大日换手
+    fn_auto_nmemb
+    NMC_RATIO=${NMC_RATIO:-.2}
+    nmemb=${nmemb:-7}
+    ZIZE=${ZIZE:-20}  
+
     test -n "${1}" && fn_iscode ${1}       
     xt_ret $? "invalid code[$1]" || return $?
 
@@ -841,23 +868,19 @@ function fn_fbi()
     local code=`sed 's/^0*//g' <<< $1 | xargs printf "%06d"`
     TBL=tbl_fbi1 fn_flush_code ${code}
 
-    # 默认 2时为300%，调整以查看更多
-    ZIZE=${ZIZE:-20}  
-    #
-    nmemb=${nmemb:-1}
-
     local sql="SELECT datetime from fenbi WHERE code = ${code} and datetime<=${END}"
-    dates=(`mysql -N kts <<< "${sql} ORDER by datetime DESC" | xargs -n${nmemb} | awk '{print $1}'`)
+    #ates=(`mysql -N kts <<< "${sql} ORDER by datetime DESC" | xargs -n${nmemb} | awk '{print $1}'`)
+    dates=(`mysql -N kts <<< "${sql} ORDER by datetime DESC" | 
+                awk -v nmemb=${nmemb} '{if (! (a++%nmemb) ) print $1}'`)
     test ${#dates[@]} -ne 0
     xt_ret "${PIPESTATUS[0]}" || return $?
 
     local size=${#dates[@]}
     let   idx=${size}-1
-          size=${ZIZE:-${size}}
-    local iNUM=${NUM:-400}
+    local iNUM=${NUM:-900}          # 30/day
 
     echo "
-    size: ${idx}+1 nmemb: ${nmemb} iNUM:${iNUM}
+    size: ${idx}+1 nmemb: ${nmemb} iNUM:${iNUM} (hour=nmemb[6])
     going to list ${size} recodrs ${dates[$idx]} ~ ${dates[0]} ...
     "
 
@@ -867,8 +890,8 @@ function fn_fbi()
     xt_ret $? "clr exitcode" || return $?
 
     local i=0
-    for (( i=0; i<${size}; i+=1 )); do
-        TBL=tbl_fbi1 NUM=${iNUM} fn_fbi_ratio ${dates[$i]} 
+    for (( i=0; i<${ZIZE}; i+=1 )); do
+        TBL=tbl_fbi1 NUM=${iNUM} fn_fbi_ratio ${dates[$i]}
         xt_ret ${?} "" || return $?
 
         if ! fn_sql_exitsucc; then

@@ -63,7 +63,7 @@ function fn_hexun()
         LOAD DATA LOCAL INFILE '${buffer}' INTO TABLE tmpfb;
         INSERT INTO fenbi(code, datetime, trade, volume, amount)
           SELECT code,datetime,trade,sum(volume),sum(amount) FROM 
-            (SELECT *,round(datetime%1000000/200,0) as grp from tmpfb ORDER by datetime DESC) 
+            (SELECT *,round(datetime%1000000/${mod_fb},0) as grp from tmpfb ORDER by datetime DESC) 
                 as newfb GROUP by grp ORDER by datetime;
         " | mysql -t kts 
         xt_ret $? "" || return $?
