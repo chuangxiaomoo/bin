@@ -90,6 +90,7 @@ function fn_main()
 
         if [ ${#dates[@]} -ne 0 ]; then
             echo "There are dates(${dates[@]}) of ${code} absent, ./mi5 first"
+            exit
         else
             echo "Going to update data of ${code}"
         fi
