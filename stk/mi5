@@ -33,6 +33,9 @@ function fn_sina()
     fmaxdate=`fn_str_2_date ${datetime}`
     # echo ${datetime}
 
+    [ -n "${datetime}" ]
+    xt_ret $? "Try create kts.fenbi and tmpfb mannually" || return $?
+
     if [ "${datetime}" = NULL ]; then
         sql="SELECT date FROM (SELECT date FROM day WHERE code=${code} ORDER by date DESC LIMIT 20)
                 as tbl ORDER by date ASC"
@@ -63,7 +66,7 @@ function fn_sina()
 
         #break;
     done
-    
+
     return $?
 }
 
@@ -78,6 +81,9 @@ function fn_main()
 
     fn_sina
     xt_ret $? "sina" || return $?
+
+    fn_echo_succ "DL and load fenbi of ${code} succ!"
+    
 }
 
 fn_main $@
