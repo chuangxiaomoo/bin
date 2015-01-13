@@ -849,10 +849,11 @@ function fn_fbi()
     # 取mi5的NUM=20，即便是歌尔日换手1.5%，亦可得到10组diff数据
     # NMC_RATIO即tov5
     # nmemb = 1%换手公差时之数据组数 = 30/最大日换手 = 30/(tov5/5) = 150/tov5
+    # ZIZE取20，太远时，日成交翻番后，往前的数据会不准确
     fn_auto_nmemb
     NMC_RATIO=${NMC_RATIO:-.2}
     nmemb=${nmemb:-7}
-    ZIZE=${ZIZE:-20}  
+    ZIZE=${ZIZE:-20}
 
     test -n "${1}" && fn_iscode ${1}       
     xt_ret $? "invalid code[$1]" || return $?
