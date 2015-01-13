@@ -20,8 +20,8 @@ function fn_usage()
         -h, --help          show usage
         -r, --remove        remove ${reffile}* b4 cscope -Rbq
         -i, --interactive   vi ${cspathes} of project b4 cscope -Rbq
-        -f, --filelist      use filelist and exit
-        -U,                 Update timestamp
+        -f, --filelist      rebuild ${reffile} from ${csfiles}
+        -U,                 rebuild both ${reffile} and ${csfiles} from ${cspathes}
 
     Configuration:
         .cscope.pathes, include path or exclude path(head with -)
