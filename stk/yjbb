@@ -123,7 +123,7 @@ function fn_select()
             WHERE day.date='${CURR}' and day.code=${TBL:-cap}.code)"
     
     echo "
-    SELECT $columns, c.nmc,c.name FROM tbl_yjbb as y, cap as c, 
+    SELECT $columns, c.nmc, c.shares, c.name FROM tbl_yjbb as y, cap as c, 
         ${sql} as d
         WHERE y.code=c.code and y.code=d.code ${CODE}
         ORDER by ${field} ${ASC:-DESC} limit ${LIMIT:-48};

@@ -420,12 +420,11 @@ function fn_tao5()
 
     local size=${#dates[@]}
     let   idx=${size}-1
-          size=${ZIZE:-${size}}
     local iNUM=${NUM:-300}
 
     echo "
-    size: ${idx}+1 nmemb: ${nmemb} iNUM:${iNUM}
-    going to list ${size} recodrs ${dates[$idx]} ~ ${dates[0]} ...
+    size: ${size} nmemb: ${nmemb} iNUM:${iNUM}
+    going to list ${ZIZE} recodrs ${dates[$idx]} ~ ${dates[0]} ...
     "
 
     mysql kts <<<"truncate TABLE tbl_tao5"
@@ -434,7 +433,7 @@ function fn_tao5()
     xt_ret $? "try create tbl_tao5: SCREENER tao 2" || return $?
 
     local i=0
-    for (( i=0; i<${size}; i+=1 )); do
+    for (( i=0; i<${ZIZE}; i+=1 )); do
         [ "${i}" -eq 0 ] && b4=3 || b4=0
         FORCE=1 TBL=tbl_tao1 NUM=${iNUM} fn_taox_ratio ${dates[$i]} # | grep -B${b4} ${code}
         xt_ret ${PIPESTATUS[0]} "" || return $?
@@ -845,12 +844,11 @@ function fn_auto_nmemb()
 
 function fn_fbi()
 {
-    # 默认 2时为300%，调整以查看更多
     # 最大日换手为20%，以1%为粒度，可以得出`10min`是一个很好的单位，得日数据25单位
-    # 若是日换手为4%，以nmemb=7.5=30/4
-    # 取mi5的NUM=30，即便是歌尔日换手1%，亦可得到10组diff数据
+    # 若是日换手为4%，以nmemb=7=30/4   <-- 30 即1日数据组（有效取28）
+    # 取mi5的NUM=20，即便是歌尔日换手1.5%，亦可得到10组diff数据
     # NMC_RATIO即tov5
-    # nmemb = 25/最大日换手
+    # nmemb = 1%换手公差时之数据组数 = 30/最大日换手 = 30/(tov5/5) = 150/tov5
     fn_auto_nmemb
     NMC_RATIO=${NMC_RATIO:-.2}
     nmemb=${nmemb:-7}
@@ -880,8 +878,8 @@ function fn_fbi()
     local iNUM=${NUM:-900}          # 30/day
 
     echo "
-    size: ${idx}+1 nmemb: ${nmemb} iNUM:${iNUM} (hour=nmemb[6])
-    going to list ${size} recodrs ${dates[$idx]} ~ ${dates[0]} ...
+    size: ${size} nmemb: ${nmemb} iNUM:${iNUM} (hour=nmemb[6])
+    going to list ${ZIZE} recodrs ${dates[$idx]} ~ ${dates[0]} ...
     "
 
     mysql kts <<<"truncate TABLE tbl_fbi5; truncate TABLE tbl_fdiff;"
@@ -912,6 +910,7 @@ function fn_fbi()
     " | mysql -N kts
     xt_ret $? "" || return $?
 
+    [ "${RETCODE:-0}" -eq 0 ] && SELECT fbi
     return ${RETCODE:-0}
 }
 

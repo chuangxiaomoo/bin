@@ -37,7 +37,7 @@ function fn_sina()
     xt_ret $? "Try create kts.fenbi and tmpfb mannually" || return $?
 
     if [ "${datetime}" = NULL ]; then
-        sql="SELECT date FROM (SELECT date FROM day WHERE code=${code} ORDER by date DESC LIMIT ${NUM:-30})
+        sql="SELECT date FROM (SELECT date FROM day WHERE code=${code} ORDER by date DESC LIMIT ${NUM:-20})
                 as tbl ORDER by date ASC"
     else
         [ `date +%H%M%S` -gt 153000 ] && equal='='
@@ -74,9 +74,9 @@ function fn_sina()
 
 function fn_main()
 {
-    code=${1:-002241}
+    code=${1}
     fn_iscode ${code}
-    xt_ret $? "" || return $?
+    xt_ret $? "Usage: mi5 code" || return $?
 
     # volume以手为单位，最终数据倍数是day中的100倍
 
