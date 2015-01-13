@@ -256,8 +256,7 @@ CREATE PROCEDURE sp_create_tbl_fbi() tag_tbl_fbi:BEGIN
         INDEX(code,datetime)
     );
 
-    DROP   TABLE IF EXISTS tbl_fbi;
-    CREATE TABLE tbl_fbi (
+    CREATE TABLE IF NOT EXISTS tbl_fbi5 (
         id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
         datetime_p  bigint(14)      NOT NULL DEFAULT 0,
@@ -289,7 +288,7 @@ CREATE PROCEDURE sp_create_tbl_fbi() tag_tbl_fbi:BEGIN
         dbrat        DECIMAL(6,2) NOT NULL DEFAULT 0 
     );
 
-    CREATE TABLE IF NOT EXISTS tbl_fbi5 LIKE tbl_fbi;
+    -- CREATE TABLE IF NOT EXISTS tbl_fbi5 LIKE tbl_fbi;
 
 END tag_tbl_fbi //
 
