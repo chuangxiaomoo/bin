@@ -59,6 +59,7 @@ function fn_sina()
         [ ${code:0:1} -eq 6 ] && sec=sh || sec=sz
 
         echo download ${code} on ${date}
+        #cho wget "${sina}date=${date}&symbol=${sec}${code}" -O ${fenbi_raw1}; exit
         wget "${sina}date=${date}&symbol=${sec}${code}" -O ${fenbi_raw1} 2>/dev/null
         xt_ret $? "" || return $?
 
