@@ -3302,6 +3302,11 @@ root@Moo64:~/bin/stk# SELECT ls 2241
 
   请不要再伪善了。
 
+# 2015-01-15 消息
+
+  本来就高开，但还是被我在早上出掉了一半。
+  中恒集团(600252)业绩预增110%左右。
+
 # 2014-11-x oracle for ur reason
   0. keep+buy
   1. sell
