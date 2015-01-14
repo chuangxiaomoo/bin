@@ -441,8 +441,18 @@ function fn_fbi()
     " | mysql -t kts
 }
 
+function fn_vol()
+{
+    echo "
+    SELECT date, sum(volume), sum(amount) FROM day WHERE date> '2014-06-06' GROUP by date;
+    " | mysql kts
+
+    return $?
+}
+
 function fn_main()
 {
+    # mysql CURRENT_DATE();
     CURR=`fn_maxdate`
     END=${END:-${CURR}}
     PREV=`fn_get_prev`
@@ -463,6 +473,7 @@ function fn_main()
     "get_curdate_min    [CODE:-900001]       # --- 当日min \$LIMIT"
     "ls                 {code|symbol}        # 日线数据 \$LIMIT"
     "name               code                 # 名"
+    "vol               code                  # 大盘成交"
     "ls_day_ob_rise     [sortfiled]          # --- END 涨幅排名 \$LIMIT"
     "stat_change        LIMIT:-13            # 近期涨跌统计"
     "pma                code                 # NUM=5日平均"
