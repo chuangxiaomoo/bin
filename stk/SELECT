@@ -2,18 +2,6 @@
 . `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
 . /etc/common.rc
 
-#
-# .select.sql
-#
-
-function fn_get_curdate_min()
-{
-    local code=${1:-900001}
-    echo "
-    SELECT * FROM min WHERE code = ${code} and date = CURRENT_DATE();
-    " | mysql kts
-}
-
 function fn_ls()
 {
     [ $# -eq "0" ] && fn_execute -l && exit
@@ -402,14 +390,20 @@ function fn_pma()
     xt_ret $? "" || return $?
 
     END=${END:-`fn_maxdate`}
+    NUM=${NUM:=5}
+    let DBL=${NUM}*2
 
+    # enable d2，则tov扩大10倍
     echo "
     SELECT close FROM day WHERE code=$1 and date='$END' INTO @iclose;
-    SELECT d.code, '${END}' as date, sum(amount)/sum(volume) as ma${NUM:-5}, @iclose,
-        round(100 * (@iclose-sum(amount)/sum(volume))/@iclose, 2) as pcnt,
-        round(100*sum(volume)/cap.shares, 2) as turnov
-        FROM (SELECT * FROM day WHERE code=$1 and date<='$END' 
-            ORDER by date DESC LIMIT ${NUM:-5}) as d, cap WHERE d.code = cap.code ;
+    SELECT d.code, '${END}' as date, sum(d.amount)/sum(d.volume) as ma${NUM}, @iclose,
+        round(100 * (@iclose-sum(d.amount)/sum(d.volume))/@iclose, 2) as pcnt,
+        round(100*sum(d.volume)/cap.shares, 2) as tov${NUM}
+        -- , round(100*sum(d2.volume)/cap.shares, 2) as tov${DBL} 
+        FROM 
+        (SELECT * FROM day WHERE code=$1 and date<='$END' ORDER by date DESC LIMIT ${NUM}) as d,
+        -- (SELECT * FROM day WHERE code=$1 and date<='$END' ORDER by date DESC LIMIT ${DBL}) as d2,
+        cap WHERE d.code = cap.code ;
     " | mysql -t kts
     # SELECT sum((high-yesc)/yesc) FROM day WHERE code = 2 and date > '2014-11-03'; 
     return $?
@@ -444,8 +438,12 @@ function fn_fbi()
 function fn_vol()
 {
     echo "
-    SELECT date, sum(volume), sum(amount) FROM day WHERE date> '2014-06-06' GROUP by date;
-    " | mysql kts
+    SELECT date, sum(volume), sum(amount), sum(amount)/sum(volume) as trade 
+        FROM day WHERE date<='${END}' 
+        GROUP by date 
+        ORDER by date DESC
+        LIMIT ${LIMIT:-13};
+    " | mysql -t kts
 
     return $?
 }
@@ -470,12 +468,11 @@ function fn_main()
     "get_open_days_min                       # 分钟日列表 \$LIMIT"
     "app_nmc_name       [sortfiled]          # 追加股票名到表TBL"
     # ----------------  ABOVE IS FIXED SEQUENCE --------------------
-    "get_curdate_min    [CODE:-900001]       # --- 当日min \$LIMIT"
+    "stat_change        LIMIT:-13            # 近期涨跌统计"
     "ls                 {code|symbol}        # 日线数据 \$LIMIT"
     "name               code                 # 名"
-    "vol               code                  # 大盘成交"
+    "vol                code                 # DP成交"
     "ls_day_ob_rise     [sortfiled]          # --- END 涨幅排名 \$LIMIT"
-    "stat_change        LIMIT:-13            # 近期涨跌统计"
     "pma                code                 # NUM=5日平均"
     "fbi                                     # tbl_fbi"
     "tao5                                    # "
