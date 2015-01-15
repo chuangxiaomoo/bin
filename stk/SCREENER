@@ -835,6 +835,11 @@ function fn_auto_nmemb()
 
     if [ "${nrat}" -lt 20 ]; then
         let nmemb0=150/${nrat}
+    else
+        fn_echo_fail "
+        ERROR: NMC_RATIO[${NMC_RATIO}] must less than .20
+        "
+        exit
     fi
 
     nmemb=${nmemb:-${nmemb0}}
@@ -850,6 +855,7 @@ function fn_fbi()
     # NMC_RATIO即tov5
     # nmemb = 1%换手公差时之数据组数 = 30/最大日换手 = 30/(tov5/5) = 150/tov5
     # ZIZE取20，太远时，日成交翻番后，往前的数据会不准确
+    # 工作条件: volume >= ZIZE+(2*NMC_RATIO)，否则会报 so_little_data，
     fn_auto_nmemb
     NMC_RATIO=${NMC_RATIO:-.2}
     nmemb=${nmemb:-7}
@@ -894,7 +900,12 @@ function fn_fbi()
         xt_ret ${?} "" || return $?
 
         if ! fn_sql_exitsucc; then
-            fn_echo_warn "    so_little_data[$i ${dates[$i]}], try: mi5 ${code}\n"
+            tovf=`echo "
+            SELECT round(sum(volume)/cap.shares, 2) as tov FROM fenbi,cap 
+            WHERE fenbi.code=${code} and fenbi.code=cap.code
+            " | mysql kts -N`
+
+            fn_echo_warn "    so_little_data[$i ${dates[$i]}], tov[${tovf}], try: mi5 ${code}\n"
             local RETCODE=1
             break
         fi

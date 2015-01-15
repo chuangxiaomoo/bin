@@ -40,7 +40,7 @@
       [ $? -eq 1 ] && { echo fail; exit; }
       echo $$
       sleep 10
-  } 3<>mylockfile
+  } 3<>mylockfile   # mylockfile处必是路径，不可用变量
   
   使用<>打开mylockfile，原因是定向文件描述符是先于命令执行的。
   当{}内的语句执行完，mylockfile会自动关闭，并unlock该文件。

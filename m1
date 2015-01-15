@@ -1366,7 +1366,7 @@ function fn_main() {
         framework
         find
         begin
-        figlet
+        figlet                  # text logo
         firebug
         firefox
         chrome
