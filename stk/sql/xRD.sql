@@ -1158,7 +1158,7 @@ CREATE PROCEDURE sp_fbi(a_code INT(6) ZEROFILL) tag_fbi:BEGIN
     SET @sqls=concat('
         INSERT INTO tempfb(code,datetime,trade,volume,amount)
         SELECT code,datetime,trade,volume,amount FROM fenbi WHERE code=', 
-        a_code, " and datetime<= ", @END, " order by datetime DESC LIMIT ", @NUM);
+        a_code, " and datetime<= ", @DT, " order by datetime DESC LIMIT ", @NUM);
     PREPARE stmt from @sqls; EXECUTE stmt;
 
     SELECT count(*)   FROM tempfb INTO @v_len;
