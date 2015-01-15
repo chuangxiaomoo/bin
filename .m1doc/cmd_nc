@@ -14,10 +14,16 @@
   nc 127.0.0.1 1234 < file.in
   `
 
-4. 模拟升级
-
-  > imitate HTTP update 
-
+4. 模拟升级 -- imitate HTTP update 
+  `
   cd /home/n/release/tar;
   nc 192.168.2.44 8006 < normal.nxp.tgz
+  `
+
+5. 组播模拟 -- 只可模拟多播发送
+
+  > 发送组播信息可以不指定本地端口，但一定要指定本地发送地址
+  > 收时使用 INADDR_ANY bind(); 发送时使用eth0的IP bind()，但不能是127.0.0.1
+
+  nc -u  -s 192.168.2.41  236.236.236.236 10000
 
