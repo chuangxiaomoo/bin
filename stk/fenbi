@@ -22,7 +22,6 @@ function fn_hexun()
     datetime4="${date}112900"
     datetime5="${date}130000"
     datetime9="${date}150000"
-    lockfile='/run/lock/fenbi'
 
     >${buffer}
     [ "${dt}" -lt ${datetime9} ]
@@ -67,14 +66,14 @@ function fn_hexun()
                 as newfb GROUP by grp ORDER by datetime;
         " | mysql -t kts 
         xt_ret $? "" || return $?
-    } 20<>${lockfile}
+    } 20<>'/dev/shm/fenbi/lock'
 }
 
 function fn_main()
 {
-    code=${1:-002241}
+    code=${1}
     fn_iscode ${code}
-    xt_ret $? "" || return $?
+    xt_ret $? "Usage: fenbi code" || return $?
 
     today=`date +%F`
     sql="SELECT max(datetime) FROM fenbi WHERE code=${code}"
@@ -104,4 +103,4 @@ function fn_main()
     return $?
 }
 # 数据的延时在30s内
-fn_main
+fn_main $@
