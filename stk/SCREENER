@@ -294,13 +294,13 @@ function fn_taox_ratio()
 
 function fn_fbi_ratio()
 {
-    iEND=${1:-${END}}
+    iDT=${1:-${DT}}
     TBL=${TBL:-'cap'}
     NUM=${NUM:-900}        # 30/day
 
     head -n -5 $mps_org > $mps_god
     echo "
-    SET @END=$iEND;
+    SET @DT=${iDT};
     SET @NUM=${NUM};
     SET @NMC_RATIO=${NMC_RATIO};
     call sp_visit_tbl('$TBL', @fn_fbi_ratio);
@@ -833,7 +833,7 @@ function fn_auto_nmemb()
     [ -z "${NMC_RATIO}" ] && return
     nrat=`mysql -N<<<"SELECT round(100*${NMC_RATIO}, 0)"`
 
-    if [ "${nrat}" -lt 20 ]; then
+    if [ "${nrat}" -le 30 ]; then
         let nmemb0=150/${nrat}
     else
         fn_echo_fail "
@@ -861,20 +861,23 @@ function fn_fbi()
     nmemb=${nmemb:-7}
     ZIZE=${ZIZE:-20}
 
-    test -n "${1}" && fn_iscode ${1}       
+    fn_iscode ${code:=$1}
     xt_ret $? "invalid code[$1]" || return $?
 
     sql="SELECT max(datetime) FROM fenbi WHERE code=${1}"
     dt=`mysql -N kts <<< "${sql}"`
-    local END=${ENDDT:-$dt}
-    fn_isdatetime ${END} 
-    xt_ret $? "invalid datetime[$END]" || return $?
 
-    local code=`sed 's/^0*//g' <<< $1 | xargs printf "%06d"`
+    # 20140707.14{o|h}  
+    DT=${DT/./}
+    DT=${DT/o/0000}     # o(o'clock)
+    DT=${DT/h/3000}     # h(half-clock)
+    DT=${DT:-$dt}
+    fn_isdatetime ${DT} 
+    xt_ret $? "invalid datetime[$DT]" || return $?
+
     TBL=tbl_fbi1 fn_flush_code ${code}
 
-    local sql="SELECT datetime from fenbi WHERE code = ${code} and datetime<=${END}"
-    #ates=(`mysql -N kts <<< "${sql} ORDER by datetime DESC" | xargs -n${nmemb} | awk '{print $1}'`)
+    local sql="SELECT datetime from fenbi WHERE code=${code} and datetime<=${DT}"
     dates=(`mysql -N kts <<< "${sql} ORDER by datetime DESC" | 
                 awk -v nmemb=${nmemb} '{if (! (a++%nmemb) ) print $1}'`)
     test ${#dates[@]} -ne 0
@@ -942,7 +945,7 @@ function fn_main()
     "focus                [field]               # #{YIST:-.soptter.focus}->zxg and 9jian"
     "tao5                 code [end]            # #{nmemb} #{ZIZE}"
     "bei                  {code...|file}        # #{nmemb} #{ZIZE}"
-    "fbi                  {code...|file}        # #{nmemb} #{ZIZE}"
+    "fbi                  {code...|file}        # #{nmemb} #{ZIZE} DT=20140707.14{o|h}"
     "9jian                code [end [field]]    # #{NUM}日，个股成本分析"
     "6jian                code [end [field]]    # #{NUM}日，个股成本分析"
     "get_down_turnov      [start:curr-13] [end] # 100%下降净换手"
