@@ -148,7 +148,7 @@ function fn_lockfile()                  { cat linux_lockfile ;}
         ubifs
         udev
         lockfile                        # lockfile-progs and flock
-        proc
+        proc                            # sys/vm
         free_buffer_cache               # 
         time管理
     )
