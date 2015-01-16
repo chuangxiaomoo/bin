@@ -131,7 +131,9 @@
 
   (c) 5日开始盘整，考虑大环境，是为`时势`，e.g. ipo资金出笼
 
-  (d) v=s/t, can't use volume in nmemb as 等长S，日换手变化大时误差大
+  (d) v=s/t, can't use volume in nmemb as `等长S`，日换手变化大时误差大
+      每个人都都以最低价格买入
+      每个人都都以最高价格买出
 
   (e) 对mi5 maxdatetime进行完整判断
 
