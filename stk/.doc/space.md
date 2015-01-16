@@ -129,6 +129,8 @@
   (b) nmemb=3 NMC_RATIO=.125 SCREENER fbi 002241
       据24分钟dbrat作短线操作
 
+  (c) 5日开始盘整，考虑大环境，是为`时势`
+
 # 大红柱 SELECT get_vol_rat_152468
 
   量比、相邻5日成交量比、相邻10日成交量比

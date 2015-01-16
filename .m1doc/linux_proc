@@ -48,8 +48,40 @@
   /proc/sys/vm/dirty_ratio                      # 会阻塞write() 
   /proc/sys/vm/dirty_background_ratio           # 通常是dirty_ratio的1/2
 
-# 
+# buffer VS cache
 
   A buffer is something that has yet to be "written" to disk. 
   A cache is something that has been "read" from the disk and stored for later use.
+
+# Linux 性能 
+
+  其次，很多人在使用 linux 时基本上都没有根据自己的实际需求进行过优化，而linux
+  内核缺省的配置是为了符合大多数应用场合的要求，设置比较保守。比方说，现在的计
+  算机内存动辍就是2G，4G，在这种环境下，至少在桌面应用上已经用不上在磁盘上的交
+  换分区了，但 linux 内核为了保证大多数场合下能用，还是将 
+
+# /proc/sys/vm/swappiness
+
+
+
+  /proc/sys/vm/swappiness 的缺省值设置为 60，
+  当 /proc/sys/vm/swappiness 为0时会最大限度使用物理内存，而 
+  /proc/sys/vm/swappiness 为`100`时，将最大限度使用交换分区，因此对于桌面应用
+  来说，设置为 60 其实非常保守的。
+
+# /proc/sys/vm/vfs_cache_pressure
+
+  /proc/sys/vm/vfs_cache_pressure，该参数表示内核回收用于 directory 和 inode 
+  的 cache 内存的倾向，低于100的话内核将尽量保持对 directory 和 inode 的缓冲，
+  高于 100 则相反。同样为了保险起见，缺省值设置为 100，象桌面应用这样频繁涉及
+  大范围内 inode 操作的应用，该值显得过于保守，我这里内存!2G的情况下，测试了一
+  段时间后设置为`40`。对反复读取大批固定位置的文件有显著的效果。
+
+  vfs_cache_pressure to 200, so kernel would reclaim cache and free physical 
+  memory as soon as possible
+
+# min_free_kbytes：
+
+  该文件表示强制Linux VM最低保留多少空闲内存（Kbytes）。
+  缺省设置：724（512M物理内存）
 
