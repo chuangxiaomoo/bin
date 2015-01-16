@@ -129,7 +129,11 @@
   (b) nmemb=3 NMC_RATIO=.125 SCREENER fbi 002241
       据24分钟dbrat作短线操作
 
-  (c) 5日开始盘整，考虑大环境，是为`时势`
+  (c) 5日开始盘整，考虑大环境，是为`时势`，e.g. ipo资金出笼
+
+  (d) v=s/t, can't use volume in nmemb as 等长S，日换手变化大时误差大
+
+  (e) 对mi5 maxdatetime进行完整判断
 
 # 大红柱 SELECT get_vol_rat_152468
 
