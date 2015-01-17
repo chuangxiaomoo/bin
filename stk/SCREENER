@@ -946,6 +946,8 @@ function fn_main()
     "tao5                 code [end]            # #{nmemb} #{ZIZE}"
     "bei                  {code...|file}        # #{nmemb} #{ZIZE}"
     "fbi                  {code...|file}        # #{nmemb} #{ZIZE} DT=20140707.14{o|h}"
+    "acc                  {code...|file}        # Acceleration"
+    "acf                  {code...|file}        # Acceleration of fb"
     "9jian                code [end [field]]    # #{NUM}日，个股成本分析"
     "6jian                code [end [field]]    # #{NUM}日，个股成本分析"
     "get_down_turnov      [start:curr-13] [end] # 100%下降净换手"

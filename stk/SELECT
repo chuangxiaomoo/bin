@@ -371,17 +371,18 @@ function fn_rdiff()
     function fn_get_tbl_rdiff_dive()
     {
         tbl_super_dive="
-        SELECT t.code, DATE_FORMAT(date_p,'%m-%d') as date_p, ${columns}, c.nmc, c.name
+        SELECT t.code, DATE_FORMAT(date_p,'%m-%d') as date_p, 
+           ${columns}
            FROM ${tablex:-tbl_rdiff} as t, cap as c 
            WHERE t.code = c.code HAVING 1 ${COND} limit ${LIMIT:-144}
         "
         echo "${tbl_super_dive}"
+        fn_name `mysql -N kts <<<"SELECT code FROM tbl_rdiff LIMIT 1"`
     }
 
     fn_get_tbl_rdiff_dive $1
-    mysql $mo -t kts <<< "${tbl_super_dive}" | \
-        sed -e '1,3s/----+$/\+/g' -e '$s/----+$/\+/g' -e '2s/    |$/|/g'
-    xt_ret ${PIPESTATUS[0]} "${FUNCNAME}" || return $?
+    mysql $mo -t kts <<< "${tbl_super_dive}" 
+    xt_ret $? "${FUNCNAME}" || return $?
 }
 
 function fn_pma()
@@ -415,7 +416,7 @@ function fn_name()
     fn_iscode ${code:=${1}}
     xt_ret $? "Usage: name code" || exit $?
 
-    mysql kts <<< "SELECT code, name FROM cap WHERE code=${code}"
+    mysql kts <<< "SELECT code, TRUNCATE(nmc/10000, 1) as nmc, name FROM cap WHERE code=${code}"
     xt_ret $? "" || return $?
 }
 
