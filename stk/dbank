@@ -45,6 +45,7 @@ TURNOV='TRUNCATE(100*d.volume*c.close/c.nmc, 2)'
 url_sh000001='http://hq.sinajs.cn/list=sh000001'
 
 mps_org="sql/xRD.sql"
+mps_acc="sql/acc.sql"
 mps_god="/var/God.sql"
 sql_temp='/dev/shm/sql.temp'
 
