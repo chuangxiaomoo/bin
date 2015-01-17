@@ -141,10 +141,9 @@ function fn_ls_day_ob_rise()
 
 function fn_get_comma_cloumns()
 {
-    echo "
-    SELECT * FROM ${1:-day} limit 1;
-	" | mysql kts  | head -1  | tr '\t' ','
     # code,date,yesc,open,high,low,close,volume,amount
+    # echo "SELECT * FROM ${1:-day} limit 1" | mysql kts  | head -1  | tr '\t' ','
+    mysql kts -N<<<"DESCRIBE ${1:-day};" | awk '{printf "%s,", $1} END{printf "\n"}' | sed 's/,$//g'
 }
 
 function fn_get_vol_rat_152468()
@@ -363,7 +362,7 @@ function fn_tao5()
 function fn_rdiff()
 {
    #columns=date_p,date_c,off_p,off_c,tnov_p,tnov_c,avrg_p,avrg_c,ratio
-    columns=date_c,off_c,tnov_c,avrg_p,avrg_c,ratio,wchng,rdiff,dbrat
+    columns=date_p,date_c,off_c,tnov_c,avrg_p,avrg_c,ratio,wchng,rdiff,dbrat
     columns=${columns:-'*'}
     columns=t.${columns//,/,t.}
 
@@ -371,19 +370,21 @@ function fn_rdiff()
     function fn_get_tbl_rdiff_dive()
     {
         tbl_super_dive="
-        SELECT t.code, DATE_FORMAT(date_p,'%m-%d') as date_p, 
+        SELECT t.code,
            ${columns}
            FROM ${tablex:-tbl_rdiff} as t, cap as c 
            WHERE t.code = c.code HAVING 1 ${COND} limit ${LIMIT:-144}
         "
-        echo "${tbl_super_dive}"
-        fn_name `mysql -N kts <<<"SELECT code FROM tbl_rdiff LIMIT 1"`
+        # echo "${tbl_super_dive}"
+        fn_name `mysql -N kts <<<"SELECT code FROM ${tablex:-tbl_rdiff} LIMIT 1"`
     }
 
     fn_get_tbl_rdiff_dive $1
     mysql $mo -t kts <<< "${tbl_super_dive}" 
     xt_ret $? "${FUNCNAME}" || return $?
 }
+
+function fn_acc() { tablex=tbl_adiff fn_rdiff; }
 
 function fn_pma()
 {
@@ -476,6 +477,7 @@ function fn_main()
     "ls_day_ob_rise     [sortfiled]          # --- END 涨幅排名 \$LIMIT"
     "pma                code                 # NUM=5日平均"
     "fbi                                     # tbl_fbi"
+    "acc                                     # tbl_adiff"
     "tao5                                    # "
     "rdiff                                   # tbl_rdiff"
     )

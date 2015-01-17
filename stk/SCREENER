@@ -929,6 +929,33 @@ function fn_fbi()
     return ${RETCODE:-0}
 }
 
+
+function fn_acc()
+{
+    fn_iscode ${code:=$1}
+    xt_ret $? "invalid code[$1]" || return $?
+
+    cp ${mps_acc} ${mps_god}
+
+    echo "
+    SET @END='${END}';
+    SET @NUM=${NUM:-500};
+    SET @PARTS=${PARTS:-20};
+    SET @PPLUS=${PPLUS:-5};
+    SET @NMC_RATIO=${NMC_RATIO:-1};
+    call sp_visit_code(${code});
+    " >> $mps_god # | tee -a $mps_god
+    fn_clr_exitcode
+    mysql $mo -t kts <<< "source $mps_god"
+    xt_ret $? "${FUNCNAME}" || return $?
+    if ! fn_sql_exitsucc; then
+        fn_echo_warn "so_little_data"
+        exit
+    fi
+
+    SELECT acc
+}
+
 function fn_main()
 {
     CURR=`fn_maxdate`
