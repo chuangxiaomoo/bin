@@ -956,6 +956,42 @@ function fn_acc()
     SELECT acc
 }
 
+function fn_acf()
+{
+    fn_iscode ${code:=$1}
+    xt_ret $? "invalid code[$1]" || return $?
+
+    cp ${mps_acf} ${mps_god}
+
+    sql="SELECT max(datetime) FROM fenbi WHERE code=${1}"
+    dt=`mysql -N kts <<< "${sql}"`
+
+    # 20140707.14{o|h}  
+    DT=${DT/./}
+    DT=${DT/o/0000}     # o(o'clock)
+    DT=${DT/h/3000}     # h(half-clock)
+    DT=${DT:-$dt}
+    fn_isdatetime ${DT} 
+    xt_ret $? "invalid datetime[$DT]" || return $?
+
+    echo "
+    SET @DT='${DT}';
+    SET @PARTS=${PARTS:-20};
+    SET @PPLUS=${PPLUS:-5};
+    SET @NMC_RATIO=${NMC_RATIO:-.20};
+    call sp_visit_code(${code});
+    " >> $mps_god # | tee -a $mps_god
+    fn_clr_exitcode
+    mysql $mo kts <<< "source $mps_god"
+    xt_ret $? "${FUNCNAME}" || return $?
+    if ! fn_sql_exitsucc; then
+        fn_echo_warn "so_little_data"
+        exit
+    fi
+
+    SELECT acf
+}
+
 function fn_main()
 {
     CURR=`fn_maxdate`

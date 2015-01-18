@@ -370,7 +370,7 @@ function fn_rdiff()
     function fn_get_tbl_rdiff_dive()
     {
         tbl_super_dive="
-        SELECT t.code,
+        SELECT t.id, t.code,
            ${columns}
            FROM ${tablex:-tbl_rdiff} as t, cap as c 
            WHERE t.code = c.code HAVING 1 ${COND} limit ${LIMIT:-144}
@@ -411,7 +411,6 @@ function fn_pma()
     return $?
 }
 
-
 function fn_name()
 {
     fn_iscode ${code:=${1}}
@@ -426,16 +425,19 @@ function fn_fbi()
     # code,datetime_p,datetime_c,
     columns='off_p,off_c,tnov_c,avrg_p,avrg_c,ratio,rdiff,wchng,dbrat'
 
-    fn_name `mysql -N kts <<<"SELECT code FROM tbl_fdiff LIMIT 1"`
+    fn_name `mysql -N kts <<<"SELECT code FROM ${tablex:-tbl_fdiff} LIMIT 1"`
     echo "
-        SELECT code, 
+        SELECT id,code, 
         -- datetime_p, 
         TRUNCATE(datetime_p%(1000000000000)/1000000,4) as dt_p,
         -- datetime_c, 
         TRUNCATE(datetime_c%(1000000000000)/1000000,4) as dt_c,
-        ${columns} FROM tbl_fdiff
+        ${columns} FROM ${tablex:-tbl_fdiff} 
     " | mysql -t kts
 }
+
+
+function fn_acf() { tablex=tbl_acfdiff fn_fbi; }
 
 function fn_vol()
 {
@@ -478,6 +480,7 @@ function fn_main()
     "pma                code                 # NUM=5日平均"
     "fbi                                     # tbl_fbi"
     "acc                                     # tbl_adiff"
+    "acf                                     # tbl_adiff"
     "tao5                                    # "
     "rdiff                                   # tbl_rdiff"
     )
