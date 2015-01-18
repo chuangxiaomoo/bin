@@ -33,6 +33,15 @@ function fn_sina()
     fmaxdate=`fn_str_2_date ${datetime}`
     # echo ${datetime}
 
+    maxtime=${datetime#????????}
+    if [ "${maxtime}" -lt 150000 ]; then
+        mintime=${datetime%??????}000000
+        sql="DELETE FROM fenbi WHERE datetime>${mintime}"
+        mysql -N kts <<< "${sql}"
+        fn_echo_warn "incomplete fenbi data cleared forcely, re-run"
+        exit
+    fi
+
     [ -n "${datetime}" ]
     xt_ret $? "Try create kts.fenbi and tmpfb mannually" || return $?
 
