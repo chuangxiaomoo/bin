@@ -46,7 +46,7 @@ function fn_sina()
     xt_ret $? "Try create kts.fenbi and tmpfb mannually" || return $?
 
     if [ "${datetime}" = NULL ]; then
-        sql="SELECT date FROM (SELECT date FROM day WHERE code=${code} ORDER by date DESC LIMIT ${NUM:-30})
+        sql="SELECT date FROM (SELECT date FROM day WHERE code=${code} ORDER by date DESC LIMIT ${NUM:-34})
                 as tbl ORDER by date ASC"
     else
         [ `date +%H%M%S` -gt 153000 ] && equal='='
