@@ -416,7 +416,11 @@ function fn_name()
     fn_iscode ${code:=${1}}
     xt_ret $? "Usage: name code" || exit $?
 
-    mysql kts <<< "SELECT code, TRUNCATE(nmc/10000, 1) as nmc, name FROM cap WHERE code=${code}"
+    echo "SELECT code, 
+            TRUNCATE(nmc/10000, 1) as nmc, 
+            -- TRUNCATE(shares/10000,2) as shares, 
+            name FROM cap WHERE code=${code}
+    " | mysql kts
     xt_ret $? "" || return $?
 }
 
