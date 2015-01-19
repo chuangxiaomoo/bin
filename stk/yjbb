@@ -116,6 +116,7 @@ function fn_select()
     date=${END:-201409}
     #olumns='code,EPS,revenue,r_grw_y,r_grw_q,profit,p_grw_y,p_grw_q,netassets,RoE,cashflow'
     columns='y.code,round(d.close/EPS,2) as PE'
+    columns=${columns}',round(d.close/EPS/p_grw_y,2) as PEG'
     columns=${columns}',revenue,r_grw_y,profit,p_grw_y,netassets,RoE'
     field=${1:-y.RoE}
     CURR=`fn_maxdate`
@@ -123,7 +124,7 @@ function fn_select()
             WHERE day.date='${CURR}' and day.code=${TBL:-cap}.code)"
     
     echo "
-    SELECT $columns, c.nmc, c.shares, c.name FROM tbl_yjbb as y, cap as c, 
+    SELECT $columns, c.nmc, c.name FROM tbl_yjbb as y, cap as c, 
         ${sql} as d
         WHERE y.code=c.code and y.code=d.code ${CODE}
         ORDER by ${field} ${ASC:-DESC} limit ${LIMIT:-48};
