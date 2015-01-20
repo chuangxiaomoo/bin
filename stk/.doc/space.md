@@ -151,6 +151,12 @@
       复杂点，应该是从买点起，NMC_RATIO=sum(vol)/2，因`两个连续次级别`可以引发更大级别。
 
   (5) diff(ratio)是环比增长，diff(wchng)是为同比增长，两者兼顾，更为合理
+      `背驰`: diff(ratio) diff(wchng) 方向不一致，diff(ratio) -lt `0.09`时 
+      .template/acc.md|背驰|
+
+  (6) 为什么选择 NMC_RATIO=vol(last) 0.75倍，因为调整的过程中通常是缩量调整。
+
+  (7) 暴跌选股法
 
 # 大红柱 SELECT get_vol_rat_152468
 
