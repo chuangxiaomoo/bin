@@ -153,7 +153,7 @@
   (5) diff(ratio)是环比增长，diff(wchng)是为同比增长，两者兼顾，更为合理
       `背驰`: diff(ratio) diff(wchng) 方向不一致，diff(ratio) -lt `0.09`时 
       .template/acc.md|背驰|
-      `数列收敛` a1 a2 a3 b1 b2 b3, 两条数列收敛过程，即意见统一的过程，确定性高
+      `数列收敛` a1 a2 a3 b1 b2 b3, 两条数列收敛过程，即意见统一的过程，确定性高，`可高杠杆`
 
   (6) 为什么选择 NMC_RATIO=vol(last) 0.75倍，因为调整的过程中通常是缩量调整。
 
