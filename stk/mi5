@@ -34,7 +34,7 @@ function fn_sina()
     # echo ${datetime}
 
     maxtime=${datetime#????????}
-    if [ "${maxtime}" -lt 150000 ]; then
+    if [ -n "${maxtime}" ] && [ "${maxtime}" -lt 150000 ]; then
         mintime=${datetime%??????}000000
         sql="DELETE FROM fenbi WHERE datetime>${mintime}"
         mysql -N kts <<< "${sql}"
