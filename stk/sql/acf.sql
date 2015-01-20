@@ -101,10 +101,10 @@ CREATE PROCEDURE sp_acf(a_code INT(6) ZEROFILL) tag_acf:BEGIN
     SELECT count(*), sum(volume) FROM tempfb INTO @v_len, @v_volumes;
 
     -- 换手不足的个股
-    IF @v_volumes < v_shares0*(2+@PPLUS/@PARTS) THEN 
+    IF (@v_volumes-2*v_shares0)/v_vol_unit < @PPLUS+@PARTS THEN 
         SELECT  @v_volumes,
-                round(v_shares0*(2+@PPLUS/@PARTS),2) as volNeed, 
-                TRUNCATE((@v_volumes/v_shares0-2)*@PARTS, 0) as maxPPLUS;
+                round(v_shares0*(2+@PPLUS/@PARTS),2) as volomeNeed, 
+                TRUNCATE((@v_volumes-2*v_shares0)/v_vol_unit-@PARTS, 0) as maxPPLUS;
         -- SELECT a_code, @END, @NUM, "so_little_acf_data";
         INSERT INTO exitcode VALUES (1);
         LEAVE tag_acf; 
@@ -131,8 +131,8 @@ CREATE PROCEDURE sp_acf(a_code INT(6) ZEROFILL) tag_acf:BEGIN
         END IF;
     END IF;
 
-    SET v_sumvolume = v_volume;
-    SET v_sumamount = v_amount;
+    SET v_sumvolume = v_sumvolume + v_volume;
+    SET v_sumamount = v_sumamount + v_amount;
     SET @v_got_100 = 0;
 
     lbl_upto_100: WHILE v_id <= @v_len DO
