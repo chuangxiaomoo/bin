@@ -1,6 +1,6 @@
 #! /bin/bash
 
-mod_fb=1000
+mod_fb=500
 filewb='/tmp/filewb'
 p_bin='/root/bin/stk/bin/'
 selecap="SELECT code FROM cap"
