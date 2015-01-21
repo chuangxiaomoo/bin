@@ -34,7 +34,7 @@ function fn_sina()
     # echo ${datetime}
 
     maxtime=${datetime#????????}
-    if [ -n "${maxtime}" ] && [ "${maxtime}" -lt 150000 ]; then
+    if [ "${maxtime}" != NULL ] && [ "${maxtime}" -lt 150000 ]; then
         mintime=${datetime%??????}000000
         sql="DELETE FROM fenbi WHERE datetime>${mintime}"
         mysql -N kts <<< "${sql}"
@@ -46,8 +46,10 @@ function fn_sina()
     xt_ret $? "Try create kts.fenbi and tmpfb mannually" || return $?
 
     if [ "${datetime}" = NULL ]; then
-        sql="SELECT date FROM (SELECT date FROM day WHERE code=${code} ORDER by date DESC LIMIT ${NUM:-34})
-                as tbl ORDER by date ASC"
+        sql="
+        SELECT date FROM (SELECT date FROM day 
+         WHERE code=${code} ORDER by date DESC LIMIT ${NUM:-34})
+         as tbl ORDER by date ASC"
     else
         [ `date +%H%M%S` -gt 153000 ] && equal='='
         sql="SELECT date FROM day WHERE code=${code} and date>'${fmaxdate}' and date<${equal}'${today}';"
