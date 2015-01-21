@@ -446,14 +446,36 @@ function fn_acf() { tablex=tbl_acfdiff fn_fbi; }
 
 function fn_vol()
 {
+    get_vol() 
+    {
     echo "
     SELECT date, sum(volume), sum(amount), sum(amount)/sum(volume) as trade 
-        FROM day WHERE date<='${END}' 
+        FROM day WHERE date<='${END}' ${COND}
         GROUP by date 
         ORDER by date DESC
         LIMIT ${LIMIT:-13};
     " | mysql -t kts
+    }
 
+    case $1 in
+    0)
+        COND='and code<100000'
+        ;;
+    3)
+        COND='and code>=300000 and code<400000'
+        ;;
+    6)
+        COND='and code>=600000 and code<700000'
+        ;;
+    03)
+        COND='and code<400000'
+        ;;
+    *)
+        COND='and code<700000'
+        ;;
+    esac
+
+    get_vol
     return $?
 }
 
@@ -480,7 +502,7 @@ function fn_main()
     "stat_change        LIMIT:-13            # 近期涨跌统计"
     "ls                 {code|symbol}        # 日线数据 \$LIMIT"
     "name               code                 # 名"
-    "vol                code                 # DP成交"
+    "vol                {0|3|6|03}           # ^^3市成交^^"
     "ls_day_ob_rise     [sortfiled]          # --- END 涨幅排名 \$LIMIT"
     "pma                code                 # NUM=5日平均"
     "fbi                                     # tbl_fbi"
