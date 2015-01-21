@@ -33,10 +33,11 @@ function fn_ls()
 
     fields='d.code,d.date,d.yesc,d.open,d.high,d.low,d.close,d.volume,d.amount'
     echo "
+    SELECT nmc/close FROM cap WHERE code=${code} LIMIT 1 INTO @shares0;
     SELECT * FROM (
-        SELECT $fields, $SWING as swing, $RISE as rise, $TURNOV as turnover
-        FROM day as d, cap as c
-        WHERE d.code = ${code} and d.code = c.code and d.date <= '${END}'
+        SELECT $fields, $SWING as swing, $RISE as rise, $TURNOV0 as turnover
+        FROM day as d
+        WHERE d.code = ${code} and d.date <= '${END}'
         ${COND} ORDER by date DESC limit ${LIMIT:-13}
     ) as tbl ORDER by date ASC;
 	" | mysql -t kts
