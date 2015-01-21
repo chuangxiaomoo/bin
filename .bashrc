@@ -198,6 +198,15 @@ pskill()
     ps -ef | grep -E "[${head}]${body}\>" | awk '{print $2}' | xargs kill -9
 }
 
+lsgcc()
+{
+    echo "
+    hisi    arm-hisiv100nptl-linux-gcc
+    nxp     arm-linux-gcc
+    ti      arm_v5t_le-gcc
+    "
+}
+
 .orgpath() { export PATH=$ORGPATH; }
 .monpath() { export PATH=$MONPATH; }
 
