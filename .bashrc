@@ -204,6 +204,8 @@ lsgcc()
     hisi    arm-hisiv100nptl-linux-gcc
     nxp     arm-linux-gcc
     ti      arm_v5t_le-gcc
+
+    /home/n/rc.d/mksquashfs
     "
 }
 
