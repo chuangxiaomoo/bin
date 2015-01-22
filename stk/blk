@@ -17,7 +17,7 @@ function fn_main()
     )
     local i j
     for (( i=0,j=1; i<${#maps[@]}; i+=2,j+=2 )); do
-        test ${maps[${j}]} -nt ${maps[${i}]} && continue
+        test ${maps[${j}]} -nt ${BLK}/${maps[${i}]} && continue
         echo ${maps[${i}]} ${maps[${j}]}
         cat ${BLK}/${maps[${i}]} | \
             tr -cd '[0-9SZH]' | sed 's/S[HZ]/\n/g'| \
