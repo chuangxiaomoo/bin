@@ -21,7 +21,9 @@ function fn_main()
 
     A*|All)
         # git add -A 递归添加当前目录的变更，要提交所有变更，请切换到项目顶层目录
-        git status | grep --color "\.swp$" && { echo "error: .swp files exist!!!";exit ;}
+        git status | grep -v delete | grep --color "\.swp$" && 
+        { echo "error: .swp files exist!!!";exit ;}
+
         read -p "Please input comment: "
 
         git add -A
