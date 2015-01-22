@@ -10,7 +10,8 @@
         tftp -r   modi_uboot_env -g ${ubt}
 
     put
-        tftp -l                  -r remotename -p ${ubt} 
+        tftp -l                                -p ${ubt}
+        tftp -l                  -r remotename -p ${ubt}
         tftp -l   modi_uboot_env -r remotename -p ${ubt}
 
     EXAMPLE
