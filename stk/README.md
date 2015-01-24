@@ -45,12 +45,12 @@
 ## 板块           .doc/block.md
 ## 总结2013       .doc/2013.md
 ## 笛卡尔实践     .doc/up_down_logic.md
-## 建立交易系统   .doc/ma-trade.md
 ## 目标&策略&纪律 .doc/discipline.md
 
 ## 战争           .doc/war.md
 ## 逻辑           .doc/logic.md
 ## 空间域         .doc/space.md
+## 交易系统       .doc/tradesys.md
 ## 独孤九剑       .doc/dugu9jian.md       --基于信息进化论.解N变量方程组
 ## 事件冲击       .doc/event.md           --高管增持 定向增发 银行加息
 ## 缠中说禅       .chan/chan.md

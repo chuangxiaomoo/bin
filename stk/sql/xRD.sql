@@ -1253,7 +1253,7 @@ CREATE PROCEDURE sp_6maishenjian(a_code INT(6) ZEROFILL) tag_6mai:BEGIN
     SELECT date     FROM tempday WHERE id=1 INTO v_datemax;
 
     -- 13日内最低价日
-    SELECT id,date,close,low FROM tempday WHERE id<=13 order by low asc LIMIT 1 
+    SELECT id,date,close,low FROM tempday WHERE id<=21 order by low asc LIMIT 1 
                                  INTO v_id,v_date2,v_close,v_low;
 
     -- 过滤停牌很久的个股
