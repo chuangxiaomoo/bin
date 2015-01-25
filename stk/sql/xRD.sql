@@ -221,6 +221,7 @@ CREATE PROCEDURE sp_create_tbl_taox() tag_tbl_taox:BEGIN
         avrg_p      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- previous 
         avrg_c      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- curr avrg = sum(amount) / sum(volume)
         ratio       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        close       DECIMAL(6,2) NOT NULL DEFAULT 0,    
         wchng       DECIMAL(6,2) NOT NULL DEFAULT 0
     );
     CREATE TABLE IF NOT EXISTS tbl_rdiff (
@@ -235,9 +236,10 @@ CREATE PROCEDURE sp_create_tbl_taox() tag_tbl_taox:BEGIN
         avrg_p      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- previous 
         avrg_c      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- curr avrg = sum(amount) / sum(volume)
         ratio       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        close       DECIMAL(6,2) NOT NULL DEFAULT 0,    
         wchng       DECIMAL(6,2) NOT NULL DEFAULT 0,
         rdiff       DECIMAL(6,2) NOT NULL DEFAULT 0,
-        dbrat        DECIMAL(6,2) NOT NULL DEFAULT 0 
+        dbrat       DECIMAL(6,2) NOT NULL DEFAULT 0 
     );
     CREATE TABLE IF NOT EXISTS tbl_tao5 LIKE tbl_taox;
 END tag_tbl_taox //
@@ -268,6 +270,7 @@ CREATE PROCEDURE sp_create_tbl_fbi() tag_tbl_fbi:BEGIN
         avrg_p      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- previous 
         avrg_c      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- curr avrg = sum(amount) / sum(volume)
         ratio       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        close       DECIMAL(6,2) NOT NULL DEFAULT 0,    
         wchng       DECIMAL(6,2) NOT NULL DEFAULT 0
     );
 
@@ -283,6 +286,7 @@ CREATE PROCEDURE sp_create_tbl_fbi() tag_tbl_fbi:BEGIN
         avrg_p      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- previous 
         avrg_c      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- curr avrg = sum(amount) / sum(volume)
         ratio       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        close       DECIMAL(6,2) NOT NULL DEFAULT 0,    
         wchng       DECIMAL(6,2) NOT NULL DEFAULT 0,
         rdiff       DECIMAL(6,2) NOT NULL DEFAULT 0,
         dbrat        DECIMAL(6,2) NOT NULL DEFAULT 0 
@@ -1097,14 +1101,14 @@ CREATE PROCEDURE sp_taox(a_code INT(6) ZEROFILL) tag_taox:BEGIN
 
                 SET v_ratio     = 100 * (v_avrg_c-v_avrg_p) / v_avrg_c;
                 INSERT INTO tbl_taox(code,  date_p,off_p,avrg_p,tnov_p, 
-                                            date_c,off_c,avrg_c,tnov_c,ratio,wchng)
+                                            date_c,off_c,avrg_c,tnov_c,ratio,close,wchng)
                          VALUES(a_code,   v_date_p,v_off_p,v_avrg_p,v_tnov_p, 
-                                          v_date_c,v_off_c,v_avrg_c,v_tnov_c,v_ratio,v_wchng);
+                                          v_date_c,v_off_c,v_avrg_c,v_tnov_c,v_ratio,v_close,v_wchng);
 
                 INSERT INTO tbl_tao5(code,  date_p,off_p,avrg_p,tnov_p, 
-                                            date_c,off_c,avrg_c,tnov_c,ratio,wchng)
+                                            date_c,off_c,avrg_c,tnov_c,ratio,close,wchng)
                          VALUES(a_code,   v_date_p,v_off_p,v_avrg_p,v_tnov_p, 
-                                          v_date_c,v_off_c,v_avrg_c,v_tnov_c,v_ratio,v_wchng);
+                                          v_date_c,v_off_c,v_avrg_c,v_tnov_c,v_ratio,v_close,v_wchng);
                 LEAVE lbl_upto_100;
             END IF;
 
@@ -1199,9 +1203,9 @@ CREATE PROCEDURE sp_fbi(a_code INT(6) ZEROFILL) tag_fbi:BEGIN
 
                 SET v_ratio     = 100 * (v_avrg_c-v_avrg_p) / v_avrg_c;
                 INSERT INTO tbl_fbi5(code,  datetime_p,off_p,avrg_p,tnov_p, 
-                                           datetime_c,off_c,avrg_c,tnov_c,ratio,wchng)
+                                           datetime_c,off_c,avrg_c,tnov_c,ratio,close,wchng)
                          VALUES(a_code,   v_datetime_p,v_off_p,v_avrg_p,v_tnov_p, 
-                                          v_datetime_c,v_off_c,v_avrg_c,v_tnov_c,v_ratio,v_wchng);
+                                          v_datetime_c,v_off_c,v_avrg_c,v_tnov_c,v_ratio,v_trade,v_wchng);
                 LEAVE lbl_upto_100;
             END IF;
 
@@ -1252,12 +1256,12 @@ CREATE PROCEDURE sp_6maishenjian(a_code INT(6) ZEROFILL) tag_6mai:BEGIN
     SELECT count(*) FROM tempday INTO @v_len;
     SELECT date     FROM tempday WHERE id=1 INTO v_datemax;
 
-    -- 13日内最低价日
+    -- 21日内最低价日
     SELECT id,date,close,low FROM tempday WHERE id<=21 order by low asc LIMIT 1 
                                  INTO v_id,v_date2,v_close,v_low;
 
-    -- 过滤停牌很久的个股
-    IF DATE_ADD(v_datemax, INTERVAL 5 DAY) < @END THEN LEAVE tag_6mai; END IF;
+    -- 过滤停牌很久的个股? 只9jian才过滤
+    -- IF DATE_ADD(v_datemax, INTERVAL 5 DAY) < @END THEN LEAVE tag_6mai; END IF;
 
     lbl_upto_100: WHILE v_id <= @v_len DO
         SELECT volume,amount FROM tempday WHERE id=(v_id) INTO v_volume,v_amount;

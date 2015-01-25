@@ -330,7 +330,8 @@ function fn_6jian()
 
     local code=`sed 's/^0*//g' <<< $1 | xargs printf "%06d"`
     TBL=tbl_cost6 up add_codes_2_dzh2tbl ${code}
-    TBL=tbl_cost6 NUM=${NUM:-240} fn_6maishenjian ${2:-$END} ${3:-wchng}
+    daysql="SELECT * FROM day WHERE code=${code} and date<='${END}' ORDER by date DESC limit 1"
+    daysql=${daysql} TBL=tbl_cost6 NUM=${NUM:-240} fn_6maishenjian ${2:-$END} ${3:-wchng}
 }
 
 function fn_flush_code()
@@ -455,7 +456,7 @@ function fn_tao5()
     echo "
     INSERT INTO tbl_rdiff(${col},rdiff,dbrat)
     SELECT ${colA},(A.ratio-B.ratio) as rdiff, 
-                    (A.ratio+A.wchng) as dbrat FROM tbl_tao5 A 
+                    100*(2*A.close-(A.avrg_p+A.avrg_c))/(A.avrg_p+A.avrg_c) as dbrat FROM tbl_tao5 A 
     INNER JOIN tbl_tao5 B on(A.id<B.id) GROUP BY A.id;
     " | mysql -N kts
     xt_ret $? "" || return $?
@@ -483,7 +484,7 @@ function fn_bei()
     for i in ${lst[@]}; do
         echo "# $i" # | tee /dev/stderr
        #ZIZE=${ZIZE:-5} call=fn_bei SCREENER tao5 ${i}
-        ZIZE=${ZIZE:-13} call=fn_bei fn_tao5 ${i}
+        ZIZE=${ZIZE:-2} call=fn_bei fn_tao5 ${i}
     done
 
     SELECT rdiff
@@ -920,7 +921,7 @@ function fn_fbi()
     echo "
     INSERT INTO tbl_fdiff(${col},rdiff,dbrat)
     SELECT ${colA},(A.ratio-B.ratio) as rdiff, 
-                    (A.ratio+A.wchng) as dbrat FROM tbl_fbi5 A 
+                    100*(2*A.close-(A.avrg_p+A.avrg_c))/(A.avrg_p+A.avrg_c) as dbrat FROM tbl_fbi5 A 
     INNER JOIN tbl_fbi5 B on(A.id<B.id) GROUP BY A.id;
     " | mysql -N kts
     xt_ret $? "" || return $?

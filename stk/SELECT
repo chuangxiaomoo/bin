@@ -245,6 +245,7 @@ function fn_6maishenjian()
     echo ----- COND: $COND -----
     function fn_get_tbl_6jian_dive()
     {
+        daysql=${daysql:-SELECT * from day where date=\'${DATE2}\'}
         tbl_super_dive="
         SELECT t.code, DATE_FORMAT(date1,'%m-%d') as start, 
                        DATE_FORMAT(date2,'%m-%d') as end, ${columns}, c.nmc, chng, 
@@ -253,7 +254,8 @@ function fn_6maishenjian()
                        round(100*(d.close- avrg)/avrg,2) as down, 
                        round(100*(d.close-t.low)/avrg,2) as up, 
                        c.name 
-            FROM ${tablex:-tbl_6mai} as t, cap as c, (SELECT * from day where date='${DATE2}') as d
+            FROM ${tablex:-tbl_6mai} as t, cap as c, 
+                (${daysql}) as d
             WHERE t.code = c.code and t.code = d.code HAVING 1 ${COND} 
             ORDER by ${1:-wchng} ${ASC:-asc} limit ${LIMIT:-36}     # COND='nmc<250000 and lchng<-9.7 and off<21'
         "
@@ -363,7 +365,7 @@ function fn_tao5()
 function fn_rdiff()
 {
    #columns=date_p,date_c,off_p,off_c,tnov_p,tnov_c,avrg_p,avrg_c,ratio
-    columns=date_p,date_c,off_c,tnov_c,avrg_p,avrg_c,ratio,wchng,rdiff,dbrat
+    columns=date_p,date_c,off_c,tnov_c,avrg_p,avrg_c,ratio,rdiff,wchng,dbrat
     columns=${columns:-'*'}
     columns=t.${columns//,/,t.}
 

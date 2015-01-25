@@ -27,6 +27,7 @@ CREATE PROCEDURE sp_create_tbl_acf() tag_tbl_acf:BEGIN
         avrg_p      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- previous 
         avrg_c      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- curr avrg = sum(amount) / sum(volume)
         ratio       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        close       DECIMAL(6,2) NOT NULL DEFAULT 0,    
         wchng       DECIMAL(6,2) NOT NULL DEFAULT 0
     );
 
@@ -43,6 +44,7 @@ CREATE PROCEDURE sp_create_tbl_acf() tag_tbl_acf:BEGIN
         avrg_p      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- previous 
         avrg_c      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- curr avrg = sum(amount) / sum(volume)
         ratio       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        close       DECIMAL(6,2) NOT NULL DEFAULT 0,    
         wchng       DECIMAL(6,2) NOT NULL DEFAULT 0,
         rdiff       DECIMAL(6,2) NOT NULL DEFAULT 0,
         dbrat        DECIMAL(6,2) NOT NULL DEFAULT 0 
@@ -171,9 +173,9 @@ CREATE PROCEDURE sp_acf(a_code INT(6) ZEROFILL) tag_acf:BEGIN
 
                 SET v_ratio     = 100 * (v_avrg_c-v_avrg_p) / v_avrg_c;
                 INSERT INTO tbl_acf(code,  datetime_p,off_p,avrg_p,tnov_p, 
-                                            datetime_c,off_c,avrg_c,tnov_c,ratio,wchng)
+                                            datetime_c,off_c,avrg_c,tnov_c,ratio,close,wchng)
                          VALUES(a_code,   v_datetime_p,v_off_p,v_avrg_p,v_tnov_p, 
-                                          v_datetime_c,v_off_c,v_avrg_c,v_tnov_c,v_ratio,v_wchng);
+                                          v_datetime_c,v_off_c,v_avrg_c,v_tnov_c,v_ratio,v_close,v_wchng);
 
                 LEAVE lbl_upto_100;
             END IF;
@@ -198,7 +200,7 @@ CREATE PROCEDURE sp_acf(a_code INT(6) ZEROFILL) tag_acf:BEGIN
                code,datetime_p,datetime_c,off_p,off_c,tnov_p,tnov_c,avrg_p,avrg_c,ratio,wchng,rdiff,dbrat)
         SELECT A.code,A.datetime_p,A.datetime_c,A.off_p,A.off_c,A.tnov_p,A.tnov_c,A.avrg_p,A.avrg_c,A.ratio,A.wchng,
             (A.ratio-B.ratio) as rdiff, 
-            (A.ratio+A.wchng) as dbrat FROM tbl_acf A 
+            100*(2*A.close-(A.avrg_p+A.avrg_c))/(A.avrg_p+A.avrg_c) as dbrat FROM tbl_acf A 
         INNER JOIN tbl_acf B on(A.id<B.id) GROUP BY A.id;
 
 END tag_acf //
