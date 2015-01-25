@@ -348,6 +348,7 @@ function fn_add_codes_2_dzh2tbl()
     " > ${sql_temp}
 
     if [ -f "${1}" ]; then
+        [ -z "cat ${1}" ] && echo "Error: file ${$1} is null" && exit 1
         lst=(`awk '/^[^#]/{print $1}' ${*} | sort -u`)
     else
         lst=(${@})
@@ -380,21 +381,19 @@ function fn_add_codes_2_dzh2tbl()
     done ;
     } > ${f_zxg}
 
-    echo "    add ${#lst[@]} to ${TBL} over."
+    echo "    add ${#lst[@]} to ${TBL} and /tmp/zxg over."
 }
 
 
 function fn_add_tbl_codes_2_dzh()
 {
-    field=${1}
-    field=${field:+ORDER by ${field} DESC}
-    goodboys=`mysql -N -B kts <<< "SELECT code FROM ${TBL:-tbl_ma345} ${field};"`
+    mysql -N -B kts <<< "SELECT code FROM ${1:-chao} ORDER by code asc;" > /tmp/zxg
 
     # echo $goodboys; exit
 
-    [ -z "$goodboys" ] && echo "No goodboys found!" && exit
+    [ "`stat -c%s /tmp/zxg`" -lt 6 ] && echo "No goodboys found!" && exit
 
-    TBL= fn_add_codes_2_dzh2tbl $goodboys
+    fn_add_codes_2_dzh2tbl /tmp/zxg
 }
 
 function fn_up_tbl_xRD()
@@ -690,7 +689,7 @@ function fn_main()
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
     "up_tbl_xRD [--keep.PWR -k]         # --- 使用当前除权数据 --keep.PWR"
     "add_codes_2_dzh2tbl {code...|file} # 添加CODE到ZXG.BLK，并写表#{TBL:-zxg}"
-    "add_tbl_codes_2_dzh                # 添加表#{TBL:-tbl_visit}到dzh2tbl{zxg}"
+    "add_tbl_codes_2_dzh {TABLE:-chao}  # 添加表#{TBL:-zxg} 及 /tmp/zxg"
     "up_rzrq_codes_tbl                  # 更新RZRQ业务数据"
     "up_swing10                         # 更新涨跌停6.1%数据"
     "up_tbl_ma240_all                   # --- 更新tbl_ma240"
