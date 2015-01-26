@@ -57,14 +57,6 @@ workdir='/root/bin/stk'
 
 m2d_temp='/dev/shm/hexun/min2day'
 
-tougu_temp='/dev/shm/sina/tougu/temp'
-tougu_debug='/dev/shm/sina/tougu/debug'
-tougu_stderr='/dev/shm/sina/tougu/stderr'
-tougu_stdout='/dev/shm/sina/tougu/stdout'
-tougu_rawxml='/dev/shm/sina/tougu/rawxml'
-tougu_ripexml='/dev/shm/sina/tougu/ripexml'
-tougu_ripetxt='/dev/shm/sina/tougu/ripetxt'
-
 hx_stderr='/dev/shm/hexun/stderr'
 hx_rawxml='/dev/shm/hexun/rawxml'
 hx_ripexml='/dev/shm/hexun/ripexml'
@@ -269,13 +261,6 @@ echo "`date +%F.%T` ${BASH_SOURCE##*/}" >> /var/dbank.trace
 
 [ "${BASH_SOURCE##*/}" != "${0##*/}" ] && return 0
 
-fn_stati_tougu_cap_layout() 
-{
-    cat $tougu_ripetxt | \
-        xargs -I{} grep {} "$sn_cap_nmc" | \
-        sort -g -k5
-}
-
 fn_rank_by_nmc() 
 {
     echo "
@@ -286,6 +271,7 @@ fn_rank_by_nmc()
 fn_group_nmc_layout() 
 {
     # cat $sn_cap_nmc
+    mysql -t  kts <<< "SELECT sum(nmc)/(10000*10000) as nmc_WanYi FROM cap;" 
     mysql -N  kts <<< "SELECT * FROM cap;" | awk 'BEGIN {
         list="5000 1000 800 500 200 100 50 20 10 5 0";
         arr_size=split(list, arr_list, " ");
@@ -311,7 +297,6 @@ fn_group_nmc_layout()
 main() 
 {
     list=(
-        fn_stati_tougu_cap_layout
         fn_group_nmc_layout
         fn_rank_by_nmc
     )        
