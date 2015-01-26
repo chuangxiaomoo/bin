@@ -107,6 +107,7 @@ function fn_main()
 {
     mkdir -p ${rt_stdout%/*}
 #   YIST=${YIST:-'.blk.qs'}
+#   YIST=${YIST:-'.soptter.lin'}
     YIST=${YIST:-'.soptter.focus'}
     codelist=`cat ${YIST}|awk '{print $1}'`
     thrxhold=.01               # .00382 .00618 .01 .01618

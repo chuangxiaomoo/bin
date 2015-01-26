@@ -15,6 +15,10 @@
   modi_uboot_env --action get --key bootargs
   modi_uboot_env --action set --key bootargs --value ""
 
+## nand bad
+
+  检查坏块
+
 ## nand
 
   ? nand
