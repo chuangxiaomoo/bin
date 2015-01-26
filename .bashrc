@@ -201,9 +201,9 @@ pskill()
 lsgcc()
 {
     echo "
-    hisi    arm-hisiv100nptl-linux-gcc
-    nxp     arm-linux-gcc
-    ti      arm_v5t_le-gcc
+    hisi    arm-hisiv100nptl-linux-
+    nxp     arm-linux-
+    ti      arm_v5t_le-
 
     /home/n/rc.d/mksquashfs
     "
