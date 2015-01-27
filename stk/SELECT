@@ -106,7 +106,7 @@ function fn_app_wgt_turnov()
     wgt="(sum-net)"
     field=${1:-wgt}
 
-    # 预筛选:高换手 SELECT get_vol_rat_152468 --> get_ma513
+    # 预筛选:高换手 SELECT get_rat_51325 --> get_ma513
     COND=${TBL:+and code in (SELECT code FROM $TBL) }${COND}
 
     echo ----- COND: $COND -----
@@ -147,23 +147,31 @@ function fn_get_comma_cloumns()
     mysql kts -N<<<"DESCRIBE ${1:-day};" | awk '{printf "%s,", $1} END{printf "\n"}' | sed 's/,$//g'
 }
 
-function fn_get_vol_rat_152468()
+function fn_get_rat_51325()
 {
     function fn_build_sqls() {
     sqls="
-    SELECT d.code,d.date,d.yesc,d.open,d.high,d.low,d.close,
+    SELECT d.code,DATE_FORMAT(d.date,'%m-%d')as date,d.yesc,d.open,d.close,
         round(100*(d.close-d.yesc)/d.yesc,2) as rise, 
-        ${rat15} as rat15, 
-        ${rat24} as rat24, 
-        ${rat68} as rat68,
+        ${tov}  as tov, 
+        ${tov5} as tov5,
+        ${tov13}as tov13,
+        ${rat5} as rat5, 
+        ${rat13} as rat13,
+        ${rat25} as rat25, 
         c.name FROM tbl_ma513 as ma, ${tbl_day} as d, cap as c
         WHERE ma.code=d.code and ma.code=c.code HAVING 1 ${COND} ORDER by ${field} DESC limit ${LIMIT:-24}" 
     }
-    field=${1:-rat15}
+    field=${1:-rat5}
     SCALE=`fn_get_ratio_close2open`
-    rat15="round(5*d.volume/ma.vol5*${SCALE},2)"
-    rat24="round(2*(d.volume*${SCALE}+ma.vol)/(ma.vol5-ma.vol),2)"
-    rat68="round((8/6)*(d.volume*${SCALE}+ma.vol5)/(ma.vol13-ma.vol5),2)"
+
+    # 以PREV为标，盘中只需要更新一次 tbl_ma513
+    tov=" round(100*(d.volume)/(c.nmc/c.close),2)"
+    tov5="round(100*(ma.vol5)/(c.nmc/c.close),2)"
+    tov13="round(100*(ma.vol13)/(c.nmc/c.close),2)"
+    rat5="round(5*d.volume*${SCALE}/(ma.vol5),2)"       
+    rat13="round(13*d.volume*${SCALE}/(ma.vol13),2)"
+    rat25="round(25*d.volume*${SCALE}/(ma.vol25),2)"
 
     ./SCREENER get_ma513 ${PREV}
     xt_ret $? "${FUNCNAME}" || return $?
@@ -174,9 +182,9 @@ function fn_get_vol_rat_152468()
 
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
-    field=rat15 fn_build_sqls
-    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > ${soptter_zxg} 
-    TBL=zxg up 7 ${soptter_zxg}
+    field=rat13 fn_build_sqls
+    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > .soptter.chao 
+    TBL=chao up 7 .soptter.chao
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -190,13 +198,17 @@ function fn_get_ma513()
 {
     # read -p "U've done [SCREENER 2]?"
     SCALE=`fn_get_ratio_close2open`
-    columns=code,close,ma5,ma13,vol,vol5,vol13
+    columns=code,close,ma5,ma13,ma25
     columns=t.${columns//,/,t.}
     sqls="
-    SELECT ${columns}, 
-    round(100*vol5/(c.nmc/c.close),2) as tov5, 
+    SELECT ${columns},
+    round(100*vol  /(c.nmc/c.close),2) as tov, 
+    round(100*vol5 /(c.nmc/c.close),2) as tov5, 
     round(100*vol13/(c.nmc/c.close),2) as tov13, 
-    round(${SCALE}*4*vol/(vol5-vol),2) as ratio,
+    round(100*vol25/(c.nmc/c.close),2) as tov25, 
+    round(4*${SCALE}*vol/(vol5-vol),2) as rat4,
+    round(12*${SCALE}*vol/(vol13-vol),2) as rat12,
+    round(24*${SCALE}*vol/(vol25-vol),2) as rat24,
     c.nmc, c.name
     FROM tbl_ma513 as t, cap as c WHERE t.code=c.code HAVING 1 ${COND}
     ORDER by ${1:-tov5} ${ASC:-DESC} LIMIT ${LIMIT:-24}
@@ -496,8 +508,8 @@ function fn_main()
     "app_wgt_turnov     [sortfiled]          # 追加weight到down_turnov CHAO=1则进zxg"
     "get_comma_cloumns  [tbl_name:-day]      # 逗分列名"
     "sel_tbl_sink_where [TBL:-zxg_chao513]   # chao ..."
-    "get_vol_rat_152468 [sortfiled:-ratio]   # 量比排名"
-    "get_ma513          [sortfiled:tov5]     # 换手率[tov5]排名"
+    "get_rat_51325      [sortfiled:-ratio]   # day+PREV513.动态rat"
+    "get_ma513          [sortfiled:tov5]     # 均价+现成513.静态rat"
     "get_open_days_min                       # 分钟日列表 \$LIMIT"
     "app_nmc_name       [sortfiled]          # 追加股票名到表TBL"
     # ----------------  ABOVE IS FIXED SEQUENCE --------------------

@@ -507,7 +507,6 @@ function fn_insert_codes_2_table()
 
 function fn_get_ma513()
 {
-    END=${1:-${END}}
     tbl_ma_date=tbl_mx_${END//-/_}
 
     if mysql kts<<<"SHOW TABLES" | grep -q ${tbl_ma_date}; then
@@ -1015,7 +1014,7 @@ function fn_main()
     "9jian                code [end [field]]    # #{NUM}日，个股成本分析"
     "6jian                code [end [field]]    # #{NUM}日，个股成本分析"
     "get_down_turnov      [start:curr-13] [end] # 100%下降净换手"
-    "get_ma513            [end]                 # ma 5 13 34 55"
+    "get_ma513                                  # /tmp/mx/"
     "ana_ma513            index [end]           # 分析ma 5 13 34 55"
     "ana_ma240                                  # 分析ma 34 60 120 240"
     "ana_chao                                   # 分析超跌反弹"

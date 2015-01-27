@@ -333,11 +333,11 @@ CREATE PROCEDURE sp_create_ma513() tag_ma513:BEGIN
         close       DECIMAL(6,2)  NOT NULL DEFAULT 0,
         ma5         DECIMAL(6,2)  NOT NULL DEFAULT 0,        
         ma13        DECIMAL(6,2)  NOT NULL DEFAULT 0,
+        ma25        DECIMAL(6,2)  NOT NULL DEFAULT 0,
         vol         DECIMAL(12,2) NOT NULL DEFAULT 0,
         vol5        DECIMAL(12,2) NOT NULL DEFAULT 0,
         vol13       DECIMAL(12,2) NOT NULL DEFAULT 0,
-        high        DECIMAL(6,2)  NOT NULL DEFAULT 0,
-        low         DECIMAL(6,2)  NOT NULL DEFAULT 0
+        vol25       DECIMAL(12,2) NOT NULL DEFAULT 0
     );
 END tag_ma513 //
 
@@ -1291,37 +1291,34 @@ END tag_6mai //
 
 DROP PROCEDURE IF EXISTS sp_get_ma513//
 CREATE PROCEDURE sp_get_ma513(a_code INT(6) ZEROFILL) tag_get_ma513:BEGIN
-    DECLARE v_ma5      DECIMAL(6,2)  DEFAULT 0;
-    DECLARE v_ma13     DECIMAL(6,2)  DEFAULT 0;
-    DECLARE v_vol      DECIMAL(12,2) DEFAULT 0;
-    DECLARE v_vol5     DECIMAL(12,2) DEFAULT 0;
-    DECLARE v_vol13    DECIMAL(12,2) DEFAULT 0;
     DECLARE v_close    DECIMAL(6,2)  DEFAULT 0;
-    DECLARE v_high     DECIMAL(6,2)  DEFAULT .1;
-    DECLARE v_low      DECIMAL(6,2)  DEFAULT .1;
+    DECLARE v_vol      DECIMAL(12,2) DEFAULT 0;
+    DECLARE v_ma5      DECIMAL(6,2)  DEFAULT 0;
+    DECLARE v_vol5     DECIMAL(12,2) DEFAULT 0;
+    DECLARE v_ma13     DECIMAL(6,2)  DEFAULT 0;
+    DECLARE v_vol13    DECIMAL(12,2) DEFAULT 0;
+    DECLARE v_ma25     DECIMAL(6,2)  DEFAULT 0;
+    DECLARE v_vol25    DECIMAL(12,2) DEFAULT 0;
 
     call sp_create_tempday();
 
-    -- 14th
-    SELECT date FROM day WHERE code=a_code and date<=@END ORDER by 
-           date DESC limit 13,1 INTO @START;
-
-    INSERT INTO tempday(code,date,close,volume) SELECT 
-           code,date,close,volume FROM day WHERE code=a_code and date>@START and date<=@END;
+    INSERT INTO tempday(code,date,close,volume,amount) 
+        SELECT code,date,close,volume,amount FROM day 
+        WHERE code=a_code and date<=@END ORDER by date DESC LIMIT 25;
 
     -- 13 34 55 100
     SELECT count(*) FROM tempday INTO @v_len;
-    SELECT close,volume FROM tempday WHERE id=@v_len INTO v_close,v_vol;
+    SELECT close,volume FROM tempday WHERE id=1 INTO v_close,v_vol;
 
-    IF @v_len < 13 THEN LEAVE tag_get_ma513; END IF;
+    IF @v_len < 26 THEN LEAVE tag_get_ma513; END IF;
 
     -- ma 即有平均的意义，但vol没有
-    SELECT SUM(close)/5,  SUM(volume) FROM tempday WHERE id>(@v_len-5) INTO v_ma5, v_vol5;
-    SELECT SUM(close)/13, SUM(volume), MAX(close), MIN(close)
-                                      FROM tempday INTO v_ma13, v_vol13, v_high, v_low;
+    SELECT SUM(amount)/SUM(volume), SUM(volume) FROM tempday WHERE id<=5 INTO v_ma5,  v_vol5;
+    SELECT SUM(amount)/SUM(volume), SUM(volume) FROM tempday WHERE id<14 INTO v_ma13, v_vol13;
+    SELECT SUM(amount)/SUM(volume), SUM(volume) FROM tempday WHERE id<26 INTO v_ma25, v_vol25;
 
-    INSERT INTO tbl_ma513 (  code,   close,   ma5,   ma13,   vol,   vol5,   vol13,  high,   low)
-                    VALUES(a_code, v_close, v_ma5, v_ma13, v_vol, v_vol5, v_vol13,v_high, v_low);
+    INSERT INTO tbl_ma513 (  code,   close,   ma5,   ma13,  ma25,   vol,   vol5,   vol13,  vol25)
+                    VALUES(a_code, v_close, v_ma5, v_ma13,v_ma25, v_vol, v_vol5, v_vol13,v_vol25);
 END tag_get_ma513 //
 
 -- 考虑使用ma34代替ma34
