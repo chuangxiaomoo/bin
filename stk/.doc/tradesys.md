@@ -75,7 +75,11 @@
 
 # 3 追风
 
-  找涨幅小、换手大而上攻者。奋达科技 2015-01-21
+  找涨幅小、换手逐渐放大而上攻者。奋达科技 2015-01-21
+
+  LIMIT=800 SELECT 8 tov13
+  LIMIT=800 SELECT 8 tov25
+  COND='rat4>1 and rat4>rat12' SELECT 8 tov25
 
 # 4 无风.卖出 bei acc acf
 
