@@ -460,11 +460,16 @@ function fn_atoi()                      { cat clang_atoi ;}
 
 function fn_binutils()                  { 
 function fn_readelf()                   { cat binutils_readelf ;}
+function fn_objdump()                   { cat binutils_objdump ;}
+function fn_strip()                     { cat binutils_strip ;}
     local opts=(
+        elf                     # info elf & man elf
         ar
         nm
         readelf                 # -h|--file-header | grep Mach 查看CPU架构
         ldd                     # 只是一个shell脚本，通过ld-linux.so实现
+        objdump                 # 
+        strip                   # 瘦身
     )
     fn_print $@
 }
