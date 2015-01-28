@@ -4,6 +4,31 @@
 . `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
 . /etc/common.rc
 
+
+# 下载分笔数据
+# function fn_down_fenbi()
+# {
+#     # sina的分笔粒度是最小的，分笔数据3家对比详见：
+#     mkdir -p `dirname $fenbi_raw`
+# 
+#     host="http://hqdigi2.eastmoney.com/EM_Quote2010NumericApplication/CompatiblePage.aspx?"
+#     para="Type=OB&stk=000002&Reference=xml&limit=0&page="
+# 
+#     page_cnt=`$W3M -dump "$host${para}1" 2>/dev/null | head -1 | awk -F"[:,]" '{print $2}'`
+#     [ -z "$page_cnt" ] && echo "error: null page_cnt" && exit
+# 
+#     > $fenbi_raw
+#     local i
+#     for (( i=1; i<=$page_cnt; i++ )); do
+#          url=$host${para}$i
+#          $W3M -dump "$url" 2>/dev/null >> $fenbi_raw
+#          xt_ret $? "NETWORK" || return $?
+#     done
+# 
+#     sed -i '/jsTimeSharingData/d' $fenbi_raw
+#     cat $fenbi_raw | tr -d '[' | tr -d ']};' | sed 's/","/\n/g'  | tr -d '"' > ${fenbi_ripe}
+# }
+
 function fn_get_url()
 {
     # fenbi只能下载当天数据 & 每次最多输出1000条记录

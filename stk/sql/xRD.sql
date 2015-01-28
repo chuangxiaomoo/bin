@@ -146,26 +146,6 @@ tag_kdj:BEGIN
     UNTIL v_i > v_len END REPEAT;
 END tag_kdj//
 
-DROP PROCEDURE IF EXISTS sp_create_tbl_sink //
-CREATE PROCEDURE sp_create_tbl_sink() tag_tbl_sink:BEGIN 
-    DROP   TABLE IF EXISTS tbl_sink;
-    CREATE TABLE tbl_sink (
-        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
-        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
-        swing       DECIMAL(6,2) NOT NULL DEFAULT 0,        -- price swing
-        rise        DECIMAL(6,2) NOT NULL DEFAULT 0,        -- rise turnover
-        sink        DECIMAL(6,2) NOT NULL DEFAULT 0,        -- sink turnover
-        sum         DECIMAL(6,2) NOT NULL DEFAULT 0,        -- sum = rise + sink
-        net         DECIMAL(6,2) NOT NULL DEFAULT 0,        -- net = rise - sink
-        low         DECIMAL(6,2) NOT NULL DEFAULT 0,        
-        avrg        DECIMAL(6,2) NOT NULL DEFAULT 0,        
-        trade       DECIMAL(6,2) NOT NULL DEFAULT 0,        
-        date_low    date NOT NULL DEFAULT 0,
-        date_high   date NOT NULL DEFAULT 0
-    );
-   #)engine memory;
-END tag_tbl_sink //
-
 DROP PROCEDURE IF EXISTS sp_create_tbl_9jian //
 CREATE PROCEDURE sp_create_tbl_9jian() tag_tbl_9jian:BEGIN 
     DROP   TABLE IF EXISTS tbl_9jian;
@@ -477,81 +457,6 @@ CREATE PROCEDURE sp_flt_kdj_up(a_code INT(6) ZEROFILL) tag_flt_kdj_up:BEGIN
     END IF;
 END tag_flt_kdj_up //
 
-DROP PROCEDURE IF EXISTS sp_flt_13d_sink//
-CREATE PROCEDURE sp_flt_13d_sink(a_code INT(6) ZEROFILL) tag_flt_13d_sink:BEGIN
-    DECLARE v_high      DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_low       DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_close     DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_sink      DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_date      DATE;
-    DECLARE v_date_high DATE;
-    DECLARE v_date_low  DATE;
-
-    call sp_create_tempday();
-    INSERT INTO tempday(code,date,open,high,low,close) 
-                SELECT code,date,open,high,low,close FROM day 
-                WHERE code=(a_code)               -- and date < @v_maxdate
-                ORDER BY date DESC limit 8;         -- GOLDEN LAW 2 3 5 8 13
-
-    call sp_xRD();
-    SELECT date FROM tempday WHERE id=1 INTO v_date;
-    SELECT date,high FROM tempday order by high DESC limit 1 INTO v_date_high,v_high;
-    SELECT date,low  FROM tempday order by low  ASC  limit 1 INTO v_date_low ,v_low;
-    SELECT close     FROM tempday WHERE date=@v_maxdate INTO v_close;
-    SET v_sink = 100*(v_high-v_low)/v_high;
-
-    # SELECT a_code,v_sink;
-
-    IF v_date_low > v_date_high AND v_date = @v_maxdate AND v_sink > 20 THEN 
-        SELECT a_code,v_sink, 100*(v_close-v_low)/v_low as bounce,v_date_low,v_low;
-        INSERT INTO tbl_visit(code,sink,bounce,date_low,date_high) 
-            VALUES(a_code,v_sink,100*(v_close-v_low)/v_low,v_date_low,v_date_high);
-    END IF;
-END tag_flt_13d_sink //
-
-DROP PROCEDURE IF EXISTS sp_flt_n_day_change//
-CREATE PROCEDURE sp_flt_n_day_change(a_code INT(6) ZEROFILL) tag_flt_n_day_change:BEGIN
-    DECLARE v_high      DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_low       DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_close     DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_change    DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_yesc_0    DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_close_n   DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_date      DATE;
-    DECLARE v_date_max  DATE;
-    DECLARE v_date_high DATE;
-    DECLARE v_date_low  DATE;
-
--- LEAVE tag_flt_n_day_change; 
-
-    call sp_create_tempday();
-    INSERT INTO tempday(code,date,yesc,open,high,low,close) 
-                SELECT code,date,yesc,open,high,low,close FROM day 
-                WHERE code=(a_code) and date > @v_mindate
-                ORDER BY date DESC;     -- GOLDEN LAW 2 3 5 8 13
-
-    call sp_xRD();
-    -- SELECT date FROM tempday WHERE id=1 INTO v_date;
-    SELECT date,close FROM tempday WHERE id=1 INTO v_date_max,v_close_n;
-    SELECT       yesc FROM tempday WHERE id=(SELECT max(id) FROM tempday) INTO v_yesc_0;
-
-    SELECT close FROM tempday WHERE date=@v_maxdate INTO v_close;
-    SET v_change = 100*(v_close_n-v_yesc_0)/v_yesc_0;
-
-    # 增幅>@argv_change
-    IF @argv_change > 0 AND @argv_change < v_change THEN -- AND v_date = @v_maxdate
-        SELECT a_code,v_change;
-        INSERT INTO tbl_visit(code,sink) VALUES(a_code,v_change);
-    END IF;
-
-    # 跌幅>@argv_change
-    IF @argv_change < 0 AND @argv_change > v_change THEN -- AND v_date = @v_maxdate 
-        SELECT a_code,v_change;
-        INSERT INTO tbl_visit(code,sink) VALUES(a_code,v_change);
-    END IF;
-END tag_flt_n_day_change//
-
-
 DROP PROCEDURE IF EXISTS sp_visit_tbl//
 CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
     DECLARE v_code  INT(6) ZEROFILL;
@@ -593,7 +498,6 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
     -- prepare
     IF a_type = @fn_get_ma513       THEN call sp_create_ma513();    END IF;
     IF a_type = @fn_up_ma240_all    THEN call sp_create_ma240();    END IF;
-    IF a_type = @fn_get_down_turnov THEN call sp_create_tbl_sink(); END IF;
     IF a_type = @fn_dugu9jian       THEN call sp_create_tbl_9jian();END IF;
     IF a_type = @fn_6maishenjian    THEN call sp_create_tbl_6mai(); END IF;
     IF a_type = @fn_taox_ratio      THEN call sp_create_tbl_taox(); END IF;
@@ -605,9 +509,6 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
         SELECT code FROM codes WHERE id=(v_id) INTO v_code;
         CASE a_type
             WHEN @fn_flt_kdj_up        THEN call sp_flt_kdj_up(v_code);
-            WHEN @fn_flt_13d_sink      THEN call sp_flt_13d_sink(v_code);
-            WHEN @fn_flt_n_day_change  THEN call sp_flt_n_day_change(v_code);
-            WHEN @fn_get_down_turnov   THEN call sp_get_down_turnov(v_code);
             WHEN @fn_dugu9jian         THEN call sp_dugu9jian(v_code);
             WHEN @fn_get_ma513         THEN call sp_get_ma513(v_code);
             WHEN @fn_up_ma240_all      THEN call sp_get_ma240(v_code);
@@ -665,45 +566,6 @@ CREATE PROCEDURE sp_xRD() tag_xRD:BEGIN
 
 END tag_xRD //
 
-# 统计历史涨跌停家数
-DROP PROCEDURE IF EXISTS sp_count_swing10//
-CREATE PROCEDURE sp_count_swing10() tag_swing10:BEGIN
-    DECLARE v_sink      INT DEFAULT 0; 
-    DECLARE v_rise      INT DEFAULT 0; 
-    DECLARE v_len       INT DEFAULT 0; 
-    DECLARE v_start     date DEFAULT 0;
-    DECLARE v_tmpdate   date DEFAULT 0;
-
-    CREATE TABLE IF NOT EXISTS swing10 (
-        id          INT(6) PRIMARY key AUTO_INCREMENT NOT NULL,
-        date        date NOT NULL,
-        rise        INT NOT NULL DEFAULT 0,
-        sink        INT NOT NULL DEFAULT 0
-    );
-
-    -- 之前的数据不删除，只做增量统计
-    SELECT count(*) FROM swing10 INTO v_len;
-    IF v_len <> 0 THEN
-        SELECT max(date) FROM swing10 INTO v_start;
-    ELSE
-        SET v_start='2013-07-18';
-    END IF;
-
-    SELECT max(date) FROM day WHERE code=900001 INTO @v_maxdate;
-    SELECT v_start, @v_maxdate;
-
-    WHILE v_start <> @v_maxdate DO
-        SELECT date FROM day WHERE code=900001 and date>v_start limit 1 INTO v_start;
-        -- SELECT v_tmpdate;
-        SELECT count(code) FROM day WHERE date=v_start and 100*(close-yesc)/yesc>6.1 INTO v_rise;
-        SELECT count(code) FROM day WHERE date=v_start and 100*(close-yesc)/yesc<-6.1 INTO v_sink;
-        -- SELECT v_start,v_rise,v_sink;
-        INSERT INTO swing10(date,rise, sink) VALUES(v_start, v_rise, v_sink);
-        -- LEAVE tag_swing10;
-    END WHILE;
-
-END tag_swing10 //
-
 DROP PROCEDURE IF EXISTS sp_stat_change //
 CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
     DECLARE v_sink      INT DEFAULT 0; 
@@ -715,15 +577,15 @@ CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
     DECLARE v_inc       INT DEFAULT 0; 
     DECLARE v_dec0      INT DEFAULT 0; 
 
-    DECLARE v_inc8      INT DEFAULT 0; 
-    DECLARE v_inc5      INT DEFAULT 0; 
-    DECLARE v_inc2      INT DEFAULT 0; 
-    DECLARE v_inc1      INT DEFAULT 0; 
+    DECLARE v_inc8p      INT DEFAULT 0; 
+    DECLARE v_inc58      INT DEFAULT 0; 
+    DECLARE v_inc25      INT DEFAULT 0; 
+    DECLARE v_inc02      INT DEFAULT 0; 
 
-    DECLARE v_dec2      INT DEFAULT 0; 
-    DECLARE v_dec5      INT DEFAULT 0; 
-    DECLARE v_dec8      INT DEFAULT 0; 
-    DECLARE v_dec1      INT DEFAULT 0; 
+    DECLARE v_dec25      INT DEFAULT 0; 
+    DECLARE v_dec58      INT DEFAULT 0; 
+    DECLARE v_dec8p      INT DEFAULT 0; 
+    DECLARE v_dec02      INT DEFAULT 0; 
 
     DROP TABLE IF EXISTS tbl_change;
     CREATE TABLE IF NOT EXISTS tbl_change (
@@ -741,15 +603,15 @@ CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
         inc         INT(6) NOT NULL DEFAULT 0,
         dec0        INT(6) NOT NULL DEFAULT 0,
 
-        inc8        INT(6) NOT NULL DEFAULT 0,
-        inc5        INT(6) NOT NULL DEFAULT 0,
-        inc2        INT(6) NOT NULL DEFAULT 0,
-        inc1        INT(6) NOT NULL DEFAULT 0,
+        inc8p        INT(6) NOT NULL DEFAULT 0,
+        inc58        INT(6) NOT NULL DEFAULT 0,
+        inc25        INT(6) NOT NULL DEFAULT 0,
+        inc02        INT(6) NOT NULL DEFAULT 0,
 
-        dec1        INT(6) NOT NULL DEFAULT 0,
-        dec2        INT(6) NOT NULL DEFAULT 0,
-        dec5        INT(6) NOT NULL DEFAULT 0,
-        dec8        INT(6) NOT NULL DEFAULT 0
+        dec02        INT(6) NOT NULL DEFAULT 0,
+        dec25        INT(6) NOT NULL DEFAULT 0,
+        dec58        INT(6) NOT NULL DEFAULT 0,
+        dec8p        INT(6) NOT NULL DEFAULT 0
     );
 
     INSERT INTO tbl_change(code,date,chng) SELECT 
@@ -765,191 +627,25 @@ CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
 
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng>=0              INTO v_inc;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<0               INTO v_dec0;
-        SELECT count(code) FROM tbl_change WHERE date=v_start and chng>=8              INTO v_inc8;
-        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<8 and chng>=5   INTO v_inc5;
-        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<5 and chng>=2   INTO v_inc2;
-        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<2 and chng>=0   INTO v_inc1;
-        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<0  and chng>=-2 INTO v_dec1;
-        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<-2 and chng>=-5 INTO v_dec2;
-        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<-5 and chng>=-8 INTO v_dec5;
-        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<-8              INTO v_dec8;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng>=8              INTO v_inc8p;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<8 and chng>=5   INTO v_inc58;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<5 and chng>=2   INTO v_inc25;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<2 and chng>=0   INTO v_inc02;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<0  and chng>=-2 INTO v_dec02;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<-2 and chng>=-5 INTO v_dec25;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<-5 and chng>=-8 INTO v_dec58;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<-8              INTO v_dec8p;
 
         INSERT INTO tbl_stat_change(date, inc, dec0, 
-                inc8 ,inc5 ,inc2 ,inc1 ,dec1 ,dec2 ,dec5 ,dec8 )
+                inc8p ,inc58 ,inc25 ,inc02 ,dec02 ,dec25 ,dec58 ,dec8p )
         VALUES(v_start, v_inc, v_dec0, 
-                v_inc8 ,v_inc5 ,v_inc2 ,v_inc1 ,v_dec1 ,v_dec2 ,v_dec5 ,v_dec8 );
+                v_inc8p ,v_inc58 ,v_inc25 ,v_inc02 ,v_dec02 ,v_dec25 ,v_dec58 ,v_dec8p );
         -- LEAVE tag_stat_change;
     END WHILE;
 
 END tag_stat_change //
 
-DROP PROCEDURE IF EXISTS sp_stat_turnov//
-CREATE PROCEDURE sp_stat_turnov(a_code INT(6) ZEROFILL) tag_turnov:BEGIN
-    DECLARE v_close     DECIMAL(8,2) DEFAULT 0;
-    DECLARE v_sink      DECIMAL(12,2) DEFAULT 0;
-    DECLARE v_rise      DECIMAL(12,2) DEFAULT 0;
-    DECLARE v_nmc       DECIMAL(12,2) DEFAULT 0;
-
-    -- for output
-    DECLARE net         DECIMAL(8,2) DEFAULT 0;
-    DECLARE sum         DECIMAL(8,2) DEFAULT 0;
-    DECLARE sink        DECIMAL(8,2) DEFAULT 0;
-    DECLARE rise        DECIMAL(8,2) DEFAULT 0;
-
-    call sp_create_tempday();
-
-    INSERT INTO tempday(code,date,yesc,open,high,low,close,volume)
-        SELECT code,date,yesc,open,high,low,close,volume FROM day 
-        WHERE code=a_code and date>=@START and date<=@END;
-
-    -- SELECT * FROM tempday;
-    call sp_cp_tbl('tempday', 'forever');
-
-    SELECT SUM(volume) FROM tempday WHERE (close-yesc)/yesc > 0 INTO v_rise;
-    SELECT SUM(volume) FROM tempday WHERE (close-yesc)/yesc <=0 INTO v_sink;
-    SELECT close,nmc   FROM cap     WHERE code=a_code           INTO v_close,v_nmc;
-
-    -- SELECT date, volume FROM tempday WHERE (close-yesc)/yesc > 0;
-    -- SELECT date, volume FROM tempday WHERE (close-yesc)/yesc <=0;
-    -- SELECT v_rise, v_sink, v_close, v_nmc;
-
-    -- 时段内全跌时v_rise将为NULL;
-    IF v_rise IS NULL THEN SET v_rise = 0; END IF;
-    IF v_sink IS NULL THEN SET v_sink = 0; END IF;
-
-    SET rise = 100 * v_rise * v_close / v_nmc;
-    SET sink = 100 * v_sink * v_close / v_nmc;
-    SET sum  = rise + sink;
-    SET net  = rise - sink;
-    SELECT code, @START, @END, rise, sink, net, sum, nmc, name FROM cap WHERE code=a_code;
-END tag_turnov //
-
 -- 暂时不进行除权处理
-DROP PROCEDURE IF EXISTS sp_get_down_turnov//
-CREATE PROCEDURE sp_get_down_turnov(a_code INT(6) ZEROFILL) tag_100d_turnov:BEGIN
-    DECLARE v_high      DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_low       DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_date_high DATE DEFAULT NULL;
-    DECLARE v_date_low  DATE DEFAULT NULL;
-
-    -- 双日顶修正 _h0为最高日前一日
-    DECLARE v_yesdate   DATE DEFAULT NULL;
-    DECLARE v_yesclose  DECIMAL(6,2) DEFAULT 0;
-
-    DECLARE v_trade     DECIMAL(8,2) DEFAULT 0;
-    DECLARE v_close     DECIMAL(8,2) DEFAULT 0;
-    DECLARE v_sink      DECIMAL(12,2) DEFAULT 0;
-    DECLARE v_rise      DECIMAL(12,2) DEFAULT 0;
-    DECLARE v_nmc       DECIMAL(12,2) DEFAULT 0;
-
-    -- SUM(volume)修正
-    DECLARE v_chng0     DECIMAL(12,2) DEFAULT 0;
-    DECLARE v_rise0     DECIMAL(12,2) DEFAULT 0;
-    DECLARE v_rise1     DECIMAL(12,2) DEFAULT 0;
-    
-    -- for output
-    DECLARE net         DECIMAL(8,2) DEFAULT 0;
-    DECLARE sum         DECIMAL(8,2) DEFAULT 0;
-    DECLARE sink        DECIMAL(8,2) DEFAULT 0;
-    DECLARE rise        DECIMAL(8,2) DEFAULT 0;
-    DECLARE avrg        DECIMAL(8,2) DEFAULT 0;
-
-    -- 价格变化振幅
-    DECLARE swing       DECIMAL(8,2) DEFAULT 0;
-
-    call sp_create_tempday();
-
-    -- INSERT INTO tempday(code,date,yesc,open,high,low,close,volume)
-    --     SELECT code,date,yesc,open,high,low,close,volume FROM day 
-    --     WHERE code=a_code and date<=@END order by date DESC LIMIT 30;
-
-    SET @sqls=concat('
-        INSERT INTO tempday(code,date,yesc,open,high,low,close,volume,amount)
-        SELECT code,date,yesc,open,high,low,close,volume,amount FROM day WHERE code=', 
-        a_code, " and date<= '", @END, "' order by date DESC LIMIT ", @NUM);
-    PREPARE stmt from @sqls; EXECUTE stmt;
-
-    -- 新股首日yesc设为open
-    UPDATE tempday SET yesc=open WHERE id=1;
-
-    -- 在trim前选出trade值，不能用 SELECT 嵌套 来操作临时表
-    SELECT close FROM tempday ORDER by date DESC LIMIT 1 INTO v_trade;
-
-    IF @DOWNSLOPE = 1 THEN
-        -- 取下降段，概率性会有相同的high和low. v_low 取最低的 close 会是如何？
-        SELECT date,close FROM tempday order by high DESC limit 1 INTO v_date_high,v_close;
-        SELECT date,low   FROM tempday 
-               WHERE date>=v_date_high order by low  ASC  limit 1 INTO v_date_low ,v_low;
-
-        -- 在阶段之顶
-        IF v_date_low = v_date_high THEN 
-            -- SELECT 'MYGOD', a_code, v_date_low , v_date_high;
-            LEAVE tag_100d_turnov; 
-        END IF;
-
-        -- 考虑双日顶，high日跌，边界前移一日. （v_date_high won't be ture high date）
-        SELECT date,close      FROM tempday 
-               WHERE date<v_date_high order by date DESC limit 1 INTO v_yesdate,v_yesclose;
-        -- swing将作为一个重要指标，此处high日的均价为v_high，数据更准确
-        SELECT (amount/volume) FROM tempday WHERE date = v_date_high INTO v_high;
-        IF v_close < v_yesclose THEN 
-            SET v_date_high=v_yesdate;
-        END IF;
-
-        DELETE FROM tempday WHERE date<v_date_high OR date>v_date_low; 
-        -- 为拉大swing的权重，使用 v_low作为被除数 20 25 ---> 1/8=0.125
-        -- 因为上面的date>=v_date_high，不必再次取high和low
-        SET swing= 100 * (v_low-v_high) / v_low;
-
-        -- v_chng0 < 0 为正常情况
-        SELECT (close-yesc), volume FROM tempday WHERE date=v_date_high INTO v_chng0, v_rise0;
-        IF v_chng0 < 0 THEN SET v_rise0 = 0; END IF; 
-        SELECT (close-yesc), volume FROM tempday WHERE date=v_date_low  INTO v_chng0, v_rise1;
-        IF v_chng0 < 0 THEN SET v_rise1 = 0; END IF; 
-    ELSE
-        -- 取上升段
-        SELECT date,low  FROM tempday order by low  ASC  limit 1 INTO v_date_low ,v_low;
-        SELECT date,high FROM tempday 
-               WHERE date>v_date_low  order by high ASC  limit 1 INTO v_date_high,v_high;
-        DELETE FROM tempday WHERE date<v_date_low OR date>v_date_high; 
-        SET swing= 100 * (v_high-v_low) / v_low;
-    END IF;
-
-    -- 指定日期，股票可能停市
-    IF v_date_low IS NULL OR v_date_high IS NULL THEN
-    --  SELECT "pause", a_code, v_date_low, v_date_high;
-        LEAVE tag_100d_turnov;
-    END IF;
-    
-    -- SELECT * FROM tempday;
-    -- call sp_cp_tbl('tempday', 'forever');
-
-    SELECT SUM(amount)/SUM(volume) FROM tempday                 INTO avrg;
-    SELECT SUM(volume) FROM tempday WHERE (close-yesc)/yesc > 0 INTO v_rise;
-    SELECT SUM(volume) FROM tempday WHERE (close-yesc)/yesc <=0 INTO v_sink;
-    SELECT close,nmc   FROM cap     WHERE code=a_code  LIMIT 1  INTO v_close,v_nmc;
-
-    -- 时段内全跌时v_rise将为NULL;
-    IF v_rise IS NULL THEN SET v_rise = 0; END IF;
-    IF v_sink IS NULL THEN SET v_sink = 0; END IF;
-
-    -- 最高价日为红，则70%计入下跌换手; 为绿，全为下跌换手
-    SET v_rise = v_rise - v_rise0;
-    SET v_sink = v_sink + v_rise0*0.7;
-
-    -- 最低价日为红，不计入上升换手; 为绿，全为下跌换手
-    SET v_rise = v_rise - v_rise1;
-
-    SET rise = 100 * v_rise * v_close / v_nmc;
-    SET sink = 100 * v_sink * v_close / v_nmc;
-    SET sum  = rise + sink;
-    SET net  = rise - sink;
-
-    -- SELECT a_code, v_date_high, v_date_low, v_high, v_low, net, rally;
-    INSERT INTO tbl_sink(code,date_high,   date_low,swing, rise, sink, net, sum,   low, avrg,  trade)
-             VALUES(a_code, v_date_high, v_date_low,swing, rise, sink, net, sum, v_low, avrg,v_trade);
-
-END tag_100d_turnov //
 
 DROP PROCEDURE IF EXISTS sp_dugu9jian//
 CREATE PROCEDURE sp_dugu9jian(a_code INT(6) ZEROFILL) tag_9jian:BEGIN
@@ -1490,9 +1186,6 @@ END tag_stat_linqi //
 -- 一些需要与shell通信的系统变量
 
     SET @fn_flt_kdj_up          = 1;   
-    SET @fn_flt_13d_sink        = 2;
-    SET @fn_flt_n_day_change    = 3;
-    SET @fn_get_down_turnov     = 4;
     SET @fn_get_ma513           = 5;
     SET @fn_up_ma240_34         = 7;
     SET @fn_up_ma144_all        = 8;
@@ -1520,19 +1213,13 @@ END tag_stat_linqi //
 --  call sp_macd('day', 2);
 --  call sp_kdj('day', 2, 9);
 --  call sp_filter_kdj('cap');
---  call sp_flt_13d_sink(2);
 --  call sp_kdj_wk('day', 750, 9);
 --  call sp_7day('day', 750);
 
 --  call sp_day('day', 750);
 --  call sp_xRD();
 
---  call sp_visit_tbl('cap', @fn_flt_13d_sink); 
---  call sp_visit_tbl('cap', @fn_flt_n_day_change);
-    
 --  call sp_stat_linqi();
---  call sp_count_swing10();
---  call sp_stat_turnov(2);
 --  call sp_get_down_turnov(2);
 --  call sp_visit_tbl('cap', @fn_dugu9jian);
 --  call sp_visit_tbl('cap', @fn_6maishenjian);

@@ -12,203 +12,6 @@
 . `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
 . /etc/common.rc
 
-function fn_get_block_info()
-{
-    # 显示当前选中，及可选BLOCK列表
-    # "show create table test;" | grep 'COMMENT='
-
-    return 1
-}
-
-function fn_set_block_info()
-{
-    # 从列表中选择BLOCK
-    # "alter table 表名 comment '注释';"
-
-    return 1
-}
-
-function fn_get_13d_20psink()
-{
-    cat <<-"HERE"
-    4日内从历史最高点回落时选择，
-    前期上升速度必须快，8日涨幅30%，13日涨幅在40%以上。
-    如观察日2013-12-12，
-    失败案例：
-    新宁物流(300013) 由于是从最高点的第2波下降，必也以“疲惫”
-
-    成功案例：
-    北京君正(300223) 13日涨幅 83% = (33-18)/18
-    潜能恒信(300191) 13日涨幅 73% = (33-19)/19
-
-    如此，可选
-    奥普光电 002338
-    麦捷科技 300319
-    奋达科技 002681
-
-
-    此类波动频繁之属，做好波段操作，特别是大盘行情不好的日子。大着眼，小着手。
-	HERE
-
-    echo "
-    call sp_visit_tbl('cap', 2);
-    " | tee -a $mps_god
-    mysql $mo -t kts <<< "source $mps_god"
-    xt_ret $? "${FUNCNAME}" || return $?
-}
-
-# 大写变量作为全局，小写作为内部
-function fn_get_1_swing_num()
-{
-    percent=${1:-8}
-    if [ "${percent%.*}" -lt 0 ] ; then
-        swing_cmd="HAVING rise < $percent"
-    else
-        swing_cmd="HAVING rise > $percent"
-    fi
-    echo "
-    DELETE from tbl_visit;
-    INSERT INTO tbl_visit(code,sink)
-    SELECT code,100*(close-yesc)/yesc as rise FROM day
-        WHERE date='$END' $swing_cmd ORDER by rise ${ASC:-DESC};
-    " | mysql $mo kts
-    fn_cp_tbl tbl_visit pipe
-    ./up add_tbl_visit_2_zixuangu   # 添加到ZXG，可根据需要再进行排序
-    ./SELECT app_nmc_name               # 追加表名打印
-    # no need source
-    exit
-}
-
-function fn_sort_amount()
-{
-    # 可扩展 'tbl_visit' 的表定义
-    # where d.code = c.code 非常重要
-    # as 语句可在 FROM 子句中
-    echo "
-    DELETE from tbl_visit;
-    INSERT INTO tbl_visit(code,sink,amount,turnover)
-    SELECT d.code, $RISE as rise,
-        amount, $TURNOV as turnover FROM day as d, cap as c
-        WHERE d.code = c.code and d.date='$END'
-        ${COND} ORDER by amount ${ASC:-DESC} limit ${LIMIT:-48};
-	" | mysql -t kts
-    fn_cp_tbl tbl_visit pipe
-    ./up add_tbl_visit_2_zixuangu       # 添加到ZXG，可根据需要再进行排序
-    ./SELECT app_nmc_name amount        # 追加表名打印
-}
-
-
-function fn_sort_turnover()
-{
-    echo "
-    DELETE from tbl_visit;
-    INSERT INTO tbl_visit(code,sink,amount,turnover)
-    SELECT d.code, $RISE as rise,
-        amount, $TURNOV as turnover FROM day as d, cap as c
-        WHERE d.code = c.code and d.date='$END'
-        ${COND} ORDER by turnover ${ASC:-DESC} limit ${LIMIT:-48};
-	" | mysql -t kts
-    fn_cp_tbl tbl_visit pipe
-    ./up add_tbl_visit_2_zixuangu       # 添加到ZXG，可根据需要再进行排序
-    ./SELECT app_nmc_name turnover      # 追加表名打印
-
-}
-
-function fn_get_n_swing_num()
-{
-    echo "
-    这些类股都是振荡股，莫作留恋。
-    "
-    [ "$#" -eq 1 ] && echo "Usage: 要么不带参数，要么两个参数" && exit
-    tailrise=8
-    daynum=${1:-2}
-    fullrise=${2:-17}
-
-    # SELECT * FROM day WHERE date=$END and (close-yesc)/yesc > 0.08;
-    # date=''需要单引号
-    echo "
-    DROP TABLE IF EXISTS codes;
-    CREATE TABLE codes (
-        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
-        code        INT(6) ZEROFILL NOT NULL DEFAULT 0
-    );
-    INSERT INTO codes(code)
-    SELECT code FROM day WHERE date='$END' and 100*(close-yesc)/yesc > $tailrise;
-    " | mysql $mo kts
-
-    if [ "$fullrise" -lt 0 ] ; then
-        intbl=cap
-    else
-        intbl=codes
-    fi
-
-    echo "
-    SET @argv_change = $fullrise;
-    SET @argv_n = $daynum;
-    call sp_visit_tbl('$intbl', @fn_flt_n_day_change);
-    " | tee -a $mps_god
-    mysql $mo -t kts <<< "source $mps_god"
-    xt_ret $? "${FUNCNAME}" || return $?
-}
-
-
-function fn_get_stat_turnov()
-{
-    local usage="Usage: ${FUNCNAME[0]} code start [end]"
-    fn_is_digit $1
-    xt_ret $? "$usage" || return $?
-
-    [ -n "${START:=${2}}" ]
-    xt_ret $? "$usage" || return $?
-
-    END=${3:-${END}}
-
-    echo "
-    SET @START='$START';
-    SET @END='$END';
-    SET @NUM=`mysql -N kts<<<"SELECT count(*) FROM day WHERE code=900001 and date>='$START' and date<='$END'"`
-    call sp_stat_turnov('$1');
-    " | tee -a $mps_god
-    mysql $mo -t kts <<< "source $mps_god"
-    xt_ret $? "${FUNCNAME}" || return $?
-}
-
-function fn_get_down_turnov()
-{
-    START=${1:-${START}}
-    END=${2:-${END}}
-
-    [ -z "${START}" ] && START=`./SELECT get_open_days | head -1`
-
-    echo "
-    From ${START} to ${END}...
-    "
-
-    # 指定环境变量TBL来进行测试
-    TBL=${TBL:-'cap'}
-
-    # 注意更新表 $TBL
-    echo "
-    To visit `mysql -N kts<<<"SELECT count(*) FROM ${TBL}"` codes on table $TBL...
-    "
-
-    echo "
-    SET @DOWNSLOPE='${DOWNSLOPE:-1}';
-    SET @START='$START';
-    SET @END='$END';
-    SET @NUM=`mysql -N kts<<<"SELECT count(*) FROM day WHERE code=900001 and date>='$START' and date<='$END'"`;
-    call sp_visit_tbl('$TBL', @fn_get_down_turnov);
-    " | tee -a $mps_god
-    mysql $mo -t kts <<< "source $mps_god"
-    xt_ret $? "${FUNCNAME}" || return $?
-
-    echo '
-    提示1: 考虑双日顶，high日绿，边界前移一日，`300301 2014-01-22`构筑3日顶.
-    提示2: 最高价日为红，则70%计入下跌换手; 为绿，全为下跌换手
-    提示3: ------------------------- 操作要合ma5 -------------------------
-    '
-}
-
 function fn_dugu9jian()
 {
     if [ "${TBL}" = windbell_codes ] && [ "`cat ${filewb}`" != ${CURR} ]; then
@@ -313,23 +116,19 @@ function fn_9jian()
 {
     test -n "${1}" && fn_iscode ${1}       
     xt_ret $? "invalid code[$1]" || return $?
-    fn_isdate ${2:-$END} 
-    xt_ret $? "invalid date[$2]" || return $?
 
     local code=`sed 's/^0*//g' <<< $1 | xargs printf "%06d"`
-    TBL=tbl_cost9 up add_codes_2_dzh2tbl ${code}
-    TBL=tbl_cost9 NUM=${NUM:-240} fn_dugu9jian ${2:-$END} ${3:-wchng}
+    TBL=tbl_cost9 up file_to_table ${code}
+    TBL=tbl_cost9 NUM=${NUM:-240} fn_dugu9jian
 }
 
 function fn_6jian()
 {
     test -n "${1}" && fn_iscode ${1}       
     xt_ret $? "invalid code[$1]" || return $?
-    fn_isdate ${2:-$END} 
-    xt_ret $? "invalid date[$2]" || return $?
 
     local code=`sed 's/^0*//g' <<< $1 | xargs printf "%06d"`
-    TBL=tbl_cost6 up add_codes_2_dzh2tbl ${code}
+    TBL=tbl_cost6 up file_to_table ${code}
     daysql="SELECT * FROM day WHERE code=${code} and date<='${END}' ORDER by date DESC limit 1"
     daysql=${daysql} TBL=tbl_cost6 NUM=${NUM:-240} fn_6maishenjian ${2:-$END} ${3:-wchng}
 }
@@ -491,11 +290,6 @@ function fn_bei()
     return $?
 }
 
-function fn_get_rise_turnov()
-{
-    DOWNSLOPE=0
-    fn_get_down_turnov $@
-}
 
 function fn_insert_codes_2_table()
 {
@@ -560,7 +354,7 @@ function fn_ma_ray()
 
     mysql -N kts<<<"SELECT code FROM tbl_ma513 WHERE
                     ma5>ma13 and ma13>ma34 ${COND}" | \
-        xargs -n4 | tee /dev/stderr | xargs up add_codes_2_dzh2tbl
+        xargs -n4 | tee /dev/stderr | xargs up file_to_table
     return
 }
 
@@ -574,7 +368,7 @@ function fn_select_tbl_ma513()
     " | tee /dev/stderr | mysql -N kts > ${soptter_zxg}
     xt_ret $? "${FUNCNAME}" || return $?
 
-    cat ${soptter_zxg} | xargs -n6 | tee /dev/stderr | TBL=zxg_ma513 xargs up add_codes_2_dzh2tbl
+    cat ${soptter_zxg} | xargs -n6 | tee /dev/stderr | TBL=zxg_ma513 xargs up file_to_table
     xt_ret $? "cat ${soptter_zxg}" || return $?
 
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
@@ -583,7 +377,7 @@ function fn_select_tbl_ma513()
     # cascading CHAO!
     SELECT code FROM zxg_ma513 WHERE code in (SELECT code FROM chao)
     " | tee /dev/stderr | mysql -N kts | tee .soptter.chao | \
-        xargs -n6 | tee /dev/stderr | TBL=zxg_chao513 xargs up add_codes_2_dzh2tbl
+        xargs -n6 | tee /dev/stderr | TBL=zxg_chao513 xargs up file_to_table
 }
 
 function fn_trd_cross_maX()
@@ -730,7 +524,7 @@ function fn_ana_chao()
     Usage:
     1. SCREENER 1 backward_14th_day #{PREV} # 得到超跌数据tbl_sink
     2. .c                                   # 全能TBL=chao
-    3. SELECT   1                           # SELECT => TBL=chao xargs up 7
+    3. SELECT   1                           # SELECT => TBL=chao xargs up 6
 
     4. SCREENER 3 1                         # 上涨预测
     " | sed 's/^  //g'
@@ -759,7 +553,7 @@ function fn_ana_ma240()
         # abs(ma34-ma60)/ma34<.05 and abs(ma120-ma240)/ma120<.03
 
     mysql -N kts<<<"${sqls} WHERE ${conds[@]}" |
-                xargs -n6 | tee /dev/stderr | xargs up add_codes_2_dzh2tbl
+                xargs -n6 | tee /dev/stderr | xargs up file_to_table
     xt_ret $? "${FUNCNAME}" || return $?
 
     return 0
@@ -772,7 +566,7 @@ function fn_c144()
 
     codes=(`xargs -n1 <<<"${*}" | sed 's/^0*//g' | xargs printf "%06d "`)
 
-    up add_codes_2_dzh2tbl ${codes[@]}
+    up file_to_table ${codes[@]}
     END=${END} TBL=zxg up up_tbl_ma144_all
 
     sqls="SELECT t.code,t.date,t.close,ma144,100*(t.close-ma144)/ma144 as rise, c.name "
@@ -802,7 +596,7 @@ function fn_ana_ma144()
     local codes=(`mysql -N kts<<<"${sqls} WHERE ${conds[@]}"`)
     xt_ret $? "${FUNCNAME}" || return $?
 
-    up add_codes_2_dzh2tbl ${codes[@]}
+    up file_to_table ${codes[@]}
     xt_ret $? "${FUNCNAME}" || return $?
 
     codes=${codes[@]}
@@ -821,7 +615,7 @@ function fn_focus()
     test -f ${file}
     xt_ret $? "${file} not exist" || return $?
 
-    up add_codes_2_dzh2tbl ${file}
+    up file_to_table ${file}
     TBL=zxg fn_dugu9jian ${END} ${2:-wchng}
 
     return $?
@@ -997,11 +791,16 @@ function fn_main()
     CURR=`fn_maxdate`
     END=${END:-${CURR}}
     PREV=`fn_get_prev`
+
+    fn_isdate ${END} 
+    xt_ret $? "invalid END[$2]" || return $?
     # SCREENER的宗旨，弃子取势
     # xet_block_info 为 sp_visit_tbl() 选定相应的BLOCK
     cmdlist=(
     "dugu9jian            [end [field]]         # NUM=61 .NMC end.close analyze"
     "6maishenjian         [end [field]]         # NUM=61 min(close) sort by #{COL}"
+    "9jian                code [end [field]]    # #{NUM}日，个股成本分析"
+    "6jian                code [end [field]]    # #{NUM}日，个股成本分析"
     "taox_ratio           [end [field]]         # TBL套现比例分析"
     "tao                  code [end [field]]    # #{nmemb}"
     "c144                 code...               # cost:ma144 & sort by #{ASC:id}"
@@ -1011,24 +810,11 @@ function fn_main()
     "fbi                  {code...|file}        # #{nmemb} #{ZIZE} DT=20140707.14{o|h}"
     "acc                  {code...|file}        # Acceleration"
     "acf                  {code...|file}        # Acceleration of fb"
-    "9jian                code [end [field]]    # #{NUM}日，个股成本分析"
-    "6jian                code [end [field]]    # #{NUM}日，个股成本分析"
-    "get_down_turnov      [start:curr-13] [end] # 100%下降净换手"
     "get_ma513                                  # /tmp/mx/"
     "ana_ma513            index [end]           # 分析ma 5 13 34 55"
     "ana_ma240                                  # 分析ma 34 60 120 240"
-    "ana_chao                                   # 分析超跌反弹"
-    "get_rise_turnov      start [end]           # 100%上升净换手"
-    "get_13d_20psink                            # 8日13日SINK超20%"
-    "get_1_swing_num      [RISE_PERCENT:-8]     # 单日振幅，小于0计算跌幅"
-    "get_n_swing_num      [SWING_PERCENT:-16]   # 双日振幅，小于0计算跌幅"
     "ana_ma144                                  # 分析ma144"
-    "get_stat_turnov      code start [end]      # 个股区间换手统计"
-    "sort_amount          [LIMIT_NUM:-48]       # --- 成交量排名"
-    "sort_turnover        [LIMIT_NUM:-48]       # 最新日换手排名"
-    # ----------------    ABOVE FIXED SEQUENCE  -------------------
-    "get_block_info                             # 查看当前BLOCK"
-    "set_block_info                             # 设置当前BLOCK"
+    "ana_chao                                   # 分析超跌反弹"
     )
 
     # 存储过程函数文件的最后5行都是注释
