@@ -53,91 +53,33 @@ function fn_get_open_days()
     fi
 }
 
-function fn_get_open_days_min()
+function fn_lsd()
 {
-    mysql -N kts <<< "SELECT DISTINCT(date) from min WHERE (code<3 OR code=5)" | tail -${LIMIT:-48}
-}
-
-
-function fn_app_nmc_name()
-{
-    # 考虑把$1作为排序关键字
-    # comment columns="" to assign *
-    # columns="code,rise,sink,bounce,turnover,amount"
+    # where d.code = c.code 非常重要，不重叠的filed不需要加‘tbl_name.’
+    columns="code,yesc,open,close"
     columns=${columns:-'*'}
     columns=d.${columns//,/,d.}
+    
+    echo ----- COND@${END}: $COND -----
 
-    field=${1:+d.${1}}
-    field=${field:-c.nmc}
-    # echo $columns && exit
-
-    echo "
-    SELECT $columns, c.nmc,c.name FROM ${TBL:-tbl_visit} as d, cap as c
-        WHERE d.code = c.code ORDER by ${field} ${ASC} limit ${LIMIT:-48};
-	" | mysql $mo -t kts
-}
-
-
-function fn_app_wgt_turnov()
-{
-    rally='round(100*(trade-low)/low,2)'
-    dcost='round(100*(trade-avrg)/avrg,2)'
-    # 高换手(流动性)、超跌、加权
-    function fn_get_tbl_super_dive()
+    function fn_sql()
     {
-        tbl_super_dive="
-        SELECT $columns, ${rally} as rally, ${dcost} as dcost,
-            $wgt as wgt, c.nmc, c.name
-            FROM tbl_sink as d, cap as c
-            WHERE d.code = c.code and sum>20 and swing<-10 HAVING wgt>50 ${COND}
-            ORDER by ${field} ${ASC:-desc} limit ${LIMIT:-30}
-        "
-        echo "${tbl_super_dive}"
+        sqls="
+        SELECT $columns, $RISE as rise, volume,amount,$TURNOV as tov, c.nmc, c.name
+                FROM day as d,cap as c where d.code = c.code and d.date = '${END}' 
+                HAVING 1 ${COND} ORDER BY ${1:-rise} ${ASC:-desc} limit ${LIMIT:-30}
+        " 
     }
-
-    # commnet below to display column id
-    #olumns=code,swing,rise,sink,sum,net,rally,date_low,date_high
-    columns=code,swing,sum,net,date_low,date_high,avrg
-    columns=${columns:-'*'}
-    columns=d.${columns//,/,d.}
-
-    # swing ~= 30, sum(13) ~= 130  流动性*.4 以拉到 100 这个范围
-    # wgt="(swing-sum*.4)"
-    wgt="(sum-net)"
-    field=${1:-wgt}
-
-    # 预筛选:高换手 SELECT get_rat_51325 --> get_ma513
-    COND=${TBL:+and code in (SELECT code FROM $TBL) }${COND}
-
-    echo ----- COND: $COND -----
-
-    fn_get_tbl_super_dive
-    mysql $mo -t kts <<< "${tbl_super_dive}"
-    xt_ret $? "${FUNCNAME}" || return $?
+    fn_sql $@ 
+    mysql -t kts <<<"${sqls}"
 
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
-    LIMIT=128 fn_get_tbl_super_dive
-    mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" > .soptter.chao 
-    TBL=chao up 7 .soptter.chao
+    #LIMIT=40 fn_sql
+    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > .soptter.chao 
+    xt_ret $? "mysql" || return $?
+    up file_to_table .soptter.chao
     xt_ret $? "${FUNCNAME}" || return $?
-}
-
-function fn_ls_day_ob_rise()
-{
-    # where d.code = c.code 非常重要，不重叠的filed不需要加‘tbl_name.’
-    # as 语句可在 FROM 子句中
-    # field=${1:+d.${1}}
-    field=${1:-rise}
-    disfield="d.code,d.date,d.volume,d.amount"
-    
-    echo ----- COND: $HAVING -----
-
-    echo "
-    SELECT $disfield, $RISE as rise, $TURNOV as turnover, c.nmc, c.name
-            FROM day as d,cap as c where d.code = c.code and
-            d.date = '$tailday' ${HAVING} ORDER BY ${field} ${ASC:-desc} limit ${LIMIT:-24};
-	" | mysql -t kts
 }
 
 function fn_get_comma_cloumns()
@@ -184,14 +126,8 @@ function fn_get_rat_51325()
 
     field=rat13 fn_build_sqls
     mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > .soptter.chao 
-    TBL=chao up 7 .soptter.chao
+    TBL=chao up 6 .soptter.chao
     xt_ret $? "${FUNCNAME}" || return $?
-}
-
-function fn_sel_tbl_sink_where()
-{
-    # SELECT * FROM tbl_sink WHERE code in (SELECT code FROM zxg_chao513); 
-    echo
 }
 
 function fn_get_ma513()
@@ -218,11 +154,11 @@ function fn_get_ma513()
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
     mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > .soptter.chao 
-    TBL=chao up 7 .soptter.chao
+    TBL=chao up 6 .soptter.chao
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
-function fn_stat_change()
+function fn_change()
 {
     START=`./SELECT get_open_days ${1:-13} | head -1`
 
@@ -282,8 +218,8 @@ function fn_6maishenjian()
 
     fn_get_tbl_6jian_dive $1 > /dev/null
     mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" > .soptter.chao 
-    TBL=chao up 7 .soptter.chao
 
+    TBL=chao up 6 .soptter.chao
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -320,8 +256,9 @@ function fn_dugu9jian()
 
     fn_get_tbl_9jian_dive $1 > /dev/null
     mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" > .soptter.chao 
-    TBL=chao up 7 .soptter.chao
+    xt_ret $? "" || return $?
 
+    TBL=chao up 6 .soptter.chao
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -505,19 +442,15 @@ function fn_main()
     "6maishenjian       [sortfiled]          # #{END} to specify diff-day"
     "taox_ratio         [sortfiled]          # taoxian"
     "get_open_days      [LIMIT:-13 [desc]]   # 开市日列表"
-    "app_wgt_turnov     [sortfiled]          # 追加weight到down_turnov CHAO=1则进zxg"
     "get_comma_cloumns  [tbl_name:-day]      # 逗分列名"
-    "sel_tbl_sink_where [TBL:-zxg_chao513]   # chao ..."
     "get_rat_51325      [sortfiled:-ratio]   # day+PREV513.动态rat"
     "get_ma513          [sortfiled:tov5]     # 均价+现成513.静态rat"
-    "get_open_days_min                       # 分钟日列表 \$LIMIT"
-    "app_nmc_name       [sortfiled]          # 追加股票名到表TBL"
     # ----------------  ABOVE IS FIXED SEQUENCE --------------------
-    "stat_change        LIMIT:-13            # 近期涨跌统计"
+    "change             [LIMIT:-13]          # 近期涨跌家数统计"
     "ls                 {code|symbol}        # 日线数据 \$LIMIT"
     "name               code                 # 名"
     "vol                {0|3|6|03}           # ^^3市成交^^"
-    "ls_day_ob_rise     [sortfiled]          # --- END 涨幅排名 \$LIMIT"
+    "lsd                [sortfiled:-rise]    # --- END 涨幅排名 \$LIMIT"
     "pma                code                 # NUM=5日平均"
     "fbi                                     # tbl_fbi"
     "acc                                     # tbl_adiff"
@@ -525,9 +458,6 @@ function fn_main()
     "tao5                                    # "
     "rdiff                                   # tbl_rdiff"
     )
-
-    tailday=`fn_maxdate`
-    tailday=${END:-$tailday}
 
     # `ASC=任意值`时使用'DESC'，弃用
     # ASC=${ASC:+'DESC'}  # ASC=${ASC:-'ASC'}

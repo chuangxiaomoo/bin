@@ -18,12 +18,6 @@ helpmsg="
     NUM         振幅分析周期(60 120 240...)，默认使用240
     XTBL        EXCLEDE表，SELECT时使用，默认为空
     NMC_RATIO   NMC_RATIO*100%成本分析空间
-
-    表zxg更新
-    kmysql -N <<<'${selecap} WHERE nmc>100000 and nmc<990000' | xargs up 7
-    kmysql -N <<<'${selecap} WHERE nmc<618000' | xargs up 7
-
-    DELETE from zxg; INSERT INTO zxg(code) SELECT code FROM ...
 "
 
 [ -n "$END" ] && export END=$END

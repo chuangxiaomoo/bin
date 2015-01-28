@@ -7,69 +7,6 @@
 # ------  common part over -----------
 #
 
-function fn_tougu_reminder()
-{
-    function fn_wall() {
-        fn_write "
-        -------------------------------------------------------------------------
-
-                    $code         $code        $code        $code
-                    $code         $code        $code        $code
-                    $code         $code        $code        $code
-                    $code         $code        $code        $code
-                    $code         $code        $code        $code
-
-        -------------------------------------------------------------------------
-        " 
-        exit
-    }
-
-    function fn_url() {
-        host="http://stock.finance.sina.com.cn/match/api/jsonp.php/"
-        host=${host}"SINAFINANCE137718069283484444/Order_Service.getTransaction?"
-        url=${host}"uid=$1&count=100&from=0&days=0&sort=1&cid=1001"
-    }
-
-    function fn_arrest() {
-        > $tougu_stdout
-        fn_url $uid_HuGongjian
-
-        $W3M -dump $url > $tougu_rawxml 2>$tougu_stderr
-        xt_ret $? "NETWORK" || return $?
-
-        cat $tougu_rawxml | sed 's/-[0-9][0-9]$/&./' | \
-            tr -d '\n' | tr -d ' ' | \
-            sed -e 's/\},/&\n/g' -e 's#["{}]##g' -e '1s#.*\[##g' -e '$s#]##g' | \
-            tee $tougu_stdout | \
-            sed -e 's/StockName.*SellBuy/SellBuy/g' -e 's/[a-z][a-z_]*://g' > $tougu_ripexml
-
-        sellbuy=`cat $tougu_ripexml | awk -F',' '{
-            if ($5==0) { deal="buy" } else {deal="sell";}
-            printf "%-10s %-6s %-8s %s\n", $4, deal, $6, $10;
-        }'`
-
-        echo "$sellbuy" | \
-            awk '{print $1}' | tr -d '[a-z]' | sort -u -g > $tougu_ripetxt
-
-        exit
-        # | sed -e 's/.*[//g' -e 's/].*//g'
-    }
-    # ------------------------- BODY -------------------------------------
-
-    deal_buy=0
-    deal_sell=1
-    deal_wanted=$deal_buy
-    uid_HuGongjian=1026334481
-
-    mkdir -p ${tougu_debug%/*}
-    touch $tougu_debug
-
-    while :; do
-        fn_arrest
-        sleep 5
-    done
-}
-
 function fn_cap()
 {
     if [ "$1" = "--keep.FIN" ] || [ "$1" = "-k" ]; then
@@ -322,7 +259,7 @@ function fn_load_directory()
     return $?
 }
 
-function fn_add_codes_2_dzh2tbl()
+function fn_file_to_table()
 {
     [ -z "$1" ] && echo "Usage: zixungu {file|code...}" && exit 1
     # echo $@ && exit
@@ -381,19 +318,13 @@ function fn_add_codes_2_dzh2tbl()
     done ;
     } > ${f_zxg}
 
-    echo "    add ${#lst[@]} to ${TBL} and /tmp/zxg over."
+    echo "    add ${#lst[@]} code to ${TBL} over."
 }
 
-
-function fn_add_tbl_codes_2_dzh()
+function fn_table_to_file()
 {
     mysql -N -B kts <<< "SELECT code FROM ${1:-chao} ORDER by code asc;" > /tmp/zxg
-
-    # echo $goodboys; exit
-
-    [ "`stat -c%s /tmp/zxg`" -lt 6 ] && echo "No goodboys found!" && exit
-
-    fn_add_codes_2_dzh2tbl /tmp/zxg
+    echo "    add `wc -l /tmp/zxg` code to /tmp/zxg over."
 }
 
 function fn_up_tbl_xRD()
@@ -431,29 +362,6 @@ function fn_up_tbl_xRD()
     else
         echo "Update TABLE xRD FAILURE" && return 1
     fi
-}
-
-function fn_down_fenbi()
-{
-    # sina的分笔粒度是最小的，分笔数据3家对比详见：
-    mkdir -p `dirname $fenbi_raw`
-
-    host="http://hqdigi2.eastmoney.com/EM_Quote2010NumericApplication/CompatiblePage.aspx?"
-    para="Type=OB&stk=000002&Reference=xml&limit=0&page="
-
-    page_cnt=`$W3M -dump "$host${para}1" 2>/dev/null | head -1 | awk -F"[:,]" '{print $2}'`
-    [ -z "$page_cnt" ] && echo "error: null page_cnt" && exit
-
-    > $fenbi_raw
-    local i
-    for (( i=1; i<=$page_cnt; i++ )); do
-         url=$host${para}$i
-         $W3M -dump "$url" 2>/dev/null >> $fenbi_raw
-         xt_ret $? "NETWORK" || return $?
-    done
-
-    sed -i '/jsTimeSharingData/d' $fenbi_raw
-    cat $fenbi_raw | tr -d '[' | tr -d ']};' | sed 's/","/\n/g'  | tr -d '"' > ${fenbi_ripe}
 }
 
 function fn_sel_day_into_znz_dir()
@@ -558,17 +466,6 @@ function fn_windbell_codes()
     
     return $?
 }
-
-function fn_up_swing10()
-{
-    cd $workdir
-    > $mps_god
-    head -n -5 $mps_org >> $mps_god
-
-    echo "call sp_count_swing10();" >> $mps_god
-    mysql $mo -t kts <<< "source $mps_god"
-}
-
 
 function fn_copy_table_2_table()
 {
@@ -681,31 +578,28 @@ function fn_main()
     cmdlist=(
     # fixed sequence
     "cap [--keep.FIN -k]                # (max(中国石油)=2万亿 sum(nmc)=20万亿)"
-    "down_fenbi                         # 下载分笔数据"
+    "redo_hexun_day_fr_min              # 利用已有分线，重做大盘日线"
     "hexun_day                          # 大盘日线数据 4:00:00 PM"
     "del_hexun_day                      # 删除大盘日线，防止冲突"
     "redo_hexun_day                     # 重做大盘日线数据"
-    "redo_hexun_day_fr_min              # 利用已有分线，重做大盘日线"
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
     "up_tbl_xRD [--keep.PWR -k]         # --- 使用当前除权数据 --keep.PWR"
-    "add_codes_2_dzh2tbl {code...|file} # 添加CODE到ZXG.BLK，并写表#{TBL:-zxg}"
-    "add_tbl_codes_2_dzh {TABLE:-chao}  # 添加表#{TBL:-zxg} 及 /tmp/zxg"
+    "file_to_table {code...|file}       # 写file到表{TBL:-zxg}，并........ZXG.BLK........"
+    "table_to_file {table:-chao}        # 添加表{table:-chao}到/tmp/zxg"
     "up_rzrq_codes_tbl                  # 更新RZRQ业务数据"
-    "up_swing10                         # 更新涨跌停6.1%数据"
     "up_tbl_ma240_all                   # --- 更新tbl_ma240"
     "up_tbl_ma240_34                    # 更新tbl_ma240中的ma34"
     "up_tbl_ma144_all                   # --- 更新tbl_ma144"
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
     "html                               # flush YIST=.soptter.xxx soptter result into html"
     "copy_table_2_table src dst         # --- 使用 1 1 做为代号"
-    "tougu_reminder                     # --- 投顾大赛提醒器，5分钟延时"
     "add_yesclose                       # 为yahoo.指南针数据添加yesclose"
     "load_directory                     # load文件夹#{znzday}到表day"
     "load_f_2_tbl_samename filepath     # 导入日线到同名表"
     "sel_day_into_znz_dir               # 导出日线"
     "trs_min_2_day                      # 最后一笔分线转日线"
     "windbell_codes                     # windbell_codes(close<avrg)"
-    "day code dateEND {num:365}         # DL day data from znz"
+    "day code dateEND {num:-365}        # DL day data from znz"
     )
 
     # 存储过程函数文件的最后5行都是注释

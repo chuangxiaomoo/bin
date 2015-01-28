@@ -278,6 +278,7 @@ function fn_execute()
         for (( idx=0; idx<${#cmdlist[@]}; idx+=1 )); do
             printf "  %-4s%s\n" $idx "${cmdlist[${idx}]}"
         done
+        echo
         ;;
     +([0-9]))
         [ $1 -ge ${#cmdlist[@]} ] && \
