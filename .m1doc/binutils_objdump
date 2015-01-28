@@ -1,0 +1,6 @@
+# objdump
+
+  [](http://blog.csdn.net/clozxy/article/details/5716089)
+
+  objdump -x hello.o
+

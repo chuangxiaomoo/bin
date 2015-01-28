@@ -1,0 +1,51 @@
+#! /bin/bash
+
+  objdump -x hello.o 查看相应 .section
+
+  strip -S 
+
+    [.ko 不可strip](http://blog.csdn.net/bitsjx/article/details/7454805)
+
+  .so可放心strip
+
+    find . -perm +700 ! -name "*.ko" -exec arm-hisiv100nptl-linux-strip {} \;
+
+# 剔除没有被使用的库文件 
+
+  执行该脚本后，当前目录下会生成./log2.txt 文件，在./log2.txt 中列出的，就是被
+  其它程序使用的库文件。
+  readelf -d  a.out -- ldd a.out
+
+# so
+
+  function fn_main()
+  {
+      # all bin
+      find -perm +700 -type f -exec file {} \; |
+          awk -F: '/ELF 32-bit/ {print $1}' | 
+          xargs -I{} arm-hisiv100nptl-linux-readelf -d {} | grep ".so" | 
+          awk -F'[\\[\\]]' '{ print $2}' > need.org
+
+          # echo $sos; exit
+
+      local i=
+      for i in `cat need.org`; do
+          file=`find -name ${i}`
+          
+          if [ -L "${file}" ]; then
+              basename `ls -l ${file} | awk '{print $NF}'`
+          else
+              basename ${file}
+          fi
+      done  > so.need
+
+      rm -f need.org
+
+      find -name '*.so*' -type f -exec file {} \; | awk -F: '/ELF 32-bit/ {print $1}' | xargs -I{} basename {} > so.all
+
+      sort -u so.need -o so.need
+      sort -u so.all -o so.all
+  }
+
+  fn_main $@
+
