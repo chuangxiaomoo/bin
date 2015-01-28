@@ -67,6 +67,31 @@ function fn_6maishenjian()
     SELECT 6maishenjian ${2:-down}
 }
 
+function fn_taox_ratio0()
+{
+   #columns=date_p,date_c,off_p,off_c,tnov_p,tnov_c,avrg_p,avrg_c,ratio
+    columns=date_p,off_p,date_c,off_c,tnov_c,avrg_p,avrg_c,ratio,wchng
+    columns=${columns:-'*'}
+    columns=t.${columns//,/,t.}
+
+    echo ----- COND: $COND -----
+    function fn_get_tbl_taox_dive()
+    {
+        tbl_super_dive="
+        SELECT t.code,  ${columns}, c.nmc,c.name 
+           FROM ${tablex:-tbl_taox} as t, cap as c 
+           WHERE t.code = c.code HAVING 1 ${COND} 
+           ORDER by ${1:-ratio} ${ASC:-asc} limit ${LIMIT:-24}
+        "
+        echo "${tbl_super_dive}"
+    }
+
+    fn_get_tbl_taox_dive $1
+    mysql $mo -t kts <<< "${tbl_super_dive}" |\
+        sed -e '1,3s/----+$/\+/g' -e '$s/----+$/\+/g' -e '2s/    |$/|/g'
+    xt_ret ${PIPESTATUS[0]} "${FUNCNAME}" || return $?
+}
+
 function fn_taox_ratio()
 {
     iEND=${1:-${END}}
@@ -92,7 +117,7 @@ function fn_taox_ratio()
     xt_ret $? "${FUNCNAME}" || return $?
 
     [ "fn_tao5" = ${FUNCNAME[1]} ] || \
-    SELECT taox_ratio ${2:-ratio}
+    fn_taox_ratio0 ${2:-ratio}
 }
 
 function fn_fbi_ratio()
@@ -801,10 +826,9 @@ function fn_main()
     "6maishenjian         [end [field]]         # NUM=61 min(close) sort by #{COL}"
     "9jian                code [end [field]]    # #{NUM}日，个股成本分析"
     "6jian                code [end [field]]    # #{NUM}日，个股成本分析"
-    "taox_ratio           [end [field]]         # TBL套现比例分析"
-    "tao                  code [end [field]]    # #{nmemb}"
     "c144                 code...               # cost:ma144 & sort by #{ASC:id}"
     "focus                [field]               # #{YIST:-.soptter.focus}->zxg and 9jian"
+    "tao                  code [end [field]]    # #{nmemb}"
     "tao5                 code [end]            # #{nmemb} #{ZIZE}"
     "bei                  {code...|file}        # #{nmemb} #{ZIZE}"
     "fbi                  {code...|file}        # #{nmemb} #{ZIZE} DT=20140707.14{o|h}"
