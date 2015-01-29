@@ -449,7 +449,7 @@ function fn_up_rzrq_codes_tbl()
 }
 
 
-function fn_windbell_codes()
+function fn_wb()
 {
     filewb='/tmp/filewb'
     echo -n ${CURR} > ${filewb}
@@ -598,7 +598,7 @@ function fn_main()
     "load_f_2_tbl_samename filepath     # 导入日线到同名表"
     "sel_day_into_znz_dir               # 导出日线"
     "trs_min_2_day                      # 最后一笔分线转日线"
-    "windbell_codes                     # windbell_codes(close<avrg)"
+    "wb                                 # windbell_codes(close<avrg)"
     "day code dateEND {num:-365}        # DL day data from znz"
     )
 

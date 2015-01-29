@@ -59,15 +59,16 @@ function fn_lsd()
     columns="code,yesc,open,close"
     columns=${columns:-'*'}
     columns=d.${columns//,/,d.}
-    
-    echo ----- COND@${END}: $COND -----
+
+    fn_yist 
+    echo ----- LIST:${#LIST} COND@${END}: $COND -----
 
     function fn_sql()
     {
         sqls="
         SELECT $columns, $RISE as rise, volume,amount,$TURNOV as tov, c.nmc, c.name
                 FROM day as d,cap as c where d.code = c.code and d.date = '${END}' 
-                HAVING 1 ${COND} ORDER BY ${1:-rise} ${ASC:-desc} limit ${LIMIT:-30}
+                HAVING 1 ${COND} ${LIST} ORDER BY ${1:-rise} ${ASC:-desc} limit ${LIMIT:-30}
         " 
     }
     fn_sql $@ 

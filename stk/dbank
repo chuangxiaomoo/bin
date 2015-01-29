@@ -102,6 +102,16 @@ yjbb_rip='/dev/shm/yjbb_rip'
 cache='/tmp/cache'
 buffer='/tmp/buffer'
 
+function fn_yist()
+{
+    if [ -f "${YIST}" ]; then
+        LIST=`cat ${YIST}|awk '/^[^#]/{print $1}' | xargs | tr ' ' ','`
+        [ -z "${LIST}" ] && return
+        LIST="and code in (${LIST})"
+    fi
+    #echo ${LIST}; exit
+}
+
 function fn_str_2_date()
 {
     dt2=$1
