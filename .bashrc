@@ -16,6 +16,7 @@ alias     PPLUS=''
 alias     PARTS=''
 alias NMC_RATIO=''
 alias       wup='.s; FINA=1 up 4; TBL=windbell_codes SCREENER 0 || up 19'
+alias       fup='.s; FINA=1 up 4'
 
 alias    ..='cd ..'
 alias   ...='cd ../..'
