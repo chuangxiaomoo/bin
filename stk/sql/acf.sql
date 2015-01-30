@@ -46,8 +46,9 @@ CREATE PROCEDURE sp_create_tbl_acf() tag_tbl_acf:BEGIN
         ratio       DECIMAL(6,2) NOT NULL DEFAULT 0,
         close       DECIMAL(6,2) NOT NULL DEFAULT 0,    
         wchng       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        cdiff       DECIMAL(6,2) NOT NULL DEFAULT 0,
         rdiff       DECIMAL(6,2) NOT NULL DEFAULT 0,
-        dbrat        DECIMAL(6,2) NOT NULL DEFAULT 0 
+        dbrat       DECIMAL(6,2) NOT NULL DEFAULT 0 
     );
 END tag_tbl_acf //
 
@@ -197,8 +198,9 @@ CREATE PROCEDURE sp_acf(a_code INT(6) ZEROFILL) tag_acf:BEGIN
   END WHILE lbl_upto_parts;
 
     INSERT INTO tbl_acfdiff(
-               code,datetime_p,datetime_c,off_p,off_c,tnov_p,tnov_c,avrg_p,avrg_c,ratio,wchng,rdiff,dbrat)
+               code,datetime_p,datetime_c,off_p,off_c,tnov_p,tnov_c,avrg_p,avrg_c,ratio,wchng,cdiff,rdiff,dbrat)
         SELECT A.code,A.datetime_p,A.datetime_c,A.off_p,A.off_c,A.tnov_p,A.tnov_c,A.avrg_p,A.avrg_c,A.ratio,A.wchng,
+            (A.avrg_c-B.avrg_c) as cdiff,
             (A.ratio-B.ratio) as rdiff, 
             100*(2*A.close-(A.avrg_p+A.avrg_c))/(A.avrg_p+A.avrg_c) as dbrat FROM tbl_acf A 
         INNER JOIN tbl_acf B on(A.id<B.id) GROUP BY A.id;

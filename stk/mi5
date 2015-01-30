@@ -71,8 +71,8 @@ function fn_sina()
 
         echo download ${code} on ${date}
         #cho wget "${sina}date=${date}&symbol=${sec}${code}" -O ${fenbi_raw1}; exit
-        wget "${sina}date=${date}&symbol=${sec}${code}" -O ${fenbi_raw1} 2>/dev/null
-        xt_ret $? "" || return $?
+        $WGET "${sina}date=${date}&symbol=${sec}${code}" -O ${fenbi_raw1} 2>/dev/null
+        xt_ret $? "timeout" || return $?
 
         fn_parser_load
         xt_ret $? "" || return $?
