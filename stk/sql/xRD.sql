@@ -218,6 +218,7 @@ CREATE PROCEDURE sp_create_tbl_taox() tag_tbl_taox:BEGIN
         ratio       DECIMAL(6,2) NOT NULL DEFAULT 0,
         close       DECIMAL(6,2) NOT NULL DEFAULT 0,    
         wchng       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        cdiff       DECIMAL(6,2) NOT NULL DEFAULT 0,
         rdiff       DECIMAL(6,2) NOT NULL DEFAULT 0,
         dbrat       DECIMAL(6,2) NOT NULL DEFAULT 0 
     );
@@ -268,6 +269,7 @@ CREATE PROCEDURE sp_create_tbl_fbi() tag_tbl_fbi:BEGIN
         ratio       DECIMAL(6,2) NOT NULL DEFAULT 0,
         close       DECIMAL(6,2) NOT NULL DEFAULT 0,    
         wchng       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        cdiff       DECIMAL(6,2) NOT NULL DEFAULT 0,
         rdiff       DECIMAL(6,2) NOT NULL DEFAULT 0,
         dbrat        DECIMAL(6,2) NOT NULL DEFAULT 0 
     );

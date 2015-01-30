@@ -278,8 +278,8 @@ function fn_tao5()
     col="${col},avrg_p,avrg_c,ratio,wchng"
     colA="A.${col//,/,A.}"
     echo "
-    INSERT INTO tbl_rdiff(${col},rdiff,dbrat)
-    SELECT ${colA},(A.ratio-B.ratio) as rdiff, 
+    INSERT INTO tbl_rdiff(${col},cdiff,rdiff,dbrat)
+    SELECT ${colA}, (A.avrg_c-B.avrg_c) as cdiff, (A.ratio-B.ratio) as rdiff,
                     100*(2*A.close-(A.avrg_p+A.avrg_c))/(A.avrg_p+A.avrg_c) as dbrat FROM tbl_tao5 A 
     INNER JOIN tbl_tao5 B on(A.id<B.id) GROUP BY A.id;
     " | mysql -N kts
@@ -301,6 +301,7 @@ function fn_bei()
     # DROP TABLE tbl_tao1;
     # DROP TABLE tbl_taox;
     # DROP TABLE tbl_rdiff;
+    # DROP TABLE tbl_fdiff;
     mysql kts <<<"truncate table tbl_rdiff;"
     xt_ret $? "try create tbl_rdiff: SCREENER tao 2" || return $?
 
@@ -308,7 +309,7 @@ function fn_bei()
     for i in ${lst[@]}; do
         echo "# $i" # | tee /dev/stderr
        #ZIZE=${ZIZE:-5} call=fn_bei SCREENER tao5 ${i}
-        ZIZE=${ZIZE:-2} call=fn_bei fn_tao5 ${i}
+        ZIZE=${ZIZE:-3} call=fn_bei fn_tao5 ${i}
     done
 
     SELECT rdiff
@@ -737,8 +738,8 @@ function fn_fbi()
     col="${col},avrg_p,avrg_c,ratio,wchng"
     colA="A.${col//,/,A.}"
     echo "
-    INSERT INTO tbl_fdiff(${col},rdiff,dbrat)
-    SELECT ${colA},(A.ratio-B.ratio) as rdiff, 
+    INSERT INTO tbl_fdiff(${col},cdiff,rdiff,dbrat)
+    SELECT ${colA}, (A.avrg_c-B.avrg_c) as cdiff, (A.ratio-B.ratio) as rdiff,
                     100*(2*A.close-(A.avrg_p+A.avrg_c))/(A.avrg_p+A.avrg_c) as dbrat FROM tbl_fbi5 A 
     INNER JOIN tbl_fbi5 B on(A.id<B.id) GROUP BY A.id;
     " | mysql -N kts

@@ -290,7 +290,7 @@ function fn_tao5()
 function fn_rdiff()
 {
    #columns=date_p,date_c,off_p,off_c,tnov_p,tnov_c,avrg_p,avrg_c,ratio
-    columns=date_p,date_c,off_p,off_c,tnov_c,avrg_p,avrg_c,ratio,rdiff,wchng,dbrat
+    columns=date_p,date_c,off_p,off_c,tnov_c,avrg_p,avrg_c,ratio,cdiff,rdiff,wchng,dbrat
     columns=${columns:-'*'}
     columns=t.${columns//,/,t.}
 
@@ -298,7 +298,7 @@ function fn_rdiff()
     function fn_get_tbl_rdiff_dive()
     {
         tbl_super_dive="
-        SELECT t.id, t.code,
+        SELECT t.id,
            ${columns}
            FROM ${tablex:-tbl_rdiff} as t, cap as c 
            WHERE t.code = c.code HAVING 1 ${COND} limit ${LIMIT:-144}
@@ -355,11 +355,11 @@ function fn_name()
 function fn_fbi()
 {
     # code,datetime_p,datetime_c,
-    columns='off_p,off_c,tnov_c,avrg_p,avrg_c,ratio,rdiff,wchng,dbrat'
+    columns='off_p,off_c,tnov_c,avrg_p,avrg_c,ratio,cdiff,rdiff,wchng,dbrat'
 
     fn_name `mysql -N kts <<<"SELECT code FROM ${tablex:-tbl_fdiff} LIMIT 1"`
     echo "
-        SELECT id,code, 
+        SELECT id,
         -- datetime_p, 
         TRUNCATE(datetime_p%(1000000000000)/1000000,4) as dt_p,
         -- datetime_c, 

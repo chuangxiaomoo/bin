@@ -54,6 +54,7 @@ CREATE PROCEDURE sp_create_tbl_acc() tag_tbl_acc:BEGIN
         ratio       DECIMAL(6,2) NOT NULL DEFAULT 0,
         close       DECIMAL(6,2) NOT NULL DEFAULT 0,    
         wchng       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        cdiff       DECIMAL(6,2) NOT NULL DEFAULT 0,
         rdiff       DECIMAL(6,2) NOT NULL DEFAULT 0,
         dbrat       DECIMAL(6,2) NOT NULL DEFAULT 0 
     );
@@ -207,8 +208,9 @@ CREATE PROCEDURE sp_acc(a_code INT(6) ZEROFILL) tag_acc:BEGIN
   --  SELECT v_part;
 
     INSERT INTO tbl_adiff(
-               code,date_p,date_c,off_p,off_c,tnov_p,tnov_c,avrg_p,avrg_c,ratio,wchng,rdiff,dbrat)
+               code,date_p,date_c,off_p,off_c,tnov_p,tnov_c,avrg_p,avrg_c,ratio,wchng,cdiff,rdiff,dbrat)
         SELECT A.code,A.date_p,A.date_c,A.off_p,A.off_c,A.tnov_p,A.tnov_c,A.avrg_p,A.avrg_c,A.ratio,A.wchng,
+            (A.avrg_c-B.avrg_c) as cdiff,
             (A.ratio-B.ratio) as rdiff,
             100*(2*A.close-(A.avrg_p+A.avrg_c))/(A.avrg_p+A.avrg_c) as dbrat FROM tbl_acc A 
         INNER JOIN tbl_acc B on(A.id<B.id) GROUP BY A.id;

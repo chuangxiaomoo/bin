@@ -30,6 +30,7 @@ HAVING="${HAVING}${GEM:+ and d.code>300000 and d.code<400000}"
 COND=${COND:+and $COND }${XTBL}
 COND="${COND}${GEM:+ and d.code>300000 and d.code<400000}"
 
+WGET='timeout 34 /usr/bin/wget'
 W3M='timeout 34 /usr/bin/w3m'
 # round(100*vol5/(c.nmc/c.close),2) as tov5, 
 RISE='TRUNCATE(100*(d.close-yesc)/yesc, 2)'
