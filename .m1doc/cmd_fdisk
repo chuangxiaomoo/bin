@@ -7,6 +7,7 @@
 
 dev_disc="/dev/sdc"
 mount_path="/b_disc"
+
 fdisk $dev_disc
 
 # n to add a new logical disk
@@ -16,7 +17,7 @@ fdisk $dev_disc
 # Last cylinder or +size or +sizeM or +sizeK (1-2610, default 2610):
 # w to write it in!
 
-mkfs.ext3 $dev_disc
+mkfs.ext4 ${dev_disc}1
 
 fdisk -l | grep "$dev_disc"
 
@@ -34,3 +35,22 @@ dev_not_in_conf=`grep "$dev_disc"  /etc/fstab`
 if [ -z $dev_not_in_conf ]; then
     echo "$dev_disc     $mount_path     ext3    defaults    1 2" >> "/etc/fstab"
 fi
+
+
+
+# 
+#  fstab
+# 
+
+# /etc/fstab: static file system information.
+#
+# Use 'blkid -o value -s UUID' to print the universally unique identifier
+# for a device; this may be used with UUID= as a more robust way to name
+# devices that works even if disks are added and removed. See fstab(5).
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+
+# mdata
+UUID=5405139b-9085-4d5f-a6a3-931ff85b5856 /opt0/mdata/     ext4    errors=remount-ro 0       1
+
+
