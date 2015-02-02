@@ -602,7 +602,7 @@ function fn_subconf()                   { cat git_subconf ;}
         diff                    # 
         rm
         svndiff                 # 与svn比较
-        github                  # startup project on github.com 
+        github                  # create 或 pull 一个项目 from github.com 
         init                    # 按遇到的先后顺序
     )
     fn_print $@
