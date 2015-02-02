@@ -429,7 +429,7 @@ function fn_main()
     "pma                code                 # NUM=5日平均"
     "fbi                                     # tbl_fbi"
     "acc                                     # tbl_adiff"
-    "acf                                     # tbl_adiff"
+    "acf                                     # tbl_acfdiff"
     "tao5                                    # "
     "rdiff                                   # tbl_rdiff"
     )
