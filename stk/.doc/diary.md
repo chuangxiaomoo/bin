@@ -3398,6 +3398,10 @@ root@Moo64:~/bin/stk# SELECT ls 2241
 
   能体会明白这句话，就能悟透徐翔的做法和短线的真谛了。
 
+# 2015-02-03 已经是下行，仍是抱侥幸心理
+
+  东方锆业 冲高又回落
+
 # 2014-11-x oracle for ur reason
   0. keep+buy
   1. sell
