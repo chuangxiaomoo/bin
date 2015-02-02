@@ -18,3 +18,14 @@
 
   apt-get source <你要下载的源代码包名>
 
+
+# cache
+
+  apt-get所缓存的deb安装包,保存在如下目录: 
+
+    /var/cache/apt/archives/
+
+  手动安装 xx.deb：
+
+    dpkg -i xx.deb
+
