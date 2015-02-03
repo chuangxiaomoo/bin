@@ -10,5 +10,28 @@
 
     mysql <<< "CREATE DATABASE kts"
 
+# 修改字体
+
+    vi kts.sql
+    :%s/latin/utf8/g
+
+# load
+
     mysql kts < /tmp/kts.sql
+
+# 兼容问题
+
+  vi /etc/mysql/my.cnf
+
+`
+[client]
+loose-local-infile=1                # load
+default-character-set=utf8          # character
+
+[mysql]
+auto-rehash	# faster start of mysql but no tab completition
+
+[mysqld]
+character-set-server=utf8
+`
 
