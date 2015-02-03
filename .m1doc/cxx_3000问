@@ -12,7 +12,9 @@
 . free的参数可以是0指针
 
     man 3 free
-    free(NULL); /* No operation is performed */ 
+
+    free(NULL); /* 重复free(NULL)没有副作用         */ 
+    free(p);    /* 重复free(非NULL)会导致系统崩溃   */ 
 
 
 . delete可以删除0指针，但不能重复delete

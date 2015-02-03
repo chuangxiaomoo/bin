@@ -1,8 +1,9 @@
 # 基础数据表
 
 tables="
-    day
     fenbi
+    tmpfb
+    day
     stamp_day
 
     cap
