@@ -14,12 +14,21 @@ function fn_parser_load()
 
 
     echo "
-        TRUNCATE TABLE tmpfb;
-        LOAD DATA LOCAL INFILE '${cache}' INTO TABLE tmpfb;
-        INSERT INTO fenbi(code, datetime, trade, volume, amount)
-          SELECT code,datetime,trade,sum(volume),sum(amount) FROM 
-            (SELECT *,round(datetime%1000000/${mod_fb},0) as grp from tmpfb ORDER by datetime DESC) 
-                as newfb GROUP by grp;
+    DROP TABLE IF EXISTS tmpfb;
+    CREATE TABLE tmpfb (
+        code        INT(6)          ZEROFILL NOT NULL, 
+        datetime    bigint(14)      NOT NULL, 
+        trade       DECIMAL(6,2)    NOT NULL,
+        volume      DECIMAL(10,2)   NOT NULL,
+        amount      DECIMAL(12,2)   NOT NULL,
+        INDEX(code,datetime)
+    );
+
+    LOAD DATA LOCAL INFILE '${cache}' INTO TABLE tmpfb;
+    INSERT INTO fenbi(code, datetime, trade, volume, amount)
+      SELECT code,datetime,trade,sum(volume),sum(amount) FROM 
+        (SELECT *,round(datetime%1000000/${mod_fb},0) as grp from tmpfb ORDER by datetime DESC) 
+            as newfb GROUP by grp;
     " | mysql -t kts 
 }
 
