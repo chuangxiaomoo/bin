@@ -13,7 +13,7 @@
 # 修改字体
 
     vi kts.sql
-    :%s/latin/utf8/g
+    :%s/latin1/utf8/g
 
 # load
 
