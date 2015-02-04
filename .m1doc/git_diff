@@ -18,6 +18,22 @@ function git_diff() {
     git diff --no-ext-diff -w "$@" | vim -R -
 }
 
+# ~/.gitconfig
+`
+[user]
+	name = chuangxiaomoo
+	email = chuangxiaomoo@gmail.com
+
+[color]
+    diff = auto
+
+[diff]
+    external = git_diff_wrapper
+
+[pager]
+    diff =
+`
+
 # 总结一下：
 git diff            是查看 working tree与index file的差别的。
 git diff --cached   是查看 index file与commit的差别的。
