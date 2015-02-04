@@ -25,7 +25,7 @@ CREATE PROCEDURE sp_create_tbl_acf() tag_tbl_acf:BEGIN
         tnov_p      DECIMAL(6,2) NOT NULL DEFAULT 0,    
         tnov_c      DECIMAL(6,2) NOT NULL DEFAULT 0,    
         avrg_p      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- previous 
-        avrg_c      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- curr avrg = sum(amount) / sum(volume)
+        avrg_c      DECIMAL(6,3) NOT NULL DEFAULT 0,    -- curr avrg = sum(amount) / sum(volume)
         ratio       DECIMAL(6,2) NOT NULL DEFAULT 0,
         close       DECIMAL(6,2) NOT NULL DEFAULT 0,    
         wchng       DECIMAL(6,2) NOT NULL DEFAULT 0
@@ -42,7 +42,7 @@ CREATE PROCEDURE sp_create_tbl_acf() tag_tbl_acf:BEGIN
         tnov_p      DECIMAL(6,2) NOT NULL DEFAULT 0,    
         tnov_c      DECIMAL(6,2) NOT NULL DEFAULT 0,    
         avrg_p      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- previous 
-        avrg_c      DECIMAL(6,2) NOT NULL DEFAULT 0,    -- curr avrg = sum(amount) / sum(volume)
+        avrg_c      DECIMAL(6,3) NOT NULL DEFAULT 0,    -- curr avrg = sum(amount) / sum(volume)
         ratio       DECIMAL(6,2) NOT NULL DEFAULT 0,
         close       DECIMAL(6,2) NOT NULL DEFAULT 0,    
         wchng       DECIMAL(6,2) NOT NULL DEFAULT 0,
@@ -67,10 +67,10 @@ CREATE PROCEDURE sp_acf(a_code INT(6) ZEROFILL) tag_acf:BEGIN
     DECLARE v_ratio     DECIMAL(6,2) DEFAULT 0;
     DECLARE v_wchng     DECIMAL(6,2) DEFAULT 0;
 
-    DECLARE v_avrg      DECIMAL(8,2) DEFAULT 0;
-    DECLARE v_avrg0     DECIMAL(8,2) DEFAULT 0;
-    DECLARE v_avrg_c    DECIMAL(8,2) DEFAULT 0;
-    DECLARE v_avrg_p    DECIMAL(8,2) DEFAULT 0;
+    DECLARE v_avrg      DECIMAL(8,3) DEFAULT 0;
+    DECLARE v_avrg0     DECIMAL(8,3) DEFAULT 0;
+    DECLARE v_avrg_c    DECIMAL(8,3) DEFAULT 0;
+    DECLARE v_avrg_p    DECIMAL(8,3) DEFAULT 0;
 
     DECLARE v_datetime   bigint(14) DEFAULT 0; 
     DECLARE v_datetime_c bigint(14) DEFAULT 0;
@@ -100,6 +100,30 @@ CREATE PROCEDURE sp_acf(a_code INT(6) ZEROFILL) tag_acf:BEGIN
         SELECT code,datetime,trade,volume,amount FROM fenbi WHERE code=', 
         a_code, " and datetime<= ", @DT, " order by datetime DESC");
     PREPARE stmt from @sqls; EXECUTE stmt;
+
+    /* 小的操作粒度 导致 更小的`格局` */
+    SET @mod_fb = 500;
+    IF  @mod_fb = 200 THEN
+        SET @sqls=concat('
+        INSERT INTO tempfb(code,datetime,trade,volume,amount)
+        SELECT code,datetime,trade,sum(volume),sum(amount) FROM 
+        (SELECT *,round(datetime/400,0) as grp from fenbi WHERE code=', 
+            a_code, " and datetime<= ", @DT, " ORDER by datetime DESC) 
+            as newfb GROUP by grp ORDER by datetime DESC");
+
+        -- DROP   TEMPORARY TABLE IF EXISTS tempfb2;
+        -- CREATE TEMPORARY TABLE tempfb2 LIKE tempfb; 
+        -- SET @sqls=concat('
+        -- INSERT INTO tempfb2(code,datetime,trade,volume,amount)
+        -- SELECT code,datetime,trade,volume,amount FROM fenbi WHERE code=', 
+        -- a_code, " and datetime<= ", @DT, " order by datetime DESC;");
+        -- PREPARE stmt from @sqls; EXECUTE stmt;
+
+        -- INSERT INTO tempfb(code,datetime,trade,volume,amount)
+        -- SELECT code,datetime,trade,sum(volume),sum(amount) FROM 
+        -- (SELECT *, round(id/2,0) as grp from tempfb2 ORDER by datetime DESC)
+        --     as newfb GROUP by grp;
+    END IF;
 
     SELECT count(*), sum(volume) FROM tempfb INTO @v_len, @v_volumes;
 
