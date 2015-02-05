@@ -175,7 +175,7 @@ function fn_change()
     SET @START='$START';
     SET @END='$END';
     call sp_stat_change();
-    SELECT * FROM tbl_stat_change;
+    SELECT * FROM tbl_stat_change ORDER by ${field:-date} ${ASC:-ASC};
     " | tee /dev/stderr >> $mps_god
 
     mysql $mo -t kts <<< "source $mps_god"
@@ -406,6 +406,33 @@ function fn_vol()
     return $?
 }
 
+
+function fn_hightm()
+{
+    # DELETE FROM fenbi WHERE datetime<12340506778899;
+    fn_iscode ${code:=${1}}
+    xt_ret $? "" || return $?
+    dates=`mysql -N kts <<< "SELECT DISTINCT round(datetime/1000000,0) from fenbi WHERE code=${code}"`
+
+    mysql kts <<< "TRUNCATE tmpfb";
+
+    local i=
+    for i in ${dates}; do
+        SELECT date FROM day WHERE code=${code} and date=
+        echo "
+        INSERT INTO tmpfb(code,datetime,trade,volume,amount)
+        SELECT code,datetime%1000000,trade,volume,amount FROM fenbi 
+            WHERE code=${code} and round(datetime/1000000, 0)=${i} 
+            ORDER by trade ${ASC:-DESC} LIMIT 1; 
+        " | mysql kts -t
+        xt_ret $? "" || return $?
+    done 
+
+    mysql -t kts <<< "SELECT * FROM tmpfb ORDER by datetime DESC";
+
+    return $?
+}
+
 function fn_main()
 {
     # mysql CURRENT_DATE();
@@ -422,6 +449,7 @@ function fn_main()
     "get_ma513          [sortfiled:tov5]     # 均价+现成513.静态rat"
     # ----------------  ABOVE IS FIXED SEQUENCE --------------------
     "change             [LIMIT:-13]          # 近期涨跌家数统计"
+    "hightm             code                 # max(trade) time"
     "ls                 {code|symbol}        # 日线数据 \$LIMIT"
     "name               code                 # 名"
     "vol                {0|3|6|03}           # ^^3市成交^^"
