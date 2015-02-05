@@ -25,7 +25,7 @@ function fn_get_url()
     fi
 }
 
-function fn_code()
+function fn_online()
 {
     CURR=`fn_maxdate`
     END=${END:-${CURR}}
@@ -46,7 +46,7 @@ function fn_load()
         echo "Redo after try: cp .template/yjbb_rip ${yjbb_rip}"; exit 1
     fi
     echo "
-    DROP TABLE IF EXISTS tbl_yjbb;
+    -- DROP TABLE IF EXISTS tbl_yjbb;
     CREATE TABLE IF NOT EXISTS tbl_yjbb (
         date        INT(6) ZEROFILL NOT NULL DEFAULT 0,
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
@@ -59,20 +59,27 @@ function fn_load()
         p_grw_q     DECIMAL(10,2) NOT NULL DEFAULT 0,
         netassets   DECIMAL(10,4) NOT NULL DEFAULT 0,
         RoE         DECIMAL(10,2) NOT NULL DEFAULT 0,
-        cashflow    DECIMAL(10,2) NOT NULL DEFAULT 0 
+        cashflow    DECIMAL(10,2) NOT NULL DEFAULT 0,
+        INDEX(code,date)
     --  grossMgn    DECIMAL(10,2) NOT NULL DEFAULT 0
     );
-    TRUNCATE tbl_yjbb;
+    -- TRUNCATE tbl_yjbb;
     LOAD DATA LOCAL INFILE '$1' INTO TABLE tbl_yjbb;
     " | mysql kts
-    
-    return $?
+    xt_ret $? "" || return $?
+
+    fn_echo_succ "LOCAL INFILE '$1'"
 }
 
 function fn_dl_all()
 {
+    [ "${#}" -eq 0 ] && fn_main
+
+    echo "DL from http://data.eastmoney.com/bbsj/${1}/yjbb.html"
+
     fn_url() { url0="http://data.eastmoney.com/bbsj/${date}/yjbb/ggrq/desc/${i}.html"; }
-    date='201409'
+
+    date=${1:-'201409'}
     pages=3
     for (( i=1; i<=${pages}; i+=1 )); do
         fn_url
@@ -95,11 +102,15 @@ function fn_dl_all()
     done > ${yjbb_rip}
     sed -i "s/^/${date}\t/" ${yjbb_rip}
     sort -g -k2 ${yjbb_rip} -o ${yjbb_rip}
+
+    echo "To run: yjbb load ${yjbb_rip}"
+    ./yjbb load ${yjbb_rip}
+
     return $?
 }
 
 
-function fn_select()
+function fn_detail()
 {
     # EPS    每股收益，PE=(close/EPS)
     # revenue营业额，必须配合ROE增长，如此才是可持续的。因缩减成本之节流不如开源。
@@ -113,54 +124,70 @@ function fn_select()
     # gross  产品毛利率——要高、稳定而且趋升，
     #        彩电行业，近10年来产品毛利率一直在逐年下降；而白酒行业产品毛利率却一直都比较稳定。
 
-    date=${END:-201409}
     #olumns='code,EPS,revenue,r_grw_y,r_grw_q,profit,p_grw_y,p_grw_q,netassets,RoE,cashflow'
-    columns='y.code,round(d.close/EPS,2) as PE'
-    columns=${columns}',round(d.close/EPS/p_grw_y,2) as PEG'
+    columns='y.date,y.code,round(c.close/EPS,2) as PE'
+    columns=${columns}',round(c.close/EPS/p_grw_y,2) as PEG'
     columns=${columns}',revenue,r_grw_y,profit,p_grw_y,netassets,RoE'
-    field=${1:-y.RoE}
+    field=${1:-y.date}
     CURR=`fn_maxdate`
-    sql="(SELECT day.code,day.close FROM day,${TBL:-cap}
-            WHERE day.date='${CURR}' and day.code=${TBL:-cap}.code)"
     
+    SELECT name ${CODE}
+
+    # 保持每日cap的更新
     echo "
-    SELECT $columns, c.nmc, c.name FROM tbl_yjbb as y, cap as c, 
-        ${sql} as d
-        WHERE y.code=c.code and y.code=d.code ${CODE}
+    SELECT $columns  FROM tbl_yjbb as y, cap as c
+        WHERE y.code=c.code and y.code=${CODE}
         ORDER by ${field} ${ASC:-DESC} limit ${LIMIT:-48};
     " | mysql -t kts
     
     return $?
 }
 
+
+function fn_soptter()
+{
+    echo "
+    SELECT *, count(code) as count FROM tbl_yjbb WHERE p_grw_y>15 and RoE > 10 GROUP by code ORDER by count DESC LIMIT 100;
+    "
+    return $?
+}
+
 function fn_main()
 {
     case $1 in
-    1|code)
-        fn_code "${@:2}"
+    1|online)
+        fn_online "${@:2}"
         ;;
     2|load)
         fn_load "${@:2}"
         ;;
     3|dl_all)
-        fn_dl_all 
+        fn_dl_all "${@:2}"
         ;;
-    4|get1)
+    4|detail)
         fn_iscode $2
         xt_ret $? "" || fn_main
-        CODE="and y.code=${2}"
-        fn_select
+        CODE=${2} fn_detail
         ;;
-    5|getall)
-        fn_select "${@:2}"
+    5|soptter)
+        fn_soptter "${@:2}"
+        ;;
+    6|ls_date)
+        mysql -t kts <<< "SELECT DISTINCT date FROM tbl_yjbb";
+        ;;
+    7|dele)
+        [ -z "${2}" ] && fn_main
+        mysql -t kts <<< "DELETE FROM tbl_yjbb WHERE date=${2}";
         ;;
     *)
         echo "Usage: 
-        yjbb {1|code}   code    (1st form)
-        yjbb {2|load}   file    (2nd form)
-        yjbb {3|dl_all}         (3rd from)
-        yjbb {4|get1}   code    (4th from)
-        yjbb {5|getall} code    (5th from)
+        yjbb {1|online}    code    (1st form)
+        yjbb {2|load}       file    (2nd form)
+        yjbb {3|dl_all}     20yymm  (3rd from)
+        yjbb {4|detail}     code    (4th from)
+        yjbb {5|getall}     code    (5th from)
+        yjbb {6|ls_date}
+        yjbb {7|dele}       20yymm
         "
         exit
         ;;
