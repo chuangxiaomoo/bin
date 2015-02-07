@@ -219,3 +219,12 @@
   [套利](http://wiki.mbalib.com/wiki/套利)
   [套利](http://baike.baidu.com/view/92523.htm?fr=aladdin)
 
+
+# 众筹小镇群解散
+
+  金泽镇，青浦，淀山湖畔
+
+  keep the country country。
+
+  只是众口不一，想法难调。另一方面，好言者多，行者少，这样就没有太大意义了。
+
