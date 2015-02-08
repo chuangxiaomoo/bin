@@ -12,6 +12,11 @@ function fn_parser_load()
         printf "%s\t%s%s\t%s\t%s\t%.2f\n", code,date,$1,$2,$4,$5/100
     }' > ${cache}
 
+    test `wc -l <${cache}` -gt 200 
+    xt_ret $? "Ignore empty file of ${date}" || {
+        cp ${cache} ${cache}.${date}
+        return 0
+    }
 
     echo "
     DROP TABLE IF EXISTS tmpfb;
@@ -32,9 +37,21 @@ function fn_parser_load()
     " | mysql -t kts 
 }
 
+function fn_do_once()
+{
+    sina='http://market.finance.sina.com.cn/downxls.php?'
+    [ ${code:0:1} -eq 6 ] && sec=sh || sec=sz
+
+    echo download ${code} on ${date}
+    $WGET "${sina}date=${date}&symbol=${sec}${code}" -O ${fenbi_raw1} 2>/dev/null
+    xt_ret $? "timeout" || return $?
+
+    fn_parser_load
+    xt_ret $? "" || return $?
+}
 
 
-function fn_sina()
+function fn_do_scope()
 {
     today=`date +%F`
     sql="SELECT max(datetime) FROM fenbi WHERE code=${code}"
@@ -54,7 +71,18 @@ function fn_sina()
     [ -n "${datetime}" ]
     xt_ret $? "Try create kts.fenbi and tmpfb mannually" || return $?
 
-    if [ "${datetime}" = NULL ]; then
+    if [ "${datetime}" != NULL ] && [ -n "${PREV}" ]; then
+        fn_is_digit ${PREV}
+        xt_ret $? "" || return $?
+        sql="SELECT min(datetime) FROM fenbi WHERE code=${code}"
+        min_dt=`mysql -N kts <<< "${sql}"`
+        fmindate=`fn_str_2_date ${min_dt}`
+        # echo ${datetime}
+        sql="
+        SELECT date FROM (SELECT date FROM day 
+         WHERE code=${code} and date<'${fmindate}' ORDER by date DESC LIMIT ${PREV})
+         as tbl ORDER by date ASC"
+    elif [ "${datetime}" = NULL ]; then
         sql="
         SELECT date FROM (SELECT date FROM day 
          WHERE code=${code} ORDER by date DESC LIMIT ${NUM:-34})
@@ -74,19 +102,7 @@ function fn_sina()
 
     local i
     for (( i=0; i<${#dates[@]}; i+=1 )); do
-        date=${dates[$i]}
-        sina='http://market.finance.sina.com.cn/downxls.php?'
-        [ ${code:0:1} -eq 6 ] && sec=sh || sec=sz
-
-        echo download ${code} on ${date}
-        #cho wget "${sina}date=${date}&symbol=${sec}${code}" -O ${fenbi_raw1}; exit
-        $WGET "${sina}date=${date}&symbol=${sec}${code}" -O ${fenbi_raw1} 2>/dev/null
-        xt_ret $? "timeout" || return $?
-
-        fn_parser_load
-        xt_ret $? "" || return $?
-
-        #break;
+        date=${dates[$i]} fn_do_once
     done
 
     return $?
@@ -97,12 +113,21 @@ function fn_main()
 {
     code=${1}
     fn_iscode ${code}
-    xt_ret $? "Usage: mi5 code" || return $?
+    xt_ret $? "Usage: [END=d] [PREV=n] mi5 code" || return $?
 
     # volume以手为单位，最终数据倍数是day中的100倍
 
-    fn_sina
-    xt_ret $? "sina" || return $?
+
+    if [ "${END}" ]; then
+        fn_isdate ${END} 
+        xt_ret $? "invalid END[$2]" || return $?
+        date=${END} fn_do_once
+        xt_ret $? "" || return $?
+    else
+        fn_do_scope
+        xt_ret $? "sina" || return $?
+    fi
+
 
     fn_echo_succ "DL and load fenbi of ${code} succ!"
     

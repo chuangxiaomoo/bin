@@ -8,6 +8,7 @@ alias       NUM=''
 alias       TBL=''
 alias      COND=''
 alias      FINA=''      # S_I_N_A conflict with Svn
+alias      PREV=''
 alias      YIST=''
 alias      ZIZE=''
 alias     LIMIT=''

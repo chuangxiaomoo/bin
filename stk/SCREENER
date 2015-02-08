@@ -687,8 +687,8 @@ function fn_fbi()
     sql="SELECT max(datetime) FROM fenbi WHERE code=${1}"
     dt=`mysql -N kts <<< "${sql}"`
 
-    # 20140707.14{o|h}  
-    DT=${DT/./}
+    # 20140707.14{o|h} or 150123.1122 
+    grep -q '\.' <<<"${DT}" && DT=20${DT/./}00
     DT=${DT/o/0000}     # o(o'clock)
     DT=${DT/h/3000}     # h(half-clock)
     DT=${DT:-$dt}
@@ -786,8 +786,8 @@ function fn_acf()
     sql="SELECT max(datetime) FROM fenbi WHERE code=${1}"
     dt=`mysql -N kts <<< "${sql}"`
 
-    # 20140707.14{o|h}  
-    DT=${DT/./}
+    # 20140707.14{o|h} or 150123.1122 
+    grep -q '\.' <<<"${DT}" && DT=20${DT/./}00
     DT=${DT/o/0000}     # o(o'clock)
     DT=${DT/h/3000}     # h(half-clock)
     DT=${DT:-$dt}
