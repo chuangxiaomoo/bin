@@ -7,7 +7,8 @@ function fn_get_url()
 {
     url="http://data.eastmoney.com/bbsj/stock${code}/yjbb.html"
 
-    if [ "${RAW}" == 1 ]; then
+    # 默认使用 RAW for detail
+    if [ "${RAW}" != 1 ]; then
         w3m -dump ${url} | grep -A24 "点击进入年报大全"
         return 0
     else
@@ -181,7 +182,7 @@ function fn_main()
         ;;
     *)
         echo "Usage: 
-        yjbb {1|online}    code    (1st form)
+        yjbb {1|online}     code    (1st form)
         yjbb {2|load}       file    (2nd form)
         yjbb {3|dl_all}     20yymm  (3rd from)
         yjbb {4|detail}     code    (4th from)

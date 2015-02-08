@@ -62,6 +62,12 @@ function fn_cap()
     # update .codelist
     cd ${workdir}
     mysql -N -B kts<<<"SELECT code,name FROM cap order by code asc;" > .codelist
+
+
+    if [ `wc -l<.codelist` -gt 3000 ]; then
+        fn_echo_fail "more than 3000 codes, please check it!"
+        exit 1
+    fi
 }
 
 function fn_load_f_2_tbl_samename()
