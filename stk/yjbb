@@ -159,16 +159,16 @@ function fn_main()
     1|online)
         fn_online "${@:2}"
         ;;
-    2|load)
-        fn_load "${@:2}"
+    2|detail)
+        fn_iscode $2
+        xt_ret $? "" || fn_main
+        CODE=${2} fn_detail
         ;;
     3|dl_all)
         fn_dl_all "${@:2}"
         ;;
-    4|detail)
-        fn_iscode $2
-        xt_ret $? "" || fn_main
-        CODE=${2} fn_detail
+    4|load)
+        fn_load "${@:2}"
         ;;
     5|soptter)
         fn_soptter "${@:2}"
@@ -182,11 +182,11 @@ function fn_main()
         ;;
     *)
         echo "Usage: 
-        yjbb {1|online}     code    (1st form)
-        yjbb {2|load}       file    (2nd form)
-        yjbb {3|dl_all}     20yymm  (3rd from)
-        yjbb {4|detail}     code    (4th from)
-        yjbb {5|getall}     code    (5th from)
+        yjbb {1|online}     code    
+        yjbb {2|detail}     code    
+        yjbb {3|dl_all}     20yymm  
+        yjbb {4|load}       file    
+        yjbb {5|soptter}                # 筛选
         yjbb {6|ls_date}
         yjbb {7|dele}       20yymm
         "
