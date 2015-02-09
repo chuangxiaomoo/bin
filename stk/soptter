@@ -106,6 +106,7 @@ fn_realtime()
 function fn_main() 
 {
     mkdir -p ${rt_stdout%/*}
+    YIST=${YIST:-'.blk.qs'}
 #   YIST=${YIST:-'.blk.yhy'}
 #   YIST=${YIST:-'.blk.cybz'}
 #   YIST=${YIST:-'.soptter.lin'}
