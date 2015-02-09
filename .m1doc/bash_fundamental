@@ -1,6 +1,8 @@
 #! /bin/bash
 
 # cross-compile
+    
+    Usage: $0 [OPTION]... [VAR=VALUE]...
 
     CC=arm-linux-gcc ./configure --host=arm-linux
 
