@@ -23,8 +23,8 @@ function fn_cap()
     xt_ret $? "sina fail" || return $?
 
     lines=`cat $sn_cap_nmc | wc -l`
-    [ $lines -gt 2000 ] && [ $lines -lt 4000 ]
-    xt_ret $? "$sn_cap_nmc lines $lines not in [2000,4000]" || return $?
+    [ $lines -gt 2000 ] && [ $lines -lt 3000 ]
+    xt_ret $? "$sn_cap_nmc lines $lines not in [2000,3000]" || return $?
 
     echo "
     DROP TABLE IF EXISTS cap;
