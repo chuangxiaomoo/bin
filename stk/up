@@ -23,8 +23,8 @@ function fn_cap()
     xt_ret $? "sina fail" || return $?
 
     lines=`cat $sn_cap_nmc | wc -l`
-    [ $lines -gt 2000 ]
-    xt_ret $? "$sn_cap_nmc $lines less than 2000 lines" || return $?
+    [ $lines -gt 2000 ] && [ $lines -lt 4000 ]
+    xt_ret $? "$sn_cap_nmc lines $lines not in [2000,4000]" || return $?
 
     echo "
     DROP TABLE IF EXISTS cap;
@@ -45,6 +45,7 @@ function fn_cap()
     " | mysql -u root kts
 
     echo "
+    INFILE '$sn_cap_nmc'
     update shares from dzh2 full.FIN...
     UPDATE cap SET nmc=close*shares WHERE nmc/close<shares;
     为兼容旧代码，最后的shares=nmc/close（只更新nmc，不更新shares）

@@ -106,9 +106,9 @@ buffer='/tmp/buffer'
 function fn_yist()
 {
     if [ -f "${YIST}" ]; then
-        LIST=`cat ${YIST}|awk '/^[^#]/{print $1}' | xargs | tr ' ' ','`
-        [ -z "${LIST}" ] && return
-        LIST="and code in (${LIST})"
+        LIST=(`cat ${YIST}|awk '/^[^#]/{print $1}' | xargs`)
+        [ -z "${LIST[0]}" ] && return
+        inLIST="and code in (`tr ' ' ','<<<${LIST[@]}`)"
     fi
     #echo ${LIST}; exit
 }
