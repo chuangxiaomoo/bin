@@ -101,10 +101,6 @@ function fn_taox_ratio()
     fn_isdate ${iEND} 
     xt_ret $? "    Usage: #{1} must be date like 2008-08-08" || return $?
 
-    # echo "
-    # To visit `mysql -N kts<<<"SELECT count(*) FROM ${TBL}"` codes on table $TBL...
-    # "
-
     head -n -5 $mps_org > $mps_god
     echo "
     SET @END='$iEND';
@@ -248,7 +244,7 @@ function fn_tao5()
     local iNUM=${NUM:-300}
 
     echo "
-    size: ${size} nmemb: ${nmemb} iNUM:${iNUM}
+    code:${code} size:${size} nmemb:${nmemb} iNUM:${iNUM}
     going to list ${ZIZE} recodrs ${dates[$idx]} ~ ${dates[0]} ...
     "
 
@@ -305,11 +301,11 @@ function fn_bei()
     mysql kts <<<"truncate table tbl_rdiff;"
     xt_ret $? "try create tbl_rdiff: SCREENER tao 2" || return $?
 
-    local i=
-    for i in ${lst[@]}; do
-        echo "# $i" # | tee /dev/stderr
-       #ZIZE=${ZIZE:-5} call=fn_bei SCREENER tao5 ${i}
-        ZIZE=${ZIZE:-3} call=fn_bei fn_tao5 ${i}
+    local code=
+    for code in ${lst[@]}; do
+        #echo "$code" 
+        irt=`fn_tov5 $code`
+        ZIZE=${ZIZE:-3} NMC_RATIO=${NMC_RATIO:-${irt}} call=fn_bei fn_tao5 ${code}
     done
 
     SELECT rdiff
@@ -667,7 +663,31 @@ function fn_auto_nmemb()
     return $?
 }
 
+function fn_tov5()
+{
+    
+    return $?
+}
+
+function fn_tov5()
+{
+    sql="
+    SELECT round(sum(d.volume)/cap.shares, 3) as nmc_ratio FROM 
+        (SELECT * FROM day WHERE code=${code} and date<='$CLOSING' ORDER by date DESC LIMIT 5)
+         as d, cap WHERE d.code = cap.code ;
+    " 
+    mysql -N kts<<<"${sql}"
+}
+
 function fn_fbi()
+{
+    fn_iscode ${code:=$1}
+    xt_ret $? "" || return $?
+
+    ZIZE=${ZIZE:-3} nmemb=${nmemb:-1} NMC_RATIO=${NMC_RATIO:-1} fn_bei ${code}
+}
+
+function _fn_fbi()
 {
     # 最大日换手为20%，以1%为粒度，可以得出`10min`是一个很好的单位，得日数据25单位
     # 若是日换手为4%，以nmemb=7=30/4   <-- 30 即1日数据组（有效取28）
@@ -783,6 +803,7 @@ function fn_acf()
 
     cp ${mps_acf} ${mps_god}
 
+    irt=`fn_tov5 $code`
     sql="SELECT max(datetime) FROM fenbi WHERE code=${1}"
     dt=`mysql -N kts <<< "${sql}"`
 
@@ -798,7 +819,7 @@ function fn_acf()
     SET @DT='${DT}';
     SET @PARTS=${PARTS:-20};
     SET @PPLUS=${PPLUS:-5};
-    SET @NMC_RATIO=${NMC_RATIO:-.20};
+    SET @NMC_RATIO=${NMC_RATIO:-${irt}};
     call sp_visit_code(${code});
     " >> $mps_god # | tee -a $mps_god
     fn_clr_exitcode
@@ -820,6 +841,7 @@ function fn_main()
 
     fn_isdate ${END} 
     xt_ret $? "invalid END[$2]" || return $?
+    [ `date +%H%M%S` -gt 150000 ] && CLOSING=${END} || CLOSING=${PREV}
     # SCREENER的宗旨，弃子取势
     # xet_block_info 为 sp_visit_tbl() 选定相应的BLOCK
     cmdlist=(
