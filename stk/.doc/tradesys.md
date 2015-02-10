@@ -126,4 +126,5 @@
   2 acf(cdiff+rdiff+wchng)
   3 turnover
   4 nmc
-  5 concept
+  5 safe(6jian+9jian)
+  6 concept
