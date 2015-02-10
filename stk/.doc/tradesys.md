@@ -119,4 +119,11 @@
 
   日日新，战胜懒惰，代谢不止 -- 调出池中下午的票，并加入上行的票
 
+# Checklist
 
+  0 blk(cybz sc40)
+  1 yjbb
+  2 acf(cdiff+rdiff+wchng)
+  3 turnover
+  4 nmc
+  5 concept

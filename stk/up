@@ -268,7 +268,7 @@ function fn_load_directory()
 
 function fn_file_to_table()
 {
-    [ -z "$1" ] && echo "Usage: zixungu {file|code...}" && exit 1
+    [ -z "$1" ] && echo "Usage: file_to_table {file|code...}" && exit 1
     # echo $@ && exit
     # D:\dzh2\USERDATA\block
     # 每个自选股都有自己的独特代码，现以8为实现
@@ -294,6 +294,7 @@ function fn_file_to_table()
     if [ -f "${1}" ]; then
         [ -z "cat ${1}" ] && echo "Error: file ${$1} is null" && exit 1
         lst=(`awk '/^[^#]/{print $1}' ${*} | sort -u`)
+        file_fr="from $1"
     else
         lst=(${@})
     fi
@@ -325,7 +326,7 @@ function fn_file_to_table()
     done ;
     } > ${f_zxg}
 
-    echo "    add ${#lst[@]} code to ${TBL} over."
+    echo "    add ${#lst[@]} code ${file_fr} to ${TBL} over."
 }
 
 function fn_table_to_file()
