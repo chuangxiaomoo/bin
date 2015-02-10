@@ -301,6 +301,7 @@ function fn_rdiff()
         tbl_super_dive="
         SELECT t.id,t.code,
            ${columns}
+           -- , c.nmc, c.name
            FROM ${tablex:-tbl_rdiff} as t, cap as c 
            WHERE t.code = c.code HAVING 1 ${COND} limit ${LIMIT:-144}
         "
