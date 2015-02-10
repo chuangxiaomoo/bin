@@ -24,6 +24,9 @@ function fn_main()
         git status | grep -v delete | grep --color "\.swp$" && 
         { echo "error: .swp files exist!!!";exit ;}
 
+        git status | grep -q 'modified.*.soptter.chao' && 
+        { git status | awk '/modified.*.soptter.chao/{print $3}' | xargs Git r ;}
+
         read -p "Please input comment: "
 
         git add -A
@@ -66,7 +69,7 @@ function fn_main()
         ;;
 
     r*|revert)
-        [ -z "$filelist" ] && echo "Error: file... must be dedicated" && exit
+        [ -z "$filelist" ] && echo "Usage: Git r file..." && exit
         git checkout -- ${filelist%%/}
         ;;
 

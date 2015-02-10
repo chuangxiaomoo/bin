@@ -66,7 +66,7 @@ function fn_lsd()
     function fn_sql()
     {
         sqls="
-        SELECT $columns, $RISE as rise, volume,amount,$TURNOV as tov, c.nmc, c.name
+        SELECT $columns, volume,amount, $RISE as rise, $TURNOV as tov, c.nmc, c.name
                 FROM day as d,cap as c where d.code = c.code and d.date = '${END}' 
                 HAVING 1 ${COND} ${inLIST} ORDER BY ${1:-rise} ${ASC:-desc} limit ${LIMIT:-60}
         " 
@@ -128,7 +128,7 @@ function fn_get_rat_51325()
 
     field=rat13 fn_build_sqls
     mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > .soptter.chao 
-    TBL=chao up 6 .soptter.chao
+    TBL=chao up file_to_table .soptter.chao
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -156,7 +156,7 @@ function fn_get_ma513()
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
     mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > .soptter.chao 
-    TBL=chao up 6 .soptter.chao
+    TBL=chao up file_to_table .soptter.chao
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -221,7 +221,7 @@ function fn_6maishenjian()
     fn_get_tbl_6jian_dive $1 > /dev/null
     mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" > .soptter.chao 
 
-    TBL=chao up 6 .soptter.chao
+    TBL=chao up file_to_table .soptter.chao
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -260,7 +260,7 @@ function fn_dugu9jian()
     mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" > .soptter.chao 
     xt_ret $? "" || return $?
 
-    TBL=chao up 6 .soptter.chao
+    TBL=chao up file_to_table .soptter.chao
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -299,7 +299,7 @@ function fn_rdiff()
     function fn_get_tbl_rdiff_dive()
     {
         tbl_super_dive="
-        SELECT t.id,
+        SELECT t.id,t.code,
            ${columns}
            FROM ${tablex:-tbl_rdiff} as t, cap as c 
            WHERE t.code = c.code HAVING 1 ${COND} limit ${LIMIT:-144}

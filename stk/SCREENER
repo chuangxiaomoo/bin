@@ -642,7 +642,7 @@ function fn_focus()
     xt_ret $? "${file} not exist" || return $?
 
     up file_to_table ${file}
-    TBL=zxg fn_dugu9jian ${END} ${2:-wchng}
+    LIMIT=999 TBL=zxg fn_dugu9jian ${END} ${2:-wchng}
 
     return $?
 }
