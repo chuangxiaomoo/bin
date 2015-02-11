@@ -117,8 +117,7 @@ function fn_main()
 
     # volume以手为单位，最终数据倍数是day中的100倍
 
-
-    if [ "${END}" ]; then
+    if [ -n "${END}" ]; then
         fn_isdate ${END} 
         xt_ret $? "invalid END[$2]" || return $?
         date=${END} fn_do_once

@@ -810,7 +810,13 @@ function fn_acf()
 
 function fn_main()
 {
-    fn_isdate ${END} 
+    # END 非空赋值不要移植到dbank 
+    CURR=`fn_maxdate`
+    END=${END:-${CURR}}
+    PREV=`fn_get_prev`
+    [ `date +%H%M%S` -gt 150000 ] && CLOSING=${END} || CLOSING=${PREV}
+
+    fn_isdate ${END}
     xt_ret $? "invalid END[$2]" || return $?
 
     cmdlist=(

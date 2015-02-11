@@ -20,6 +20,7 @@ helpmsg="
     NMC_RATIO   NMC_RATIO*100%成本分析空间
 "
 
+export END=${END}
 
 XTBL=${XTBL:+and code not in (SELECT code FROM $XTBL)}
 
@@ -259,13 +260,6 @@ function fn_reset_sqlsource()
     # sed Q exclude the match line, sed q include that
     sed '/THIS EXECUTE DELIMITER/q' ${mps_org} > ${mps_god}
 }
-
-# 
-CURR=`fn_maxdate`
-END=${END:-${CURR}}
-PREV=`fn_get_prev`
-[ `date +%H%M%S` -gt 150000 ] && CLOSING=${END} || CLOSING=${PREV}
-export END
 
 echo "`date +%F.%T` ${BASH_SOURCE##*/}" >> /var/dbank.trace
 
