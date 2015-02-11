@@ -185,8 +185,8 @@ function fn_main()
         yjbb {1|online}     code    
         yjbb {2|detail}     code    
         yjbb {3|dl_all}     20yymm  
-        yjbb {4|load}       file    
-        yjbb {5|soptter}                # 筛选
+        yjbb {4|load}       file
+        yjbb {5|soptter}
         yjbb {6|ls_date}
         yjbb {7|dele}       20yymm
         "
