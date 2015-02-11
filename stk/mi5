@@ -60,7 +60,7 @@ function fn_do_scope()
     # echo ${datetime}
 
     maxtime=${datetime#????????}
-    if [ "${maxtime}" != NULL ] && [ "${maxtime}" -lt 150000 ]; then
+    if [ "${maxtime}" != NULL ] && [ "${maxtime}" -lt 145700 ]; then
         mintime=${datetime%??????}000000
         sql="DELETE FROM fenbi WHERE datetime>${mintime}"
         mysql -N kts <<< "${sql}"
