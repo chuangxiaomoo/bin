@@ -588,8 +588,6 @@ function fn_ana_ma144()
 {
     # 上海莱士，福建水泥
     # 若开涨了，预估起点与终点 
-    #
-    # 1. 
 
     local sqls="SELECT code FROM tbl_ma144 as m"
     local conds=(
@@ -643,12 +641,6 @@ function fn_auto_nmemb()
 
     nmemb=${nmemb:-${nmemb0}}
     #echo ${nmemb}; exit
-    return $?
-}
-
-function fn_tov5()
-{
-    
     return $?
 }
 
@@ -752,7 +744,6 @@ function ___fbi()
     return ${RETCODE:-0}
 }
 
-
 function fn_acc()
 {
     fn_iscode ${code:=$1}
@@ -819,15 +810,9 @@ function fn_acf()
 
 function fn_main()
 {
-    CURR=`fn_maxdate`
-    END=${END:-${CURR}}
-    PREV=`fn_get_prev`
-
     fn_isdate ${END} 
     xt_ret $? "invalid END[$2]" || return $?
-    [ `date +%H%M%S` -gt 150000 ] && CLOSING=${END} || CLOSING=${PREV}
-    # SCREENER的宗旨，弃子取势
-    # xet_block_info 为 sp_visit_tbl() 选定相应的BLOCK
+
     cmdlist=(
     "dugu9jian            [field]               # NUM=61 .NMC end.close analyze"
     "6maishenjian         [field]               # NUM=61 min(close) sort by #{COL}"
@@ -848,11 +833,12 @@ function fn_main()
     "ana_chao                                   # 分析超跌反弹"
     )
 
+    # SCREENER的宗旨，弃子取势
     # 存储过程函数文件的最后5行都是注释
     cd $workdir
     head -n -5 $mps_org > $mps_god
 
-    # 为提高效率，可能使用临时表，必要请备份相应文件 call sp_cp_tbl('fr', 'to');
+    # 为提高效率，可能使用临时表，调试时备份可使用 call sp_cp_tbl('fr', 'to');
     fn_execute "$@" || return $?
 }
 

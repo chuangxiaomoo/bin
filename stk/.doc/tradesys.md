@@ -126,5 +126,6 @@
   2 acf(cdiff+rdiff+wchng)
   3 turnover
   4 nmc
-  5 safe(6jian+9jian)
-  6 concept
+  5 big NMC_RATIO(6jian+9jian)
+  6 big NUM(ma513 ma144)
+  9 concept
