@@ -121,11 +121,12 @@
 
 # Checklist
 
-  0 blk(cybz sc40)
-  1 yjbb
-  2 acf(cdiff+rdiff+wchng)
-  3 turnover
-  4 nmc
-  5 big NMC_RATIO(6jian+9jian)
-  6 big NUM(ma513 ma144)
-  9 concept
+  0 不孤注，得乐视
+  1 blk(cybz sc40)
+  2 yjbb
+  3 acf(cdiff+rdiff+wchng)
+  4 turnover
+  5 nmc
+  6 big NMC_RATIO(6jian+9jian)
+  9 big NUM(ma513 ma144)
+  a concept

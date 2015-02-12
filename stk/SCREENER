@@ -648,8 +648,9 @@ function fn_tov5()
 {
     sql="
     SELECT round(sum(d.volume)/cap.shares, 3) as nmc_ratio FROM 
-        (SELECT * FROM day WHERE code=${code} and date<='$CLOSING' ORDER by date DESC LIMIT 5)
-         as d, cap WHERE d.code = cap.code ;
+       (SELECT * FROM day WHERE code=${code} and date<='$CLOSING' ORDER by date DESC LIMIT 5)
+       as d, cap WHERE d.code = cap.code INTO @irt;
+       SELECT IF(@irt<.2,@irt,.2);
     " 
     mysql -N kts<<<"${sql}"
 }
