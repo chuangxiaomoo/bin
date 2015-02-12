@@ -8,6 +8,19 @@
 
     匹配组合
 
+// 获取一行
+
+    do {
+        printf(
+            "input command, such as:\n"
+            "SEARCH *NVR/\n"
+            "METHOD ID=01234567890#CMD=SETMAC#PARAM=08:00:27:97:72:99,#\n"
+            "METHOD ID=01234567890#CMD=SETIP#PARAM=192.168.2.48,255.255.255.0,192.168.2.1,#\n"
+            );
+        n = scanf("%[^\n]", buf);
+        getchar(); // clean the \n
+    } while(n == 0);
+
 . scanf EXAMPLE 1 
 
     #include <stdio.h>
