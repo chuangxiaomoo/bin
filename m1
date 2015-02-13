@@ -411,6 +411,7 @@ function fn_sync()                      { cat clang_sync ;}
 function fn_getopt_long()               { cat clang_getopt_long ;}
 function fn_strtol()                    { cat clang_strtol ;}
 function fn_atoi()                      { cat clang_atoi ;}
+function fn_nonblock()                  { cat clang_nonblock ;}
 
     local opts=(
         C调用C++链接库
@@ -432,6 +433,7 @@ function fn_atoi()                      { cat clang_atoi ;}
         warning
         macro
         # ------ posix ------
+        nonblock                # setjmp,longjmp和sigsetjmp,siglongjmp 
         atoi                    # atou
         md5                     # 
         strtol                  # hex work well

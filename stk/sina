@@ -46,9 +46,9 @@ function fn_sina() {
     local url='http://vip.stock.finance.sina.com.cn'
     local page='/quotes_service/api/json_v2.php/Market_Center.getHQNodeData'
     local all='?page=1&num=2480&sort=symbol&asc=1&node=hs_a&_s_r_a=page'
-    local  sh='?page=1&num=1000&sort=symbol&asc=1&node=sh_a&_s_r_a=page'
-    local sz1='?page=1&num=800&sort=symbol&asc=1&node=sz_a&_s_r_a=page'
-    local sz2='?page=2&num=800&sort=symbol&asc=1&node=sz_a&_s_r_a=page'
+    local  sh='?page=1&num=1200&sort=symbol&asc=1&node=sh_a&_s_r_a=page'
+    local sz1='?page=1&num=1000&sort=symbol&asc=1&node=sz_a&_s_r_a=page'
+    local sz2='?page=2&num=1000&sort=symbol&asc=1&node=sz_a&_s_r_a=page'
 
     # 代码   名称     最新价 涨跌额 涨跌幅 买入   卖出   昨收   今开   最高   最低   成交量/手 成交额/万 
 

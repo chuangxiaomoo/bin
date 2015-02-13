@@ -119,14 +119,28 @@
 
   日日新，战胜懒惰，代谢不止 -- 调出池中下午的票，并加入上行的票
 
-# Checklist
+# Checklist odds
 
-  0 不孤注，得乐视
-  1 blk(cybz sc40)
-  2 yjbb
-  3 acf(cdiff+rdiff+wchng)
-  4 turnover
-  5 nmc
-  6 big NMC_RATIO(6jian+9jian)
-  9 big NUM(ma513 ma144)
-  a concept
+  唯有量化认知，才可以突破感性
+  odds=f(1)+...+f(n)
+
+  3类买卖点                       #
+
+  不孤注，得乐视                  #
+
+  blk                             # cybz sc40 etf180 etf300 上证300成分股
+
+  yjbb                            #
+
+  acf(cdiff+rdiff+wchng)          #
+
+  turnover                        #
+
+  nmc                             #
+
+  big NMC_RATIO(6jian+9jian)      #
+
+  big NUM(ma513 ma144)            #
+
+  concept                         #
+
