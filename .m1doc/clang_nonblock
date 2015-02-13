@@ -1,0 +1,40 @@
+/* nonblock 
+  [](http://blog.csdn.net/bengda/article/details/7691020)
+ */
+
+
+#include<stdio.h>   
+#include<stdlib.h>   
+#include<unistd.h>   
+#include<signal.h>   
+#include<setjmp.h>   
+  
+#define MAXLINE 1024   
+  
+void sig_alarm(int signo);  
+  
+jmp_buf env_alrm;  
+int main() {  
+    int n;  
+    char buf[MAXLINE];  
+    if (signal(SIGALRM, sig_alarm) == SIG_ERR) {  
+        printf("can't catch sigalrm\n");  
+        exit(0);  
+    }  
+    if (setjmp(env_alrm) != 0) {  
+        printf("longjump called\n");  
+        exit(0);  
+    }  
+    alarm(5);  
+    if ((n = read(STDIN_FILENO, buf, MAXLINE)) < 0) {  
+        printf("read error\n");  
+        exit(0);  
+    }  
+    alarm(0);  
+    write(STDOUT_FILENO, buf, n);  
+}  
+  
+void sig_alarm(int signo) {  
+    longjmp(env_alrm, 1);  
+}  
+

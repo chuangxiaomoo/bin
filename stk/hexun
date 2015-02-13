@@ -13,8 +13,8 @@ function fn_fmt_hexun() {
 function fn_hexun() {
     # sorttype {origin 0} updown {up从大到小}
     local host='http://quote.tool.hexun.com/hqzx/'
-    local sh='quote.aspx?type=2&market=1&sorttype=3&updown=up&page=1&count=1000'
-    local sz='quote.aspx?type=2&market=2&sorttype=3&updown=up&page=1&count=1500'
+    local sh='quote.aspx?type=2&market=1&sorttype=3&updown=up&page=1&count=1200'
+    local sz='quote.aspx?type=2&market=2&sorttype=3&updown=up&page=1&count=2000'
     #ocal gem='stocktype.aspx?columnid=5500&type_code=Y0003&sorttype=3&updown=up&page=1&count=500'
     #GEM(growth enterprise market)
 
