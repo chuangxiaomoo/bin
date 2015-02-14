@@ -9,9 +9,10 @@ function fn_main()
         echo "
         ----------- Usage --------------
         A   commit  [all changed file]
-        c   commit  [specifid file] 
+        c   commit  [single file to local]
         d   diff    [file] 
         dp  dprev   file 'PREV'
+        l   log     log -p file
         p   pull    [origin master]
         P   push    [origin master]
         r   revert  [file or directory]
@@ -43,7 +44,7 @@ function fn_main()
 
         read -p "Please input comment: "
 
-        git add ${filelist}
+        git add ${filelist:=.}
         git commit -m "$REPLY" ${filelist}
         ;;
 
