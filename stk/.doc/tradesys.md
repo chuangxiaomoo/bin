@@ -124,23 +124,15 @@
   唯有量化认知，才可以突破感性
   odds=f(1)+...+f(n)
 
-  3类买卖点                       #
-
-  不孤注，得乐视                  #
-
-  blk                             # cybz sc40 etf180 etf300 上证300成分股
-
-  yjbb                            #
-
-  acf(cdiff+rdiff+wchng)          #
-
-  turnover                        #
-
-  nmc                             #
-
-  big NMC_RATIO(6jian+9jian)      #
-
-  big NUM(ma513 ma144)            #
-
-  concept                         #
+  0 复利迭代                        #
+  1 3类买卖点                       #
+  2 不孤注，得乐视                  #
+  3 blk                             # cybz sc40 etf180 etf300 上证300成分股
+  4 yjbb                            #
+  5 acf(cdiff+rdiff+wchng)          #
+  6 turnover                        #
+  7 nmc                             #
+  8 big NMC_RATIO(6jian+9jian)      #
+  9 big NUM(ma513 ma144)            #
+  0 concept                         #
 
