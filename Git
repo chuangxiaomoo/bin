@@ -35,7 +35,7 @@ function fn_main()
         ;;
 
     c*)
-        # add commit push 指定文件...
+        # add commit push 指定文件到本地
         local i=
         for i in ${filelist}; do
             [ ! -f "$i" ] && { echo "Error: $i not exist"; exit ;}
@@ -45,7 +45,6 @@ function fn_main()
 
         git add ${filelist}
         git commit -m "$REPLY" ${filelist}
-        git push origin master
         ;;
 
     d|diff)
