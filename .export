@@ -1,7 +1,4 @@
 #! /bin/bash
-#
-#  . ~/bin/.export @~/.bashrc
-#
 
-export p_mx=/tmp/mx/
+. ~/.env
 
