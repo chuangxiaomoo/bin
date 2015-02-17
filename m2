@@ -132,6 +132,7 @@ function fn_104_罗永浩天生骄傲()        { cat book_104_罗永浩天生骄
 function fn_200_逃不开的经济周期()      { cat book_200_逃不开的经济周期 ;}
 function fn_lunyu()                     { cat book_lunyu ;}
 function fn_shenglvqimeng()             { cat book_shenglvqimeng ;}
+function fn_think_fast_n_slow()         { cat book_think_fast_n_slow ;}
     local opts=(
         base       
         wanna                   # 想读的书
@@ -152,6 +153,7 @@ function fn_shenglvqimeng()             { cat book_shenglvqimeng ;}
         economic_naturalist     # 牛奶可乐
         10years                 # 我的职场十年：修炼
         conservatism            # 保守主义
+        think_fast_n_slow
 
         f2_海底捞你学不会
         f1_富同学穷同学
