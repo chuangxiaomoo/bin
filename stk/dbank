@@ -149,7 +149,7 @@ function fn_timestamp_market()
     OPENDATE=${DATETIME[0]}
     OPENTIME=${DATETIME[1]}
     if [ -z "$OPENDATE" ]; then
-        fn_write "
+        fn_echo_fail "
         FINA UNREACHABLE!
         "  
         return 1

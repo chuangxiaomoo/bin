@@ -19,7 +19,7 @@ function fn_peel()
     record=(`grep $1 ${rt_ripetxt} | tr ',' ' '`)
     echo record is $record
     [ -z "${record[*]}" ] && { 
-        fn_write "code[$1] get error" 
+        fn_echo_fail "code[$1] get error" 
     } && exit
     record=(${record[@]:1})     
 

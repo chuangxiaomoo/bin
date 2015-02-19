@@ -188,7 +188,7 @@ function fn_hexun_day()
     else
         $workdir/hexun || {
             echo "try again..."
-            sleep 2; $workdir/hexun || { fn_write "try 2 times fail"; return 1 ; }
+            sleep 2; $workdir/hexun || { fn_echo_fail "try 2 times fail"; return 1 ; }
         }
 
         awk '{
@@ -418,7 +418,7 @@ function fn_redo_hexun_day_fr_min()
 
     OPENDATE=`$W3M -dump ${url_sh000001} |awk -F',' '{print $(NF-2)}'`
 
-    [ -z "$OPENDATE" ] && fn_write "    FINA UNREACHABLE!" && return 1
+    [ -z "$OPENDATE" ] && fn_echo_fail "    FINA UNREACHABLE!" && return 1
     [ "$DATE" != "$OPENDATE" ] && echo "Error: market is close" && return 1
 
 
