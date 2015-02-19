@@ -9,7 +9,7 @@ function fn_main()
         echo "
         ----------- Usage --------------
         A   commit  [all changed file]
-        c   commit  [single file to local]
+        c   commit  [ci . to local]
         d   diff    [file] 
         dp  dprev   file 'PREV'
         l   log     log -p file
