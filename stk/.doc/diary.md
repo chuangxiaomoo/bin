@@ -3233,4 +3233,6 @@ root@Moo64:~/bin/stk# SELECT ls 2241
   1. sell
   2. review 
 
+# 解决链接 x_profile.sh 
+
 - 要事第一 -

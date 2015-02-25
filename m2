@@ -523,7 +523,7 @@ function fn_12_wife()                   { cat girl_12_wife ;}
         lovewords
         00_jiebao
         01_tingbao
-        11_2013相亲记
+        11_2013相亲记                   # xiangqin
         12_wife                         # 贤良12妻
     )
     fn_print $@
