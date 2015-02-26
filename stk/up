@@ -16,7 +16,7 @@ function fn_cap()
         Make sure U have down full.FIN?
         cp /dzh2/Download/FIN/full.FIN $p_bin"
         cp /dzh2/Download/FIN/full.FIN $p_bin
-        xert $? `$PS8` || return $?
+        xt_ret $? "" || return $?
     fi
 
     $workdir/sina
@@ -342,7 +342,7 @@ function fn_up_tbl_xRD()
     else
         echo "cp /dzh2/Download/PWR/full.PWR $p_bin"
         cp /dzh2/Download/PWR/full.PWR $p_bin
-        xert $? `$PS8` || return $?
+        xt_ret $? "" || return $?
     fi
 
     [ ! -f "$p_bin/xRD" ] && echo "xRD not exist" && exit

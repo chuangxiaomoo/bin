@@ -126,13 +126,14 @@
 
   0 复利迭代                        #
   1 3类买卖点                       #
-  2 不孤注，得乐视                  #
+  2 odds && 梅花5数                 # 不孤注，得乐视
   3 blk                             # cybz sc40 etf180 etf300 上证300成分股
   4 yjbb                            #
   5 acf(cdiff+rdiff+wchng)          #
-  6 turnover                        #
+  6 turnover                        # tov5 diff(tov5)增
   7 nmc                             #
   8 big NMC_RATIO(6jian+9jian)      #
   9 big NUM(ma513 ma144)            #
-  0 concept                         #
+  0 3级别周期鉴定                   # 200% 2次回探更加靠谱
+  1 concept                         #
 

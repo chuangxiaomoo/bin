@@ -3233,6 +3233,8 @@ root@Moo64:~/bin/stk# SELECT ls 2241
   1. sell
   2. review 
 
+# 行善不见善，前世有缺欠。做恶不见恶，前世有余德。
+
 # 解决链接 x_profile.sh 
 
 - 要事第一 -
