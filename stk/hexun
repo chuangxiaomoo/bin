@@ -38,7 +38,7 @@ function fn_main() {
     mkdir -p ${hx_rawxml%/*}
 
     fn_hexun
-    xert $? `$PS8` "fn_hexun fail" || return $?
+    xt_ret $? "fn_hexun fail" || return $?
 }
 
 # 

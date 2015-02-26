@@ -190,7 +190,7 @@ function fn_6maishenjian()
     columns=${columns:-'*'}
     columns=t.${columns//,/,t.}
 
-    DATE2=${END}
+    DATE2=${DATE2:-${END}}
 
     echo ----- COND: $COND -----
     function fn_get_tbl_6jian_dive()
@@ -202,7 +202,8 @@ function fn_6maishenjian()
                        round(100*(t.low  - avrg)/avrg,2) as lchng, 
                        round(100*(t.close- avrg)/avrg,2) as wchng, 
                        round(100*(d.close- avrg)/avrg,2) as down, 
-                       round(100*(d.close-t.low)/avrg,2) as up, 
+                       round(100*(d.close-(t.close+t.low)/2)/avrg,2) as up, 
+                       round((avrg-d.close)/(d.close-(t.close+t.low)/2),2) as odds, 
                        c.name 
             FROM ${tablex:-tbl_6mai} as t, cap as c, 
                 (${daysql}) as d
@@ -444,7 +445,7 @@ function fn_main()
 
     cmdlist=(
     "dugu9jian          [sortfiled]          # nine sword"
-    "6maishenjian       [sortfiled]          # #{END} to specify diff-day"
+    "6maishenjian       [sortfiled]          # #{DATE2} to specify diff-day"
     "get_comma_cloumns  [tbl_name:-day]      # 逗分列名"
     "get_open_days      [LIMIT:-13 [desc]]   # 开市日列表"
     "get_rat_51325      [sortfiled:-ratio]   # day+PREV513.动态rat"
@@ -455,7 +456,7 @@ function fn_main()
     "ls                 {code|symbol}        # 日线数据 \$LIMIT"
     "name               code                 # 名"
     "vol                {0|3|6|03}           # ^^3市成交^^"
-    "lsd                [sortfiled:-rise]    # --- END 涨幅排名 \$LIMIT"
+    "lsd                [sortfiled:-rise]    # --- END YIST LIMIT 涨幅排名"
     "pma                code                 # NUM=5日平均"
     "fbi                                     # tbl_fbi"
     "acc                                     # tbl_adiff"

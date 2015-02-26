@@ -277,11 +277,11 @@ fn_group_nmc_layout()
     # cat $sn_cap_nmc
     mysql -t  kts <<< "SELECT sum(nmc)/(10000*10000) as nmc_WanYi FROM cap;" 
     mysql -N  kts <<< "SELECT * FROM cap;" | awk 'BEGIN {
-        list="5000 1000 800 500 200 100 50 20 10 5 0";
+        list="5000 1000 800 400 200 100 50 20 10 5 0";
         arr_size=split(list, arr_list, " ");
     } {
         count++;
-        nmc=$5/10000
+        nmc=$6/10000
         for(k=1; k<=arr_size; k++) {
             if (nmc > arr_list[k]) {
                 arr_count[k] = arr_count[k]+1; break;
@@ -296,6 +296,29 @@ fn_group_nmc_layout()
         printf "    分析可见：   市值%%60分布主要在10~100亿\n";
         printf "    mysql -N kts <<<\"SELECT code FROM cap WHERE nmc>100000 and nmc<990000\" | xargs up 7\n";
     }'
+
+    # .yist.
+    # 
+    # SELECT count(*), sum(nmc) FROM cap WHERE nmc<1000000 ;
+    # SELECT count(*), sum(nmc) FROM cap WHERE nmc>=1000000 and nmc<4000000 ;   
+    # SELECT count(*), sum(nmc) FROM cap WHERE nmc>=4000000 ;                 
+    # 
+    # +----------+-----------+
+    # | count(*) | sum(nmc)  |
+    # +----------+-----------+
+    # |     2042 | 829104179 |
+    # |      457 | 858114696 |
+    # |      105 | 1584677867|
+    # +----------+-----------+      刚好以5为倍数
+
+    sql='SELECT code FROM cap WHERE nmc<1000000'
+    mysql -N  kts <<< "${sql}" > .yist.lt100
+    sql='SELECT code FROM cap WHERE nmc>=1000000 and nmc<4000000'
+    mysql -N  kts <<< "${sql}" > .yist.lt400
+    sql='SELECT code FROM cap WHERE nmc>=4000000 and nmc<9990000'
+    mysql -N  kts <<< "${sql}" > .yist.lt999
+    sql='SELECT code FROM cap WHERE nmc>=9990000'
+    mysql -N  kts <<< "${sql}" > .yist.ge999
 }
 
 main() 
