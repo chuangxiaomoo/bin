@@ -268,8 +268,46 @@ echo "`date +%F.%T` ${BASH_SOURCE##*/}" >> /var/dbank.trace
 fn_rank_by_nmc() 
 {
     echo "
-    SELECT * FROM cap ORDER by nmc DESC limit ${1:-48};
+    SELECT * FROM cap ORDER by nmc DESC limit ${LIMIT:-48};
 	" | mysql -t kts
+}
+
+
+function fn_yist()
+{
+    # .yist.
+    # 
+    # SELECT count(*), sum(nmc) FROM cap WHERE nmc<1000000 ;
+    # SELECT count(*), sum(nmc) FROM cap WHERE nmc>=1000000 and nmc<4000000 ;   
+    # SELECT count(*), sum(nmc) FROM cap WHERE nmc>=4000000 ;                 
+    # 
+    # +----------+-----------+
+    # | count(*) | sum(nmc)  |
+    # +----------+-----------+
+    # |     2042 | 829104179 |
+    # |      457 | 858114696 |
+    # |      105 | 1584677867|
+    # +----------+-----------+      刚好以5为倍数
+
+    sql='SELECT code FROM cap WHERE nmc<1000000'
+    mysql -N  kts <<< "${sql} ORDER by code" > .yist.lt100
+    sql='SELECT code FROM cap WHERE nmc>=1000000 and nmc<4000000'
+    mysql -N  kts <<< "${sql} ORDER by code" > .yist.lt400
+    sql='SELECT code FROM cap WHERE nmc>=4000000 and nmc<9990000'
+    mysql -N  kts <<< "${sql} ORDER by code" > .yist.lt999
+    sql='SELECT code FROM cap WHERE nmc>=9990000'
+    mysql -N  kts <<< "${sql} ORDER by code" > .yist.ge999
+
+    sql='SELECT code FROM cap ORDER by nmc DESC LIMIT 0,40'
+    mysql -N  kts <<< "${sql}" > .yist.lv1_40
+    sql='SELECT code FROM cap ORDER by nmc DESC LIMIT 40,80'
+    mysql -N  kts <<< "${sql}" > .yist.lv2_80
+    sql='SELECT code FROM cap ORDER by nmc DESC LIMIT 120,400'
+    mysql -N  kts <<< "${sql}" > .yist.lv3_400
+    sql='SELECT code FROM cap ORDER by nmc DESC LIMIT 520,2400'
+    mysql -N  kts <<< "${sql}" > .yist.lv4_24k
+    
+    return $?
 }
 
 fn_group_nmc_layout() 
@@ -297,28 +335,6 @@ fn_group_nmc_layout()
         printf "    mysql -N kts <<<\"SELECT code FROM cap WHERE nmc>100000 and nmc<990000\" | xargs up 7\n";
     }'
 
-    # .yist.
-    # 
-    # SELECT count(*), sum(nmc) FROM cap WHERE nmc<1000000 ;
-    # SELECT count(*), sum(nmc) FROM cap WHERE nmc>=1000000 and nmc<4000000 ;   
-    # SELECT count(*), sum(nmc) FROM cap WHERE nmc>=4000000 ;                 
-    # 
-    # +----------+-----------+
-    # | count(*) | sum(nmc)  |
-    # +----------+-----------+
-    # |     2042 | 829104179 |
-    # |      457 | 858114696 |
-    # |      105 | 1584677867|
-    # +----------+-----------+      刚好以5为倍数
-
-    sql='SELECT code FROM cap WHERE nmc<1000000'
-    mysql -N  kts <<< "${sql}" > .yist.lt100
-    sql='SELECT code FROM cap WHERE nmc>=1000000 and nmc<4000000'
-    mysql -N  kts <<< "${sql}" > .yist.lt400
-    sql='SELECT code FROM cap WHERE nmc>=4000000 and nmc<9990000'
-    mysql -N  kts <<< "${sql}" > .yist.lt999
-    sql='SELECT code FROM cap WHERE nmc>=9990000'
-    mysql -N  kts <<< "${sql}" > .yist.ge999
 }
 
 main() 
@@ -326,6 +342,7 @@ main()
     list=(
         fn_group_nmc_layout
         fn_rank_by_nmc
+        fn_yist
     )        
 
     match_word=(`echo ${list[@]}| xargs -n1 | cat -n | grep  "\<$1\>"`)
