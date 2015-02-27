@@ -120,12 +120,13 @@ function fn_main()
         fi
     fi
 
-    read -p "Type any key to continue, Ctrl-C to interrupt"
-    
+    # read -p "Type any key to continue, Ctrl-C to interrupt"
     # DELETE FROM  fenbi WHERE  datetime > 20141219000000
 
     fn_hexun $code
     return $?
+
+    fn_echo_succ "DL and load mini-fenbi of ${code} succ!"
 }
 # 数据的延时在30s内
 fn_main $@
