@@ -1366,6 +1366,7 @@ function fn_main() {
         codingstyle
         google_cxx_style
         google
+        chrome                  # vpn
         coreutils
         curl
         cygwin
@@ -1378,7 +1379,6 @@ function fn_main() {
         figlet                  # text logo
         firebug
         firefox
-        chrome
         gcc
         gcov
         gdb
