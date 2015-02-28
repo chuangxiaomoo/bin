@@ -1,4 +1,7 @@
-" https://github.com/chuangxiaomoo/bin/blob/master/.vromerc
+" https://raw.githubusercontent.com/chuangxiaomoo/bin/master/.vromerc
 
-map j 3j
-map k 3k
+map     j 3j
+map     k 3k
+
+unmap   <M-d>
+set     enable_vrome_key=<Esc>
