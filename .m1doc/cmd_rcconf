@@ -1,5 +1,10 @@
 #! /bin/bash
 
+. Ubuntu下关闭apache和mysql的开机启动  
+
+    debian通过/etc/rc*下的链接来处理开机启动，类似SuSE
+    ls /etc/rc*
+
 . rcconf们也无能为力
 
     http://blog.csdn.net/zhangxg8776/article/details/7790118
