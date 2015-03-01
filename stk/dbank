@@ -103,6 +103,15 @@ yjbb_rip='/dev/shm/yjbb_rip'
 cache='/tmp/cache'
 buffer='/tmp/buffer'
 
+
+function fn_txttbl()
+{
+    if [ -f "${YIST}" ]; then
+        TBL=yist
+        TBL=yist up file_to_table ${YIST}
+    fi
+}
+
 function fn_yist()
 {
     if [ -f "${YIST}" ]; then

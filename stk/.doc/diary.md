@@ -3239,7 +3239,11 @@ root@Moo64:~/bin/stk# SELECT ls 2241
 # 2015-03-01 习总说：法律的尊严在于执行
 
 # 2014-11-x oracle for ur reason
+
   0. keep+buy
+000035  25.4    中国天楹
+000826  2340062 桑德环境
+
   1. sell
   2. review 
 

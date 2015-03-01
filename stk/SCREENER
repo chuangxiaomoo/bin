@@ -19,6 +19,7 @@ function fn_dugu9jian()
         exit 1
     fi
 
+    fn_txttbl
     TBL=${TBL:-'cap'}
     NUM=${NUM:-81}        # 34太小，300104 2014-07-17 被漏掉了
 
@@ -40,6 +41,7 @@ function fn_dugu9jian()
 
 function fn_6maishenjian()
 {
+    fn_txttbl
     TBL=${TBL:-'cap'}
     NUM=${NUM:-90}
 
