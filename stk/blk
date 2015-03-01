@@ -10,16 +10,22 @@ function fn_main()
 {
     CWD=${PWD}
     BLK='/dzh2/USERDATA/block'
+    stbh='生态保护和环境治理业.BLK'
     maps=(
     深成40.BLK      .blk.sc40
     创业板指.BLK    .blk.cybz
     深证300P.BLK    .blk.sz300p
+
     军工指数.BLK    .blk.jgzs
     融资融券.BLK    .blk.rzrq
     券商.BLK        .blk.qs
     银行业.BLK      .blk.yhy
     房地产.BLK      .blk.fdc
     300地产.BLK     .blk.300dc
+
+    污水处理.BLK    .blk.wscl
+    ${stbh}         .blk.stbh
+    节能环保.BLK    .blk.jnhb
     )
     local i j
     for (( i=0,j=1; i<${#maps[@]}; i+=2,j+=2 )); do
