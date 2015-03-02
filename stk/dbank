@@ -106,6 +106,10 @@ buffer='/tmp/buffer'
 
 function fn_txttbl()
 {
+    if [ -n "${NMC_RATIO}" ]; then
+        iNUM=`mysql -N <<< "SELECT round(${NUM:-100}*${NMC_RATIO})"`
+        NUM=${NUM:-$iNUM}
+    fi
     if [ -f "${YIST}" ]; then
         TBL=yist
         TBL=yist up file_to_table ${YIST}

@@ -21,7 +21,6 @@ function fn_dugu9jian()
 
     fn_txttbl
     TBL=${TBL:-'cap'}
-    NUM=${NUM:-81}        # 34太小，300104 2014-07-17 被漏掉了
 
     echo "
     To visit `mysql -N kts<<<"SELECT count(*) FROM ${TBL}"` codes on table $TBL...
@@ -29,7 +28,7 @@ function fn_dugu9jian()
 
     echo "
     SET @END='$END';
-    SET @NUM=${NUM};
+    SET @NUM=${NUM:-100};
     SET @NMC_RATIO=${NMC_RATIO:-1};
     call sp_visit_tbl('$TBL', @fn_dugu9jian);
     " | tee -a $mps_god
@@ -43,7 +42,6 @@ function fn_6maishenjian()
 {
     fn_txttbl
     TBL=${TBL:-'cap'}
-    NUM=${NUM:-90}
 
     echo "
     To visit `mysql -N kts<<<"SELECT count(*) FROM ${TBL}"` codes on table $TBL...
@@ -51,14 +49,14 @@ function fn_6maishenjian()
 
     echo "
     SET @END='$END';
-    SET @NUM=${NUM};
+    SET @NUM=${NUM:-100};
     SET @NMC_RATIO=${NMC_RATIO:-1};
     call sp_visit_tbl('$TBL', @fn_6maishenjian);
     " | tee -a $mps_god
     mysql $mo -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
 
-    SELECT 6maishenjian ${1:-down}
+    SELECT 6maishenjian
 }
 
 function fn_taox_ratio0()
@@ -648,9 +646,10 @@ function fn_auto_nmemb()
 
 function fn_tov5()
 {
+    # LIMIT 10 在换手剧增时比 LIMIT 5 更加敏感
     sql="
-    SELECT round(sum(d.volume)/cap.shares, 3) as nmc_ratio FROM 
-       (SELECT * FROM day WHERE code=${code} and date<='$CLOSING' ORDER by date DESC LIMIT 5)
+    SELECT round(sum(d.volume)/cap.shares/2, 3) as nmc_ratio FROM 
+       (SELECT * FROM day WHERE code=${code} and date<='$CLOSING' ORDER by date DESC LIMIT 10)
        as d, cap WHERE d.code = cap.code INTO @irt;
        SELECT IF(@irt<.2,@irt,.2);
     " 
@@ -781,7 +780,6 @@ function fn_acf()
 
     cp ${mps_acf} ${mps_god}
 
-    irt=`fn_tov5 $code`
     sql="SELECT max(datetime) FROM fenbi WHERE code=${1}"
     dt=`mysql -N kts <<< "${sql}"`
 
@@ -792,6 +790,9 @@ function fn_acf()
     DT=${DT:-$dt}
     fn_isdatetime ${DT} 
     xt_ret $? "invalid datetime[$DT]" || return $?
+
+    DATE2=`fn_str_2_date ${DT}` 
+    irt=`CLOSING=${DATE2} fn_tov5 $code`
 
     echo "
     SET @DT='${DT}';
