@@ -201,8 +201,8 @@ function fn_6maishenjian()
                        DATE_FORMAT(date2,'%m-%d') as end, ${columns}, c.nmc, chng, 
                        round(100*(t.low  - avrg)/avrg,2) as lchng, 
                        round(100*(t.close- avrg)/avrg,2) as wchng, 
-                       round(100*(d.close- avrg)/avrg,2) as down, 
-                       round(100*(d.close-(t.close+t.low)/2)/avrg,2) as up, 
+                       round(100*(d.close- avrg)/avrg,2) as avrg_up, 
+                       round(100*(d.close-(t.close+t.low)/2)/avrg,2) as sharp_up, 
                        round((avrg-d.close)/(d.close-(t.close+t.low)/2),2) as odds, 
                        c.name 
             FROM ${tablex:-tbl_6mai} as t, cap as c, 
@@ -324,7 +324,6 @@ function fn_pma()
 
     END=${END:-`fn_maxdate`}
     NUM=${NUM:=5}
-    let DBL=${NUM}*2
 
     # enable d2，则tov扩大10倍
     echo "
@@ -332,10 +331,8 @@ function fn_pma()
     SELECT d.code, '${END}' as date, sum(d.amount)/sum(d.volume) as ma${NUM}, @iclose,
         round(100 * (@iclose-sum(d.amount)/sum(d.volume))/@iclose, 2) as pcnt,
         round(100*sum(d.volume)/cap.shares, 2) as tov${NUM}
-        -- , round(100*sum(d2.volume)/cap.shares, 2) as tov${DBL} 
         FROM 
         (SELECT * FROM day WHERE code=$1 and date<='$END' ORDER by date DESC LIMIT ${NUM}) as d,
-        -- (SELECT * FROM day WHERE code=$1 and date<='$END' ORDER by date DESC LIMIT ${DBL}) as d2,
         cap WHERE d.code = cap.code ;
     " | mysql -t kts
     # SELECT sum((high-yesc)/yesc) FROM day WHERE code = 2 and date > '2014-11-03'; 

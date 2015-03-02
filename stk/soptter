@@ -111,7 +111,7 @@ function fn_main()
 #   YIST=${YIST:-'.blk.yhy'}
 #   YIST=${YIST:-'.blk.sc40'}
 #   YIST=${YIST:-'.soptter.lin'}
-    YIST=${YIST:-'.soptter.etf'}
+#   YIST=${YIST:-'.soptter.etf'}
     YIST=${YIST:-'.soptter.focus'}
     codelist=`cat ${YIST}|awk '/^[^#]/{print $1}'`
     thrxhold=.01               # .00382 .00618 .01 .01618
