@@ -71,78 +71,6 @@ function fn_cap()
     fi
 }
 
-function fn_load_f_2_tbl_samename()
-{
-    echo "为防止误删表，特停用此功能!" && exit
-
-    [ ! -f "$1" ] && echo "Usage: $FUNCNAME FILEPATH" && exit
-
-    tbl_day=${1##*/}
-    tbl_day=${tbl_day%%\.*}
-    tbl_macd="macd_${tbl_day}"
-    tmp_txt='/dev/shm/.tmp_txt'
-
-    tail -251 $1 | tail -n +2  > $tmp_txt
-
-    echo "
-    DROP TABLE IF EXISTS $tbl_day;
-    CREATE TABLE $tbl_day (
-        date        DATE NOT NULL,
-        yesc        DECIMAL(6,2) NOT NULL,
-        open        DECIMAL(6,2) NOT NULL,
-        high        DECIMAL(6,2) NOT NULL,
-        low         DECIMAL(6,2) NOT NULL,
-        close       DECIMAL(6,2) NOT NULL,
-        volume      DECIMAL(10,2) NOT NULL,
-        amount      DECIMAL(12) NOT NULL
-    );
-
-    LOAD DATA LOCAL INFILE '$tmp_txt' INTO TABLE $tbl_day FIELDS TERMINATED BY ',';
-
-    DROP TABLE IF EXISTS $tbl_macd;
-    CREATE TABLE $tbl_macd (
-        id          INT(6) PRIMARY key AUTO_INCREMENT NOT NULL,
-        date        DATE NOT NULL,
-        close       FLOAT NOT NULL DEFAULT 0,
-        short_ema   FLOAT NOT NULL DEFAULT 0,
-        long_ema    FLOAT NOT NULL DEFAULT 0,
-        dif         FLOAT NOT NULL DEFAULT 0,
-        dea         FLOAT NOT NULL DEFAULT 0,
-        macd        FLOAT NOT NULL DEFAULT 0
-    );
-
-    INSERT INTO $tbl_macd (date, close) SELECT date, close FROM $tbl_day ;
-
-    " | mysql -u root test
-}
-
-function fn_http_get()
-{
-    abc=12345
-    echo ${abc:0:1}
-    bourse='sh'
-
-    echo "
-    DROP TABLE IF EXISTS $tbl_day;
-    CREATE TABLE $tbl_day (
-        code        INT(6) ZEROFILL NOT NULL,
-        date        DATE NOT NULL,
-        yesc        DECIMAL(6,2) NOT NULL,
-        open        DECIMAL(6,2) NOT NULL,
-        high        DECIMAL(6,2) NOT NULL,
-        low         DECIMAL(6,2) NOT NULL,
-        close       DECIMAL(6,2) NOT NULL,
-        volume      DECIMAL(12) NOT NULL,       -- 以‘万股’为单位
-        amount      DECIMAL(12) NOT NULL,       -- 以元为单位
-        INDEX(code,date),
-        INDEX(date)
-    );
-
-    LOAD DATA LOCAL INFILE '$tmp_txt' INTO TABLE $tbl_day FIELDS TERMINATED BY ',';
-
-    " | mysql -u root test
-}
-
 function fn_add_yesclose()
 {
     local p_znz="$warehs/znz_day"
@@ -372,18 +300,12 @@ function fn_up_tbl_xRD()
     fi
 }
 
-function fn_sel_day_into_znz_dir()
+function fn_dump_day_2_tmp()
 {
     # 对 /tmp 有写权限，其它的则需要设置
-    mkdir -p /tmp/znz_day
-    icodes=`(cd $warehs/znz_day && ls)`;
-    local i=
-    for i in $icodes; do
-        echo $i
-        echo "
-        SELECT * FROM day WHERE code = $i INTO OUTFILE '/tmp/znz_day/$i';
-        " | mysql kts
-    done
+    echo "
+    SELECT * FROM day WHERE date>='$1' and date<='${2:-$END}' INTO OUTFILE '/tmp/day';
+    " | mysql kts
 }
 
 function fn_trs_min_2_day()
@@ -603,8 +525,7 @@ function fn_main()
     "copy_table_2_table src dst         # --- 使用 1 1 做为代号"
     "add_yesclose                       # 为yahoo.指南针数据添加yesclose"
     "load_directory                     # load文件夹#{znzday}到表day"
-    "load_f_2_tbl_samename filepath     # 导入日线到同名表"
-    "sel_day_into_znz_dir               # 导出日线"
+    "dump_day_2_tmp START END           # 导出日线"
     "trs_min_2_day                      # 最后一笔分线转日线"
     "wb                                 # windbell_codes(close<avrg)"
     "day code dateEND {num:-365}        # DL day data from znz"
