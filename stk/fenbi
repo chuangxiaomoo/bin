@@ -96,6 +96,7 @@ function fn_hexun()
 
 function fn_main()
 {
+    # 数据的延时在30s内
     code=${1}
     fn_iscode ${code}
     xt_ret $? "Usage: fenbi code" || return $?
@@ -121,12 +122,11 @@ function fn_main()
     fi
 
     # read -p "Type any key to continue, Ctrl-C to interrupt"
-    # DELETE FROM  fenbi WHERE  datetime > 20141219000000
+    # DELETE FROM  fenbi WHERE datetime > 20150303000000
 
     fn_hexun $code
-    return $?
-
+    xt_ret $? "" || return $?
     fn_echo_succ "DL and load mini-fenbi of ${code} succ!"
 }
-# 数据的延时在30s内
+
 fn_main $@
