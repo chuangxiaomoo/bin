@@ -136,5 +136,6 @@
   8 big NMC_RATIO(6jian+9jian)      #
   9 big NUM(ma513 ma144)            #
   0 3级别周期鉴定                   # 200% 2次回探更加靠谱
-  1 concept                         #
+  1 量比tov5/tov5以上升为更大级别   # 2015-03-05 002502 骅威股价
+  a concept                         #
 
