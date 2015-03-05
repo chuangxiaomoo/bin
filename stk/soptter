@@ -53,31 +53,16 @@ fn_realtime()
         }
     }' | tr ' ' ',' | sed 's/,$//g'`
 
-    indexlist='sh000001,sz399001,sz399006'
+    indexlist='sh000001,sz399001,sz399106,sz399006'
     $W3M -dump "http://hq.sinajs.cn/list=${indexlist},${comma_sepa_list}" > ${rt_stdout} 
     xt_ret $? "NETWORK" || return $?
-
-    # cat ${rt_stdout} ; exit
-    # cat ${rt_stdout} | head -1 | # awk -F ',' '{print $32}'  # print time
-
-    # format ref to .doc/soptter.md
-    #cat ${rt_stdout} | \
-    #    sed -e '1s/sh000001/sh900001/' \
-    #        -e 's/var hq_str_..//g' -e 's/="/,/g' | awk -F',' '{
-    #            printf "%06d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n", 
-    #            $1, $32, $4, $3, $6, $7, $5, ($10/100), ($11/10000);
-    #        }' 
-    # >> $hx_dayclose
-    #   tr -d '"' | tr -d ';' | tr ':' '.' > ${rt_ripetxt} 
-    #       symbole date  yesc open high low trade tr_yesc  tr_high     tr_low
-    #                     $4,   $3, $6,  $7, $5, ($5-$4)/$4, ($5-$6)/$6, ($5-$7)/$7,
 
     printf "%6s\t%s\t\t%s\t%-5s\t%5s\t%s\n" \
             symbole trade pcnt  pcnt_hi pcnt_lo __name
 
     cat ${rt_stdout} | \
         sed -e '1s/sh000001/sh900001/' -e 's/var hq_str_..//g' -e 's/="/,/g' | \
-        sed -n '1,3p' | awk -F',' '{
+        sed -n '1,4p' | awk -F',' '{
                 printf "%06d\t%-8.2f\t%.2f\t%.2f\t%.2f\t%s\n", 
                      $1,
                      $5, 
@@ -89,7 +74,7 @@ fn_realtime()
 
     cat ${rt_stdout} | \
         sed -e '1s/sh000001/sh900001/' -e 's/var hq_str_..//g' -e 's/="/,/g' | \
-        sed -n '4,$p' | awk -F',' '{
+        sed -n '5,$p' | awk -F',' '{
                 printf "%06d\t%.2f\t\t%.2f\t%.2f\t%.2f\t%s\n", 
                      $1,
                      $5, 

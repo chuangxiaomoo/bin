@@ -131,7 +131,7 @@
   3 blk                             # cybz sc40 etf180 etf300 上证300成分股
   4 yjbb                            #
   5 acf(cdiff+rdiff+wchng)          #
-  6 turnover                        # tov5 diff(tov5)增
+  6 turnover                        # tov5 diff(tov5)增 300238.2015-02-09
   7 nmc                             #
   8 big NMC_RATIO(6jian+9jian)      #
   9 big NUM(ma513 ma144)            #

@@ -647,9 +647,10 @@ function fn_auto_nmemb()
 function fn_tov5()
 {
     # LIMIT 10 在换手剧增时比 LIMIT 5 更加敏感
+    # date<'$CLOSING' 不包括今日，转折日成交量都会大增，此举可提高灵敏度
     sql="
     SELECT round(sum(d.volume)/cap.shares/2, 3) as nmc_ratio FROM 
-       (SELECT * FROM day WHERE code=${code} and date<='$CLOSING' ORDER by date DESC LIMIT 10)
+       (SELECT * FROM day WHERE code=${code} and date<'$CLOSING' ORDER by date DESC LIMIT 10)
        as d, cap WHERE d.code = cap.code INTO @irt;
        SELECT IF(@irt<.2,@irt,.2);
     " 
