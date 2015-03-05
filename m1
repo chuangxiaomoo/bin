@@ -595,6 +595,7 @@ function fn_add()                       { cat git_add ;}
 function fn_rm()                        { cat git_rm ;}
 function fn_config()                    { cat git_config ;}
 function fn_subconf()                   { cat git_subconf ;}
+function fn_log()                       { cat git_log ;}
     local opts=(
         base                    # 入门
         add
@@ -606,6 +607,7 @@ function fn_subconf()                   { cat git_subconf ;}
         svndiff                 # 与svn比较
         github                  # create 或 pull 一个项目 from github.com 
         init                    # 按遇到的先后顺序
+        log
     )
     fn_print $@
 }
