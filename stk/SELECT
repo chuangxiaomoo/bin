@@ -93,6 +93,9 @@ function fn_get_comma_cloumns()
 
 function fn_get_rat_51325()
 {
+    # 0. Make sure U've done [up 4]?
+    # 1. 自动处理生成 tbl_ma513
+    # 2. 使用多表tbl_ma513 tbl_day`联合查询`得到数据
     function fn_build_sqls() {
     sqls="
     SELECT d.code,DATE_FORMAT(d.date,'%m-%d')as date,d.yesc,d.open,d.close,
@@ -134,7 +137,8 @@ function fn_get_rat_51325()
 
 function fn_get_ma513()
 {
-    # read -p "U've done [SCREENER 2]?"
+    # 1. Make sure U've done [SCREENER 2]?
+    # 2. 使用单表tbl_ma513作差得到数据
     SCALE=`fn_get_ratio_close2open`
     columns=code,close,ma5,ma13,ma25
     columns=t.${columns//,/,t.}
@@ -407,7 +411,7 @@ function fn_vol()
 }
 
 
-function fn_hightm()
+function fn_td_layout()
 {
     # DELETE FROM fenbi WHERE datetime<12340506778899;
     fn_iscode ${code:=${1}}
@@ -418,7 +422,7 @@ function fn_hightm()
 
     local i=
     for i in ${dates}; do
-        SELECT date FROM day WHERE code=${code} and date=
+        # SELECT date FROM day WHERE code=${code} and date=
         echo "
         INSERT INTO tmpfb(code,datetime,trade,volume,amount)
         SELECT code,datetime%1000000,trade,volume,amount FROM fenbi 
@@ -449,7 +453,7 @@ function fn_main()
     "get_ma513          [sortfiled:tov5]     # 均价+现成513.静态rat"
     # ----------------  ABOVE IS FIXED SEQUENCE --------------------
     "change             [LIMIT:-13]          # 近期涨跌家数统计"
-    "hightm             code                 # max(trade) time"
+    "td_layout          code                 # 日内最高价时点分布.10:00am"
     "ls                 {code|symbol}        # 日线数据 \$LIMIT"
     "name               code                 # 名"
     "vol                {0|3|6|03}           # ^^3市成交^^"
