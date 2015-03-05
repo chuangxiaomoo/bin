@@ -10,7 +10,6 @@ function fn_main()
 {
     CWD=${PWD}
     BLK='/dzh2/USERDATA/block'
-    stbh='生态保护和环境治理业.BLK'
     maps=(
         深成40.BLK      .blk.sc40
         创业板指.BLK    .blk.cybz

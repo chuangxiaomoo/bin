@@ -247,7 +247,7 @@ function fn_file_to_table()
             echo -n SZ$i
             ;;
         *)
-            echo -e "\n    Invalide code $i, exit\n" > /dev/stderr && exit # 上面的数据库添加时没有做检查
+            fn_echo_fail "    skip invalide code $i" > /dev/stderr && continue # 上面的数据库添加时没有做检查
             ;;
         esac
         echo -n -e $DELI
