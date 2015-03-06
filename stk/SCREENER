@@ -271,6 +271,19 @@ function fn_tao5()
     return ${RETCODE:-0}
 }
 
+function fn_turnov5()
+{
+    # LIMIT 10 在换手剧增时比 LIMIT 5 更加敏感
+    # date<'$CLOSING' 不包括今日，转折日成交量都会大增，此举可提高灵敏度
+    sql="
+    SELECT round(sum(d.volume)/cap.shares/2, 3) as nmc_ratio FROM 
+       (SELECT * FROM day WHERE code=${code} and date<'$CLOSING' ORDER by date DESC LIMIT 10)
+       as d, cap WHERE d.code = cap.code INTO @irt;
+       SELECT IF(@irt<.2,@irt,.2);
+    " 
+    mysql -N kts<<<"${sql}"
+}
+
 function fn_bei()
 {
     [ -z "$1" ] && echo "Usage: bei {file|code...}" && exit 1
@@ -291,7 +304,7 @@ function fn_bei()
     local code=
     for code in ${lst[@]}; do
         #echo "$code" 
-        irt=`fn_tov5 $code`
+        irt=`fn_turnov5 $code`
         ZIZE=${ZIZE:-3} NMC_RATIO=${NMC_RATIO:-${irt}} call=fn_bei fn_tao5 ${code}
     done
 
@@ -308,14 +321,14 @@ function fn_insert_codes_2_table()
     " | mysql kts
 }
 
-function fn_get_ma513()
+function fn_tov()
 {
-    tbl_ma_date=tbl_mx_${END//-/_}
+    tbl_ma_date=tbl_tov_${END//-/_}
 
     if mysql kts<<<"SHOW TABLES" | grep -q ${tbl_ma_date}; then
         # 表 ${tbl_ma_date} 存在，且是闭市后构建
         # 表 tbl_ma513 是TBL的分析结果，供后续处理分析。
-        if [ -f /tmp/mx/${tbl_ma_date} ]; then
+        if [ -f /tmp/tov/${tbl_ma_date} ]; then
             if [ "cap" = "${TBL:-cap}" ]; then
                 fn_cp_tbl ${tbl_ma_date} tbl_ma513;
             else
@@ -330,6 +343,7 @@ function fn_get_ma513()
         fi
     fi
 
+    fn_txttbl
     echo "    build on ${TBL:-cap}..."
 
     echo "
@@ -344,13 +358,15 @@ function fn_get_ma513()
         xt_ret $? "fn_cp_tbl" || return $?
 
         # tag a tag, touch file the fisttime after $sec_1500
-        sec_1500=$(date +%s -d "15:00:00")
+        sec_1500=$(date +%s -d "${END} 15:00:00")
         sec_curr=$(date +%s)
         # ! must append with a whitespace
         if ! ([ "${END}" = "${CURR}" ] && [ "${sec_curr}" -lt "${sec_1500}" ]); then
-            mkdir -p /tmp/mx/
-            touch /tmp/mx/${tbl_ma_date}
+            mkdir -p /tmp/tov/
+            touch /tmp/tov/${tbl_ma_date}
         fi
+    else
+        SELECT tov ${@}
     fi
 }
 
@@ -611,18 +627,10 @@ function fn_ana_ma144()
     return 0
 }
 
-
 function fn_focus()
 {
-    local file=${YIST:-'.soptter.focus'}
-
-    test -f ${file}
-    xt_ret $? "${file} not exist" || return $?
-
-    up file_to_table ${file}
-    LIMIT=999 TBL=zxg fn_dugu9jian ${END} ${2:-wchng}
-
-    return $?
+    YIST=${YIST:-'.soptter.focus'} fn_txttbl
+    LIMIT=999 TBL=yist fn_dugu9jian ${1:-wchng}
 }
 
 function fn_auto_nmemb()
@@ -642,19 +650,6 @@ function fn_auto_nmemb()
     nmemb=${nmemb:-${nmemb0}}
     #echo ${nmemb}; exit
     return $?
-}
-
-function fn_tov5()
-{
-    # LIMIT 10 在换手剧增时比 LIMIT 5 更加敏感
-    # date<'$CLOSING' 不包括今日，转折日成交量都会大增，此举可提高灵敏度
-    sql="
-    SELECT round(sum(d.volume)/cap.shares/2, 3) as nmc_ratio FROM 
-       (SELECT * FROM day WHERE code=${code} and date<'$CLOSING' ORDER by date DESC LIMIT 10)
-       as d, cap WHERE d.code = cap.code INTO @irt;
-       SELECT IF(@irt<.2,@irt,.2);
-    " 
-    mysql -N kts<<<"${sql}"
 }
 
 function fn_fbi()
@@ -752,7 +747,7 @@ function fn_acc()
     fn_iscode ${code:=$1}
     xt_ret $? "invalid code[$1]" || return $?
 
-    irt=`fn_tov5 $code`
+    irt=`fn_turnov5 $code`
     cp ${mps_acc} ${mps_god}
 
     echo "
@@ -793,7 +788,7 @@ function fn_acf()
     xt_ret $? "invalid datetime[$DT]" || return $?
 
     DATE2=`fn_str_2_date ${DT}` 
-    irt=`CLOSING=${DATE2} fn_tov5 $code`
+    irt=`CLOSING=${DATE2} fn_turnov5 $code`
 
     echo "
     SET @DT='${DT}';
@@ -837,7 +832,7 @@ function fn_main()
     "fbi                  code                  # ZIZE=6 nmemb=1 NMC_RATIO=100%"
     "acc                  code                  # Acceleration"
     "acf                  code                  # Acceleration of fb"
-    "get_ma513                                  # /tmp/mx/"
+    "tov                  [field]               # /tmp/tov/"
     "ana_ma513            {1~9}                 # 分析ma 5 13 34 55"
     "ana_ma240                                  # 分析ma 34 60 120 240"
     "ana_ma144                                  # 分析ma144"

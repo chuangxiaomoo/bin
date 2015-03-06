@@ -1008,7 +1008,7 @@ CREATE PROCEDURE sp_get_ma513(a_code INT(6) ZEROFILL) tag_get_ma513:BEGIN
     SELECT count(*) FROM tempday INTO @v_len;
     SELECT close,volume FROM tempday WHERE id=1 INTO v_close,v_vol;
 
-    IF @v_len < 26 THEN LEAVE tag_get_ma513; END IF;
+    IF @v_len < 25 THEN LEAVE tag_get_ma513; END IF;
 
     -- ma 即有平均的意义，但vol没有
     SELECT SUM(amount)/SUM(volume), SUM(volume) FROM tempday WHERE id<=5 INTO v_ma5,  v_vol5;
