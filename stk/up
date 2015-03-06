@@ -221,7 +221,7 @@ function fn_file_to_table()
 
     if [ -f "${1}" ]; then
         [ -z "cat ${1}" ] && echo "Error: file ${$1} is null" && exit 1
-        lst=(`awk '/^[^#]/{print $1}' ${*} | sort -u`)
+        lst=(`awk '/^[036]/{print $1}' ${*} | sort -u`)
         file_fr="from $1"
     else
         lst=(${@})

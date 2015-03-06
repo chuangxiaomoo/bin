@@ -91,7 +91,7 @@ function fn_get_comma_cloumns()
     mysql kts -N<<<"DESCRIBE ${1:-day};" | awk '{printf "%s,", $1} END{printf "\n"}' | sed 's/,$//g'
 }
 
-function fn_get_rat_51325()
+function fn_rat()
 {
     # 0. Make sure U've done [up 4]?
     # 1. 自动处理生成 tbl_ma513
@@ -120,7 +120,7 @@ function fn_get_rat_51325()
     rat13="round(13*d.volume*${SCALE}/(ma.vol13),2)"
     rat25="round(25*d.volume*${SCALE}/(ma.vol25),2)"
 
-    ./SCREENER get_ma513 ${PREV}
+    TBL=${TBL:-cap} END=${PREV} ./SCREENER tov 
     xt_ret $? "${FUNCNAME}" || return $?
 
     tbl_day="(SELECT * FROM day WHERE date='${END}')"
@@ -135,7 +135,7 @@ function fn_get_rat_51325()
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
-function fn_get_ma513()
+function fn_tov()
 {
     # 1. Make sure U've done [SCREENER 2]?
     # 2. 使用单表tbl_ma513作差得到数据
@@ -148,9 +148,9 @@ function fn_get_ma513()
     round(100*vol5 /(c.nmc/c.close),2) as tov5, 
     round(100*vol13/(c.nmc/c.close),2) as tov13, 
     round(100*vol25/(c.nmc/c.close),2) as tov25, 
-    round(4*${SCALE}*vol/(vol5-vol),2) as rat4,
-    round(12*${SCALE}*vol/(vol13-vol),2) as rat12,
-    round(24*${SCALE}*vol/(vol25-vol),2) as rat24,
+    round(4*${SCALE}*vol/(vol5-vol),2)  as v1v4,
+    round(2*(vol5-vol)/(vol13-vol5),2)  as v4v8,
+    round((vol13-vol)/(vol25-vol13),2)  as vXvX,
     c.nmc, c.name
     FROM tbl_ma513 as t, cap as c WHERE t.code=c.code HAVING 1 ${COND}
     ORDER by ${1:-tov5} ${ASC:-DESC} LIMIT ${LIMIT:-24}
@@ -164,7 +164,7 @@ function fn_get_ma513()
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
-function fn_change()
+function fn_updown()
 {
     START=`./SELECT get_open_days ${1:-13} | head -1`
 
@@ -449,10 +449,10 @@ function fn_main()
     "6maishenjian       [sortfiled]          # #{DATE2} to specify diff-day"
     "get_comma_cloumns  [tbl_name:-day]      # 逗分列名"
     "get_open_days      [LIMIT:-13 [desc]]   # 开市日列表"
-    "get_rat_51325      [sortfiled:-ratio]   # day+PREV513.动态rat"
-    "get_ma513          [sortfiled:tov5]     # 均价+现成513.静态rat"
+    "tov                [sortfiled:tov5]     # 均价+现成513.静态rat"
+    "rat                [sortfiled:-ratio]   # day+PREV513.动态rat"
     # ----------------  ABOVE IS FIXED SEQUENCE --------------------
-    "change             [LIMIT:-13]          # 近期涨跌家数统计"
+    "updown             [LIMIT:-13]          # 近期涨跌家数统计"
     "td_layout          code                 # 日内最高价时点分布.10:00am"
     "ls                 {code|symbol}        # 日线数据 \$LIMIT"
     "name               code                 # 名"
