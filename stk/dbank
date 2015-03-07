@@ -1,8 +1,9 @@
 #! /bin/bash
 
 mod_fb=500
-filec='/tmp/filec'
-filewb='/tmp/filewb'
+filec='/tmp/.tmp.c'
+filewb='/tmp/.tmp.wb'
+file120='/tmp/.tmp.120'
 p_bin='/root/bin/stk/bin/'
 selecap="SELECT code FROM cap"
 helpmsg="
@@ -269,12 +270,6 @@ function fn_cp_tbl()
     " | mysql kts
 }
 
-function fn_reset_sqlsource() 
-{
-    # sed Q exclude the match line, sed q include that
-    sed '/THIS EXECUTE DELIMITER/q' ${mps_org} > ${mps_god}
-}
-
 echo "`date +%F.%T` ${BASH_SOURCE##*/}" >> /var/dbank.trace
 
 [ "${BASH_SOURCE##*/}" != "${0##*/}" ] && return 0
@@ -287,7 +282,7 @@ fn_rank_by_nmc()
 }
 
 
-function fn_yist()
+function fn_4yist()
 {
     # .yist.
     # 
@@ -321,6 +316,7 @@ function fn_yist()
     sql='SELECT code FROM cap ORDER by nmc DESC LIMIT 520,2400'
     mysql -N  kts <<< "${sql}" > .yist.lv4_24k
     
+    echo "up .yist files succ"
     return $?
 }
 
@@ -356,7 +352,7 @@ main()
     list=(
         fn_group_nmc_layout
         fn_rank_by_nmc
-        fn_yist
+        fn_4yist
     )        
 
     match_word=(`echo ${list[@]}| xargs -n1 | cat -n | grep  "\<$1\>"`)

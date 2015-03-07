@@ -312,29 +312,25 @@ function fn_bei()
     return $?
 }
 
-
-function fn_insert_codes_2_table()
-{
-    [ -z "${1}" ] && echo "Usage: insert tbl_name" && exit 1
-    echo "
-    INSERT INTO ${1}(code) SELECT code FROM ${tbl_ma_date} WHERE ${COND0};
-    " | mysql kts
-}
-
 function fn_tov()
 {
-    tbl_ma_date=tbl_tov_${END//-/_}
+    fn_mavol5B25 $@    
+}
 
-    if mysql kts<<<"SHOW TABLES" | grep -q ${tbl_ma_date}; then
-        # 表 ${tbl_ma_date} 存在，且是闭市后构建
-        # 表 tbl_ma513 是TBL的分析结果，供后续处理分析。
-        if [ -f /tmp/tov/${tbl_ma_date} ]; then
+function fn_mavol5B25()
+{
+    tbl_tov_date=tbl_tov_${END//-/_}
+
+    if mysql kts<<<"SHOW TABLES" | grep -q ${tbl_tov_date}; then
+        # 表 ${tbl_tov_date} 存在，且是闭市后构建
+        # 表 tbl_mavol5B25 是TBL的分析结果，供后续处理分析。
+        if [ -f /tmp/tov/${tbl_tov_date} ]; then
             if [ "cap" = "${TBL:-cap}" ]; then
-                fn_cp_tbl ${tbl_ma_date} tbl_ma513;
+                fn_cp_tbl ${tbl_tov_date} tbl_mavol5B25;
             else
                 echo "
-                DELETE from tbl_ma513;
-                INSERT INTO tbl_ma513 SELECT * FROM ${tbl_ma_date}
+                DELETE from tbl_mavol5B25;
+                INSERT INTO tbl_mavol5B25 SELECT * FROM ${tbl_tov_date}
                             WHERE code in (SELECT code FROM ${TBL});
                 " | mysql kts # | tee /dev/stderr
                 echo
@@ -348,13 +344,13 @@ function fn_tov()
 
     echo "
     SET @END='$END';
-    call sp_visit_tbl('${TBL:-cap}', @fn_get_ma513);
+    call sp_visit_tbl('${TBL:-cap}', @fn_mavol5B25);
     " | tee -a $mps_god
     mysql $mo -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
 
     if [ "${TBL:-cap}" = "cap" ] ; then
-        fn_cp_tbl tbl_ma513 ${tbl_ma_date}
+        fn_cp_tbl tbl_mavol5B25 ${tbl_tov_date}
         xt_ret $? "fn_cp_tbl" || return $?
 
         # tag a tag, touch file the fisttime after $sec_1500
@@ -363,269 +359,22 @@ function fn_tov()
         # ! must append with a whitespace
         if ! ([ "${END}" = "${CURR}" ] && [ "${sec_curr}" -lt "${sec_1500}" ]); then
             mkdir -p /tmp/tov/
-            touch /tmp/tov/${tbl_ma_date}
+            touch /tmp/tov/${tbl_tov_date}
         fi
     else
         SELECT tov ${@}
     fi
 }
 
-function fn_ma_ray()
+function fn_tov_usage()
 {
-    echo "build ${END}..."
-    fn_reset_sqlsource
-    fn_get_ma513
-    xt_ret $? "${FUNCNAME}" || return $?
-
-    mysql -N kts<<<"SELECT code FROM tbl_ma513 WHERE
-                    ma5>ma13 and ma13>ma34 ${COND}" | \
-        xargs -n4 | tee /dev/stderr | xargs up file_to_table
-    return
-}
-
-function fn_select_tbl_ma513()
-{
-    local sqls="(SELECT * FROM day WHERE date='${END}') as d"
-    local conds="m.code=d.code and ${COND1} ${COND}"
-
     echo "
-    SELECT m.code FROM tbl_ma513 as m, ${sqls} WHERE ${conds}
-    " | tee /dev/stderr | mysql -N kts > ${soptter_zxg}
-    xt_ret $? "${FUNCNAME}" || return $?
-
-    cat ${soptter_zxg} | xargs -n6 | tee /dev/stderr | TBL=zxg_ma513 xargs up file_to_table
-    xt_ret $? "cat ${soptter_zxg}" || return $?
-
-    [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
-
-    echo "
-    # cascading CHAO!
-    SELECT code FROM zxg_ma513 WHERE code in (SELECT code FROM chao)
-    " | tee /dev/stderr | mysql -N kts | tee $filec | \
-        xargs -n6 | tee /dev/stderr | TBL=zxg_chao513 xargs up file_to_table
+    1 可以配合分时线及上涨进行预测
+    2 采用双表联合查询来解决分析的困境
+    3 ana 的关键在于 cross & 收敛 & 放量上行
+    "
 }
 
-function fn_trd_cross_maX()
-{
-    echo "build ${PREV}..."
-    fn_reset_sqlsource
-    END=${PREV} fn_get_ma513
-    xt_ret $? "${FUNCNAME}" || return $?
-
-    fn_create_tbl_codes tbl_fr_ma_where_cond0
-    xt_ret $? "create tbl error" || return $?
-
-    COND0="${COND0}" fn_insert_codes_2_table tbl_fr_ma_where_cond0
-    xt_ret $? "insert codes table" || return $?
-
-    echo "build ${END}..."
-    fn_reset_sqlsource
-    TBL=tbl_fr_ma_where_cond0 fn_get_ma513
-    xt_ret $? "${FUNCNAME}" || return $?
-
-    fn_select_tbl_ma513
-    xt_ret $? "" || return $?
-}
-
-function fn_hop_cross_maX()
-{
-    fn_get_ma513
-    xt_ret $? "${FUNCNAME}" || return $?
-
-    fn_select_tbl_ma513
-    xt_ret $? "" || return $?
-}
-
-function fn_hop_cross_ma5()
-{
-    # ma5<ma13 --> 2次上穿ma5
-    # COND1="ma5<ma13 and d.yesc>ma5 and d.low<ma5 and d.close>ma5" fn_hop_cross_maX
-    # xt_ret $? "xx" || return $?
-    iEND=`STEP=1 fn_get_prev`
-    iPREV=`STEP=${STEP} END=${iEND} fn_get_prev`
-
-    PREV=${iPREV} END=${iEND} fn_trd_cross_ma5
-    xt_ret $? "${FUNCNAME}" || return $?
-
-    fn_cp_tbl zxg tbl_cross_ma5
-
-    TBL=tbl_cross_ma5 COND1="ma5<ma13 and d.low<ma5 and d.close>ma5" fn_hop_cross_maX
-
-    xt_ret $? "${FUNCNAME}" || return $?
-
-    echo "    2次上穿ma5分析over..."
-}
-
-function fn_trd_cross_ma5()
-{
-    COND0="close<ma5 and ma5<ma13" COND1="m.close>ma5" fn_trd_cross_maX
-    xt_ret $? "xx" || return $?
-}
-
-function fn_trd_cross_ma13()
-{
-    COND0="close<ma13" COND1="m.close>ma13" fn_trd_cross_maX
-    xt_ret $? "xx" || return $?
-}
-
-function fn_trd_cross_5_13()
-{
-    COND0="close<ma5 and close<ma13" COND1="m.close>ma5 and m.close>ma13" fn_trd_cross_maX
-    xt_ret $? "xx" || return $?
-}
-
-
-function fn_ma5_cross_ma13()
-{
-    COND0="ma5<ma13" COND1="ma5>ma13" fn_trd_cross_maX
-    xt_ret $? "xx" || return $?
-}
-
-function fn_hii_cross_ma5()
-{
-    COND0="close<ma5" COND1="d.high>ma5 and m.close<ma5" fn_trd_cross_maX
-    xt_ret $? "xx" || return $?
-}
-
-function fn_trd_rally_ma5() 
-{
-    read -p "
-    make sure you have done below points:
-    ./SCREENER ana_chao
-    type any key to continue."
-
-    echo "build ${PREV}..."
-    fn_reset_sqlsource
-    END=${PREV} fn_get_ma513
-    xt_ret $? "${FUNCNAME}" || return $?
-
-    # 昨未穿ma5，今上涨，今放大上涨上穿ma5
-    SCALE=1.3
-    COND1="m.close<m.ma5 and d.close>d.yesc"
-    COND1="${COND1} and (d.close+(d.close-d.yesc)*${SCALE})>m.ma5"
-    fn_select_tbl_ma513
-    xt_ret $? "" || return $?
-
-}
-
-function fn_ana_ma513()
-{
-    # 可以配合分时线及上涨进行预测
-    # 采用双表联合查询来解决分析的困境
-    # ana 的关键在于 cross & 收敛 & 放量上行
-
-    sqls="SELECT date FROM day WHERE code=900001 and date='$END'"
-    if ! mysql -N kts<<<"${sqls}" | grep -q ${END}; then
-        echo "Error: ${END} is not a open day!!!" && exit 1
-    fi
-    sqls="SELECT date FROM day WHERE code=900001 and date<='$END'"
-
-    # --------- 做分支 ---------------
-    cmdlist=(
-    "ma_ray             # ma5 > ma13 > ma34"
-    "trd_rally_ma5      #       上穿 ma5 predicting"
-    "trd_cross_ma5      # close 上穿 ma5"
-    "trd_cross_ma13     # close 上穿 ma13"
-    "trd_cross_5_13     # close 上穿 ma5 and ma13"
-    "hop_cross_ma5      # trd re上穿 ma5, STEP设置天数"
-    "ma5_cross_ma13     # ma5   上穿 ma13"
-    "hii_cross_ma5      # high  上穿 ma5, !close"
-    )
-    fn_execute "$@" || return $?
-}
-
-function fn_ana_chao()
-{
-    #
-    # 从`SCREENER 1`得到超跌股票，并写入表zxg。
-    # 再通过ma5进行过滤。
-    #
-    function fn_exe_usage()
-    {
-    echo "
-    Usage:
-    1. SCREENER 1 backward_14th_day #{PREV} # 得到超跌数据tbl_sink
-    2. .c                                   # 全能TBL=chao
-    3. SELECT   1                           # SELECT => TBL=chao xargs up 6
-
-    4. SCREENER 3 1                         # 上涨预测
-    " | sed 's/^  //g'
-    }
-
-    fn_exe_usage
-}
-
-function fn_ana_ma240()
-{
-    fn_get_ma513
-    xt_ret $? "${FUNCNAME}" || return $?
-
-    # 条件进行分类
-    # 且不要长得太多，已经过去的，要抓住现在
-
-    local sqls="SELECT s.code FROM tbl_ma513 as s, tbl_ma240 as l"
-    local conds=(                                           # 2014-04-14
-        's.code=l.code and'                                 # 关联code
-        '(l.high-l.low)/l.low<.23 and'                      # 年振幅45%，参照佛山照明、福建水泥
-        's.ma5>s.ma13 and (s.close-s.ma13)/s.ma13<.05 and'  # 345中线：ma5上穿ma13
-        '(s.close-l.low)/l.low<.05 and'                     # 345中线：ma5上穿ma13
-       #'s.ma13>l.ma34 and (s.ma13-l.ma34)/l.ma34<.05 and'  # 345长线：ma13上穿ma34
-        's.close>3'                                         # 价格无关，上海莱士，福建水泥
-    )
-        # abs(ma34-ma60)/ma34<.05 and abs(ma120-ma240)/ma120<.03
-
-    mysql -N kts<<<"${sqls} WHERE ${conds[@]}" |
-                xargs -n6 | tee /dev/stderr | xargs up file_to_table
-    xt_ret $? "${FUNCNAME}" || return $?
-
-    return 0
-}
-
-function fn_c144()
-{
-    fn_iscode $1 
-    xt_ret $? "" || { echo "Usage: 144 code... {END}" && exit; }
-
-    codes=(`xargs -n1 <<<"${*}" | sed 's/^0*//g' | xargs printf "%06d "`)
-
-    up file_to_table ${codes[@]}
-    END=${END} TBL=zxg up up_tbl_ma144_all
-
-    sqls="SELECT t.code,t.date,t.close,ma144,100*(t.close-ma144)/ma144 as rise, c.name "
-    sqls="${sqls} FROM tbl_ma144 as t, cap as c, zxg  WHERE t.code = c.code and t.code = zxg.code"
-    sqls="${sqls} ${HAVING} ORDER by ${ASC:-zxg.id}"
-    mysql -t kts<<<"${sqls}"
-    xt_ret $? "${FUNCNAME}" || return $?
-
-    return 0
-}
-
-function fn_ana_ma144()
-{
-    # 上海莱士，福建水泥
-    # 若开涨了，预估起点与终点 
-
-    local sqls="SELECT code FROM tbl_ma144 as m"
-    local conds=(
-        "m.close > ma13 and ma13>ma34*0.99 and "
-        "m.width < .2 and "                       # 窄幅振荡
-        "m.close > ma144*.9 and "                 # close接近ma144
-        "m.close < ma144*${RISED:-1.10}"          # +10%涨幅内
-    )
-
-    local codes=(`mysql -N kts<<<"${sqls} WHERE ${conds[@]}"`)
-    xt_ret $? "${FUNCNAME}" || return $?
-
-    up file_to_table ${codes[@]}
-    xt_ret $? "${FUNCNAME}" || return $?
-
-    codes=${codes[@]}
-    sqls="SELECT code,width FROM tbl_ma144 WHERE code in (${codes// /,}) ORDER by width ASC"
-    mysql -N kts<<<"${sqls}" | xargs -n8
-    xt_ret $? "${FUNCNAME}" || return $?
-
-    return 0
-}
 
 function fn_focus()
 {
@@ -808,6 +557,32 @@ function fn_acf()
     SELECT acf
 }
 
+function fn_ma5B25()
+{
+    if ! mysql kts<<<"SHOW TABLES" | grep -q 'tbl_ma240'; then
+        echo -e "\n    error: tbl_ma240 not exist\n"
+        exit 1
+    fi
+
+    echo "
+    SET @END='$END';
+    call sp_visit_tbl('${TBL:-cap}', @fn_ma5B25);
+    " | tee -a $mps_god
+    mysql $mo -t kts <<< "source $mps_god"
+}
+
+function fn_ma60x2x4()
+{
+    echo "
+    ${FUNCNAME} ...
+    "
+    echo "
+    SET @END='$END';
+    call sp_visit_tbl('${TBL:-cap}', @fn_ma60x2x4);
+    " | tee -a $mps_god
+    mysql $mo -t kts <<< "source $mps_god"
+}
+
 function fn_main()
 {
     # END 非空赋值不要移植到dbank 
@@ -824,7 +599,7 @@ function fn_main()
     "6maishenjian         [field]               # NUM=61 min(close) sort by #{COL}"
     "9jian                code [field]          # #{NUM}日，个股成本分析"
     "6jian                code [field]          # #{NUM}日，个股成本分析"
-    "c144                 code...               # cost:ma144 & sort by #{ASC:id}"
+    "nouse                [field]               # "
     "focus                [field]               # #{YIST:-.soptter.focus}->zxg and 9jian"
     "tao                  code [field]          # #{nmemb}"
     "tao5                 code                  # #{nmemb} #{ZIZE}"
@@ -832,11 +607,10 @@ function fn_main()
     "fbi                  code                  # ZIZE=6 nmemb=1 NMC_RATIO=100%"
     "acc                  code                  # Acceleration"
     "acf                  code                  # Acceleration of fb"
-    "tov                  [field]               # /tmp/tov/"
-    "ana_ma513            {1~9}                 # 分析ma 5 13 34 55"
-    "ana_ma240                                  # 分析ma 34 60 120 240"
-    "ana_ma144                                  # 分析ma144"
-    "ana_chao                                   # 分析超跌反弹"
+    "tov                  [field]               # mavol5B25's别名 其ma是wchng"
+    "tov_usage            {1~9}                 # 分析ma 5 13 34 55"
+    "ma5B25               [field]               # "
+    "ma60x2x4             [field]               # 5B25+60x2x4"
     )
 
     # SCREENER的宗旨，弃子取势

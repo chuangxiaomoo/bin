@@ -445,7 +445,7 @@
   SELECT t.*, 
   round(100*vol5/(c.nmc/c.close),2) as tov5, 
   round(100*vol13/(c.nmc/c.close),2) as tov13 
-  FROM tbl_ma513 as t, cap as c WHERE t.code=c.code 
+  FROM tbl_mavol5B25 as t, cap as c WHERE t.code=c.code 
   ORDER by tov13 DESC
   LIMIT 24;
   `
