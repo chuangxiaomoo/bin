@@ -78,9 +78,9 @@ function fn_lsd()
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
     #LIMIT=40 fn_sql
-    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > .soptter.chao 
+    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > $filec 
     xt_ret $? "mysql" || return $?
-    up file_to_table .soptter.chao
+    up file_to_table $filec
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -134,8 +134,8 @@ function fn_rat()
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
     fn_build_sqls
-    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > .soptter.chao 
-    TBL=chao up file_to_table .soptter.chao
+    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > $filec 
+    TBL=chao up file_to_table $filec
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -163,8 +163,8 @@ function fn_tov()
 
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
-    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > .soptter.chao 
-    TBL=chao up file_to_table .soptter.chao
+    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > $filec 
+    TBL=chao up file_to_table $filec
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -228,9 +228,9 @@ function fn_6maishenjian()
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
     fn_get_tbl_6jian_dive $1 > /dev/null
-    mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" > .soptter.chao 
+    mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" > $filec 
 
-    TBL=chao up file_to_table .soptter.chao
+    TBL=chao up file_to_table $filec
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -266,10 +266,10 @@ function fn_dugu9jian()
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
     fn_get_tbl_9jian_dive $1 > /dev/null
-    mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" > .soptter.chao 
+    mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" > $filec 
     xt_ret $? "" || return $?
 
-    TBL=chao up file_to_table .soptter.chao
+    TBL=chao up file_to_table $filec
     xt_ret $? "${FUNCNAME}" || return $?
 }
 

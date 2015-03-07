@@ -401,7 +401,7 @@ function fn_select_tbl_ma513()
     echo "
     # cascading CHAO!
     SELECT code FROM zxg_ma513 WHERE code in (SELECT code FROM chao)
-    " | tee /dev/stderr | mysql -N kts | tee .soptter.chao | \
+    " | tee /dev/stderr | mysql -N kts | tee $filec | \
         xargs -n6 | tee /dev/stderr | TBL=zxg_chao513 xargs up file_to_table
 }
 
