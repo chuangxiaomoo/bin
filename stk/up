@@ -207,8 +207,10 @@ function fn_file_to_table()
     # HEAD="\xa6\x00Q\xff\x01"
     # DELI="\x00}\xa9\x00\x91\xb9\x88R"
     TBL=${TBL:-zxg}
-    HEAD="\xa5\x00Q\xff"
-    DELI="\x00\x00\x00\x00"
+   #HEAD="\xa5\x00Q\xff"            # 不带时间
+   #DELI="\x00\x00\x00\x00"
+    HEAD="\xa6\x00\x51\xff\x01"     # 带时间排序功能
+    DELI="\x00\x20\x66\x01"
     sql_insert0=''
 
     echo "DROP TABLE IF EXISTS ${TBL};
@@ -221,7 +223,7 @@ function fn_file_to_table()
 
     if [ -f "${1}" ]; then
         [ -z "cat ${1}" ] && echo "Error: file ${$1} is null" && exit 1
-        lst=(`awk '/^[036]/{print $1}' ${*} | sort -u`)
+        lst=(`awk '/^[036]/{print $1}' ${*}`)
         file_fr="from $1"
     else
         lst=(${@})
@@ -238,6 +240,7 @@ function fn_file_to_table()
     {
     echo -n -e $HEAD
     local i=
+    local index=0
     for i in ${lst[@]}; do
         case $i in
         [67]*)
@@ -250,8 +253,11 @@ function fn_file_to_table()
             fn_echo_fail "    skip invalide code $i" > /dev/stderr && continue # 上面的数据库添加时没有做检查
             ;;
         esac
-        echo -n -e $DELI
+        TIME="${DELI}\x"$index"\x7c\xfa\x54"  # Byte1是秒数计时，可用于100个排序
+        echo -n -e $TIME
+        let index++
     done ;
+    echo
     } > ${f_zxg}
 
     echo "    add ${#lst[@]} code ${file_fr} to ${TBL} over."

@@ -100,36 +100,40 @@ function fn_rat()
     sqls="
     SELECT d.code,DATE_FORMAT(d.date,'%m-%d')as date,d.yesc,d.open,d.close,
         round(100*(d.close-d.yesc)/d.yesc,2) as rise, 
-        ${tov}  as tov, 
+        ${tov} as tov, 
         ${tov5} as tov5,
         ${tov13}as tov13,
-        ${rat5} as rat5, 
-        ${rat13} as rat13,
-        ${rat25} as rat25, 
-        c.name FROM tbl_ma513 as ma, ${tbl_day} as d, cap as c
+        ${v1v5} as v1v5, 
+        ${v5v8} as v5v8,
+        ${vBvX} as vBvX, 
+        c.name FROM tbl_ma513 as ma, 
+        ${tbl_day} as d, cap as c
         WHERE ma.code=d.code and ma.code=c.code HAVING 1 ${COND} ORDER by ${field} DESC limit ${LIMIT:-24}" 
     }
-    field=${1:-rat5}
+    field=${1:-v1v5}
     SCALE=`fn_get_ratio_close2open`
 
     # 以PREV为标，盘中只需要更新一次 tbl_ma513
-    tov=" round(100*(d.volume)/(c.nmc/c.close),2)"
+    tov="round(100*(d.volume)/(c.nmc/c.close),2)"
     tov5="round(100*(ma.vol5)/(c.nmc/c.close),2)"
     tov13="round(100*(ma.vol13)/(c.nmc/c.close),2)"
-    rat5="round(5*d.volume*${SCALE}/(ma.vol5),2)"       
-    rat13="round(13*d.volume*${SCALE}/(ma.vol13),2)"
-    rat25="round(25*d.volume*${SCALE}/(ma.vol25),2)"
+    tov25="round(100*(ma.vol25)/(c.nmc/c.close),2)"
+    v1v5="round(5*d.volume*${SCALE}/(ma.vol5),2)"       
+    v5v8="round(8*ma.vol5/(ma.vol13-ma.vol5)/5,2)"
+    vBvX="round(12*ma.vol13/(ma.vol25-ma.vol13)/12,2)"
 
     TBL=${TBL:-cap} END=${PREV} ./SCREENER tov 
     xt_ret $? "${FUNCNAME}" || return $?
 
-    tbl_day="(SELECT * FROM day WHERE date='${END}')"
+    fn_yist
+    tbl_day="(SELECT * FROM day WHERE date='${END}' ${inLIST})"
     fn_build_sqls
-    echo "$sqls" | tee /dev/stderr | mysql -t kts
+    echo "$sqls">/dev/stderr 
+    mysql -t kts<<<"$sqls"
 
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
-    field=rat13 fn_build_sqls
+    fn_build_sqls
     mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > .soptter.chao 
     TBL=chao up file_to_table .soptter.chao
     xt_ret $? "${FUNCNAME}" || return $?
