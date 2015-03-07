@@ -306,10 +306,10 @@ CREATE PROCEDURE sp_create_tempday() tag_tempday:BEGIN
    #)engine memory;
 END tag_tempday //
 
-DROP PROCEDURE IF EXISTS sp_create_ma513 //
-CREATE PROCEDURE sp_create_ma513() tag_ma513:BEGIN 
-    DROP TABLE IF EXISTS tbl_ma513; -- for visit output
-    CREATE TABLE tbl_ma513(
+DROP PROCEDURE IF EXISTS sp_create_tbl_mavol5B25 //
+CREATE PROCEDURE sp_create_tbl_mavol5B25() tag_mavol5B25:BEGIN 
+    DROP TABLE IF EXISTS tbl_mavol5B25; -- for visit output
+    CREATE TABLE tbl_mavol5B25(
         id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
         close       DECIMAL(6,2)  NOT NULL DEFAULT 0,
@@ -321,36 +321,19 @@ CREATE PROCEDURE sp_create_ma513() tag_ma513:BEGIN
         vol13       DECIMAL(12,2) NOT NULL DEFAULT 0,
         vol25       DECIMAL(12,2) NOT NULL DEFAULT 0
     );
-END tag_ma513 //
+END tag_mavol5B25 //
 
-DROP PROCEDURE IF EXISTS sp_create_ma144 //
-CREATE PROCEDURE sp_create_ma144() tag_ma144:BEGIN 
-    DROP TABLE IF EXISTS tbl_ma144; -- for visit output
-    CREATE TABLE tbl_ma144(
-        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
-        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
-        date        date NOT NULL,
-        low         DECIMAL(6,2) NOT NULL DEFAULT 0,
-        high        DECIMAL(6,2) NOT NULL DEFAULT 0,
-        width       DECIMAL(6,2) NOT NULL DEFAULT 0,
-        close       DECIMAL(6,2) NOT NULL DEFAULT 0,
-        ma13        DECIMAL(6,2) NOT NULL DEFAULT 0,
-        ma34        DECIMAL(6,2) NOT NULL DEFAULT 0,        
-        ma144       DECIMAL(6,2) NOT NULL DEFAULT 0 
-    );
-END tag_ma144 //
-
-DROP PROCEDURE IF EXISTS sp_create_ma240 //
-CREATE PROCEDURE sp_create_ma240() tag_ma240:BEGIN 
+DROP PROCEDURE IF EXISTS sp_create_tbl_ma240 //
+CREATE PROCEDURE sp_create_tbl_ma240() tag_ma240:BEGIN 
     DROP TABLE IF EXISTS tbl_ma240; -- for visit output
     CREATE TABLE tbl_ma240(
         id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
         date        date NOT NULL,
-        low         DECIMAL(6,2) NOT NULL DEFAULT 0,
-        high        DECIMAL(6,2) NOT NULL DEFAULT 0,
         close       DECIMAL(6,2) NOT NULL DEFAULT 0,
-        ma34        DECIMAL(6,2) NOT NULL DEFAULT 0,        
+        ma5         DECIMAL(6,2) NOT NULL DEFAULT 0,        
+        ma13        DECIMAL(6,2) NOT NULL DEFAULT 0,        
+        ma25        DECIMAL(6,2) NOT NULL DEFAULT 0,        
         ma60        DECIMAL(6,2) NOT NULL DEFAULT 0,
         ma120       DECIMAL(6,2) NOT NULL DEFAULT 0,
         ma240       DECIMAL(6,2) NOT NULL DEFAULT 0
@@ -498,27 +481,25 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
     PREPARE stmt from @sqls; EXECUTE stmt;
 
     -- prepare
-    IF a_type = @fn_get_ma513       THEN call sp_create_ma513();    END IF;
-    IF a_type = @fn_up_ma240_all    THEN call sp_create_ma240();    END IF;
-    IF a_type = @fn_dugu9jian       THEN call sp_create_tbl_9jian();END IF;
-    IF a_type = @fn_6maishenjian    THEN call sp_create_tbl_6mai(); END IF;
-    IF a_type = @fn_taox_ratio      THEN call sp_create_tbl_taox(); END IF;
-    IF a_type = @fn_fbi_ratio       THEN call sp_create_tbl_fbi();  END IF;
-    IF a_type = @fn_up_ma144_all    THEN call sp_create_ma144();    END IF;
+    IF a_type = @fn_mavol5B25       THEN call sp_create_tbl_mavol5B25();END IF;
+    IF a_type = @fn_ma60x2x4        THEN call sp_create_tbl_ma240();    END IF;
+    IF a_type = @fn_dugu9jian       THEN call sp_create_tbl_9jian();    END IF;
+    IF a_type = @fn_6maishenjian    THEN call sp_create_tbl_6mai();     END IF;
+    IF a_type = @fn_taox_ratio      THEN call sp_create_tbl_taox();     END IF;
+    IF a_type = @fn_fbi_ratio       THEN call sp_create_tbl_fbi();      END IF;
 
     -- visit all codes
     WHILE v_id <= v_len DO
         SELECT code FROM codes WHERE id=(v_id) INTO v_code;
         CASE a_type
-            WHEN @fn_flt_kdj_up        THEN call sp_flt_kdj_up(v_code);
-            WHEN @fn_dugu9jian         THEN call sp_dugu9jian(v_code);
-            WHEN @fn_get_ma513         THEN call sp_get_ma513(v_code);
-            WHEN @fn_up_ma240_all      THEN call sp_get_ma240(v_code);
-            WHEN @fn_up_ma240_34       THEN call sp_up_ma34(v_code);
-            WHEN @fn_6maishenjian      THEN call sp_6maishenjian(v_code);
-            WHEN @fn_taox_ratio        THEN call sp_taox(v_code);
-            WHEN @fn_fbi_ratio         THEN call sp_fbi(v_code);
-            WHEN @fn_up_ma144_all      THEN call sp_get_ma144(v_code);
+            WHEN @fn_flt_kdj_up     THEN call sp_flt_kdj_up(v_code);
+            WHEN @fn_dugu9jian      THEN call sp_dugu9jian(v_code);
+            WHEN @fn_mavol5B25      THEN call sp_mavol5B25(v_code);
+            WHEN @fn_ma60x2x4       THEN call sp_ma60x240(v_code);
+            WHEN @fn_ma5B25         THEN call sp_ma5B25(v_code);
+            WHEN @fn_6maishenjian   THEN call sp_6maishenjian(v_code);
+            WHEN @fn_taox_ratio     THEN call sp_taox(v_code);
+            WHEN @fn_fbi_ratio      THEN call sp_fbi(v_code);
             ELSE SELECT "no a_type match";
         END CASE;
 
@@ -987,8 +968,8 @@ CREATE PROCEDURE sp_6maishenjian(a_code INT(6) ZEROFILL) tag_6mai:BEGIN
     END WHILE lbl_upto_100;
 END tag_6mai //
 
-DROP PROCEDURE IF EXISTS sp_get_ma513//
-CREATE PROCEDURE sp_get_ma513(a_code INT(6) ZEROFILL) tag_get_ma513:BEGIN
+DROP PROCEDURE IF EXISTS sp_mavol5B25//
+CREATE PROCEDURE sp_mavol5B25(a_code INT(6) ZEROFILL) tag_mavol5B25:BEGIN
     DECLARE v_close    DECIMAL(6,2)  DEFAULT 0;
     DECLARE v_vol      DECIMAL(12,2) DEFAULT 0;
     DECLARE v_ma5      DECIMAL(6,2)  DEFAULT 0;
@@ -1008,124 +989,83 @@ CREATE PROCEDURE sp_get_ma513(a_code INT(6) ZEROFILL) tag_get_ma513:BEGIN
     SELECT count(*) FROM tempday INTO @v_len;
     SELECT close,volume FROM tempday WHERE id=1 INTO v_close,v_vol;
 
-    IF @v_len < 25 THEN LEAVE tag_get_ma513; END IF;
+    IF @v_len < 25 THEN LEAVE tag_mavol5B25; END IF;
 
     -- ma 即有平均的意义，但vol没有
     SELECT SUM(amount)/SUM(volume), SUM(volume) FROM tempday WHERE id<=5 INTO v_ma5,  v_vol5;
     SELECT SUM(amount)/SUM(volume), SUM(volume) FROM tempday WHERE id<14 INTO v_ma13, v_vol13;
     SELECT SUM(amount)/SUM(volume), SUM(volume) FROM tempday WHERE id<26 INTO v_ma25, v_vol25;
 
-    INSERT INTO tbl_ma513 (  code,   close,   ma5,   ma13,  ma25,   vol,   vol5,   vol13,  vol25)
-                    VALUES(a_code, v_close, v_ma5, v_ma13,v_ma25, v_vol, v_vol5, v_vol13,v_vol25);
-END tag_get_ma513 //
+    INSERT INTO tbl_mavol5B25(code,  close,   ma5,   ma13,  ma25,   vol,   vol5,   vol13,  vol25)
+                     VALUES(a_code,v_close, v_ma5, v_ma13,v_ma25, v_vol, v_vol5, v_vol13,v_vol25);
+END tag_mavol5B25 //
 
 -- 考虑使用ma34代替ma34
-DROP PROCEDURE IF EXISTS sp_up_ma34//
-CREATE PROCEDURE sp_up_ma34(a_code INT(6) ZEROFILL) tag_up_ma34:BEGIN
+DROP PROCEDURE IF EXISTS sp_ma5B25//
+CREATE PROCEDURE sp_ma5B25(a_code INT(6) ZEROFILL) tag_ma5B25:BEGIN
     DECLARE v_date     DATE;
-    DECLARE v_count    INT(6) DEFAULT 0;
     DECLARE v_close    DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_low      DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_high     DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_ma34     DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_ma5      DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_ma13     DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_ma25     DECIMAL(6,2) DEFAULT 0;
 
     call sp_create_tempday();
 
-    -- 240 cycle
-    SELECT date FROM day WHERE code=a_code and date<=@END ORDER by 
-           date DESC limit 240,1 INTO @START;
+    INSERT INTO tempday(code,date,close) 
+        SELECT code,date,close FROM day 
+            WHERE code=a_code and date<=@END ORDER by date DESC LIMIT 25;
 
-    INSERT INTO tempday(code,date,close) SELECT 
-           code,date,close FROM day WHERE code=a_code and date>=@START and date<=@END;
-
-    -- via high, induct is a long-cycle invaste one
     SELECT count(*)   FROM tempday INTO @v_len;
-    SELECT date,close FROM tempday WHERE id=@v_len INTO v_date,v_close;
+    SELECT date,close FROM tempday WHERE id=1 INTO v_date,v_close;
 
-    IF @v_len < 240 THEN LEAVE tag_up_ma34; END IF;
+    -- IF @v_len < 240 THEN LEAVE tag_ma60x240; END IF;
+    IF @v_len = 25 THEN 
+        SELECT SUM(close)/5    FROM tempday WHERE id<=5   INTO v_ma5  ;
+        SELECT SUM(close)/13   FROM tempday WHERE id<=13  INTO v_ma13 ;
+        SELECT SUM(close)/25   FROM tempday WHERE id<=25  INTO v_ma25 ;
+        UPDATE tbl_ma240 SET date=v_date,close=v_close,
+               ma5=v_ma5, ma13=v_ma13, ma25=v_ma25 WHERE code=a_code;
+    END IF;
+END tag_ma5B25 //
 
-    SELECT min(close),max(close) 
-                           FROM tempday WHERE id>(@v_len-@NUM) INTO v_low,v_high;
-    SELECT SUM(close)/34   FROM tempday WHERE id>(@v_len-34)    INTO v_ma34 ;
-
-    UPDATE tbl_ma240 SET date=v_date,close=v_close,
-                         ma34=v_ma34,low=v_low,high=v_high WHERE code = a_code;
-END tag_up_ma34 //
-
-DROP PROCEDURE IF EXISTS sp_get_ma240//
-CREATE PROCEDURE sp_get_ma240(a_code INT(6) ZEROFILL) tag_get_ma240:BEGIN
+DROP PROCEDURE IF EXISTS sp_ma60x240//
+CREATE PROCEDURE sp_ma60x240(a_code INT(6) ZEROFILL) tag_ma60x240:BEGIN
     DECLARE v_date     DATE;
-    DECLARE v_low      DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_high     DECIMAL(6,2) DEFAULT 0;
     DECLARE v_close    DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_ma34     DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_ma5      DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_ma13     DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_ma25     DECIMAL(6,2) DEFAULT 0;
     DECLARE v_ma60     DECIMAL(6,2) DEFAULT 0;
     DECLARE v_ma120    DECIMAL(6,2) DEFAULT 0;
     DECLARE v_ma240    DECIMAL(6,2) DEFAULT 0;
 
     call sp_create_tempday();
 
-    -- 240
-    SELECT date FROM day WHERE code=a_code and date<=@END ORDER by 
-           date DESC limit 240,1 INTO @START;
+    -- SELECT date FROM day 
+    --     WHERE code=a_code and date<=@END ORDER BY date DESC limit 240,1 INTO @START;
 
-    INSERT INTO tempday(code,date,close) SELECT 
-           code,date,close FROM day WHERE code=a_code and date>=@START and date<=@END;
+    INSERT INTO tempday(code,date,close) 
+        SELECT code,date,close FROM day 
+            WHERE code=a_code and date<=@END ORDER by date DESC LIMIT 240;
 
-    -- via high, induct is a long-cycle invaste one
     SELECT count(*)   FROM tempday INTO @v_len;
-    SELECT date,close FROM tempday WHERE id=@v_len INTO v_date,v_close;
+    SELECT date,close FROM tempday WHERE id=1 INTO v_date,v_close;
 
-    IF @v_len < 240 THEN LEAVE tag_get_ma240; END IF;
+    -- IF @v_len < 240 THEN LEAVE tag_ma60x240; END IF;
+    IF @v_len = 240 THEN 
+        SELECT SUM(close)/5    FROM tempday WHERE id<=5   INTO v_ma5  ;
+        SELECT SUM(close)/13   FROM tempday WHERE id<=13  INTO v_ma13 ;
+        SELECT SUM(close)/25   FROM tempday WHERE id<=25  INTO v_ma25 ;
+        SELECT SUM(close)/60   FROM tempday WHERE id<=60  INTO v_ma60 ;
+        SELECT SUM(close)/120  FROM tempday WHERE id<=120 INTO v_ma120;
+        SELECT SUM(close)/240  FROM tempday WHERE id<=240 INTO v_ma240;
+    END IF;
 
-    SELECT min(close),max(close)
-                           FROM tempday WHERE id>(@v_len-@NUM) INTO v_low,v_high;
-    SELECT SUM(close)/34   FROM tempday WHERE id>(@v_len-34)    INTO v_ma34 ;
-    SELECT SUM(close)/60   FROM tempday WHERE id>(@v_len-60)    INTO v_ma60 ;
-    SELECT SUM(close)/120  FROM tempday WHERE id>(@v_len-120)   INTO v_ma120;
-    SELECT SUM(close)/240  FROM tempday WHERE id>(@v_len-240)   INTO v_ma240;
+    -- SELECT v_ma60, v_ma120, v_ma240;
 
-    -- SELECT v_ma34, v_ma60, v_ma120, v_ma240;
-
-    INSERT INTO tbl_ma240 (code,     date,  low,  high,  close,  ma34,  ma60,   ma120,   ma240)
-                    VALUES(a_code, v_date,v_low,v_high,v_close,v_ma34,v_ma60, v_ma120, v_ma240);
-END tag_get_ma240 //
-
-DROP PROCEDURE IF EXISTS sp_get_ma144//
-CREATE PROCEDURE sp_get_ma144(a_code INT(6) ZEROFILL) tag_get_ma144:BEGIN
-    DECLARE v_date     DATE;
-    DECLARE v_low      DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_width    DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_high     DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_close    DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_ma13     DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_ma34     DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_ma144    DECIMAL(6,2) DEFAULT 0;
-
-    call sp_create_tempday();
-
-    SELECT date FROM day WHERE code=a_code and date<=@END ORDER by 
-           date DESC limit 144,1 INTO @START;
-
-    INSERT INTO tempday(code,date,close) SELECT 
-           code,date,close FROM day WHERE code=a_code and date>=@START and date<=@END;
-
-    -- via high, induct is a long-cycle invaste one
-    SELECT count(*)   FROM tempday INTO @v_len;
-    SELECT date,close FROM tempday WHERE id=@v_len INTO v_date,v_close;
-
-    IF @v_len < 144 THEN LEAVE tag_get_ma144; END IF;
-
-    SELECT min(close),max(close) 
-                           FROM tempday WHERE id>(@v_len-@NUM) INTO v_low,v_high;
-    SELECT SUM(close)/13   FROM tempday WHERE id>(@v_len-13)    INTO v_ma13 ;
-    SELECT SUM(close)/34   FROM tempday WHERE id>(@v_len-34)    INTO v_ma34 ;
-    SELECT SUM(close)/144  FROM tempday WHERE id>(@v_len-144)   INTO v_ma144;
-
-    SET v_width = 2*(v_high-v_low)/(v_high+v_low);      -- .2之内为比较好的值
-    INSERT INTO tbl_ma144 (code,     date,  low,  width,  high,  close,  ma13,  ma34,  ma144)
-                    VALUES(a_code, v_date,v_low,v_width,v_high,v_close,v_ma13,v_ma34,v_ma144);
-END tag_get_ma144 //
+    INSERT INTO tbl_ma240 (code,     date,  close,  ma5,  ma13,  ma25,  ma60,   ma120,   ma240)
+                    VALUES(a_code, v_date,v_close,v_ma5,v_ma13,v_ma25,v_ma60, v_ma120, v_ma240);
+END tag_ma60x240 //
 
 DROP PROCEDURE IF EXISTS sp_stat_linqi//
 CREATE PROCEDURE sp_stat_linqi() tag_stat_linqi:BEGIN
@@ -1188,10 +1128,9 @@ END tag_stat_linqi //
 -- 一些需要与shell通信的系统变量
 
     SET @fn_flt_kdj_up          = 1;   
-    SET @fn_get_ma513           = 5;
-    SET @fn_up_ma240_34         = 7;
-    SET @fn_up_ma144_all        = 8;
-    SET @fn_up_ma240_all        = 9;
+    SET @fn_mavol5B25           = 5;
+    SET @fn_ma5B25              = 7;
+    SET @fn_ma60x2x4            = 9;
     SET @fn_dugu9jian           = 10;
     SET @fn_6maishenjian        = 11;
     SET @fn_taox_ratio          = 12;
