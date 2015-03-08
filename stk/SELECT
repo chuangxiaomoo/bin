@@ -77,10 +77,8 @@ function fn_lsd()
 
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
-    #LIMIT=40 fn_sql
-    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > $filec 
-    xt_ret $? "mysql" || return $?
-    up file_to_table $filec
+    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > $file_c 
+    up file_to_table $file_c
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -133,9 +131,8 @@ function fn_rat()
 
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
-    fn_build_sqls
-    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > $filec 
-    TBL=chao up file_to_table $filec
+    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > $file_c 
+    up file_to_table $file_c
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -163,8 +160,8 @@ function fn_tov()
 
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
-    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > $filec 
-    TBL=chao up file_to_table $filec
+    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > $file_c 
+    up file_to_table $file_c
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -227,10 +224,8 @@ function fn_6maishenjian()
     
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
-    fn_get_tbl_6jian_dive $1 > /dev/null
-    mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" > $filec 
-
-    TBL=chao up file_to_table $filec
+    mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" > $file_c 
+    up file_to_table $file_c
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -265,11 +260,8 @@ function fn_dugu9jian()
     
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
-    fn_get_tbl_9jian_dive $1 > /dev/null
-    mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" > $filec 
-    xt_ret $? "" || return $?
-
-    TBL=chao up file_to_table $filec
+    mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" > $file_c 
+    up file_to_table $file_c
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -441,12 +433,12 @@ function fn_td_layout()
     return $?
 }
 
-function fn_ma120()
+function fn_dif120()
 {
     if [ -z "${YIST}" ]; then
         fn_iscode $1 
         xt_ret $? "" || { echo "Usage: 120 code... {END}" && exit; }
-        YIST=${file120}
+        YIST=${file_ma120}
         xargs -n1 <<<"${*}" | sed 's/^0*//g' | xargs printf "%06d\n" > ${YIST}
     fi
 
@@ -459,13 +451,53 @@ function fn_ma120()
     SELECT d.code,d.date,d.close,ma120,100*(d.close-ma120)/ma120 as rise, c.name 
         ${sqls} FROM ${tbl_day} as d, 
         tbl_ma240 as t, 
-        cap as c 
-        WHERE t.code=d.code and t.code=c.code HAVING 1 ${inLIST}
+        cap as c WHERE t.code=d.code and t.code=c.code 
+        HAVING 1 ${inLIST} ORDER by rise ASC
     "
     mysql -t kts<<<"${sqls}"
     xt_ret $? "${FUNCNAME}" || return $?
 
     return 0
+}
+
+function fn_ma240_usage()
+{
+    echo "
+    1 可以配合分时线及上涨进行预测
+    2 采用双表联合查询来解决分析的困境
+    3 ana 的关键在于 cross & 收敛 & 放量上行
+    "
+}
+
+function fn_ma240()
+{
+    # 0. Make sure U've done [SCREENER ma240]?
+    columns=code,date,close,ma5,ma13,ma25,ma60,ma120,ma240
+    columns=ma.${columns//,/,ma.}
+    function fn_build_sqls() {
+    sqls="
+    SELECT ${columns},
+        ${x_short} as x_short, 
+        ${x_long} as x_long,
+        c.name FROM tbl_ma240 as ma, cap as c
+        WHERE ma.code=c.code HAVING 1 ${COND} ${inLIST} ORDER by ${1:-x_short} ASC limit ${LIMIT:-24}" 
+    }
+
+    # .0001 使得新股 x_short x_long 都为 2.000
+    x_short="round(abs((ma5-ma13)/(ma13)) + abs((ma25-ma13)/(ma13)), 3)"
+    x_long="round(abs((ma60-ma120)/(ma120)) +abs((ma240-ma120)/(ma120)), 3)"
+
+    fn_yist
+    fn_build_sqls $1
+    echo ----- LIST:${#LIST[@]} COND@${END}: $COND -----
+    echo "$sqls">/dev/stderr 
+    mysql -t kts<<<"$sqls"
+
+    [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
+
+    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > $file_ma240
+    up file_to_table $file_ma240
+    xt_ret $? "${FUNCNAME}" || return $?
 }
 
 function fn_main()
@@ -476,26 +508,28 @@ function fn_main()
     PREV=`fn_get_prev`
 
     cmdlist=(
-    "dugu9jian          [sortfiled]          # nine sword"
-    "6maishenjian       [sortfiled]          # #{DATE2} to specify diff-day"
-    "get_comma_cloumns  [tbl_name:-day]      # 逗分列名"
-    "get_open_days      [LIMIT:-13 [desc]]   # 开市日列表"
-    "tov                [sortfiled:tov5]     # 均价+现成513.静态rat"
-    "rat                [sortfiled:-ratio]   # day+PREV513.动态rat"
-    "ma120              code...              # cost:ma120 & sort by #{ASC:id}"
+    "dugu9jian          [sortfiled]           # nine sword"
+    "6maishenjian       [sortfiled]           # #{DATE2} to specify diff-day"
+    "get_comma_cloumns  [tbl_name:-day]       # 逗分列名"
+    "get_open_days      [LIMIT:-13 [desc]]    # 开市日列表"
+    "tov                [sortfiled:tov5]      # 均价+现成513.静态rat"
+    "rat                [sortfiled:-ratio]    # day+PREV513.动态rat"
+    "ma240              [sortfiled:-ratio]    # "
+    "ma240_usage        {1~9}                 # 分析ma 5 13 34 55"
+    "dif120             code...               # cost:(close-ma120) & sort by #{ASC:id}"
     # ----------------  ABOVE IS FIXED SEQUENCE --------------------
-    "updown             [LIMIT:-13]          # 近期涨跌家数统计"
-    "td_layout          code                 # 日内最高价时点分布.10:00am"
-    "ls                 {code|symbol}        # 日线数据 \$LIMIT"
-    "name               code                 # 名"
-    "vol                {0|3|6|03}           # ^^3市成交^^"
-    "lsd                [sortfiled:-rise]    # --- END YIST LIMIT 涨幅排名"
-    "pma                code                 # NUM=5日平均"
-    "fbi                                     # tbl_fbi"
-    "acc                                     # tbl_adiff"
-    "acf                                     # tbl_acfdiff"
-    "tao5                                    # "
-    "rdiff                                   # tbl_rdiff"
+    "updown             [LIMIT:-13]           # 近期涨跌家数统计"
+    "td_layout          code                  # 日内最高价时点分布.10:00am"
+    "ls                 {code|symbol}         # 日线数据 \$LIMIT"
+    "name               code                  # 名"
+    "vol                {0|3|6|03}            # ^^3市成交^^"
+    "lsd                [sortfiled:-rise]     # --- END YIST LIMIT 涨幅排名"
+    "pma                code                  # NUM=5日平均"
+    "fbi                                      # tbl_fbi"
+    "acc                                      # tbl_adiff"
+    "acf                                      # tbl_acfdiff"
+    "tao5                                     # "
+    "rdiff                                    # tbl_rdiff"
     )
 
     # `ASC=任意值`时使用'DESC'，弃用

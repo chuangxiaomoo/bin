@@ -331,12 +331,12 @@ CREATE PROCEDURE sp_create_tbl_ma240() tag_ma240:BEGIN
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
         date        date NOT NULL,
         close       DECIMAL(6,2) NOT NULL DEFAULT 0,
-        ma5         DECIMAL(6,2) NOT NULL DEFAULT 0,        
-        ma13        DECIMAL(6,2) NOT NULL DEFAULT 0,        
-        ma25        DECIMAL(6,2) NOT NULL DEFAULT 0,        
-        ma60        DECIMAL(6,2) NOT NULL DEFAULT 0,
-        ma120       DECIMAL(6,2) NOT NULL DEFAULT 0,
-        ma240       DECIMAL(6,2) NOT NULL DEFAULT 0
+        ma5         DECIMAL(6,3) NOT NULL DEFAULT 0,        
+        ma13        DECIMAL(6,3) NOT NULL DEFAULT 0,        
+        ma25        DECIMAL(6,3) NOT NULL DEFAULT 0,        
+        ma60        DECIMAL(6,3) NOT NULL DEFAULT 0,
+        ma120       DECIMAL(6,3) NOT NULL DEFAULT 0,
+        ma240       DECIMAL(6,3) NOT NULL DEFAULT 0
     );
 END tag_ma240 //
 
@@ -1032,12 +1032,12 @@ DROP PROCEDURE IF EXISTS sp_ma60x240//
 CREATE PROCEDURE sp_ma60x240(a_code INT(6) ZEROFILL) tag_ma60x240:BEGIN
     DECLARE v_date     DATE;
     DECLARE v_close    DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_ma5      DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_ma13     DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_ma25     DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_ma60     DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_ma120    DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_ma240    DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_ma5      DECIMAL(6,3) DEFAULT 0;
+    DECLARE v_ma13     DECIMAL(6,3) DEFAULT 0.001;
+    DECLARE v_ma25     DECIMAL(6,3) DEFAULT 0;
+    DECLARE v_ma60     DECIMAL(6,3) DEFAULT 0;
+    DECLARE v_ma120    DECIMAL(6,3) DEFAULT 0.001;
+    DECLARE v_ma240    DECIMAL(6,3) DEFAULT 0;
 
     call sp_create_tempday();
 
@@ -1052,10 +1052,13 @@ CREATE PROCEDURE sp_ma60x240(a_code INT(6) ZEROFILL) tag_ma60x240:BEGIN
     SELECT date,close FROM tempday WHERE id=1 INTO v_date,v_close;
 
     -- IF @v_len < 240 THEN LEAVE tag_ma60x240; END IF;
-    IF @v_len = 240 THEN 
+    IF @v_len >= 25 THEN 
         SELECT SUM(close)/5    FROM tempday WHERE id<=5   INTO v_ma5  ;
         SELECT SUM(close)/13   FROM tempday WHERE id<=13  INTO v_ma13 ;
         SELECT SUM(close)/25   FROM tempday WHERE id<=25  INTO v_ma25 ;
+    END IF;
+
+    IF @v_len = 240 THEN 
         SELECT SUM(close)/60   FROM tempday WHERE id<=60  INTO v_ma60 ;
         SELECT SUM(close)/120  FROM tempday WHERE id<=120 INTO v_ma120;
         SELECT SUM(close)/240  FROM tempday WHERE id<=240 INTO v_ma240;

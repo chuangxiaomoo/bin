@@ -1,9 +1,10 @@
 #! /bin/bash
 
 mod_fb=500
-filec='/tmp/.tmp.c'
-filewb='/tmp/.tmp.wb'
-file120='/tmp/.tmp.120'
+file_c='/tmp/.tmp.c'
+file_wb='/tmp/.tmp.wb'
+file_ma120='/tmp/.tmp.ma120'
+file_ma240='/tmp/.tmp.ma240'
 p_bin='/root/bin/stk/bin/'
 selecap="SELECT code FROM cap"
 helpmsg="

@@ -14,7 +14,7 @@
 
 function fn_dugu9jian()
 {
-    if [ "${TBL}" = windbell_codes ] && [ "`cat ${filewb}`" != ${CURR} ]; then
+    if [ "${TBL}" = windbell_codes ] && [ "`cat ${file_wb}`" != ${CURR} ]; then
         echo "windbell_codes is out of day. continue to run [./up 22]"
         exit 1
     fi
@@ -366,16 +366,6 @@ function fn_mavol5B25()
     fi
 }
 
-function fn_tov_usage()
-{
-    echo "
-    1 可以配合分时线及上涨进行预测
-    2 采用双表联合查询来解决分析的困境
-    3 ana 的关键在于 cross & 收敛 & 放量上行
-    "
-}
-
-
 function fn_focus()
 {
     YIST=${YIST:-'.soptter.focus'} fn_txttbl
@@ -571,12 +561,16 @@ function fn_ma5B25()
     mysql $mo -t kts <<< "source $mps_god"
 }
 
+function fn_ma240()
+{
+    fn_ma60x2x4 $@
+}
+
 function fn_ma60x2x4()
 {
+    fn_txttbl
     echo "
-    ${FUNCNAME} ...
-    "
-    echo "
+    --  ${FUNCNAME} ...
     SET @END='$END';
     call sp_visit_tbl('${TBL:-cap}', @fn_ma60x2x4);
     " | tee -a $mps_god
@@ -595,22 +589,21 @@ function fn_main()
     xt_ret $? "invalid END[$2]" || return $?
 
     cmdlist=(
-    "dugu9jian            [field]               # NUM=61 .NMC end.close analyze"
-    "6maishenjian         [field]               # NUM=61 min(close) sort by #{COL}"
-    "9jian                code [field]          # #{NUM}日，个股成本分析"
-    "6jian                code [field]          # #{NUM}日，个股成本分析"
-    "nouse                [field]               # "
-    "focus                [field]               # #{YIST:-.soptter.focus}->zxg and 9jian"
-    "tao                  code [field]          # #{nmemb}"
-    "tao5                 code                  # #{nmemb} #{ZIZE}"
-    "bei                  {code...|file}        # #{nmemb} #{ZIZE}"
-    "fbi                  code                  # ZIZE=6 nmemb=1 NMC_RATIO=100%"
-    "acc                  code                  # Acceleration"
-    "acf                  code                  # Acceleration of fb"
-    "tov                  [field]               # mavol5B25's别名 其ma是wchng"
-    "tov_usage            {1~9}                 # 分析ma 5 13 34 55"
-    "ma5B25               [field]               # "
-    "ma60x2x4             [field]               # 5B25+60x2x4"
+    "dugu9jian          [field]               # NUM=61 .NMC end.close analyze"
+    "6maishenjian       [field]               # NUM=61 min(close) sort by #{COL}"
+    "9jian              code [field]          # #{NUM}日，个股成本分析"
+    "6jian              code [field]          # #{NUM}日，个股成本分析"
+    "nouse              [field]               # "
+    "focus              [field]               # #{YIST:-.soptter.focus}->zxg and 9jian"
+    "tao                code [field]          # #{nmemb}"
+    "tao5               code                  # #{nmemb} #{ZIZE}"
+    "bei                {code...|file}        # #{nmemb} #{ZIZE}"
+    "fbi                code                  # ZIZE=6 nmemb=1 NMC_RATIO=100%"
+    "acc                code                  # Acceleration"
+    "acf                code                  # Acceleration of fb"
+    "tov                [field]               # mavol5B25's别名 其ma是wchng"
+    "ma5B25             [field]               # "
+    "ma240              [field]               # 5B25+60x2x4"
     )
 
     # SCREENER的宗旨，弃子取势
