@@ -129,16 +129,25 @@ function fn_detail()
     columns='y.date,y.code,round(c.close/EPS,2) as PE'
     columns=${columns}',round(c.close/EPS/p_grw_y,2) as PEG'
     columns=${columns}',revenue,r_grw_y,profit,p_grw_y,netassets,RoE'
-    field=${1:-y.date}
     CURR=`fn_maxdate`
     
-    SELECT name ${CODE}
-
+    # SELECT name ${CODE}
     # 保持每日cap的更新
+    if [ -z "${YIST}" ]; then
+        fn_iscode $1 
+        xt_ret $? "" || { echo "Usage: 120 code... {END}" && exit; }
+        YIST=${file_ma120}
+        xargs -n1 <<<"${*}" | sed 's/^0*//g' | xargs printf "%06d\n" > ${YIST}
+    fi
+
+    fn_yist 
+    echo ----- LIST:${#LIST[@]} COND@${END}: $COND -----
+
     echo "
-    SELECT $columns  FROM tbl_yjbb as y, cap as c
-        WHERE y.code=c.code and y.code=${CODE}
-        ORDER by ${field} ${ASC:-DESC} limit ${LIMIT:-48};
+    SELECT $columns, c.nmc, c.name FROM tbl_yjbb as y, cap as c
+        WHERE y.code=c.code 
+        HAVING 1 ${COND} ${inLIST} 
+        ORDER by ${field:-code} ${ASC:-DESC} limit ${LIMIT:-48};
     " | mysql -t kts
     
     return $?
@@ -160,9 +169,7 @@ function fn_main()
         fn_online "${@:2}"
         ;;
     2|detail)
-        fn_iscode $2
-        xt_ret $? "" || fn_main
-        CODE=${2} fn_detail
+        fn_detail "${@:2}"
         ;;
     3|dl_all)
         fn_dl_all "${@:2}"
@@ -183,7 +190,7 @@ function fn_main()
     *)
         echo "Usage: 
         yjbb {1|online}     code    
-        yjbb {2|detail}     code    
+        yjbb {2|detail}     code...
         yjbb {3|dl_all}     20yymm  
         yjbb {4|load}       file
         yjbb {5|soptter}

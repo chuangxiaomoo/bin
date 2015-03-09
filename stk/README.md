@@ -49,7 +49,7 @@
 ## 心战           .doc/psy.md
 ## 张小龙         .doc/zhangxiaolong.md
 ## 总结2020       .doc/2013.md
-## 笛卡尔实践     .doc/up_down_logic.md
+## 笛卡尔实践     .doc/Descartes.md
 ## 目标&策略&纪律 .doc/discipline.md
 
 ## 战争           .doc/war.md
