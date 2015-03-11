@@ -373,11 +373,12 @@ function fn_acf() { tablex=tbl_acfdiff fn_fbi; }
 
 function fn_vol()
 {
+    fn_yist
     get_vol() 
     {
     echo "
     SELECT date, sum(volume), sum(amount), sum(amount)/sum(volume) as trade 
-        FROM day WHERE date<='${END}' ${COND}
+        FROM day WHERE date<='${END}' ${COND} ${inLIST}
         GROUP by date 
         ORDER by date DESC
         LIMIT ${LIMIT:-13};
