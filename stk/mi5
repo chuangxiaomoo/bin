@@ -84,10 +84,10 @@ function fn_do_scope()
          WHERE code=${code} and date<'${fmindate}' ORDER by date DESC LIMIT ${PREV})
          as tbl ORDER by date ASC"
     elif [ "${datetime}" = NULL ]; then
+        # acf默认以tov5/20为单位进行同环比计算，若无tov巨变，NUM=10可矣
         sql="
         SELECT date FROM (SELECT date FROM day 
-         WHERE code=${code} ORDER by date DESC LIMIT ${NUM:-34})
-         as tbl ORDER by date ASC"
+        WHERE code=${code} ORDER by date DESC LIMIT ${NUM:-25}) as tbl ORDER by date ASC"
     else
         [ `date +%H%M%S` -gt 153000 ] && equal='='
         sql="SELECT date FROM day WHERE code=${code} and date>'${fmaxdate}' and date<${equal}'${today}';"
