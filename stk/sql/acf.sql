@@ -138,6 +138,7 @@ CREATE PROCEDURE sp_acf(a_code INT(6) ZEROFILL) tag_acf:BEGIN
     END IF;
 
   lbl_upto_parts: WHILE v_part <= (@PARTS+@PPLUS) DO
+    -- 可能遇到极端情况如破板：v_volume数倍于v_vol_unit
     SET v_got_next = 0;
     SELECT datetime,trade,volume,amount FROM tempfb WHERE id=(v_id)
             INTO v_datetime,v_close,v_volume,v_amount;

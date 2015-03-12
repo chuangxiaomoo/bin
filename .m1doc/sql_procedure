@@ -74,6 +74,8 @@
             statements
         UNTIL expression END REPEAT [label] ;
 
+    4.  leave iterate
+
 . 用户变量
 
     可以先在用户变量中保存值然后在以后引用它；当前连接会话有效。用户变量名一般以
