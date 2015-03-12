@@ -935,8 +935,8 @@ CREATE PROCEDURE sp_6maishenjian(a_code INT(6) ZEROFILL) tag_6mai:BEGIN
     SELECT count(*) FROM tempday INTO @v_len;
     SELECT date     FROM tempday WHERE id=1 INTO v_datemax;
 
-    -- 21日内最低价日
-    SELECT id,date,close,low FROM tempday WHERE id<=21 order by low asc LIMIT 1 
+    -- 5周内最低价日
+    SELECT id,date,close,low FROM tempday WHERE id<=25 order by low asc LIMIT 1 
                                  INTO v_id,v_date2,v_close,v_low;
 
     -- 过滤停牌很久的个股? 只9jian才过滤

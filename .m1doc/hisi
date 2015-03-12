@@ -1,5 +1,9 @@
 # hisi
 
+# kernel
+  cp    arch/arm/configs/hi3520d_full_defconfig .config 
+  make  -j8 ARCH=arm CROSS_COMPILE=arm-hisiv200-linux- uImage
+
 # nvr
 
   regsvr32 JAVOleDev.ocx
