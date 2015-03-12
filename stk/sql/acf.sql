@@ -222,11 +222,11 @@ CREATE PROCEDURE sp_acf(a_code INT(6) ZEROFILL) tag_acf:BEGIN
   END WHILE lbl_upto_parts;
 
     INSERT INTO tbl_acfdiff(
-               code,datetime_p,datetime_c,off_p,off_c,tnov_p,tnov_c,avrg_p,avrg_c,ratio,wchng,cdiff,rdiff,dbrat)
+               code,datetime_p,datetime_c,off_p,off_c,tnov_p,tnov_c,avrg_p,avrg_c,ratio,wchng,cdiff,rdiff,dbrat,close)
         SELECT A.code,A.datetime_p,A.datetime_c,A.off_p,A.off_c,A.tnov_p,A.tnov_c,A.avrg_p,A.avrg_c,A.ratio,A.wchng,
             (A.avrg_c-B.avrg_c) as cdiff,
             (A.ratio-B.ratio) as rdiff, 
-            100*(2*A.close-(A.avrg_p+A.avrg_c))/(A.avrg_p+A.avrg_c) as dbrat FROM tbl_acf A 
+            100*(2*A.close-(A.avrg_p+A.avrg_c))/(A.avrg_p+A.avrg_c) as dbrat,A.close FROM tbl_acf A 
         INNER JOIN tbl_acf B on(A.id<B.id) GROUP BY A.id;
 
 END tag_acf //

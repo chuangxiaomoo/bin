@@ -1,6 +1,6 @@
 # samba
 
-# XP不删除samba的user & passwd
+# XP下删除samba的user & passwd
 
   (1) net use * /d /y
   (2) if you want to change a user
