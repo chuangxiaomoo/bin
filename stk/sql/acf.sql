@@ -57,6 +57,7 @@ CREATE PROCEDURE sp_acf(a_code INT(6) ZEROFILL) tag_acf:BEGIN
     -- acf
     DECLARE v_id        INT DEFAULT 1; 
     DECLARE v_num_unit  INT DEFAULT 0; 
+    DECLARE v_id_jumped INT DEFAULT 0; 
     DECLARE v_nextid    INT DEFAULT 1; 
     DECLARE v_got_next  INT DEFAULT 1; 
     DECLARE v_part      INT DEFAULT 1; 
@@ -143,12 +144,14 @@ CREATE PROCEDURE sp_acf(a_code INT(6) ZEROFILL) tag_acf:BEGIN
   lbl_upto_parts: WHILE v_part <= (@PARTS+@PPLUS) DO
     -- 可能遇到极端情况如破板：v_volume数倍于v_vol_unit
     SET v_got_next = 0;
+    SET v_id_jumped= 1;
     SELECT datetime,trade,volume,amount FROM tempfb WHERE id=(v_id)
             INTO v_datetime,v_close,v_volume,v_amount;
 
     -- SELECT v_id,v_datetime,v_volume,v_vol_unit,v_amount;
 
     IF v_volume > v_vol_unit THEN                               -- 大换手数据
+        SET v_id_jumped= 0;
         SET v_got_next = 1;                                     -- 控制v_id保持不变
         SET v_avrg0 = (v_amount/v_volume);
         SET v_volume = v_volume - (v_vol_unit * v_num_unit);
@@ -193,9 +196,14 @@ CREATE PROCEDURE sp_acf(a_code INT(6) ZEROFILL) tag_acf:BEGIN
                 SET v_datetime_c= v_datetime;
                 SET v_wchng     = 100 * (v_close-v_avrg_c)/v_avrg_c;
 
-                SET v_endvolume = v_vol_more;                   -- 只取第一个周期的余量
-                SET v_endamount = v_amt_more;
-                --  SELECT v_datetime_c, v_vol_unit, v_volume, v_endvolume;
+                IF v_id_jumped = 1 THEN
+                    SET v_endvolume = v_vol_more;               -- 跳了ID，将余量叠加到下个周期
+                    SET v_endamount = v_amt_more;
+                    --  SELECT v_datetime_c, v_vol_unit, v_volume, v_endvolume;
+                ELSE
+                    SET v_endvolume = 0;
+                    SET v_endamount = 0;
+                END IF;
             ELSE
                 SELECT datetime FROM tempfb WHERE id=(v_off_c+1) INTO v_datetime;
                 SET @v_got_100 = 2;
@@ -221,6 +229,7 @@ CREATE PROCEDURE sp_acf(a_code INT(6) ZEROFILL) tag_acf:BEGIN
         IF  v_got_next = 0 AND v_sumvolume >= v_vol_unit THEN 
             SET v_nextid = v_id+1;                              -- 得到next环比unit起始ID
             SET v_got_next = 1;
+            SET v_id_jumped= 1;
         END IF;
 
     END WHILE lbl_upto_100;
