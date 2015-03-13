@@ -354,8 +354,8 @@ function fn_name()
 
 function fn_fbi()
 {
-    # code,datetime_p,datetime_c,
-    columns='off_p,off_c,tnov_c,close,avrg_p,avrg_c,ratio,cdiff,rdiff,wchng,dbrat'
+    # code,datetime_p,datetime_c,dbrat
+    columns='off_p,off_c,tnov_c,close,avrg_p,avrg_c,ratio,cdiff,rdiff,wchng'
 
     fn_name `mysql -N kts <<<"SELECT code FROM ${tablex:-tbl_fdiff} LIMIT 1"`
     echo "
@@ -364,7 +364,7 @@ function fn_fbi()
         TRUNCATE(datetime_p%(1000000000000)/1000000,4) as dt_p,
         -- datetime_c, 
         TRUNCATE(datetime_c%(1000000000000)/1000000,4) as dt_c,
-        ${columns} FROM ${tablex:-tbl_fdiff} 
+        ${columns}, (cdiff+rdiff+wchng) as fire FROM ${tablex:-tbl_fdiff} 
     " | mysql -t kts
 }
 
