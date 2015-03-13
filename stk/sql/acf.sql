@@ -88,6 +88,9 @@ CREATE PROCEDURE sp_acf(a_code INT(6) ZEROFILL) tag_acf:BEGIN
     DECLARE v_sumvolume DECIMAL(12,2) DEFAULT 0;
     DECLARE v_sumamount DECIMAL(12,2) DEFAULT 0;
 
+    DECLARE v_endvolume DECIMAL(12,2) DEFAULT 0;
+    DECLARE v_endamount DECIMAL(12,2) DEFAULT 0;
+
     DECLARE v_vol_more  DECIMAL(12,2) DEFAULT 0;
     DECLARE v_amt_more  DECIMAL(12,2) DEFAULT 0;
 
@@ -145,13 +148,13 @@ CREATE PROCEDURE sp_acf(a_code INT(6) ZEROFILL) tag_acf:BEGIN
 
     -- SELECT v_id,v_datetime,v_volume,v_vol_unit,v_amount;
 
-    IF v_volume > v_vol_unit THEN  -- 大换手数据
-        SET v_got_next = 1;
+    IF v_volume > v_vol_unit THEN                               -- 大换手数据
+        SET v_got_next = 1;                                     -- 控制v_id保持不变
         SET v_avrg0 = (v_amount/v_volume);
         SET v_volume = v_volume - (v_vol_unit * v_num_unit);
         SET v_amount = v_avrg0*v_volume;
         -- SELECT "IN branch", v_volume,v_amount,v_num_unit;
-        IF v_volume <= v_vol_unit THEN                            -- 最后一部分
+        IF v_volume <= v_vol_unit THEN                          -- 最后一部分
             SET v_num_unit = 0;
             SET v_nextid = v_id+1;
         ELSE
@@ -159,8 +162,8 @@ CREATE PROCEDURE sp_acf(a_code INT(6) ZEROFILL) tag_acf:BEGIN
         END IF;
     END IF;
 
-    SET v_sumvolume = v_sumvolume + v_volume;
-    SET v_sumamount = v_sumamount + v_amount;
+    SET v_sumvolume = v_endvolume + v_volume;
+    SET v_sumamount = v_endamount + v_amount;
     SET @v_got_100 = 0;
 
     lbl_upto_100: WHILE v_id <= @v_len DO
@@ -189,6 +192,10 @@ CREATE PROCEDURE sp_acf(a_code INT(6) ZEROFILL) tag_acf:BEGIN
                 SET v_off_c     = v_id;
                 SET v_datetime_c= v_datetime;
                 SET v_wchng     = 100 * (v_close-v_avrg_c)/v_avrg_c;
+
+                SET v_endvolume = v_vol_more;                   -- 只取第一个周期的余量
+                SET v_endamount = v_amt_more;
+                --  SELECT v_datetime_c, v_vol_unit, v_volume, v_endvolume;
             ELSE
                 SELECT datetime FROM tempfb WHERE id=(v_off_c+1) INTO v_datetime;
                 SET @v_got_100 = 2;
@@ -212,7 +219,7 @@ CREATE PROCEDURE sp_acf(a_code INT(6) ZEROFILL) tag_acf:BEGIN
         SET v_sumvolume = v_sumvolume + v_volume;
         SET v_sumamount = v_sumamount + v_amount;
         IF  v_got_next = 0 AND v_sumvolume >= v_vol_unit THEN 
-            SET v_nextid = v_id+1;
+            SET v_nextid = v_id+1;                              -- 得到next环比unit起始ID
             SET v_got_next = 1;
         END IF;
 
