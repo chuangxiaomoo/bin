@@ -81,10 +81,10 @@ function fn_do_scope()
         # echo ${datetime}
         sql="
         SELECT date FROM (SELECT date FROM day 
-         WHERE code=${code} and date<'${fmindate}' ORDER by date DESC LIMIT ${PREV})
-         as tbl ORDER by date ASC"
+        WHERE code=${code} and date<'${fmindate}' ORDER by date DESC LIMIT ${PREV})
+        as tbl ORDER by date ASC"
     elif [ "${datetime}" = NULL ]; then
-        # acf默认以tov5/20为单位进行同环比计算，若无tov巨变，NUM=10可矣
+        # acf默认以tov5/20为单位进行同环比计算，量比为2时，NUM=25=(40/4h*2+5)
         sql="
         SELECT date FROM (SELECT date FROM day 
         WHERE code=${code} ORDER by date DESC LIMIT ${NUM:-25}) as tbl ORDER by date ASC"
@@ -109,15 +109,9 @@ function fn_do_scope()
     return $?
 }
 
-
-function fn_main()
+# volume以手为单位，最终数据倍数是day中的100倍
+function fn_download()
 {
-    code=${1}
-    fn_iscode ${code}
-    xt_ret $? "Usage: [END=d] [PREV=n] mi5 code" || return $?
-
-    # volume以手为单位，最终数据倍数是day中的100倍
-
     if [ -n "${END}" ]; then
         fn_isdate ${END} 
         xt_ret $? "invalid END[$2]" || return $?
@@ -128,10 +122,22 @@ function fn_main()
         xt_ret $? "sina" || return $?
     fi
 
-
     fn_echo_succ "DL and load fenbi of ${code} succ!"
-    
+}
+
+function fn_main()
+{
+    [ "${#}" -ne 0 ]
+    xt_ret $? "Usage: [END=d] [PREV=n] mi5 code..." || return $?
+
+    local i=
+    for i in $@; do
+        code=${i}
+        fn_iscode ${code}
+        xt_ret $? "Usage: [END=d] [PREV=n] mi5 code..." || return $?
+        fn_download $code
+    done
+    return $?
 }
 
 fn_main $@
-

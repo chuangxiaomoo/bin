@@ -94,12 +94,12 @@ function fn_hexun()
     } 20<>'/dev/shm/fenbi/lock'
 }
 
-function fn_main()
+function fn_fenbi()
 {
     # 数据的延时在30s内
     code=${1}
     fn_iscode ${code}
-    xt_ret $? "Usage: fenbi code" || return $?
+    xt_ret $? "Usage: fenbi {s|code}" || return $?
 
     today=`date +%F`
     sql="SELECT max(datetime) FROM fenbi WHERE code=${code}"
@@ -127,6 +127,43 @@ function fn_main()
     fn_hexun $code
     xt_ret $? "" || return $?
     fn_echo_succ "DL and load mini-fenbi of ${code} succ!"
+}
+
+function fn_squeeze()
+{
+    codes=`mysql -N kts<<<'SELECT DISTINCT code FROM fenbi'`
+    count0=`mysql -N kts<<<'SELECT count(*) FROM fenbi'`
+    
+    local i=
+    for i in ${codes}; do
+        sqls="SELECT date FROM day WHERE code=${i} ORDER by date DESC LIMIT 40,1"
+        date=`mysql -N kts<<<"${sqls}"`
+        dt=${date//-/}160000
+        fn_isdatetime ${dt}
+        xt_ret $? "bad format: ${dt}" || return $?
+        sqls="DELETE FROM fenbi WHERE code=${i} and datetime<${dt}"
+        mysql -N kts<<<"${sqls}"
+        echo squeeze ${i} before ${dt} over
+    done
+
+    count1=`mysql -N kts<<<'SELECT count(*) FROM fenbi'`
+    let count2=count0-count1
+    fn_echo_succ "squeeze ${count2} record total"
+}
+
+
+function fn_main()
+{
+    case $1 in
+    s|squeeze)
+        fn_squeeze
+        ;;
+    *)
+        fn_fenbi $@
+        ;;
+    esac
+
+    return $?
 }
 
 fn_main $@
