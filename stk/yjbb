@@ -40,12 +40,15 @@ function fn_online()
     done
 }
 
-
 function fn_load()
 {
     if [ ! -f "${1}" ]; then
         echo "Redo after try: cp .template/yjbb_rip ${yjbb_rip}"; exit 1
     fi
+
+    timestamp=`head -1 /dev/shm/yjbb_rip | awk '{print $1}'`
+    echo "Delete data of ${timestamp} and load ${yjbb_rip}..."
+
     echo "
     -- DROP TABLE IF EXISTS tbl_yjbb;
     CREATE TABLE IF NOT EXISTS tbl_yjbb (
@@ -65,6 +68,7 @@ function fn_load()
     --  grossMgn    DECIMAL(10,2) NOT NULL DEFAULT 0
     );
     -- TRUNCATE tbl_yjbb;
+    DELETE FROM tbl_yjbb WHERE date=${timestamp};
     LOAD DATA LOCAL INFILE '$1' INTO TABLE tbl_yjbb;
     " | mysql kts
     xt_ret $? "" || return $?
@@ -83,6 +87,7 @@ function fn_dl_all()
     date=${1:-'201409'}
     pages=3
     for (( i=1; i<=${pages}; i+=1 )); do
+        echo DownLoading page $i of ${date}...
         fn_url
         w3m -dump ${url0} > ${yjbb_raw}
         if [ "${i}" -eq 1 ]; then
@@ -104,7 +109,6 @@ function fn_dl_all()
     sed -i "s/^/${date}\t/" ${yjbb_rip}
     sort -g -k2 ${yjbb_rip} -o ${yjbb_rip}
 
-    echo "To run: yjbb load ${yjbb_rip}"
     ./yjbb load ${yjbb_rip}
 
     return $?
