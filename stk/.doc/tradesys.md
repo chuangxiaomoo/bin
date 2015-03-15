@@ -138,5 +138,7 @@
   0 3级别周期鉴定                   # 200% 2次回探更加靠谱
   1 量比tov5/tov5以上升为更大级别   # 2015-03-05 002502 骅威股价
   2 avrg_up .= sharp_up             # *右击时代*, 正在上升且上升不大之票
-  a concept                         #
+  3 ma收敛                          # SELECT ma240 -- x_short x_long
+  a 敏捷指导过程管理                # 
+  b concept                         #
 
