@@ -74,8 +74,6 @@ function fn_main()
 #   YIST=${YIST:-'.soptter.focus'}
     YIST=${YIST:-'.soptter.trade'}
     codelist=`cat ${YIST}|awk '/^[^#]/{print $1}'`
-    thrxhold=.01               # .00382 .00618 .01 .01618
-
     fn_realtime ${codelist}
 }
 
