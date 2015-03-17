@@ -469,6 +469,7 @@ function fn_checkcode()
 
     local i=
     for i in ${codes[@]}; do
+        [[ ${i} =~ ^[036].* ]] || { echo "ignore code ${i}"; continue ;}
         grep -q ${i} .codelist
         xt_ret $? "${i} is a bad code" || return $?
     done

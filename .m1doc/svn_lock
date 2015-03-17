@@ -1,12 +1,17 @@
-# lock
+# steal lock
 
 Transmitting file data .svn: E195022: Commit failed (details follow):
 svn: E195022: File '' is locked in another working copy
 svn: E170007: No lock on path '' (Status 423 on PUT Request)
 svn: E175002: Server sent unexpected return value (423 Locked) in response to PUT request for ''
 
+# windows
+
 在svn处理目录，右键选择“TortoiseSVN” –>“Get Lock”，勾选 “Steal the locks”，
 等待完成后，再次进行提交即可。
 
-Linux暂没有找到解决方法。
+# Linux
+
+svn lock --force
+
 
