@@ -61,22 +61,43 @@ function fn_9jian()
     done
 }
 
-function fn_fenbi()
+function fn_fenbi0()
 {
-    codes=(`cat ${1}|awk '/^[^#]/{print $1}' | xargs`)
+    file=${1:-.soptter.trade}
+    codes=(`cat ${file}|awk '/^[^#]/{print $1}' | xargs`)
     local i=
     for i in ${codes[@]}; do
         [[ ${i} =~ ^[036].* ]] || { echo "ignore code ${i}"; continue ;}
         fenbi ${i}
-        xt_ret $? "${i} is a bad code" || return $?
+        xt_ret $? "down ${i} error" || return $?
     done
 
-    tail -n+2 .soptter.trade |
+    tail -n+2 ${file} |
     while read code symble nmc_ratio threshold; do
-        echo $code $nmc_ratio $threshold
+        # echo $code $nmc_ratio $threshold
+        LIMIT=3 PPLUS=0 SCREENER acf ${code}
+        sqls="SELECT round(100*(cdiff+rdiff+wchng), 0) as fire FROM tbl_acfdiff LIMIT 1"
+        fire=`mysql -N kts <<<"${sqls}"`
+        if [ "${fire:-0}" -lt 99 ]; then
+            wall -n <<< "code ${code} firing: ${fire}"
+        fi
     done 
-    #while :; do
-    #done
+    return $?
+}
+
+function fn_fenbi()
+{
+    while :; do
+        sleep 30
+        minute=2015`date +%M`
+        per_minute=5
+        let got=${minute}%${per_minute}
+        if [ "${got}" -eq 0 ]; then
+            fn_fenbi0
+        fi
+        sleep 30
+    done
+    fn_fenbi0
     return $?
 }
 
@@ -87,7 +108,7 @@ function fn_main()
         fn_9jian
         ;;
     f|fenbi)
-        fn_fenbi $@
+        fn_fenbi ${@:2}
         ;;
     *)
         echo "Usage: $0 {9|9jian|f|fenbi}"
