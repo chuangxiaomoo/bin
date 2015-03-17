@@ -364,7 +364,7 @@ function fn_fbi()
         TRUNCATE(datetime_p%(1000000000000)/1000000,4) as dt_p,
         -- datetime_c, 
         TRUNCATE(datetime_c%(1000000000000)/1000000,4) as dt_c,
-        ${columns}, (cdiff+rdiff+wchng) as fire FROM ${tablex:-tbl_fdiff} 
+        ${columns}, (cdiff+rdiff+wchng) as fire FROM ${tablex:-tbl_fdiff} LIMIT ${LIMIT:-100}
     " | mysql -t kts
 }
 

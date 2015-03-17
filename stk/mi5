@@ -65,7 +65,7 @@ function fn_do_scope()
         mintime=${datetime%??????}000000
         sql="DELETE FROM fenbi WHERE datetime>${mintime}"
         mysql -N kts <<< "${sql}"
-        fn_echo_warn "incomplete fenbi data cleared forcely, re-run"
+        fn_echo_warn "incomplete fenbi of ${code} cleared forcely, re-run"
         exit
     fi
 

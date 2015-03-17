@@ -1,3 +1,2 @@
 #! /bin/bash
-[ -f "${1}" ] || { echo "Usage: $0 file" && exit ;}
-cat ${1} | awk '/^[036]/{print $1}' | xargs
+cat ${1:-'.soptter.trade'} | awk '/^[036]/{print $1}' | xargs
