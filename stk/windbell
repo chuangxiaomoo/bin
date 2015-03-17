@@ -45,16 +45,12 @@ function fn_dugu9jian()
     fi
 }
 
-function fn_main()
+function fn_9jian()
 {
-    # up 21 (windbell_codes) to accelerate
-    export inwind=1
-        # COND='and lchng<-14 and up>.6' fn_dugu9jian
-        # exit
-
     while :; do
         FINA=1 up 4
         TBL=windbell_codes SCREENER 0
+        SELECT dugu9jian wchng
         # COND='and wchng<-10.5 and up>.3' fn_dugu9jian
         COND='and wchng<-12.48 or (wchng<-12 and up>.1)' fn_dugu9jian
 
@@ -65,4 +61,37 @@ function fn_main()
     done
 }
 
-fn_main ${@}
+function fn_fenbi()
+{
+    codes=(`cat ${1}|awk '/^[^#]/{print $1}' | xargs`)
+    local i=
+    for i in ${codes[@]}; do
+        [[ ${i} =~ ^[036].* ]] || { echo "ignore code ${i}"; continue ;}
+        fenbi ${i}
+        xt_ret $? "${i} is a bad code" || return $?
+    done
+
+    tail -n+2 .soptter.trade |
+    while read code symble nmc_ratio threshold; do
+        echo $code $nmc_ratio $threshold
+    done 
+    #while :; do
+    #done
+    return $?
+}
+
+function fn_main()
+{
+    case $1 in
+    9|9jian)
+        fn_9jian
+        ;;
+    f|fenbi)
+        fn_fenbi $@
+        ;;
+    *)
+        echo "Usage: $0 {9|9jian|f|fenbi}"
+        ;;
+    esac
+}
+fn_main f # ${@}

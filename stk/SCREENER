@@ -34,8 +34,6 @@ function fn_dugu9jian()
     " | tee -a $mps_god
     mysql $mo -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
-
-    [ "${inwind}" = 1 ] || SELECT dugu9jian ${1:-wchng}
 }
 
 function fn_6maishenjian()
