@@ -50,7 +50,7 @@ function fn_hexun()
 
     >${buffer}
     [ "${dt}" -lt ${datetime9} ]
-    xt_ret $? "It's latest" || return $?
+    xt_ret $? "It's latest" || return 0
 
     while :; do
         url=`fn_get_url ${code} ${dt}`
@@ -65,10 +65,11 @@ function fn_hexun()
         [ "`stat -c%s $fenbi_ripe`" -gt 80 ]
         xt_ret $? "no data" || return $?
         
+        # 2015-03-17 中国平安amount($3)不准，使用($2*$4)/10000替代
         cat ${fenbi_ripe} | JSON.sh -b |
             awk -v code=$code '{
                 printf "%s\t%s\t%.2f\t%.2f\t%.2f\n", 
-                code,$1,$2/100,$4/100,$3/100
+                code,$1,$2/100,$4/100,($2*$4)/10000
         }' | sed "/${dt}/D" >${cache} 
         xt_ret $? "" || return $?
 
@@ -94,12 +95,31 @@ function fn_hexun()
     } 20<>'/dev/shm/fenbi/lock'
 }
 
+function fn_usage()
+{
+    echo "Usage: fenbi code"
+    echo "       fenbi squeeze"
+    echo "       fenbi fb2day code"
+    echo "       fenbi delete [code]"
+    exit
+}
+
+function fn_fb2day()
+{
+    fn_iscode ${1} || fn_usage
+    sqls="code, TRUNCATE(datetime/1000000,0) as date, sum(volume), sum(amount)"
+    sqls="SELECT ${sqls} FROM fenbi WHERE code=$1 GROUP by date ORDER by date DESC limit 10"
+    sqls="SELECT * from (${sqls}) as tbl ORDER by date ASC"
+    mysql -t kts<<<"${sqls}"
+
+    return $?
+}
+
 function fn_fenbi()
 {
     # 数据的延时在30s内
     code=${1}
-    fn_iscode ${code}
-    xt_ret $? "Usage: fenbi {s|code}" || return $?
+    fn_iscode ${code} || fn_usage
 
     today=`date +%F`
     sql="SELECT max(datetime) FROM fenbi WHERE code=${code}"
@@ -148,15 +168,35 @@ function fn_squeeze()
 
     count1=`mysql -N kts<<<'SELECT count(*) FROM fenbi'`
     let count2=count0-count1
-    fn_echo_succ "squeeze ${count2} record total"
+    fn_echo_succ "squeeze ${count2} records total"
 }
 
+function fn_delete()
+{
+    fn_iscode ${1} && COND="and code=${1}"
+
+    #ate=`date +%F`
+    date=`fn_maxdate`
+    dt=${date//-/}000000
+    sqls="DELETE FROM fenbi WHERE datetime>${dt} ${COND}"
+    count0=`mysql -N kts<<<'SELECT count(*) FROM fenbi'`
+    mysql -N kts<<<"${sqls}"
+    count1=`mysql -N kts<<<'SELECT count(*) FROM fenbi'`
+    let count2=count0-count1
+    fn_echo_succ "delete ${count2} records total"
+}
 
 function fn_main()
 {
     case $1 in
     s|squeeze)
         fn_squeeze
+        ;;
+    d|delete)
+        fn_delete ${@:2}
+        ;;
+    f|fb2day)
+        fn_fb2day ${@:2}
         ;;
     *)
         fn_fenbi $@
