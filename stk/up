@@ -458,6 +458,24 @@ function fn_html()
 	HERE_tail
 }
 
+function fn_checkcode()
+{
+    if [ ! -f "${1}" ]; then
+        echo "Usage: $FUNCNAME file"
+        exit
+    fi
+    
+    codes=(`cat ${1}|awk '/^[^#]/{print $1}' | xargs`)
+
+    local i=
+    for i in ${codes[@]}; do
+        grep -q ${i} .codelist
+        xt_ret $? "${i} is a bad code" || return $?
+    done
+
+    fn_echo_succ "${1} is good code file"
+}
+
 function fn_day()
 {
     bin/znz.yahoo $@
@@ -482,6 +500,7 @@ function fn_main()
     "table_to_file {table:-chao}        # 添加表{table:-chao}到/tmp/zxg"
     "up_rzrq_codes_tbl                  # 更新RZRQ业务数据"
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
+    "checkcode file                     # "
     "html                               # flush YIST=.soptter.xxx soptter result into html"
     "copy_table_2_table src dst         # --- 使用 1 1 做为代号"
     "add_yesclose                       # 为yahoo.指南针数据添加yesclose"
