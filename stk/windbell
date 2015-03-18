@@ -78,8 +78,9 @@ function fn_fenbi0()
         LIMIT=3 PPLUS=0 SCREENER acf ${code}
         sqls="SELECT round(100*(cdiff+rdiff+wchng), 0) as fire FROM tbl_acfdiff LIMIT 1"
         fire=`mysql -N kts <<<"${sqls}"`
-        if [ "${fire:-0}" -lt 99 ]; then
-            wall -n <<< "code ${code} firing: ${fire}"
+        if [ "${fire:-0}" -lt -99 ]; then
+            echo "code ${code} firing: ${fire}"
+            wall -n <<< "code ${code} firing: ${fire}" 2>/dev/null
         fi
     done 
     return $?
@@ -110,9 +111,12 @@ function fn_main()
     f|fenbi)
         fn_fenbi ${@:2}
         ;;
+    f0|fenbi0)
+        fn_fenbi0 ${@:2}
+        ;;
     *)
-        echo "Usage: $0 {9|9jian|f|fenbi}"
+        echo "Usage: $0 {9|9jian|f|fenbi|f0|fenbi0}"
         ;;
     esac
 }
-fn_main f # ${@}
+fn_main ${@}

@@ -1,2 +1,29 @@
 #! /bin/bash
-cat ${1:-'.soptter.trade'} | awk '/^[036]/{print $1}' | xargs
+
+. /etc/common.rc
+
+function fn_main()
+{
+    codes=(`cat ${YIST:-'.soptter.trade'} | awk '/^[036]/{print $1}'`)
+    case $1 in
+    c|cmd)
+        [ "${#}" -eq 1 ] && fn_main
+        local i=
+        for i in ${codes[@]}; do
+            ${@:2} ${i} 
+            xt_ret $? "error: ${@:2} ${i}" || return $?
+        done
+        ;;
+    l|list)
+        echo ${codes[@]}
+        ;;
+    *)
+        echo "Usage: $0 {list|cmd cmdline}"
+        exit
+        ;;
+    esac
+    
+    return $?
+}
+
+fn_main $@
