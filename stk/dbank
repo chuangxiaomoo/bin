@@ -155,7 +155,7 @@ function fn_isdatetime()
 
 function fn_write() 
 {
-    # wall < /dev/stdin
+    # wall -n <<<"abc" 2>/dev/null
     mesg y; write root /dev/pts/0 <<< "${1}"
 }
 
