@@ -61,9 +61,38 @@ function fn_9jian()
     done
 }
 
-function fn_fenbi0()
+
+function fn_acf()
 {
     file=${1:-.soptter.trade}
+    tail -n+2 ${file} |
+    while read code symble sign_gate nmc_ratio; do
+        # echo $code $nmc_ratio $threshold
+        sign=${sign_gate:0:2}
+        gate=${sign_gate:2}
+        #echo ${sign} ${gate}
+
+        LIMIT=3 PPLUS=0 SCREENER acf ${code}
+
+        [ -z "${gate}" ] && continue
+        sqls="SELECT round(100*(cdiff+rdiff+wchng-${gate:-0}), 0) as fire FROM tbl_acfdiff LIMIT 1"
+        fire=`mysql -N kts <<<"${sqls}"`
+        sqls="SELECT cdiff+rdiff+wchng FROM tbl_acfdiff LIMIT 1"
+        bill=`mysql -N kts <<<"${sqls}"`
+
+        if [ ${sign} = "ge" ] && [ "${fire:-0}" -ge 0 ]; then  
+            wall -n <<< "code ${code} got [ ${bill} -${sign} ${gate} ]" 2>/dev/null
+        fi
+        if [ ${sign} = "le" ] && [ "${fire:-0}" -le 0 ]; then
+            wall -n <<< "code ${code} got [ ${bill} -${sign} ${gate} ]" 2>/dev/null
+        fi
+    done 
+    return $?
+}
+
+function fn_fenbi0()
+{
+    file=${1:-'.soptter.trade'}
     codes=(`cat ${file}|awk '/^[^#]/{print $1}' | xargs`)
     local i=
     for i in ${codes[@]}; do
@@ -72,19 +101,7 @@ function fn_fenbi0()
         xt_ret $? "down ${i} error" || return $?
     done
 
-    tail -n+2 ${file} |
-    while read code symble nmc_ratio threshold; do
-        # echo $code $nmc_ratio $threshold
-        LIMIT=3 PPLUS=0 SCREENER acf ${code}
-        sqls="SELECT round(100*(cdiff+rdiff+wchng), 0) as fire FROM tbl_acfdiff LIMIT 1"
-        fire=`mysql -N kts <<<"${sqls}"`
-            echo "code ${code} firing: ${fire}"
-        if [ "${fire:-0}" -lt -99 ]; then
-            echo "code ${code} firing: ${fire}"
-            wall -n <<< "code ${code} firing: ${fire}" 2>/dev/null
-        fi
-    done 
-    return $?
+    fn_acf $1
 }
 
 function fn_fenbi()
@@ -109,6 +126,9 @@ function fn_main()
     9|9jian)
         fn_9jian
         ;;
+    a|acf)
+        fn_acf ${@:2}
+        ;;
     f|fenbi)
         fn_fenbi ${@:2}
         ;;
@@ -116,7 +136,7 @@ function fn_main()
         fn_fenbi0 ${@:2}
         ;;
     *)
-        echo "Usage: $0 {9|9jian|f|fenbi|f0|fenbi0}"
+        echo "Usage: $0 {9|9jian|a|acf|f|fenbi|f0|fenbi0}"
         ;;
     esac
 }
