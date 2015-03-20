@@ -130,7 +130,7 @@
   2 odds && 梅花5数                 # 不孤注，得乐视
   3 blk                             # cybz sc40 etf180 etf300 上证300成分股
   4 yjbb                            #
-  5 acf(cdiff+rdiff+wchng)          #
+  5 acf(cdiff+rdiff+wchng+大盘)     #
   6 turnover                        # tov5 diff(tov5)增 300238.2015-02-09
   7 nmc                             #
   8 big NMC_RATIO(6jian+9jian)      #
@@ -140,5 +140,6 @@
   2 avrg_up .= sharp_up             # *右击时代*, 正在上升且上升不大之票
   3 ma收敛                          # SELECT ma240 -- x_short x_long
   a 敏捷指导过程管理                # 
-  b concept                         #
-
+  b 定增+增持                       #
+  c 定量小步子上涨                  # 克服追涨心理障碍
+  z concept                         #

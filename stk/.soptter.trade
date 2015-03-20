@@ -1,6 +1,6 @@
-# code  symble      gate    nmc_ratio
-600211  西藏药业    ge-1
-600212  江泉实业    ge.5
+# code  symble     op  gate nmc_ratio
+600211  西藏药业    >   -2  
+600212  江泉实业    >   .5
 601318  中国平安
 600048  保利地产
-601688  华泰证券    le-1
+601688  华泰证券    <   -1

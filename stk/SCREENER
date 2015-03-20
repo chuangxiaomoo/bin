@@ -272,7 +272,9 @@ function fn_tao5()
 function fn_turnov5()
 {
     # LIMIT 10 在换手剧增时比 LIMIT 5 更加敏感
-    # date<'$CLOSING' 不包括今日，转折日成交量都会大增，此举可提高灵敏度
+    # date<'$CLOSING' 不包括今日：
+    # 1. 交易中计算，不会令结果平均时变小
+    # 2. 转折日成交量都会大增，此举可提高灵敏度
     sql="
     SELECT round(sum(d.volume)/cap.shares/2, 3) as nmc_ratio FROM 
        (SELECT * FROM day WHERE code=${code} and date<'$CLOSING' ORDER by date DESC LIMIT 10)

@@ -66,25 +66,22 @@ function fn_acf()
 {
     file=${1:-.soptter.trade}
     tail -n+2 ${file} |
-    while read code symble sign_gate nmc_ratio; do
-        # echo $code $nmc_ratio $threshold
-        sign=${sign_gate:0:2}
-        gate=${sign_gate:2}
-        #echo ${sign} ${gate}
+    while read code symble op gate nmc_ratio; do
+        # echo ${op} ${gate}
 
         LIMIT=3 PPLUS=0 SCREENER acf ${code}
 
         [ -z "${gate}" ] && continue
-        sqls="SELECT round(100*(cdiff+rdiff+wchng-${gate:-0}), 0) as fire FROM tbl_acfdiff LIMIT 1"
+        sqls="SELECT round(100*(cdiff+rdiff+wchng-${gate}), 0) as fire FROM tbl_acfdiff LIMIT 1"
         fire=`mysql -N kts <<<"${sqls}"`
         sqls="SELECT cdiff+rdiff+wchng FROM tbl_acfdiff LIMIT 1"
         bill=`mysql -N kts <<<"${sqls}"`
 
-        if [ ${sign} = "ge" ] && [ "${fire:-0}" -ge 0 ]; then  
-            wall -n <<< "code ${code} got [ ${bill} -${sign} ${gate} ]" 2>/dev/null
+        if [ ${op} = ">" ] && [ "${fire:-0}" -ge 0 ]; then  
+            wall -n <<< "code ${code} got [ ${bill} ${op} ${gate} ]" 2>/dev/null
         fi
-        if [ ${sign} = "le" ] && [ "${fire:-0}" -le 0 ]; then
-            wall -n <<< "code ${code} got [ ${bill} -${sign} ${gate} ]" 2>/dev/null
+        if [ ${op} = "<" ] && [ "${fire:-0}" -le 0 ]; then
+            wall -n <<< "code ${code} got [ ${bill} ${op} ${gate} ]" 2>/dev/null
         fi
     done 
     return $?
