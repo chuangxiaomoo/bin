@@ -107,14 +107,24 @@ function fn_fenbi0()
 function fn_fenbi()
 {
     while :; do
-        sleep 30
-        minute=2015`date +%M`
-        per_minute=5
+        hhmmss=`date +%H%M%S`
+        minute=30${hhmmss:0:4}  # 30 = 2 * 3 * 5 * 10, for 09pm error
+
+        if  [ "${hhmmss}" -lt 092500 ] || 
+            [ "${hhmmss}" -gt 150000 ] ||
+           ([ "${hhmmss}" -gt 113000 ] && [ "${hhmmss}" -lt 130000 ]); then
+            echo rest time `date +%T`
+            sleep 120
+            continue
+        fi
+        
+        per_minute=5            # fenbi 以5min为单位，连续3个5min数据才形成条件
         let got=${minute}%${per_minute}
         if [ "${got}" -eq 0 ]; then
             fn_fenbi0
+            sleep 30
         fi
-        sleep 30
+        sleep 30  # 30 seconds
     done
     fn_fenbi0
     return $?
