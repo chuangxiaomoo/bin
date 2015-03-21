@@ -73,7 +73,7 @@ function fn_do_scope()
     xt_ret $? "Try create kts.fenbi and tmpfb mannually" || return $?
 
     if [ "${datetime}" != NULL ] && [ -n "${PREV}" ]; then
-        fn_is_digit ${PREV}
+        fn_isdigit ${PREV}
         xt_ret $? "" || return $?
         sql="SELECT min(datetime) FROM fenbi WHERE code=${code}"
         min_dt=`mysql -N kts <<< "${sql}"`

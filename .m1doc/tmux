@@ -1,46 +1,56 @@
-    Tmux using a key combination, prefix key (Ctrl-b) followed by a command key.
+# install
 
-    COMMAND KEY
-        ┌────────────────────────────────────────────────────────────────────────┐
-        │ c           Create a window.                                           │
-        │ %           Split the current pane vertically                          │
-        │ "           Split the current pane HORIZONTALLY                        │
-        ├────────────────────────────────────────────────────────────────────────┤
-        │ ,           Rename the current window.                                 │
-        ├────────────────────────────────────────────────────────────────────────┤
-        │ n           Change to the next window.                                 │
-        │ w           Choose the current window interactively.                   │
-        │ l           Move to the previously active window.                      │
-        │                                                                        │
-        │ <Up..Right> Move to the pane above, below, left, or right              │
-        │ o           Select the next pane in the current window                 │
-        │ <C-O>       rotate pane.                                               │
-        ├────────────────────────────────────────────────────────────────────────┤
-        │ [           Enter copy mode to copy text or view the history.          │
-        │ ]           Paste the most recently copied buffer of text.             │
-        │ :           Enter the tmux command prompt.                             │
-        └────────────────────────────────────────────────────────────────────────┘
+    1410  apt-get install libevent-2.0-5 
+    1427  apt-get install libevent-1.4-2
+    1431  apt-get install libncurses5-dev
+    1436  apt-get install libevent-dev
 
-    VI MODE-KEYS
-        Clear   selection              Escape   
-        Copy    selection              Enter    
-        Start   selection              Space    
-        Verti   selection              Space-v  
+# config
 
-    CONFIG
-        alias tmux='TERM=xterm tmux'    # pane separator is line
+  Tmux using a key combination, prefix key (Ctrl-b) followed by a command key.
 
-        ~/.tmux.conf
-            http://linuxtoy.org/archives/from-screen-to-tmux.html
-            set-window-option -g mode-keys vi
-            set-window-option -g utf8 on     
-            set -g history-limit 5000        
+  COMMAND KEY
 
-        COMMAND
-            set-option -g -w mode-mouse off
+      ┌────────────────────────────────────────────────────────────────────────┐
+      │ c           Create a window.                                           │
+      │ %           Split the current pane vertically                          │
+      │ "           Split the current pane HORIZONTALLY                        │
+      ├────────────────────────────────────────────────────────────────────────┤
+      │ ,           Rename the current window.                                 │
+      ├────────────────────────────────────────────────────────────────────────┤
+      │ n           Change to the next window.                                 │
+      │ w           Choose the current window interactively.                   │
+      │ l           Move to the previously active window.                      │
+      │                                                                        │
+      │ <Up..Right> Move to the pane above, below, left, or right              │
+      │ o           Select the next pane in the current window                 │
+      │ <C-O>       rotate pane.                                               │
+      ├────────────────────────────────────────────────────────────────────────┤
+      │ [           Enter copy mode to copy text or view the history.          │
+      │ ]           Paste the most recently copied buffer of text.             │
+      │ :           Enter the tmux command prompt.                             │
+      └────────────────────────────────────────────────────────────────────────┘
 
-            set-option -g mouse-resize-pane off 
+  VI MODE-KEYS
+      Clear   selection              Escape   
+      Copy    selection              Enter    
+      Start   selection              Space    
+      Verti   selection              Space-v  
 
-            supported after 1.7+
-            set-option -g mouse-select-pane on
-            set-option -g mouse-select-window on
+  CONFIG
+      alias tmux='TERM=xterm tmux'    # pane separator is line
+
+      ~/.tmux.conf
+          http://linuxtoy.org/archives/from-screen-to-tmux.html
+          set-window-option -g mode-keys vi
+          set-window-option -g utf8 on     
+          set -g history-limit 5000        
+
+      COMMAND
+          set-option -g -w mode-mouse off
+
+          set-option -g mouse-resize-pane off 
+
+          supported after 1.7+
+          set-option -g mouse-select-pane on
+          set-option -g mouse-select-window on

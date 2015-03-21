@@ -162,7 +162,7 @@ function fn_create_tar_bz2()
     return $?
 }
 
-function fn_is_digit()
+function fn_isdigit()
 {   # echo $@ | grep -q -E "^[0-9]+$"; return ${PIPESTATUS[1]}
     case $1 in
         +([0-9])) return 0 ;;

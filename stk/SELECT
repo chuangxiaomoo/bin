@@ -6,7 +6,7 @@ function fn_ls()
 {
     [ $# -eq "0" ] && fn_execute -l && exit
 
-    if fn_is_digit $1; then
+    if fn_isdigit $1; then
         code=$1
     else
         local shmout=$SHMPATH/shmout
