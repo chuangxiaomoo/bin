@@ -14,6 +14,7 @@ function fn_main()
         深成40.BLK      .blk.sc40
         创业板指.BLK    .blk.cybz
         深证300P.BLK    .blk.sz300p
+        中证500.BLK     .blk.zz500
 
         军工指数.BLK    .blk.jgzs
         融资融券.BLK    .blk.rzrq

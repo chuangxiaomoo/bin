@@ -60,6 +60,10 @@ function fn_gether_symbol()
 
         if [ "${is_precise_last}" = 'false' ]; then
             last=`tail -1 ${day_temp} | sed 's/ \.\.//g' | awk '{print $(NF-1)}' 2>/dev/null`
+            fn_isdigit ${last} || {
+                echo "疑似ST代码$code got last:${last} on index:${index}"
+                return 0
+            }
             if tail -1 ${day_temp} | grep -q '[0-9] 　下一页'; then
                 # 上一页　 .. 2 3 4 5 　下一页
                 is_precise_last=true
