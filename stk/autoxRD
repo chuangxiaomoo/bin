@@ -46,8 +46,9 @@ function fn_rebuild_list_and_download_from_last_xRD()
     going to xRD `wc -l ${yahooask}` codes
     "
 
-    ## begin to download
-    start_sps=($(date +'%Y %m %d' --date='365 days ago' ))
+    # begin to download
+    # 365 ~= 240 个交易日，考虑到停牌情况，上调日数为400
+    start_sps=($(date +'%Y %m %d' --date='400 days ago' ))
     endin_sps=($(date +'%Y %m %d'))
     start_year=${start_sps[0]}; start_month=${start_sps[1]}; start_day=${start_sps[2]}
     endin_year=${endin_sps[0]}; endin_month=${endin_sps[1]}; endin_day=${endin_sps[2]}
