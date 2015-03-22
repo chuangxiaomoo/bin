@@ -24,6 +24,7 @@ alias    ..='cd ..'
 alias   ...='cd ../..'
 alias    .b='cd ~/bin'
 alias    .c="let 'CHAO=!CHAO'; echo \$CHAO; export CHAO"
+alias    .5="let 'TOV5=!TOV5'; echo \$TOV5; export TOV5"
 alias .sina="let 'SINA=!SINA'; echo \$SINA; export SINA"
 alias    .n='. /opt/nxpbash'
 alias    .s='cd ~/bin/stk'

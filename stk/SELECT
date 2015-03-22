@@ -464,9 +464,9 @@ function fn_dif120()
 function fn_ma240_usage()
 {
     echo "
-    1 可以配合分时线及上涨进行预测
+    1 x_mid x_one 双线出击
     2 采用双表联合查询来解决分析的困境
-    3 ana 的关键在于 cross & 收敛 & 放量上行
+    3 牛市第二阶段 ma240收敛 & cross & 放量上行
     "
 }
 
@@ -476,17 +476,27 @@ function fn_ma240()
     columns=code,date,close,ma5,ma13,ma25,ma60,ma120,ma240
     columns=ma.${columns//,/,ma.}
     function fn_build_sqls() {
+    sqls="SELECT date FROM day WHERE code=900001 ORDER by date DESC LIMIT 4,1"
+    ago5=`mysql -N kts<<<"${sqls}" 2>/dev/null`
+    filed=${1:-x_sho}
     sqls="
     SELECT ${columns},
-        ${x_short} as x_short, 
+        ${x_sho} as x_sho, 
+        ${x_mid} as x_mid,
         ${x_long} as x_long,
-        c.name FROM tbl_ma240 as ma, cap as c
-        WHERE ma.code=c.code HAVING 1 ${COND} ${inLIST} ORDER by ${1:-x_short} ASC limit ${LIMIT:-24}" 
+        ${x_sho}+
+        ${x_mid}+
+        ${x_long} as x_one,
+        c.nmc,c.name FROM tbl_ma240 as ma, cap as c
+        WHERE ma.code=c.code and ma.date>'${ago5}' 
+        HAVING 1 ${COND} ${inLIST} ORDER by ${filed} ASC limit ${LIMIT:-24}" 
     }
 
-    # .0001 使得新股 x_short x_long 都为 2.000
-    x_short="round(abs((ma5-ma13)/(ma13)) + abs((ma25-ma13)/(ma13)), 3)"
-    x_long="round(abs((ma60-ma120)/(ma120)) +abs((ma240-ma120)/(ma120)), 3)"
+    # .0001 使得新股 x_sho x_long 都为 2.000
+    # mid 5day 5week 5month
+    x_sho="round(abs((ma5-ma13)/(ma13))+abs((ma25-ma13)/(ma13)), 3)"
+    x_long="round(abs((ma60-ma120)/(ma120))+abs((ma240-ma120)/(ma120)), 3)"
+    x_mid="round(abs((ma5-ma25)/(ma25))+abs((ma120-ma25)/(ma25)), 3)"
 
     fn_yist
     fn_build_sqls $1

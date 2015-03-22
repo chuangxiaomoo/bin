@@ -1034,7 +1034,7 @@ CREATE PROCEDURE sp_ma60x240(a_code INT(6) ZEROFILL) tag_ma60x240:BEGIN
     DECLARE v_close    DECIMAL(6,2) DEFAULT 0;
     DECLARE v_ma5      DECIMAL(6,3) DEFAULT 0;
     DECLARE v_ma13     DECIMAL(6,3) DEFAULT 0.001;
-    DECLARE v_ma25     DECIMAL(6,3) DEFAULT 0;
+    DECLARE v_ma25     DECIMAL(6,3) DEFAULT 0.001;
     DECLARE v_ma60     DECIMAL(6,3) DEFAULT 0;
     DECLARE v_ma120    DECIMAL(6,3) DEFAULT 0.001;
     DECLARE v_ma240    DECIMAL(6,3) DEFAULT 0;
@@ -1058,9 +1058,11 @@ CREATE PROCEDURE sp_ma60x240(a_code INT(6) ZEROFILL) tag_ma60x240:BEGIN
         SELECT SUM(close)/25   FROM tempday WHERE id<=25  INTO v_ma25 ;
     END IF;
 
-    IF @v_len = 240 THEN 
+    IF @v_len >= 120 THEN 
         SELECT SUM(close)/60   FROM tempday WHERE id<=60  INTO v_ma60 ;
         SELECT SUM(close)/120  FROM tempday WHERE id<=120 INTO v_ma120;
+    END IF;
+    IF @v_len >= 240 THEN 
         SELECT SUM(close)/240  FROM tempday WHERE id<=240 INTO v_ma240;
     END IF;
 
