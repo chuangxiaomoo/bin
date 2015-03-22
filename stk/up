@@ -182,10 +182,9 @@ function fn_redo_hexun_day()
 function fn_load_directory()
 {
     local tbl_name='day'
-    local p_sql=${znzday}
     local f_sql="$warehs/znz.xRD"
     # 做成一个大文件会快得多
-    cd $p_sql
+    cd ${znzday}
     cat * > $f_sql
     echo "
     LOAD DATA LOCAL INFILE '$f_sql' INTO TABLE $tbl_name
@@ -480,7 +479,6 @@ function fn_checkcode()
 function fn_day()
 {
     bin/znz.yahoo $@
-    xt_ret $? "Usage: fn_day code dateEND num" || return $?
 }
 
 function fn_main()
@@ -505,11 +503,11 @@ function fn_main()
     "html                               # flush YIST=.soptter.xxx soptter result into html"
     "copy_table_2_table src dst         # --- 使用 1 1 做为代号"
     "add_yesclose                       # 为yahoo.指南针数据添加yesclose"
-    "load_directory                     # load文件夹#{znzday}到表day"
+    "load_directory                     # load文件夹${znzday}到表day"
     "dump_day_2_tmp START END           # 导出日线"
     "trs_min_2_day                      # 最后一笔分线转日线"
     "wb                                 # windbell_codes(close<avrg)"
-    "day code dateEND {num:-365}        # DL day data from znz"
+    "day code                           # DL 1year data from znz"
     )
 
     # 存储过程函数文件的最后5行都是注释
