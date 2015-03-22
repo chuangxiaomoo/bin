@@ -19,6 +19,7 @@ function fn_main()
         军工指数.BLK    .blk.jgzs
         融资融券.BLK    .blk.rzrq
         券商.BLK        .blk.qs
+        保险业.BLK      .blk.bxy
         银行业.BLK      .blk.yhy
         房地产.BLK      .blk.fdc
         300地产.BLK     .blk.300dc

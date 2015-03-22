@@ -98,7 +98,8 @@ function fn_hexun()
 function fn_usage()
 {
     echo "Usage: fenbi code"
-    echo "       fenbi squeeze"
+    echo "       fenbi l|lscode"
+    echo "       fenbi s|squeeze"
     echo "       fenbi fb2day code"
     echo "       fenbi delete [code]"
     exit
@@ -186,9 +187,18 @@ function fn_delete()
     fn_echo_succ "delete ${count2} records total"
 }
 
+function fn_lscode()
+{
+    sqls='SELECT DISTINCT code FROM fenbi'
+    mysql -t kts<<<${sqls}
+    return $?
+}
 function fn_main()
 {
     case $1 in
+    l|lscode)
+        fn_lscode
+        ;;
     s|squeeze)
         fn_squeeze
         ;;
