@@ -10,11 +10,6 @@ mkdir -p ${day_gether%/*}
 
 function fn_maxyahoo() 
 {
-    start_sps=($(date +'%Y %m %d' --date='8 days ago' ))
-    endin_sps=($(date +'%Y %m %d'))
-    start_year=${start_sps[0]}; start_month=${start_sps[1]}; start_day=${start_sps[2]}
-    endin_year=${endin_sps[0]}; endin_month=${endin_sps[1]}; endin_day=${endin_sps[2]}
-
     echo sh000001 > ${yahooask}
     NOCLEAN=1 fn_yahoo start
 
@@ -28,15 +23,26 @@ function fn_gether_symbol()
     local header=${1:0:1}
     local symbol=
     case $header in
-      6|7) symbol='sh'$1    ;;
-        s) symbol=$1;   
-           code=9${1:3}     ;;      # sh000001 转化为 900001
-        *) symbol='sz'$1    ;;
+      6|7) 
+            symbol='sh'$1    
+            ;;
+        s)  # sh000001 转化为 900001
+            symbol=$1;   
+            start_sps=($(date +'%Y %m %d' --date='15 days ago' ))
+            code=9${1:3}     
+            ;;      
+        *) 
+            symbol='sz'$1    
+            ;;
     esac
+
+    start_year=${start_sps[0]}; start_month=${start_sps[1]}; start_day=${start_sps[2]}
+    endin_year=${endin_sps[0]}; endin_month=${endin_sps[1]}; endin_day=${endin_sps[2]}
+    start_date=$start_year-$start_month-$start_day
 
     > ${day_gether}
     
-    local index=1
+          index=1
     local last=1
     local is_precise_last=false
 
@@ -60,8 +66,9 @@ function fn_gether_symbol()
 
         if [ "${is_precise_last}" = 'false' ]; then
             last=`tail -1 ${day_temp} | sed 's/ \.\.//g' | awk '{print $(NF-1)}' 2>/dev/null`
+            [ -z "${last}" ] && break       # 小数据
             fn_isdigit ${last} || {
-                echo "疑似ST代码$code got last:${last} on index:${index}"
+                echo "疑似ST代码$code got last:${last} on index:${index}" 2>/dev/null
                 return 0
             }
             if tail -1 ${day_temp} | grep -q '[0-9] 　下一页'; then
@@ -71,7 +78,6 @@ function fn_gether_symbol()
         fi
         let index++
     done
-
 
     ## 添加yesclose，同 ./up znz2mysql
     ## xRD时，yahoo中的volume没有进行处理，volume ~= amount/close
@@ -95,48 +101,27 @@ function fn_gether_symbol()
 
 function fn_yahoo()
 {
-    # endin_year=`date +%Y`; endin_month=`date +%m`; endin_day=`date +%d`
+    [ "start" = "$1" ] 
+    xt_ret $? "fn_yahoo start please" || return $?
 
-    local start_date=$start_year-$start_month-$start_day
-    local lt_curr="date<='`date +%F`'"
-
-    Usage="Usage: 
-    执行第1点和第2点
-    $0 start        (先用 for i in sh000001 测试，再用 for i in yahooask)
-    执行第3点和第4点
-
-    1.
-    'sh000001' 代表上证
-    codes.ask 通常用连续时间的所有code进行sort -u。手动去头(code)去尾(900001)
-    kmysql<<<\"SELECT code from day where date>='2014-01-20' and $lt_curr;\" | sort -u > $yahooask
-
-    2.
-    设置变量 url 中代表数据日期范围的6个时间变量 start_year... 
-    为精确匹配，'$start_date'应当开市，该日数据将被删除，
-    当日停牌的，yesclose需要从mySql读取
-
-    3.
-    保留原来在数据库中的连续的数据
-    DELETE FROM day where date > '$start_date';
-
-    4.
-    LOAD 目录 $warehs/znz_day/
-    ./up load_directory
-    "
-
-    [ "start" != "$1" ] && echo "$Usage" && exit
-
-    # This script depends on: ./up 6
     > $yahootimeout
-
-    # for timeout
     [ -z "${NOCLEAN}" ] && rm   -rf ${znzday}/*
 
+    # 365 ~= 240 个交易日，考虑到8个月停牌情况，上调日数为600
+    start_600=`date +'%Y %m %d' --date="${NUM:-600} days ago"`
+    endin_sps=($(date +'%Y %m %d'))
+
+    list=
+#   list=${list:-sh000001}
+#   list=${list:-000509}
+    list=${list:-`cat $yahooask`}
     local i=
-      for i in `cat $yahooask` ; do
-    # for i in sh000001 ; do
-    # for i in 000509; do
-        fn_gether_symbol $i && echo "$i completed!"
+    for i in ${list} ; do
+        sqls="SELECT date FROM day WHERE code=${i} ORDER by date DESC LIMIT 269,1"
+        d240=`mysql -N kts<<<"${sqls}" 2>/dev/null`
+        d240=${d240//-/ }
+        start_sps=(${d240:-${start_600}})
+        fn_gether_symbol $i && echo "${i/sh/} completed records [30*${index}]"
     done
 }
 
@@ -145,56 +130,32 @@ function fn_yahoo()
 function fn_main() 
 {
     fn_iscode $1
-    xt_ret $? "<$1> not code" || return $?
-    fn_isdate ${2} 
-    xt_ret $? "<$2> must be date like `fn_maxdate`" || return $?
+    xt_ret $? "Usage: $0 code" || return $?
     codes=$1
-    endin_org=($2)      
-    number=${3:-365}
     # (2013-04-08)
-    # fn_maxyahoo 会修改 $yahooask, 必须再手动构建 $yahooask 
+    # fn_maxyahoo 会修改 $yahooask, 必须再手动构建 $yahooask
     # 以下4行指定单个code及date区间 sh000001为上证
     # codes="002241"
 
-
     xt_ret $? "" || { echo "Usage: 144 code... {END}" && exit; }
 
-    if [ -n "${codes}" ] ; then
-        fn_echo_succ "update ${codes}..."
-        echo ${codes} > $yahooask
-        endin_sps=(${endin_org//-/ })
-        max_dbday=${endin_sps[@]}
-        max_dbday=${max_dbday// /-}
-        start_sps=($(date +'%Y %m %d' --date="${max_dbday} ${number} days ago" ))
-    else
-        fn_echo_succ "update maxyahoo..."
+    fn_echo_succ "update maxyahoo..."
 
-        fn_maxyahoo
-        [ -n "${date_maxyahoo}" ]
-        xt_ret $? "date_maxyahoo is NULL" || return $?
+    fn_maxyahoo
+    [ -n "${date_maxyahoo}" ]
+    xt_ret $? "date_maxyahoo is NULL" || return $?
 
-        start_sps=($(date +'%Y %m %d' --date='365 days ago' ))
-        endin_sps=($(date +'%Y %m %d'))
-        max_dbday=${date_maxyahoo}
-    fi
-
-    start_year=${start_sps[0]}; start_month=${start_sps[1]}; start_day=${start_sps[2]}
-    endin_year=${endin_sps[0]}; endin_month=${endin_sps[1]}; endin_day=${endin_sps[2]}
-
+    echo ${codes} > $yahooask
     fn_yahoo start
 
     local i=
-    for i in `ls ${znzday}`; do
-        echo "DELETE FROM day WHERE code=$i and date <='${max_dbday}';" | mysql -N kts 
-        xt_ret $? "mysql" || return $?
-        echo "DELETE code=$i and date <='${max_dbday}' over"
+    for i in ${1}; do
+        sqls="DELETE FROM day WHERE code=$i and date <='${date_maxyahoo}'" 
+        mysql -N kts<<<"${sqls}"
     done
 
-    # rm -f ${znzday}/900001
     up load_directory
     xt_ret $? "load znzday fail" || return $?
-
-    echo "LOAD over"
 }
 
 fn_main $@

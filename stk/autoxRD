@@ -46,13 +46,6 @@ function fn_rebuild_list_and_download_from_last_xRD()
     going to xRD `wc -l ${yahooask}` codes
     "
 
-    # begin to download
-    # 365 ~= 240 个交易日，考虑到停牌情况，上调日数为400
-    start_sps=($(date +'%Y %m %d' --date='400 days ago' ))
-    endin_sps=($(date +'%Y %m %d'))
-    start_year=${start_sps[0]}; start_month=${start_sps[1]}; start_day=${start_sps[2]}
-    endin_year=${endin_sps[0]}; endin_month=${endin_sps[1]}; endin_day=${endin_sps[2]}
-
     fn_yahoo start
 
     echo "    Redoing the timeout ones[`cat $yahootimeout`]..."
@@ -62,7 +55,6 @@ function fn_rebuild_list_and_download_from_last_xRD()
     test -z "`cat $yahootimeout`"
     xt_ret $? "ask_help_to tag_try_2_times_fail" || return 0
 }
-
 
 function fn_main()
 {
@@ -83,9 +75,8 @@ function fn_main()
     local i=
     for i in `ls ${znzday}`; do
         # it's so slow, don't use: code in (SELECT code from zxg)
-        echo "
-        DELETE FROM day WHERE code=$i and date <='${date_maxyahoo}';
-        " | mysql -N kts
+        sqls=" DELETE FROM day WHERE code=$i and date <='${date_maxyahoo}'" 
+        mysql -N kts<<<"${sqls}"
         xt_ret $? "mysql" || return $?
     done
 
