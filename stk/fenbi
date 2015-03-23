@@ -109,7 +109,7 @@ function fn_fb2day()
 {
     fn_iscode ${1} || fn_usage
     sqls="code, TRUNCATE(datetime/1000000,0) as date, sum(volume), sum(amount)"
-    sqls="SELECT ${sqls} FROM fenbi WHERE code=$1 GROUP by date ORDER by date DESC limit 10"
+    sqls="SELECT ${sqls} FROM fenbi WHERE code=$1 GROUP by date ORDER by date DESC limit ${LIMIT:-10}"
     sqls="SELECT * from (${sqls}) as tbl ORDER by date ASC"
     mysql -t kts<<<"${sqls}"
 
