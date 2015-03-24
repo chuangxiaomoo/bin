@@ -115,7 +115,7 @@ function fn_fenbi()
             continue
         fi
         
-        per_minute=5            # fenbi 以5min为单位，连续3个5min数据才形成条件
+        per_minute=3            # fenbi 以5min为单位，连续3个5min数据才形成条件
         let got=${minute}%${per_minute}
         if [ "${got}" -eq 0 ]; then
             fn_fenbi0
