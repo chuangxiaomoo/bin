@@ -1,0 +1,16 @@
+#! /bin/bash
+. `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
+
+function fn_usage()
+{
+    # 印象框架
+    echo "Usage: yin code"
+    exit
+}
+
+function fn_main()
+{
+    fn_iscode ${1} || fn_usage
+}
+
+fn_main $@

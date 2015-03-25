@@ -24,15 +24,13 @@ alias    ..='cd ..'
 alias   ...='cd ../..'
 alias    .b='cd ~/bin'
 alias    .c="let 'CHAO=!CHAO'; echo \$CHAO; export CHAO"
-alias    .5="let 'TOV5=!TOV5'; echo \$TOV5; export TOV5"
+alias    .5="let 'TOV5=++TOV5%3'; echo \$TOV5; export TOV5"
 alias .sina="let 'SINA=!SINA'; echo \$SINA; export SINA"
 alias    .n='. /opt/nxpbash'
 alias    .s='cd ~/bin/stk'
 alias   .ss='cd ~/bin/stk/sql'
 alias   .rc='. /root/.bashrc'
 alias   .ps='PS1="[\w]\n\u-> \[\033[0m\]"'
-alias    .isoptter='vi /root/bin/stk/.soptter'   
-function .asoptter(){ [ -n "$@" ] && echo $@ | xargs -n1 >>/root/bin/stk/.soptter ;}
 
 alias     f='find'
 alias     l='ls -CF'
@@ -230,6 +228,9 @@ export LESS_TERMCAP_se=$'\E[0m'
 export LESS_TERMCAP_so=$'\E[01;44;33m'
 export LESS_TERMCAP_ue=$'\E[0m'
 export LESS_TERMCAP_us=$'\E[01;32m'
+
+# kts variable
+export TOV5=0
 
 # 
 export PATH=.:~/bin:$PATH
