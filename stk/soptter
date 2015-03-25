@@ -12,7 +12,6 @@
 . `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
 . /etc/common.rc
 
-# 实时探测
 fn_realtime() 
 {
     comma_sepa_list=`echo $@ | awk '{

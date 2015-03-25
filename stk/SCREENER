@@ -283,7 +283,7 @@ function fn_turnov5()
         as d, cap WHERE d.code = cap.code INTO @irt;
         SELECT IF(@irt<.2,@irt,.2);
         " 
-    else
+    elif [ "${TOV5:-0}" -eq 1 ]; then
         # tov5 在价底反弹时比 tov10/2 敏感
         sql="
         SELECT round(sum(d.volume)/cap.shares, 3) as nmc_ratio FROM 
@@ -291,6 +291,14 @@ function fn_turnov5()
         as d, cap WHERE d.code = cap.code INTO @irt;
         SELECT IF(@irt<.2,@irt,.2);
         " 
+    elif [ "${TOV5:-0}" -eq 2 ]; then
+        # tov20/2 海龟
+        sql="
+        SELECT round(sum(d.volume)/cap.shares/2, 3) as nmc_ratio FROM 
+        (SELECT * FROM day WHERE code=${code} and date<'$CLOSING' ORDER by date DESC LIMIT 20)
+        as d, cap WHERE d.code = cap.code INTO @irt;
+        SELECT IF(@irt<.2,@irt,.2);
+        "
     fi
     mysql -N kts<<<"${sql}"
 }
