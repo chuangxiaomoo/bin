@@ -105,30 +105,9 @@ CREATE PROCEDURE sp_acf(a_code INT(6) ZEROFILL) tag_acf:BEGIN
         a_code, " and datetime<= ", @DT, " order by datetime DESC");
     PREPARE stmt from @sqls; EXECUTE stmt;
 
-    /* 小的操作粒度 导致 更小的`格局` */
-    SET @mod_fb = 500;
-    IF  @mod_fb = 200 THEN
-        SET @sqls=concat('
-        INSERT INTO tempfb(code,datetime,trade,volume,amount)
-        SELECT code,datetime,trade,sum(volume),sum(amount) FROM 
-        (SELECT *,round(datetime/400,0) as grp from fenbi WHERE code=', 
-            a_code, " and datetime<= ", @DT, " ORDER by datetime DESC) 
-            as newfb GROUP by grp ORDER by datetime DESC");
-
-        -- DROP   TEMPORARY TABLE IF EXISTS tempfb2;
-        -- CREATE TEMPORARY TABLE tempfb2 LIKE tempfb; 
-        -- SET @sqls=concat('
-        -- INSERT INTO tempfb2(code,datetime,trade,volume,amount)
-        -- SELECT code,datetime,trade,volume,amount FROM fenbi WHERE code=', 
-        -- a_code, " and datetime<= ", @DT, " order by datetime DESC;");
-        -- PREPARE stmt from @sqls; EXECUTE stmt;
-
-        -- INSERT INTO tempfb(code,datetime,trade,volume,amount)
-        -- SELECT code,datetime,trade,sum(volume),sum(amount) FROM 
-        -- (SELECT *, round(id/2,0) as grp from tempfb2 ORDER by datetime DESC)
-        --     as newfb GROUP by grp;
-    END IF;
-
+    /* 小的操作粒度 导致 更小的`格局`
+     * SET @mod_fb = 500; IF  @mod_fb = 200 ...
+     */
     SELECT count(*), sum(volume) FROM tempfb INTO @v_len, @v_volumes;
 
     -- 换手不足的个股

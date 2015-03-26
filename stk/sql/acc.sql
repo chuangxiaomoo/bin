@@ -65,6 +65,7 @@ CREATE PROCEDURE sp_acc(a_code INT(6) ZEROFILL) tag_acc:BEGIN
     -- acc
     DECLARE v_id        INT DEFAULT 1; 
     DECLARE v_num_unit  INT DEFAULT 0; 
+    DECLARE v_id_jumped INT DEFAULT 0; 
     DECLARE v_nextid    INT DEFAULT 1; 
     DECLARE v_got_next  INT DEFAULT 1; 
     DECLARE v_part      INT DEFAULT 1; 
@@ -96,6 +97,9 @@ CREATE PROCEDURE sp_acc(a_code INT(6) ZEROFILL) tag_acc:BEGIN
     DECLARE v_sumvolume DECIMAL(12,2) DEFAULT 0;
     DECLARE v_sumamount DECIMAL(12,2) DEFAULT 0;
 
+    DECLARE v_endvolume DECIMAL(12,2) DEFAULT 0;
+    DECLARE v_endamount DECIMAL(12,2) DEFAULT 0;
+
     DECLARE v_vol_more  DECIMAL(12,2) DEFAULT 0;
     DECLARE v_amt_more  DECIMAL(12,2) DEFAULT 0;
 
@@ -123,12 +127,14 @@ CREATE PROCEDURE sp_acc(a_code INT(6) ZEROFILL) tag_acc:BEGIN
 
   lbl_upto_parts: WHILE v_part <= (@PARTS+@PPLUS) DO
     SET v_got_next = 0;
+    SET v_id_jumped= 1;
     SELECT date,close,volume,amount FROM tempday WHERE id=(v_id)
             INTO v_date,v_close,v_volume,v_amount;
 
     -- SELECT v_id,v_date,v_volume,v_vol_unit,v_amount;
 
     IF v_volume > v_vol_unit THEN  -- 大换手数据
+        SET v_id_jumped= 0;
         SET v_got_next = 1;
         SET v_avrg0 = (v_amount/v_volume);
         SET v_volume = v_volume - (v_vol_unit * v_num_unit);
@@ -142,8 +148,8 @@ CREATE PROCEDURE sp_acc(a_code INT(6) ZEROFILL) tag_acc:BEGIN
         END IF;
     END IF;
 
-    SET v_sumvolume = v_sumvolume + v_volume;
-    SET v_sumamount = v_sumamount + v_amount;
+    SET v_sumvolume = v_endvolume + v_volume;
+    SET v_sumamount = v_endamount + v_amount;
     SET @v_got_100 = 0;
 
     lbl_upto_100: WHILE v_id <= @v_len DO
@@ -172,6 +178,15 @@ CREATE PROCEDURE sp_acc(a_code INT(6) ZEROFILL) tag_acc:BEGIN
                 SET v_off_c     = v_id;
                 SET v_date_c    = v_date;
                 SET v_wchng     = 100 * (v_close-v_avrg_c)/v_avrg_c;
+
+                IF v_id_jumped = 1 THEN
+                    SET v_endvolume = v_vol_more;               -- 跳了ID，将余量叠加到下个周期
+                    SET v_endamount = v_amt_more;
+                    --  SELECT v_datetime_c, v_vol_unit, v_volume, v_endvolume;
+                ELSE
+                    SET v_endvolume = 0;
+                    SET v_endamount = 0;
+                END IF;
             ELSE
                 SELECT date FROM tempday WHERE id=(v_off_c+1) INTO v_date;
                 SET @v_got_100 = 2;
@@ -197,6 +212,7 @@ CREATE PROCEDURE sp_acc(a_code INT(6) ZEROFILL) tag_acc:BEGIN
         IF  v_got_next = 0 AND v_sumvolume >= v_vol_unit THEN 
             SET v_nextid = v_id+1;
             SET v_got_next = 1;
+            SET v_id_jumped= 1;
         END IF;
 
     END WHILE lbl_upto_100;
@@ -208,8 +224,8 @@ CREATE PROCEDURE sp_acc(a_code INT(6) ZEROFILL) tag_acc:BEGIN
   --  SELECT v_part;
 
     INSERT INTO tbl_adiff(
-               code,date_p,date_c,off_p,off_c,tnov_p,tnov_c,avrg_p,avrg_c,ratio,wchng,cdiff,rdiff,dbrat)
-        SELECT A.code,A.date_p,A.date_c,A.off_p,A.off_c,A.tnov_p,A.tnov_c,A.avrg_p,A.avrg_c,A.ratio,A.wchng,
+               code,date_p,date_c,off_p,off_c,tnov_p,tnov_c,avrg_p,avrg_c,ratio,close,wchng,cdiff,rdiff,dbrat)
+        SELECT A.code,A.date_p,A.date_c,A.off_p,A.off_c,A.tnov_p,A.tnov_c,A.avrg_p,A.avrg_c,A.ratio,A.close,A.wchng,
             (A.avrg_c-B.avrg_c) as cdiff,
             (A.ratio-B.ratio) as rdiff,
             100*(2*A.close-(A.avrg_p+A.avrg_c))/(A.avrg_p+A.avrg_c) as dbrat FROM tbl_acc A 

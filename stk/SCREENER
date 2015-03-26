@@ -297,7 +297,7 @@ function fn_turnov5()
         SELECT round(sum(d.volume)/cap.shares/2, 3) as nmc_ratio FROM 
         (SELECT * FROM day WHERE code=${code} and date<'$CLOSING' ORDER by date DESC LIMIT 20)
         as d, cap WHERE d.code = cap.code INTO @irt;
-        SELECT IF(@irt<.2,@irt,.2);
+        SELECT IF(@irt<.4,@irt,.4);
         "
     fi
     mysql -N kts<<<"${sql}"
@@ -504,14 +504,14 @@ function fn_acc()
     fn_iscode ${code:=$1}
     xt_ret $? "invalid code[$1]" || return $?
 
-    irt=`fn_turnov5 $code`
+    irt=`TOV5=2 fn_turnov5 $code`
     cp ${mps_acc} ${mps_god}
 
     echo "
     SET @END='${END}';
     SET @NUM=${NUM:-500};
-    SET @PARTS=${PARTS:-20};
-    SET @PPLUS=${PPLUS:-5};
+    SET @PARTS=${PARTS:-5};
+    SET @PPLUS=${PPLUS:-20};
     SET @NMC_RATIO=${NMC_RATIO:-${irt}};
     call sp_visit_code(${code});
     " >> $mps_god

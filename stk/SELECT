@@ -291,8 +291,8 @@ function fn_tao5()
 
 function fn_rdiff()
 {
-   #columns=date_p,date_c,off_p,off_c,tnov_p,tnov_c,avrg_p,avrg_c,ratio
-    columns=date_p,date_c,off_p,off_c,tnov_c,avrg_p,avrg_c,ratio,cdiff,rdiff,wchng,dbrat
+   #columns=date_p,date_c,off_p,off_c,tnov_p,tnov_c,avrg_p,avrg_c,ratio,dbrat
+    columns=date_p,date_c,off_p,off_c,tnov_c,close,avrg_p,avrg_c,ratio,cdiff,rdiff,wchng
     columns=${columns:-'*'}
     columns=t.${columns//,/,t.}
 
@@ -301,7 +301,7 @@ function fn_rdiff()
     {
         tbl_super_dive="
         SELECT t.id,t.code,
-           ${columns}
+        ${columns}, (cdiff+rdiff+wchng) as fire
            -- , c.nmc, c.name
            FROM ${tablex:-tbl_rdiff} as t, cap as c 
            WHERE t.code = c.code HAVING 1 ${COND} limit ${LIMIT:-144}
