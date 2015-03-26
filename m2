@@ -565,6 +565,7 @@ function fn_0920_3D打印()               { cat ljsw_0920_3D打印 ;}
 function fn_0926_领导，你为啥不信我？() { cat ljsw_0926_领导，你为啥不信我？;}
 function fn_1003_张勋复辟()             { cat ljsw_1003_张勋复辟 ;}
 function fn_1017_外交()                 { cat ljsw_1017_外交 ;}
+function fn_1008_怎样炼成世界级高手()   { cat ljsw_1008_怎样炼成世界级高手 ;}
     local opts=(
         voice
         00_曾国藩
@@ -591,6 +592,7 @@ function fn_1017_外交()                 { cat ljsw_1017_外交 ;}
         0926_领导，你为啥不信我？       # 权力
         1003_张勋复辟                   # 权力2
         1017_外交                       # 强国思维
+        1008_怎样炼成世界级高手
     )
     fn_print $@
 }

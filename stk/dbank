@@ -37,7 +37,8 @@ WGET='timeout 34 /usr/bin/wget'
 W3M='timeout 34 /usr/bin/w3m'
 # round(100*vol5/(c.nmc/c.close),2) as tov5, 
 RISE='TRUNCATE(100*(d.close-yesc)/yesc, 2)'
-SWING='TRUNCATE(100*(high-low)/yesc, 2)'
+PEAK='TRUNCATE(100*(high-yesc)/yesc, 2)'
+TROUGH='TRUNCATE(100*(low-yesc)/yesc, 2)'
 TURNOV='TRUNCATE(100*d.volume*c.close/c.nmc, 2)'
 TURNOV0='TRUNCATE(100*d.volume/@shares0, 2)'
 

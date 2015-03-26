@@ -24,7 +24,8 @@ fn_realtime()
         }
     }' | tr ' ' ',' | sed 's/,$//g'`
 
-    indexlist='sh000001,sz399001,sz399106,sz399006'
+    # 深证综指 sz399106
+    indexlist='sh000016,sz399300,sz399004,sz399005,,sz399006'
     $W3M -dump "http://hq.sinajs.cn/list=${indexlist},${comma_sepa_list}" > ${rt_stdout} 
     xt_ret $? "NETWORK" || return $?
 
@@ -33,7 +34,7 @@ fn_realtime()
 
     cat ${rt_stdout} | \
         sed -e '1s/sh000001/sh900001/' -e 's/var hq_str_..//g' -e 's/="/,/g' | \
-        sed -n '1,4p' | awk -F',' '{
+        sed -n '1,5p' | awk -F',' '{
                 printf "%06d\t%-8.2f\t%.2f\t%.2f\t%.2f\t%s\n", 
                      $1,
                      $5, 
@@ -45,7 +46,7 @@ fn_realtime()
 
     cat ${rt_stdout} | \
         sed -e '1s/sh000001/sh900001/' -e 's/var hq_str_..//g' -e 's/="/,/g' | \
-        sed -n '5,$p' | awk -F',' '{
+        sed -n '6,$p' | awk -F',' '{
                 printf "%06d\t%.2f\t\t%.2f\t%.2f\t%.2f\t%s\n", 
                      $1,
                      $5, 

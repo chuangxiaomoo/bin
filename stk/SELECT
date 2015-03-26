@@ -35,7 +35,7 @@ function fn_ls()
     echo "
     SELECT nmc/close FROM cap WHERE code=${code} LIMIT 1 INTO @shares0;
     SELECT * FROM (
-        SELECT $fields, $SWING as swing, $RISE as rise, $TURNOV0 as turnover
+        SELECT $fields, $PEAK as peak, $TROUGH as trough, $RISE as rise, $TURNOV0 as turnover
         FROM day as d
         WHERE d.code = ${code} and d.date <= '${END}'
         ${COND} ORDER by date DESC limit ${LIMIT:-13}

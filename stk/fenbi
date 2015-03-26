@@ -129,7 +129,8 @@ function fn_fenbi()
     # echo ${dt}
 
     if [ "${dt}" = NULL ]; then
-        echo "NULL database, run ./mi5 first"
+        echo "NULL database, re-run after [ ./mi5 ${code} ] "
+        exit
     else
         sql="SELECT date FROM day WHERE code=${code} and date>'${fmaxdate}' and date<'${today}';"
         dates=(`mysql -N kts <<< "${sql}"`)
