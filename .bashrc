@@ -206,6 +206,7 @@ lsgcc()
     hisi    arm-hisiv100nptl-linux-
     nxp     arm-linux-
     ti      arm_v5t_le-
+    grain   arm-unknown-linux-uclibcgnueabi
 
     /home/n/rc.d/mksquashfs
     "
