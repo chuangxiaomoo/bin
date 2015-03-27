@@ -120,6 +120,8 @@ function fn_fenbi()
         if [ "${got}" -eq 0 ]; then
             fn_fenbi0
             sleep 30
+        else
+            echo patrol@HHMM: ${hhmmss:0:4}%${per_minute}
         fi
         sleep 30  # 30 seconds
     done
