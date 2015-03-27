@@ -1,12 +1,5 @@
 #! /bin/bash
 
-mod_fb=500
-file_c='/tmp/.tmp.c'
-file_wb='/tmp/.tmp.wb'
-file_ma120='/tmp/.tmp.ma120'
-file_ma240='/tmp/.tmp.ma240'
-p_bin='/root/bin/stk/bin/'
-selecap="SELECT code FROM cap"
 helpmsg="
     ------------------------------ 环境变量 -----------------------------
     ASC         排序方式，SELECT默认使用asc，SCREENER默认使用desc
@@ -44,12 +37,14 @@ TURNOV0='TRUNCATE(100*d.volume/@shares0, 2)'
 
 url_sh000001='http://hq.sinajs.cn/list=sh000001'
 
+mod_fb=500
 mps_org="sql/xRD.sql"
 mps_acc="sql/acc.sql"
 mps_acf="sql/acf.sql"
 mps_god="/var/God.sql"
 sql_temp='/dev/shm/sql.temp'
 
+p_bin='/root/bin/stk/bin/'
 warehs='/opt0/warehs'
 znzday='/opt0/warehs/znzday'
 workdir='/root/bin/stk'
@@ -99,14 +94,28 @@ yahootimeout='/dev/shm/day/yahoo.ask.timeout'
 fenbi_raw='/dev/shm/fenbi/raw'
 fenbi_raw1='/dev/shm/fenbi/raw1'
 fenbi_ripe='/dev/shm/fenbi/ripe'
-mkdir -p ${fenbi_raw%/*}
 
 yjbb_raw='/dev/shm/yjbb_raw'
 yjbb_rip='/dev/shm/yjbb_rip'
 
-cache='/tmp/cache'
-buffer='/tmp/buffer'
+     cache='/tmp/kts/cache'
+    buffer='/tmp/kts/buffer'
+    file_c='/tmp/kts/chao'
+   file_wb='/tmp/kts/wb'
+   exclude='/tmp/kts/exclude'
+file_ma120='/tmp/kts/ma120'
+file_ma240='/tmp/kts/ma240'
 
+mkdir -p /tmp/kts
+mkdir -p /dev/shm/fenbi
+
+touch $cache
+touch $buffer
+touch $file_c
+touch $file_wb
+touch $exclude
+touch $file_ma120
+touch $file_ma240
 
 function fn_txttbl()
 {
