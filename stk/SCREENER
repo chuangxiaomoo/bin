@@ -133,6 +133,7 @@ function fn_9jian()
     local code=`sed 's/^0*//g' <<< $1 | xargs printf "%06d"`
     TBL=tbl_cost9 up file_to_table ${code}
     TBL=tbl_cost9 NUM=${NUM:-240} fn_dugu9jian
+    SELECT 0
 }
 
 function fn_6jian()
@@ -144,6 +145,7 @@ function fn_6jian()
     TBL=tbl_cost6 up file_to_table ${code}
     daysql="SELECT * FROM day WHERE code=${code} and date<='${END}' ORDER by date DESC limit 1"
     daysql=${daysql} TBL=tbl_cost6 NUM=${NUM:-240} fn_6maishenjian ${2:-wchng}
+    SELECT 1
 }
 
 function fn_flush_code()
@@ -622,8 +624,8 @@ function fn_main()
     "acc                code                  # Acceleration"
     "acf                code                  # Acceleration of fb"
     "tov                [field]               # mavol5B25's别名 其ma是wchng"
-    "ma5B25             [field]               # "
-    "ma240              [field]               # 5B25+60x2x4"
+    "ma5B25             [field]               # ma240局部"
+    "ma240              [field]               # ma240整体:5B25+60x2x4"
     )
 
     # SCREENER的宗旨，弃子取势
