@@ -23,6 +23,7 @@ function fn_main()
         银行业.BLK      .blk.yhy
         房地产.BLK      .blk.fdc
         300地产.BLK     .blk.300dc
+        上海国资.BLK    .blk.shgz
 
         污水处理.BLK     .blk.wscl
 生态保护和环境治理业.BLK .blk.hjzl
