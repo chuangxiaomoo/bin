@@ -719,7 +719,7 @@ function fn_kill()                      { cat cmd_kill ;}
 function fn_install()                   { cat cmd_install ;}
     local opts=(
         01_方便之门
-        arping                  # arp -D 检测IP冲突
+        arping                  # arp -D 检测IP冲突 iputils
         date
         dd
         dialog
