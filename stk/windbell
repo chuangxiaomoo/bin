@@ -65,8 +65,8 @@ function fn_9jian()
 
 function fn_acf()
 {
-    file=${1:-.soptter.trade}
-    tail -n+2 ${file} |
+    file=${1:-'.soptter.trade'}
+    grep -v '^#' ${file} |
     while read code symble op gate nmc_ratio; do
         # echo ${op} ${gate}
 
