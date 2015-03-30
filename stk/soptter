@@ -73,7 +73,7 @@ function fn_main()
 #   YIST=${YIST:-'.soptter.etf'}
 #   YIST=${YIST:-'.soptter.lin'}
 #   YIST=${YIST:-'.soptter.ever'}
-#   YIST=${YIST:-'.soptter.focus'}
+    YIST=${YIST:-'.soptter.focus'}
     YIST=${YIST:-'.soptter.trade'}
     codelist=`cat ${YIST}|awk '/^[^#]/{print $1}'`
     fn_realtime ${codelist}

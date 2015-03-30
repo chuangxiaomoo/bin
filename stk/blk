@@ -5,6 +5,8 @@
 # 钛：宝钛股份、西部材料；锆：东方锆业；钽：东方钽业；锗：云南锗业；
 # 铼：炼石有色；钨：中钨高新、厦门钨业、章源钨业；钼：金钼股份、洛阳钼业；
 # 稀土：五矿稀土、包钢稀土、广晟有色。
+# [互联网+](http://mt.sohu.com/20150311/n409644432.shtml)
+# [互联金融](http://www.360doc.com/content/14/0201/22/1632548_349253018.shtml)
 
 function fn_main()
 {
@@ -24,10 +26,11 @@ function fn_main()
         房地产.BLK      .blk.fdc
         300地产.BLK     .blk.300dc
         上海国资.BLK    .blk.shgz
+        互联金融.BLK    .blk.hljr
 
-        污水处理.BLK     .blk.wscl
-生态保护和环境治理业.BLK .blk.hjzl
-        节能环保.BLK     .blk.jnhb
+        节能环保.BLK        .blk.jnhb
+        污水处理.BLK        .blk.wscl
+生态保护和环境治理业.BLK    .blk.hjzl
     )
     local i j
     for (( i=0,j=1; i<${#maps[@]}; i+=2,j+=2 )); do
