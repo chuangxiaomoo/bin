@@ -51,7 +51,7 @@ function fn_9jian()
 {
     while :; do
         FINA=1 up 4
-        TBL=windbell_codes SCREENER 0 || up wb
+        TBL=${TBL:-windbell_codes} SCREENER 0 || up wb
         SELECT dugu9jian wchng
         # COND='and wchng<-10.5 and up>.3' fn_dugu9jian
         COND='and wchng<-12.48 or (wchng<-12 and up>.1)' fn_dugu9jian
