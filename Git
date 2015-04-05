@@ -12,6 +12,7 @@ function fn_main()
         c   commit  [ci . to local]
         d   diff    [file] 
         dp  dprev   file 'PREV'
+        ds  .swp    [del .swp] 
         l   log     log -p file
         p   pull    [origin master]
         P   push    [origin master]
@@ -57,6 +58,10 @@ function fn_main()
         git diff HEAD^ HEAD ${filelist}
         ;;
 
+    ds)
+        find -name '.*.swp' -exec rm -f {} \;
+        ;;
+
     p*|pull)
         # 解决自动merge
         # git config branch.master.remote origin
@@ -69,7 +74,7 @@ function fn_main()
         git push origin master
         ;;
 
-    r*|revert)
+    r|revert)
         [ -z "$filelist" ] && echo "Usage: Git r file..." && exit
         git checkout -- ${filelist%%/}
         ;;
