@@ -308,8 +308,10 @@ function fn_up_tbl_xRD()
 function fn_dump_day_2_tmp()
 {
     # 对 /tmp 有写权限，其它的则需要设置
+    chmod 777 ${daydump%/*}
+    rm -f ${daydump}
     echo "
-    SELECT * FROM day WHERE date>='$1' and date<='${2:-$END}' INTO OUTFILE '/tmp/day';
+    SELECT * FROM day WHERE date>='${1:-$END}' and date<='${2:-$END}' INTO OUTFILE '${daydump}';
     " | mysql kts
 }
 
@@ -504,7 +506,7 @@ function fn_main()
     "copy_table_2_table src dst         # --- 使用 1 1 做为代号"
     "add_yesclose                       # 为yahoo.指南针数据添加yesclose"
     "load_directory                     # load文件夹${znzday}到表day"
-    "dump_day_2_tmp START END           # 导出日线"
+    "dump_day_2_tmp START END           # 导出日线到${daydump} \${START:-\$END} \${END:-\${END}}"
     "trs_min_2_day                      # 最后一笔分线转日线"
     "wb                                 # windbell_codes(close<avrg)"
     "day code                           # DL 1year data from znz"
