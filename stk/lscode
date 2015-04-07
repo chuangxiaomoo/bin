@@ -14,11 +14,24 @@ function fn_main()
             xt_ret $? "error: ${@:2} ${i}" || return $?
         done
         ;;
+    g|grep)
+        [ "${#}" -eq 1 ] && fn_main
+        local i=
+        for i in ${@:2}; do
+            test -f ${i}
+            xt_ret $? "error: ${i} not exist" || return $?
+        done
+        for i in ${codes[@]}; do
+            grep --color ${i} ${@:2}
+        done
+        ;;
     l|list)
         echo ${codes[@]}
         ;;
     *)
-        echo "Usage: $0 {list|cmd cmdline}"
+        echo "Usage: YIST=xx $0 list"
+        echo "       YIST=xx $0 cmd cmdline {}"
+        echo "       YIST=xx $0 grep {} haystack_files..."
         exit
         ;;
     esac
