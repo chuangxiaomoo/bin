@@ -38,7 +38,8 @@ function fn_main()
         echo ${maps[${i}]} ${maps[${j}]}
         cat ${BLK}/${maps[${i}]} | \
             tr -cd '[0-9SZH]' | sed 's/S[HZ]/\n/g'| \
-            tail -n+2 | sort -g | grep '^[036]' > ${maps[${j}]}
+            tail -n+2 | sort -g | grep '^[036]' > /dev/shm/.blk
+        grep -f /dev/shm/.blk .codelist > ${maps[${j}]}
     done
     return $?
 }
