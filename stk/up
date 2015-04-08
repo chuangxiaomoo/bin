@@ -411,7 +411,7 @@ function fn_copy_table_2_table()
 
 function fn_html()
 {
-    if [ "${FINA:-0}" -eq 1 ] ; then
+    if [ "${FINA:-1}" -eq 1 ] ; then
         timeout 10 ./soptter > ${js_xunner_txt}
     else
         timeout 10 ./xunner > ${js_xunner_txt}
