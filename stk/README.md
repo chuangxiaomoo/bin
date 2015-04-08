@@ -61,4 +61,4 @@
 ## 缠中说禅       .chan/chan.md
 ## 洪粉家人       .doc/hrong.md
 ## 逻辑           .doc/logic.md
-## 操盘日记       .doc/diary.md|1|
+## 操盘日记       .doc/diary.md
