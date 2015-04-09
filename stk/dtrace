@@ -5,8 +5,8 @@
 
 function fn_xunner()
 {
-    printf "%6s\t%s\t%s\t%s\t%s\t%s\t%s\t%-5s\t%5s\t%5s\t%5s\n" \
-            symbol avrg trade chng high pcnt_hi loww pcnt_lo turnov vratio name
+    printf "%6s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%-5s\t%5s\t%5s\t%5s\n" \
+            symbol avrg trade chng yesc open high pcnt_hi loww pcnt_lo turnov vratio name
 
     # cat ${rt_stdout} 
 
@@ -14,9 +14,10 @@ function fn_xunner()
         tr -d '\n' | tr "'" '"' | 
         sed -e 's/^.*= *//' -e 's/;.*$//' | 
         JSON.sh -b | tr -d '"' | 
-        awk '{printf "%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%s\n", 
+        awk '{printf \
+                "%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%s\n", 
                 $1,(100*$3-$10/($9+0.00001))/($3+0.00001),
-                $3,$4, $7, 100*($3-$7)/$5, $8, 100*($3-$8)/$5, $11, $13, $2
+                $3,$4, $5, $6, $7, 100*($3-$7)/$5, $8, 100*($3-$8)/$5, $11, $13, $2
         }' | sort -g -r -k4
 }
 
