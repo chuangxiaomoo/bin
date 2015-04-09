@@ -261,6 +261,7 @@ function fn_13_除权后的股票难以上涨()   { cat stk_13_除权后的股�
 function fn_15_逐笔_分笔_分时_逐单()    { cat stk_15_逐笔_分笔_分时_逐单 ;}
 
 function fn_20_fenbi()                  { cat stk_20_fenbi ;}
+function fn_tdx()                       { cat stk_tdx ;}
 
 function fn_jc_这不是独家买卖()         { cat stk_jc_这不是独家买卖 ;}
 function fn_jc_Golf智慧_快就是慢()      { cat stk_jc_Golf智慧_快就是慢 ;}
@@ -282,6 +283,7 @@ function fn_jc_Golf智慧_快就是慢()      { cat stk_jc_Golf智慧_快就是�
         03_大数据                       # macro data
         07_牛眼投资法                   # bulleye
 
+        tdx                             # 通达信
         10_dazhihui                     # dzh 大智慧
         11_N_XD_XR_DR                   # 除权除息
         13_除权后的股票难以上涨
