@@ -137,9 +137,11 @@ function fn_udev()                      { cat linux_udev ;}
 function fn_mtd()                       { cat linux_mtd ;}
 function fn_ubifs()                     { cat linux_ubifs ;}
 function fn_lockfile()                  { cat linux_lockfile ;}
+function fn_memory()                    { cat linux_memory ;}
     local opts=(
         fundamental
         kernel
+        memory                          # 减少内存使用
         cron
         ldd3                            # Linux Device Driver Edition3
         IPC
