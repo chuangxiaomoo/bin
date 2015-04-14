@@ -598,6 +598,7 @@ function fn_rm()                        { cat git_rm ;}
 function fn_config()                    { cat git_config ;}
 function fn_subconf()                   { cat git_subconf ;}
 function fn_log()                       { cat git_log ;}
+function fn_cat-file()                  { cat git_cat-file ;}
     local opts=(
         base                    # 入门
         add
@@ -610,6 +611,7 @@ function fn_log()                       { cat git_log ;}
         github                  # create 或 pull 一个项目 from github.com 
         init                    # 按遇到的先后顺序
         log
+        cat-file
     )
     fn_print $@
 }
