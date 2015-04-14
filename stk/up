@@ -483,6 +483,29 @@ function fn_day()
     bin/znz.yahoo $@
 }
 
+
+function fn_ipo()
+{
+    tmp='/tmp/kts/.ipo.tmp'
+    raw='/tmp/kts/.ipo.raw'
+    rip='/tmp/kts/.ipo.rip'
+
+    local i
+    for (( i=1; i<=1; i+=1 )); do
+        url="http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx?type=NS&sty=NSST&st=12&sr=-1&p=${i}&ps=50"
+
+        echo dump ${url}
+        w3m -dump "${url}" > ${tmp}
+
+        cat ${tmp} |sed -e '1s/(\[//' -e '$s/])//' -e 's/"//g' | tr -d '\n' |
+                    sed -e 's/AN201/\n&/g' -e 's/AN//g' | 
+                    awk -F',' '/^201/{printf "%d\t%s\t%s\n", $1/1000000000000,$5,$4}'  > ${raw}
+
+        cat ${raw} >> ${rip}
+    done
+
+}
+
 function fn_main()
 {
     CURR=`fn_maxdate`
@@ -510,6 +533,7 @@ function fn_main()
     "trs_min_2_day                      # 最后一笔分线转日线"
     "wb                                 # windbell_codes(close<avrg)"
     "day code                           # DL 1year data from znz"
+    "ipo                                # DL ipo codes from east"
     )
 
     # 存储过程函数文件的最后5行都是注释
