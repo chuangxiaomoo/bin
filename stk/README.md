@@ -48,7 +48,7 @@
 
 ## 心战           .doc/psy.md
 ## 张小龙         .doc/zhangxiaolong.md
-## 总结2020       .doc/2013.md
+## 总结2020       .doc/2013.md            -- 人生使命
 ## 笛卡尔实践     .doc/Descartes.md
 ## 目标&策略&纪律 .doc/discipline.md
 
@@ -56,8 +56,8 @@
 ## 空间域         .doc/space.md
 ## 资金管理       .doc/fundmanagement.md
 ## 交易系统       .doc/tradesys.md
-## 独孤九剑       .doc/dugu9jian.md       --成本.信息进化论.解N变量方程组
-## 事件冲击       .doc/event.md           --高管增持 定向增发 银行加息
+## 独孤九剑       .doc/dugu9jian.md       -- 成本.信息进化论.解N变量方程组
+## 事件冲击       .doc/event.md           -- 高管增持 定向增发 银行加息
 ## 缠中说禅       .chan/chan.md
 ## 洪粉家人       .doc/hrong.md
 ## 逻辑           .doc/logic.md
