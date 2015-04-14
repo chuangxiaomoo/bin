@@ -717,8 +717,8 @@ function fn_main() {
     local opts=(
         50_interview_faq                # 想想自己的价值？
         01_囧_jiong
-        02_如何解题                     # how to solve it, problem_solving
         architecture                    # 建筑
+        02_如何解题                     # how to solve it, problem_solving
         advertisement
         aesthetics                      # i:s`θetic 美学
         estate                          # 房地产
