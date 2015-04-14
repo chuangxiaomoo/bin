@@ -1,0 +1,9 @@
+# cat-file
+
+# diff 替代 cat
+
+  git diff b0536eeb2aa7cd6e76b07f83bb42d11a83de022f HEAD -- .blk.50etf
+
+# show
+
+  PAGER= git show b0536eeb2aa7cd6e76b07f83bb42d11a83de022f:stk/.blk.50etf
