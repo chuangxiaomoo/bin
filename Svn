@@ -40,7 +40,9 @@ function fn_main()
     D)
         {
         echo "Deleting: "
-        svn status | grep "^${filelist:-?}" | tee /dev/stderr |  awk '{print $2}' | xargs -I{} rm -rf {}
+        exclude="INSTALL|cscope"
+        svn status | grep -v -E "${exclude}" | grep "^${filelist:-?}" | tee /dev/stderr |\
+            awk '{print $2}' | xargs -I{} rm -rf {}
         } 2>&1 | sed 's/^/\t/g'
         ;;
     d|diff)
