@@ -145,7 +145,6 @@ function fn_6jian()
     TBL=tbl_cost6 up file_to_table ${code}
     daysql="SELECT * FROM day WHERE code=${code} and date<='${END}' ORDER by date DESC limit 1"
     daysql=${daysql} TBL=tbl_cost6 NUM=${NUM:-240} fn_6maishenjian ${2:-wchng}
-    SELECT 1
 }
 
 function fn_flush_code()

@@ -942,6 +942,8 @@ CREATE PROCEDURE sp_6maishenjian(a_code INT(6) ZEROFILL) tag_6mai:BEGIN
     -- 过滤停牌很久的个股? 只9jian才过滤
     -- IF DATE_ADD(v_datemax, INTERVAL 5 DAY) < @END THEN LEAVE tag_6mai; END IF;
 
+    -- 新股第1日即是最低日，前面没有数据，此情况下，请使用9jian
+
     lbl_upto_100: WHILE v_id <= @v_len DO
         SELECT volume,amount FROM tempday WHERE id=(v_id) INTO v_volume,v_amount;
 
