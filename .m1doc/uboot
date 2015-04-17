@@ -33,6 +33,11 @@
   setenv bootcmd     'nand read 0x80700000 0x400000 0x300000; 
                       bootm 0x80700000'
 
+## nand write.yaffs
+
+  nand erase 600000 1E00000;mw.b 0x82000000 ff 1E00000; tftp 0x82000000 rootfs_hi3535_2k_4bit.yaffs2; 
+  nand write.yaffs 0x82000000 0x600000 0x1DFFB80
+
 ## nand 写保护
 
   ? tftpboot
