@@ -36,6 +36,8 @@ function fn_dugu9jian()
     " | tee -a $mps_god
     mysql $mo -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
+
+    test -n "${1}" && SELECT 0
 }
 
 function fn_6maishenjian()
@@ -56,7 +58,7 @@ function fn_6maishenjian()
     mysql $mo -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
 
-    SELECT 6maishenjian
+    test -n "${1}" && SELECT 6maishenjian
 }
 
 function fn_taox_ratio0()
@@ -610,8 +612,8 @@ function fn_main()
     xt_ret $? "invalid END[$2]" || return $?
 
     cmdlist=(
-    "dugu9jian          [field]               # NUM=61 .NMC end.close analyze"
-    "6maishenjian       [field]               # NUM=61 min(close) sort by #{COL}"
+    "dugu9jian          [print]               # NUM=61 .NMC end.close analyze"
+    "6maishenjian       [print]               # NUM=61 min(close) sort by #{COL}"
     "9jian              code [field]          # #{NUM}日，个股成本分析"
     "6jian              code [field]          # #{NUM}日，个股成本分析"
     "nouse              [field]               # "
