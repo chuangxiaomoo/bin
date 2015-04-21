@@ -392,7 +392,7 @@ function fn_mavol5B25()
 
 function fn_focus()
 {
-    YIST=${YIST:-'.soptter.focus'} LIMIT=99 fn_dugu9jian ${1:-wchng}
+    YIST=${YIST:-'.soptter.trade'} LIMIT=99 fn_dugu9jian ${1:-wchng}
 }
 
 function fn_auto_nmemb()
@@ -617,7 +617,7 @@ function fn_main()
     "9jian              code [field]          # #{NUM}日，个股成本分析"
     "6jian              code [field]          # #{NUM}日，个股成本分析"
     "nouse              [field]               # "
-    "focus              [field]               # #{YIST:-.soptter.focus}->zxg and 9jian"
+    "focus              [field]               # #{YIST:-.soptter.trade}->zxg and 9jian"
     "tao                code [field]          # #{nmemb}"
     "tao5               code                  # #{nmemb} #{ZIZE}"
     "bei                {code...|file}        # #{nmemb} #{ZIZE}"

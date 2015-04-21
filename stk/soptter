@@ -66,6 +66,7 @@ function fn_main()
 #   YIST=${YIST:-'.blk.sc40'}
 #   YIST=${YIST:-'.etf.50'}
 #   YIST=${YIST:-'.blk.300dc'}
+#   YIST=${YIST:-'.blk.bxy'}
 #   YIST=${YIST:-'.blk.qs'}
 #   YIST=${YIST:-'.blk.yhy'}
 #   YIST=${YIST:-'.blk.cybz'}
