@@ -57,7 +57,7 @@
 ## 资金管理       .doc/fundmanagement.md
 ## 交易系统       .doc/tradesys.md
 ## 独孤九剑       .doc/dugu9jian.md       -- 成本.信息进化论.解N变量方程组
-## 事件冲击       .doc/event.md           -- 高管增持 定向增发 银行加息
+## 事件冲击       .doc/event.md           -- 高管增持 定向增发 银行加息 gushequ大数据
 ## 缠中说禅       .chan/chan.md
 ## 洪粉家人       .doc/hrong.md
 ## 逻辑           .doc/logic.md
