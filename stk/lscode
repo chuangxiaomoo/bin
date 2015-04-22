@@ -6,7 +6,7 @@ function fn_main()
 {
     codes=(`cat ${YIST:-'.soptter.trade'} | awk '/^[036]/{print $1}'`)
     case $1 in
-    c|cmd)
+    c)
         [ "${#}" -eq 1 ] && fn_main
         local i=
         for i in ${codes[@]}; do
@@ -14,7 +14,8 @@ function fn_main()
             xt_ret $? "error: ${@:2} ${i}" || return $?
         done
         ;;
-    g|grep)
+
+    g|code2sym)
         [ "${#}" -eq 1 ] && fn_main
         local i=
         for i in ${@:2}; do
@@ -25,13 +26,19 @@ function fn_main()
             grep --color ${i} ${@:2}
         done
         ;;
+
     l|list)
         echo ${codes[@]}
         ;;
+
+    s|sym2code)
+        cat $YIST | xargs -I{} grep {} .codelist
+        ;;
     *)
-        echo "Usage: YIST=xx $0 list"
-        echo "       YIST=xx $0 cmd cmdline {}"
-        echo "       YIST=xx $0 grep {} haystack_files..."
+        echo "Usage: YIST=xx $0 c cmd..."
+        echo "       YIST=xx $0 {l|list}"
+        echo "       YIST=xx $0 {g|grep_code} haystack_files..."
+        echo "       YIST=xx $0 {s|sym2code}"
         exit
         ;;
     esac
