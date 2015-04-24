@@ -200,8 +200,9 @@ function fn_6maishenjian()
     echo ----- COND: $COND -----
     function fn_get_tbl_6jian_dive()
     {
-        daysql=${daysql:-SELECT * from day where date=\'${DATE2}\'}
         tbl_super_dive="
+        CREATE TEMPORARY TABLE tempday LIKE day;
+        INSERT INTO tempday SELECT * from day where date='${DATE2}';
         SELECT t.code, DATE_FORMAT(date1,'%m-%d') as start, 
                        DATE_FORMAT(date2,'%m-%d') as end, ${columns}, c.nmc, chng, 
                        round(100*(t.low  - avrg)/avrg,2) as lchng, 
@@ -210,8 +211,7 @@ function fn_6maishenjian()
                        round(100*(d.close-(t.close+t.low)/2)/avrg,2) as trough_up, 
                        round((avrg-d.close)/(d.close-(t.close+t.low)/2),2) as odds, 
                        c.name 
-            FROM ${tablex:-tbl_6mai} as t, cap as c, 
-                (${daysql}) as d
+            FROM ${tablex:-tbl_6mai} as t, cap as c, tempday as d
             WHERE t.code = c.code and t.code = d.code HAVING 1 ${COND} 
             ORDER by ${1:-wchng} ${ASC:-asc} limit ${LIMIT:-36}     # COND='nmc<250000 and lchng<-9.7 and off<21'
         "
@@ -241,13 +241,15 @@ function fn_dugu9jian()
     function fn_get_tbl_9jian_dive()
     {
         tbl_super_dive="
+        CREATE TEMPORARY TABLE tempday LIKE day;
+        INSERT INTO tempday SELECT * from day where date='${DATE2}';
         SELECT t.code,  DATE_FORMAT(date1,'%m-%d') as start, 
                         DATE_FORMAT(date2,'%m-%d') as end, ${columns}, c.nmc, chng, 
                         $PEAK as peak, 
                         $TROUGH as trough,
                         round(100*(t.low-avrg)/avrg,2) as lchng, 
                         round(100*(t.close-avrg)/avrg,2) as wchng, c.name 
-           FROM ${tablex:-tbl_9jian} as t, cap as c, (SELECT * from day where date='${DATE2}') as d
+           FROM ${tablex:-tbl_9jian} as t, cap as c, tempday as d
            WHERE t.code = c.code and t.code = d.code HAVING 1 ${COND} 
            ORDER by ${1:-lchng} ${ASC:-asc} limit ${LIMIT:-36}      # COND='nmc<250000 and lchng<-9.7 and off<21' 
         "
