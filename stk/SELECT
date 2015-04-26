@@ -200,9 +200,11 @@ function fn_6maishenjian()
     echo ----- COND: $COND -----
     function fn_get_tbl_6jian_dive()
     {
-        tbl_super_dive="
+        tempday="
         CREATE TEMPORARY TABLE tempday LIKE day;
         INSERT INTO tempday SELECT * from day where date='${DATE2}';
+        "
+        tbl_super_dive="
         SELECT t.code, DATE_FORMAT(date1,'%m-%d') as start, 
                        DATE_FORMAT(date2,'%m-%d') as end, ${columns}, c.nmc, chng, 
                        round(100*(t.low  - avrg)/avrg,2) as lchng, 
@@ -219,12 +221,12 @@ function fn_6maishenjian()
     }
 
     fn_get_tbl_6jian_dive $1
-    mysql $mo -t kts <<< "${tbl_super_dive}"
+    mysql $mo -t kts <<< "${tempday}${tbl_super_dive}"
     xt_ret $? "${FUNCNAME}" || return $?
     
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
-    mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" > $file_c 
+    mysql -N kts <<<"${tempday}SELECT code FROM (${tbl_super_dive}) as tbl" > $file_c 
     up file_to_table $file_c
     xt_ret $? "${FUNCNAME}" || return $?
 }
@@ -240,9 +242,11 @@ function fn_dugu9jian()
     echo ----- COND: $COND -----
     function fn_get_tbl_9jian_dive()
     {
-        tbl_super_dive="
+        tempday="
         CREATE TEMPORARY TABLE tempday LIKE day;
         INSERT INTO tempday SELECT * from day where date='${DATE2}';
+        "
+        tbl_super_dive="
         SELECT t.code,  DATE_FORMAT(date1,'%m-%d') as start, 
                         DATE_FORMAT(date2,'%m-%d') as end, ${columns}, c.nmc, chng, 
                         $PEAK as peak, 
@@ -257,12 +261,12 @@ function fn_dugu9jian()
     }
 
     fn_get_tbl_9jian_dive $1
-    mysql ${mo:-'-t'} kts <<< "${tbl_super_dive}" | grep -v -f .soptter.exclude
+    mysql ${mo:-'-t'} kts <<< "${tempday}${tbl_super_dive}" | grep -v -f .soptter.exclude
     xt_ret ${PIPESTATUS[0]} "${FUNCNAME}" || return $?
     
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
-    mysql -N kts <<<"SELECT code FROM (${tbl_super_dive}) as tbl" > $file_c 
+    mysql -N kts <<<"${tempday}SELECT code FROM (${tbl_super_dive}) as tbl" > $file_c 
     up file_to_table $file_c
     xt_ret $? "${FUNCNAME}" || return $?
 }
