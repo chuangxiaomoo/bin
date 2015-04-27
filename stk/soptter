@@ -47,6 +47,7 @@ fn_realtime()
     cat ${rt_stdout} | \
         sed -e '1s/sh000001/sh900001/' -e 's/var hq_str_..//g' -e 's/="/,/g' | \
         sed -n '6,$p' | awk -F',' '{
+            if (NF > 5)
                 printf "%06d\t%.2f\t\t%.2f\t%.2f\t%.2f\t%s\n", 
                      $1,
                      $5, 
@@ -63,6 +64,7 @@ fn_realtime()
 function fn_main()
 {
     mkdir -p ${rt_stdout%/*}
+#   YIST=${YIST:-'.ipo.201504'}
 #   YIST=${YIST:-'.blk.sc40'}
 #   YIST=${YIST:-'.etf.50'}
 #   YIST=${YIST:-'.blk.300dc'}
@@ -76,8 +78,8 @@ function fn_main()
 #   YIST=${YIST:-'.soptter.ying'}
 #   YIST=${YIST:-'.soptter.ever'}
 #   YIST=${YIST:-'.soptter.hljr'}
+#   YIST=${YIST:-'.soptter.flags'}
 #   YIST=${YIST:-'.soptter.focus'}
-    YIST=${YIST:-'.soptter.flags'}
     YIST=${YIST:-'.soptter.trade'}
     codelist=`cat ${YIST}|awk '/^[^#]/{print $1}'`
     fn_realtime ${codelist}
