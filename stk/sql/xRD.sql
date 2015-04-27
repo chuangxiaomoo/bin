@@ -936,11 +936,15 @@ CREATE PROCEDURE sp_6maishenjian(a_code INT(6) ZEROFILL) tag_6mai:BEGIN
     SELECT date     FROM tempday WHERE id=1 INTO v_datemax;
 
     -- 5周内最低价日
-    SET @left_cursor = 25;
+    -- SET @left_cursor = IF(@v_len<25,@v_len,25);
+
+    SELECT id FROM tempday WHERE id<=25 order by high desc LIMIT 1 INTO @left_cursor;
+
     lbl_downslope_min: WHILE @left_cursor>0 DO
         SELECT id,date,close,low FROM tempday WHERE id<=@left_cursor order by low asc LIMIT 1 
                                  INTO v_id,v_date2,v_close,v_low;
-        IF v_id <=(@left_cursor-5) THEN
+        SELECT v_id,v_date2,@left_cursor-5;
+        IF v_id<=(@left_cursor-5) THEN
             LEAVE lbl_downslope_min;
         END IF;
         SET @left_cursor = @left_cursor-5;
