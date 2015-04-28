@@ -943,7 +943,7 @@ CREATE PROCEDURE sp_6maishenjian(a_code INT(6) ZEROFILL) tag_6mai:BEGIN
     lbl_downslope_min: WHILE @left_cursor>0 DO
         SELECT id,date,close,low FROM tempday WHERE id<=@left_cursor order by low asc LIMIT 1 
                                  INTO v_id,v_date2,v_close,v_low;
-        SELECT v_id,v_date2,@left_cursor-5;
+    --  SELECT v_id,v_date2,@left_cursor-5;
         IF v_id<=(@left_cursor-5) THEN
             LEAVE lbl_downslope_min;
         END IF;

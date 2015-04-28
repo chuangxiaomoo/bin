@@ -249,6 +249,7 @@ function fn_dugu9jian()
         tbl_super_dive="
         SELECT t.code,  DATE_FORMAT(date1,'%m-%d') as start, 
                         DATE_FORMAT(date2,'%m-%d') as end, ${columns}, c.nmc, chng, 
+                        $RISE as rise, 
                         $PEAK as peak, 
                         $TROUGH as trough,
                         round(100*(t.low-avrg)/avrg,2) as lchng, 
