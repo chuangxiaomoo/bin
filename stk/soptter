@@ -64,7 +64,7 @@ fn_realtime()
 function fn_main()
 {
     mkdir -p ${rt_stdout%/*}
-#   YIST=${YIST:-'.ipo.201504'}
+    YIST=${YIST:-'.ipo.201504'}
 #   YIST=${YIST:-'.blk.sc40'}
 #   YIST=${YIST:-'.etf.50'}
 #   YIST=${YIST:-'.blk.300dc'}

@@ -32,7 +32,7 @@ function fn_main()
         ;;
 
     s|sym2code)
-        cat $YIST | xargs -I{} grep {} .codelist
+        cat $YIST | awk '/^[^#]/{print $1}' | xargs -I{} grep {} .codelist
         ;;
     *)
         echo "Usage: YIST=xx $0 c cmd..."
