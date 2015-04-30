@@ -212,8 +212,8 @@ lsgcc()
     "
 }
 
-.orgpath() { export PATH=$ORGPATH; }
-.monpath() { export PATH=$MONPATH; }
+#orgpath() { export PATH=$ORGPATH; }
+#monpath() { export PATH=$MONPATH; }
 
 .tar() 
 {
