@@ -85,10 +85,10 @@ function fn_do_scope()
         WHERE code=${code} and date<'${fmindate}' ORDER by date DESC LIMIT ${PREV})
         as tbl ORDER by date ASC"
     elif [ "${datetime}" = NULL ]; then
-        # acf默认以tov5/20为单位进行同环比计算，量比为2时，NUM=25=(40/4h*2+5)
+        # acf默认以tov5/20 vol_hour 为单位进行环比，5天为同比。计算，量比为2时，NUM=20
         sql="
         SELECT date FROM (SELECT date FROM day 
-        WHERE code=${code} ORDER by date DESC LIMIT ${NUM:-25}) as tbl ORDER by date ASC"
+        WHERE code=${code} ORDER by date DESC LIMIT ${NUM:-20}) as tbl ORDER by date ASC"
     else
         [ `date +%H%M%S` -gt 153000 ] && equal='='
         sql="SELECT date FROM day WHERE code=${code} and date>'${fmaxdate}' and date<${equal}'${today}';"

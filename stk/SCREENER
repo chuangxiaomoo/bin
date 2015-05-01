@@ -304,6 +304,14 @@ function fn_turnov5()
         as d, cap WHERE d.code = cap.code INTO @irt;
         SELECT IF(@irt<.4,@irt,.4);
         "
+    elif [ "${TOV5:-0}" -eq 6 ]; then
+        # tov10/2 * .618
+        sql="
+        SELECT round(sum(d.volume)/cap.shares, 3) as nmc_ratio FROM 
+        (SELECT * FROM day WHERE code=${code} and date<'$CLOSING' ORDER by date DESC LIMIT 5)
+        as d, cap WHERE d.code = cap.code INTO @irt;
+        SELECT IF(@irt<.2,@irt*.618,.123);
+        " 
     fi
     mysql -N kts<<<"${sql}"
 }
@@ -531,6 +539,11 @@ function fn_acc()
     SELECT acc
 }
 
+function fn_a6f()
+{
+    TOV5=6 fn_acf $@
+}
+
 function fn_acf()
 {
     fn_iscode ${code:=$1}
@@ -624,6 +637,7 @@ function fn_main()
     "fbi                code                  # ZIZE=6 nmemb=1 NMC_RATIO=100%"
     "acc                code                  # NMC_RATIO=tov10 Acceleration day"
     "acf                code                  # TOV5 {0|1|2}~{tov10/2, tov5, tov20/2}"
+    "a6f                code                  # TOV5 * .618"
     "tov                [field]               # mavol5B25's别名 其ma是wchng"
     "ma5B25             [field]               # ma240局部"
     "ma240              [field]               # ma240整体:5B25+60x2x4"
