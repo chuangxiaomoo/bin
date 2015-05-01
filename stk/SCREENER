@@ -613,6 +613,36 @@ function fn_ma60x2x4()
     mysql $mo -t kts <<< "source $mps_god"
 }
 
+
+# start end turnov tpd rat15 rat210 gap2max
+
+function fn_yi()
+{
+    fn_txttbl
+
+    if [ -n "${1}" ]; then
+        fn_iscode ${1}       
+        xt_ret $? "invalid code[$1]" || return $?
+
+        local code=`sed 's/^0*//g' <<< $1 | xargs printf "%06d"`
+        up file_to_table ${code}
+    else
+        if [ -z "${YIST}" ]; then
+            echo "Usage: YIST=xxx SCREENER yi code..." 
+            exit
+        fi
+    fi
+
+    echo "
+    SET @END='$END';
+    SET @NUM=${NUM:-40};
+    SET @NMC_RATIO=${NMC_RATIO:-1};
+    call sp_visit_tbl('${TBL:-zxg}', @fn_yi);
+    " | tee -a $mps_god
+    mysql $mo -t kts <<< "source $mps_god"
+    xt_ret $? "${FUNCNAME}" || return $?
+}
+
 function fn_main()
 {
     # END 非空赋值不要移植到dbank 
@@ -633,6 +663,7 @@ function fn_main()
     "focus              [field]               # #{YIST:-.soptter.trade}->zxg and 9jian"
     "tao                code [field]          # #{nmemb}"
     "tao5               code                  # #{nmemb} #{ZIZE}"
+    "yi                                       # YIST"
     "bei                {code...|file}        # #{nmemb} #{ZIZE}"
     "fbi                code                  # ZIZE=6 nmemb=1 NMC_RATIO=100%"
     "acc                code                  # NMC_RATIO=tov10 Acceleration day"

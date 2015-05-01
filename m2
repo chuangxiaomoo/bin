@@ -709,6 +709,7 @@ function fn_advertisement()             { cat advertisement ;}
 function fn_architecture()              { cat architecture ;}
 function fn_estate()                    { cat estate ;}
 function fn_driver()                    { cat driver ;}
+function fn_cold()                      { cat cold ;}
 
 # 新教与天主教。信则得救，不信则下地狱 vs 助人行善
 # 一花一世界，一木一浮生，一草一天堂，一叶一如来，
@@ -723,6 +724,7 @@ function fn_main() {
         aesthetics                      # i:s`θetic 美学
         estate                          # 房地产
         phi                             # philosophy
+        cold                            # 感冒
         logic
         annual
         artical
