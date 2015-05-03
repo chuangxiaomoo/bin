@@ -329,9 +329,11 @@ function fn_02_一朝天子一朝臣()         { cat why_02_一朝天子一朝�
 }
 
 function fn_movie()                     { 
+function fn_videos()                    { cat movie_videos ;}
 function fn_100films()                  { cat movie_100films ;}
 function fn_01_Akkila与拼字大赛()       { cat movie_01_Akkila与拼字大赛 ;}
     local opts=(
+        videos                          # 论语300讲 中国好禅师
         100films
         01_Akkila与拼字大赛
     )
@@ -724,7 +726,7 @@ function fn_main() {
         aesthetics                      # i:s`θetic 美学
         estate                          # 房地产
         phi                             # philosophy
-        cold                            # 感冒
+        cold                            # 感冒 牙痛 智齿
         logic
         annual
         artical
