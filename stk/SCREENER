@@ -539,7 +539,7 @@ function fn_acc()
     SELECT acc
 }
 
-function fn_a61()
+function fn_ac6()
 {
     TOV5=6 fn_acf $@
 }
@@ -668,7 +668,7 @@ function fn_main()
     "fbi                code                  # ZIZE=6 nmemb=1 NMC_RATIO=100%"
     "acc                code                  # NMC_RATIO=tov10 Acceleration day"
     "acf                code                  # TOV5 {0|1|2}~{tov10/2, tov5, tov20/2}"
-    "a61                code                  # TOV5 * .618"
+    "ac6                code                  # TOV5 * .618"
     "tov                [field]               # mavol5B25's别名 其ma是wchng"
     "ma5B25             [field]               # ma240局部"
     "ma240              [field]               # ma240整体:5B25+60x2x4"
