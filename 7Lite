@@ -10,7 +10,11 @@ shopt -s gnu_errfmt
 
 cd ${CWD}
 
-# roll file 
+function fn_main()
+{
+    DELM=${1:-':'}    
+    awk -F${DELM} '{print $1}' < /dev/stdin
+}
 
 function fn_roll_file()
 {
