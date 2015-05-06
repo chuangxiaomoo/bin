@@ -37,7 +37,7 @@ function fn_dugu9jian()
     mysql $mo -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
 
-    test -n "${1}" && SELECT 0
+    test -n "${1}" && SELECT 0 ${1:-wchng}
 }
 
 function fn_6maishenjian()
