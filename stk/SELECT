@@ -136,7 +136,7 @@ function fn_rat()
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
-function fn_tov()
+function fn_wma()
 {
     # 1. Make sure U've done [SCREENER 2]?
     # 2. 使用单表tbl_mavol5B25作差得到数据
@@ -531,7 +531,7 @@ function fn_main()
     "6maishenjian       [sortfiled]           # #{DATE2} to specify diff-day"
     "get_comma_cloumns  [tbl_name:-day]       # 逗分列名"
     "get_open_days      [LIMIT:-13 [desc]]    # 开市日列表"
-    "tov                [sortfiled:tov5]      # 均价+现成513.静态rat"
+    "wma                [sortfiled:tov5]      # 均价+现成513.静态rat"
     "rat                [sortfiled:-ratio]    # day+PREV513.动态rat"
     "ma240              [sortfiled:-ratio]    # "
     "ma240_usage        {1~9}                 # 分析ma 5 13 34 55"

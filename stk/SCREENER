@@ -344,7 +344,7 @@ function fn_bei()
     return $?
 }
 
-function fn_tov()
+function fn_wma()
 {
     fn_mavol5B25 $@    
 }
@@ -669,7 +669,7 @@ function fn_main()
     "acc                code                  # NMC_RATIO=tov10 Acceleration day"
     "acf                code                  # TOV5 {0|1|2}~{tov10/2, tov5, tov20/2}"
     "ac6                code                  # TOV5 * .618"
-    "tov                [field]               # mavol5B25's别名 其ma是wchng"
+    "wma                [field]               # mavol5B25's别名 其ma是wchng"
     "ma5B25             [field]               # ma240局部"
     "ma240              [field]               # ma240整体:5B25+60x2x4"
     )
