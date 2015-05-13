@@ -334,8 +334,15 @@ function fn_4yist()
 
 fn_group_nmc_layout() 
 {
-    # cat $sn_cap_nmc
-    mysql -t  kts <<< "SELECT sum(nmc)/(10000*10000) as nmc_WanYi FROM cap;" 
+    # cat $sn_cap_nmc nmc_WanYi
+    echo "
+    SELECT round(sum(nmc)/(10000*10000),2) FROM cap INTO @nmc_all_Wanyi;
+    SELECT round(sum(nmc)/(10000*10000),2) FROM cap WHERE code>400000 INTO @nmc_sh;
+    SELECT round(sum(nmc)/(10000*10000),2) FROM cap WHERE code<100000 INTO @nmc_sz;
+    SELECT round(sum(nmc)/(10000*10000),2) FROM cap WHERE code>100000 and code<400000 INTO @nmc_cyb;
+    SELECT @nmc_all_Wanyi, @nmc_sh, @nmc_sz, @nmc_cyb;
+    " | mysql -t kts 
+
     mysql -N  kts <<< "SELECT * FROM cap;" | awk 'BEGIN {
         list="5000 1000 800 400 200 100 50 20 10 5 0";
         arr_size=split(list, arr_list, " ");
