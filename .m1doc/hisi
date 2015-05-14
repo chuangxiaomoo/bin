@@ -8,6 +8,11 @@
 
   regsvr32 JAVOleDev.ocx
 
+  N 联结
+  V 视频 声音 报警
+  R 录像
+
+
 # plan
 
   我们NVR项目启动在即，请大家在抓紧熟悉代码：
