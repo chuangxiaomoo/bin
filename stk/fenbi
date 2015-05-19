@@ -180,7 +180,9 @@ function fn_delete()
     #ate=`date +%F`
     date=`fn_maxdate`
     dt=${date//-/}000000
-    sqls="DELETE FROM fenbi WHERE datetime>${dt} ${COND}"
+    date_p=`date --date="${date} 1 month ago" +'%F'`
+    dt_p=${date_p//-/}000000
+    sqls="DELETE FROM fenbi WHERE datetime>${dt} or datetime<${dt_p} ${COND}"
     count0=`mysql -N kts<<<'SELECT count(*) FROM fenbi'`
     mysql -N kts<<<"${sqls}"
     count1=`mysql -N kts<<<'SELECT count(*) FROM fenbi'`
