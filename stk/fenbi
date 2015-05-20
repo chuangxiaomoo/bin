@@ -97,7 +97,7 @@ function fn_hexun()
 
 function fn_usage()
 {
-    echo "Usage: fenbi code"
+    echo "Usage: fenbi code..."
     echo "       fenbi l|lscode"
     echo "       fenbi s|squeeze"
     echo "       fenbi fb2day code"
@@ -212,7 +212,9 @@ function fn_main()
         fn_fb2day ${@:2}
         ;;
     *)
-        fn_fenbi $@
+        for i in ${@:-''}; do
+            fn_fenbi $i
+        done
         ;;
     esac
 
