@@ -12,7 +12,7 @@
 
   MAC丢失或冲突(MAC地址冲突，导致telnet操作很慢) ARP缓存MAC  -> arp -d
 
-  MAC以00打头，unicast(00)
+  MAC以00打头，是单播地址，01打头，是多播MAC地址。
 
   ping
 
@@ -23,6 +23,10 @@
   在u-boot中ping
 
   把设备直连到PC （硬件链路，cheby遇到过）
+
+  路由和PC设备会缓存ARP(arp -d 清空arp缓存表)
+
+  跨网段时查看网关是否正确(route -n 查看路由表)
 
 # MAC of unicast(MAC地址最高字节低8位为0打头的单播地址)
 
