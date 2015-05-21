@@ -1347,6 +1347,10 @@
 
 # 案例34 敬畏和高兴
 
+  Whatever has happened before will happen again. 
+  Whatever has been done before will be done again. 
+  There is nothing new under the sun
+
   601519(大智慧)大股东持股比例仍然很高，看东财发财了，dzh的老板不眼红吗？
   且基础比东财好，移动端用户量仅次于同花顺排第二
 
