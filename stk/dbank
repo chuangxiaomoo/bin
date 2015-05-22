@@ -37,7 +37,8 @@ TURNOV0='TRUNCATE(100*d.volume/@shares0, 2)'
 
 url_sh000001='http://hq.sinajs.cn/list=sh000001'
 
-mod_fb=300
+mod_fbi=100
+mod_mi5=200
 mps_org="sql/xRD.sql"
 mps_acc="sql/acc.sql"
 mps_acf="sql/acf.sql"

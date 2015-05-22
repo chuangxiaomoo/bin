@@ -88,7 +88,7 @@ function fn_hexun()
         LOAD DATA LOCAL INFILE '${buffer}' INTO TABLE tmpfb;
         INSERT INTO fenbi(code, datetime, trade, volume, amount)
           SELECT code,datetime,trade,sum(volume),sum(amount) FROM 
-            (SELECT *,round(datetime%1000000/${mod_fb},0) as grp from tmpfb ORDER by datetime DESC) 
+            (SELECT *,round(datetime%1000000/${mod_fbi},0) as grp from tmpfb ORDER by datetime DESC) 
                 as newfb GROUP by grp ORDER by datetime;
         " | mysql -t kts 
         xt_ret $? "" || return $?
@@ -175,14 +175,14 @@ function fn_squeeze()
 
 function fn_delete()
 {
-    fn_iscode ${1} && COND="and code=${1}"
-
-    #ate=`date +%F`
     date=`fn_maxdate`
     dt=${date//-/}000000
     date_p=`date --date="${date} 1 month ago" +'%F'`
     dt_p=${date_p//-/}000000
-    sqls="DELETE FROM fenbi WHERE datetime>${dt} or datetime<${dt_p} ${COND}"
+
+    fn_iscode ${1} && COND="code=${1}" || COND="datetime>${dt} or datetime<${dt_p}"
+
+    sqls="DELETE FROM fenbi WHERE ${COND}"
     count0=`mysql -N kts<<<'SELECT count(*) FROM fenbi'`
     mysql -N kts<<<"${sqls}"
     count1=`mysql -N kts<<<'SELECT count(*) FROM fenbi'`
