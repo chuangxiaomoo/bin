@@ -19,6 +19,7 @@
 # 想看的书       .doc/books.md
 # 本质论         .doc/essential.md           -- 我是谁？从哪来？到哪去？
 # 决定论         .doc/model.md               -- 打造自己的交易模型
+# 鸿观           .doc/hongguan.md
 
 > 构建体系
 
@@ -32,7 +33,7 @@
 
 # 程序员道德     .doc/virtue.md
 
-> 杂论
+> 杂论 -- 所有的竞局都不是单一能力的较量，而是综合实力的对抗。
 
 # 追风消息论     .doc/excitation_response.md
 # 谋“势”战略     .doc/围棋谋势.md
@@ -42,14 +43,9 @@
 
 > 实践 -- 旧有的技术架构已经不足以支撑更大的梦想
 
-所有的竞局都不是单一能力的较量，而是综合实力的对抗。
-比如，数据基础和想象力。
-比如，战争是一种武器装备、士兵素质、后勤保障能力、灵活性、神经系统反应速度、
-      招式熟练程度等综合对抗。
-
 # 心战           .doc/psy.md
 # 张小龙         .doc/zhangxiaolong.md
-# 总结2020       .doc/2013.md            -- 人生使命
+# 总结2020       .doc/2013.md
 # 笛卡尔实践     .doc/Descartes.md
 # 目标&策略&纪律 .doc/discipline.md
 
@@ -60,6 +56,8 @@
 # 独孤九剑       .doc/dugu9jian.md       -- 成本.信息进化论.解N变量方程组
 # 事件冲击       .doc/event.md           -- 高管增持 定向增发 银行加息 gushequ大数据
 # 缠中说禅       .chan/chan.md
+# 莫大仙岳居     .doc/sulon.md
 # 洪粉家人       .doc/hrong.md
+# 瑞鹤仙         .doc/yxkrrhx.md
 # 逻辑           .doc/logic.md
 # 操盘日记       .doc/diary.md

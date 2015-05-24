@@ -570,6 +570,7 @@ function fn_0926_领导，你为啥不信我？() { cat ljsw_0926_领导，你�
 function fn_1003_张勋复辟()             { cat ljsw_1003_张勋复辟 ;}
 function fn_1017_外交()                 { cat ljsw_1017_外交 ;}
 function fn_1008_怎样炼成世界级高手()   { cat ljsw_1008_怎样炼成世界级高手 ;}
+function fn_0521_物种战争()             { cat ljsw_0521_物种战争 ;}
     local opts=(
         voice
         00_曾国藩
@@ -597,6 +598,8 @@ function fn_1008_怎样炼成世界级高手()   { cat ljsw_1008_怎样炼成世
         1003_张勋复辟                   # 权力2
         1017_外交                       # 强国思维
         1008_怎样炼成世界级高手
+                                        # 2015
+        0521_物种战争                                        
     )
     fn_print $@
 }
