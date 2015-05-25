@@ -56,6 +56,7 @@ DROP PROCEDURE IF EXISTS sp_acf//
 CREATE PROCEDURE sp_acf(a_code INT(6) ZEROFILL) tag_acf:BEGIN
     -- acf
     DECLARE v_id        INT DEFAULT 1; 
+    DECLARE v_end_c     INT DEFAULT 1; 
     DECLARE v_num_unit  INT DEFAULT 0; 
     DECLARE v_id_jumped INT DEFAULT 0; 
     DECLARE v_nextid    INT DEFAULT 1; 
@@ -171,7 +172,8 @@ CREATE PROCEDURE sp_acf(a_code INT(6) ZEROFILL) tag_acf:BEGIN
                 SET @v_got_100 = 1;
                 SET v_avrg_c    = v_avrg;
                 SET v_tnov_c    = v_turnov;
-                SET v_off_c     = v_id;
+                SET v_end_c     = v_id;
+                SET v_off_c     = v_end_c-v_nextid;
                 SET v_datetime_c= v_datetime;
                 SET v_wchng     = 100 * (v_close-v_avrg_c)/v_avrg_c;
 
@@ -184,11 +186,11 @@ CREATE PROCEDURE sp_acf(a_code INT(6) ZEROFILL) tag_acf:BEGIN
                     SET v_endamount = 0;
                 END IF;
             ELSE
-                SELECT datetime FROM tempfb WHERE id=(v_off_c+1) INTO v_datetime;
+                SELECT datetime FROM tempfb WHERE id=(v_end_c+1) INTO v_datetime;
                 SET @v_got_100 = 2;
                 SET v_avrg_p    = v_avrg;
                 SET v_tnov_p    = v_turnov;
-                SET v_off_p     = v_id - v_off_c;
+                SET v_off_p     = v_id - v_end_c;
                 SET v_datetime_p= v_datetime;
 
                 SET v_ratio     = 100 * (v_avrg_c-v_avrg_p) / v_avrg_c;
