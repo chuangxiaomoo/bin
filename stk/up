@@ -490,16 +490,19 @@ function fn_ipo()
     raw='/tmp/kts/.ipo.raw'
     rip='/tmp/kts/.ipo.rip'
 
+    > ${rip}
+
     local i
-    for (( i=1; i<=1; i+=1 )); do
+    for (( i=1; i<=2; i+=1 )); do
         url="http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx?type=NS&sty=NSST&st=12&sr=-1&p=${i}&ps=50"
 
         echo dump ${url}
         w3m -dump "${url}" > ${tmp}
 
-        cat ${tmp} |sed -e '1s/(\[//' -e '$s/])//' -e 's/"//g' | tr -d '\n' |
+        # 's/,AN//g' 剔除申购准备中的票
+        cat ${tmp} |sed -e '1s/(\[//' -e '$s/])//' -e 's/,AN//g' -e 's/"//g' | tr -d '\n' |
                     sed -e 's/AN201/\n&/g' -e 's/AN//g' | 
-                    awk -F',' '/^201/{printf "%d\t%s\t%s\n", $1/1000000000000,$5,$4}'  > ${raw}
+                    awk -F',' '/^201/{printf "%d\t%s\t%20s\n", $1/1000000000000,$5,$4}'  > ${raw}
 
         cat ${raw} >> ${rip}
     done
