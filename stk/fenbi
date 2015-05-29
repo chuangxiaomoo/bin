@@ -55,7 +55,7 @@ function fn_hexun()
     while :; do
         url=`fn_get_url ${code} ${dt}`
 
-        echo ${url}; # exit
+        echo ${url};
         timeout 30 w3m -dump ${url} > ${fenbi_raw}
         xt_ret $? "timeout" || return $?
 
@@ -63,7 +63,7 @@ function fn_hexun()
             sed  -e '1s/^.*\[\[/[[/' -e '$s/]].*$/]]/' > ${fenbi_ripe}
 
         [ "`stat -c%s $fenbi_ripe`" -gt 80 ]
-        xt_ret $? "no data" || return $?
+        xt_ret $? "no data" || return 0
         
         # 2015-03-17 中国平安amount($3)不准，使用($2*$4)/10000替代
         cat ${fenbi_ripe} | JSON.sh -b |
@@ -95,16 +95,6 @@ function fn_hexun()
     } 20<>'/dev/shm/fenbi/lock'
 }
 
-function fn_usage()
-{
-    echo "Usage: fenbi code..."
-    echo "       fenbi l|lscode"
-    echo "       fenbi s|squeeze"
-    echo "       fenbi fb2day code"
-    echo "       fenbi delete [code]"
-    exit
-}
-
 function fn_fb2day()
 {
     fn_iscode ${1} || fn_usage
@@ -130,14 +120,14 @@ function fn_fenbi()
 
     if [ "${dt}" = NULL ]; then
         echo "NULL database, re-run after [ ./mi5 ${code} ] "
-        exit
+        exit 1
     else
         sql="SELECT date FROM day WHERE code=${code} and date>'${fmaxdate}' and date<'${today}';"
         dates=(`mysql -N kts <<< "${sql}"`)
 
         if [ ${#dates[@]} -ne 0 ]; then
             echo "There are dates(${dates[@]}) of ${code} absent, ./mi5 first"
-            exit
+            exit 1
         else
             echo "Going to update data of ${code}"
         fi
@@ -196,11 +186,37 @@ function fn_lscode()
     mysql -t kts<<<${sqls}
     return $?
 }
+
+function fn_auto_fb()
+{
+    now=`date +%H%M%S`   
+    codes=`lscode l`
+    local i=
+    for i in ${codes}; do
+        fenbi ${i} || { mi5 ${i}; fenbi ${i};}
+    done
+    return $?
+}
+
+function fn_usage()
+{
+    echo "Usage: fenbi code..."
+    echo "       fenbi l|lscode"
+    echo "       fenbi a|auto_fb"
+    echo "       fenbi s|squeeze"
+    echo "       fenbi fb2day code"
+    echo "       fenbi delete [code]"
+    exit
+}
+
 function fn_main()
 {
     case $1 in
     l|lscode)
         fn_lscode
+        ;;
+    a|auto_fb)
+        fn_auto_fb
         ;;
     s|squeeze)
         fn_squeeze
