@@ -386,18 +386,18 @@ function fn_up_rzrq_codes_tbl()
 }
 
 
-function fn_wb()
+function fn_wind()
 {
     echo -n ${CURR} > ${file_wb}
     SCREENER 0
     echo "
-    DROP TABLE IF EXISTS windbell_codes;
-    CREATE TABLE windbell_codes (
+    DROP TABLE IF EXISTS wind;
+    CREATE TABLE wind (
         id      INT(6) PRIMARY key AUTO_INCREMENT NOT NULL,
         code    INT(6)  ZEROFILL
     );
 
-    INSERT INTO windbell_codes(code) SELECT DISTINCT code FROM tbl_9jian WHERE close < avrg;
+    INSERT INTO wind(code) SELECT DISTINCT code FROM tbl_9jian WHERE close < avrg;
     " | mysql kts
     
     return $?
@@ -534,7 +534,7 @@ function fn_main()
     "load_directory                     # load文件夹${znzday}到表day"
     "dump_day_2_tmp START END           # 导出日线到${daydump} \${START:-\$END} \${END:-\${END}}"
     "trs_min_2_day                      # 最后一笔分线转日线"
-    "wb                                 # windbell_codes(close<avrg)"
+    "wind                               # wind(close<avrg)"
     "day code                           # DL 1year data from znz"
     "ipo                                # DL ipo codes from east"
     )

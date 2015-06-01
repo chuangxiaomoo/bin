@@ -73,7 +73,7 @@ function fn_main()
 #   YIST=${YIST:-'.blk.yhy'}
 #   YIST=${YIST:-'.blk.cybz'}
 #   YIST=${YIST:-'.soptter.etf'}
-#   YIST=${YIST:-'.soptter.obor'}
+    YIST=${YIST:-'.soptter.obor'}
 #   YIST=${YIST:-'.soptter.lin'}
 #   YIST=${YIST:-'.soptter.bang'}
 #   YIST=${YIST:-'.soptter.ying'}
@@ -82,7 +82,7 @@ function fn_main()
 #   YIST=${YIST:-'.soptter.flags'}
 #   YIST=${YIST:-'.soptter.focus'}
 #   YIST=${YIST:-'.soptter.dragon'}
-    YIST=${YIST:-'.soptter.sulon'}
+#   YIST=${YIST:-'.soptter.sulon'}
     YIST=${YIST:-'.soptter.trade'}
     codelist=`cat ${YIST}|awk '/^[^#]/{print $1}'`
     fn_realtime ${codelist}

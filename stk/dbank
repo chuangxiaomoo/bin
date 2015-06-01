@@ -104,7 +104,8 @@ yjbb_rip='/dev/shm/yjbb_rip'
     file_c='/tmp/kts/chao'
    file_wb='/tmp/kts/wb'
    daydump='/tmp/kts/day.dump'
-   exclude='/tmp/kts/exclude'
+  exclude0='/tmp/kts/exclude0'
+  exclude1='/tmp/kts/exclude1'
 file_ma120='/tmp/kts/ma120'
 file_ma240='/tmp/kts/ma240'
 
@@ -115,7 +116,8 @@ touch $cache
 touch $buffer
 touch $file_c
 touch $file_wb
-touch $exclude
+touch $exclude0
+touch $exclude1
 touch $file_ma120
 touch $file_ma240
 
