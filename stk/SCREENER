@@ -14,9 +14,13 @@
 
 function fn_dugu9jian()
 {
-    if [ "${TBL}" = windbell_codes ] ; then
+    xRDdate=`mysql -N kts<<<"SELECT date from tbl_xRDdate ORDER by date DESC LIMIT 1"`
+    exclude=`mysql -N kts <<<"SELECT code from xRD WHERE date>'${xRDdate}' and date<='${END}'"`
+    echo -n ${exclude} | tr ' ' , > ${exclude0}
+
+    if [ "${TBL}" = wind ] ; then
         if [ "`cat ${file_wb}`" != ${CURR} ]; then
-            echo "windbell_codes is out of day. continue to run [./up wb]"
+            echo "wind is out of day. continue to run [./up wind]"
             exit 1
         fi
     fi
@@ -38,10 +42,16 @@ function fn_dugu9jian()
     xt_ret $? "${FUNCNAME}" || return $?
 
     test -n "${1}" && SELECT 0 ${1:-wchng}
+
+    return 0
 }
 
 function fn_6maishenjian()
 {
+    xRDdate=`mysql -N kts<<<"SELECT date from tbl_xRDdate ORDER by date DESC LIMIT 1"`
+    exclude=`mysql -N kts <<<"SELECT code from xRD WHERE date>'${xRDdate}' and date<='${END}'"`
+    echo -n ${exclude} | tr ' ' , > ${exclude1}
+
     fn_txttbl
     TBL=${TBL:-'cap'}
 
@@ -549,7 +559,7 @@ function fn_acc()
 
 function fn_act()
 {
-    PPLUS=${PPLUS:-60} TOV_DIVISION=2 \
+    PPLUS=${PPLUS:-40} TOV_DIVISION=2 \
     TOV5=5 fn_acf $@
 }
 
