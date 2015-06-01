@@ -5,6 +5,8 @@
     http://quote.eastmoney.com/sz000002.html
 
     http://hqdigi2.eastmoney.com/EM_Quote2010NumericApplication/CompatiblePage.aspx?Type=OB&stk=0000022&Reference=xml&limit=0&page=1
+    http://hqdigi2.eastmoney.com/EM_Quote2010NumericApplication/CompatiblePage.aspx?Type=OB&stk=6000001&Reference=xml&limit=0&page=2&rt=0.6572961676865816
+    http://hqdigi2.eastmoney.com/EM_Quote2010NumericApplication/CompatiblePage.aspx?Type=OB&stk=3001042&Reference=xml&limit=0&page=2&rt=0.5464205641765147
 
     wget 'http://market.finance.sina.com.cn/downxls.php?date=2013-07-29&symbol=sz000002' -O wka.0709
 
