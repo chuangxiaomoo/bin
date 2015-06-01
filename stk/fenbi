@@ -6,28 +6,29 @@
 
 
 # 下载分笔数据
-# function fn_down_fenbi()
-# {
-#     # sina的分笔粒度是最小的，分笔数据3家对比详见：
-#     mkdir -p `dirname $fenbi_raw`
-# 
-#     host="http://hqdigi2.eastmoney.com/EM_Quote2010NumericApplication/CompatiblePage.aspx?"
-#     para="Type=OB&stk=000002&Reference=xml&limit=0&page="
-# 
-#     page_cnt=`$W3M -dump "$host${para}1" 2>/dev/null | head -1 | awk -F"[:,]" '{print $2}'`
-#     [ -z "$page_cnt" ] && echo "error: null page_cnt" && exit
-# 
-#     > $fenbi_raw
-#     local i
-#     for (( i=1; i<=$page_cnt; i++ )); do
-#          url=$host${para}$i
-#          $W3M -dump "$url" 2>/dev/null >> $fenbi_raw
-#          xt_ret $? "NETWORK" || return $?
-#     done
-# 
-#     sed -i '/jsTimeSharingData/d' $fenbi_raw
-#     cat $fenbi_raw | tr -d '[' | tr -d ']};' | sed 's/","/\n/g'  | tr -d '"' > ${fenbi_ripe}
-# }
+function fn_down_eastmoney_fb()
+{
+    [ ${1:0:1} -eq 6 ] && sec=1 || sec=2
+    # sina的分笔粒度是最小的，分笔数据3家对比详见：
+    mkdir -p `dirname $fenbi_raw`
+
+    host="http://hqdigi2.eastmoney.com/EM_Quote2010NumericApplication/CompatiblePage.aspx?"
+    para="Type=OB&stk=${1}${sec}&Reference=xml&limit=0&page="
+
+    page_cnt=`$W3M -dump "$host${para}1" 2>/dev/null | head -1 | awk -F"[:,]" '{print $2}'`
+    [ -z "$page_cnt" ] && echo "error: null page_cnt" && exit
+
+    > $fenbi_raw
+    local i
+    for (( i=1; i<=$page_cnt; i++ )); do
+         url=$host${para}$i
+         $W3M -dump "$url" 2>/dev/null >> $fenbi_raw
+         xt_ret $? "NETWORK" || return $?
+    done
+
+    sed -i '/jsTimeSharingData/d' $fenbi_raw
+    cat $fenbi_raw | tr -d '[' | tr -d ']};' | sed 's/","/\n/g'  | tr -d '"' > ${fenbi_ripe}
+}
 
 function fn_get_url()
 {
@@ -50,13 +51,14 @@ function fn_hexun()
 
     >${buffer}
     [ "${dt}" -lt ${datetime9} ]
-    xt_ret $? "It's latest" || return 0
+    xt_ret $? "It's latest@${dt}" || return 0
+    [ "${dt}" -lt ${datetime0} ] && dt=${datetime0}
 
     while :; do
         url=`fn_get_url ${code} ${dt}`
 
         echo ${url};
-        timeout 30 w3m -dump ${url} > ${fenbi_raw}
+        ${W3M} -dump "${url}" > ${fenbi_raw}
         xt_ret $? "timeout" || return $?
 
         cat ${fenbi_raw} | sed -n '/\[\[/,$p' |
@@ -137,7 +139,7 @@ function fn_fenbi()
     # DELETE FROM  fenbi WHERE datetime > 20150303000000
 
     fn_hexun $code
-    xt_ret $? "" || return $?
+    xt_ret $? "DL and load mini-fenbi of ${code} fail!" || return $?
     fn_echo_succ "DL and load mini-fenbi of ${code} succ!"
 }
 

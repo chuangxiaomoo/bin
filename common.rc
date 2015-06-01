@@ -31,7 +31,11 @@ function xert() { [ "${1}" -eq 0 ] || echo ${@:2}; return ${1}; }
 function xt_ret() 
 {
     [ "${1}" = "0" ] && return 0
-    printf "${BASH_SOURCE[1]##*/}%-6s %s\n" "|${BASH_LINENO[0]}|" "${@:2}"
+   #printf "${BASH_SOURCE[1]##*/}%-6s %s\n" "|${BASH_LINENO[0]}|" "${@:2}"
+    printf "${BASH_SOURCE[1]##*/}%-6s %s" "|${BASH_LINENO[0]}|" 
+    FG=31 BG=40
+    echo -e "\E[${FG};${BG}m${@:2}"
+    echo -ne "\E[0m"
     return 1
 }
 
@@ -43,7 +47,7 @@ function fn_echo_line()
 # echo yellow
 function fn_echo_warn()
 {
-    FG=33 BG=40
+    FG=31 BG=40
     TEXT="$@"
     echo -e "\E[${FG};${BG}m${TEXT}"
     echo -ne "\E[0m"
