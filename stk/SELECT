@@ -310,7 +310,7 @@ function fn_rdiff()
     {
         tbl_super_dive="
         SELECT t.id,t.code,
-        ${columns}, (cdiff+rdiff+wchng) as fire
+        ${columns}, (wchng+2*rdiff+3*cdiff) as fire
            -- , c.nmc, c.name
            FROM ${tablex:-tbl_rdiff} as t, cap as c 
            WHERE t.code = c.code HAVING 1 ${COND} limit ${LIMIT:-144}
@@ -372,8 +372,9 @@ function fn_fbi()
         -- datetime_p, 
         TRUNCATE(datetime_p%(1000000000000)/1000000,4) as dt_p,
         -- datetime_c, 
-        TRUNCATE(datetime_c%(1000000000000)/1000000,4) as dt_c,
-        ${columns}, (wchng+2*rdiff+3*cdiff) as fire FROM ${tablex:-tbl_fdiff} LIMIT ${LIMIT:-200}
+        TRUNCATE(datetime_c%(1000000000000)/1000000,4) as dt_c, ${columns}, 
+        round(close+(avrg_c-close)*.618,2) as oracle, (wchng+2*rdiff+3*cdiff) as fire
+        FROM ${tablex:-tbl_fdiff} LIMIT ${LIMIT:-200}
     " | mysql -t kts
 }
 
