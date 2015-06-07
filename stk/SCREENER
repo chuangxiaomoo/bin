@@ -559,7 +559,7 @@ function fn_acc()
 
 function fn_act()
 {
-    PPLUS=${PPLUS:-20} TOV_DIVISION=3 \
+    PPLUS=${PPLUS:-50} TOV_DIVISION=3 \
     TOV5=5 fn_acf $@
 }
 

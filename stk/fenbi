@@ -52,7 +52,8 @@ function fn_hexun()
     >${buffer}
     [ "${dt}" -lt ${datetime9} ]
     xt_ret $? "Latest@${dt}>${datetime9}" || return 0
-    [ "${dt}" -lt ${datetime0} ] && dt=${datetime0}
+
+   #[ "${dt}" -lt ${datetime0} ] && dt=${datetime0}
 
     while :; do
         url=`fn_get_url ${code} ${dt}`
