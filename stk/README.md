@@ -11,14 +11,14 @@
 # 王新平12建议   .doc/wang12.md
 # 王大爷的金融   .doc/wanghaibin.md
 # 橡胶的混沌时段 .doc/wang_oak.md
-# 交易的哲学体系 .doc/wang_trade.md
+# 交易的哲学体系 .doc/wang_trade.md           -- 价值观体系
 # 交易的哲学2    .doc/wang_trade2.md
 
 # 量子力学       .doc/quantum_meCHANics.md
 # 行为心理学     .doc/behaviorism.md
 # 想看的书       .doc/books.md
-# 本质论         .doc/essential.md           -- 我是谁？从哪来？到哪去？
-# 决定论         .doc/model.md               -- 打造自己的交易模型
+# 本质论         .doc/essential.md            -- 我是谁？从哪来？到哪去？
+# 决定论         .doc/model.md                -- 打造自己的交易模型
 # 鸿观           .doc/hongguan.md
 
 > 构建体系
