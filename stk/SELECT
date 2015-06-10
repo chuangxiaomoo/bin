@@ -524,6 +524,44 @@ function fn_ma240()
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
+
+function fn_yi()
+{
+    columns='code,date1,date2,off,close,turnov,tovpd,rat1,rat2,high,low,avrg,chng'
+    columns=${columns:-'*'}
+    columns=t.${columns//,/,t.}
+
+    [ -s "${exclude2}" ] && EXCLUDE="and code not in (`cat ${exclude2}`)"
+
+    function fn_yi_dive()
+    {
+        tempday="
+        CREATE TEMPORARY TABLE tempday LIKE day;
+        INSERT INTO tempday SELECT * from day where date='${CURR}';
+        "
+        # delete停牌个股
+        tbl_super_dive="
+        SELECT ${columns} FROM tbl_yi as t, tempday as d
+        WHERE t.code = d.code                               
+        HAVING 1 ${COND} ${EXCLUDE}
+        ORDER by ${1:-chng} ${ASC:-ASC} LIMIT ${LIMIT:-36}
+        "
+        echo "${tbl_super_dive}"
+    }
+
+    fn_yi_dive $1
+    mysql $mo -t kts <<< "${tempday}${tbl_super_dive}"
+    xt_ret $? "${FUNCNAME}" || return $?
+
+    [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
+
+    mysql -N kts <<<"${tempday}SELECT code FROM (${tbl_super_dive}) as tbl" > ${file_c}
+    xt_ret $? "" || return $?
+
+    up file_to_table $file_c
+    xt_ret $? "${FUNCNAME}" || return $?
+}
+
 function fn_main()
 {
     # mysql CURRENT_DATE();
@@ -554,6 +592,7 @@ function fn_main()
     "acf                                      # tbl_acfdiff"
     "tao5                                     # "
     "rdiff                                    # tbl_rdiff"
+    "yi                 chng                  # tbl_rdiff"
     )
 
     # `ASC=任意值`时使用'DESC'，弃用
