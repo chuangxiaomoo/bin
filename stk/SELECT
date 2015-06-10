@@ -525,7 +525,7 @@ function fn_ma240()
 }
 
 
-function fn_yi()
+function fn_hilo()
 {
     columns='code,date1,date2,off,close,turnov,tovpd,rat1,rat2,high,low,avrg,chng'
     columns=${columns:-'*'}
@@ -541,7 +541,7 @@ function fn_yi()
         "
         # delete停牌个股
         tbl_super_dive="
-        SELECT ${columns} FROM tbl_yi as t, tempday as d
+        SELECT ${columns} FROM tbl_hilo as t, tempday as d
         WHERE t.code = d.code                               
         HAVING 1 ${COND} ${EXCLUDE}
         ORDER by ${1:-chng} ${ASC:-ASC} LIMIT ${LIMIT:-36}
@@ -592,7 +592,7 @@ function fn_main()
     "acf                                      # tbl_acfdiff"
     "tao5                                     # "
     "rdiff                                    # tbl_rdiff"
-    "yi                 chng                  # tbl_rdiff"
+    "hilo               chng                  # tbl_rdiff"
     )
 
     # `ASC=任意值`时使用'DESC'，弃用
