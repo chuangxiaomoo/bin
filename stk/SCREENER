@@ -12,11 +12,18 @@
 . `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
 . /etc/common.rc
 
-function fn_dugu9jian()
+
+function fn_exclude()
 {
     xRDdate=`mysql -N kts<<<"SELECT date from tbl_xRDdate ORDER by date DESC LIMIT 1"`
     exclude=`mysql -N kts <<<"SELECT code from xRD WHERE date>'${xRDdate}' and date<='${END}'"`
-    echo -n ${exclude} | tr ' ' , > ${exclude0}
+    echo -n ${exclude} | tr ' ' , > ${1}
+    
+}
+
+function fn_dugu9jian()
+{
+    fn_exclude ${exclude0}
 
     if [ "${TBL}" = wind ] ; then
         if [ "`cat ${file_wb}`" != ${CURR} ]; then
@@ -48,10 +55,7 @@ function fn_dugu9jian()
 
 function fn_6maishenjian()
 {
-    xRDdate=`mysql -N kts<<<"SELECT date from tbl_xRDdate ORDER by date DESC LIMIT 1"`
-    exclude=`mysql -N kts <<<"SELECT code from xRD WHERE date>'${xRDdate}' and date<='${END}'"`
-    echo -n ${exclude} | tr ' ' , > ${exclude1}
-
+    fn_exclude ${exclude1}
     fn_txttbl
     TBL=${TBL:-'cap'}
 
@@ -648,6 +652,7 @@ function fn_ma60x2x4()
 
 function fn_yi()
 {
+    fn_exclude ${exclude2}
     fn_txttbl
 
     if [ -n "${1}" ]; then
@@ -665,7 +670,7 @@ function fn_yi()
 
     echo "
     SET @END='$END';
-    SET @NUM=${NUM:-40};
+    SET @NUM=${NUM:-13};
     SET @NMC_RATIO=${NMC_RATIO:-1};
     call sp_visit_tbl('${TBL:-zxg}', @fn_yi);
     " | tee -a $mps_god
@@ -693,7 +698,7 @@ function fn_main()
     "focus              [field]               # #{YIST:-.soptter.trade}->zxg and 9jian"
     "tao                code [field]          # #{nmemb}"
     "tao5               code                  # #{nmemb} #{ZIZE}"
-    "yi                                       # YIST"
+    "yi                 code...               # #{YIST}下跌幅度计算"
     "bei                {code...|file}        # #{nmemb} #{ZIZE}"
     "fbi                code                  # ZIZE=6 nmemb=1 NMC_RATIO=100%"
     "acc                code                  # NMC_RATIO=tov10 Acceleration day"

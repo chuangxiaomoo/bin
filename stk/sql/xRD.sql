@@ -194,19 +194,17 @@ CREATE PROCEDURE sp_create_tbl_yi() tag_tbl_yi:BEGIN
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
         date1       date NOT NULL DEFAULT 0,
         date2       date NOT NULL DEFAULT 0,
-        pk2         INT  NOT NULL DEFAULT 0,
         off         INT  NOT NULL DEFAULT 0,
         close       DECIMAL(6,2) NOT NULL DEFAULT 0,    
         turnov      DECIMAL(6,2) NOT NULL DEFAULT 0,    
-        tpd         DECIMAL(6,2) NOT NULL DEFAULT 0,    
+        tovpd         DECIMAL(6,2) NOT NULL DEFAULT 0,    
         rat1        DECIMAL(6,2) NOT NULL DEFAULT 0,    
         rat2        DECIMAL(6,2) NOT NULL DEFAULT 0,    
 
         high        DECIMAL(6,2) NOT NULL DEFAULT 0,
         low         DECIMAL(6,2) NOT NULL DEFAULT 0,    -- lchng = (low - avrg)/avrg
         avrg        DECIMAL(6,2) NOT NULL DEFAULT 0,    -- avrg = sum(amount) / sum(volume)
-        chng        DECIMAL(6,2) NOT NULL DEFAULT 0,    -- chng = (close-open)/open
-        chnp5       DECIMAL(6,2) NOT NULL DEFAULT 0     -- chnp5= (close-avrg)/avrg
+        chng        DECIMAL(6,2) NOT NULL DEFAULT 0     -- chng = (close-open)/open
     );
 END tag_tbl_yi //
 
@@ -934,7 +932,6 @@ CREATE PROCEDURE sp_yi(a_code INT(6) ZEROFILL) tag_yi:BEGIN
     DECLARE v_id_hi     INT DEFAULT 1; 
     DECLARE v_id_lo     INT DEFAULT 1; 
     DECLARE v_id_mx     INT DEFAULT 1; 
-    DECLARE v_pk2       INT DEFAULT 0;
     DECLARE v_shares    INT DEFAULT 0;
     DECLARE v_date1     date DEFAULT 0;
     DECLARE v_date2     date DEFAULT 0;
@@ -946,7 +943,7 @@ CREATE PROCEDURE sp_yi(a_code INT(6) ZEROFILL) tag_yi:BEGIN
     DECLARE v_sumamount DECIMAL(12,2) DEFAULT 0;
 
     DECLARE v_turnov    DECIMAL(6,2) DEFAULT 0;    
-    DECLARE v_tpd       DECIMAL(6,2) DEFAULT 0;    
+    DECLARE v_tovpd       DECIMAL(6,2) DEFAULT 0;    
     DECLARE v_rat1      DECIMAL(6,2) DEFAULT 0;    
     DECLARE v_rat2      DECIMAL(6,2) DEFAULT 0;    
     DECLARE v_close     DECIMAL(6,2) DEFAULT 0;
@@ -954,7 +951,6 @@ CREATE PROCEDURE sp_yi(a_code INT(6) ZEROFILL) tag_yi:BEGIN
     DECLARE v_low       DECIMAL(6,2) DEFAULT 0;    -- lchng = (low - avrg)/avrg
     DECLARE v_avrg      DECIMAL(6,2) DEFAULT 0;    -- avrg = sum(amount) / sum(volume)
     DECLARE v_chng      DECIMAL(6,2) DEFAULT 0;    -- chng = (close-open)/open
-    DECLARE v_chnp5     DECIMAL(6,2) DEFAULT 0;    -- chnp5= (close-avrg)/avrg
 
     call sp_create_tempday();
     SELECT nmc/close FROM cap WHERE code=a_code LIMIT 1 INTO v_shares;
@@ -968,38 +964,38 @@ CREATE PROCEDURE sp_yi(a_code INT(6) ZEROFILL) tag_yi:BEGIN
 
     SELECT count(*) FROM tempday INTO @v_len;
 
-    -- 5周内最低价日
+    -- 13日最低价(high & low 可能在同一天)
     -- SET @left_cursor = IF(@v_len<25,@v_len,25);
 
-    SELECT id                       FROM tempday                  order by high desc LIMIT 1 INTO v_id_mx;
-    SELECT id, date, high           FROM tempday WHERE id<=20     order by high desc LIMIT 1 INTO v_id_hi, v_date1, v_high;
-    SELECT id, date, low, close     FROM tempday WHERE id<v_id_hi order by low  asc  LIMIT 1 INTO v_id_lo, v_date2, v_low, v_close;
+    SELECT id                       FROM tempday                   order by high desc LIMIT 1 INTO v_id_mx;
+    SELECT id, date, high           FROM tempday WHERE id<=10      order by high desc LIMIT 1 INTO v_id_hi, v_date1, v_high;
+    SELECT id, date, low, close     FROM tempday WHERE id<=v_id_hi order by low  asc  LIMIT 1 INTO v_id_lo, v_date2, v_low, v_close;
 
-    IF v_id_hi-v_id_lo<5 THEN
-        SELECT "lt 5 gap:", v_date1, v_date2, v_id_hi-v_id_lo;
+    IF v_id_hi-v_id_lo<2 THEN
+        -- SELECT "lt 2 gap:", a_code, v_id_hi-v_id_lo+1, v_date1, v_date2;
         LEAVE tag_yi;
     END IF;
 
-    SELECT sum(amount)/sum(volume)  FROM tempday WHERE id>=v_id_lo  and id<v_id_lo+5  INTO v_avrg;
-    SELECT sum(amount),sum(volume)  FROM tempday WHERE id>=v_id_lo  and id<=v_id_hi   INTO v_sumamount, v_sumvolume; 
-    SELECT volume                   FROM tempday WHERE                  id =v_id_lo   INTO v_volume;
-    SELECT sum(volume)              FROM tempday WHERE id>v_id_lo-2 and id<=v_id_lo   INTO v_volume2;
+    SELECT sum(amount)/sum(volume)  FROM tempday WHERE id>=v_id_lo and id<v_id_lo+5  INTO v_avrg;
+    SELECT sum(amount),sum(volume)  FROM tempday                                     INTO v_sumamount, v_sumvolume; 
+    SELECT volume                   FROM tempday WHERE                 id =v_id_lo   INTO v_volume;
+    SELECT sum(volume)/2            FROM tempday WHERE id>=v_id_lo and id<v_id_lo+2  INTO v_volume2;
+
+    -- SELECT v_volume2, v_id_lo, v_id_hi;
 
     --  v_avrg 5日加权均价
     SET v_chng = 100*(v_low-v_high)/v_high;
-    SET v_chnp5= (v_close-v_avrg)/v_avrg;
-    SET @len   = v_id_hi - v_id_lo;
-    SET v_rat1 = 100*v_volume / v_sumvolume / @len;
-    SET v_rat2 = 100*v_volume2/ v_sumvolume / @len/2;
+    SET @len   = v_id_hi - v_id_lo + 1;
+    SET v_rat1 = v_volume / (v_sumvolume/@NUM);
+    SET v_rat2 = v_volume2/ (v_sumvolume/@NUM);
 
     SET v_turnov  = 100*v_sumvolume/v_shares;
-    SET v_tpd     = v_turnov / @len;
-    SET v_pk2   = v_id_mx - v_id_hi;
+    SET v_tovpd     = v_turnov/@NUM;
 
     INSERT INTO tbl_yi(code,date1,date2,high,low,close,
-                    avrg,chng,chnp5,turnov,tpd,rat1,rat2,pk2,off)
+                    avrg,chng,turnov,tovpd,rat1,rat2,off)
              VALUES(a_code,v_date1,v_date2,v_high,v_low,v_close,
-                    v_avrg, v_chng,v_chnp5,v_turnov,v_tpd,v_rat1,v_rat2,v_pk2,@len);
+                    v_avrg,v_chng,v_turnov,v_tovpd,v_rat1,v_rat2,@len);
 END tag_yi //
 
 DROP PROCEDURE IF EXISTS sp_6maishenjian//
