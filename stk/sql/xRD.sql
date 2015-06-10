@@ -186,10 +186,10 @@ CREATE PROCEDURE sp_create_tbl_6mai() tag_tbl_6mai:BEGIN
     );
 END tag_tbl_6mai //
 
-DROP PROCEDURE IF EXISTS sp_create_tbl_yi //
-CREATE PROCEDURE sp_create_tbl_yi() tag_tbl_yi:BEGIN 
-    DROP   TABLE IF EXISTS tbl_yi;
-    CREATE TABLE tbl_yi (
+DROP PROCEDURE IF EXISTS sp_create_tbl_hilo //
+CREATE PROCEDURE sp_create_tbl_hilo() tag_tbl_hilo:BEGIN 
+    DROP   TABLE IF EXISTS tbl_hilo;
+    CREATE TABLE tbl_hilo (
         id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
         date1       date NOT NULL DEFAULT 0,
@@ -206,7 +206,7 @@ CREATE PROCEDURE sp_create_tbl_yi() tag_tbl_yi:BEGIN
         avrg        DECIMAL(6,2) NOT NULL DEFAULT 0,    -- avrg = sum(amount) / sum(volume)
         chng        DECIMAL(6,2) NOT NULL DEFAULT 0     -- chng = (close-open)/open
     );
-END tag_tbl_yi //
+END tag_tbl_hilo //
 
 DROP PROCEDURE IF EXISTS sp_create_tbl_taox //
 CREATE PROCEDURE sp_create_tbl_taox() tag_tbl_taox:BEGIN 
@@ -509,7 +509,7 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
     IF a_type = @fn_6maishenjian    THEN call sp_create_tbl_6mai();     END IF;
     IF a_type = @fn_taox_ratio      THEN call sp_create_tbl_taox();     END IF;
     IF a_type = @fn_fbi_ratio       THEN call sp_create_tbl_fbi();      END IF;
-    IF a_type = @fn_yi              THEN call sp_create_tbl_yi();       END IF;
+    IF a_type = @fn_hilo            THEN call sp_create_tbl_hilo();     END IF;
 
     -- visit all codes
     WHILE v_id <= v_len DO
@@ -523,7 +523,7 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
             WHEN @fn_6maishenjian   THEN call sp_6maishenjian(v_code);
             WHEN @fn_taox_ratio     THEN call sp_taox(v_code);
             WHEN @fn_fbi_ratio      THEN call sp_fbi(v_code);
-            WHEN @fn_yi             THEN call sp_yi(v_code);
+            WHEN @fn_hilo           THEN call sp_hilo(v_code);
             ELSE SELECT "no a_type match";
         END CASE;
 
@@ -925,9 +925,9 @@ CREATE PROCEDURE sp_fbi(a_code INT(6) ZEROFILL) tag_fbi:BEGIN
     -- SELECT v_cnt100;
 END tag_fbi //
 
-DROP PROCEDURE IF EXISTS sp_yi//
-CREATE PROCEDURE sp_yi(a_code INT(6) ZEROFILL) tag_yi:BEGIN
-    -- yi
+DROP PROCEDURE IF EXISTS sp_hilo//
+CREATE PROCEDURE sp_hilo(a_code INT(6) ZEROFILL) tag_hilo:BEGIN
+    -- hilo
     DECLARE v_id        INT DEFAULT 1; 
     DECLARE v_id_hi     INT DEFAULT 1; 
     DECLARE v_id_lo     INT DEFAULT 1; 
@@ -973,7 +973,7 @@ CREATE PROCEDURE sp_yi(a_code INT(6) ZEROFILL) tag_yi:BEGIN
 
     IF v_id_hi-v_id_lo<2 THEN
         -- SELECT "lt 2 gap:", a_code, v_id_hi-v_id_lo+1, v_date1, v_date2;
-        LEAVE tag_yi;
+        LEAVE tag_hilo;
     END IF;
 
     SELECT sum(amount)/sum(volume)  FROM tempday WHERE id>=v_id_lo and id<v_id_lo+5  INTO v_avrg;
@@ -992,11 +992,11 @@ CREATE PROCEDURE sp_yi(a_code INT(6) ZEROFILL) tag_yi:BEGIN
     SET v_turnov  = 100*v_sumvolume/v_shares;
     SET v_tovpd     = v_turnov/@NUM;
 
-    INSERT INTO tbl_yi(code,date1,date2,high,low,close,
+    INSERT INTO tbl_hilo(code,date1,date2,high,low,close,
                     avrg,chng,turnov,tovpd,rat1,rat2,off)
              VALUES(a_code,v_date1,v_date2,v_high,v_low,v_close,
                     v_avrg,v_chng,v_turnov,v_tovpd,v_rat1,v_rat2,@len);
-END tag_yi //
+END tag_hilo //
 
 DROP PROCEDURE IF EXISTS sp_6maishenjian//
 CREATE PROCEDURE sp_6maishenjian(a_code INT(6) ZEROFILL) tag_6mai:BEGIN
@@ -1249,7 +1249,7 @@ END tag_stat_linqi //
     SET @fn_6maishenjian        = 11;
     SET @fn_taox_ratio          = 12;
     SET @fn_fbi_ratio           = 13;
-    SET @fn_yi                  = 14;
+    SET @fn_hilo                = 14;
     SET @FORCE                  = 0;    -- 1时强制计算过滤停牌很久的个股
     SET @START      = '2013-12-6';
     SET @END        = '2014-11-26';

@@ -650,7 +650,7 @@ function fn_ma60x2x4()
 
 # start end turnov tpd rat15 rat210 gap2max
 
-function fn_yi()
+function fn_hilo()
 {
     fn_exclude ${exclude2}
     fn_txttbl
@@ -663,7 +663,7 @@ function fn_yi()
         up file_to_table ${code}
     else
         if [ -z "${YIST}" ]; then
-            echo "Usage: YIST=xxx SCREENER yi code..." 
+            echo "Usage: YIST=xxx SCREENER hilo code..." 
             exit
         fi
     fi
@@ -672,7 +672,7 @@ function fn_yi()
     SET @END='$END';
     SET @NUM=${NUM:-13};
     SET @NMC_RATIO=${NMC_RATIO:-1};
-    call sp_visit_tbl('${TBL:-zxg}', @fn_yi);
+    call sp_visit_tbl('${TBL:-zxg}', @fn_hilo);
     " | tee -a $mps_god
     mysql $mo -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
@@ -696,16 +696,14 @@ function fn_main()
     "6jian              code [field]          # #{NUM}日，个股成本分析"
     "nouse              [field]               # "
     "focus              [field]               # #{YIST:-.soptter.trade}->zxg and 9jian"
-    "tao                code [field]          # #{nmemb}"
-    "tao5               code                  # #{nmemb} #{ZIZE}"
-    "yi                 code...               # #{YIST}下跌幅度计算"
-    "bei                {code...|file}        # #{nmemb} #{ZIZE}"
-    "fbi                code                  # ZIZE=6 nmemb=1 NMC_RATIO=100%"
-    "acc                code                  # NMC_RATIO=tov10 Acceleration day"
-    "acf                code                  # TOV5 {0|1|2}~{tov10/2, tov5, tov20/2}"
-    "act                code                  # replace ac5 when 曲线陡峭"
-    "ac5                code                  # min5"
-    "ac6                code                  # TOV5 * .618"
+    "hilo               code...               # #{YIST}下跌幅度计算"
+    "act                code                  # 2 hour 曲线陡峭"
+    "ac5                code                  # 5 hour"
+    "ac6                code                  # 3 day TOV5 * .618"
+    "acf                code                  # 5 day TOV5 {0|1|2}~{tov10/2, tov5, tov20/2}"
+    "acc                code                  # 10day NMC_RATIO=tov10 Acceleration day"
+    "bei                {code...|file}        # 完整换手 ZIZE=6 nmemb=1 NMC_RATIO=100%"
+    "fbi                code                  # 完整换手 bei的个例 "
     "wma                [field]               # mavol5B25's别名 其ma是wchng"
     "ma5B25             [field]               # ma240局部"
     "ma240              [field]               # ma240整体:5B25+60x2x4"
