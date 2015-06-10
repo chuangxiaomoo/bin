@@ -207,6 +207,8 @@ function fn_usage()
     echo "       fenbi l|lscode"
     echo "       fenbi a|auto_fb"
     echo "       fenbi s|squeeze"
+    echo "       fenbi r|realtime code"
+    echo "       fenbi r5|real_ac5 code"
     echo "       fenbi fb2day code"
     echo "       fenbi delete [code]"
     exit
@@ -220,6 +222,12 @@ function fn_main()
         ;;
     a|auto_fb)
         fn_auto_fb
+        ;;
+    r|realtime)
+        fenbi ${2} && PPLUS=${PPLUS:-5} SCREENER act ${2}
+        ;;
+    r5|real_ac5)
+        fenbi ${2} && PPLUS=${PPLUS:-5} SCREENER ac5 ${2}
         ;;
     s|squeeze)
         fn_squeeze
