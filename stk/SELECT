@@ -373,7 +373,9 @@ function fn_fbi()
         TRUNCATE(datetime_p%(1000000000000)/1000000,4) as dt_p,
         -- datetime_c, 
         TRUNCATE(datetime_c%(1000000000000)/1000000,4) as dt_c, ${columns}, 
-        round(close+(avrg_c-close)*.618,2) as oracle, (wchng+2*rdiff+3*cdiff) as fire
+        round(close+(avrg_c-close)*.618 - close*ratio*.00236, 2) *              -- close as space
+           IF((avrg_c-close)*.618 - close*ratio*.00236<0, -1, 1) as oracle,     -- ratio as time
+        (wchng+2*rdiff+3*cdiff) as fire
         FROM ${tablex:-tbl_fdiff} LIMIT ${LIMIT:-200}
     " | mysql -t kts
 }
