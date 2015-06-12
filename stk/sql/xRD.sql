@@ -968,7 +968,7 @@ CREATE PROCEDURE sp_hilo(a_code INT(6) ZEROFILL) tag_hilo:BEGIN
     -- SET @left_cursor = IF(@v_len<25,@v_len,25);
 
     SELECT id                       FROM tempday                   order by high desc LIMIT 1 INTO v_id_mx;
-    SELECT id, date, high           FROM tempday WHERE id<=10      order by high desc LIMIT 1 INTO v_id_hi, v_date1, v_high;
+    SELECT id, date, high           FROM tempday                   order by high desc LIMIT 1 INTO v_id_hi, v_date1, v_high;
     SELECT id, date, low, close     FROM tempday WHERE id<=v_id_hi order by low  asc  LIMIT 1 INTO v_id_lo, v_date2, v_low, v_close;
 
     IF v_id_hi-v_id_lo<2 THEN

@@ -670,7 +670,7 @@ function fn_hilo()
 
     echo "
     SET @END='$END';
-    SET @NUM=${NUM:-13};
+    SET @NUM=${NUM:-15};
     SET @NMC_RATIO=${NMC_RATIO:-1};
     call sp_visit_tbl('${TBL:-zxg}', @fn_hilo);
     " | tee -a $mps_god
