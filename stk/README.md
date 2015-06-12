@@ -46,7 +46,7 @@
 
 # 心战           .doc/psy.md
 # 张小龙         .doc/zhangxiaolong.md
-# 总结2020       .doc/2013.md
+# 总结2020       .doc/2013.md           -- 2014 2015 2016
 # 笛卡尔实践     .doc/Descartes.md
 # 目标&策略&纪律 .doc/discipline.md
 

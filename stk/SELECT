@@ -55,7 +55,7 @@ function fn_get_open_days()
 
 function fn_lsd()
 {
-    # where d.code = c.code 非常重要，不重叠的filed不需要加‘tbl_name.’
+    # where d.code = c.code 非常重要，不重叠的field不需要加‘tbl_name.’
     columns="code,yesc,open,close"
     columns=${columns:-'*'}
     columns=d.${columns//,/,d.}
@@ -493,7 +493,7 @@ function fn_ma240()
     function fn_build_sqls() {
     sqls="SELECT date FROM day WHERE code=900001 ORDER by date DESC LIMIT 4,1"
     ago5=`mysql -N kts<<<"${sqls}" 2>/dev/null`
-    filed=${1:-x_sho}
+    field=${1:-x_sho}
     sqls="
     SELECT ${columns},
         ${x_sho} as x_sho, 
@@ -504,7 +504,7 @@ function fn_ma240()
         ${x_long} as x_one,
         c.nmc,c.name FROM tbl_ma240 as ma, cap as c
         WHERE ma.code=c.code and ma.date>'${ago5}' 
-        HAVING 1 ${COND} ${inLIST} ORDER by ${filed} ASC limit ${LIMIT:-24}" 
+        HAVING 1 ${COND} ${inLIST} ORDER by ${field} ASC limit ${LIMIT:-24}" 
     }
 
     # .0001 使得新股 x_sho x_long 都为 2.000
@@ -565,6 +565,13 @@ function fn_hilo()
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
+
+function fn_xrd()
+{
+    mysql kts <<<"SELECT * from xRD WHERE date${OP:->}'${END}' order by ${1:-date} ASC"
+    return $?
+}
+
 function fn_main()
 {
     # mysql CURRENT_DATE();
@@ -573,13 +580,13 @@ function fn_main()
     PREV=`fn_get_prev`
 
     cmdlist=(
-    "dugu9jian          [sortfiled]           # nine sword"
-    "6maishenjian       [sortfiled]           # #{DATE2} to specify diff-day"
+    "dugu9jian          [sortfield]           # nine sword"
+    "6maishenjian       [sortfield]           # #{DATE2} to specify diff-day"
     "get_comma_cloumns  [tbl_name:-day]       # 逗分列名"
     "get_open_days      [LIMIT:-13 [desc]]    # 开市日列表"
-    "wma                [sortfiled:tov5]      # 均价+现成513.静态rat"
-    "rat                [sortfiled:-ratio]    # day+PREV513.动态rat"
-    "ma240              [sortfiled:-ratio]    # "
+    "wma                [sortfield:tov5]      # 均价+现成513.静态rat"
+    "rat                [sortfield:-ratio]    # day+PREV513.动态rat"
+    "ma240              [sortfield:-ratio]    # "
     "ma240_usage        {1~9}                 # 分析ma 5 13 34 55"
     "dif120             code...               # cost:(close-ma120) & sort by #{ASC:id}"
     # ----------------  ABOVE IS FIXED SEQUENCE --------------------
@@ -588,14 +595,15 @@ function fn_main()
     "ls                 {code|symbol}         # 日线数据 \$LIMIT"
     "name               code                  # 名"
     "vol                {0|3|6|03}            # ^^3市成交^^"
-    "lsd                [sortfiled:-rise]     # --- END YIST LIMIT 涨幅排名"
+    "lsd                [sortfield:-rise]     # --- END YIST LIMIT 涨幅排名"
     "pma                code                  # NUM=5日平均"
     "fbi                                      # tbl_fbi"
     "acc                                      # tbl_adiff"
     "acf                                      # tbl_acfdiff"
     "tao5                                     # "
     "rdiff                                    # tbl_rdiff"
-    "hilo               chng                  # tbl_rdiff"
+    "hilo               field                 # field to sort by"
+    "xrd                field                 # #{OP:->}"
     )
 
     # `ASC=任意值`时使用'DESC'，弃用
