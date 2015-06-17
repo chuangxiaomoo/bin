@@ -234,7 +234,7 @@ function fn_6maishenjian()
 
 function fn_dugu9jian()
 {   # date1,date2,amount,open
-    columns="off,avrg,close,turnov"
+    columns="off,turnov,avrg,close"
     columns=${columns:-'*'}
     columns=t.${columns//,/,t.}
 
@@ -250,13 +250,14 @@ function fn_dugu9jian()
         "
         tbl_super_dive="
         SELECT t.code,  DATE_FORMAT(date1,'%m-%d') as start, 
-                        DATE_FORMAT(date2,'%m-%d') as end, ${columns}, c.nmc, chng, 
+                        DATE_FORMAT(date2,'%m-%d') as end, ${columns}, 
+                        round(avrg*(1-${ORACLE:-10}/100),2) as oracle, 
+                        c.nmc, chng, 
                         $RISE as rise, 
                         $PEAK as peak, 
                         $TROUGH as trough,
                         round(100*(t.low-avrg)/avrg,2) as lchng, 
                         round(100*(t.close-avrg)/avrg,2) as wchng, 
-                        round(t.close*(1-${ORACLE:-10}/100),2) as oracle, 
                         c.name 
            FROM ${tablex:-tbl_9jian} as t, cap as c, tempday as d
            WHERE t.code = c.code and t.code = d.code HAVING 1 ${COND} ${EXCLUDE}
