@@ -8,6 +8,8 @@
 # [互联网+](http://mt.sohu.com/20150311/n409644432.shtml)
 # [互联金融](http://www.360doc.com/content/14/0201/22/1632548_349253018.shtml)
 
+# 深证100R(对派息进行除权以减少波动)及深证100P均属于深证100指数,二者样本股组合完全相同
+
 function fn_main()
 {
     CWD=${PWD}
@@ -15,7 +17,8 @@ function fn_main()
     maps=(
         深证成指.BLK    .blk.szcz
         创业板指.BLK    .blk.cybz
-        深证300P.BLK    .blk.sz300p
+        深证100R.BLK    .blk.sz100R
+        深证300P.BLK    .blk.sz300P
         中证500.BLK     .blk.zz500
 
         军工指数.BLK    .blk.jgzs
