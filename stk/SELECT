@@ -572,6 +572,12 @@ function fn_xrd()
     mysql kts <<<"SELECT * from xRD WHERE date${OP:->}'${END}' order by ${1:-date} ASC"
     return $?
 }
+function fn_cap()
+{
+    [ $# -eq "0" ] && fn_execute -l && exit
+    mysql -t kts <<<"SELECT * FROM cap WHERE code = ${1};"
+    return $?
+}
 
 function fn_main()
 {
@@ -594,6 +600,7 @@ function fn_main()
     "updown             [LIMIT:-13]           # 近期涨跌家数统计"
     "td_layout          code                  # 日内最高价时点分布.10:00am"
     "ls                 {code|symbol}         # 日线数据 \$LIMIT"
+    "cap                code                  # 查询nmc&cap"
     "name               code                  # 名"
     "vol                {0|3|6|03}            # ^^3市成交^^"
     "lsd                [sortfield:-rise]     # --- END YIST LIMIT 涨幅排名"
