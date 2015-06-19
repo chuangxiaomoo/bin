@@ -107,6 +107,7 @@ yjbb_rip='/dev/shm/yjbb_rip'
   exclude0='/tmp/kts/exclude0'
   exclude1='/tmp/kts/exclude1'
   exclude2='/tmp/kts/exclude2'
+file_focus='/tmp/kts/focus'
 file_ma120='/tmp/kts/ma120'
 file_ma240='/tmp/kts/ma240'
 
