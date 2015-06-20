@@ -368,11 +368,7 @@ function fn_bei()
 
 function fn_wma()
 {
-    fn_mavol5B25 $@    
-}
-
-function fn_mavol5B25()
-{
+    fn_txttbl
     tbl_tov_date=tbl_tov_${END//-/_}
 
     if mysql kts<<<"SHOW TABLES" | grep -q ${tbl_tov_date}; then
@@ -393,7 +389,6 @@ function fn_mavol5B25()
         fi
     fi
 
-    fn_txttbl
     echo "    build on ${TBL:-cap}..."
 
     echo "
@@ -416,7 +411,7 @@ function fn_mavol5B25()
             touch /tmp/tov/${tbl_tov_date}
         fi
     else
-        SELECT tov ${@}
+        SELECT wma ${@}
     fi
 }
 
@@ -620,6 +615,7 @@ function fn_acf()
 
 function fn_ma5B25()
 {
+    fn_txttbl
     if ! mysql kts<<<"SHOW TABLES" | grep -q 'tbl_ma240'; then
         echo -e "\n    error: tbl_ma240 not exist\n"
         exit 1
@@ -634,11 +630,6 @@ function fn_ma5B25()
 
 function fn_ma240()
 {
-    fn_ma60x2x4 $@
-}
-
-function fn_ma60x2x4()
-{
     fn_txttbl
     echo "
     --  ${FUNCNAME} ...
@@ -646,6 +637,7 @@ function fn_ma60x2x4()
     call sp_visit_tbl('${TBL:-cap}', @fn_ma60x2x4);
     " | tee -a $mps_god
     mysql $mo -t kts <<< "source $mps_god"
+    SELECT ma240 ${@}
 }
 
 
@@ -707,7 +699,7 @@ function fn_main()
     "fbi                code                  # 完整换手 bei的个例 "
     "wma                [field]               # mavol5B25's别名 其ma是wchng"
     "ma5B25             [field]               # ma240局部"
-    "ma240              [field]               # ma240整体:5B25+60x2x4"
+    "ma240              [field]               # ma240整体:5B25+ma60x2x4"
     )
 
     # SCREENER的宗旨，弃子取势
