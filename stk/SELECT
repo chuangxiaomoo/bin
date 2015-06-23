@@ -494,7 +494,7 @@ function fn_ma240_usage()
 function fn_ma240()
 {
     # 0. Make sure U've done [SCREENER ma240]?
-    columns=code,date,close,ma5,ma13,ma25,ma60,ma120        # ,ma240
+    columns=code,date,close                     # ,ma5,ma13,ma25,ma60 # ,ma120,ma240
     columns=ma.${columns//,/,ma.}
     function fn_build_sqls() {
     sqls="SELECT date FROM day WHERE code=900001 and date<='${END}' ORDER by date DESC LIMIT 4,1"
@@ -502,6 +502,10 @@ function fn_ma240()
     field=${1:-x_5}
     sqls="
     SELECT ${columns},
+        round(100*(ma.close-ma5  )/ma5  ,2)as pma5,
+        round(100*(ma.close-ma25 )/ma25 ,2)as pma25,
+        round(100*(ma.close-ma60 )/ma60 ,2)as pma60,
+        round(100*(ma.close-ma120)/ma120,2)as pma120,
         ${x_5} as x_5, 
         ${x_sho} as x_sho, 
         ${x_mid} as x_mid,
