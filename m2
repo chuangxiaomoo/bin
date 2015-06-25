@@ -717,6 +717,7 @@ function fn_architecture()              { cat architecture ;}
 function fn_estate()                    { cat estate ;}
 function fn_driver()                    { cat driver ;}
 function fn_cold()                      { cat cold ;}
+function fn_sport()                     { cat sport ;}
 
 # 新教与天主教。信则得救，不信则下地狱 vs 助人行善
 # 一花一世界，一木一浮生，一草一天堂，一叶一如来，
@@ -767,6 +768,7 @@ function fn_main() {
         prof                            # professionalism 专业主义 职业化
         stevejobs
         socrates                        # Socrates 苏格拉底 诘问
+        sport                           # badmiton 羽毛球
         stk
         futures                         # futures trading 期货
         texaspoker                      # texas_hold_em
