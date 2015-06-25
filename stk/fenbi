@@ -171,17 +171,21 @@ function fn_delete()
 {
     date=`fn_maxdate`
     dt=${date//-/}000000
-    date_p=`date --date="${date} 1 month ago" +'%F'`
+    date_p=`date --date="${date} 14 days ago" +'%F'`
     dt_p=${date_p//-/}000000
 
-    fn_iscode ${1} && COND="code=${1}" || COND="datetime>${dt} or datetime<${dt_p}"
-
+    if fn_iscode ${1}; then
+        COND="code=${1}"
+    else
+        COND="datetime>${dt} or datetime<${dt_p}"
+    fi
+       
     sqls="DELETE FROM fenbi WHERE ${COND}"
     count0=`mysql -N kts<<<'SELECT count(*) FROM fenbi'`
     mysql -N kts<<<"${sqls}"
     count1=`mysql -N kts<<<'SELECT count(*) FROM fenbi'`
     let count2=count0-count1
-    fn_echo_succ "delete ${count2} records total"
+    fn_echo_succ "${sqls}: ${count2} records cleared"
 }
 
 function fn_lscode()
@@ -211,7 +215,7 @@ function fn_usage()
     echo "       fenbi r|realtime code"
     echo "       fenbi r5|real_ac5 code"
     echo "       fenbi fb2day code"
-    echo "       fenbi delete [code]"
+    echo "       fenbi delete [code]    # without code, clear 14days ago"
     exit
 }
 

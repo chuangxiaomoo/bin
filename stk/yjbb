@@ -52,7 +52,7 @@ function fn_load()
     echo "
     -- DROP TABLE IF EXISTS tbl_yjbb;
     CREATE TABLE IF NOT EXISTS tbl_yjbb (
-        date        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        date        date NOT NULL DEFAULT 0,
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
         EPS         DECIMAL(10,4) NOT NULL DEFAULT 0,
         revenue     DECIMAL(12,2) NOT NULL DEFAULT 0,
@@ -78,38 +78,37 @@ function fn_load()
 
 function fn_dl_all()
 {
-    [ "${#}" -eq 0 ] && fn_main
+    # [ "${#}" -eq 0 ] && fn_main
 
     echo "DL from http://data.eastmoney.com/bbsj/${1}/yjbb.html"
 
-    fn_url() { url0="http://data.eastmoney.com/bbsj/${date}/yjbb/ggrq/desc/${i}.html"; }
+    date=${1:-'2014-12-31'}
 
-    date=${1:-'201409'}
-    pages=3
-    for (( i=1; i<=${pages}; i+=1 )); do
-        echo DownLoading page $i of ${date}...
-        fn_url
-        w3m -dump ${url0} > ${yjbb_raw}
-        if [ "${i}" -eq 1 ]; then
-            pages=`grep '下一页' ${yjbb_raw} | sed 's/下一页.*//g' | awk '{print $NF}'`
-        fi
-        # code eps 
-        # orevenue r_growth_y r_growth_q 
-        # profit p_growth_y p_growth_q
-        # net_assets ROE cash_flow gross_margin
-        grep '详细股吧' ${yjbb_raw} | 
-        awk '{
+    fn_url() 
+    { 
+        url0="http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx?type=SR&sty=YJBB&"
+        url0="${url0}fd=${date}&st=13&sr=-1&p=1&ps=3000"
+    }
+    fn_url
+    w3m -dump ${url0} > ${yjbb_raw}
+    if ! grep -q "${date}" ${yjbb_raw}; then
+        fn_echo_fail "no ${date} data"
+        exit 1
+    fi
+    cat ${yjbb_raw} |tr -d '\n' |
+        sed -e '1s/^...//' -e '1s/...$//' -e 's/","/\n/g' | 
+        awk -F',' '{
             printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
-            $2, $5, 
-            $6,$7,$8,
+            $1,$3,$5/10000,
+            $6,$7,$8/10000,
             $9,$10,$11,
-            $12,$13,$14
-        }' | sed 's/-$/0/' | grep "^[036]" 
-    done > ${yjbb_rip}
+            $12,$13
+        }' | grep "^[036]" > ${yjbb_rip}
+
     sed -i "s/^/${date}\t/" ${yjbb_rip}
     sort -g -k2 ${yjbb_rip} -o ${yjbb_rip}
 
-    ./yjbb load ${yjbb_rip}
+    fn_load ${yjbb_rip}
 
     return $?
 }
@@ -117,6 +116,9 @@ function fn_dl_all()
 
 function fn_detail()
 {
+    # 季度报表的所有项目分两个：环比数据，
+    #                           同比数据，年初至报告期(所以EPS计算应该进行时间校正)
+
     # EPS    每股收益，PE=(close/EPS)
     # revenue营业额，必须配合ROE增长，如此才是可持续的。因缩减成本之节流不如开源。
     # r_grw_y
@@ -128,6 +130,8 @@ function fn_detail()
 
     # gross  产品毛利率——要高、稳定而且趋升，
     #        彩电行业，近10年来产品毛利率一直在逐年下降；而白酒行业产品毛利率却一直都比较稳定。
+
+    # 季度环比数据 r_grw_q, p_grw_q 有时会是空数据0
 
     #olumns='code,EPS,revenue,r_grw_y,r_grw_q,profit,p_grw_y,p_grw_q,netassets,RoE,cashflow'
     columns='y.date,y.code,round(c.close/EPS,2) as PE'
@@ -151,7 +155,7 @@ function fn_detail()
     SELECT $columns, c.nmc, c.name FROM tbl_yjbb as y, cap as c
         WHERE y.code=c.code 
         HAVING 1 ${COND} ${inLIST} 
-        ORDER by ${field:-code} ${ASC:-DESC} limit ${LIMIT:-48};
+        ORDER by code,${field:-date} ${ASC:-DESC} limit ${LIMIT:-48};
     " | mysql -t kts
     
     return $?
@@ -169,10 +173,10 @@ function fn_soptter()
 function fn_main()
 {
     case $1 in
-    1|online)
-        fn_online "${@:2}"
-        ;;
-    2|detail)
+   #1|online)
+   #    fn_online "${@:2}"
+   #    ;;
+    1|detail)
         fn_detail "${@:2}"
         ;;
     3|dl_all)
@@ -193,13 +197,12 @@ function fn_main()
         ;;
     *)
         echo "Usage: 
-        yjbb {1|online}     code    
-        yjbb {2|detail}     code...
-        yjbb {3|dl_all}     20yymm  
+        yjbb {1|detail}     code...
+        yjbb {3|dl_all}     20yy-mm-dd
         yjbb {4|load}       file
         yjbb {5|soptter}
         yjbb {6|ls_date}
-        yjbb {7|dele}       20yymm
+        yjbb {7|dele}       20yy-mm-dd
         "
         exit
         ;;
