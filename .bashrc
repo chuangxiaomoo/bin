@@ -2,12 +2,13 @@
 
 # make sure no space b4 the 2nd '
 
+alias        FM=''
 alias       ASC=''
 alias       END=''
 alias       NUM=''
 alias       TBL=''
 alias      COND=''
-alias      FINA=''      # S_I_N_A conflict with Svn
+#lias      FINA=''      # S_I_N_A conflict with Svn
 alias      PREV=''
 alias      YIST=''
 alias      ZIZE=''

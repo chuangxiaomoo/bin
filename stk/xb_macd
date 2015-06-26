@@ -1,0 +1,32 @@
+#! /bin/bash
+
+. `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
+. /etc/common.rc
+
+
+function fn_routine()
+{
+    file=${1:-'.soptter.macd'}
+    codes=(`cat ${file}|awk '/^[^#]/{print $1}' | xargs`)
+    local i=
+    for i in ${codes[@]}; do
+        [[ ${i} =~ ^[036].* ]] || { echo "ignore code ${i}"; continue ;}
+        fenbi ${i}
+        xt_ret $? "down ${i} error" || return $?
+    done
+
+    fn_acf $1
+}
+
+function fn_main()
+{
+    while :; do
+        hhmmss=`date +%H:%M:%S`
+        echo PATROL@${hhmmss}
+        fn_routine
+        sleep 120
+    done
+    return $?
+}
+
+fn_main ${@}
