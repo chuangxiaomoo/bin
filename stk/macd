@@ -1,0 +1,68 @@
+#! /bin/bash -
+#---------------------------------------------------------------------------
+#       CREATED: 2015-06-25 23:23:17 CST
+#---------------------------------------------------------------------------
+. `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
+. /etc/common.rc
+
+#(TRUNCATE(datetime%10000/100+1, 0)%5)=0 or (TRUNCATE(datetime%1000000/100, 0)%1500)=0
+function fn_macd()
+{
+    head -n -5 $mps_org > $mps_god
+
+
+    echo "
+    DROP   TABLE IF EXISTS tmpfb_macd;
+    CREATE TABLE tmpfb_macd (
+        id          int(6)          PRIMARY key AUTO_INCREMENT NOT NULL,
+        code        INT(6)          ZEROFILL NOT NULL, 
+        datetime    bigint(14)      NOT NULL DEFAULT 0, 
+        trade       DECIMAL(6,2)    NOT NULL,
+        volume      DECIMAL(10,2)   NOT NULL,
+        amount      DECIMAL(12,2)   NOT NULL
+        -- INDEX(code,datetime)     有意不使用INDEX(datetime)，以防按datetime排序
+    );
+    CREATE TABLE IF NOT EXISTS ma20macd (
+        fcod        INT(8)          ZEROFILL NOT NULL PRIMARY key,
+        code        INT(6)          ZEROFILL NOT NULL,
+        fish        INT(2)          NOT NULL DEFAULT 5,
+        ma20        DECIMAL(6,2)    NOT NULL,
+        datetime    bigint(14)      NOT NULL DEFAULT 0,
+        close       DECIMAL(6,2)    NOT NULL DEFAULT 0,
+        dif         DECIMAL(8,4)    NOT NULL DEFAULT 0,
+        dea         DECIMAL(8,4)    NOT NULL DEFAULT 0,
+        macd        DECIMAL(8,4)    NOT NULL DEFAULT 0,
+        INDEX(fcod)
+    );
+
+    SELECT max(datetime) FROM fenbi WHERE code=$1 into @max_dt;
+    INSERT into tmpfb_macd(code,datetime,trade,volume,amount) 
+        SELECT code,datetime,trade,volume,amount FROM fenbi WHERE code=$1 and ( (
+        (TRUNCATE(datetime%10000/100, 0)%${FM:=5})=0 and
+        (TRUNCATE(datetime%1000000/100, 0)%0925)!=0 ) or
+        datetime=@max_dt
+        ) ORDER by datetime DESC LIMIT 52;
+
+    call sp_fmacd();
+    SELECT sum(trade)/20 FROM tmpfb_macd WHERE id<=20 INTO @ma20;
+
+    REPLACE INTO ma20macd(fcod,code,fish,ma20,datetime,close,dif,dea,macd)
+        SELECT code+${FM}*1000000,code,${FM},@ma20,datetime,close,dif,dea,macd FROM fmacd ORDER by id DESC LIMIT 1;
+    -- SELECT * FROM fmacd;
+    " >> $mps_god
+
+    mysql $mo -t kts <<< "source $mps_god"
+    xt_ret $? "${FUNCNAME}" || return $?
+}
+
+function fn_main()
+{
+    code=${1}
+    fn_iscode ${code}
+    xt_ret $? "Usage: macd code" || return $?
+
+    fn_macd $code
+    return $?
+}
+
+fn_main $@

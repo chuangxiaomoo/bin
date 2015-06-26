@@ -82,6 +82,35 @@ CREATE PROCEDURE sp_macd(a_tbl CHAR(32), a_code INT(6) ZEROFILL) tag_macd:BEGIN
     UPDATE  macd SET macd = (dif -dea)*2 ;
 END tag_macd//
 
+DROP PROCEDURE IF EXISTS sp_fmacd//
+CREATE PROCEDURE sp_fmacd() tag_fmacd:BEGIN
+    DROP   TABLE IF EXISTS fmacd;
+    CREATE TABLE fmacd (
+        id          INT(6) PRIMARY key AUTO_INCREMENT NOT NULL,
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        datetime    bigint(14)   NOT NULL DEFAULT 0,
+        close       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        short_ema   DECIMAL(8,4) NOT NULL DEFAULT 0,
+        long_ema    DECIMAL(8,4) NOT NULL DEFAULT 0,
+        dif         DECIMAL(8,4) NOT NULL DEFAULT 0,
+        dea         DECIMAL(8,4) NOT NULL DEFAULT 0,
+        macd        DECIMAL(8,4) NOT NULL DEFAULT 0,
+        INDEX(datetime)
+    );
+
+    INSERT INTO fmacd(code,datetime,close) SELECT code,datetime,trade FROM tmpfb_macd order by datetime ASC;
+
+    -- long short dea 26 12 9
+    call sp_ema('fmacd', 'close', 'short_ema', 12);
+    call sp_ema('fmacd', 'close', 'long_ema',  26);
+
+    UPDATE  fmacd SET dif  = short_ema-long_ema;
+
+    call sp_ema('fmacd', 'dif',   'dea',       9);
+
+    UPDATE  fmacd SET macd = (dif -dea)*2 ;
+END tag_fmacd//
+
 
 /* 结果输出到表 kdj */
 DROP PROCEDURE IF EXISTS sp_kdj//
@@ -1267,6 +1296,7 @@ END tag_stat_linqi //
 --  THIS EXECUTE DELIMITER
 
 --  call sp_macd('day', 2);
+--  call sp_fmacd();
 --  call sp_kdj('day', 2, 9);
 --  call sp_filter_kdj('cap');
 --  call sp_kdj_wk('day', 750, 9);
