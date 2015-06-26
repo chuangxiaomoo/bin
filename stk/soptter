@@ -71,7 +71,7 @@ function fn_main()
 #   YIST=${YIST:-'.blk.bxy'}
 #   YIST=${YIST:-'.blk.qs'}
 #   YIST=${YIST:-'.blk.yhy'}
-#   YIST=${YIST:-'.blk.cybz'}
+    YIST=${YIST:-'.blk.cybz'}
 #   YIST=${YIST:-'.soptter.etf'}
 #   YIST=${YIST:-'.soptter.obor'}
 #   YIST=${YIST:-'.soptter.lin'}

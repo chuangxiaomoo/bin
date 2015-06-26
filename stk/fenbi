@@ -47,11 +47,21 @@ function fn_hexun()
     datetime0="${date}092500"
     datetime4="${date}112900"
     datetime5="${date}130000"
+    datetime7="${date}145700"
     datetime9="${date}150000"
 
     >${buffer}
     [ "${dt}" -lt ${datetime9} ]
     xt_ret $? "Latest@${dt}>${datetime9}" || return 0
+
+    # 防止在macd(F5)时，1分钟有两个记录
+    if [ "${dt}" -lt ${datetime7} ]; then
+        sql="
+        DELETE FROM fenbi WHERE code=${code} and datetime=${dt};
+        SELECT max(datetime) FROM fenbi WHERE code=${code};
+        "
+        dt=`mysql -N kts <<< "${sql}"`
+    fi
 
    #[ "${dt}" -lt ${datetime0} ] && dt=${datetime0}
 
@@ -91,7 +101,7 @@ function fn_hexun()
         LOAD DATA LOCAL INFILE '${buffer}' INTO TABLE tmpfb;
         INSERT INTO fenbi(code, datetime, trade, volume, amount)
           SELECT code,datetime,trade,sum(volume),sum(amount) FROM 
-            (SELECT *,round(datetime%1000000/${mod_fbi},0) as grp from tmpfb ORDER by datetime DESC) 
+            (SELECT *,TRUNCATE(datetime%1000000/${mod_fbi},0) as grp from tmpfb ORDER by datetime DESC) 
                 as newfb GROUP by grp ORDER by datetime;
         " | mysql -t kts 
         xt_ret $? "" || return $?
@@ -171,7 +181,7 @@ function fn_delete()
 {
     date=`fn_maxdate`
     dt=${date//-/}000000
-    date_p=`date --date="${date} 14 days ago" +'%F'`
+    date_p=`date --date="${date} 10 days ago" +'%F'`
     dt_p=${date_p//-/}000000
 
     if fn_iscode ${1}; then
