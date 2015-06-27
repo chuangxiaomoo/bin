@@ -3,19 +3,28 @@
 . `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
 . /etc/common.rc
 
-
 function fn_routine()
 {
-    file=${1:-'.soptter.macd'}
-    codes=(`cat ${file}|awk '/^[^#]/{print $1}' | xargs`)
-    local i=
-    for i in ${codes[@]}; do
-        [[ ${i} =~ ^[036].* ]] || { echo "ignore code ${i}"; continue ;}
-        fenbi ${i}
-        xt_ret $? "down ${i} error" || return $?
-    done
+    grep -v '^#' .soptter.macd |
+    while read code symble FM cond1 op cond2 tips; do
+        if [ "${code}" = '-' ]; then
+            code=$code0
+        elif [ -z "${DT}" ]; then   # DT不指定，则从网络更新fenbi数据
+            fenbi ${code} >& ${SUBOUT}
+            xt_ret $? "down ${i} error" || return $?
+        fi
+        FM=${FM} macd ${code}
+        sql="SELECT IF(${cond1} ${op} ${cond2}, 1, 0) FROM ma20macd WHERE code=${code} and fish=${FM}"
+        ret=`mysql -N kts <<<"${sql}"`
 
-    fn_acf $1
+        if [ "${ret}" = 1 ]; then
+            fn_echo_succ "$code.$symble.$FM $cond1 $op $cond2"
+            fn_echo_warn "$tips"
+        elif [ "${ret}" = "" ]; then
+            fn_echo_fail "bad condition ${code}: ${cond1} ${op} ${cond2}"
+        fi
+        code0=$code
+    done
 }
 
 function fn_main()
@@ -24,9 +33,11 @@ function fn_main()
         hhmmss=`date +%H:%M:%S`
         echo PATROL@${hhmmss}
         fn_routine
+        [ -n "${DT}" ] && exit      # DT指定，即时退出
         sleep 120
     done
     return $?
 }
 
-fn_main ${@}
+fn_routine
+# fn_main ${@}

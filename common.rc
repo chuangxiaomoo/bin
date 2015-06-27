@@ -47,7 +47,7 @@ function fn_echo_line()
 # echo yellow
 function fn_echo_warn()
 {
-    FG=31 BG=40
+    FG=33 BG=40
     TEXT="$@"
     echo -e "\E[${FG};${BG}m${TEXT}"
     echo -ne "\E[0m"

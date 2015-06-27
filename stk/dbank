@@ -18,6 +18,9 @@ helpmsg="
 
 export END=${END}
 
+[ "${DEBUG:-0}" = 1 ] && 
+SUBOUT='/dev/stdout' || SUBOUT='/dev/null'
+
 XTBL=${XTBL:+and code not in (SELECT code FROM $XTBL)}
 
 HAVING=${COND:+HAVING $COND }${XTBL}
