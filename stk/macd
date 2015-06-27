@@ -9,7 +9,7 @@
 function fn_macd()
 {
     head -n -5 $mps_org > $mps_god
-
+    test -n "${DT}" && TEST="and datetime<=${DT}"
 
     echo "
     DROP   TABLE IF EXISTS tmpfb_macd;
@@ -37,7 +37,7 @@ function fn_macd()
 
     SELECT max(datetime) FROM fenbi WHERE code=$1 into @max_dt;
     INSERT into tmpfb_macd(code,datetime,trade,volume,amount) 
-        SELECT code,datetime,trade,volume,amount FROM fenbi WHERE code=$1 and ( (
+        SELECT code,datetime,trade,volume,amount FROM fenbi WHERE code=$1 ${TEST} and ( (
         (TRUNCATE(datetime%10000/100, 0)%${FM:=5})=0 and
         (TRUNCATE(datetime%1000000/100, 0)%0925)!=0 ) or
         datetime=@max_dt

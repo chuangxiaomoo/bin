@@ -43,7 +43,7 @@ function fn_hexun()
 {
     code=$1
     date=`date +%Y%m%d`
-    #date=`fn_maxdate|sed 's/-//g'`  # uncomment when weekend
+    date=`fn_maxdate|sed 's/-//g'`  # uncomment when weekend
     datetime0="${date}092500"
     datetime4="${date}112900"
     datetime5="${date}130000"

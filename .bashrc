@@ -28,9 +28,11 @@ alias   ...='cd ../..'
 alias    .b='cd ~/bin'
 alias    .c="let 'CHAO=!CHAO'; echo \$CHAO; export CHAO"
 alias    .5="let 'TOV5=++TOV5%3'; echo \$TOV5; export TOV5"
+alias  .dbg="let 'DEBUG=!DEBUG'; echo \$DEBUG; export DEBUG"
 alias .sina="let 'SINA=!SINA'; echo \$SINA; export SINA"
-alias    .n='. /opt/nxpbash'
+#lias    .n='. /opt/nxpbash'
 alias    .s='cd ~/bin/stk'
+alias   .nb="nc 192.168.100.100 1234 <<< 'ooh my god'"
 alias   .ss='cd ~/bin/stk/sql'
 alias   .rc='. /root/.bashrc'
 alias   .ps='PS1="[\w]\n\u-> \[\033[0m\]"'
