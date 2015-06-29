@@ -21,6 +21,8 @@ export END=${END}
 [ "${DEBUG:-0}" = 1 ] && 
 SUBOUT='/dev/stdout' || SUBOUT='/dev/null'
 
+nbell="nc 192.168.100.100 1234 <<< 'ooh my god'"
+
 XTBL=${XTBL:+and code not in (SELECT code FROM $XTBL)}
 
 HAVING=${COND:+HAVING $COND }${XTBL}
