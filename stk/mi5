@@ -43,6 +43,8 @@ function fn_do_once()
     sina='http://market.finance.sina.com.cn/downxls.php?'
     [ ${code:0:1} -eq 6 ] && sec=sh || sec=sz
 
+#   echo $WGET \""${sina}date=${date}&symbol=${sec}${code}"\" -O ${fenbi_raw1}
+
     echo download ${code} on ${date}
     $WGET "${sina}date=${date}&symbol=${sec}${code}" -O ${fenbi_raw1} 2>/dev/null ||
     $WGET "${sina}date=${date}&symbol=${sec}${code}" -O ${fenbi_raw1} 2>/dev/null

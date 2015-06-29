@@ -20,8 +20,10 @@ function fn_routine()
         if [ "${ret}" = 1 ]; then
             fn_echo_succ "$code.$symble.$FM $cond1 $op $cond2"
             fn_echo_warn "$tips"
+            nbell
         elif [ "${ret}" = "" ]; then
             fn_echo_fail "bad condition ${code}: ${cond1} ${op} ${cond2}"
+            nbell
         fi
         code0=$code
     done
