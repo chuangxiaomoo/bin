@@ -4,7 +4,8 @@
 
 function fn_main()
 {
-    codes=(`cat ${YIST:-'.soptter.trade'} | awk '/^[036]/{print $1}'`)
+    YIST=${YIST:-'.soptter.trade'}
+    codes=(`cat ${YIST} | awk '/^[036]/{print $1}'`)
     case $1 in
     c)
         [ "${#}" -eq 1 ] && fn_main

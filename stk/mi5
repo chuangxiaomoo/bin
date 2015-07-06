@@ -130,14 +130,16 @@ function fn_download()
 
 function fn_main()
 {
-    [ "${#}" -ne 0 ]
-    xt_ret $? "Usage: [END=d] [PREV=n] mi5 code..." || return $?
+    [ "${#}" -ne 0 ] || [ -n "${YIST}" ]
+    xt_ret $? "Usage: [YIST=y] [END=d] [PREV=n] mi5 [code...]" || return $?
+
+    fn_yist
 
     local i=
-    for i in $@; do
+    for i in ${@:-${LIST[@]}}; do
         code=${i}
         fn_iscode ${code}
-        xt_ret $? "Usage: [END=d] [PREV=n] mi5 code..." || return $?
+        xt_ret $? "Usage: [YIST=y] [END=d] [PREV=n] mi5 [code...]" || return $?
         fn_download $code
     done
     return $?

@@ -1,4 +1,5 @@
 # code  symble   FM cond1   op  cond2                       tips
 #                 5 macd>0  and (ma20-close)/close<.006     
+# posi  5000
 002197	证通电子  5 macd>0  and 1                           PM&&买入100手
 -     	证通电子  5 macd>0  and 1                           PM&&买入100手

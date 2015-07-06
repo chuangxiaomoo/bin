@@ -44,6 +44,8 @@ function fn_macd()
         ) ORDER by datetime DESC LIMIT 52;
 
     call sp_fmacd();
+    SELECT sum(trade)/20 FROM (SELECT 
+           trade from fenbi WHERE code=${1} ORDER by datetime DESC LIMIT 20) as t INTO @fa20;
     SELECT sum(trade)/20 FROM tmpfb_macd WHERE id<=20 INTO @ma20;
 
     REPLACE INTO ma20macd(fcod,code,fish,ma20,datetime,close,dif,dea,macd)
