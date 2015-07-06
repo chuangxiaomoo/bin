@@ -32,11 +32,15 @@ function fn_routine()
 function fn_main()
 {
     while :; do
-        hhmmss=`date +%H:%M:%S`
+        hhmmss=`date +%H%M%S`
+        if ([ ${hhmmss} -ge 113000 ] && [ ${hhmmss} -le 130000 ]) ||
+            [ ${hhmmss} -lt 093300 ] || [ ${hhmmss} -gt 145700 ]; then
+            echo "resting..."; sleep 60; continue
+        fi
         echo PATROL@${hhmmss}
         fn_routine
         [ -n "${DT}" ] && exit      # DT指定，即时退出
-        sleep 120
+        sleep 110
     done
     return $?
 }

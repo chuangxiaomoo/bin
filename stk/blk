@@ -15,6 +15,7 @@ function fn_main()
     CWD=${PWD}
     BLK='/dzh2/USERDATA/block'
     maps=(
+        上证50.BLK      .blk.sz50
         深证成指.BLK    .blk.szcz
         创业板指.BLK    .blk.cybz
         深证100R.BLK    .blk.sz100R

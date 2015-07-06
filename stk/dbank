@@ -143,7 +143,7 @@ function fn_txttbl()
 function fn_yist()
 {
     if [ -f "${YIST}" ]; then
-        LIST=(`cat ${YIST}|awk '/^[^#]/{print $1}' | xargs`)
+        LIST=(`cat ${YIST}|awk '/^[036]/{print $1}' | xargs`)
         [ -z "${LIST[0]}" ] && return
         inLIST="and code in (`tr ' ' ','<<<${LIST[@]}`)"
     fi
