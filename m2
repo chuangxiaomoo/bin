@@ -780,8 +780,9 @@ function fn_main() {
         yufen
         rose                            # 
         zhihu
-        zhenhuan        # 甄嬛体
+        zhenhuan                        # 甄嬛体
         sanxing三省
+        life_is_a_bus                   # 公交车
     )
     fn_print $@
 }
