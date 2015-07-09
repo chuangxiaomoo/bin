@@ -636,6 +636,7 @@ CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
         id          INT(6) PRIMARY key AUTO_INCREMENT NOT NULL,
         date        date NOT NULL,
 
+        cnt         INT(6) NOT NULL DEFAULT 0,
         inc         INT(6) NOT NULL DEFAULT 0,
         dec0        INT(6) NOT NULL DEFAULT 0,
 
@@ -661,6 +662,7 @@ CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
         SELECT date FROM day WHERE code=900001 and date>v_start limit 1 INTO v_start;
         -- SELECT v_start;
 
+        SELECT count(code) FROM tbl_change WHERE date=v_start                          INTO @cnt;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng>=0              INTO v_inc;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<0               INTO v_dec0;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng>=8              INTO v_inc8p;
@@ -672,9 +674,9 @@ CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<-5 and chng>=-8 INTO v_dec58;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<-8              INTO v_dec8p;
 
-        INSERT INTO tbl_stat_change(date, inc, dec0, 
+        INSERT INTO tbl_stat_change(date, cnt, inc, dec0, 
                 inc8p ,inc58 ,inc25 ,inc02 ,dec02 ,dec25 ,dec58 ,dec8p )
-        VALUES(v_start, v_inc, v_dec0, 
+        VALUES(v_start, @cnt, v_inc, v_dec0, 
                 v_inc8p ,v_inc58 ,v_inc25 ,v_inc02 ,v_dec02 ,v_dec25 ,v_dec58 ,v_dec8p );
         -- LEAVE tag_stat_change;
     END WHILE;

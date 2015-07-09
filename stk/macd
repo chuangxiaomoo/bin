@@ -23,16 +23,17 @@ function fn_macd()
         -- INDEX(code,datetime)     有意不使用INDEX(datetime)，以防按datetime排序
     );
     CREATE TABLE IF NOT EXISTS ma20macd (
-        fcod        INT(8)          ZEROFILL NOT NULL PRIMARY key,
+        freq        INT(8)          ZEROFILL NOT NULL PRIMARY key,
         code        INT(6)          ZEROFILL NOT NULL,
         fish        INT(2)          NOT NULL DEFAULT 5,
+        fa20        DECIMAL(6,2)    NOT NULL,
         ma20        DECIMAL(6,2)    NOT NULL,
         datetime    bigint(14)      NOT NULL DEFAULT 0,
         close       DECIMAL(6,2)    NOT NULL DEFAULT 0,
         dif         DECIMAL(8,4)    NOT NULL DEFAULT 0,
         dea         DECIMAL(8,4)    NOT NULL DEFAULT 0,
         macd        DECIMAL(8,4)    NOT NULL DEFAULT 0,
-        INDEX(fcod)
+        INDEX(freq)
     );
 
     SELECT max(datetime) FROM fenbi WHERE code=$1 into @max_dt;
@@ -48,8 +49,9 @@ function fn_macd()
            trade from fenbi WHERE code=${1} ORDER by datetime DESC LIMIT 20) as t INTO @fa20;
     SELECT sum(trade)/20 FROM tmpfb_macd WHERE id<=20 INTO @ma20;
 
-    REPLACE INTO ma20macd(fcod,code,fish,ma20,datetime,close,dif,dea,macd)
-        SELECT code+${FM}*1000000,code,${FM},@ma20,datetime,close,dif,dea,macd FROM fmacd ORDER by id DESC LIMIT 1;
+    REPLACE INTO ma20macd(freq,code,fish,fa20,ma20,datetime,close,dif,dea,macd)
+        SELECT code+${FM}*1000000,code,${FM},@fa20,@ma20,datetime,close,dif,dea,macd 
+        FROM fmacd ORDER by freq DESC LIMIT 1;
     -- SELECT * FROM fmacd;
     " >> $mps_god
 

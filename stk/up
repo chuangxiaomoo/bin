@@ -133,7 +133,7 @@ function fn_hexun_day()
     xt_ret $? "NETWORK" || return $?
 
     hx_lines=`cat $hx_dayclose | wc -l`
-    [ $hx_lines -gt 2000 ]
+    [ $hx_lines -gt 1200 ]
     xt_ret $? "$hx_lines less than 2000 lines" || return $?
 
     grep -q 900001 $hx_dayclose || { echo "Error: 900001" && return 1 ;}
