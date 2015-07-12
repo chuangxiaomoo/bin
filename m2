@@ -101,6 +101,7 @@ function fn_2015_report()               { cat annual_2015_report ;}
 #
 function fn_book()                      {
 function fn_base()                      { cat book_base ;}
+function fn_laozi()                     { cat book_laozi ;}
 function fn_sunzi()                     { cat book_sunzi; 
                                           cat arch_sunzi ;}
 function fn_liutao()                    { cat book_liutao ;}
@@ -139,7 +140,8 @@ function fn_think_fast_n_slow()         { cat book_think_fast_n_slow ;}
         base       
         wanna                   # 想读的书
         sunzi                   # 孙子兵法
-        liutao                  # 六韬
+        laozi                   # 道德经 daodejing 
+        liutao                  # 六韬.太公兵法
         36ji                    # 36计
         lunyu                   # 论语
         shenglvqimeng           # 声律启蒙
@@ -618,9 +620,13 @@ function fn_11_煎饼果子()               { cat zhenhuan_11_煎饼果子 ;}
 }
 
 function fn_family()                    {
+function fn_00_不滥爱()                 { cat family_00_不滥爱 ;}
 function fn_01_王海滨()                 { cat family_01_王海滨 ;}
+function fn_02_地图()                   { cat family_02_地图 ;}
     local opts=(
+        00_不滥爱                       # thinking for love
         01_王海滨                       # 男人的责任与爱
+        02_地图                         # map 家天下
     )
     fn_print $@
 }
@@ -745,7 +751,7 @@ function fn_main() {
         economic
         finance                         
         faith
-        family                          # 难念的经
+        family                          # 难念的经 家国天下
         girl
         guang
         huawei
