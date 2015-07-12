@@ -58,7 +58,8 @@
 # 事件冲击       .doc/event.md           -- 高管增持 定向增发 银行加息 gushequ大数据
 # 缠中说禅       .chan/chan.md
 # 莫大仙岳居     .doc/sulon.md
-# 洪粉家人       .doc/hrong.md
+# 花荣之习惯     .doc/huarong.md         -- 成交量的秘密
+# 洪粉家人       .doc/hongrong.md
 # 瑞鹤仙         .doc/yxkrrhx.md         -- 桃谷
 # 逻辑           .doc/logic.md
 # 操盘日记       .doc/diary.md

@@ -1,0 +1,6 @@
+# regedit
+
+# 鼠标滚轮
+
+REG ADD "HKEY_CURRENT_USER\Control Panel\Desktop" /v WheelScrollLines /d 8 /f
+
