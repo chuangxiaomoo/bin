@@ -120,7 +120,7 @@ function fn_rat()
     v5v8="round(8*ma.vol5/(ma.vol13-ma.vol5)/5,2)"
     vBvX="round(12*ma.vol13/(ma.vol25-ma.vol13)/12,2)"
 
-    TBL=${TBL:-cap} END=${PREV} ./SCREENER tov 
+    TBL=${TBL:-cap} END=${PREV} ./SCREENER wma
     xt_ret $? "${FUNCNAME}" || return $?
 
     fn_yist
@@ -159,7 +159,7 @@ function fn_wma()
     c.nmc, c.name
     FROM tbl_mavol5B25 as t, cap as c WHERE t.code=c.code 
     HAVING 1 ${COND} ${inLIST}
-    ORDER by ${1:-tov5} ${ASC:-DESC} LIMIT ${LIMIT:-24}
+    ORDER by ${1:-v1v4} ${ASC:-DESC} LIMIT ${LIMIT:-24}
     " 
     echo "${sqls}" | tee /dev/stderr | mysql $mo -t kts
 
@@ -603,7 +603,7 @@ function fn_main()
     "get_comma_cloumns  [tbl_name:-day]       # 逗分列名"
     "get_open_days      [LIMIT:-13 [desc]]    # 开市日列表"
     "wma                [sortfield:tov5]      # 均价+现成513.静态rat"
-    "rat                [sortfield:-ratio]    # day+PREV513.动态rat"
+    "rat                [sortfield:-ratio]    # day+PREV513.动态rat，实时速度快"
     "ma240              [sortfield:-ratio]    # "
     "ma240_usage        {1~9}                 # 分析ma 5 13 34 55"
     "dif120             code...               # cost:(close-ma120) & sort by #{ASC:id}"

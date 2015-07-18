@@ -1,10 +1,20 @@
-# code  symble   FM cond1   op  cond2                       tips
-#                 5 macd>0  and (ma20-close)/close<.006     
+# code  symble   FM   cond1         op  cond2           tips
+#                                                       最多同时交易5只股票，形成比价淘汰机制
+#                                                       关注大盘的macd与ma20(F15)
 # posi  5000
-002197	证通电子  5 macd>0  and 1                           PM&&买入100手
--     	证通电子  5 macd>0  and 1                           PM&&买入100手
+002197	证通电子 15   macd<0        or  close<ma20      必须卖出一半
 
-# posi  
-000705	浙江震元
+002019	亿帆鑫富  5   macd>0        or  close>ma20      2:30是买入的好时机
+
+# posi  13*500
+#000705	浙江震元  5   close>ma20   
+
+# posi  13*900
+#603399	新华龙    5   macd>0        and close>ma20      买入一半
+
+# posi  22*500
+#600767	运盛医疗 15   close>ma60    or  1               补仓机会
+
+#002129	中环股份  5   close>=fa20
 
 #000001	上证指数
