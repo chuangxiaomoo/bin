@@ -105,8 +105,13 @@ function fn_laozi()                     { cat book_laozi ;}
 function fn_sunzi()                     { cat book_sunzi; 
                                           cat arch_sunzi ;}
 function fn_liutao()                    { cat book_liutao ;}
+function fn_lunyu()                     { cat book_lunyu ;}
 function fn_36ji()                      { cat book_36ji ;}
+
 function fn_wanna()                     { cat book_wanna ;}
+function fn_shenglvqimeng()             { cat book_shenglvqimeng ;}
+function fn_think_fast_n_slow()         { cat book_think_fast_n_slow ;}
+
 function fn_01_商君书()                 { cat book_01_商君书 ;}
 function fn_02_韩非子()                 { cat book_02_韩非子 ;}
 function fn_aq_如何提问()               { cat book_aq_如何提问 ;}
@@ -133,9 +138,7 @@ function fn_102_谈我对在校学习的看法()  { cat book_102_谈我对在校
 function fn_103_雷军的第二个四年()      { cat book_103_雷军的第二个四年 ;}
 function fn_104_罗永浩天生骄傲()        { cat book_104_罗永浩天生骄傲 ;}
 function fn_200_逃不开的经济周期()      { cat book_200_逃不开的经济周期 ;}
-function fn_lunyu()                     { cat book_lunyu ;}
-function fn_shenglvqimeng()             { cat book_shenglvqimeng ;}
-function fn_think_fast_n_slow()         { cat book_think_fast_n_slow ;}
+function fn_900_平凡的世界()            { cat book_900_平凡的世界 ;}
     local opts=(
         base       
         wanna                   # 想读的书
@@ -171,6 +174,7 @@ function fn_think_fast_n_slow()         { cat book_think_fast_n_slow ;}
         104_罗永浩天生骄傲          # kaiwu
 
         200_逃不开的经济周期
+        900_平凡的世界
     )
     fn_print $@
 }
