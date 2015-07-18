@@ -5,45 +5,58 @@
 
 function fn_routine()
 {
-    grep -v '^#' .soptter.macd |
+    grep '^[-036]' .soptter.macd |
     while read code symble FM cond1 op cond2 tips; do
-        if [ "${code}" = '-' ]; then
+        if [ "${code}" = '-' ] && [ -n "$code0" ]; then
             code=$code0
         elif [ -z "${DT}" ]; then   # DT不指定，则从网络更新fenbi数据
-            fenbi ${code} >& ${SUBOUT}
-            xt_ret $? "down ${i} error" || return $?
+            echo do fenbi ${code}...
+            fenbi ${code} >& ${error}
+            xt_ret $? "down ${code}" || { cat ${error}; return $?; }
         fi
+
         FM=${FM} macd ${code}
+        xt_ret $? "macd error" || return $?
+
         sql="SELECT IF(${cond1} ${op} ${cond2}, 1, 0) FROM ma20macd WHERE code=${code} and fish=${FM}"
         ret=`mysql -N kts <<<"${sql}"`
 
         if [ "${ret}" = 1 ]; then
             fn_echo_succ "$code.$symble.$FM $cond1 $op $cond2"
             fn_echo_warn "$tips"
-            nbell
+            fn_bell "$code: $tips"
         elif [ "${ret}" = "" ]; then
             fn_echo_fail "bad condition ${code}: ${cond1} ${op} ${cond2}"
-            nbell
+            fn_bell "bad condition"
         fi
         code0=$code
     done
 }
 
+
+function fn_isresting()
+{
+    hhmmss=`date +%H%M%S`
+    if ([ ${hhmmss} -ge 113000 ] && [ ${hhmmss} -le 130000 ]) ||
+        [ ${hhmmss} -lt 093300 ] || [ ${hhmmss} -gt 145700 ]; then
+        echo "is resting @${hhmmss}..."; 
+        return 0
+    else
+        echo to checking @${hhmmss}...
+        return 1
+    fi
+}
+
 function fn_main()
 {
     while :; do
-        hhmmss=`date +%H%M%S`
-        if ([ ${hhmmss} -ge 113000 ] && [ ${hhmmss} -le 130000 ]) ||
-            [ ${hhmmss} -lt 093300 ] || [ ${hhmmss} -gt 145700 ]; then
-            echo "resting..."; sleep 60; continue
-        fi
-        echo PATROL@${hhmmss}
+        fn_isresting && { sleep 60; continue; }
         fn_routine
         [ -n "${DT}" ] && exit      # DT指定，即时退出
-        sleep 110
+        echo "to sleeping ${intv:=110}s"
+        sleep ${intv}
     done
     return $?
 }
 
-fn_routine
-# fn_main ${@}
+fn_main ${@}

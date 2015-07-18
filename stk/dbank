@@ -21,7 +21,6 @@ export END=${END}
 [ "${DEBUG:-0}" = 1 ] && 
 SUBOUT='/dev/stdout' || SUBOUT='/dev/null'
 
-nbell="nc 192.168.100.100 1234 <<< 'ooh my god'"
 
 XTBL=${XTBL:+and code not in (SELECT code FROM $XTBL)}
 
@@ -104,6 +103,7 @@ fenbi_ripe='/dev/shm/fenbi/ripe'
 yjbb_raw='/dev/shm/yjbb_raw'
 yjbb_rip='/dev/shm/yjbb_rip'
 
+     error='/tmp/kts/error'
      cache='/tmp/kts/cache'
     buffer='/tmp/kts/buffer'
     file_c='/tmp/kts/chao'
@@ -277,6 +277,11 @@ function fn_create_tbl_codes()
         " | mysql kts
         xt_ret $? "" || return $?
     done
+}
+
+function fn_bell()
+{
+    echo "$*" | nc 192.168.100.100 1234
 }
 
 function fn_cp_tbl()
