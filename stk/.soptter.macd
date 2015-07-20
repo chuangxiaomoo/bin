@@ -1,6 +1,11 @@
 # code  symble   FM   cond1         op  cond2           tips
 #                                                       最多同时交易5只股票，形成比价淘汰机制
 #                                                       关注大盘的macd与ma20(F15)
+
+000001	上证指数
+399005	中小板指
+399006	创业板指
+
 # posi  5000
 002197	证通电子 15   macd<0        or  close<ma20      必须卖出一半
 

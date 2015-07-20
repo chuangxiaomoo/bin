@@ -35,25 +35,17 @@ function fn_get_url()
     # fenbi只能下载当天数据 & 每次最多输出1000条记录
     # http://webstock.quote.hermes.hexun.com/a/deal?code=szse000002&start=20140813151000&number=-10&callback=callback
     url0="http://webstock.quote.hermes.hexun.com/a/deal?"
-    [ ${1:0:1} -eq 6 ] && sec=sse || sec=szse 
+    sec=szse 
+    # 上证指数sse000001
+    if [ ${1:0:1} -eq 6 ] || [ $1 = "000001" ]; then
+        sec=sse
+    fi
     echo "${url0}code=${sec}${1}&start=${2}&number=1000"
 }
 
 function fn_hexun()
 {
     code=$1
-    date=`date +%Y%m%d`
-    wday=`date +%a`
-
-    if [ "${wday}" = Sat ] || [ "${wday}" = Sun ]; then
-        date=`fn_maxdate|sed 's/-//g'`  # weekend
-    fi
-
-    datetime0="${date}092500"
-    datetime4="${date}112900"
-    datetime5="${date}130000"
-    datetime7="${date}145700"
-    datetime9="${date}150000"
 
     >${buffer}
     [ "${dt}" -lt ${datetime9} ]
@@ -134,21 +126,43 @@ function fn_fenbi()
     sql="SELECT max(datetime) FROM fenbi WHERE code=${code}"
     dt=`mysql -N kts <<< "${sql}"`
     fmaxdate=`fn_str_2_date ${dt}`
-    # echo ${dt}
+    date=`date +%Y%m%d`
+    wday=`date +%a`
 
-    if [ "${dt}" = NULL ]; then
-        echo "NULL database, re-run after [ ./mi5 ${code} ] "
-        exit 1
+    if [ "${wday}" = Sat ] || [ "${wday}" = Sun ]; then
+        date=`fn_maxdate|sed 's/-//g'`  # weekend
+    fi
+
+    datetime0="${date}092500"
+    datetime4="${date}112900"
+    datetime5="${date}130000"
+    datetime7="${date}145700"
+    datetime9="${date}150000"
+    # ---------------------------------------------------------
+
+    if fn_isindex $code; then
+        if [ "${dt}" = NULL ]; then
+            echo "down index data first time..."
+            dt=${datetime0}
+        fi
     else
-        sql="SELECT date FROM day WHERE code=${code} and date>'${fmaxdate}' and date<'${today}';"
-        dates=(`mysql -N kts <<< "${sql}"`)
-
-        if [ ${#dates[@]} -ne 0 ]; then
-            echo "There are dates(${dates[@]}) of ${code} absent, trying ./mi5 ${code}..."
-            mi5 ${code}
-            exit 1
+        if [ "${dt}" = NULL ]; then
+            echo "exec [ ./mi5 ${code} ] for NULL database..."
+            ./mi5 ${code}
+            fenbi ${code}
+            return $?       # 否则会再次执行 fn_hexun
         else
-            echo "Going to update data of ${code}"
+            sql="SELECT date FROM day WHERE code=${code} and date>'${fmaxdate}' and date<'${today}';"
+            dates=(`mysql -N kts <<< "${sql}"`)
+
+            if [ ${#dates[@]} -ne 0 ]; then
+                echo "There are dates(${dates[@]}) of ${code} absent, trying ./mi5 ${code}..."
+                mi5 ${code}
+                fenbi ${code}
+                return $?       # 否则会再次执行 fn_hexun
+            else
+                echo "Going to update data of ${code}"
+            fi
         fi
     fi
 
@@ -212,11 +226,10 @@ function fn_lscode()
 
 function fn_auto_fb()
 {
-    now=`date +%H%M%S`   
     codes=`lscode l`
     local i=
     for i in ${codes}; do
-        fenbi ${i} || { mi5 ${i}; fenbi ${i};}
+        mi5 ${i}; fenbi ${i};   # 先由mi5进行清扫，再由fenbi补充
     done
     return $?
 }
@@ -230,7 +243,7 @@ function fn_usage()
     echo "       fenbi r|realtime code"
     echo "       fenbi r5|real_ac5 code"
     echo "       fenbi fb2day code"
-    echo "       fenbi delete [code]    # without code, clear 14days ago"
+    echo "       fenbi d|delete [code]    # without code, clear 10days ago"
     exit
 }
 
