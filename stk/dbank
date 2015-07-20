@@ -157,6 +157,12 @@ function fn_str_2_date()
     # echo ${dt2:8:2}:${dt2:10:2}:${dt2:12:2}
 }
 
+function fn_isindex()
+{
+    [ "${1}" = '000001' ] || [ "${1}" = '399005' ] || [ "${1}" = '399006' ]
+    return $?
+}
+
 function fn_iscode()
 {
     # set -x

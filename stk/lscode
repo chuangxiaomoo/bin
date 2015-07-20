@@ -4,8 +4,10 @@
 
 function fn_main()
 {
-    YIST=${YIST:-'.soptter.trade'}
+    test "$1" = "l" && YIST=${2:-${YIST}}
+    YIST=${YIST:-'.soptter.macd'}
     codes=(`cat ${YIST} | awk '/^[036]/{print $1}'`)
+
     case $1 in
     c)
         [ "${#}" -eq 1 ] && fn_main
@@ -37,7 +39,7 @@ function fn_main()
         ;;
     *)
         echo "Usage: YIST=xx $0 c cmd..."
-        echo "       YIST=xx $0 {l|list}"
+        echo "       YIST=xx $0 {l|list} [.soptter.macd]"
         echo "       YIST=xx $0 {g|grep_code} haystack_files..."
         echo "       YIST=xx $0 {s|sym2code}"
         exit

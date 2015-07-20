@@ -29,6 +29,7 @@ function fn_macd()
         vol         DECIMAL(10,2)   NOT NULL,
         fa20        DECIMAL(6,2)    NOT NULL,
         ma20        DECIMAL(6,2)    NOT NULL,
+        di20        DECIMAL(6,2)    NOT NULL,
         ma60        DECIMAL(6,2)    NOT NULL,
         datetime    bigint(14)      NOT NULL DEFAULT 0,
         close       DECIMAL(6,2)    NOT NULL DEFAULT 0,
@@ -52,11 +53,13 @@ function fn_macd()
     SELECT sum(trade)/20 FROM (SELECT 
            trade from fenbi WHERE code=${1} ORDER by datetime DESC LIMIT 20) as t INTO @fa20;
     SELECT sum(trade)/20 FROM tmpfb_macd WHERE id<=20 INTO @ma20;
+    SELECT     trade     FROM tmpfb_macd WHERE id=21  INTO @c21;
+    SELECT     trade,datetime     FROM tmpfb_macd WHERE id=21;
     SELECT sum(trade)/60 FROM tmpfb_macd              INTO @ma60;
     SELECT sum(volume)/10000 FROM fenbi WHERE code=$1 and datetime>@min_dt INTO @vol;
 
-    REPLACE INTO ma20macd(freq,code,fish,vol,fa20,ma20,ma60,datetime,close,dif,dea,macd)
-        SELECT code+${FM}*1000000,code,${FM},@vol,@fa20,@ma20,@ma60,datetime,close,dif,dea,macd 
+    REPLACE INTO ma20macd(freq,code,fish,vol,fa20,ma20,di20,ma60,datetime,close,dif,dea,macd)
+    SELECT code+${FM}*1000000,code,${FM},@vol,@fa20,@ma20,100*(close-@c21)/@c21,@ma60,datetime,close,dif,dea,macd 
         FROM fmacd ORDER by id DESC LIMIT 1;
     -- SELECT * FROM fmacd;
     " >> $mps_god

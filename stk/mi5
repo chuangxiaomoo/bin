@@ -69,7 +69,8 @@ function fn_do_scope()
         sql="DELETE FROM fenbi WHERE datetime>${mintime}"
         mysql -N kts <<< "${sql}"
         fn_echo_warn "incomplete fenbi of ${code} cleared forcely, re-run"
-        exit
+        fn_download $code
+        return 0
     fi
 
     [ -n "${datetime}" ]
@@ -138,6 +139,7 @@ function fn_main()
     local i=
     for i in ${@:-${LIST[@]}}; do
         code=${i}
+        fn_isindex ${code} && continue
         fn_iscode ${code}
         xt_ret $? "Usage: [YIST=y] [END=d] [PREV=n] mi5 [code...]" || return $?
         fn_download $code
