@@ -18,6 +18,7 @@ function fn_main()
         上证50.BLK      .blk.sz50
         深证成指.BLK    .blk.szcz
         创业板指.BLK    .blk.cybz
+        中小板指.BLK    .blk.zxbz
         深证100R.BLK    .blk.sz100R
         深证300P.BLK    .blk.sz300P
         中证500.BLK     .blk.zz500

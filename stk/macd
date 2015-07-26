@@ -54,7 +54,6 @@ function fn_macd()
            trade from fenbi WHERE code=${1} ORDER by datetime DESC LIMIT 20) as t INTO @fa20;
     SELECT sum(trade)/20 FROM tmpfb_macd WHERE id<=20 INTO @ma20;
     SELECT     trade     FROM tmpfb_macd WHERE id=21  INTO @c21;
-    SELECT     trade,datetime     FROM tmpfb_macd WHERE id=21;
     SELECT sum(trade)/60 FROM tmpfb_macd              INTO @ma60;
     SELECT sum(volume)/10000 FROM fenbi WHERE code=$1 and datetime>@min_dt INTO @vol;
 

@@ -5,6 +5,8 @@
 function fn_main()
 {
     test "$1" = "l" && YIST=${2:-${YIST}}
+    test "$1" = "e" && YIST=${2:-${YIST}}
+
     YIST=${YIST:-'.soptter.macd'}
     codes=(`cat ${YIST} | awk '/^[036]/{print $1}'`)
 
@@ -29,6 +31,11 @@ function fn_main()
             grep --color ${i} ${@:2}
         done
         ;;
+    e|etf)
+        echo ${YIST}
+        codes=(`cat ${YIST} | awk '/^[51036]/{print $1}'`)
+        echo ${codes[@]}
+        ;;
 
     l|list)
         echo ${codes[@]}
@@ -40,6 +47,7 @@ function fn_main()
     *)
         echo "Usage: YIST=xx $0 c cmd..."
         echo "       YIST=xx $0 {l|list} [.soptter.macd]"
+        echo "       YIST=xx $0 {e|etf}  [.soptter.etf]"
         echo "       YIST=xx $0 {g|grep_code} haystack_files..."
         echo "       YIST=xx $0 {s|sym2code}"
         exit

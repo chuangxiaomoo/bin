@@ -12,3 +12,7 @@
 
     UPDATE Person SET Address = 'Zhongshan 23', City = 'Nanjing' WHERE LastName = 'Wilson'
 
+
+. 存在更新，不存在插入（根据主键或者唯一索引判断）
+
+    replace into t(id, update_time) select 1, now();

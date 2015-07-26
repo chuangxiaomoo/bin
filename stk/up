@@ -69,6 +69,8 @@ function fn_cap()
         fn_echo_fail "more than 3000 codes, please check it!"
         exit 1
     fi
+
+    ./dbank 1
 }
 
 function fn_add_yesclose()

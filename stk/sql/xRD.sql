@@ -1000,7 +1000,8 @@ CREATE PROCEDURE sp_hilo(a_code INT(6) ZEROFILL) tag_hilo:BEGIN
 
     SELECT id                       FROM tempday                   order by high desc LIMIT 1 INTO v_id_mx;
     SELECT id, date, high           FROM tempday                   order by high desc LIMIT 1 INTO v_id_hi, v_date1, v_high;
-    SELECT id, date, low, close     FROM tempday WHERE id<=v_id_hi order by low  asc  LIMIT 1 INTO v_id_lo, v_date2, v_low, v_close;
+    SELECT id, date, low,(open+close)/2     
+                                    FROM tempday WHERE id<=v_id_hi order by (open+close) asc  LIMIT 1 INTO v_id_lo, v_date2, v_low, v_close;
 
     IF v_id_hi-v_id_lo<2 THEN
         -- SELECT "lt 2 gap:", a_code, v_id_hi-v_id_lo+1, v_date1, v_date2;
