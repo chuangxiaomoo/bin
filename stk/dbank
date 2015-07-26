@@ -102,6 +102,8 @@ fenbi_ripe='/dev/shm/fenbi/ripe'
 
 yjbb_raw='/dev/shm/yjbb_raw'
 yjbb_rip='/dev/shm/yjbb_rip'
+yjyg_raw='/dev/shm/yjyg_raw'
+yjyg_rip='/dev/shm/yjyg_rip'
 
      error='/tmp/kts/error'
      cache='/tmp/kts/cache'
@@ -353,18 +355,45 @@ function fn_4yist()
     return $?
 }
 
+
+function fn_sqls()
+{
+    sqls_curr="
+    SELECT round(sum(nmc)/(10000*10000),2), 
+           round(sum(cap)/(10000*10000),2) FROM $TBL WHERE 1  ${inLIST}  INTO @nmc_Wanyi, @cap_Wanyi;
+    SELECT round(sum(nmc)/(10000*10000),2) FROM $TBL WHERE code>400000 ${inLIST} INTO @nmc_sh;
+    SELECT round(sum(nmc)/(10000*10000),2) FROM $TBL WHERE code<100000 ${inLIST} INTO @nmc_sz;
+    SELECT round(sum(nmc)/(10000*10000),2) FROM $TBL WHERE code>100000 and code<400000 ${inLIST} INTO @nmc_cyb;
+    SELECT max(date), @cap_Wanyi, @nmc_Wanyi, @nmc_sh, @nmc_sz, @nmc_cyb FROM cap;
+    "
+
+    if [ "${inLIST}" = '' ]; then
+        echo "redo"
+        sqls_curr="
+    --  DROP TABLE IF EXISTS currency;
+        CREATE TABLE IF NOT EXISTS currency (
+            date date PRIMARY key,
+            cap_Wanyi DECIMAL(10,2),
+            nmc_Wanyi DECIMAL(10,2),
+            nmc_sh DECIMAL(10,2),
+            nmc_sz DECIMAL(10,2), 
+            nmc_cyb DECIMAL(10,2),
+            INDEX(date)
+        );
+        ${sqls_curr}
+        replace into currency SELECT max(date), @cap_Wanyi, @nmc_Wanyi, @nmc_sh, @nmc_sz, @nmc_cyb FROM cap;
+        "
+    fi
+}
+
 fn_group_nmc_layout() 
 {
     # cat $sn_cap_nmc nmc_WanYi
     fn_yist
     TBL=${TBL:-cap}
-    echo "
-    SELECT round(sum(nmc)/(10000*10000),2) FROM $TBL WHERE 1  ${inLIST}  INTO @nmc_all_Wanyi;
-    SELECT round(sum(nmc)/(10000*10000),2) FROM $TBL WHERE code>400000 ${inLIST} INTO @nmc_sh;
-    SELECT round(sum(nmc)/(10000*10000),2) FROM $TBL WHERE code<100000 ${inLIST} INTO @nmc_sz;
-    SELECT round(sum(nmc)/(10000*10000),2) FROM $TBL WHERE code>100000 and code<400000 ${inLIST} INTO @nmc_cyb;
-    SELECT @nmc_all_Wanyi, @nmc_sh, @nmc_sz, @nmc_cyb;
-    " | mysql -t kts 
+
+    fn_sqls
+    mysql -t kts <<< "$sqls_curr"
 
     mysql -N  kts <<< "SELECT * FROM cap;" | awk 'BEGIN {
         list="5000 1000 800 400 200 100 50 20 10 5 0";

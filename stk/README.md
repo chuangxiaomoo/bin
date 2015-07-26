@@ -51,6 +51,7 @@
 # 目标&策略&纪律 .doc/discipline.md
 
 # 战争           .doc/war.md
+# 战法           .doc/law.md
 # 空间域         .doc/space.md
 # 资金管理       .doc/fundmanagement.md
 # 交易系统       .doc/tradesys.md

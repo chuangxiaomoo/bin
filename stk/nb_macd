@@ -5,7 +5,10 @@
 
 function fn_routine()
 {
-    grep '^[-036]' .soptter.macd |
+    bell_got=false
+    bell_bad=false
+    tips_got=''
+
     while read code symble FM cond1 op cond2 tips; do
         if [ "${code}" = '-' ] && [ -n "$code0" ]; then
             code=$code0
@@ -24,13 +27,19 @@ function fn_routine()
         if [ "${ret}" = 1 ]; then
             fn_echo_succ "$code.$symble.$FM $cond1 $op $cond2"
             fn_echo_warn "$tips"
-            fn_bell "$code: $tips"
+            bell_got=true
+            tips_got="${tips_got} ${code}"
         elif [ "${ret}" = "" ]; then
             fn_echo_fail "bad condition ${code}: ${cond1} ${op} ${cond2}"
-            fn_bell "bad condition"
+            bell_bad=true
+            tips_bad="bad condition"
         fi
         code0=$code
-    done
+    done<<<"`grep '^[-036]' .soptter.macd`"
+    
+    ${bell_got} && fn_bell "$tips_got"
+    ${bell_bad} && fn_bell "$tips_bad"
+    fn_echo_warn '------------------------------------------------------------'
 }
 
 
