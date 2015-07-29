@@ -10,19 +10,22 @@ function fn_routine()
     tips_got=''
 
     while read code symble FM cond1 op cond2 tips; do
-        if [ "${code}" = '-' ] && [ -n "$code0" ]; then
-            code=$code0
-        elif [ -z "${DT}" ]; then   # DT不指定，则从网络更新fenbi数据
+        if [ ! ${istest} ] && [ "$code" != '-' ]; then                              # istest
             echo do fenbi ${code}...
             fenbi ${code} >& ${error}
             xt_ret $? "down ${code}" || { cat ${error}; return $?; }
         fi
+        if [ "${code}" = '-' ] && [ -n "$code0" ]; then # code is -
+            code=$code0
+        else
+            FM=${FM} macd ${code}                       # 自FM固定为5后，可只作一次macd
+            xt_ret $? "macd error" || return $?
+        fi
 
-        FM=${FM} macd ${code}
-        xt_ret $? "macd error" || return $?
-
-        sql="SELECT IF(${cond1} ${op} ${cond2}, 1, 0) FROM ma20macd WHERE code=${code} and fish=${FM}"
+        sql="SELECT IF(${cond1} ${op} ${cond2}, 1, 0) FROM mm55 WHERE code=${code} and fish=${FM}"
         ret=`mysql -N kts <<<"${sql}"`
+
+        # echo "${sql}"
 
         if [ "${ret}" = 1 ]; then
             fn_echo_succ "$code.$symble.$FM $cond1 $op $cond2"
@@ -35,11 +38,17 @@ function fn_routine()
             tips_bad="bad condition"
         fi
         code0=$code
-    done<<<"`grep '^[-036]' .soptter.macd`"
+    done<<<"`grep ${PATTERN:-'^[-036]'} .soptter.macd`"
     
     ${bell_got} && fn_bell "$tips_got"
     ${bell_bad} && fn_bell "$tips_bad"
-    fn_echo_warn '------------------------------------------------------------'
+    fn_echo_warn '
+    Warning:----------------------------------------------------------
+    1. 早盘易诱多高开低走 vs 13:45:00是抄底好时机
+    2. 请遵守F5x3有效确认(K线实体站上ma55，即便晚15分，你的成本也很低)
+    3. 根据大盘决定整体仓位
+    4. (a)保住本金；(b)请永远记住第一条
+    '
 }
 
 
@@ -56,15 +65,61 @@ function fn_isresting()
     fi
 }
 
-function fn_main()
+function fn_loop()
 {
     while :; do
-        fn_isresting && { sleep 60; continue; }
+        fn_isresting && { sleep 120; continue; }
         fn_routine
-        [ -n "${DT}" ] && exit      # DT指定，即时退出
-        echo "to sleeping ${intv:=110}s"
-        sleep ${intv}
+        echo "to sleeping ${intv:=120}s"        # F5x3有效突破，即3线之内，低点抬高，高点亦抬高
+        sleep ${intv}                           #               若是大阳线，则不破1/2长度
     done
+    return $?
+}
+
+function fn_usage()
+{
+    echo "Usage: nb_macd code"
+    echo "       nb_macd l|loop"
+    echo "       nb_macd t|test_all"
+    exit
+}
+
+function fn_test_all()
+{
+    fn_routine
+    xt_ret $? "" || return $?
+}
+
+function fn_test_code()
+{
+    fn_iscode ${1}
+    xt_ret $? "bad code ${1}" || return $?
+
+    PATTERN="^${1}" fn_routine
+    xt_ret $? "" || return $?
+
+    return $?
+}
+
+function fn_main()
+{
+    istest=false
+    case $1 in
+    l|loop)
+        fn_loop
+        ;;
+    t|test_all)
+        istest=true
+        fn_test_all
+        ;;
+    [0-9][0-9]*)
+        fn_test_code ${@}
+        ;;
+    *)
+        fn_usage
+        ;;
+    esac
+
     return $?
 }
 

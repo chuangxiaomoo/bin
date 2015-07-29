@@ -430,7 +430,6 @@ function fn_vol()
 
 function fn_td_layout()
 {
-    # DELETE FROM fenbi WHERE datetime<12340506778899;
     fn_iscode ${code:=${1}}
     xt_ret $? "" || return $?
     dates=`mysql -N kts <<< "SELECT DISTINCT round(datetime/1000000,0) from fenbi WHERE code=${code}"`
@@ -494,7 +493,7 @@ function fn_ma240_usage()
 function fn_ma240()
 {
     # 0. Make sure U've done [SCREENER ma240]?
-    columns=code,date,close                     # ,ma5,ma13,ma25,ma60 # ,ma120,ma240
+    columns=code,date,close                     # ,ma5,ma10,ma20,ma60 # ,ma120,ma240
     columns=ma.${columns//,/,ma.}
     function fn_build_sqls() {
     sqls="SELECT date FROM day WHERE code=900001 and date<='${END}' ORDER by date DESC LIMIT 4,1"
@@ -503,27 +502,28 @@ function fn_ma240()
     sqls="
     SELECT ${columns},
         round(100*(ma.close-ma5  )/ma5  ,2)as pma5,
-        round(100*(ma.close-ma25 )/ma25 ,2)as pma25,
+        round(100*(ma.close-ma20 )/ma20 ,2)as pma20,
         round(100*(ma.close-ma60 )/ma60 ,2)as pma60,
         round(100*(ma.close-ma120)/ma120,2)as pma120,
         ${x_5} as x_5, 
-        ${x_sho} as x_sho, 
-        ${x_mid} as x_mid,
-        ${x_long} as x_long,
+        ${x_sho} as x_sho,          -- 5 10 20
+        ${x_mid} as x_mid,          -- 20 60 120
+        ${x_long} as x_long,        -- 60 120 240
         ${x_sho}+
         ${x_mid}+
-        ${x_long} as x_one,
+        ${x_long} as x_6line,       -- 一阳穿3线
         c.nmc,c.name FROM tbl_ma240 as ma, cap as c
-        WHERE ma.code=c.code and ma.date>'${ago5}' 
-        HAVING 1 ${COND} ${inLIST} ORDER by ${field} ASC limit ${LIMIT:-24}" 
+        WHERE ma.code=c.code and ma5!=0 and ma.date>'${ago5}' 
+        HAVING 1 and pma5>-5 and pma5<10       -- -5%是趋势必须
+        ${COND} ${inLIST} ORDER by ${field} ${ASC:-ASC} limit ${LIMIT:-24}" 
     }
 
     # .0001 使得新股 x_sho x_long 都为 2.000
     # mid 5day 5week 5month
        x_5="round(abs((ma.close-ma5)/(ma5))*IF((ma.close-ma5)<0, -1, 1), 3)"
-     x_sho="round(abs((ma5-ma13)/(ma13))+abs((ma25-ma13)/(ma13)), 3)"
+     x_sho="round(abs((ma5-ma10)/(ma10))+abs((ma20-ma10)/(ma10)), 3)"
     x_long="round(abs((ma60-ma120)/(ma120))+abs((ma240-ma120)/(ma120)), 3)"
-     x_mid="round(abs((ma5-ma25)/(ma25))+abs((ma120-ma25)/(ma25)), 3)"
+     x_mid="round(abs((ma20-ma60)/(ma60))+abs((ma120-ma60)/(ma60)), 3)"
 
     fn_yist
     fn_build_sqls $1
