@@ -22,17 +22,18 @@ function fn_macd()
         amount      DECIMAL(12,2)   NOT NULL
         -- INDEX(code,datetime)     有意不使用INDEX(datetime)，以防按datetime排序
     );
-    CREATE TABLE IF NOT EXISTS ma20macd (
+ -- DROP   TABLE IF EXISTS mm55;
+    CREATE TABLE IF NOT EXISTS mm55 (
         freq        INT(8)          ZEROFILL NOT NULL PRIMARY key,
         code        INT(6)          ZEROFILL NOT NULL,
         fish        INT(2)          NOT NULL DEFAULT 5,
         vol         DECIMAL(10,2)   NOT NULL,
+        cvgenc      DECIMAL(10,2)   NOT NULL,
+        close       DECIMAL(6,2)    NOT NULL DEFAULT 0,
         fa20        DECIMAL(6,2)    NOT NULL,
         ma20        DECIMAL(6,2)    NOT NULL,
-        di20        DECIMAL(6,2)    NOT NULL,
-        ma60        DECIMAL(6,2)    NOT NULL,
+        ma55        DECIMAL(6,2)    NOT NULL,
         datetime    bigint(14)      NOT NULL DEFAULT 0,
-        close       DECIMAL(6,2)    NOT NULL DEFAULT 0,
         dif         DECIMAL(8,4)    NOT NULL DEFAULT 0,
         dea         DECIMAL(8,4)    NOT NULL DEFAULT 0,
         macd        DECIMAL(8,4)    NOT NULL DEFAULT 0,
@@ -45,22 +46,24 @@ function fn_macd()
     INSERT into tmpfb_macd(code,datetime,trade,volume,amount) 
         SELECT code,datetime,trade,volume,amount FROM fenbi WHERE code=$1 ${TEST} and ( (
         (TRUNCATE(datetime%10000/100, 0)%${FM:=5})=0 and
-        (TRUNCATE(datetime%1000000/100, 0)%0925)!=0 ) or
+        (TRUNCATE(datetime%1000000/100, 0)>930 and TRUNCATE(datetime%1000000/100, 0)!=1300) ) or  -- 0925 0930 1100 不计入统计
         datetime=@max_dt
-        ) ORDER by datetime DESC LIMIT 60;
+        ) ORDER by datetime DESC LIMIT 55;
 
     call sp_fmacd();
     SELECT sum(trade)/20 FROM (SELECT 
-           trade from fenbi WHERE code=${1} ORDER by datetime DESC LIMIT 20) as t INTO @fa20;
-    SELECT sum(trade)/20 FROM tmpfb_macd WHERE id<=20 INTO @ma20;
-    SELECT     trade     FROM tmpfb_macd WHERE id=21  INTO @c21;
-    SELECT sum(trade)/60 FROM tmpfb_macd              INTO @ma60;
+           trade from fenbi WHERE code=${1} ${TEST} ORDER by datetime DESC LIMIT 20) as t INTO @fa20;
+    SELECT sum(trade)/20 FROM tmpfb_macd WHERE id<=20           INTO @ma20;
+    SELECT sum(trade)/55 FROM tmpfb_macd                        INTO @ma55;
+    SELECT 100*(@ma20-@ma55)/@ma55                              INTO @cvgenc;
     SELECT sum(volume)/10000 FROM fenbi WHERE code=$1 and datetime>@min_dt INTO @vol;
 
-    REPLACE INTO ma20macd(freq,code,fish,vol,fa20,ma20,di20,ma60,datetime,close,dif,dea,macd)
-    SELECT code+${FM}*1000000,code,${FM},@vol,@fa20,@ma20,100*(close-@c21)/@c21,@ma60,datetime,close,dif,dea,macd 
+    # di20 --> SELECT trade     FROM tmpfb_macd WHERE id=21  INTO @c21;
+    # 100*(close-@c21)/@c21,
+    REPLACE INTO mm55(freq,code,fish,vol,cvgenc,fa20,ma20,ma55,datetime,close,dif,dea,macd)
+    SELECT code+${FM}*1000000,code,${FM},@vol,@cvgenc,@fa20,@ma20,@ma55,datetime,close,dif,dea,macd 
         FROM fmacd ORDER by id DESC LIMIT 1;
-    -- SELECT * FROM fmacd;
+--  SELECT * FROM fmacd;
     " >> $mps_god
 
     mysql $mo -t kts <<< "source $mps_god"

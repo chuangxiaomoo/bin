@@ -16,7 +16,9 @@ helpmsg="
     NMC_RATIO   NMC_RATIO*100%成本分析空间
 "
 
+cd ~/bin/stk
 export END=${END}
+export PATH=.:~/bin:$PATH
 
 [ "${DEBUG:-0}" = 1 ] && 
 SUBOUT='/dev/stdout' || SUBOUT='/dev/null'

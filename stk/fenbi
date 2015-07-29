@@ -86,7 +86,12 @@ function fn_hexun()
         cat ${cache} >> ${buffer}
         dt=`tail -1 ${cache} | awk '{print $2}'`
         end=`tail -1 /dev/shm/fenbi/raw | awk -F',' '{print $12}'`
-        [ "${dt}" -ge ${end} ] && break
+        if [ "${dt}" -ge ${end} ]; then
+            if [ "${code}" -ge 600000 ]; then   # 沪市尾盘乃自由竞价
+                sed -i '$s/1459..\>/150030/' ${buffer}
+            fi
+            break
+        fi
 
         # exit # uncomment to w3m once
     done
@@ -226,7 +231,7 @@ function fn_lscode()
 
 function fn_auto_fb()
 {
-    codes=`lscode l`
+    codes=`YIST=.soptter.macd lscode l`
     local i=
     for i in ${codes}; do
         mi5 ${i}; fenbi ${i};   # 先由mi5进行清扫，再由fenbi补充
@@ -283,4 +288,5 @@ function fn_main()
     return $?
 }
 
+# kmysql <<< "SELECT * FROM fenbi WHERE code=000001 or code=399005 or code=399006" > ~/fenbi
 fn_main $@

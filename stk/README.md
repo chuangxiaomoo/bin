@@ -62,5 +62,6 @@
 # 花荣之习惯     .doc/huarong.md         -- tov换手的秘密
 # 洪粉家人       .doc/hongrong.md
 # 瑞鹤仙         .doc/yxkrrhx.md         -- 桃谷
+# 超短           .doc/chaoduan.md
 # 逻辑           .doc/logic.md
 # 操盘日记       .doc/diary.md

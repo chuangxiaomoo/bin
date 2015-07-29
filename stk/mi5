@@ -64,10 +64,11 @@ function fn_do_scope()
     # echo ${datetime}
 
     maxtime=${datetime#????????}
-    if [ "${maxtime}" != NULL ] && [ "${maxtime}" -lt 145700 ]; then
+    if [ "${maxtime}" != NULL ] && [ "${maxtime}" -lt ${DT:-1500}00 ]; then
         mintime=${datetime%??????}000000
-        sql="DELETE FROM fenbi WHERE datetime>${mintime}"
+        sql="DELETE FROM fenbi WHERE code=${code} and datetime>${mintime}"
         mysql -N kts <<< "${sql}"
+        xt_ret $? "mysql error" || return $?
         fn_echo_warn "incomplete fenbi of ${code} cleared forcely, re-run"
         fn_download $code
         return 0
@@ -139,7 +140,10 @@ function fn_main()
     local i=
     for i in ${@:-${LIST[@]}}; do
         code=${i}
-        fn_isindex ${code} && continue
+        fn_isindex ${code} && { 
+            echo "skip index ${code}"
+            continue;
+        }
         fn_iscode ${code}
         xt_ret $? "Usage: [YIST=y] [END=d] [PREV=n] mi5 [code...]" || return $?
         fn_download $code
