@@ -5,12 +5,11 @@
 
 function fn_routine()
 {
-    bell_got=false
-    bell_bad=false
+    tips_cnt=0
     tips_got=''
 
     while read code symble FM cond1 op cond2 tips; do
-        if [ ! ${istest} ] && [ "$code" != '-' ]; then                              # istest
+        if ! ${istest} && [ "$code" != '-' ]; then                              # istest
             echo do fenbi ${code}...
             fenbi ${code} >& ${error}
             xt_ret $? "down ${code}" || { cat ${error}; return $?; }
@@ -30,24 +29,28 @@ function fn_routine()
         if [ "${ret}" = 1 ]; then
             fn_echo_succ "$code.$symble.$FM $cond1 $op $cond2"
             fn_echo_warn "$tips"
-            bell_got=true
-            tips_got="${tips_got} ${code}"
+            let tips_cnt++
         elif [ "${ret}" = "" ]; then
             fn_echo_fail "bad condition ${code}: ${cond1} ${op} ${cond2}"
-            bell_bad=true
-            tips_bad="bad condition"
+            fn_bell "bad condition"
         fi
         code0=$code
     done<<<"`grep ${PATTERN:-'^[-036]'} .soptter.macd`"
     
-    ${bell_got} && fn_bell "$tips_got"
-    ${bell_bad} && fn_bell "$tips_bad"
+    local i
+    for (( i=${tips_cnt}; i>0; i-=3 )); do
+        tips_got="${tips_got} duang.wav msg.wav"    # 2个股+2指数 = 一级戒备
+    done
+    echo ${tips_got}
+    [ -n "${tips_got}" ] && fn_bell "$tips_got"
+
     fn_echo_warn '
-    Warning:----------------------------------------------------------
-    1. 早盘易诱多高开低走 vs 13:45:00是抄底好时机
+    Warning:-----------------------------------------------------------------
+    1. 跌不必贱，涨不必贵，在于其位。高位ma55易诱多 vs 13:45:00宜抄底
     2. 请遵守F5x3有效确认(K线实体站上ma55，即便晚15分，你的成本也很低)
     3. 根据大盘决定整体仓位
-    4. (a)保住本金；(b)请永远记住第一条
+    4. (a)保住本金; (b)请永远记住第一条; (c)直至2015-07-30最后5分钟亦可出半仓
+    5. 如遇涨停，挂1/2委托单做T+0(不因利小而不为)
     '
 }
 
@@ -68,9 +71,9 @@ function fn_isresting()
 function fn_loop()
 {
     while :; do
-        fn_isresting && { sleep 120; continue; }
+        fn_isresting && { sleep 150; continue; }
         fn_routine
-        echo "to sleeping ${intv:=120}s"        # F5x3有效突破，即3线之内，低点抬高，高点亦抬高
+        echo "to sleeping ${intv:=90}s"        # F5x3有效突破，即3线之内，低点抬高，高点亦抬高
         sleep ${intv}                           #               若是大阳线，则不破1/2长度
     done
     return $?
