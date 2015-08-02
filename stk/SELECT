@@ -92,33 +92,33 @@ function fn_get_comma_cloumns()
 function fn_rat()
 {
     # 0. Make sure U've done [up 4]?
-    # 1. 自动处理生成 tbl_mavol5B25
-    # 2. 使用多表tbl_mavol5B25 tbl_day`联合查询`得到数据
+    # 1. 自动处理生成 tbl_mavol520s
+    # 2. 使用多表tbl_mavol520s tbl_day`联合查询`得到数据
     function fn_build_sqls() {
     sqls="
     SELECT d.code,DATE_FORMAT(d.date,'%m-%d')as date,d.yesc,d.open,d.close,
         round(100*(d.close-d.yesc)/d.yesc,2) as rise, 
         ${tov} as tov, 
         ${tov5} as tov5,
-        ${tov13}as tov13,
+        ${tov60}as tov60,
         ${v1v5} as v1v5, 
         ${v5v8} as v5v8,
         ${vBvX} as vBvX, 
-        c.name FROM tbl_mavol5B25 as ma, 
+        c.name FROM tbl_mavol520s as ma, 
         ${tbl_day} as d, cap as c
         WHERE ma.code=d.code and ma.code=c.code HAVING 1 ${COND} ORDER by ${field} DESC limit ${LIMIT:-24}" 
     }
     field=${1:-v1v5}
     SCALE=`fn_get_ratio_close2open`
 
-    # 以PREV为标，盘中只需要更新一次 tbl_mavol5B25
+    # 以PREV为标，盘中只需要更新一次 tbl_mavol520s
     tov="round(100*(d.volume)/(c.nmc/c.close),2)"
     tov5="round(100*(ma.vol5)/(c.nmc/c.close),2)"
-    tov13="round(100*(ma.vol13)/(c.nmc/c.close),2)"
-    tov25="round(100*(ma.vol25)/(c.nmc/c.close),2)"
+    tov60="round(100*(ma.vol10)/(c.nmc/c.close),2)"
+    tov20="round(100*(ma.vol20)/(c.nmc/c.close),2)"
     v1v5="round(5*d.volume*${SCALE}/(ma.vol5),2)"       
-    v5v8="round(8*ma.vol5/(ma.vol13-ma.vol5)/5,2)"
-    vBvX="round(12*ma.vol13/(ma.vol25-ma.vol13)/12,2)"
+    v5v8="round(8*ma.vol5/(ma.vol10-ma.vol5)/5,2)"
+    vBvX="round(12*ma.vol10/(ma.vol20-ma.vol10)/12,2)"
 
     TBL=${TBL:-cap} END=${PREV} ./SCREENER wma
     xt_ret $? "${FUNCNAME}" || return $?
@@ -139,25 +139,22 @@ function fn_rat()
 function fn_wma()
 {
     # 1. Make sure U've done [SCREENER 2]?
-    # 2. 使用单表tbl_mavol5B25作差得到数据
+    # 2. 使用单表tbl_mavol520s作差得到数据
     SCALE=`fn_get_ratio_close2open`
-    columns=code,close,ma5,ma13,ma25
+    columns=code,close,ma5,ma10,ma20
     columns=t.${columns//,/,t.}
 
     fn_yist 
     echo ----- LIST:${#LIST[@]} COND@${END}: $COND -----
 
     sqls="
-    SELECT ${columns},
-    round(100*vol  /(c.nmc/c.close),2) as tov, 
-    round(100*vol5 /(c.nmc/c.close),2) as tov5, 
-    round(100*vol13/(c.nmc/c.close),2) as tov13, 
-    round(100*vol25/(c.nmc/c.close),2) as tov25, 
+    SELECT ${columns}, vol,
+    round(100*vol5 / 5,2)  as mavol5, 
+    round(100*vol20/ 20,2) as mavol20, 
+    round(100*vol60/ 60,2) as mavol60, 
     round(4*${SCALE}*vol/(vol5-vol),2)  as v1v4,
-    round(2*(vol5-vol)/(vol13-vol5),2)  as v4v8,
-    round((vol13-vol)/(vol25-vol13),2)  as vXvX,
     c.nmc, c.name
-    FROM tbl_mavol5B25 as t, cap as c WHERE t.code=c.code 
+    FROM tbl_mavol520s as t, cap as c WHERE t.code=c.code 
     HAVING 1 ${COND} ${inLIST}
     ORDER by ${1:-v1v4} ${ASC:-DESC} LIMIT ${LIMIT:-24}
     " 

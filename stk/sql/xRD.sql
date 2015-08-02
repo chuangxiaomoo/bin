@@ -357,10 +357,10 @@ CREATE PROCEDURE sp_create_tempday() tag_tempday:BEGIN
    #)engine memory;
 END tag_tempday //
 
-DROP PROCEDURE IF EXISTS sp_create_tbl_mavol5D20 //
-CREATE PROCEDURE sp_create_tbl_mavol5D20() tag_mavol5D20:BEGIN 
-    DROP TABLE IF EXISTS tbl_mavol5D20; -- for visit output
-    CREATE TABLE tbl_mavol5D20(
+DROP PROCEDURE IF EXISTS sp_create_tbl_mavol520s //
+CREATE PROCEDURE sp_create_tbl_mavol520s() tag_mavol520s:BEGIN 
+    DROP TABLE IF EXISTS tbl_mavol520s; -- for visit output
+    CREATE TABLE tbl_mavol520s(
         id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
         close       DECIMAL(6,2)  NOT NULL DEFAULT 0,
@@ -369,10 +369,10 @@ CREATE PROCEDURE sp_create_tbl_mavol5D20() tag_mavol5D20:BEGIN
         ma20        DECIMAL(6,2)  NOT NULL DEFAULT 0,
         vol         DECIMAL(12,2) NOT NULL DEFAULT 0,
         vol5        DECIMAL(12,2) NOT NULL DEFAULT 0,
-        vol10       DECIMAL(12,2) NOT NULL DEFAULT 0,
-        vol20       DECIMAL(12,2) NOT NULL DEFAULT 0
+        vol20       DECIMAL(12,2) NOT NULL DEFAULT 0,
+        vol60       DECIMAL(12,2) NOT NULL DEFAULT 0
     );
-END tag_mavol5D20 //
+END tag_mavol520s //
 
 DROP PROCEDURE IF EXISTS sp_create_tbl_ma240 //
 CREATE PROCEDURE sp_create_tbl_ma240() tag_ma240:BEGIN 
@@ -532,7 +532,7 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
     PREPARE stmt from @sqls; EXECUTE stmt;
 
     -- prepare
-    IF a_type = @fn_mavol5D20       THEN call sp_create_tbl_mavol5D20();END IF;
+    IF a_type = @fn_mavol520s       THEN call sp_create_tbl_mavol520s();END IF;
     IF a_type = @fn_ma60x2x4        THEN call sp_create_tbl_ma240();    END IF;
     IF a_type = @fn_dugu9jian       THEN call sp_create_tbl_9jian();    END IF;
     IF a_type = @fn_6maishenjian    THEN call sp_create_tbl_6mai();     END IF;
@@ -546,7 +546,7 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
         CASE a_type
             WHEN @fn_flt_kdj_up     THEN call sp_flt_kdj_up(v_code);
             WHEN @fn_dugu9jian      THEN call sp_dugu9jian(v_code);
-            WHEN @fn_mavol5D20      THEN call sp_mavol5D20(v_code);
+            WHEN @fn_mavol520s      THEN call sp_mavol520s(v_code);
             WHEN @fn_ma60x2x4       THEN call sp_ma60x240(v_code);
             WHEN @fn_ma5D20         THEN call sp_ma5D20(v_code);
             WHEN @fn_6maishenjian   THEN call sp_6maishenjian(v_code);
@@ -1109,37 +1109,37 @@ CREATE PROCEDURE sp_6maishenjian(a_code INT(6) ZEROFILL) tag_6mai:BEGIN
     END WHILE lbl_upto_100;
 END tag_6mai //
 
-DROP PROCEDURE IF EXISTS sp_mavol5D20//
-CREATE PROCEDURE sp_mavol5D20(a_code INT(6) ZEROFILL) tag_mavol5D20:BEGIN
+DROP PROCEDURE IF EXISTS sp_mavol520s//
+CREATE PROCEDURE sp_mavol520s(a_code INT(6) ZEROFILL) tag_mavol520s:BEGIN
     DECLARE v_close    DECIMAL(6,2)  DEFAULT 0;
     DECLARE v_vol      DECIMAL(12,2) DEFAULT 0;
     DECLARE v_ma5      DECIMAL(6,2)  DEFAULT 0;
-    DECLARE v_vol5     DECIMAL(12,2) DEFAULT 0;
     DECLARE v_ma10     DECIMAL(6,2)  DEFAULT 0;
-    DECLARE v_vol10    DECIMAL(12,2) DEFAULT 0;
     DECLARE v_ma20     DECIMAL(6,2)  DEFAULT 0;
+    DECLARE v_vol5     DECIMAL(12,2) DEFAULT 0;
     DECLARE v_vol20    DECIMAL(12,2) DEFAULT 0;
+    DECLARE v_vol60    DECIMAL(12,2) DEFAULT 0;
 
     call sp_create_tempday();
 
     INSERT INTO tempday(code,date,close,volume,amount) 
         SELECT code,date,close,volume,amount FROM day 
-        WHERE code=a_code and date<=@END ORDER by date DESC LIMIT 20;
+        WHERE code=a_code and date<=@END ORDER by date DESC LIMIT 60;
 
     -- 13 34 55 100
     SELECT count(*) FROM tempday INTO @v_len;
     SELECT close,volume FROM tempday WHERE id=1 INTO v_close,v_vol;
 
-    IF @v_len < 20 THEN LEAVE tag_mavol5D20; END IF;
+    IF @v_len < 60 THEN LEAVE tag_mavol520s; END IF;
 
     -- ma 即有平均的意义，但vol没有
     SELECT SUM(amount)/SUM(volume), SUM(volume) FROM tempday WHERE id<=5 INTO v_ma5,  v_vol5;
-    SELECT SUM(amount)/SUM(volume), SUM(volume) FROM tempday WHERE id<11 INTO v_ma10, v_vol10;
     SELECT SUM(amount)/SUM(volume), SUM(volume) FROM tempday WHERE id<21 INTO v_ma20, v_vol20;
+    SELECT SUM(amount)/SUM(volume), SUM(volume) FROM tempday WHERE id<61 INTO v_ma10, v_vol60;
 
-    INSERT INTO tbl_mavol5D20(code,  close,   ma5,   ma10,  ma20,   vol,   vol5,   vol10,  vol20)
-                     VALUES(a_code,v_close, v_ma5, v_ma10,v_ma20, v_vol, v_vol5, v_vol10,v_vol20);
-END tag_mavol5D20 //
+    INSERT INTO tbl_mavol520s(code,  close,   ma5,   ma10,  ma20,   vol,   vol5,  vol20,   vol60)
+                     VALUES(a_code,v_close, v_ma5, v_ma10,v_ma20, v_vol, v_vol5,v_vol20, v_vol60);
+END tag_mavol520s //
 
 -- 考虑使用ma34代替ma34
 DROP PROCEDURE IF EXISTS sp_ma5D20//
@@ -1274,7 +1274,7 @@ END tag_stat_linqi //
 -- 一些需要与shell通信的系统变量
 
     SET @fn_flt_kdj_up          = 1;   
-    SET @fn_mavol5D20           = 5;
+    SET @fn_mavol520s           = 5;
     SET @fn_ma5D20              = 7;
     SET @fn_ma60x2x4            = 9;
     SET @fn_dugu9jian           = 10;

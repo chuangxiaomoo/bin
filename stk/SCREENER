@@ -373,14 +373,14 @@ function fn_wma()
 
     if mysql kts<<<"SHOW TABLES" | grep -q ${tbl_tov_date}; then
         # 表 ${tbl_tov_date} 存在，且是闭市后构建
-        # 表 tbl_mavol5B25 是TBL的分析结果，供后续处理分析。
+        # 表 tbl_mavol520s 是TBL的分析结果，供后续处理分析。
         if [ -f /tmp/tov/${tbl_tov_date} ]; then
             if [ "cap" = "${TBL:-cap}" ]; then
-                fn_cp_tbl ${tbl_tov_date} tbl_mavol5B25;
+                fn_cp_tbl ${tbl_tov_date} tbl_mavol520s;
             else
                 echo "
-                DELETE from tbl_mavol5B25;
-                INSERT INTO tbl_mavol5B25 SELECT * FROM ${tbl_tov_date}
+                DELETE from tbl_mavol520s;
+                INSERT INTO tbl_mavol520s SELECT * FROM ${tbl_tov_date}
                             WHERE code in (SELECT code FROM ${TBL});
                 " | mysql kts # | tee /dev/stderr
                 echo
@@ -393,13 +393,13 @@ function fn_wma()
 
     echo "
     SET @END='$END';
-    call sp_visit_tbl('${TBL:-cap}', @fn_mavol5D20);
+    call sp_visit_tbl('${TBL:-cap}', @fn_mavol520s);
     " | tee -a $mps_god
     mysql $mo -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
 
     if [ "${TBL:-cap}" = "cap" ] ; then
-        fn_cp_tbl tbl_mavol5B25 ${tbl_tov_date}
+        fn_cp_tbl tbl_mavol520s ${tbl_tov_date}
         xt_ret $? "fn_cp_tbl" || return $?
 
         # tag a tag, touch file the fisttime after $sec_1500
@@ -697,7 +697,7 @@ function fn_main()
     "acc                code                  # 10day NMC_RATIO=tov10 Acceleration day"
     "bei                {code...|file}        # 完整换手 ZIZE=6 nmemb=1 NMC_RATIO=100%"
     "fbi                code                  # 完整换手 bei的个例 "
-    "wma                [field]               # mavol5D20's别名 其ma是wchng"
+    "wma                [field]               # mavol520s's别名 其ma是wchng"
     "ma5D20             [field]               # ma240局部"
     "ma240              [field]               # ma240整体:5B25+ma60x2x4"
     )
