@@ -148,10 +148,11 @@ function fn_wma()
     echo ----- LIST:${#LIST[@]} COND@${END}: $COND -----
 
     sqls="
-    SELECT ${columns}, vol,
-    round(100*vol5 / 5,2)  as mavol5, 
-    round(100*vol20/ 20,2) as mavol20, 
-    round(100*vol60/ 60,2) as mavol60, 
+    SELECT ${columns}, 
+    ${SCALE}*vol       as mavol,
+    round(vol5 / 5,2)  as mavol5, 
+    round(vol20/ 20,2) as mavol20, 
+    round(vol60/ 60,2) as mavol60, 
     round(4*${SCALE}*vol/(vol5-vol),2)  as v1v4,
     c.nmc, c.name
     FROM tbl_mavol520s as t, cap as c WHERE t.code=c.code 
