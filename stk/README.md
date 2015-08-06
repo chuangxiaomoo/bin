@@ -51,16 +51,16 @@
 # 目标&策略&纪律 .doc/discipline.md
 
 # 战争           .doc/war.md
-# 战法           .doc/law.md
+# 强势战法       .doc/law.md
 # 空间域         .doc/space.md
-# 资金管理       .doc/fundmanagement.md
+# 仓位管理       .doc/position.md       -- 核心理论
 # 交易系统       .doc/tradesys.md
-# 独孤九剑       .doc/dugu9jian.md       -- 成本.信息进化论.解N变量方程组
-# 事件冲击       .doc/event.md           -- 高管增持 定向增发 银行加息 gushequ大数据
+# 独孤九剑       .doc/dugu9jian.md      -- 成本.信息进化论.解N变量方程组
+# 事件冲击       .doc/event.md          -- 高管增持 定增 加息 gushequ大数据
 # 缠中说禅       .chan/chan.md
 # 莫大仙岳居     .doc/sulon.md
-# 花荣之习惯     .doc/huarong.md         -- tov换手的秘密
+# 花荣之习惯     .doc/huarong.md        -- tov换手的秘密
 # 洪粉家人       .doc/hongrong.md
-# 瑞鹤仙         .doc/yxkrrhx.md         -- 桃谷
+# 瑞鹤仙         .doc/yxkrrhx.md        -- 桃谷
 # 逻辑           .doc/logic.md
 # 操盘日记       .doc/diary.md

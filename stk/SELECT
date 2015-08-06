@@ -553,9 +553,10 @@ function fn_hilo()
         "
         # delete停牌个股
         tbl_super_dive="
+        -- rat1:最低日lo量比 rat2:lo+(lo+1)日量比
         SELECT ${columns}, 
         round(100*(d.close-t.high)/t.high, 2) as dive, 
-        round(100*(d.close-t.close)/t.close, 2) as rebound, c.name
+        round(100*(d.close-t.close)/t.close, 2) as rebound, c.nmc, c.name
         FROM tbl_hilo as t, tempday as d, cap as c
         WHERE t.code = d.code and t.code=c.code
         HAVING 1 ${COND} ${EXCLUDE}

@@ -175,7 +175,7 @@ function fn_redo_hexun_day()
     fn_del_hexun_day && fn_hexun_day
 
     if [ "$?" -eq 0 ]; then
-        echo "    redo hexun_day succ ^_^
+        echo "    redo hexun_day succ ^_^ @`date +%T`
         "
     else
         echo "    redo hexun_day fail #_#

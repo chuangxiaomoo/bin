@@ -32,7 +32,7 @@ alias  .dbg="let 'DEBUG=!DEBUG'; echo \$DEBUG; export DEBUG"
 alias .sina="let 'SINA=!SINA'; echo \$SINA; export SINA"
 #lias    .n='. /opt/nxpbash'
 alias    .s='cd ~/bin/stk'
-alias   .nb="nc 192.168.100.100 1234 <<< 'ooh my god'"
+alias   .nb="nc 192.168.100.100 1234 <<< 'duang.wav msg.wav'"
 alias   .ss='cd ~/bin/stk/sql'
 alias   .rc='. /root/.bashrc'
 alias   .ps='PS1="[\w]\n\u-> \[\033[0m\]"'
