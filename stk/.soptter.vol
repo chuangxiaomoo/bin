@@ -1,0 +1,4 @@
+# code  symble    FM  cond1           op  cond2                                 tips
+
+002129	中环股份   5  close<fa20      &&  fa20<ma20
+-     	中环股份   5  ma20>ma55*.938  &&  close>fa20&&fa20>ma20&&mavol5>mavol60

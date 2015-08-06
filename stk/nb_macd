@@ -21,7 +21,7 @@ function fn_routine()
             xt_ret $? "macd error" || return $?
         fi
 
-        sql="SELECT IF(${cond1} ${op} ${cond2}, 1, 0) FROM mm55 WHERE code=${code} and fish=${FM}"
+        sql="SELECT IF(${cond1} ${op} ${cond2}, 1, 0) FROM mm55 WHERE code=${code} and FM=${FM}"
         ret=`mysql -N kts <<<"${sql}"`
 
         # echo "${sql}"
@@ -41,12 +41,12 @@ function fn_routine()
     for (( i=${tips_cnt}; i>0; i-=3 )); do
         tips_got="${tips_got} duang.wav msg.wav"    # 2个股+2指数 = 一级戒备
     done
-    echo ${tips_got}
+    #echo ${tips_got}
     [ -n "${tips_got}" ] && fn_bell "$tips_got"
 
     fn_echo_warn '
     Warning:-----------------------------------------------------------------
-    1. 跌不必贱，涨不必贵，在于其位。高位ma55易诱多 vs 13:45:00宜抄底
+    1. 跌不必贱，涨不必贵，水无贵贱。水能载舟，亦能覆舟，上善若水。
     2. 请遵守F5x3有效确认(K线实体站上ma55，即便晚15分，你的成本也很低)
     3. 根据大盘决定整体仓位
     4. (a)保住本金; (b)请永远记住第一条; (c)直至2015-07-30最后5分钟亦可出半仓

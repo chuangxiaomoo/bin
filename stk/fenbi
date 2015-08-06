@@ -205,13 +205,14 @@ function fn_delete()
 {
     date=`fn_maxdate`
     dt=${date//-/}000000
-    date_p=`date --date="${date} 10 days ago" +'%F'`
+#   date_p=`date --date="${date} 10 days ago" +'%F'`
+    date_p=`mysql -N kts <<< "SELECT date from day WHERE code = 900001 ORDER by date DESC LIMIT 4,1"`
     dt_p=${date_p//-/}000000
 
     if fn_iscode ${1}; then
         COND="code=${1}"
     else
-        COND="datetime>${dt} or datetime<${dt_p}"
+        COND="datetime<${dt_p}"     # datetime>${dt} 不清除当天数据
     fi
        
     sqls="DELETE FROM fenbi WHERE ${COND}"
@@ -231,7 +232,7 @@ function fn_lscode()
 
 function fn_auto_fb()
 {
-    codes=`YIST=.soptter.macd lscode l`
+    codes=`lscode l ${@:-${YIST:-.soptter.macd}}`
     local i=
     for i in ${codes}; do
         mi5 ${i}; fenbi ${i};   # 先由mi5进行清扫，再由fenbi补充
@@ -261,7 +262,7 @@ function fn_main()
         fn_lscode
         ;;
     a|auto_fb)
-        fn_auto_fb
+        fn_auto_fb ${@:2}
         ;;
     r|realtime)
         fenbi ${2} && PPLUS=${PPLUS:-5} SCREENER act ${2}
