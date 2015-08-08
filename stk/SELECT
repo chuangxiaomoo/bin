@@ -63,12 +63,29 @@ function fn_lsd()
     fn_yist 
     echo ----- LIST:${#LIST[@]} COND@${END}: $COND -----
 
+
+    case $1 in
+    c|ceiling)
+        LIMIT=2000
+        HAVING="rise>9.93"
+        field=${2:-nmc}
+            ;;
+    f|floor)
+        LIMIT=2000
+        HAVING="rise<-9.93"
+        field=${2:-nmc}
+            ;;
+    *)
+        field=${1:-rise}
+            ;;
+    esac
+
     function fn_sql()
     {
         sqls="
         SELECT $columns, volume,amount, $RISE as rise, $TURNOV as tov, c.nmc, c.name
                 FROM day as d,cap as c where d.code = c.code and d.date = '${END}' 
-                HAVING 1 ${COND} ${inLIST} ORDER BY ${1:-rise} ${ASC:-desc} limit ${LIMIT:-60}
+                HAVING ${HAVING:-1} ${COND} ${inLIST} ORDER BY ${field} ${ASC:-desc} limit ${LIMIT:-60}
         " 
         #echo ${sqls}
     }
@@ -80,6 +97,29 @@ function fn_lsd()
     mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > $file_c 
     up file_to_table $file_c
     xt_ret $? "${FUNCNAME}" || return $?
+}
+
+function fn_ace()
+{
+    dates=(`mysql -N kts <<< "SELECT date from day WHERE code=900001 ORDER by date DESC LIMIT ${LIMIT:-1},10"`)
+
+    function fn_sql()
+    {
+        sqls="SELECT code FROM day as d where d.date = '${date:-$1}' and ${RISE}>9.93 " 
+        #echo ${sqls}
+    }
+
+    > .soptter.ace
+    local i=
+    for i in ${dates[@]}; do
+        fn_sql $i 
+        mysql -N kts <<<"${sqls}" >> .soptter.ace
+    done
+
+    sort -u .soptter.ace -o .soptter.ace
+    echo "Selcect `wc -l<.soptter.ace` From (${dates[@]}) into .soptter.ace"
+        
+    return $?
 }
 
 function fn_get_comma_cloumns()
@@ -584,10 +624,18 @@ function fn_xrd()
     mysql kts <<<"SELECT * from xRD WHERE date${OP:->}'${END}' order by ${1:-date} ASC"
     return $?
 }
+
 function fn_cap()
 {
-    [ $# -eq "0" ] && fn_execute -l && exit
-    mysql -t kts <<<"SELECT * FROM cap WHERE code = ${1};"
+    if [ -n "${1}" ]; then
+        COND="code=${1}"
+    elif [ -f "${YIST}" ]; then
+        fn_yist
+    else
+        fn_execute -l && exit
+    fi
+
+    mysql -t kts <<<"SELECT * FROM cap WHERE ${COND:-1} ${inLIST} ORDER by nmc DESC;"
     return $?
 }
 
@@ -615,7 +663,7 @@ function fn_main()
     "cap                code                  # 查询nmc&cap"
     "name               code                  # 名"
     "vol                {0|3|6|03}            # ^^3市成交^^"
-    "lsd                [sortfield:-rise]     # --- END YIST LIMIT 涨幅排名"
+    "lsd                [{c|floor}][filed]    # --- END YIST LIMIT 涨幅排名"
     "pma                code                  # NUM=5日平均"
     "fbi                                      # tbl_fbi"
     "acc                                      # tbl_adiff"
@@ -624,6 +672,7 @@ function fn_main()
     "rdiff                                    # tbl_rdiff"
     "hilo               field                 # field to sort by"
     "xrd                field                 # #{OP:->}"
+    "ace                                      # +10%"
     )
 
     # `ASC=任意值`时使用'DESC'，弃用
