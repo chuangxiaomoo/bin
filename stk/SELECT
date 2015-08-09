@@ -69,15 +69,15 @@ function fn_lsd()
         LIMIT=2000
         HAVING="rise>9.93"
         field=${2:-nmc}
-            ;;
+        ;;
     f|floor)
         LIMIT=2000
         HAVING="rise<-9.93"
         field=${2:-nmc}
-            ;;
+        ;;
     *)
         field=${1:-rise}
-            ;;
+        ;;
     esac
 
     function fn_sql()
@@ -639,6 +639,29 @@ function fn_cap()
     return $?
 }
 
+
+function fn_lhb()
+{
+    sql="SELECT max(date) FROM lhb"
+    max_dt=`mysql -N kts <<< "${sql}"`
+    case $1 in
+    e|exception)
+        mysql -t kts <<<"SELECT DISTINCT cause FROM lhb"
+        mysql -t kts <<<"SELECT * FROM lhb WHERE date='${max_dt}' and (
+                            cause='tov_to_20' or 
+                            cause='rzrq_to_50')"
+        ;;
+    '')
+        fn_execute -l && exit
+        ;;
+    *)
+        field=${1:-rise}
+            ;;
+    esac
+    
+    return $?
+}
+
 function fn_main()
 {
     # mysql CURRENT_DATE();
@@ -673,6 +696,7 @@ function fn_main()
     "hilo               field                 # field to sort by"
     "xrd                field                 # #{OP:->}"
     "ace                                      # +10%"
+    "lhb                excption              # 龙虎榜"
     )
 
     # `ASC=任意值`时使用'DESC'，弃用
