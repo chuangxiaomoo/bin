@@ -513,6 +513,83 @@ function fn_ipo()
 
 }
 
+
+function fn_lhb()
+{
+    sql="SELECT max(date) FROM lhb"
+    max_dt=`mysql -N kts <<< "${sql}"`
+    max_dt=${max_dt/NULL/2015-07-08}
+    sql="SELECT date from day WHERE code=900001 and date>'${max_dt}' ORDER by date ASC"
+    dates=(`mysql -N kts <<<"${sql}"`)
+    # echo ${sql}
+    # echo ${dates[@]}
+
+    if [ "${#dates[@]}" -eq 0 ]; then
+        echo "It's latest" ; exit
+    fi
+    local i=
+    for i in ${dates[@]}; do
+        echo to up ${i}...
+        fn_lhb0 ${i}
+    done
+    return $?
+}
+
+function fn_lhb0()
+{
+    url="http://data.eastmoney.com/stock/lhb/$1.html"
+    w3m -cols 999 -dump "${url}" > ${lhb_raw}
+
+    # $1      $2      $3      $4              $5   $6         $7          $8      $9          $10      $11
+    # 序号  代码    名称      相关链接    涨跌幅  龙虎榜成  买入额(万)  占总成交  卖出额(万)  占总成交 上榜原因
+
+    cat ${lhb_raw} | grep -A1000 '^序号' | grep '^[0-9]' | 
+    sed -e 's/ N//g' |
+    awk -v v_date=$1 '
+    BEGIN{ nr=0 } {
+        if ($1<nr) {
+            exit
+        }
+        printf "%s\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%s\t\n", v_date, $2,$5,$6,$7,$8,$9,$10,$11;
+        nr=$1;  
+    }' | 
+    sed \
+    -e 's/退市整理的证券/be_fired/g'                                        \
+    -e 's/当日融资买入数量占该证券总交易量50%以上/rzrq_to_50/g'             \
+    -e 's/日均换手率与前五个交易日的.*/ratio_to_30/g'                       \
+    -e 's/当日价格振幅达到15%的证券/hilo_to_15/g'                           \
+    -e 's/当日换手率达到20%的证券/tov_to_20/g'                              \
+    -e 's/当日涨幅偏离值达7%的证券/up_to_7/g'                               \
+    -e 's/当日跌幅偏离值达7%的证券/down_to_7/g'                             \
+    -e 's/连续三个交易日收盘价涨幅偏离值累计20%/3up_to_20/g'                \
+    -e 's/S、ST、.ST连续三个交易日跌幅.*/st3down_to_12/g'                   \
+    -e 's/S、ST、.ST连续三个交易日涨幅.*/st3up_to_12/g'                     \
+    -e 's/连续三个交易日收盘价跌幅偏离值累计20%/3down_to_20/g'  > ${lhb}
+    
+    echo "
+    -- DROP TABLE IF EXISTS lhb;
+    CREATE TABLE IF NOT EXISTS lhb (
+        id      int(4) ZEROFILL PRIMARY key AUTO_INCREMENT NOT NULL,
+        date    DATE NOT NULL,
+        code    INT(6)  ZEROFILL,
+        chng    DECIMAL(6,2) NOT NULL,
+        amount  DECIMAL(10,2) NOT NULL,     -- 万
+        buy     DECIMAL(10,2) NOT NULL,
+        bloo    DECIMAL(10,2) NOT NULL, 
+        sell    DECIMAL(10,2) NOT NULL,
+        sloo    DECIMAL(10,2) NOT NULL, 
+        cause   CHAR(20),
+        INDEX(date,code)
+    );
+
+    DELETE FROM lhb WHERE date='$1';
+    LOAD DATA LOCAL INFILE '${lhb}' INTO 
+    TABLE lhb(date,code,chng,amount,buy,bloo,sell,sloo,cause);
+    " | mysql -u root kts
+
+    return $?
+}
+
 function fn_main()
 {
     CURR=`fn_maxdate`
@@ -541,6 +618,7 @@ function fn_main()
     "wind                               # wind(close<avrg)"
     "day code                           # DL 1year data from znz"
     "ipo                                # DL ipo codes from east"
+    "lhb                                # 龙虎榜"
     )
 
     # 存储过程函数文件的最后5行都是注释

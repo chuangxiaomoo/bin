@@ -26,8 +26,8 @@ SUBOUT='/dev/stdout' || SUBOUT='/dev/null'
 
 XTBL=${XTBL:+and code not in (SELECT code FROM $XTBL)}
 
-HAVING=${COND:+HAVING $COND }${XTBL}
-HAVING="${HAVING}${GEM:+ and d.code>300000 and d.code<400000}"
+#HAVING=${COND:+HAVING $COND }${XTBL}
+#HAVING="${HAVING}${GEM:+ and d.code>300000 and d.code<400000}"
 
 COND=${COND:+and $COND }${XTBL}
 COND="${COND}${GEM:+ and d.code>300000 and d.code<400000}"
@@ -107,6 +107,8 @@ yjbb_rip='/dev/shm/yjbb_rip'
 yjyg_raw='/dev/shm/yjyg_raw'
 yjyg_rip='/dev/shm/yjyg_rip'
 
+       lhb='/tmp/kts/lhb'
+   lhb_raw='/tmp/kts/lhb.raw'
      error='/tmp/kts/error'
      cache='/tmp/kts/cache'
     buffer='/tmp/kts/buffer'

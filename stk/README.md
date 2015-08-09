@@ -51,9 +51,11 @@
 # 目标&策略&纪律 .doc/discipline.md
 
 # 战争           .doc/war.md
-# 强势战法       .doc/law.md
+# 短线战法       .doc/dagger.md
+# 中线战法       .doc/pike.md
+# 打板精要       .doc/daban.md
 # 空间域         .doc/space.md
-# 仓位管理       .doc/position.md       -- 核心理论
+# 仓位管理       .doc/position.md       -- 核心理论: 价、量、macd、势、攻、防
 # 交易系统       .doc/tradesys.md
 # 独孤九剑       .doc/dugu9jian.md      -- 成本.信息进化论.解N变量方程组
 # 事件冲击       .doc/event.md          -- 高管增持 定增 加息 gushequ大数据
