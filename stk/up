@@ -554,18 +554,24 @@ function fn_lhb0()
         nr=$1;  
     }' | 
     sed \
-    -e 's/退市整理的证券/be_fired/g'                                        \
-    -e 's/当日融资买入数量占该证券总交易量50%以上/rzrq_to_50/g'             \
-    -e 's/日均换手率与前五个交易日的.*/ratio_to_30/g'                       \
-    -e 's/当日价格振幅达到15%的证券/hilo_to_15/g'                           \
-    -e 's/当日换手率达到20%的证券/tov_to_20/g'                              \
-    -e 's/当日涨幅偏离值达7%的证券/up_to_7/g'                               \
-    -e 's/当日跌幅偏离值达7%的证券/down_to_7/g'                             \
-    -e 's/连续三个交易日收盘价涨幅偏离值累计20%/3up_to_20/g'                \
-    -e 's/S、ST、.ST连续三个交易日跌幅.*/st3down_to_12/g'                   \
-    -e 's/S、ST、.ST连续三个交易日涨幅.*/st3up_to_12/g'                     \
-    -e 's/连续三个交易日收盘价跌幅偏离值累计20%/3down_to_20/g'  > ${lhb}
+    -e 's/退市整理的证券/fired/g'                                       \
+    -e 's/当日融资买入数量占该证券总交易量50%以上/rzrq50/g'             \
+    -e 's/日均换手率与前五个交易日的.*/rat30/g'                         \
+    -e 's/当日价格振幅达到15%的证券/hilo15/g'                           \
+    -e 's/当日换手率达到20%的证券/tov20/g'                              \
+    -e 's/当日涨幅偏离值达7%的证券/up7/g'                               \
+    -e 's/当日跌幅偏离值达7%的证券/dn7/g'                               \
+    -e 's/连续三个交易日收盘价涨幅偏离值累计20%/3up20/g'                \
+    -e 's/S、ST、.ST连续三个交易日跌幅.*/s3dn12/g'                      \
+    -e 's/S、ST、.ST连续三个交易日涨幅.*/s3up12/g'                      \
+    -e 's/连续三个交易日收盘价跌幅偏离值累计20%/3dn20/g'  > ${lhb}
     
+    lines=`wc -l<${lhb}`
+    if [ "${lines}" -lt 5 ]; then
+        echo "Bad lhb data: ${url}"
+        exit
+    fi
+
     echo "
     -- DROP TABLE IF EXISTS lhb;
     CREATE TABLE IF NOT EXISTS lhb (

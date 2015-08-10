@@ -137,31 +137,41 @@ function fn_rat()
     function fn_build_sqls() {
     sqls="
     SELECT d.code,DATE_FORMAT(d.date,'%m-%d')as date,d.yesc,d.open,d.close,
+        round(100*((d.open+low)/2-d.yesc)/d.yesc,2) as ol_down, 
+        round(100*(d.close-(d.open+low)/2)/((d.open+low)/2),2) as ol_rise,
         round(100*(d.close-d.yesc)/d.yesc,2) as rise, 
         ${tov} as tov, 
         ${tov5} as tov5,
         ${tov60}as tov60,
         ${v1v5} as v1v5, 
-        ${v5v8} as v5v8,
-        ${vBvX} as vBvX, 
-        c.name FROM tbl_mavol520s as ma, 
-        ${tbl_day} as d, cap as c
-        WHERE ma.code=d.code and ma.code=c.code HAVING 1 ${COND} ORDER by ${field} DESC limit ${LIMIT:-24}" 
+        ${v5vT} as v5vT, 
+        c.nmc,c.name FROM tbl_mavol520s as ma, 
+        ${TBL:-${tbl_day}} as d, cap as c
+        WHERE ma.code=d.code and ma.code=c.code HAVING 1 ${COND} ORDER by ${field} DESC limit ${LIMIT:-36}" 
     }
     field=${1:-v1v5}
-    SCALE=`fn_get_ratio_close2open`
 
+    if [ -n "${TBL}" ]; then
+        DT=${TBL#dorat_}
+        dt0=${DT:0:10} 
+        dt1=${DT:11:8}
+        DT="${dt0//_/-} ${dt1//_/:}"
+    fi
+
+    SCALE=`DT=${DT} fn_get_ratio_close2open`
+    # echo ${SCALE}; exit
     # 以PREV为标，盘中只需要更新一次 tbl_mavol520s
     tov="round(100*(d.volume)/(c.nmc/c.close),2)"
     tov5="round(100*(ma.vol5)/(c.nmc/c.close),2)"
-    tov60="round(100*(ma.vol10)/(c.nmc/c.close),2)"
     tov20="round(100*(ma.vol20)/(c.nmc/c.close),2)"
+    tov60="round(100*(ma.vol60)/(c.nmc/c.close),2)"
     v1v5="round(5*d.volume*${SCALE}/(ma.vol5),2)"       
-    v5v8="round(8*ma.vol5/(ma.vol10-ma.vol5)/5,2)"
-    vBvX="round(12*ma.vol10/(ma.vol20-ma.vol10)/12,2)"
+    v5vT="round(4*ma.vol5/(ma.vol20),2)"
 
-    TBL=${TBL:-cap} END=${PREV} ./SCREENER wma
-    xt_ret $? "${FUNCNAME}" || return $?
+    if [ "${WMA:-0}" -eq 0 ]; then
+        TBL=${TBL:-cap} END=${PREV} ./SCREENER wma
+        xt_ret $? "${FUNCNAME}" || return $?
+    fi
 
     fn_yist
     tbl_day="(SELECT * FROM day WHERE date='${END}' ${inLIST})"
@@ -465,6 +475,26 @@ function fn_vol()
     return $?
 }
 
+function fn_dorat()
+{
+    case $1 in
+    l|list)
+        mysql -N kts<<<"show tables" | grep dorat
+        ;;
+    c|copy)
+        sec_dt=(`mysql -N kts<<<"SELECT date,time FROM stamp_day ORDER by id DESC LIMIT 1"`)
+        sec_date=${sec_dt[0]}
+        sec_time=${sec_dt[1]}
+        COND="WHERE date='${sec_date}'" fn_cp_tbl day dorat_${sec_date//-/_}_${sec_time//:/_}
+        ;;
+    *)
+        fn_execute -l | grep dorat && exit
+        ;;
+    esac
+
+    return $?
+}
+
 
 function fn_td_layout()
 {
@@ -639,7 +669,6 @@ function fn_cap()
     return $?
 }
 
-
 function fn_lhb()
 {
     sql="SELECT max(date) FROM lhb"
@@ -652,7 +681,7 @@ function fn_lhb()
                             cause='rzrq_to_50')"
         ;;
     '')
-        fn_execute -l && exit
+        fn_execute -l | grep "lhb" && exit
         ;;
     *)
         field=${1:-rise}
@@ -675,7 +704,8 @@ function fn_main()
     "get_comma_cloumns  [tbl_name:-day]       # 逗分列名"
     "get_open_days      [LIMIT:-13 [desc]]    # 开市日列表"
     "wma                [sortfield:tov5]      # 均价+现成513.静态rat"
-    "rat                [sortfield:-ratio]    # day+PREV513.动态rat，实时速度快"
+    "rat                [sortfield:-ratio]    # wma+day-->动态rat，实时速度快"
+    "dorat              {copy|list}           # 以时间为表名保存day"
     "ma240              [sortfield:-ratio]    # "
     "ma240_usage        {1~9}                 # 分析ma 5 13 34 55"
     "dif120             code...               # cost:(close-ma120) & sort by #{ASC:id}"
