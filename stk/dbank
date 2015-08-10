@@ -231,17 +231,20 @@ function fn_get_ratio_close2open()
 {
     # ratio = 4小时/sum(open)，用于预测当日量比
     # 在 ./SELECT 通过变量 ratio=`fn_get_ratio_close2open`
-    DATE=`date +%Y-%m-%d`
-    sec_0930=$(date +%s -d "${DATE} 09:30:00") 
-    sec_1130=$(date +%s -d "${DATE} 11:30:00")
-    sec_1300=$(date +%s -d "${DATE} 13:00:00")
-    sec_1500=$(date +%s -d "${DATE} 15:00:00")
-    sec_curr=`mysql -N kts<<<"SELECT time FROM stamp_day ORDER by id DESC LIMIT 1"`
-    sec_curr=$(date +%s -d "${DATE} ${sec_curr}")
+    DT=${DT:-`mysql -N kts<<<"SELECT date,time FROM stamp_day ORDER by id DESC LIMIT 1"`}
+    sec_dt=(${DT})
+    sec_date=${sec_dt[0]}
+    sec_curr=$(date +%s -d "${sec_dt[*]}")
+    sec_0930=$(date +%s -d "${sec_date} 09:30:00") 
+    sec_1130=$(date +%s -d "${sec_date} 11:30:00")
+    sec_1300=$(date +%s -d "${sec_date} 13:00:00")
+    sec_1500=$(date +%s -d "${sec_date} 15:00:00")
     sec_open=0
 
     [ -n "$sec_curr" ]
-    xt_ret $? "Table 'kts.stamp_day1' doesn't exist" || return $?
+    xt_ret $? "Table 'kts.stamp_day' doesn't exist" || return $?
+
+    fn_echo_warn "    rat@${sec_dt[@]}" >/dev/stderr
 
     if [ "$sec_curr" -lt ${sec_0930} ] ; then
         sec_open=0
@@ -300,12 +303,12 @@ function fn_cp_tbl()
 {
     [ 2 != "$#" ] && echo "Error: we need 2 table name" && exit
 
-    echo "    cp_tbl $1 $2"
+    echo "    INSERT INTO $2 SELECT * FROM $1 ${COND}"
 
     echo "
     DROP TABLE IF EXISTS $2;
     CREATE TABLE $2 LIKE $1;   
-    INSERT INTO $2 SELECT * FROM $1;  
+    INSERT INTO $2 SELECT * FROM $1 ${COND};
     " | mysql kts
 }
 

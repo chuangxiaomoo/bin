@@ -28,13 +28,15 @@ function fn_macd()
         code        INT(6)          ZEROFILL NOT NULL,
         FM          INT(2)          NOT NULL DEFAULT 5,
         cvgenc      DECIMAL(10,2)   NOT NULL,
-        mavol3      INT(6)          NOT NULL DEFAULT 0,
         mavol5      INT(6)          NOT NULL DEFAULT 0,
-        mavol60     INT(6)          NOT NULL DEFAULT 0,
+        mavol20     INT(6)          NOT NULL DEFAULT 0,
         close       DECIMAL(6,2)    NOT NULL DEFAULT 0,
-        fa20        DECIMAL(6,2)    NOT NULL,
-        ma20        DECIMAL(6,2)    NOT NULL,
-        ma55        DECIMAL(6,2)    NOT NULL,
+        fa20        DECIMAL(6,2)    NOT NULL DEFAULT 0,
+        ma5         DECIMAL(6,2)    NOT NULL DEFAULT 0,
+        ma10        DECIMAL(6,2)    NOT NULL DEFAULT 0,
+        ma20        DECIMAL(6,2)    NOT NULL DEFAULT 0,
+        ma40        DECIMAL(6,2)    NOT NULL DEFAULT 0,
+        ma80        DECIMAL(6,2)    NOT NULL DEFAULT 0,
         datetime    bigint(14)      NOT NULL DEFAULT 0,
         dif         DECIMAL(8,3)    NOT NULL DEFAULT 0,
         dea         DECIMAL(8,3)    NOT NULL DEFAULT 0,
@@ -42,36 +44,42 @@ function fn_macd()
         INDEX(freq)
     );
 
-    SELECT max(datetime) FROM fenbi WHERE code=$1 into @max_dt;
+    SELECT max(datetime) FROM fenbi WHERE code=$1 ${TEST} into @max_dt;
 
     INSERT into tmpfb_macd(code,datetime,trade,volume,amount) 
         SELECT code,datetime,trade,volume,amount FROM fenbi WHERE code=$1 ${TEST} and ( (
         (TRUNCATE(datetime%10000/100, 0)%${FM:=5})=0 and
-        (TRUNCATE(datetime%1000000/100, 0)>930 and TRUNCATE(datetime%1000000/100, 0)!=1300) ) or  -- 0925 0930 1100 不计入统计
+        (TRUNCATE(datetime%1000000/100, 0)>930 and TRUNCATE(datetime%1000000/100, 0)!=1300) ) or  -- 0925 0930 1300 不计入统计
         datetime=@max_dt
-        ) ORDER by datetime DESC LIMIT 55;
+        ) ORDER by datetime DESC LIMIT 80;
 
-    call sp_fmacd();
+--  call sp_fmacd();
     SELECT sum(trade)/20  FROM (SELECT trade from fenbi 
         WHERE code=${1} ${TEST} ORDER by datetime DESC LIMIT 20) as t INTO @fa20;
-    SELECT sum(volume)/3  FROM (SELECT volume from fenbi 
-        WHERE code=${1} ${TEST} ORDER by datetime DESC LIMIT 16) as t INTO @mavol3;
     SELECT sum(volume)/5  FROM (SELECT volume from fenbi 
         WHERE code=${1} ${TEST} ORDER by datetime DESC LIMIT 25) as t INTO @mavol5;
-    SELECT sum(volume)/60 FROM (SELECT volume from fenbi 
-        WHERE code=${1} ${TEST} ORDER by datetime DESC LIMIT 301) as t INTO @mavol60;
+    SELECT sum(volume)/20  FROM (SELECT volume from fenbi 
+        WHERE code=${1} ${TEST} ORDER by datetime DESC LIMIT 100) as t INTO @mavol20;
+--  SELECT sum(volume)/60 FROM (SELECT volume from fenbi 
+--      WHERE code=${1} ${TEST} ORDER by datetime DESC LIMIT 301) as t INTO @mavol60;
 
+    SELECT sum(trade)/5  FROM tmpfb_macd WHERE id<= 5           INTO @ma5;
+    SELECT sum(trade)/10 FROM tmpfb_macd WHERE id<=10           INTO @ma10;
     SELECT sum(trade)/20 FROM tmpfb_macd WHERE id<=20           INTO @ma20;
-    SELECT sum(trade)/55 FROM tmpfb_macd                        INTO @ma55;
-    SELECT 100*(@ma20-@ma55)/@ma55                              INTO @cvgenc;
+    SELECT sum(trade)/40 FROM tmpfb_macd WHERE id<=40           INTO @ma40;
+    SELECT sum(trade)/80 FROM tmpfb_macd WHERE id<=80           INTO @ma80;
+    SELECT 100*(@ma5-@ma20)/@ma20                               INTO @cvgenc;
     -- SELECT (@max_dt-@max_dt%1000000)                         into @min_dt;
     -- SELECT sum(volume)/10000 FROM fenbi WHERE code=$1 && datetime>@min_dt INTO @vol;       -- 当天所有成交
 
     # di20 --> SELECT trade     FROM tmpfb_macd WHERE id=21  INTO @c21;
     # 100*(close-@c21)/@c21,
-    REPLACE INTO mm55(freq,code,FM,mavol3,mavol5,mavol60,cvgenc,fa20,ma20,ma55,datetime,close,dif,dea,macd)
-    SELECT code+${FM}*1000000,code,${FM},@mavol3,@mavol5,@mavol60,@cvgenc,@fa20,@ma20,@ma55,datetime,close,dif,dea,macd 
-        FROM fmacd ORDER by id DESC LIMIT 1;
+    REPLACE INTO mm55(freq,code,FM,mavol20,mavol5,cvgenc,fa20,ma5,ma10,ma20,ma40,ma80,datetime,close)
+    SELECT code+${FM}*1000000,code,${FM},@mavol20,@mavol5,@cvgenc,@fa20,@ma5,@ma10,@ma20,@ma40,@ma80,datetime,trade FROM tmpfb_macd WHERE id=1;
+
+--  REPLACE INTO mm55(freq,code,FM,mavol20,mavol5,cvgenc,fa20,ma5,ma10,ma20,ma40,ma80,datetime,close,dif,dea,macd)
+--  SELECT code+${FM}*1000000,code,${FM},@mavol20,@mavol5,@cvgenc,@fa20,@ma5,@ma10,@ma20,@ma40,@ma80,datetime,close,dif,dea,macd 
+--      FROM fmacd ORDER by id DESC LIMIT 1;
 --  SELECT * FROM fmacd;
     " >> $mps_god
 
