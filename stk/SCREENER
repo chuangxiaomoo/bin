@@ -383,6 +383,7 @@ function fn_wma()
                 INSERT INTO tbl_mavol520s SELECT * FROM ${tbl_tov_date}
                             WHERE code in (SELECT code FROM ${TBL});
                 " | mysql kts # | tee /dev/stderr
+                xt_ret $? "mysql" || return $?
                 echo
             fi
             return 0

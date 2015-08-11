@@ -174,6 +174,13 @@ function fn_redo_hexun_day()
 {
     fn_del_hexun_day && fn_hexun_day
 
+    sql="SELECT ${RISE} as rise FROM day as d WHERE date='${OPENDATE}' ORDER by rise DESC LIMIT 1"
+    maxrise=`mysql kts -N <<<"${sql}"`
+    if [ "${maxrise%%.*}" -gt 10 ]; then
+        fn_echo_warn "Bad yesc"
+        fn_bell "msg.wav msg.wav"
+    fi
+
     if [ "$?" -eq 0 ]; then
         echo "    redo hexun_day succ ^_^ @`date +%T`
         "
@@ -550,6 +557,9 @@ function fn_lhb0()
         if ($1<nr) {
             exit
         }
+        if ($2>700000) {
+            continue
+        }
         printf "%s\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%s\t\n", v_date, $2,$5,$6,$7,$8,$9,$10,$11;
         nr=$1;  
     }' | 
@@ -596,6 +606,45 @@ function fn_lhb0()
     return $?
 }
 
+function fn_dorat()
+{
+    if [ -z "${TBL}" ]; then
+        fn_redo_hexun_day
+        xt_ret $? "" || return $?
+        sec_dt=(`mysql -N kts<<<"SELECT date,time FROM stamp_day ORDER by id DESC LIMIT 1"`)
+    else
+        sec_dt=${TBL#dorat_}
+        sec_dt=(`fn_dt_hyphen_2_normal ${sec_dt}`)
+
+    fi
+
+    sec_date=${sec_dt[0]}
+    sec_time=${sec_dt[1]}
+    columns="code,yesc,open,high,low,close,volume,amount"
+    # COND0="WHERE date='${sec_date}'" fn_cp_tbl day dorat_${sec_date//-/_}_${sec_time//:/_}
+    echo "
+    -- DROP TABLE dorat;
+    CREATE TABLE IF NOT EXISTS dorat (
+        date        date NOT NULL, 
+        time        time NOT NULL, 
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        yesc        DECIMAL(6,2) NOT NULL,
+        open        DECIMAL(6,2) NOT NULL,
+        high        DECIMAL(6,2) NOT NULL,
+        low         DECIMAL(6,2) NOT NULL,
+        close       DECIMAL(6,2) NOT NULL,
+        volume      DECIMAL(12,2) NOT NULL,
+        amount      DECIMAL(12,2) NOT NULL,
+        INDEX(date,time,code)
+    );
+    DELETE from dorat WHERE date='${sec_date}' && time='${sec_time}';
+    INSERT INTO dorat SELECT date,'${sec_time}',${columns} FROM ${TBL:-day} WHERE date='${sec_date}';
+    " | mysql kts
+    fn_echo_succ "    succ: insert dorat ${sec_dt[@]}"
+    
+    return $?
+}
+
 function fn_main()
 {
     CURR=`fn_maxdate`
@@ -625,6 +674,7 @@ function fn_main()
     "day code                           # DL 1year data from znz"
     "ipo                                # DL ipo codes from east"
     "lhb                                # 龙虎榜"
+    "dorat                              # 量比数据"
     )
 
     # 存储过程函数文件的最后5行都是注释

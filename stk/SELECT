@@ -85,7 +85,7 @@ function fn_lsd()
         sqls="
         SELECT $columns, volume,amount, $RISE as rise, $TURNOV as tov, c.nmc, c.name
                 FROM day as d,cap as c where d.code = c.code and d.date = '${END}' 
-                HAVING ${HAVING:-1} ${COND} ${inLIST} ORDER BY ${field} ${ASC:-desc} limit ${LIMIT:-60}
+                HAVING ${HAVING:-1} ${COND} ${inLIST} ORDER BY ${field} ${ASC:-desc} limit ${LIMIT:-36}
         " 
         #echo ${sqls}
     }
@@ -129,6 +129,24 @@ function fn_get_comma_cloumns()
     mysql kts -N<<<"DESCRIBE ${1:-day};" | awk '{printf "%s,", $1} END{printf "\n"}' | sed 's/,$//g'
 }
 
+
+function fn_dt_hyphen_2_normal()
+{
+    dt0=${1:0:10} 
+    dt1=${1:11:8}
+    echo "${dt0//_/-} ${dt1//_/:}"
+    return $?
+}
+
+function fn_dt_normal_2_hyphen()
+{
+    echo "${1//-/_}_${2//:/_}"
+    return $?
+}
+
+# fn_dt_hyphen_2_normal 2015_08_11_11_02_21
+# fn_dt_normal_2_hyphen 2015-08-11 11:02:21
+
 function fn_rat()
 {
     # 0. Make sure U've done [up 4]?
@@ -136,26 +154,24 @@ function fn_rat()
     # 2. 使用多表tbl_mavol520s tbl_day`联合查询`得到数据
     function fn_build_sqls() {
     sqls="
-    SELECT d.code,DATE_FORMAT(d.date,'%m-%d')as date,d.yesc,d.open,d.close,
-        round(100*((d.open+low)/2-d.yesc)/d.yesc,2) as ol_down, 
-        round(100*(d.close-(d.open+low)/2)/((d.open+low)/2),2) as ol_rise,
+    SELECT d.code,DATE_FORMAT(d.date,'%m-%d')as date,d.yesc,d.open,d.low,d.close,
+        round(100*((d.open+low)/2-d.yesc)/d.yesc,2) as av_open, 
+        round(100*(d.close-(d.open+low)/2)/((d.open+low)/2),2) as av_rise,
         round(100*(d.close-d.yesc)/d.yesc,2) as rise, 
         ${tov} as tov, 
         ${tov5} as tov5,
-        ${tov60}as tov60,
+        ${tov20}as tov20,
         ${v1v5} as v1v5, 
-        ${v5vT} as v5vT, 
-        c.nmc,c.name FROM tbl_mavol520s as ma, 
+        d.amount,c.nmc,c.name FROM tbl_mavol520s as ma, 
         ${TBL:-${tbl_day}} as d, cap as c
-        WHERE ma.code=d.code and ma.code=c.code HAVING 1 ${COND} ORDER by ${field} DESC limit ${LIMIT:-36}" 
+        WHERE ma.code=d.code and ma.code=c.code 
+        HAVING 1 ${COND} ORDER by ${field} ${ASC:-DESC} limit ${LIMIT:-36}" 
     }
     field=${1:-v1v5}
 
     if [ -n "${TBL}" ]; then
         DT=${TBL#dorat_}
-        dt0=${DT:0:10} 
-        dt1=${DT:11:8}
-        DT="${dt0//_/-} ${dt1//_/:}"
+        DT="`fn_dt_hyphen_2_normal ${DT}`"
     fi
 
     SCALE=`DT=${DT} fn_get_ratio_close2open`
@@ -166,9 +182,11 @@ function fn_rat()
     tov20="round(100*(ma.vol20)/(c.nmc/c.close),2)"
     tov60="round(100*(ma.vol60)/(c.nmc/c.close),2)"
     v1v5="round(5*d.volume*${SCALE}/(ma.vol5),2)"       
-    v5vT="round(4*ma.vol5/(ma.vol20),2)"
+    # v5vT="round(4*ma.vol5/(ma.vol20),2)"
+    # ${v5vT} as v5vT, 
 
     if [ "${WMA:-0}" -eq 0 ]; then
+        fn_echo_fail "Try .wma to avoid ./SCREENER wma"
         TBL=${TBL:-cap} END=${PREV} ./SCREENER wma
         xt_ret $? "${FUNCNAME}" || return $?
     fi
@@ -478,17 +496,9 @@ function fn_vol()
 function fn_dorat()
 {
     case $1 in
-    l|list)
-        mysql -N kts<<<"show tables" | grep dorat
-        ;;
-    c|copy)
-        sec_dt=(`mysql -N kts<<<"SELECT date,time FROM stamp_day ORDER by id DESC LIMIT 1"`)
-        sec_date=${sec_dt[0]}
-        sec_time=${sec_dt[1]}
-        COND="WHERE date='${sec_date}'" fn_cp_tbl day dorat_${sec_date//-/_}_${sec_time//:/_}
-        ;;
     *)
-        fn_execute -l | grep dorat && exit
+        mysql -N kts<<< "SELECT DISTINCT date, time FROM dorat"
+        #fn_execute -l | grep dorat && exit
         ;;
     esac
 
@@ -561,7 +571,7 @@ function fn_ma240_usage()
 function fn_ma240()
 {
     # 0. Make sure U've done [SCREENER ma240]?
-    columns=code,date,close                     # ,ma5,ma10,ma20,ma60 # ,ma120,ma240
+    columns=code,date,close,ma5                     # ,ma5,ma10,ma20,ma60 # ,ma120,ma240
     columns=ma.${columns//,/,ma.}
     function fn_build_sqls() {
     sqls="SELECT date FROM day WHERE code=900001 and date<='${END}' ORDER by date DESC LIMIT 4,1"
@@ -569,10 +579,10 @@ function fn_ma240()
     field=${1:-x_5}
     sqls="
     SELECT ${columns},
-        round(100*(ma.close-ma5  )/ma5  ,2)as pma5,
-        round(100*(ma.close-ma20 )/ma20 ,2)as pma20,
-        round(100*(ma.close-ma60 )/ma60 ,2)as pma60,
-        round(100*(ma.close-ma120)/ma120,2)as pma120,
+        round(100*(ma.close-ma5  )/ma5  ,1)as pma5,
+        round(100*(ma.close-ma20 )/ma20 ,1)as pma20,
+        round(100*(ma.close-ma60 )/ma60 ,1)as pma60,
+        round(100*(ma.close-ma120)/ma120,1)as pma120,
         ${x_5} as x_5, 
         ${x_sho} as x_sho,          -- 5 10 20
         ${x_mid} as x_mid,          -- 20 60 120
