@@ -53,7 +53,7 @@
 # 战争           .doc/war.md
 # 短线战法       .doc/dagger.md
 # 中线战法       .doc/pike.md
-# 打板精要       .doc/daban.md
+# 打板精要       .doc/daban.md          -- 盘面解读
 # 空间域         .doc/space.md
 # 仓位管理       .doc/position.md       -- 核心理论: 价、量、macd、势、攻、防
 # 交易系统       .doc/tradesys.md

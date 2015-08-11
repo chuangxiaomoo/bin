@@ -296,19 +296,19 @@ function fn_create_tbl_codes()
 
 function fn_bell()
 {
-    echo "$*" | nc 192.168.100.100 1234
+    timeout 2 nc 192.168.100.100 1234 <<<"$*"
 }
 
 function fn_cp_tbl()
 {
     [ 2 != "$#" ] && echo "Error: we need 2 table name" && exit
 
-    echo "    INSERT INTO $2 SELECT * FROM $1 ${COND}"
+    echo "    INSERT INTO $2 SELECT * FROM $1 ${COND0}"
 
     echo "
     DROP TABLE IF EXISTS $2;
     CREATE TABLE $2 LIKE $1;   
-    INSERT INTO $2 SELECT * FROM $1 ${COND};
+    INSERT INTO $2 SELECT * FROM $1 ${COND0};
     " | mysql kts
 }
 
