@@ -177,6 +177,11 @@ function fn_redo_hexun_day()
     sql="SELECT ${RISE} as rise FROM day as d WHERE date='${OPENDATE}' ORDER by rise DESC LIMIT 1"
     maxrise=`mysql kts -N <<<"${sql}"`
     if [ "${maxrise%%.*}" -gt 10 ]; then
+        # 修正yesc数据
+        # iPREV=`END=${OPENDATE} fn_get_prev`
+        # echo "
+        # UPDATE day as dd,(SELECT * FROM day WHERE date='${iPREV}') as yy SET dd.yesc=yy.close WHERE dd.code=yy.code && dd.date='${OPENDATE}'
+        # " | mysql kts
         fn_echo_warn "Bad yesc"
         fn_bell "msg.wav msg.wav"
     fi
@@ -608,6 +613,14 @@ function fn_lhb0()
 
 function fn_dorat()
 {
+    case $1 in
+    l|loop)
+        is_del_routine=true fn_timestamp_market
+        xt_ret $? "unarm_close_forbid=true TO RERUN WHEN MARKET CLOSED" || return $?
+        fn_isresting && { echo "is reseting"; exit 0; }
+        ;;
+    esac
+
     if [ -z "${TBL}" ]; then
         fn_redo_hexun_day
         xt_ret $? "" || return $?
@@ -674,7 +687,7 @@ function fn_main()
     "day code                           # DL 1year data from znz"
     "ipo                                # DL ipo codes from east"
     "lhb                                # 龙虎榜"
-    "dorat                              # 量比数据"
+    "dorat  [loop]                      # 量比数据，loop when run@crontab"
     )
 
     # 存储过程函数文件的最后5行都是注释

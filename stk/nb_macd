@@ -3,7 +3,7 @@
 . `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
 . /etc/common.rc
 
-function fn_routine()
+function fn_routine_1_0()
 {
     tips_cnt=0
     tips_got=''
@@ -54,18 +54,99 @@ function fn_routine()
     '
 }
 
-
-function fn_isresting()
+function fn_routine()
 {
-    hhmmss=`date +%H%M%S`
-    if ([ ${hhmmss} -ge 113000 ] && [ ${hhmmss} -le 130000 ]) ||
-        [ ${hhmmss} -lt 093300 ] || [ ${hhmmss} -gt 145700 ]; then
-        echo "is resting @${hhmmss}..."; 
-        return 0
-    else
-        echo to checking @${hhmmss}...
-        return 1
-    fi
+    tips_cnt=0
+    tips_got=''
+
+    while read code symble IF tips; do
+        if ! ${istest} && [ "$code" != '-' ]; then                              # istest
+            echo do fenbi ${code}...
+            fenbi ${code} >& ${error}
+            xt_ret $? "down ${code}" || { cat ${error}; return $?; }
+        fi
+
+        if [ "${code}" = '-' ]; then # code is -
+            code=$code0
+        else
+            FM=15 macd ${code}
+            xt_ret $? "macd error" || return $?
+
+            sql='(FM=15)*IF(close>=fa15, 1, -1)*((fa15>=ma5)+(fa15>=ma10)+(fa15>=ma20)+(fa15>=ma40)+(fa15>=ma80))'
+            sql="SELECT ${sql} FROM mm55 WHERE code=${code} and FM=15"
+            limo=`mysql -N kts <<<"${sql}"`
+
+            # <无条件>计算dif会耗时
+            # limo=-100
+            # if [ "${limo}" -gt 0 ]; then
+            # macd计算作为BuySell的标配进行，但对其进行下列优化，触发执行
+            # 1. 上一个时间单元abs(dif)<0.006
+            # 2. 上一个更新时间>10min
+            # 3. ${istest}
+            sql="SELECT abs(dif)<0.006 || (CURRENT_TIMESTAMP()-datetime)>1000 FROM mm55 WHERE code=${code} and FM=5"
+            ret=`mysql -N kts <<<"${sql}"`
+
+            if ${istest} || [ "${ret}" -eq 1 ]; then
+                echo "do macd ${code}..."
+                FM=5 macd ${code}
+                xt_ret $? "macd error" || return $?
+            fi
+        fi
+
+        case $IF in
+        B)
+            if [ "${limo}" -gt 0 ] && [ "${limo}" -ge 3 ]; then
+                fn_echo_succ "$code.$symble.limo ${IF}"
+                let tips_cnt++
+            fi
+            sql="SELECT IF(dif>0&&close>fa15, 1, 0) FROM mm55 WHERE code=${code} and FM=5"
+            ret=`mysql -N kts <<<"${sql}"`
+            if [ "${ret}" -eq 1 ]; then
+                fn_echo_succ "$code.$symble.macd ${IF}"
+                let tips_cnt++
+            fi
+            ;;
+        S)
+            if [ "${limo}" -lt 0 ] && [ "${limo#-}" -lt 3 ]; then
+                fn_echo_succ "$code.$symble.limo ${IF}"
+                let tips_cnt++
+            fi
+            sql="SELECT IF(dif<0&&close<fa15, 1, 0) FROM mm55 WHERE code=${code} and FM=5"
+            ret=`mysql -N kts <<<"${sql}"`
+            if [ "${ret}" -eq 1 ]; then
+                fn_echo_succ "$code.$symble.macd ${IF}"
+                let tips_cnt++
+            fi
+            ;;
+        *)
+            sql="SELECT IF(${IF}, 1, 0) FROM mm55 WHERE code=${code} and FM=15"
+            ret=`mysql -N kts <<<"${sql}"`
+            if [ "${ret}" = 1 ]; then
+                fn_echo_succ "$code.$symble.cond ${IF}"
+                fn_echo_warn "$tips"
+                let tips_cnt++
+            elif [ "${ret}" = "" ]; then
+                fn_echo_fail "bad cond: ${IF}"
+                fn_bell "msg.wav msg.wav msg.wav"
+            fi
+            ;;
+        esac
+        code0=$code
+    done<<<"`grep ${PATTERN:-'^[-036]'} .soptter.macd`"
+    
+    local i
+    for (( i=${tips_cnt}; i>0; i-=3 )); do
+        tips_got="${tips_got} duang.wav msg.wav"    # 2个股+2指数 = 一级戒备
+    done
+    #echo ${tips_got}
+    [ -n "${tips_got}" ] && fn_bell "$tips_got"
+
+    fn_echo_warn '
+    Warning:-----------------------------------------------------------------
+    1. 跌不必贱，涨不必贵，水无贵贱。水能载舟，亦能覆舟，上善若水。
+    2. 根据大盘决定整体仓位
+    3. 当天出现过卖出信号的，当天不可以买入。可：dif第一次跌破时，小仓博反弹
+    '
 }
 
 function fn_loop()
