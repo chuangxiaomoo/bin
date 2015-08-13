@@ -150,37 +150,16 @@ function fn_dt_normal_2_hyphen()
 function fn_rat()
 {
     # 0. Make sure U've done [up 4]?
-    # 1. 自动处理生成 tbl_mavol520s
+    # 1. 以PREV为标，自动处理生成 tbl_mavol520s，只需上午更新一次 tbl_mavol520s
     # 2. 使用多表tbl_mavol520s tbl_day`联合查询`得到数据
-    function fn_build_sqls() {
-    sqls="
-    SELECT d.code,DATE_FORMAT(d.date,'%m-%d')as date,d.yesc,d.open,d.low,d.close,
-        round(100*((d.open+low)/2-d.yesc)/d.yesc,2) as av_open, 
-        round(100*(d.close-(d.open+low)/2)/((d.open+low)/2),2) as av_rise,
-        round(100*(d.close-d.yesc)/d.yesc,2) as rise, 
-        ${tov} as tov, 
-        ${tov5} as tov5,
-        ${tov20}as tov20,
-        ${v1v5} as v1v5, 
-        d.amount,c.nmc,c.name FROM tbl_mavol520s as ma, 
-        ${TBL:-${tbl_day}} as d, cap as c
-        WHERE ma.code=d.code and ma.code=c.code 
-        HAVING 1 ${COND} ORDER by ${field} ${ASC:-DESC} limit ${LIMIT:-36}" 
-    }
     field=${1:-v1v5}
 
-    if [ -n "${TBL}" ]; then
-        DT=${TBL#dorat_}
-        DT="`fn_dt_hyphen_2_normal ${DT}`"
-    fi
-
-    SCALE=`DT=${DT} fn_get_ratio_close2open`
+    DT=(${DT:-`mysql -N kts<<<"SELECT date,time FROM stamp_day ORDER by id DESC LIMIT 1"`})
+    SCALE=`DT=${DT[@]} fn_get_ratio_close2open`
     # echo ${SCALE}; exit
-    # 以PREV为标，盘中只需要更新一次 tbl_mavol520s
     tov="round(100*(d.volume)/(c.nmc/c.close),2)"
     tov5="round(100*(ma.vol5)/(c.nmc/c.close),2)"
     tov20="round(100*(ma.vol20)/(c.nmc/c.close),2)"
-    tov60="round(100*(ma.vol60)/(c.nmc/c.close),2)"
     v1v5="round(5*d.volume*${SCALE}/(ma.vol5),2)"       
     # v5vT="round(4*ma.vol5/(ma.vol20),2)"
     # ${v5vT} as v5vT, 
@@ -192,8 +171,88 @@ function fn_rat()
     fi
 
     fn_yist
-    tbl_day="(SELECT * FROM day WHERE date='${END}' ${inLIST})"
+    tbl_day="(SELECT * FROM dorat WHERE date='${DT[0]}' && time='${DT[1]}' ${inLIST})"
+
+    function fn_build_sqls() {
+    sqls="
+    SELECT d.code,DATE_FORMAT(d.date,'%m-%d')as date,d.yesc,d.open,d.low,d.close,
+        round(100*((d.open+low)/2-d.yesc)/d.yesc,2) as av_open, 
+        round(100*(d.close-(d.open+low)/2)/((d.open+low)/2),2) as av_rise,
+        round(100*(d.close-d.yesc)/d.yesc,2) as rise, 
+        ${tov} as tov, 
+        ${tov5} as tov5,
+        ${tov20}as tov20,
+        ${v1v5} as v1v5, 
+        d.amount,c.nmc,c.name FROM tbl_mavol520s as ma, 
+        ${tbl_day} as d, cap as c
+        WHERE ma.code=d.code and ma.code=c.code 
+        HAVING 1 ${COND} ORDER by ${field} ${ASC:-DESC} limit ${LIMIT:-36}" 
+    }
     fn_build_sqls
+
+    echo "$sqls">/dev/stderr 
+    mysql -t kts<<<"$sqls"
+
+    [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
+
+    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > $file_c 
+    up file_to_table $file_c
+    xt_ret $? "${FUNCNAME}" || return $?
+}
+
+function fn_dirtio()
+{
+    field=${1:-dirtio}
+
+    DT=(${DT:-`mysql -N kts<<<"SELECT DISTINCT date,time FROM dorat ORDER by date DESC, time DESC LIMIT 1"`})
+    DP=(${DP:-`mysql -N kts<<<"SELECT DISTINCT date,time FROM dorat WHERE date<='${DT[0]}' && time<'${DT[1]}' ORDER by date DESC, time DESC LIMIT 1"`})
+        
+    sec_dt=$(date +%s -d "${DT[*]}")
+    sec_dp=$(date +%s -d "${DP[*]}")
+    sec_open=$(expr $sec_dt - $sec_dp) 
+
+    [ "${sec_open}" -gt 5400 ] && let sec_open-=5400
+    SCALE=$(bc -l <<<"scale=2; 14400/${sec_open}")
+
+    # echo ${SCALE}; exit
+    dov="round(100*(d.volume-p.volume)/(c.nmc/c.close),2)"
+    tov="round(100*(d.volume)/(c.nmc/c.close),2)"
+    tov5="round(100*(ma.vol5)/(c.nmc/c.close),2)"
+    tov20="round(100*(ma.vol20)/(c.nmc/c.close),2)"
+    v1v5="round(5*d.volume*${SCALE}/(ma.vol5),2)"       
+    dirtio="round(5*(d.volume-p.volume)*${SCALE}/(ma.vol5),2)"       
+
+    fn_yist
+    tbl_dt="(SELECT * FROM dorat WHERE date='${DT[0]}' && time='${DT[1]}' ${inLIST})"
+    tbl_dp="(SELECT * FROM dorat WHERE date='${DP[0]}' && time='${DP[1]}' ${inLIST})"
+
+    function fn_build_sqls() {
+    sqls="
+    SELECT d.code,d.close,
+        round(100*((d.open+d.low)/2-d.yesc)/d.yesc,2) as av_open, 
+        round(100*(d.close-(d.open+d.low)/2)/((d.open+d.low)/2),2) as av_rise,
+
+        ${tov5} as tov5,
+        ${tov20}as tov20,
+
+        round(100*(d.close-d.yesc)/d.yesc,2) as rise, 
+        ${tov} as tov, 
+        ${v1v5} as v1v5, 
+        d.amount,
+
+        round(100*(d.close-p.close)/p.close,2) as dise, 
+        ${dov} as dov, 
+        ${dirtio} as dirtio, 
+        (d.amount-p.amount) as dmount, 
+
+        c.nmc,c.name FROM tbl_mavol520s as ma, 
+        ${tbl_dt} as d, 
+        ${tbl_dp} as p, cap as c
+        WHERE ma.code=d.code and ma.code=p.code && ma.code=c.code
+        HAVING 1 ${COND} ${inLIST} ORDER by ${field} ${ASC:-DESC} limit ${LIMIT:-32}" 
+    }
+    fn_build_sqls
+
     echo "$sqls">/dev/stderr 
     mysql -t kts<<<"$sqls"
 
@@ -701,6 +760,26 @@ function fn_lhb()
     return $?
 }
 
+
+function fn_macd()
+{
+    case $1 in
+    c|clean)
+        echo "DROP TABLE IF EXISTS mm55" | mysql kts; 
+        fn_echo_succ "succ: clean macd!"; exit 0
+        ;;
+    esac
+
+    fields='code,FM,datetime,close,fa15,ma5,ma10,ma20,ma40,ma80,mavol5,mavol20,cvgenc'
+    limo='(FM=15)*IF(close>=fa15, 1, -1)*((fa15>=ma5)+(fa15>=ma10)+(fa15>=ma20)+(fa15>=ma40)+(fa15>=ma80))'
+    echo "
+    SELECT ${fields}, 
+            ${limo} as limo, dif FROM mm55 ORDER by ${1:-code},FM ${ASC:-ASC};
+	" | mysql -t kts
+    
+    return $?
+}
+
 function fn_main()
 {
     # mysql CURRENT_DATE();
@@ -715,7 +794,8 @@ function fn_main()
     "get_open_days      [LIMIT:-13 [desc]]    # 开市日列表"
     "wma                [sortfield:tov5]      # 均价+现成513.静态rat"
     "rat                [sortfield:-ratio]    # wma+day-->动态rat，实时速度快"
-    "dorat              {copy|list}           # 以时间为表名保存day"
+    "dorat                                    # 时间为表名list"
+    "dirtio                                   # diff(dorat)"
     "ma240              [sortfield:-ratio]    # "
     "ma240_usage        {1~9}                 # 分析ma 5 13 34 55"
     "dif120             code...               # cost:(close-ma120) & sort by #{ASC:id}"
@@ -737,6 +817,7 @@ function fn_main()
     "xrd                field                 # #{OP:->}"
     "ace                                      # +10%"
     "lhb                excption              # 龙虎榜"
+    "macd               [clean]               # macd-alarm-sys"
     )
 
     # `ASC=任意值`时使用'DESC'，弃用
