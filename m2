@@ -293,7 +293,7 @@ function fn_jc_Golf智慧_快就是慢()      { cat stk_jc_Golf智慧_快就是�
         03_大数据                       # macro data
         07_牛眼投资法                   # bulleye
 
-        tdx                             # 通达信
+        tdx                             # 通达信 同花顺(ths 10jqka)
         10_dazhihui                     # dzh 大智慧
         11_N_XD_XR_DR                   # 除权除息
         13_除权后的股票难以上涨

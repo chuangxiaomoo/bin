@@ -14,28 +14,31 @@ alias      YIST=''
 alias      ZIZE=''
 alias     LIMIT=''
 alias     nmemb=''
-alias       mip='PREV=10 mi5 '
+alias       mip='PREV=3 mi5 '
 alias     PPLUS=''
 alias     PARTS=''
 alias    ORACLE=''
 alias NMC_RATIO=''
 alias       wup='.s; FINA=0 up 4; TBL=wind SCREENER 0 || up wind'
-alias       fup='.s; FINA=0 up 4'
+alias       fup='.s; FINA=1 up 4'
 alias     field=''
+alias   .lschao='xargs -n8</tmp/kts/chao'
+alias       .nb="nc 192.168.100.100 1234 <<< 'duang.wav msg.wav'"
 
 alias    ..='cd ..'
 alias   ...='cd ../..'
 alias    .b='cd ~/bin'
+alias  .wma="let 'WMA=!WMA'; echo \$WMA; export WMA"
 alias    .c="let 'CHAO=!CHAO'; echo \$CHAO; export CHAO"
 alias    .5="let 'TOV5=++TOV5%3'; echo \$TOV5; export TOV5"
 alias  .dbg="let 'DEBUG=!DEBUG'; echo \$DEBUG; export DEBUG"
 alias .sina="let 'SINA=!SINA'; echo \$SINA; export SINA"
 #lias    .n='. /opt/nxpbash'
 alias    .s='cd ~/bin/stk'
-alias   .nb="nc 192.168.100.100 1234 <<< 'duang.wav msg.wav'"
 alias   .ss='cd ~/bin/stk/sql'
 alias   .rc='. /root/.bashrc'
 alias   .ps='PS1="[\w]\n\u-> \[\033[0m\]"'
+
 
 alias     f='find'
 alias     l='ls -CF'
@@ -80,7 +83,7 @@ alias    v7='vi /root/bin/7Lite'
 alias    vj='vi /root/bin/j2box'
 alias    vn='vi --noplugin'
 alias    vr='vi -R'
-alias    vR='vi README*'
+alias    vR='vi -R README*'
 alias    vt='vi /root/bin/.m2doc/tick.md'
 
 alias sdiff='svn diff -r PREV'
@@ -224,6 +227,12 @@ lsgcc()
 {
     [ "$#" -ne 2 ] && echo "Usage: .tar -zxvf file.tgz" && return
     mkdir -p ${2%.*} && tar $@ -C ${2%.*}
+}
+
+.nbmavol()
+{
+    echo "${1:-100} -> /tmp/kts/mavol"
+    echo "${1:-100}" > /tmp/kts/mavol
 }
 
 # manpage color

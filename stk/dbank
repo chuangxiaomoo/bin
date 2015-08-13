@@ -121,6 +121,8 @@ yjyg_rip='/dev/shm/yjyg_rip'
 file_focus='/tmp/kts/focus'
 file_ma120='/tmp/kts/ma120'
 file_ma240='/tmp/kts/ma240'
+file_mavol='/tmp/kts/mavol'
+ list_limo='/tmp/kts/limo'
 
 mkdir -p /tmp/kts
 mkdir -p /dev/shm/fenbi

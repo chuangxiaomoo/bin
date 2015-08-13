@@ -55,8 +55,13 @@ CREATE PROCEDURE sp_mamacd() BEGIN
         datetime=@max_dt
         ) ORDER by datetime DESC LIMIT 80;
 
+IF ${1} IN (000001,399005,399005) THEN 
     SELECT sum(trade)/15  FROM (SELECT trade from fenbi 
         WHERE code=${1} ${TEST} ORDER by datetime DESC LIMIT 15) as t INTO @fa15;
+ELSE
+    SELECT sum(amount)/sum(volume)  FROM (SELECT volume, amount from fenbi          -- 加入成交量的权重
+        WHERE code=${1} ${TEST} ORDER by datetime DESC LIMIT 15) as t INTO @fa15;
+END IF;
 
     IF ${FM:-5} = 5 THEN 
         call sp_fmacd();                                                -- F5只用macd
@@ -73,10 +78,10 @@ CREATE PROCEDURE sp_mamacd() BEGIN
         SELECT sum(trade)/80 FROM tmpfb_macd WHERE id<=80  INTO @ma80;
         SELECT 100*(@ma20-@ma5 )/@ma5   INTO @cvgenc;                   -- 大周期/小周期 < .6%
 
-        SELECT sum(volume)/5  FROM (SELECT volume from fenbi 
-            WHERE code=${1} ${TEST} ORDER by datetime DESC LIMIT 25) as t INTO @mavol5;
-        SELECT sum(volume)/20  FROM (SELECT volume from fenbi 
-            WHERE code=${1} ${TEST} ORDER by datetime DESC LIMIT 100) as t INTO @mavol20;
+        SELECT sum(volume)   FROM (SELECT volume from fenbi 
+            WHERE code=${1} ${TEST} ORDER by datetime DESC LIMIT 0,5)  as t INTO @mavol5;
+        SELECT sum(volume)/4 FROM (SELECT volume from fenbi 
+            WHERE code=${1} ${TEST} ORDER by datetime DESC LIMIT 5,20) as t INTO @mavol20;
 
         REPLACE INTO mm55(freq,code,FM,mavol20,mavol5,cvgenc,fa15,ma5,ma10,ma20,ma40,ma80,datetime,close)
         SELECT code+${FM}*1000000,code,${FM},@mavol20,@mavol5,@cvgenc,@fa15,@ma5,@ma10,@ma20,@ma40,@ma80,datetime,trade 

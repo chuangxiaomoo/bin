@@ -16,3 +16,10 @@ VOLMJ
 画线工具  Alt+F12
 
 # 板块数据导出 [快捷键 34]
+
+# 同花顺
+
+`
+画虚线
+VERLINE(HOUR<REF(HOUR,1),2),COLOR666666; 
+`

@@ -92,7 +92,7 @@ function fn_do_scope()
         # acf默认以tov5/20 vol_hour 为单位进行环比，5天为同比。计算，量比为2时，NUM=20
         sql="
         SELECT date FROM (SELECT date FROM day 
-        WHERE code=${code} ORDER by date DESC LIMIT ${NUM:-5}) as tbl ORDER by date ASC"
+        WHERE code=${code} ORDER by date DESC LIMIT ${NUM:-6}) as tbl ORDER by date ASC"
     else
         [ `date +%H%M%S` -gt 153000 ] && equal='='
         sql="SELECT date FROM day WHERE code=${code} and date>'${fmaxdate}' and date<${equal}'${today}';"
@@ -141,7 +141,7 @@ function fn_main()
     for i in ${@:-${LIST[@]}}; do
         code=${i}
         fn_isindex ${code} && { 
-            echo "skip index ${code}"
+            echo "skip mi5 index ${code}"
             continue;
         }
         fn_iscode ${code}

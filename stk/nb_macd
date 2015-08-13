@@ -58,6 +58,7 @@ function fn_routine()
 {
     tips_cnt=0
     tips_got=''
+    >${list_limo}
 
     while read code symble IF tips; do
         if ! ${istest} && [ "$code" != '-' ]; then                              # istest
@@ -76,9 +77,10 @@ function fn_routine()
             sql="SELECT ${sql} FROM mm55 WHERE code=${code} and FM=15"
             limo=`mysql -N kts <<<"${sql}"`
 
-            # <无条件>计算dif会耗时
-            # limo=-100
-            # if [ "${limo}" -gt 0 ]; then
+            # 5日线上，B用4数，S用3数；5日线下，B用3数，S用3数
+            sql="SELECT IF(close>ma80,4,3) FROM mm55 WHERE code=${code} and FM=15"
+            buyn=`mysql -N kts <<<"${sql}"`
+
             # macd计算作为BuySell的标配进行，但对其进行下列优化，触发执行
             # 1. 上一个时间单元abs(dif)<0.006
             # 2. 上一个更新时间>10min
@@ -86,22 +88,22 @@ function fn_routine()
             sql="SELECT abs(dif)<0.006 || (CURRENT_TIMESTAMP()-datetime)>1000 FROM mm55 WHERE code=${code} and FM=5"
             ret=`mysql -N kts <<<"${sql}"`
 
-            if ${istest} || [ "${ret}" -eq 1 ]; then
-                echo "do macd ${code}..."
+            if ${istest} || [ "${ret}" = 1 ] || [ "${ret}" = "" ]; then
+                echo "do _dif_ ${code}..."
                 FM=5 macd ${code}
                 xt_ret $? "macd error" || return $?
             fi
         fi
 
-        case $IF in
+        case ${IF:-B} in
         B)
-            if [ "${limo}" -gt 0 ] && [ "${limo}" -ge 3 ]; then
+            if [ "${limo}" -gt 0 ] && [ "${limo}" -ge ${buyn:-3} ]; then
                 fn_echo_succ "$code.$symble.limo ${IF}"
                 let tips_cnt++
             fi
             sql="SELECT IF(dif>0&&close>fa15, 1, 0) FROM mm55 WHERE code=${code} and FM=5"
             ret=`mysql -N kts <<<"${sql}"`
-            if [ "${ret}" -eq 1 ]; then
+            if [ "${ret}" = 1 ]; then
                 fn_echo_succ "$code.$symble.macd ${IF}"
                 let tips_cnt++
             fi
@@ -113,7 +115,7 @@ function fn_routine()
             fi
             sql="SELECT IF(dif<0&&close<fa15, 1, 0) FROM mm55 WHERE code=${code} and FM=5"
             ret=`mysql -N kts <<<"${sql}"`
-            if [ "${ret}" -eq 1 ]; then
+            if [ "${ret}" = 1 ]; then
                 fn_echo_succ "$code.$symble.macd ${IF}"
                 let tips_cnt++
             fi
@@ -131,15 +133,29 @@ function fn_routine()
             fi
             ;;
         esac
+
+        x_mavol=`cat ${file_mavol}`
+        sql="SELECT IF(mavol5/mavol20>${x_mavol:-2}, 1, 0) FROM mm55 WHERE code=${code} and FM=15"
+        ret=`mysql -N kts <<<"${sql}"`
+        if [ "${ret}" = 1 ]; then
+            fn_echo_succ "$code.$symble.cond mavol5/mavol20>${x_mavol}"
+            let tips_cnt++
+        fi
+
+        [ "${tips_cnt}" -gt ${tips_old:-0} ] && echo ${code} >> ${list_limo}
         code0=$code
+        tips_old=${tips_cnt}
     done<<<"`grep ${PATTERN:-'^[-036]'} .soptter.macd`"
     
     local i
-    for (( i=${tips_cnt}; i>0; i-=3 )); do
+    for (( i=${tips_cnt}; i>0; i-=6 )); do
         tips_got="${tips_got} duang.wav msg.wav"    # 2个股+2指数 = 一级戒备
     done
     #echo ${tips_got}
-    [ -n "${tips_got}" ] && fn_bell "$tips_got"
+    if [ -n "${tips_got}" ]; then
+         fn_bell "$tips_got"
+         YIST=${list_limo} SELECT macd
+    fi
 
     fn_echo_warn '
     Warning:-----------------------------------------------------------------
@@ -154,7 +170,7 @@ function fn_loop()
     while :; do
         fn_isresting && { sleep 150; continue; }
         fn_routine
-        echo "to sleeping ${intv:=90}s"        # F5x3有效突破，即3线之内，低点抬高，高点亦抬高
+        echo "to sleeping ${intv:=120}s"        # F5x3有效突破，即3线之内，低点抬高，高点亦抬高
         sleep ${intv}                           #               若是大阳线，则不破1/2长度
     done
     return $?
@@ -188,6 +204,7 @@ function fn_test_code()
 function fn_main()
 {
     istest=false
+    echo '2' >${file_mavol}
     case $1 in
     l|loop)
         fn_loop
