@@ -763,6 +763,7 @@ function fn_lhb()
 
 function fn_macd()
 {
+    fn_yist
     case $1 in
     c|clean)
         echo "DROP TABLE IF EXISTS mm55" | mysql kts; 
@@ -774,7 +775,9 @@ function fn_macd()
     limo='(FM=15)*IF(close>=fa15, 1, -1)*((fa15>=ma5)+(fa15>=ma10)+(fa15>=ma20)+(fa15>=ma40)+(fa15>=ma80))'
     echo "
     SELECT ${fields}, 
-            ${limo} as limo, dif FROM mm55 ORDER by ${1:-code},FM ${ASC:-ASC};
+            ${limo} as limo, dif FROM mm55
+            HAVING 1 ${COND} ${inLIST}
+            ORDER by ${1:-code},FM ${ASC:-ASC};
 	" | mysql -t kts
     
     return $?

@@ -206,7 +206,7 @@ function fn_delete()
     date=`fn_maxdate`
     dt=${date//-/}000000
 #   date_p=`date --date="${date} 10 days ago" +'%F'`
-    date_p=`mysql -N kts <<< "SELECT date from day WHERE code = 900001 ORDER by date DESC LIMIT 5,1"`
+    date_p=`mysql -N kts <<< "SELECT date from day WHERE code = 900001 ORDER by date DESC LIMIT 7,1"`   # 保存8天数据
     dt_p=${date_p//-/}000000
 
     if fn_iscode ${1}; then
