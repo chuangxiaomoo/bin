@@ -139,8 +139,8 @@ touch $file_ma240
 function fn_isresting()
 {
     hhmmss=`date +%H%M%S`
-    if ([ ${hhmmss} -ge 113000 ] && [ ${hhmmss} -le 130000 ]) ||
-        [ ${hhmmss} -lt 093000 ] || [ ${hhmmss} -gt 145800 ]; then
+    if ([ ${hhmmss} -ge 113000 ] && [ ${hhmmss} -lt 130000 ]) ||
+        [ ${hhmmss} -lt 093200 ] || [ ${hhmmss} -gt 145800 ]; then
         echo "is resting @${hhmmss}..."; 
         return 0
     else
