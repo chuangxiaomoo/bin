@@ -200,6 +200,48 @@ function fn_rat()
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
+function fn_tri()
+{
+    D3=(${DT:-`mysql -N kts<<<"SELECT date FROM day WHERE code=900001 and date<='${END}' ORDER by date DESC LIMIT 0,1"`})
+    D2=(${DT:-`mysql -N kts<<<"SELECT date FROM day WHERE code=900001 and date<='${END}' ORDER by date DESC LIMIT 1,1"`})
+    D1=(${DT:-`mysql -N kts<<<"SELECT date FROM day WHERE code=900001 and date<='${END}' ORDER by date DESC LIMIT 2,1"`})
+    D0=(${DT:-`mysql -N kts<<<"SELECT date FROM day WHERE code=900001 and date<='${END}' ORDER by date DESC LIMIT 0,1"`})
+    
+    t3="(SELECT * FROM day WHERE date='${D3}' ${inLIST})"
+    t2="(SELECT * FROM day WHERE date='${D2}' ${inLIST})"
+    t1="(SELECT * FROM day WHERE date='${D1}' ${inLIST})"
+    t0="(SELECT * FROM day WHERE date='${D4}' ${inLIST})"
+
+    function fn_build_sqls() {
+    product="TRUNCATE(100*(tbl.close-(tbl.amount/tbl.volume))/tbl.close,2)"
+    sqls="
+    SELECT t1.code, 
+        ${product//tbl/t1} as p1,
+        ${product//tbl/t2} as p2,
+        ${product//tbl/t3} as p3,
+        c.name FROM 
+        ${t3} as t3, 
+        ${t2} as t2, 
+        ${t1} as t1, cap as c 
+        WHERE t1.code=t2.code && t1.code=t3.code && t1.code=c.code and
+        t3.amount>t2.amount && t2.amount>t1.amount and
+        t3.close>t3.yesc && t2.close>t2.yesc && t1.close>t1.yesc
+        HAVING 1 && p3>p2 && p2>p1
+        ${COND} ORDER by ${field:-code} ${ASC:-DESC} limit ${LIMIT:-36}
+    " 
+    }
+    fn_build_sqls
+    echo "$sqls">/dev/stderr 
+    mysql -t kts<<<"$sqls"
+
+    [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
+
+    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > $file_c 
+    up file_to_table $file_c
+    xt_ret $? "${FUNCNAME}" || return $?
+
+}
+
 function fn_dirtio()
 {
     field=${1:-dirtio}
@@ -771,11 +813,11 @@ function fn_macd()
         ;;
     esac
 
-    fields='code,FM,datetime,close,fa15,ma5,ma10,ma20,ma40,ma80,mavol5,mavol20,cvgenc'
+    fields='code,FM,datetime,close,fa15,ma5,ma10,ma20,ma40,ma80,mavol5,mavol20'
     limo='(FM=15)*IF(close>=fa15, 1, -1)*((fa15>=ma5)+(fa15>=ma10)+(fa15>=ma20)+(fa15>=ma40)+(fa15>=ma80))'
     echo "
-    SELECT ${fields}, 
-            ${limo} as limo, dif FROM mm55
+    SELECT ${fields}, TRUNCATE(mavol5/mavol20, 2) as nb,
+            cvgenc, ${limo} as limo, dif FROM mm55
             HAVING 1 ${COND} ${inLIST}
             ORDER by ${1:-code},FM ${ASC:-ASC};
 	" | mysql -t kts
@@ -821,6 +863,7 @@ function fn_main()
     "ace                                      # +10%"
     "lhb                excption              # 龙虎榜"
     "macd               [clean]               # macd-alarm-sys"
+    "tri                                      # 3连阳"
     )
 
     # `ASC=任意值`时使用'DESC'，弃用

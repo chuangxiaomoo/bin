@@ -658,10 +658,76 @@ function fn_dorat()
     return $?
 }
 
+
+function fn_creat_db_ma2015()
+{
+    echo "
+    DROP TABLE IF EXISTS dorat2;
+    CREATE TABLE IF NOT EXISTS dorat2 (
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+--      date        date NOT NULL, 
+--      time        time NOT NULL, 
+        close       DECIMAL(6,2) NOT NULL,
+        INDEX(code)
+    );
+    "
+
+    while read date time; do
+        echo "
+        -- SELECT '${date}', '${time}';
+        INSERT INTO dorat2 SELECT code,close FROM dorat WHERE date='${date}' and time='${time}';
+        "
+    done <<<"`./SELECT dorat | tac | head -60 | sed -n '1~3p'`"
+    
+    return $?
+}
+
+function fn_ma2015()
+{
+    fn_creat_db_ma2015 > ${mps_god}
+
+    echo "
+delimiter //
+
+DROP PROCEDURE IF EXISTS sp_ma2015 //
+CREATE PROCEDURE sp_ma2015() tag_ma2015:BEGIN
+    DROP TABLE IF EXISTS ma2015; -- for visit output
+    CREATE TABLE ma2015(
+        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        ma2015        DECIMAL(6,2) NOT NULL DEFAULT 0
+    );
+    CREATE TABLE IF NOT EXISTS code2015 LIKE codes;
+    TRUNCATE code2015;
+    INSERT INTO code2015(code)
+      SELECT A.code FROM 
+        (SELECT code FROM day WHERE date='${END}') as A,
+        (SELECT code FROM day WHERE date='${PREV}') as B WHERE A.code=B.code;
+
+    SET @v_id = 1; 
+    SELECT max(id)   FROM code2015 INTO @v_len;
+    WHILE @v_id <= @v_len DO
+--  WHILE @v_id <= 10 DO
+        SELECT code FROM code2015 WHERE id=(@v_id) INTO @v_code;
+        INSERT INTO ma2015(code,ma2015)
+            SELECT @v_code, sum(close)/20 FROM (SELECT close FROM dorat2 WHERE code=@v_code) as t;
+--          SELECT @v_code, sum(close)/60 FROM (SELECT close FROM dorat  WHERE code=@v_code ORDER by date DESC,time DESC LIMIT 60) as t;
+        SET @v_id = @v_id + 1;
+    END WHILE;
+    
+END tag_ma2015 //
+
+call sp_ma2015();
+    " >> ${mps_god}
+    mysql kts < ${mps_god}
+    return $?
+}
+
 function fn_main()
 {
     CURR=`fn_maxdate`
     END=${END:-${CURR}}
+    PREV=`fn_get_prev`
 
     cmdlist=(
     # fixed sequence
@@ -688,6 +754,7 @@ function fn_main()
     "ipo                                # DL ipo codes from east"
     "lhb                                # 龙虎榜"
     "dorat  [loop]                      # 量比数据，loop when run@crontab"
+    "ma2015                             # "
     )
 
     # 存储过程函数文件的最后5行都是注释
@@ -697,6 +764,5 @@ function fn_main()
     fn_execute "$@"
 }
 
-# fn_main 5
- fn_main "$@"
+fn_main "$@"
 

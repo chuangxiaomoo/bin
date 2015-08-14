@@ -61,6 +61,7 @@ function fn_routine()
     >${list_limo}
 
     while read code symble IF tips; do
+        [ "$IF" == 0 ] && continue
         if ! ${istest} && [ "$code" != '-' ]; then                              # istest
             echo do fenbi ${code}...
             fenbi ${code} >& ${error}
@@ -82,10 +83,11 @@ function fn_routine()
             buyn=`mysql -N kts <<<"${sql}"`
 
             # macd计算作为BuySell的标配进行，但对其进行下列优化，触发执行
+            # 0. 清空dif表
             # 1. 上一个时间单元abs(dif)<0.006
             # 2. 上一个更新时间>10min
             # 3. ${istest}
-            sql="SELECT abs(dif)<0.006 || (CURRENT_TIMESTAMP()-datetime)>1000 FROM mm55 WHERE code=${code} and FM=5"
+            sql="SELECT abs(dif)<0.0382 || (CURRENT_TIMESTAMP()-datetime)>1000 FROM mm55 WHERE code=${code} and FM=5"
             ret=`mysql -N kts <<<"${sql}"`
 
             if ${istest} || [ "${ret}" = 1 ] || [ "${ret}" = "" ]; then
@@ -95,9 +97,10 @@ function fn_routine()
             fi
         fi
 
+        # sina分时数据缺失会导致ma80(F15)失真，若此，则使用{b|s}
         case ${IF:-B} in
-        B)
-            if [ "${limo}" -gt 0 ] && [ "${limo}" -ge ${buyn:-3} ]; then
+        B|b)
+            if [ ${IF} = B ] && [ "${limo}" -gt 0 ] && [ "${limo}" -ge ${buyn:-3} ]; then
                 fn_echo_succ "$code.$symble.limo ${IF}"
                 let tips_cnt++
             fi
@@ -108,8 +111,8 @@ function fn_routine()
                 let tips_cnt++
             fi
             ;;
-        S)
-            if [ "${limo}" -lt 0 ] && [ "${limo#-}" -lt 3 ]; then
+        S|s)
+            if [ ${IF} = S ] && [ "${limo}" -lt 0 ] && [ "${limo#-}" -lt 3 ]; then
                 fn_echo_succ "$code.$symble.limo ${IF}"
                 let tips_cnt++
             fi
@@ -139,7 +142,8 @@ function fn_routine()
         ret=`mysql -N kts <<<"${sql}"`
         if [ "${ret}" = 1 ]; then
             fn_echo_succ "$code.$symble.cond mavol5/mavol20>${x_mavol}"
-            let tips_cnt++
+            tips_got='tweet.wav'
+            echo ${code} >> ${list_limo}
         fi
 
         [ "${tips_cnt}" -gt ${tips_old:-0} ] && echo ${code} >> ${list_limo}
