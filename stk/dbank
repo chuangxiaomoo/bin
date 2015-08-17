@@ -123,6 +123,8 @@ file_ma120='/tmp/kts/ma120'
 file_ma240='/tmp/kts/ma240'
 file_mavol='/tmp/kts/mavol'
  list_limo='/tmp/kts/limo'
+ date_dif3='/tmp/kts/dif3'
+  date_wma='/tmp/kts/wma'
 
 mkdir -p /tmp/kts
 mkdir -p /dev/shm/fenbi
@@ -275,7 +277,7 @@ function fn_get_ratio_close2open()
 
     # echo $sec_open
     # sec_pcnt=$(expr ${sec_open}00 / 14400)
-    sec_pcnt=$(bc -l <<<"scale=2; 14400/${sec_open}")
+    sec_pcnt=$(bc -l <<<"scale=4; 14400/${sec_open}")
     echo $sec_pcnt
 }
 
