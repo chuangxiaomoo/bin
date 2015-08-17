@@ -164,11 +164,7 @@ function fn_rat()
     # v5vT="round(4*ma.vol5/(ma.vol20),2)"
     # ${v5vT} as v5vT, 
 
-    if [ "${WMA:-0}" -eq 0 ]; then
-        fn_echo_fail "Try .wma to avoid ./SCREENER wma"
-        TBL=${TBL:-cap} END=${PREV} ./SCREENER wma
-        xt_ret $? "${FUNCNAME}" || return $?
-    fi
+    TBL=${TBL:-cap} END=${PREV} ./SCREENER wma
 
     fn_yist
     tbl_day="(SELECT * FROM dorat WHERE date='${DT[0]}' && time='${DT[1]}' ${inLIST})"
@@ -242,62 +238,135 @@ function fn_tri()
 
 }
 
+function fn_dif3()
+{
+    dts="SELECT DISTINCT date,time FROM dorat"
+    odr="ORDER by date DESC, time DESC"
+    DT=${DT:-`mysql -N kts<<<"${dts} ${odr} LIMIT 1"`}
+    DP=(`cat ${date_dif3} 2> /dev/null`)
+    DT3=(${DT})
+
+    [ "${DT3[0]}${DT3[1]}" = "${DP[0]}${DP[1]}" ] && return 0
+
+    DT2=(${DT2:-`mysql -N kts<<<"${dts} WHERE date<='${DT3[0]}' && time<='${DT3[1]}' ${odr} LIMIT 1,1"`})
+    DT1=(${DT1:-`mysql -N kts<<<"${dts} WHERE date<='${DT3[0]}' && time<='${DT3[1]}' ${odr} LIMIT 2,1"`})
+    DT0=(${DT0:-`mysql -N kts<<<"${dts} WHERE date<='${DT3[0]}' && time<='09:47:00'  ${odr} LIMIT 1"`})
+    TEMPORARY=TEMPORARY
+
+    echo "${DT3[@]}" > ${date_dif3}
+
+    echo "
+    DROP   TABLE IF EXISTS dif3;
+    CREATE TABLE IF NOT EXISTS dif3 (
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        yesc        DECIMAL(6,2) NOT NULL,
+        open        DECIMAL(6,2) NOT NULL,
+        high        DECIMAL(6,2) NOT NULL,
+        low         DECIMAL(6,2) NOT NULL,
+        close       DECIMAL(6,2) NOT NULL,
+        volume      DECIMAL(12,2) NOT NULL,
+        amount      DECIMAL(12,2) NOT NULL,
+        -- dif
+        av_op       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        av_ri       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        rise        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        ri32        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        ri21        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        dirtio      DECIMAL(6,2) NOT NULL DEFAULT 0,            -- 增量量比 dif-vol-ratio
+        pie         DECIMAL(8,2) NOT NULL DEFAULT 0,            -- 增量额度，以万为单位
+        INDEX(code)
+    );
+    DROP   $TEMPORARY TABLE IF EXISTS t2,t1,t0;
+    CREATE $TEMPORARY TABLE IF NOT EXISTS t2 (
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        close       DECIMAL(6,2) NOT NULL,
+        volume      DECIMAL(12,2) NOT NULL,
+        amount      DECIMAL(12,2) NOT NULL,
+        INDEX(code)
+    );
+    CREATE $TEMPORARY TABLE t1 LIKE t2;
+    CREATE $TEMPORARY TABLE t0 LIKE t2;
+    INSERT INTO dif3(code,yesc,open,high,low,close,volume,amount) SELECT code,yesc,open,high,low,
+                               close,volume,amount FROM dorat WHERE date='${DT3[0]}' and time='${DT3[1]}' and code<698765;
+    INSERT INTO t2 SELECT code,close,volume,amount FROM dorat WHERE date='${DT2[0]}' and time='${DT2[1]}';
+    INSERT INTO t1 SELECT code,close,volume,amount FROM dorat WHERE date='${DT1[0]}' and time='${DT1[1]}';
+    INSERT INTO t0 SELECT code,close,volume,amount FROM dorat WHERE date='${DT0[0]}' and time='${DT0[1]}';
+    UPDATE dif3,t0 SET av_op=100*((t0.amount/t0.volume)-dif3.yesc)/dif3.yesc,
+                       av_ri=100*(dif3.close-(t0.amount/t0.volume))/(t0.amount/t0.volume),
+                       rise=100*(dif3.close-dif3.yesc)/dif3.yesc
+                       WHERE dif3.code=t0.code;
+
+    UPDATE dif3 INNER JOIN t2 on dif3.code=t2.code 
+                INNER JOIN t1 on t2.code=t1.code
+                      SET ri32=dif3.close-t2.close,
+                          ri21=t2.close-t1.close,
+                          dirtio=(dif3.volume-t2.volume)/(t2.volume-t1.volume),
+                          pie=(dif3.amount-t2.amount);                              -- 以万为单位
+
+    " | mysql kts
+    xt_ret $? "fail: mysql" || return $?
+
+    fn_echo_succ "    succ: up dif3!"
+}
+
 function fn_dirtio()
 {
-    field=${1:-dirtio}
-
-    DT=(${DT:-`mysql -N kts<<<"SELECT DISTINCT date,time FROM dorat ORDER by date DESC, time DESC LIMIT 1"`})
-    DP=(${DP:-`mysql -N kts<<<"SELECT DISTINCT date,time FROM dorat WHERE date<='${DT[0]}' && time<'${DT[1]}' ORDER by date DESC, time DESC LIMIT 1"`})
-        
-    sec_dt=$(date +%s -d "${DT[*]}")
-    sec_dp=$(date +%s -d "${DP[*]}")
-    sec_open=$(expr $sec_dt - $sec_dp) 
-
-    [ "${sec_open}" -gt 5400 ] && let sec_open-=5400
-    SCALE=$(bc -l <<<"scale=2; 14400/${sec_open}")
-
+    # sec_dt=$(date +%s -d "${DT3[*]}")
+    # sec_dp=$(date +%s -d "${DT2[*]}")
+    # sec_open=$(expr $sec_dt - $sec_dp) 
+    # [ "${sec_open}" -gt 5400 ] && let sec_open-=5400
+    # SCALE=$(bc -l <<<"scale=2; 14400/${sec_open}")
     # echo ${SCALE}; exit
-    dov="round(100*(d.volume-p.volume)/(c.nmc/c.close),2)"
-    tov="round(100*(d.volume)/(c.nmc/c.close),2)"
-    tov5="round(100*(ma.vol5)/(c.nmc/c.close),2)"
-    tov20="round(100*(ma.vol20)/(c.nmc/c.close),2)"
-    v1v5="round(5*d.volume*${SCALE}/(ma.vol5),2)"       
-    dirtio="round(5*(d.volume-p.volume)*${SCALE}/(ma.vol5),2)"       
+    case $1 in
+    l|list)
+        SELECT dorat | tail -24 | cat -n; exit 0
+        ;;
+    [0-9]*)
+        [ "${1}" -le 24 ] || { fn_echo_fail "fail: $1 -le 24"; exit 1; }
+        DT=`SELECT dorat | tail -24 | sed -n "${1}p"`
+        ;;
+    *)
+        field=$1
+        ;;
+    esac
 
+    fn_dif3 ${@} # up DT, with param 'up', update dif3
     fn_yist
-    tbl_dt="(SELECT * FROM dorat WHERE date='${DT[0]}' && time='${DT[1]}' ${inLIST})"
-    tbl_dp="(SELECT * FROM dorat WHERE date='${DP[0]}' && time='${DP[1]}' ${inLIST})"
+
+
+    SCALE=`fn_get_ratio_close2open`
+    xt_ret $? "" || return $?
+
+    v1x1="round(48*(dif3.volume-t2.volume)/dif3.volume*${SCALE},2)"       
+    tov5="round(100*(ma.vol5)/(c.nmc/c.close),2)"
+    tov1="round(100*(dif3.volume)/(c.nmc/c.close),2)"
+    tov20="round((ma.vol20)/(c.nmc/c.close),2)"
+    columns='code,close,av_op,av_ri,rise,ri32,ri21'
+    columns=dif3.${columns//,/,dif3.}
 
     function fn_build_sqls() {
     sqls="
-    SELECT d.code,d.close,
-        round(100*((d.open+d.low)/2-d.yesc)/d.yesc,2) as av_open, 
-        round(100*(d.close-(d.open+d.low)/2)/((d.open+d.low)/2),2) as av_rise,
-
-        ${tov5} as tov5,
+    SELECT 
+        ${columns},
         ${tov20}as tov20,
-
-        round(100*(d.close-d.yesc)/d.yesc,2) as rise, 
-        ${tov} as tov, 
-        ${v1v5} as v1v5, 
-        d.amount,
-
-        round(100*(d.close-p.close)/p.close,2) as dise, 
-        ${dov} as dov, 
-        ${dirtio} as dirtio, 
-        (d.amount-p.amount) as dmount, 
-
-        c.nmc,c.name FROM tbl_mavol520s as ma, 
-        ${tbl_dt} as d, 
-        ${tbl_dp} as p, cap as c
-        WHERE ma.code=d.code and ma.code=p.code && ma.code=c.code
-        HAVING 1 ${COND} ${inLIST} ORDER by ${field} ${ASC:-DESC} limit ${LIMIT:-32}" 
+        ${tov5} as tov5,
+        ${tov1} as tov1, 
+        dif3.volume,
+        round(dif3.amount/10000,2) as pie_Yi,
+        round(5*dif3.volume*$SCALE/(ma.vol5),2) as v1x5,                -- 普通量比
+        dirtio,pie,
+        round(c.nmc/10000, 1) as nmc_Yi, c.name 
+        FROM dif3, tbl_mavol520s as ma, cap as c                        -- USE INDEX(code)
+        WHERE dif3.code=ma.code && dif3.code=c.code
+        HAVING 1 ${COND} ${inLIST} ORDER by ${field:-dirtio} ${ASC:-DESC} limit ${LIMIT:-32}" 
     }
     fn_build_sqls
 
     echo "$sqls">/dev/stderr 
     mysql -t kts<<<"$sqls"
+    xt_ret $? "" || return $?
 
+    fn_echo_warn "dif3@${DT3[@]}"
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
     mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > $file_c 
@@ -598,7 +667,9 @@ function fn_dorat()
 {
     case $1 in
     *)
-        mysql -N kts<<< "SELECT DISTINCT date, time FROM dorat"
+        # echo DT is ${DT} > /dev/stderr
+        [ -n "${DT}" ] && DT=(${DT}) && COND0="WHERE date<='${DT[0]}' and time<='${DT[1]}'"
+        mysql -N kts<<< "SELECT date,time FROM ( SELECT DISTINCT date, time FROM dorat ) as t ${COND0}"
         #fn_execute -l | grep dorat && exit
         ;;
     esac

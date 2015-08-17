@@ -23,12 +23,11 @@ alias       wup='.s; FINA=0 up 4; TBL=wind SCREENER 0 || up wind'
 alias       fup='.s; FINA=1 up 4'
 alias     field=''
 alias   .lschao='xargs -n8</tmp/kts/chao'
-alias       .nb="nc 192.168.100.100 1234 <<< 'duang.wav msg.wav'"
+alias      .nb.="nc 192.168.100.100 1234 <<< 'duang.wav msg.wav'"
 
 alias    ..='cd ..'
 alias   ...='cd ../..'
 alias    .b='cd ~/bin'
-alias  .wma="let 'WMA=!WMA'; echo \$WMA; export WMA"
 alias    .c="let 'CHAO=!CHAO'; echo \$CHAO; export CHAO"
 alias    .5="let 'TOV5=++TOV5%3'; echo \$TOV5; export TOV5"
 alias  .dbg="let 'DEBUG=!DEBUG'; echo \$DEBUG; export DEBUG"
@@ -229,11 +228,26 @@ lsgcc()
     mkdir -p ${2%.*} && tar $@ -C ${2%.*}
 }
 
-.nbmavol()
+.nb.mavol()
 {
-    echo "${1:-100} -> /tmp/kts/mavol"
-    echo "${1:-100}" > /tmp/kts/mavol
+    # mavol20/mavol5的门限
+    if [ -z "${1}" ]; then
+        echo "nb.mavol: `cat /tmp/kts/mavol`"
+    else
+        echo "${1:-100} -> /tmp/kts/mavol"
+        echo "${1:-100}" > /tmp/kts/mavol
+    fi
 }
+
+.nb.2015()
+{
+    # alias  .ma60="let 'WMA=!WMA'; echo \$WMA; export WMA"
+    WMA=`cat /tmp/kts/2015 2>/dev/null`
+    let 'WMA=!WMA'
+    echo "${WMA} -> /tmp/kts/2015"
+    echo "${WMA}" > /tmp/kts/2015
+}
+
 
 # manpage color
 export LESS_TERMCAP_mb=$'\E[01;31m'

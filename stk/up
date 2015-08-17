@@ -155,6 +155,45 @@ function fn_hexun_day()
     " | mysql kts
 }
 
+function fn_trace()
+{
+    file='/root/bin/stk/sql/trace'
+    colA="date,curr_asset,frozen,sh,cyb"
+    colA="A.${colA//,/,A.}"
+
+    echo "
+        DROP TABLE IF EXISTS trace;
+        CREATE TABLE trace (
+            id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+            date        date,
+            curr_asset  DECIMAL(9,1) DEFAULT 0,
+            frozen      DECIMAL(9,1) DEFAULT 0,
+            sh          DECIMAL(9,2) DEFAULT 0,
+            cyb         DECIMAL(9,2) DEFAULT 0
+        );
+
+        LOAD DATA LOCAL INFILE '${file}' INTO TABLE trace(date,curr_asset,frozen,sh,cyb);
+
+           SELECT ${colA}, 
+               (A.curr_asset-B.curr_asset) as earning, 
+               round(100*(A.curr_asset-B.curr_asset)/A.curr_asset, 2) as ROE,
+               round(100*(A.curr_asset-B.curr_asset)/(A.curr_asset-A.frozen), 2) as ROE_real,
+            -- (A.sh-B.sh) as earning_sh, 
+            -- (A.cyb-B.cyb) as earning_cyb, 
+               round(100*(A.sh-B.sh)/A.sh, 2) as ROE_sh,
+               round(100*(A.cyb-B.cyb)/A.cyb, 2) as ROE_cyb
+               FROM trace A INNER JOIN 
+                    trace B on(A.id=B.id+1) GROUP BY A.id;
+
+        -- SELECT *,
+        --     round(100*(curr_asset-prev_asset)/prev_asset, 2) as RoE,
+        --     round(100*(curr_asset-prev_asset)/(prev_asset-frozen), 2) as RoE_real
+        --     FROM trace;
+    " | mysql -t kts
+    
+    return $?
+}
+
 function fn_del_hexun_day()
 {
     unarm_close_forbid=true \
@@ -658,32 +697,37 @@ function fn_dorat()
     return $?
 }
 
-
-function fn_creat_db_ma2015()
+function fn_example_not_work_by_group()
 {
     echo "
-    DROP TABLE IF EXISTS dorat2;
-    CREATE TABLE IF NOT EXISTS dorat2 (
-        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
---      date        date NOT NULL, 
---      time        time NOT NULL, 
-        close       DECIMAL(6,2) NOT NULL,
-        INDEX(code)
-    );
+    SET @v_id = 1; 
+    SELECT max(id)   FROM code2015 INTO @v_len;
+    WHILE @v_id <= @v_len DO
+        SELECT code FROM code2015 WHERE id=(@v_id) INTO @v_code;
+        INSERT INTO ma2015(code,ma2015)
+            SELECT @v_code, sum(close)/20 FROM (SELECT close FROM dorat2 WHERE code=@v_code) as t;
+        SET @v_id = @v_id + 1;
+    END WHILE;
     "
-
-    while read date time; do
-        echo "
-        -- SELECT '${date}', '${time}';
-        INSERT INTO dorat2 SELECT code,close FROM dorat WHERE date='${date}' and time='${time}';
-        "
-    done <<<"`./SELECT dorat | tac | head -60 | sed -n '1~3p'`"
-    
-    return $?
 }
 
 function fn_ma2015()
 {
+    function fn_creat_db_ma2015()
+    {
+        TEMPORARY=TEMPORARY
+        echo "
+        DROP   $TEMPORARY TABLE IF EXISTS dorat2;
+        CREATE $TEMPORARY TABLE IF NOT EXISTS dorat2 (
+            code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+            close       DECIMAL(6,2) NOT NULL,
+            INDEX(code)
+        );"
+        while read date time; do
+            echo "INSERT INTO dorat2 SELECT code,close FROM dorat WHERE date='${date}' and time='${time}';"
+        done <<<"`./SELECT dorat | tac | head -60 | sed -n '1~3p'`"
+    }
+
     fn_creat_db_ma2015 > ${mps_god}
 
     echo "
@@ -691,30 +735,22 @@ delimiter //
 
 DROP PROCEDURE IF EXISTS sp_ma2015 //
 CREATE PROCEDURE sp_ma2015() tag_ma2015:BEGIN
-    DROP TABLE IF EXISTS ma2015; -- for visit output
+    DROP   TABLE IF EXISTS ma2015;
     CREATE TABLE ma2015(
         id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
-        ma2015        DECIMAL(6,2) NOT NULL DEFAULT 0
+        ma2015      DECIMAL(8,2) NOT NULL DEFAULT 0
     );
-    CREATE TABLE IF NOT EXISTS code2015 LIKE codes;
-    TRUNCATE code2015;
-    INSERT INTO code2015(code)
-      SELECT A.code FROM 
-        (SELECT code FROM day WHERE date='${END}') as A,
-        (SELECT code FROM day WHERE date='${PREV}') as B WHERE A.code=B.code;
-
-    SET @v_id = 1; 
-    SELECT max(id)   FROM code2015 INTO @v_len;
-    WHILE @v_id <= @v_len DO
---  WHILE @v_id <= 10 DO
-        SELECT code FROM code2015 WHERE id=(@v_id) INTO @v_code;
-        INSERT INTO ma2015(code,ma2015)
-            SELECT @v_code, sum(close)/20 FROM (SELECT close FROM dorat2 WHERE code=@v_code) as t;
---          SELECT @v_code, sum(close)/60 FROM (SELECT close FROM dorat  WHERE code=@v_code ORDER by date DESC,time DESC LIMIT 60) as t;
-        SET @v_id = @v_id + 1;
-    END WHILE;
-    
+    INSERT INTO ma2015(code,ma2015)
+        SELECT t.code,ma2015 FROM ( SELECT code,sum(close)/20 as ma2015 FROM dorat2 GROUP by code ) as t, 
+        (SELECT A.code FROM 
+          (SELECT code FROM day WHERE date='${END}') as A,
+          (SELECT code FROM day WHERE date='${PREV}') as B WHERE A.code=B.code 
+        ) as code2015 
+        WHERE t.code=code2015.code;
+    -- NOT IN 比较慢
+    -- SELECT code,sum(close)/20 as ma2015 FROM dorat2 GROUP by code;
+    -- DELETE FROM ma2015 WHERE code NOT IN(SELECT code FROM code2015);
 END tag_ma2015 //
 
 call sp_ma2015();
@@ -755,6 +791,7 @@ function fn_main()
     "lhb                                # 龙虎榜"
     "dorat  [loop]                      # 量比数据，loop when run@crontab"
     "ma2015                             # "
+    "trace                              # "
     )
 
     # 存储过程函数文件的最后5行都是注释

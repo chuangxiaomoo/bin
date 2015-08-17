@@ -281,7 +281,7 @@ function fn_tao5()
     INSERT INTO tbl_rdiff(${col},cdiff,rdiff,dbrat)
     SELECT ${colA}, (A.avrg_c-B.avrg_c) as cdiff, (A.ratio-B.ratio) as rdiff,
                     100*(2*A.close-(A.avrg_p+A.avrg_c))/(A.avrg_p+A.avrg_c) as dbrat FROM tbl_tao5 A 
-    INNER JOIN tbl_tao5 B on(A.id<B.id) GROUP BY A.id;
+    INNER JOIN tbl_tao5 B on(A.id<B.id) GROUP BY A.id;      -- 此处条件应该是 on A.id=B.id+1
     " | mysql -N kts
     xt_ret $? "" || return $?
 
@@ -376,7 +376,13 @@ function fn_wma()
         # 表 tbl_mavol520s 是TBL的分析结果，供后续处理分析。
         if [ -f /tmp/tov/${tbl_tov_date} ]; then
             if [ "cap" = "${TBL:-cap}" ]; then
-                fn_cp_tbl ${tbl_tov_date} tbl_mavol520s;
+                WMA=`cat ${date_wma} 2>/dev/null`
+                if [ "${WMA}" != ${END} ]; then
+                    fn_cp_tbl ${tbl_tov_date} tbl_mavol520s;
+                    echo ${END} > ${date_wma}      # 不用每次都 fn_cp_tbl tbl_mavol520s
+                else
+                    echo "    Repeat wma, ignore!"
+                fi
             else
                 echo "
                 DELETE from tbl_mavol520s;
@@ -410,6 +416,7 @@ function fn_wma()
         if ! ([ "${END}" = "${CURR}" ] && [ "${sec_curr}" -lt "${sec_1500}" ]); then
             mkdir -p /tmp/tov/
             touch /tmp/tov/${tbl_tov_date}
+            echo ${END} > ${date_wma}      # 不用每次都 fn_cp_tbl tbl_mavol520s
         fi
     else
         SELECT wma ${@}
