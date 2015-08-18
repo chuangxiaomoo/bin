@@ -49,8 +49,7 @@ function fn_echo_warn()
 {
     FG=33 BG=40
     TEXT="$@"
-    echo -e "\E[${FG};${BG}m${TEXT}"
-    echo -ne "\E[0m"
+    echo -ne "\E[${FG};${BG}m${TEXT}\n\E[0m" > /dev/stderr
     return 0
 }
 
@@ -59,8 +58,7 @@ function fn_echo_succ()
 {
     FG=32 BG=40
     TEXT="$@"
-    echo -e "\E[${FG};${BG}m${TEXT}"
-    echo -ne "\E[0m"
+    echo -ne "\E[${FG};${BG}m${TEXT}\n\E[0m"
     return 0
 }
 
@@ -69,8 +67,7 @@ function fn_echo_fail()
 {
     FG=31 BG=40
     TEXT="$@"
-    echo -e "\E[${FG};${BG}m${TEXT}"
-    echo -ne "\E[0m"
+    echo -ne "\E[${FG};${BG}m${TEXT}\n\E[0m" > /dev/stderr
     return 0
 }
 

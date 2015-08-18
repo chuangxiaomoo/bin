@@ -539,6 +539,7 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
     IF a_type = @fn_taox_ratio      THEN call sp_create_tbl_taox();     END IF;
     IF a_type = @fn_fbi_ratio       THEN call sp_create_tbl_fbi();      END IF;
     IF a_type = @fn_hilo            THEN call sp_create_tbl_hilo();     END IF;
+    IF a_type = @fn_lohi            THEN call sp_create_tbl_lohi();     END IF;
 
     -- visit all codes
     WHILE v_id <= v_len DO
@@ -553,6 +554,7 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
             WHEN @fn_taox_ratio     THEN call sp_taox(v_code);
             WHEN @fn_fbi_ratio      THEN call sp_fbi(v_code);
             WHEN @fn_hilo           THEN call sp_hilo(v_code);
+            WHEN @fn_lohi           THEN call sp_lohi(v_code);
             ELSE SELECT "no a_type match";
         END CASE;
 
@@ -1271,6 +1273,66 @@ CREATE PROCEDURE sp_stat_linqi() tag_stat_linqi:BEGIN
 
 END tag_stat_linqi //
 
+DROP PROCEDURE IF EXISTS sp_create_tbl_lohi //
+CREATE PROCEDURE sp_create_tbl_lohi() tag_tbl_lohi:BEGIN 
+    DROP   TABLE IF EXISTS tbl_lohi;
+    CREATE TABLE tbl_lohi (
+        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        date1       date NOT NULL DEFAULT 0,
+        date2       date NOT NULL DEFAULT 0,
+        off         INT  NOT NULL DEFAULT 0,
+        high        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        low         DECIMAL(6,2) NOT NULL DEFAULT 0,
+        dif         DECIMAL(6,2) NOT NULL DEFAULT 0     -- 100*(high-low)/low
+    );
+END tag_tbl_lohi //
+
+DROP PROCEDURE IF EXISTS sp_lohi//
+CREATE PROCEDURE sp_lohi(a_code INT(6) ZEROFILL) tag_lohi:BEGIN
+    -- lohi
+    DECLARE v_id        INT DEFAULT 1; 
+    DECLARE v_id_hi     INT DEFAULT 1; 
+    DECLARE v_id_lo     INT DEFAULT 1; 
+    DECLARE v_date1     date DEFAULT 0;
+    DECLARE v_date2     date DEFAULT 0;
+
+    DECLARE v_high      DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_low       DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_dif       DECIMAL(6,2) DEFAULT 0;    -- dif = (close-open)/open
+
+    call sp_create_tempday();
+
+    SET @sqls=concat('
+        INSERT INTO tempday(code,date,yesc,open,high,low,close)
+        SELECT code,date,yesc,open,high,low,close FROM day WHERE code=', 
+        a_code, " and date<= '", @END, "' order by date DESC LIMIT ", @NUM);
+    PREPARE stmt from @sqls; EXECUTE stmt;
+
+    SELECT count(*) FROM tempday INTO @v_len;
+
+    -- 13日最低价(high & low 可能在同一天)
+
+    SELECT id,date,close FROM tempday                   order by close asc  LIMIT 1 INTO v_id_lo, v_date1, v_low;
+    SELECT id,date,close FROM tempday WHERE id<=v_id_lo order by close DESC LIMIT 1 INTO v_id_hi, v_date2, v_high;
+
+    IF v_id_hi < v_id_lo THEN
+        -- high > low+1
+        -- SELECT "lt 2 gap:", a_code, v_id_hi-v_id_lo+1, v_date1, v_date2;
+        SET @is_ok=1;
+    ELSE
+        -- SELECT "lt 2 gap:", a_code, v_id_hi,v_id_lo, v_date1, v_date2;
+        -- SELECT * FROM tempday;
+        LEAVE tag_lohi;
+    END IF;
+
+    SET v_dif = 100*(v_high-v_low)/v_low;
+    SET @len   = v_id_lo-v_id_hi + 1;
+
+    INSERT INTO tbl_lohi(code,date1,date2,   high,low,    dif,off)
+             VALUES(a_code,v_date1,v_date2,v_high,v_low,v_dif,@len);
+END tag_lohi //
+
 -- 一些需要与shell通信的系统变量
 
     SET @fn_flt_kdj_up          = 1;   
@@ -1282,6 +1344,7 @@ END tag_stat_linqi //
     SET @fn_taox_ratio          = 12;
     SET @fn_fbi_ratio           = 13;
     SET @fn_hilo                = 14;
+    SET @fn_lohi                = 15;
     SET @FORCE                  = 0;    -- 1时强制计算过滤停牌很久的个股
     SET @START      = '2013-12-6';
     SET @END        = '2014-11-26';

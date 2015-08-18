@@ -242,10 +242,10 @@ lsgcc()
 .nb.2015()
 {
     # alias  .ma60="let 'WMA=!WMA'; echo \$WMA; export WMA"
-    WMA=`cat /tmp/kts/2015 2>/dev/null`
-    let 'WMA=!WMA'
-    echo "${WMA} -> /tmp/kts/2015"
-    echo "${WMA}" > /tmp/kts/2015
+    nb_2015=`cat /tmp/kts/2015 2>/dev/null`
+    let 'nb_2015=!nb_2015'
+    echo "${nb_2015} -> /tmp/kts/2015"
+    echo "${nb_2015}" > /tmp/kts/2015
 }
 
 

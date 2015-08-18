@@ -37,8 +37,8 @@ CREATE PROCEDURE sp_mamacd() BEGIN
         ma20        DECIMAL(6,2)    NOT NULL DEFAULT 0,
         ma40        DECIMAL(6,2)    NOT NULL DEFAULT 0,
         ma80        DECIMAL(6,2)    NOT NULL DEFAULT 0,
-        mavol5      INT(6)          NOT NULL DEFAULT 0,
-        mavol20     INT(6)          NOT NULL DEFAULT 0,
+        mavol5      DECIMAL(6,1)    NOT NULL DEFAULT 0,
+        mavol20     DECIMAL(6,1)    NOT NULL DEFAULT 0,
         cvgenc      DECIMAL(6,2)    NOT NULL DEFAULT 0,
         dif         DECIMAL(8,3)    NOT NULL DEFAULT 0,
         dea         DECIMAL(8,3)    NOT NULL DEFAULT 0,
@@ -55,7 +55,7 @@ CREATE PROCEDURE sp_mamacd() BEGIN
         datetime=@max_dt
         ) ORDER by datetime DESC LIMIT 80;
 
-IF ${1} IN (000001,399005,399005) THEN 
+IF ${1} IN (000001,399005,399006) THEN 
     SELECT sum(trade)/15  FROM (SELECT trade from fenbi 
         WHERE code=${1} ${TEST} ORDER by datetime DESC LIMIT 15) as t INTO @fa15;
 ELSE
@@ -78,10 +78,10 @@ END IF;
         SELECT sum(trade)/80 FROM tmpfb_macd WHERE id<=80  INTO @ma80;
         SELECT 100*(@ma20-@ma5 )/@ma5   INTO @cvgenc;                   -- 大周期/小周期 < .6%
 
-      IF ${1} NOT IN (000001,399005,399005) THEN 
-        SELECT sum(volume)   FROM (SELECT volume from fenbi 
+      IF ${1} NOT IN (000001,399005,399006) THEN 
+        SELECT sum(amount)/100 FROM (SELECT amount from fenbi 
             WHERE code=${1} ${TEST} ORDER by datetime DESC LIMIT 0,5)  as t INTO @mavol5;
-        SELECT sum(volume)/4 FROM (SELECT volume from fenbi 
+        SELECT sum(amount)/400 FROM (SELECT amount from fenbi 
             WHERE code=${1} ${TEST} ORDER by datetime DESC LIMIT 5,20) as t INTO @mavol20;
       END IF;
 
