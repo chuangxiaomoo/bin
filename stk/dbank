@@ -35,7 +35,7 @@ COND="${COND}${GEM:+ and d.code>300000 and d.code<400000}"
 WGET='timeout 34 /usr/bin/wget'
 W3M='timeout  60 /usr/bin/w3m'
 # round(100*vol5/(c.nmc/c.close),2) as tov5, 
-RISE='TRUNCATE(100*(d.close-yesc)/yesc, 2)'
+RISE='TRUNCATE(100*(d.close-d.yesc)/d.yesc, 2)'
 PEAK='TRUNCATE(100*(d.high-d.close)/yesc, 2)'
 TROUGH='TRUNCATE(100*(d.close-d.low)/yesc, 2)'
 TURNOV='TRUNCATE(100*d.volume*c.close/c.nmc, 2)'
@@ -50,6 +50,7 @@ mps_acc="sql/acc.sql"
 mps_acf="sql/acf.sql"
 mps_god="/var/God.sql"
 sql_temp='/dev/shm/sql.temp'
+mps_ma2015="/var/ma2015.sql"
 
 p_bin='/root/bin/stk/bin/'
 warehs='/opt0/warehs'
@@ -122,6 +123,7 @@ file_focus='/tmp/kts/focus'
 file_ma120='/tmp/kts/ma120'
 file_ma240='/tmp/kts/ma240'
 file_mavol='/tmp/kts/mavol'
+ file_2015='/tmp/kts/2015'
  list_limo='/tmp/kts/limo'
  date_dif3='/tmp/kts/dif3'
   date_wma='/tmp/kts/wma'
@@ -165,6 +167,22 @@ function fn_txttbl()
 
 function fn_yist()
 {
+    # f_yist='/tmp/kts/yist'
+    # if [ -f "${YIST}" ]; then
+    #     cat ${YIST}|awk '/^[036]/{print $1}' > $f_yist
+    #     [ ! -s "${f_yist}" ] && return
+    #     echo "
+    #     DROP TABLE IF EXISTS yist;
+    #     CREATE TABLE yist (
+    #         id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+    #         code        INT(6) ZEROFILL NOT NULL DEFAULT 0
+    #     );
+    #     LOAD DATA LOCAL INFILE '$f_yist' INTO TABLE yist(code);
+    #     " | mysql kts
+    #     inLIST="and code in (SELECT code from yist)"
+    # fi
+    # return
+
     if [ -f "${YIST}" ]; then
         LIST=(`cat ${YIST}|awk '/^[036]/{print $1}' | xargs`)
         [ -z "${LIST[0]}" ] && return

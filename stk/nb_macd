@@ -32,7 +32,7 @@ function fn_routine_1_0()
             let tips_cnt++
         elif [ "${ret}" = "" ]; then
             fn_echo_fail "bad condition ${code}: ${cond1} ${op} ${cond2}"
-            fn_bell "bad condition"
+            fn_bell "duang.wav duang.wav"
         fi
         code0=$code
     done<<<"`grep ${PATTERN:-'^[-036]'} .soptter.macd`"
@@ -138,7 +138,7 @@ function fn_routine()
         esac
 
         x_mavol=`cat ${file_mavol}`
-        sql="SELECT IF(mavol5/mavol20>${x_mavol:-2}, 1, 0) FROM mm55 WHERE code=${code} and FM=15"
+        sql="SELECT IF(mavol5>880 && mavol5/mavol20>${x_mavol:-2}, 1, 0) FROM mm55 WHERE code=${code} and FM=15"
         ret=`mysql -N kts <<<"${sql}"`
         if [ "${ret}" = 1 ]; then
             fn_echo_succ "$code.$symble.cond mavol5/mavol20>${x_mavol}"

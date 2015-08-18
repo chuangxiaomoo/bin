@@ -137,7 +137,7 @@ function fn_hexun_day()
     hx_lines=`cat $hx_dayclose | wc -l`
     if [ $hx_lines -lt ${baselines:=1300} ]; then
         wall <<< "up:${BASH_LINENO[0]} $hx_lines less than ${baselines} lines" 
-        return $?
+        return 1
     fi
 
     grep -q 900001 $hx_dayclose || { echo "Error: 900001" && return 1 ;}
@@ -212,6 +212,7 @@ function fn_del_hexun_day()
 function fn_redo_hexun_day()
 {
     fn_del_hexun_day && fn_hexun_day
+    xt_ret $? "fail: day" || return $?
 
     sql="SELECT ${RISE} as rise FROM day as d WHERE date='${OPENDATE}' ORDER by rise DESC LIMIT 1"
     maxrise=`mysql kts -N <<<"${sql}"`
@@ -232,6 +233,7 @@ function fn_redo_hexun_day()
         echo "    redo hexun_day fail #_#
         "
     fi
+    return $RET
 }
 
 function fn_load_directory()
@@ -661,10 +663,16 @@ function fn_dorat()
     esac
 
     if [ -z "${TBL}" ]; then
-        fn_redo_hexun_day
+        fn_redo_hexun_day || FINA=1 up 4
         xt_ret $? "" || return $?
         sec_dt=(`mysql -N kts<<<"SELECT date,time FROM stamp_day ORDER by id DESC LIMIT 1"`)
     else
+        # 手动补全5分钟数据，hexun会失败
+        # DROP TABLE dorat_temp;
+        # CREATE TABLE IF NOT EXISTS dorat_temp LIKE dorat;
+        # INSERT INTO dorat_temp SELECT * FROM dorat WHERE date='2015-08-17' and time='11:14:49';
+        # UPDATE dorat_temp SET time='11:20:00';
+        # INSERT INTO dorat SELECT * FROM dorat_temp;
         sec_dt=${TBL#dorat_}
         sec_dt=(`fn_dt_hyphen_2_normal ${sec_dt}`)
 
@@ -692,9 +700,16 @@ function fn_dorat()
     DELETE from dorat WHERE date='${sec_date}' && time='${sec_time}';
     INSERT INTO dorat SELECT date,'${sec_time}',${columns} FROM ${TBL:-day} WHERE date='${sec_date}';
     " | mysql kts
+    xt_ret $? "" || return $?
+
     fn_echo_succ "    succ: insert dorat ${sec_dt[@]}"
     
-    return $?
+    nb_2015=`cat /tmp/kts/2015 2>/dev/null`
+    if [ "${nb_2015:-1}" -eq 1 ]; then
+        fn_bell "system.wav"
+    fi
+
+    return 0
 }
 
 function fn_example_not_work_by_group()
@@ -715,20 +730,27 @@ function fn_ma2015()
 {
     function fn_creat_db_ma2015()
     {
-        TEMPORARY=TEMPORARY
+        # fn_echo_fail "db DT is ${DT[@]}" > /dev/stderr
+        # TEMPORARY=TEMPORARY
         echo "
         DROP   $TEMPORARY TABLE IF EXISTS dorat2;
         CREATE $TEMPORARY TABLE IF NOT EXISTS dorat2 (
             code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
             close       DECIMAL(6,2) NOT NULL,
+            date        date,
+            time        time,
             INDEX(code)
         );"
         while read date time; do
-            echo "INSERT INTO dorat2 SELECT code,close FROM dorat WHERE date='${date}' and time='${time}';"
-        done <<<"`./SELECT dorat | tac | head -60 | sed -n '1~3p'`"
+            echo "INSERT INTO dorat2 SELECT code,close,date,time FROM dorat WHERE date='${date}' and time='${time}';"
+        done <<<"`DT="${DT[@]}" ./SELECT dorat | tac | head -60 | sed -n '1~3p'`"
     }
 
-    fn_creat_db_ma2015 > ${mps_god}
+    DT=(${DT})
+    iEND=${DT[0]}
+    END=${iEND:-$END}
+    PREV=`fn_get_prev`
+    fn_creat_db_ma2015 > ${mps_ma2015}
 
     echo "
 delimiter //
@@ -754,8 +776,10 @@ CREATE PROCEDURE sp_ma2015() tag_ma2015:BEGIN
 END tag_ma2015 //
 
 call sp_ma2015();
-    " >> ${mps_god}
-    mysql kts < ${mps_god}
+    " >> ${mps_ma2015}
+    mysql kts < ${mps_ma2015}
+    xt_ret $? "" || return $?
+    fn_echo_succ "    succ: up ma2015@${DT[@]}!"
     return $?
 }
 

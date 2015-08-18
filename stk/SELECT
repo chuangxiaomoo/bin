@@ -65,7 +65,7 @@ function fn_lsd()
 
 
     case $1 in
-    c|ceiling)
+    t|top)
         LIMIT=2000
         HAVING="rise>9.93"
         field=${2:-nmc}
@@ -191,39 +191,37 @@ function fn_rat()
 
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
-    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > $file_c 
-    up file_to_table $file_c
+    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > $file_c.rat 
+    up file_to_table $file_c.rat
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
 function fn_tri()
 {
-    D3=(${DT:-`mysql -N kts<<<"SELECT date FROM day WHERE code=900001 and date<='${END}' ORDER by date DESC LIMIT 0,1"`})
-    D2=(${DT:-`mysql -N kts<<<"SELECT date FROM day WHERE code=900001 and date<='${END}' ORDER by date DESC LIMIT 1,1"`})
-    D1=(${DT:-`mysql -N kts<<<"SELECT date FROM day WHERE code=900001 and date<='${END}' ORDER by date DESC LIMIT 2,1"`})
-    D0=(${DT:-`mysql -N kts<<<"SELECT date FROM day WHERE code=900001 and date<='${END}' ORDER by date DESC LIMIT 0,1"`})
+    field=${1:-rising}
+    STEP=${STEP:-7}
+    # D3=(${DT:-`mysql -N kts<<<"SELECT date FROM day WHERE code=900001 and date<='${END}' ORDER by date DESC LIMIT 0,1"`})
+    D2=${END}
+    D1=${DT:-`mysql -N kts<<<"SELECT date FROM day WHERE code=900001 and date<'${END}' ORDER by date DESC LIMIT 0,1"`}
+    D0=${DT:-`mysql -N kts<<<"SELECT date FROM day WHERE code=900001 and date<'${END}' ORDER by date DESC LIMIT ${STEP},1"`}
     
-    t3="(SELECT * FROM day WHERE date='${D3}' ${inLIST})"
-    t2="(SELECT * FROM day WHERE date='${D2}' ${inLIST})"
-    t1="(SELECT * FROM day WHERE date='${D1}' ${inLIST})"
-    t0="(SELECT * FROM day WHERE date='${D4}' ${inLIST})"
+    t2="(SELECT * FROM day WHERE date='${D2}')"
+    t1="(SELECT * FROM day WHERE date='${D1}')"
+    t0="(SELECT * FROM day WHERE date='${D0}')"
 
     function fn_build_sqls() {
     product="TRUNCATE(100*(tbl.close-(tbl.amount/tbl.volume))/tbl.close,2)"
     sqls="
-    SELECT t1.code, 
-        ${product//tbl/t1} as p1,
-        ${product//tbl/t2} as p2,
-        ${product//tbl/t3} as p3,
-        c.name FROM 
-        ${t3} as t3, 
-        ${t2} as t2, 
-        ${t1} as t1, cap as c 
-        WHERE t1.code=t2.code && t1.code=t3.code && t1.code=c.code and
-        t3.amount>t2.amount && t2.amount>t1.amount and
-        t3.close>t3.yesc && t2.close>t2.yesc && t1.close>t1.yesc
-        HAVING 1 && p3>p2 && p2>p1
-        ${COND} ORDER by ${field:-code} ${ASC:-DESC} limit ${LIMIT:-36}
+    SELECT * FROM (SELECT '${END}' as date, d.code, d.close, 
+        $RISE as rise,
+        round(100*(t1.close-t0.yesc)/t0.yesc, 2) as rising, ${STEP}+1 as D, 
+        c.nmc, c.name FROM 
+        ${t2} as d, 
+        ${t1} as t1, 
+        ${t0} as t0, cap as c
+        WHERE d.code=t1.code && d.code=t0.code and d.code=c.code   -- 取样本数40 = 2000*20%，7天可翻倍
+              ORDER by rising DESC limit 40 ) as t
+        ${COND} ORDER by ${field:-rising} ${ASC:-DESC} limit ${LIMIT:-40}
     " 
     }
     fn_build_sqls
@@ -235,45 +233,48 @@ function fn_tri()
     mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > $file_c 
     up file_to_table $file_c
     xt_ret $? "${FUNCNAME}" || return $?
-
 }
 
 function fn_dif3()
 {
-    dts="SELECT DISTINCT date,time FROM dorat"
-    odr="ORDER by date DESC, time DESC"
-    DT=${DT:-`mysql -N kts<<<"${dts} ${odr} LIMIT 1"`}
+    DT=`SELECT dorat|tail -1`
     DP=(`cat ${date_dif3} 2> /dev/null`)
     DT3=(${DT})
 
-    [ "${DT3[0]}${DT3[1]}" = "${DP[0]}${DP[1]}" ] && return 0
+    [ "${DT3[0]}${DT3[1]}.${STEP:-1}" = "${DP[0]}${DP[1]}" ] && return 0
 
-    DT2=(${DT2:-`mysql -N kts<<<"${dts} WHERE date<='${DT3[0]}' && time<='${DT3[1]}' ${odr} LIMIT 1,1"`})
-    DT1=(${DT1:-`mysql -N kts<<<"${dts} WHERE date<='${DT3[0]}' && time<='${DT3[1]}' ${odr} LIMIT 2,1"`})
+    DT="${DT}" ./up ma2015
+    xt_ret $? "ma2015" || return $?
+
+    dts="SELECT DISTINCT date,time FROM dorat"
+    odr="ORDER by date DESC, time DESC"
+    DT2=(${DT2:-`mysql -N kts<<<"${dts} WHERE date<='${DT3[0]}' && time<='${DT3[1]}' ${odr} LIMIT ${STEP:-1},1"`})
+    DT1=(${DT1:-`mysql -N kts<<<"${dts} WHERE date<='${DT2[0]}' && time<='${DT2[1]}' ${odr} LIMIT ${STEP:-1},1"`})
     DT0=(${DT0:-`mysql -N kts<<<"${dts} WHERE date<='${DT3[0]}' && time<='09:47:00'  ${odr} LIMIT 1"`})
-    TEMPORARY=TEMPORARY
 
-    echo "${DT3[@]}" > ${date_dif3}
+    echo "${DT3[@]}.${STEP:-1}" > ${date_dif3}
+    TEMPORARY=TEMPORARY
 
     echo "
     DROP   TABLE IF EXISTS dif3;
     CREATE TABLE IF NOT EXISTS dif3 (
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
-        yesc        DECIMAL(6,2) NOT NULL,
-        open        DECIMAL(6,2) NOT NULL,
-        high        DECIMAL(6,2) NOT NULL,
-        low         DECIMAL(6,2) NOT NULL,
-        close       DECIMAL(6,2) NOT NULL,
-        volume      DECIMAL(12,2) NOT NULL,
-        amount      DECIMAL(12,2) NOT NULL,
+        yesc        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        open        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        high        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        low         DECIMAL(6,2) NOT NULL DEFAULT 0,
+        close       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        avrg        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        ma20        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        close2      DECIMAL(6,2) NOT NULL DEFAULT 0,
+        close1      DECIMAL(6,2) NOT NULL DEFAULT 0,
+        volume      DECIMAL(12,2) NOT NULL DEFAULT 0,
+        amount      DECIMAL(12,2) NOT NULL DEFAULT 0,
         -- dif
         av_op       DECIMAL(6,2) NOT NULL DEFAULT 0,
-        av_ri       DECIMAL(6,2) NOT NULL DEFAULT 0,
         rise        DECIMAL(6,2) NOT NULL DEFAULT 0,
-        ri32        DECIMAL(6,2) NOT NULL DEFAULT 0,
-        ri21        DECIMAL(6,2) NOT NULL DEFAULT 0,
         dirtio      DECIMAL(6,2) NOT NULL DEFAULT 0,            -- 增量量比 dif-vol-ratio
-        pie         DECIMAL(8,2) NOT NULL DEFAULT 0,            -- 增量额度，以万为单位
+        pie         DECIMAL(8,1) NOT NULL DEFAULT 0,            -- 增量额度，以万为单位
         INDEX(code)
     );
     DROP   $TEMPORARY TABLE IF EXISTS t2,t1,t0;
@@ -291,15 +292,16 @@ function fn_dif3()
     INSERT INTO t2 SELECT code,close,volume,amount FROM dorat WHERE date='${DT2[0]}' and time='${DT2[1]}';
     INSERT INTO t1 SELECT code,close,volume,amount FROM dorat WHERE date='${DT1[0]}' and time='${DT1[1]}';
     INSERT INTO t0 SELECT code,close,volume,amount FROM dorat WHERE date='${DT0[0]}' and time='${DT0[1]}';
-    UPDATE dif3,t0 SET av_op=100*((t0.amount/t0.volume)-dif3.yesc)/dif3.yesc,
-                       av_ri=100*(dif3.close-(t0.amount/t0.volume))/(t0.amount/t0.volume),
-                       rise=100*(dif3.close-dif3.yesc)/dif3.yesc
-                       WHERE dif3.code=t0.code;
+
+    UPDATE dif3    SET avrg=(amount/volume), rise=100*(close-yesc)/yesc;
+    UPDATE dif3,t0 SET av_op=100*((t0.amount/t0.volume)-dif3.yesc)/dif3.yesc WHERE dif3.code=t0.code;
+    UPDATE dif3 INNER JOIN ma2015 on dif3.code=ma2015.code SET dif3.ma20=ma2015.ma2015;
+    DELETE FROM dif3 WHERE ma20=0;
 
     UPDATE dif3 INNER JOIN t2 on dif3.code=t2.code 
                 INNER JOIN t1 on t2.code=t1.code
-                      SET ri32=dif3.close-t2.close,
-                          ri21=t2.close-t1.close,
+                      SET close2=t2.close,
+                          close1=t1.close,
                           dirtio=(dif3.volume-t2.volume)/(t2.volume-t1.volume),
                           pie=(dif3.amount-t2.amount);                              -- 以万为单位
 
@@ -318,17 +320,39 @@ function fn_dirtio()
     # SCALE=$(bc -l <<<"scale=2; 14400/${sec_open}")
     # echo ${SCALE}; exit
     case $1 in
+    u|usage)
+        echo "
+        SELECT dirtio <param>
+        usage: print usage
+        list : print list of Date Time
+        i25  : insert 2.5min data
+        d25  : delete 2.5min data
+        c1   : cond1: rise>0&& av_op>2&&av_op<5 && close2<close1 && close2<close && pie>1000 && av_ri<2 
+                      0轴上    高开2~5%            低走             再上行          1000万      不涨太快
+                      1. 一直运行在ma20(F1)上方
+                      2. 先破ma20(F1)，在10:00前后突破之
+        c2   : cond2: 
+        c3   : cond3: 
+        c4   : cond4: 
+        1~48 : DT=list[1~48]
+        "
+        exit 0
+        ;;
     l|list)
-        SELECT dorat | tail -24 | cat -n; exit 0
+        SELECT dorat | tail -48 | cat -n; exit 0
         ;;
     [0-9]*)
-        [ "${1}" -le 24 ] || { fn_echo_fail "fail: $1 -le 24"; exit 1; }
-        DT=`SELECT dorat | tail -24 | sed -n "${1}p"`
+        let min=3*${STEP:-1}
+        [ ${1} -ge ${min} ] && [ "${1}" -le 48 ] || { 
+            fn_echo_fail "fail: $1 -ge ${min} && $1 -le 48"; exit 1; 
+        }
+        DT=`SELECT dorat | tail -48 | sed -n "${1}p"`
         ;;
     *)
         field=$1
         ;;
     esac
+    field=${field:-$2}
 
     fn_dif3 ${@} # up DT, with param 'up', update dif3
     fn_yist
@@ -337,40 +361,39 @@ function fn_dirtio()
     SCALE=`fn_get_ratio_close2open`
     xt_ret $? "" || return $?
 
-    v1x1="round(48*(dif3.volume-t2.volume)/dif3.volume*${SCALE},2)"       
+    v1x1="round(48*(d.volume-t2.volume)/d.volume*${SCALE},2)"       
     tov5="round(100*(ma.vol5)/(c.nmc/c.close),2)"
-    tov1="round(100*(dif3.volume)/(c.nmc/c.close),2)"
-    tov20="round((ma.vol20)/(c.nmc/c.close),2)"
-    columns='code,close,av_op,av_ri,rise,ri32,ri21'
-    columns=dif3.${columns//,/,dif3.}
+    tov1="round(100*(d.volume)/(c.nmc/c.close),2)"
+    tovt="round((ma.vol20)/(c.nmc/c.close),1)"
+    columns='ma20,avrg,close,close2,close1,av_op,rise'
+    columns=d.${columns//,/,d.}
 
     function fn_build_sqls() {
     sqls="
-    SELECT 
-        ${columns},
-        ${tov20}as tov20,
+    SELECT d.code, ${columns},
+        ${tovt} as tovt,
         ${tov5} as tov5,
-        ${tov1} as tov1, 
-        dif3.volume,
-        round(dif3.amount/10000,2) as pie_Yi,
-        round(5*dif3.volume*$SCALE/(ma.vol5),2) as v1x5,                -- 普通量比
+        ${tov1} as tov1,                                        -- 有tov，不必volume
+        round(d.amount/10000,2) as pie_Yi,
+        round(5*d.volume*$SCALE/(ma.vol5),2) as v1x5,           -- 普通量比
         dirtio,pie,
         round(c.nmc/10000, 1) as nmc_Yi, c.name 
-        FROM dif3, tbl_mavol520s as ma, cap as c                        -- USE INDEX(code)
-        WHERE dif3.code=ma.code && dif3.code=c.code
-        HAVING 1 ${COND} ${inLIST} ORDER by ${field:-dirtio} ${ASC:-DESC} limit ${LIMIT:-32}" 
+        FROM dif3 as d, tbl_mavol520s as ma, cap as c           -- USE INDEX(code)
+        WHERE d.code=ma.code && d.code=c.code                   -- av_ri = rise-av_op
+        HAVING 1 ${COND} ${inLIST} 
+        ORDER by ${field:-dirtio} ${ASC:-DESC} limit ${LIMIT:-32}" 
     }
     fn_build_sqls
 
     echo "$sqls">/dev/stderr 
-    mysql -t kts<<<"$sqls"
+    mysql -t kts<<<"$sqls" | sed -e 's/    |$/|/g' -e 's/----+$/+/g'
     xt_ret $? "" || return $?
 
-    fn_echo_warn "dif3@${DT3[@]}"
+    fn_echo_warn "dif3@${DT3[@]}.${STEP:-1}"
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
-    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > $file_c 
-    up file_to_table $file_c
+    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > ${file_c}.dir
+    up file_to_table ${file_c}.dir
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -668,7 +691,9 @@ function fn_dorat()
     case $1 in
     *)
         # echo DT is ${DT} > /dev/stderr
-        [ -n "${DT}" ] && DT=(${DT}) && COND0="WHERE date<='${DT[0]}' and time<='${DT[1]}'"
+        [ -n "${DT}" ] && DT=(${DT}) && 
+        COND0="WHERE DATE_FORMAT(CONCAT(date, ' ', time), '%Y-%m-%d %T')<='${DT[@]}'"
+        # date<='${DT[0]}' and time<='${DT[1]}'"
         mysql -N kts<<< "SELECT date,time FROM ( SELECT DISTINCT date, time FROM dorat ) as t ${COND0}"
         #fn_execute -l | grep dorat && exit
         ;;
@@ -808,7 +833,7 @@ function fn_hilo()
         -- rat1:最低日lo量比 rat2:lo+(lo+1)日量比
         SELECT ${columns}, 
         round(100*(d.close-t.high)/t.high, 2) as dive, 
-        round(100*(d.close-t.close)/t.close, 2) as rebound, c.nmc, c.name
+        round(100*(d.close-t.close)/t.close, 2) as rebound, c.nmc, c.name   -- t.close=(open+close)/2
         FROM tbl_hilo as t, tempday as d, cap as c
         WHERE t.code = d.code and t.code=c.code
         HAVING 1 ${COND} ${EXCLUDE}
@@ -827,6 +852,47 @@ function fn_hilo()
     xt_ret $? "" || return $?
 
     up file_to_table $file_c
+    xt_ret $? "${FUNCNAME}" || return $?
+}
+
+function fn_lohi()
+{
+    columns='code,date1,date2,off,high,low,dif'
+    columns=${columns:-'*'}
+    columns=t.${columns//,/,t.}
+
+    [ -s "${exclude2}" ] && EXCLUDE="and code not in (`cat ${exclude2}`)"
+
+    function fn_yi_descend()
+    {
+        tempday="
+        CREATE TEMPORARY TABLE tempday LIKE day;
+        INSERT INTO tempday SELECT * from day where date='${CURR}';
+        "
+        # delete停牌个股
+        tbl_super_dive="
+        SELECT ${columns}, 
+        round(100*(d.close-t.low)/t.low, 2) as ascend,
+        round(100*(d.close-t.high)/t.high, 2) as descend,
+        c.nmc, c.name  
+        FROM tbl_lohi as t, tempday as d, cap as c
+        WHERE t.code = d.code and t.code=c.code
+        HAVING 1 ${COND} ${EXCLUDE}
+        ORDER by ${1:-dif} ${ASC:-DESC} LIMIT ${LIMIT:-44}
+        "
+        echo "${tbl_super_dive}"
+    }
+
+    fn_yi_descend $1
+    mysql $mo -t kts <<< "${tempday}${tbl_super_dive}"
+    xt_ret $? "${FUNCNAME}" || return $?
+
+    [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
+
+    mysql -N kts <<<"${tempday}SELECT code FROM (${tbl_super_dive}) as tbl" > ${file_c}.desc
+    xt_ret $? "" || return $?
+
+    up file_to_table $file_c.desc
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -922,7 +988,7 @@ function fn_main()
     "cap                code                  # 查询nmc&cap"
     "name               code                  # 名"
     "vol                {0|3|6|03}            # ^^3市成交^^"
-    "lsd                [{c|floor}][filed]    # --- END YIST LIMIT 涨幅排名"
+    "lsd                [{top|floor}][field]  # --- END YIST LIMIT 涨幅排名"
     "pma                code                  # NUM=5日平均"
     "fbi                                      # tbl_fbi"
     "acc                                      # tbl_adiff"
@@ -930,6 +996,7 @@ function fn_main()
     "tao5                                     # "
     "rdiff                                    # tbl_rdiff"
     "hilo               field                 # field to sort by"
+    "lohi               field                 # field to sort by"
     "xrd                field                 # #{OP:->}"
     "ace                                      # +10%"
     "lhb                excption              # 龙虎榜"

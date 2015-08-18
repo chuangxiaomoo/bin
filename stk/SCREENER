@@ -679,6 +679,34 @@ function fn_hilo()
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
+function fn_lohi()
+{
+    fn_exclude ${exclude2}
+    fn_txttbl
+
+    if [ -n "${1}" ]; then
+        fn_iscode ${1}       
+        xt_ret $? "invalid code[$1]" || return $?
+
+        local code=`sed 's/^0*//g' <<< $1 | xargs printf "%06d"`
+        up file_to_table ${code}
+    else
+        if [ -z "${YIST}" ]; then
+            echo "Usage: YIST=xxx SCREENER hilo code..." 
+            exit
+        fi
+    fi
+
+    echo "
+    SET @END='$END';
+    SET @NUM=${NUM:-10};
+    SET @NMC_RATIO=${NMC_RATIO:-1};
+    call sp_visit_tbl('${TBL:-zxg}', @fn_lohi);
+    " | tee -a $mps_god
+    mysql $mo -t kts <<< "source $mps_god"
+    xt_ret $? "${FUNCNAME}" || return $?
+}
+
 function fn_main()
 {
     # END 非空赋值不要移植到dbank 
@@ -698,6 +726,7 @@ function fn_main()
     "nouse              [field]               # "
     "focus              [field]               # #{YIST:-.soptter.trade}->zxg and 9jian"
     "hilo               code...               # #{YIST}下跌幅度计算"
+    "lohi               code...               # #{YIST}下跌幅度计算"
     "act                code                  # 2 hour 曲线陡峭"
     "ac5                code                  # 5 hour"
     "ac6                code                  # 3 day TOV5 * .618"
