@@ -948,15 +948,24 @@ function fn_macd()
         echo "DROP TABLE IF EXISTS mm55" | mysql kts; 
         fn_echo_succ "succ: clean macd!"; exit 0
         ;;
+    [0-9]*)
+        COND="and code=$1"
+        field=$2
+        ;;
+    *)
+        field=$1
+        ;;
     esac
 
-    fields='code,FM,datetime,close,fa15,ma5,ma10,ma20,ma40,ma80,mavol5,mavol20'
+    fields='close,fa15,ma5,ma10,ma20,ma40,ma80,mavol5,mavol20'
     limo='(FM=15)*IF(close>=fa15, 1, -1)*((fa15>=ma5)+(fa15>=ma10)+(fa15>=ma20)+(fa15>=ma40)+(fa15>=ma80))'
     echo "
-    SELECT ${fields}, TRUNCATE(mavol5/mavol20, 2) as nb,
+    SELECT code,FM,datetime%1000000 as time,
+        ${fields}, TRUNCATE(mavol5/mavol20, 2) as nb,
+        round(abs((close-fa15)/fa15/.01), 2) as abs,
             cvgenc, ${limo} as limo, dif FROM mm55
             HAVING 1 ${COND} ${inLIST}
-            ORDER by ${1:-code},FM ${ASC:-ASC};
+            ORDER by ${field:-code},FM ${ASC:-ASC};
 	" | mysql -t kts
     
     return $?

@@ -9,12 +9,12 @@ function fn_routine_1_0()
     tips_got=''
 
     while read code symble FM cond1 op cond2 tips; do
-        if ! ${istest} && [ "$code" != '-' ]; then                              # istest
+        if ! ${istest} && [ "$code" != '/' ]; then                              # istest
             echo do fenbi ${code}...
             fenbi ${code} >& ${error}
             xt_ret $? "down ${code}" || { cat ${error}; return $?; }
         fi
-        if [ "${code}" = '-' ] && [ -n "$code0" ]; then # code is -
+        if [ "${code}" = '/' ] && [ -n "$code0" ]; then # code is -
             code=$code0
         else
             FM=${FM} macd ${code}                       # 自FM固定为5后，可只作一次macd
@@ -62,13 +62,13 @@ function fn_routine()
 
     while read code symble IF tips; do
         [ "$IF" == 0 ] && continue
-        if ! ${istest} && [ "$code" != '-' ]; then                              # istest
+        if ! ${istest} && [ "$code" != '/' ]; then                              # istest
             echo do fenbi ${code}...
             fenbi ${code} >& ${error}
             xt_ret $? "down ${code}" || { cat ${error}; return $?; }
         fi
 
-        if [ "${code}" = '-' ]; then # code is -
+        if [ "${code}" = '/' ]; then # code is -
             code=$code0
         else
             FM=15 macd ${code}
@@ -87,11 +87,12 @@ function fn_routine()
             # 1. 上一个时间单元abs(dif)<0.006
             # 2. 上一个更新时间>10min
             # 3. ${istest}
-            sql="SELECT abs(dif)<0.0382 || (CURRENT_TIMESTAMP()-datetime)>1000 FROM mm55 WHERE code=${code} and FM=5"
+            sql="SELECT abs(dif)<0.382 || (CURRENT_TIMESTAMP()-datetime)>1000 FROM mm55 WHERE code=${code} and FM=5"
             ret=`mysql -N kts <<<"${sql}"`
 
-            if ${istest} || [ "${ret}" = 1 ] || [ "${ret}" = "" ]; then
+            if ${istest} || grep -q "x${code}"<<<"${forces}" || [ "${ret}" = 1 ] || [ "${ret}" = "" ]; then
                 echo "do _dif_ ${code}..."
+                forces=${forces//x${code}/}   # 进入临界的macd要连续判断
                 FM=5 macd ${code}
                 xt_ret $? "macd error" || return $?
             fi
@@ -108,6 +109,7 @@ function fn_routine()
             ret=`mysql -N kts <<<"${sql}"`
             if [ "${ret}" = 1 ]; then
                 fn_echo_succ "$code.$symble.macd ${IF}"
+                forces="x${code}${forces}"
                 let tips_cnt++
             fi
             ;;
@@ -120,6 +122,7 @@ function fn_routine()
             ret=`mysql -N kts <<<"${sql}"`
             if [ "${ret}" = 1 ]; then
                 fn_echo_succ "$code.$symble.macd ${IF}"
+                forces="x${code}${forces}"
                 let tips_cnt++
             fi
             ;;
@@ -149,10 +152,10 @@ function fn_routine()
         [ "${tips_cnt}" -gt ${tips_old:-0} ] && echo ${code} >> ${list_limo}
         code0=$code
         tips_old=${tips_cnt}
-    done<<<"`grep ${PATTERN:-'^[-036]'} .soptter.macd`"
+    done<<<"`grep ${PATTERN:-'^[/036]'} .soptter.macd`"
     
     local i
-    for (( i=${tips_cnt}; i>0; i-=6 )); do
+    for (( i=${tips_cnt}; i>0; i-=10 )); do
         tips_got="${tips_got} duang.wav msg.wav"    # 2个股+2指数 = 一级戒备
     done
     #echo ${tips_got}
