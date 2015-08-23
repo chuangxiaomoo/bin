@@ -176,12 +176,12 @@ function fn_trace()
 
            SELECT ${colA}, 
                (A.curr_asset-B.curr_asset) as earning, 
-               round(100*(A.curr_asset-B.curr_asset)/A.curr_asset, 2) as ROE,
-               round(100*(A.curr_asset-B.curr_asset)/(A.curr_asset-A.frozen), 2) as ROE_real,
+               round(100*(A.curr_asset-B.curr_asset)/B.curr_asset, 2) as RoE,
+               round(100*(A.curr_asset-B.curr_asset)/(B.curr_asset-B.frozen), 2) as RoE_real,
             -- (A.sh-B.sh) as earning_sh, 
             -- (A.cyb-B.cyb) as earning_cyb, 
-               round(100*(A.sh-B.sh)/A.sh, 2) as ROE_sh,
-               round(100*(A.cyb-B.cyb)/A.cyb, 2) as ROE_cyb
+               round(100*(A.sh-B.sh)/B.sh, 2) as RoE_sh,
+               round(100*(A.cyb-B.cyb)/B.cyb, 2) as RoE_cyb
                FROM trace A INNER JOIN 
                     trace B on(A.id=B.id+1) GROUP BY A.id;
 

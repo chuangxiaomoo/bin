@@ -629,10 +629,13 @@ function fn_family()                    {
 function fn_00_不滥爱()                 { cat family_00_不滥爱 ;}
 function fn_01_王海滨()                 { cat family_01_王海滨 ;}
 function fn_02_地图()                   { cat family_02_地图 ;}
+function fn_03_为什么现在不相亲()       { cat family_03_为什么现在不相亲 ;}
     local opts=(
         00_不滥爱                       # thinking for love
         01_王海滨                       # 男人的责任与爱
         02_地图                         # map 家天下
+        03_为什么现在不相亲             # 
+
     )
     fn_print $@
 }

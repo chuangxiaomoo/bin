@@ -857,11 +857,20 @@ function fn_hilo()
 
 function fn_lohi()
 {
-    columns='code,date1,date2,off,high,low,dif'
+    columns='code,date1,date2,off,high,low,lohi'
     columns=${columns:-'*'}
     columns=t.${columns//,/,t.}
 
     [ -s "${exclude2}" ] && EXCLUDE="and code not in (`cat ${exclude2}`)"
+
+    if [ -z "${DT}" ]; then
+        TEMPDAY="tempday"
+    else
+        DT=`SELECT dorat|tail -1`
+        DT=(${DT})
+        # echo ${DT}; exit
+        TEMPDAY="(SELECT * FROM dorat WHERE date='${DT[0]}' && time='${DT[1]}')"
+    fi
 
     function fn_yi_descend()
     {
@@ -871,14 +880,17 @@ function fn_lohi()
         "
         # delete停牌个股
         tbl_super_dive="
-        SELECT ${columns}, 
-        round(100*(d.close-t.low)/t.low, 2) as ascend,
-        round(100*(d.close-t.high)/t.high, 2) as descend,
-        c.nmc, c.name  
-        FROM tbl_lohi as t, tempday as d, cap as c
-        WHERE t.code = d.code and t.code=c.code
-        HAVING 1 ${COND} ${EXCLUDE}
-        ORDER by ${1:-dif} ${ASC:-DESC} LIMIT ${LIMIT:-44}
+        SELECT * FROM (
+          SELECT ${columns}, 
+          round(100*(d.close-t.low)/t.low, 2)  as increas,
+          round(100*(d.close-t.high)/t.low, 2) as decline,
+          ${RISE} as rise,
+          round((d.volume/t.mavol5), 2) as tov,
+          c.nmc, c.name  
+          FROM tbl_lohi as t, ${TEMPDAY} as d, cap as c
+          WHERE t.code = d.code and t.code=c.code HAVING 1 ${EXCLUDE}
+          ORDER by lohi ${ASC:-DESC} LIMIT ${LIMIT:-45} ) as t
+        HAVING 1 ${COND} ORDER by ${1:-lohi} ${ASC:-DESC}
         "
         echo "${tbl_super_dive}"
     }

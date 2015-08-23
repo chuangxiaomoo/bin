@@ -681,27 +681,71 @@ function fn_hilo()
 
 function fn_lohi()
 {
+    case $1 in
+    e)
+        mysql -N kts<<< "SELECT end,num FROM ( SELECT DISTINCT end,num FROM mat_lohi ) as t"
+        exit
+        ;;
+    l)
+        echo "     0  ${END}"
+        echo "
+        SELECT date from day WHERE code=900001 ORDER by date DESC LIMIT ${LIMIT:-1},10
+        " | mysql -N kts | cat -n
+        exit
+        ;;
+    [0-9]*)
+        END=`mysql -N kts <<< "SELECT date from day WHERE code=900001 ORDER by date DESC LIMIT ${1:-0},1"`
+        ;;
+    *)
+        echo "
+        SCREENER lohi <param>
+            exist: exist dates
+            list : dates list with num
+            0~9  : 0 is latest
+        "
+        exit
+        ;;
+    esac
+
     fn_exclude ${exclude2}
     fn_txttbl
 
-    if [ -n "${1}" ]; then
-        fn_iscode ${1}       
-        xt_ret $? "invalid code[$1]" || return $?
-
-        local code=`sed 's/^0*//g' <<< $1 | xargs printf "%06d"`
-        up file_to_table ${code}
-    else
-        if [ -z "${YIST}" ]; then
-            echo "Usage: YIST=xxx SCREENER hilo code..." 
-            exit
-        fi
+    iEND=${END:-${PREV}}
+    iNUM=${NUM:-5}
+    if [ -z "${YIST}" ]; then
+        echo "
+        TRUNCATE TABLE zxg;
+        INSERT INTO zxg(code) SELECT code FROM day WHERE date='${iEND}' and code<765432;
+        " | mysql kts
+        sql_insert_mat_lohi="
+        INSERT INTO mat_lohi(end,num,code,date1,date2,off,high,low,lohi,mavol5)
+            SELECT  '${iEND}',${iNUM},code,date1,date2,off,high,low,lohi,mavol5 FROM tbl_lohi;
+        "
     fi
 
+    sqls="SELECT count(id) FROM mat_lohi WHERE end='${iEND}' and num=${iNUM} LIMIT 1;"
+    count=`mysql -N kts <<< "${sqls}"`
+    xt_ret $? "" || return $?
+
+    if [ "${count:-0}" -gt 0 ]; then
+        fn_echo_warn "${iEND}:${iNUM} exist, copy it"
+        echo "
+        TRUNCATE TABLE tbl_lohi;
+        INSERT INTO tbl_lohi(code,date1,date2,off,high,low,lohi,mavol5)
+                     SELECT  code,date1,date2,off,high,low,lohi,mavol5 FROM mat_lohi WHERE end='${iEND}' and num=${iNUM};
+
+        " | mysql kts
+        return 0
+    fi
+
+    fn_echo_succ "    build lohi on ${iEND}..."
+
     echo "
-    SET @END='$END';
-    SET @NUM=${NUM:-10};
+    SET @END='$iEND';
+    SET @NUM=${iNUM};
     SET @NMC_RATIO=${NMC_RATIO:-1};
     call sp_visit_tbl('${TBL:-zxg}', @fn_lohi);
+    ${sql_insert_mat_lohi}
     " | tee -a $mps_god
     mysql $mo -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
