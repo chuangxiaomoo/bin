@@ -1284,13 +1284,28 @@ CREATE PROCEDURE sp_create_tbl_lohi() tag_tbl_lohi:BEGIN
         off         INT  NOT NULL DEFAULT 0,
         high        DECIMAL(6,2) NOT NULL DEFAULT 0,
         low         DECIMAL(6,2) NOT NULL DEFAULT 0,
-        dif         DECIMAL(6,2) NOT NULL DEFAULT 0     -- 100*(high-low)/low
+        lohi        DECIMAL(6,2) NOT NULL DEFAULT 0,    -- 100*(high-low)/low
+        mavol5      INT
+    );
+--  DROP   TABLE IF EXISTS mat_lohi;
+    CREATE TABLE IF NOT EXISTS mat_lohi (
+        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+        end         date NOT NULL DEFAULT 0,
+        num         INT  NOT NULL DEFAULT 0,
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        date1       date NOT NULL DEFAULT 0,
+        date2       date NOT NULL DEFAULT 0,
+        off         INT  NOT NULL DEFAULT 0,
+        high        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        low         DECIMAL(6,2) NOT NULL DEFAULT 0,
+        lohi        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        mavol5      INT,
+        INDEX(end,num,code)
     );
 END tag_tbl_lohi //
 
 DROP PROCEDURE IF EXISTS sp_lohi//
 CREATE PROCEDURE sp_lohi(a_code INT(6) ZEROFILL) tag_lohi:BEGIN
-    -- lohi
     DECLARE v_id        INT DEFAULT 1; 
     DECLARE v_id_hi     INT DEFAULT 1; 
     DECLARE v_id_lo     INT DEFAULT 1; 
@@ -1299,38 +1314,38 @@ CREATE PROCEDURE sp_lohi(a_code INT(6) ZEROFILL) tag_lohi:BEGIN
 
     DECLARE v_high      DECIMAL(6,2) DEFAULT 0;
     DECLARE v_low       DECIMAL(6,2) DEFAULT 0;
-    DECLARE v_dif       DECIMAL(6,2) DEFAULT 0;    -- dif = (close-open)/open
+    DECLARE v_lohi      DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_mavol5    INT DEFAULT 0;
+    DECLARE v_volume    INT DEFAULT 0;
 
     call sp_create_tempday();
 
     SET @sqls=concat('
-        INSERT INTO tempday(code,date,yesc,open,high,low,close)
-        SELECT code,date,yesc,open,high,low,close FROM day WHERE code=', 
+        INSERT INTO tempday(code,date,yesc,open,high,low,close,volume)
+        SELECT code,date,yesc,open,high,low,close,volume FROM day WHERE code=', 
         a_code, " and date<= '", @END, "' order by date DESC LIMIT ", @NUM);
     PREPARE stmt from @sqls; EXECUTE stmt;
 
     SELECT count(*) FROM tempday INTO @v_len;
 
-    -- 13日最低价(high & low 可能在同一天)
-
+    SELECT     volume    FROM tempday WHERE id =1       INTO v_volume;
+    SELECT sum(volume)/5 FROM tempday WHERE id<=5       INTO v_mavol5;
     SELECT id,date,close FROM tempday                   order by close asc  LIMIT 1 INTO v_id_lo, v_date1, v_low;
     SELECT id,date,close FROM tempday WHERE id<=v_id_lo order by close DESC LIMIT 1 INTO v_id_hi, v_date2, v_high;
 
-    IF v_id_hi < v_id_lo THEN
-        -- high > low+1
-        -- SELECT "lt 2 gap:", a_code, v_id_hi-v_id_lo+1, v_date1, v_date2;
-        SET @is_ok=1;
-    ELSE
-        -- SELECT "lt 2 gap:", a_code, v_id_hi,v_id_lo, v_date1, v_date2;
-        -- SELECT * FROM tempday;
-        LEAVE tag_lohi;
-    END IF;
+    -- 我们只预测两天，放大mavol5
+    SET v_mavol5 = IF(v_volume>v_mavol5, v_mavol5*.382+v_volume*.618, v_mavol5*1.14);
 
-    SET v_dif = 100*(v_high-v_low)/v_low;
+    -- high=low，创历史新低，如此可得出第一根阳线
+    -- IF v_id_hi = v_id_lo THEN
+    --     LEAVE tag_lohi;
+    -- END IF;
+
+    SET v_lohi = 100*(v_high-v_low)/v_low;
     SET @len   = v_id_lo-v_id_hi + 1;
 
-    INSERT INTO tbl_lohi(code,date1,date2,   high,low,    dif,off)
-             VALUES(a_code,v_date1,v_date2,v_high,v_low,v_dif,@len);
+    INSERT INTO tbl_lohi(code,date1,date2,   high,low,    lohi,off,  mavol5)
+             VALUES(a_code,v_date1,v_date2,v_high,v_low,v_lohi,@len, v_mavol5);
 END tag_lohi //
 
 -- 一些需要与shell通信的系统变量
