@@ -861,39 +861,129 @@ function fn_lohi()
     columns=${columns:-'*'}
     columns=t.${columns//,/,t.}
 
+    DROP="DROP TABLE IF EXISTS "
+    iNUM=${NUM:-5}
+    iTEMP=${END}
+    iCURR=${END}                       # prev+temp = 灵活推演
+    iPREV=`END=${iCURR} fn_get_prev`    #
+    hilo_curr="( SELECT * FROM mat_lohi WHERE end='${iCURR}' and num=${iNUM} )"
+    hilo_prev="( SELECT * FROM mat_lohi WHERE end='${iPREV}' and num=${iNUM} )"
+       d_temp="SELECT * from day where date='${iTEMP}'" 
+       d_curr="SELECT * from day where date='${iCURR}'" 
+       d_prev="SELECT * from day where date='${iPREV}'" 
+
+    inout_codes="
+    $DROP        d_curr;
+    CREATE TABLE d_curr LIKE day;
+    INSERT INTO  d_curr ${d_curr};
+    $DROP        d_prev;
+    CREATE TABLE d_prev LIKE day;
+    INSERT INTO  d_prev ${d_prev};
+
+    $DROP        prev_codes;
+    CREATE TABLE prev_codes LIKE codes;
+    INSERT INTO  prev_codes(code) 
+        SELECT code FROM (
+            SELECT t.code, round(100*(d.close-t.low)/t.low, 2) as increas
+            FROM ${hilo_prev} as t, d_prev as d
+            WHERE t.code=d.code ORDER by increas DESC LIMIT ${LIMIT:-40}    -- PREV排名前40
+        ) as t;
+
+    $DROP        curr_codes;
+    CREATE TABLE curr_codes LIKE codes;
+    INSERT INTO  curr_codes(code) 
+        SELECT code FROM (
+            SELECT t.code, round(100*(d.close-t.low)/t.low, 2) as increas
+            FROM ${hilo_curr} as t, d_curr as d
+            WHERE t.code=d.code ORDER by increas DESC LIMIT ${LIMIT:-40}    -- CURR排名前40
+        ) as t;
+
+    $DROP        out_codes;
+    CREATE TABLE out_codes LIKE codes;
+    INSERT INTO  out_codes(code) SELECT code FROM prev_codes WHERE code NOT IN(SELECT code FROM curr_codes);
+
+    $DROP         in_codes;
+    CREATE TABLE  in_codes LIKE codes;
+    INSERT INTO   in_codes(code) SELECT code FROM curr_codes WHERE code NOT IN(SELECT code FROM prev_codes);
+    "
+
+    function fn_in_or_out()
+    {
+      echo "
+      SELECT * FROM (
+        SELECT ${columns}, 
+        round(100*(d.close-t.low)/t.low, 2)  as increas,
+        round(100*(d.close-t.high)/t.low, 2) as decline,
+        ${RISE} as rise,
+        round((d.volume/t.mavol5), 2) as tov,
+        c.nmc, c.name  FROM 
+        ${hilo_curr} as t, d_curr as d, cap as c          
+        WHERE t.code=d.code and t.code=c.code
+        HAVING 1 ${EXCLUDE} 
+        ORDER by increas ${ASC:-DESC} ) as newton
+        WHERE code IN (SELECT code FROM ${1}_codes)       -- 新进 = 今天前40-(2天的交集)
+      HAVING 1 ${COND} ORDER by ${field:-increas} ${ASC:-DESC}      -- 淘汰 = 昨天前40-(2天的交集)
+      "
+    }
+
+    field=$1
+    case $1 in
+    in|out)
+        field=$2
+        fn_echo_warn "$1 after ${iCURR}"
+        function fn_yi_descend()
+        {
+          tempday="${inout_codes}"
+          tbl_super_dive=`fn_in_or_out $1`
+          echo "${tbl_super_dive}"
+        }
+        ;;
+    u)
+        echo "
+        SELECT lohi <param>
+            in : exist dates
+            out: dates list with num
+            *  : normal SELECT
+        "
+        exit
+        ;;
+    *)
+        if [ -z "${DT}" ]; then
+            TEMPDAY="tempday"
+        else
+            DT=`SELECT dorat|tail -1`
+            DT=(${DT})
+            # echo ${DT}; exit
+            TEMPDAY="(SELECT * FROM dorat WHERE date='${DT[0]}' && time='${DT[1]}')"
+        fi
+        function fn_yi_descend()
+        {
+          tempday="
+          CREATE TEMPORARY TABLE tempday LIKE day;
+          INSERT INTO tempday SELECT * from day where date='${iTEMP}';
+          "
+          # delete停牌个股
+          tbl_super_dive="
+          SELECT * FROM (
+            SELECT ${columns}, 
+            round(100*(d.close-t.low)/t.low, 2)  as increas,
+            round(100*(d.close-t.high)/t.low, 2) as decline,
+            ${RISE} as rise,
+            round((d.volume/t.mavol5), 2) as tov,
+            c.nmc, c.name  
+            FROM ${hilo_prev} as t, ${TEMPDAY} as d, cap as c
+            WHERE t.code = d.code and t.code=c.code HAVING 1 ${EXCLUDE}
+            ORDER by lohi ${ASC:-DESC} LIMIT ${LIMIT:-40} ) as t
+          HAVING 1 ${COND} ORDER by ${1:-lohi} ${ASC:-DESC}
+          "
+          echo "${tbl_super_dive}"
+        }
+
+        ;;
+    esac
+
     [ -s "${exclude2}" ] && EXCLUDE="and code not in (`cat ${exclude2}`)"
 
-    if [ -z "${DT}" ]; then
-        TEMPDAY="tempday"
-    else
-        DT=`SELECT dorat|tail -1`
-        DT=(${DT})
-        # echo ${DT}; exit
-        TEMPDAY="(SELECT * FROM dorat WHERE date='${DT[0]}' && time='${DT[1]}')"
-    fi
-
-    function fn_yi_descend()
-    {
-        tempday="
-        CREATE TEMPORARY TABLE tempday LIKE day;
-        INSERT INTO tempday SELECT * from day where date='${CURR}';
-        "
-        # delete停牌个股
-        tbl_super_dive="
-        SELECT * FROM (
-          SELECT ${columns}, 
-          round(100*(d.close-t.low)/t.low, 2)  as increas,
-          round(100*(d.close-t.high)/t.low, 2) as decline,
-          ${RISE} as rise,
-          round((d.volume/t.mavol5), 2) as tov,
-          c.nmc, c.name  
-          FROM tbl_lohi as t, ${TEMPDAY} as d, cap as c
-          WHERE t.code = d.code and t.code=c.code HAVING 1 ${EXCLUDE}
-          ORDER by lohi ${ASC:-DESC} LIMIT ${LIMIT:-45} ) as t
-        HAVING 1 ${COND} ORDER by ${1:-lohi} ${ASC:-DESC}
-        "
-        echo "${tbl_super_dive}"
-    }
 
     fn_yi_descend $1
     mysql $mo -t kts <<< "${tempday}${tbl_super_dive}"
