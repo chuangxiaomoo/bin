@@ -4,6 +4,7 @@
 
 alias        FM=''
 alias       ASC=''
+alias       TAM=''
 alias       END=''
 alias       NUM=''
 alias       TBL=''
@@ -11,6 +12,7 @@ alias      COND=''
 #lias      FINA=''      # S_I_N_A conflict with Svn
 alias      PREV=''
 alias      YIST=''
+alias      STEP=''
 alias      ZIZE=''
 alias     LIMIT=''
 alias     nmemb=''

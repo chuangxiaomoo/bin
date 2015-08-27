@@ -154,17 +154,18 @@ function fn_fenbi()
         if [ "${dt}" = NULL ]; then
             echo "exec [ ./mi5 ${code} ] for NULL database..."
             ./mi5 ${code}
-            fenbi ${code}
-            return $?       # 否则会再次执行 fn_hexun
+            fn_hexun ${code}
+            return $?
         else
+            # 第一次执行 fn_hexun
             sql="SELECT date FROM day WHERE code=${code} and date>'${fmaxdate}' and date<'${today}';"
             dates=(`mysql -N kts <<< "${sql}"`)
 
             if [ ${#dates[@]} -ne 0 ]; then
                 echo "There are dates(${dates[@]}) of ${code} absent, trying ./mi5 ${code}..."
-                mi5 ${code}
-                fenbi ${code}
-                return $?       # 否则会再次执行 fn_hexun
+                mi5 ${code}         # 可能会有空数据
+                fn_hexun ${code}    # 否则会再次执行 fn_hexun
+                return $?       
             else
                 echo "Going to update data of ${code}"
             fi
@@ -176,7 +177,6 @@ function fn_fenbi()
 
     fn_hexun $code
     xt_ret $? "DL and load mini-fenbi of ${code} fail!" || return $?
-    fn_echo_succ "DL and load mini-fenbi of ${code} succ!"
 }
 
 function fn_squeeze()
@@ -281,7 +281,7 @@ function fn_main()
         ;;
     *)
         for i in ${@:-''}; do
-            fn_fenbi $i
+            fn_fenbi $i && fn_echo_succ "DL and load mini-fenbi of ${code} succ!"
         done
         ;;
     esac

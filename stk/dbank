@@ -310,6 +310,13 @@ function fn_get_prev()
     mysql -N kts<<<"${sqls} ORDER by date DESC LIMIT ${STEP:-1},1"
 }
 
+function fn_get_next()
+{
+    # `END=${iCURR} fn_get_next`; [ -z "${iTEMP}" ] && { fn_echo_fail "empty next of ${iCURR}"; exit; }
+    sqls="SELECT date FROM day WHERE code=900001 and date>'$END'"
+    mysql -N kts<<<"${sqls} ORDER by date ASC LIMIT 1"
+}
+
 function fn_create_tbl_codes()
 {
     [ -z "${*}" ] && echo "

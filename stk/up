@@ -194,6 +194,36 @@ function fn_trace()
     return $?
 }
 
+function fn_power()
+{
+    file0='/root/bin/stk/.soptter.power10'
+    file1='/tmp/kts/power10'
+    colA="code,quarter,power10,jigou,jgnewin,sholders,name"
+    colA="A.${colA//,/,A.}"
+
+    grep -v '^#' ${file0} > ${file1}
+    echo "
+        DROP TABLE IF EXISTS power10;
+        CREATE TABLE power10 (
+            id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+            quarter     INT DEFAULT 0,
+            power10     DECIMAL(6,2) DEFAULT 0,
+            jigou       INT DEFAULT 0,
+            jgnewin     INT DEFAULT 0,
+            code        INT(6)  ZEROFILL,
+            sholders    INT DEFAULT 0,
+            name        CHAR(16),
+            INDEX(code)
+        );
+
+        LOAD DATA LOCAL INFILE '${file1}' INTO TABLE 
+            power10(code,name,quarter,power10,jigou,jgnewin,sholders);
+        SELECT ${colA} FROM power10 as A;
+    " | mysql -t kts
+    
+    return $?
+}
+
 function fn_del_hexun_day()
 {
     unarm_close_forbid=true \
@@ -816,6 +846,7 @@ function fn_main()
     "dorat  [loop]                      # 量比数据，loop when run@crontab"
     "ma2015                             # "
     "trace                              # "
+    "power                              # 权重分析"
     )
 
     # 存储过程函数文件的最后5行都是注释
