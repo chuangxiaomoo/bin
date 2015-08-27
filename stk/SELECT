@@ -339,14 +339,15 @@ function fn_dirtio()
         exit 0
         ;;
     l|list)
-        SELECT dorat | tail -48 | cat -n; exit 0
+        SELECT dorat | cat -n; exit 0
         ;;
     [0-9]*)
         let min=3*${STEP:-1}
         [ ${1} -ge ${min} ] && [ "${1}" -le 48 ] || { 
             fn_echo_fail "fail: $1 -ge ${min} && $1 -le 48"; exit 1; 
         }
-        DT=`SELECT dorat | tail -48 | sed -n "${1}p"`
+        DT=`SELECT dorat | sed -n "${1}p"` 
+        # echo ${DT};exit
         ;;
     *)
         field=$1
@@ -693,8 +694,9 @@ function fn_dorat()
         # echo DT is ${DT} > /dev/stderr
         [ -n "${DT}" ] && DT=(${DT}) && 
         COND0="WHERE DATE_FORMAT(CONCAT(date, ' ', time), '%Y-%m-%d %T')<='${DT[@]}'"
+        odr="ORDER by date DESC, time DESC"
         # date<='${DT[0]}' and time<='${DT[1]}'"
-        mysql -N kts<<< "SELECT date,time FROM ( SELECT DISTINCT date, time FROM dorat ) as t ${COND0}"
+        mysql -N kts<<< "SELECT date,time FROM ( SELECT DISTINCT date, time FROM dorat ) as t ${COND0} ${odr} LIMIT ${LIMIT:-48}"
         #fn_execute -l | grep dorat && exit
         ;;
     esac
@@ -863,13 +865,13 @@ function fn_lohi()
 
     DROP="DROP TABLE IF EXISTS "
     iNUM=${NUM:-5}
-    TAM=${TAM//END/${END}}                                              # 字串END，代表今天
+    TAM=${TAM//END/${END}}                                              # TAM代表mat_lohi中最高日期，亦TEMPDAY的日期
     TAM=${TAM:-`mysql -N kts <<< "SELECT max(end) from mat_lohi"`}      # 开市后才能指定MAT
     iTEMP=${TAM}
     iCURR=`END=${TAM} fn_get_prev`
     iPREV=`END=${iCURR} fn_get_prev`                                    # prev+temp = 灵活推演
 
-    #echo END: ${END} curr: ${iCURR}  temp:${iTEMP} prev:${iPREV}; exit
+    # echo END: ${END} TAM:${TAM} temp:${iTEMP} curr: ${iCURR} prev:${iPREV}; exit
 
     hilo_temp="( SELECT * FROM mat_lohi WHERE end='${iTEMP}' and num=${iNUM} )"
     hilo_curr="( SELECT * FROM mat_lohi WHERE end='${iCURR}' and num=${iNUM} )"
@@ -929,10 +931,10 @@ function fn_lohi()
         round((c.nmc/10000), 1) as nmcYi, c.name  
         FROM ${hilo_curr} as t, d_temp as d, cap as c
         WHERE t.code=d.code and t.code=c.code
-        HAVING 1 ${EXCLUDE} 
+        HAVING 1 ${EXCLUDE}
         ORDER by increas ${ASC:-DESC} ) as newton
         WHERE code IN (SELECT code FROM ${1}_codes)                 -- 新进 = 今天前40-(2天的交集)
-      HAVING 1 ${COND} ORDER by ${field:-increas} ${ASC:-DESC}      -- 淘汰 = 昨天前40-(2天的交集)
+      HAVING ${HAVING:-1} ORDER by ${field:-increas} ${ASC:-DESC}      -- 淘汰 = 昨天前40-(2天的交集)
       "
     }
 
@@ -945,37 +947,32 @@ function fn_lohi()
         {
           tempday="${inout_codes}"
           tbl_super_dive=`fn_in_or_out $1`
-          echo "${tbl_super_dive}"
+          fn_echo_erro "${tbl_super_dive}"
         }
         ;;
-    u)
-        echo "
-        SELECT lohi <param>
-            in : exist dates
-            out: dates list with num
-            *  : normal SELECT
-        "
-        exit
+    l|list)
+        DT="${iTEMP} 15:05:00" SELECT dorat | cat -n; exit 0
         ;;
-    *)
-        if [ -z "${DT}" ]; then
+    [0-9]*|'')
+        if [ -z "${1}" ]; then
             TEMPDAY="tempday"
+            iTEMP=`END=${iTEMP} fn_get_next`    # 仅开市时间使用，取最新。闭市时间，请使用 SELECT lohi 1
+            iTEMP=${iTEMP:-${TAM}}
+            tempday="
+            $DROP tempday; CREATE TABLE tempday LIKE day;
+            INSERT INTO tempday SELECT * from day where date='${iTEMP}';
+            "
         else
-            DT=`SELECT dorat|tail -1`
-            DT=(${DT})
+            field=$2
+            DT=`DT="${iTEMP} 15:05:00" SELECT dorat | sed -n "${1}p"`
             # echo ${DT}; exit
+            DT=(${DT})
             TEMPDAY="(SELECT * FROM dorat WHERE date='${DT[0]}' && time='${DT[1]}')"
         fi
         function fn_yi_descend()
         {
-          iTEMP=`END=${iTEMP} fn_get_next`
-          iTEMP=${iTEMP:-${TAM}}
-          tempday="
-          "
           # delete停牌个股
           tbl_super_dive="
-          $DROP tempday; CREATE TABLE tempday LIKE day;
-          INSERT INTO tempday SELECT * from day where date='${iTEMP}';
           SELECT * FROM (
             SELECT ${columns}, 
             round(100*(d.close-t.low)/t.low, 2)  as increas,
@@ -984,23 +981,34 @@ function fn_lohi()
             round((d.volume/t.mavol5), 2) as tov,
             round((d.amount/10000), 1) as eYi,
             round((c.nmc/10000), 1) as nmcYi, c.name  
-            FROM ${hilo_temp} as t, ${TEMPDAY} as d, cap as c
-            WHERE t.code = d.code and t.code=c.code HAVING 1 ${EXCLUDE}
+            FROM ${hilo_curr} as t, 
+            ${TEMPDAY} as d, cap as c
+            WHERE t.code = d.code and t.code=c.code HAVING 1 ${COND} ${EXCLUDE}
             ORDER by increas ${ASC:-DESC} LIMIT ${LIMIT:-40} ) as t
-          HAVING 1 ${COND} ORDER by ${1:-increas} ${ASC:-DESC}
+          HAVING ${HAVING:-1} ORDER by ${field:-increas} ${ASC:-DESC}
           "
-          echo "${tbl_super_dive}"
+          echo "${tempday}${tbl_super_dive}"
         }
-
+        ;;
+    u|*)
+        echo "
+        SELECT lohi <param>
+            in : exist dates
+            out: dates list with num
+            0-9: tempday from dorat
+            '' : 仅开市时间使用，取最新。闭市时间，请使用 SELECT lohi 1
+            *  : usage
+        "
+        exit
         ;;
     esac
 
     [ -s "${exclude2}" ] && EXCLUDE="and code not in (`cat ${exclude2}`)"
 
-
     fn_yi_descend $1
     mysql $mo -t kts <<< "${tempday}${tbl_super_dive}"
     xt_ret $? "${FUNCNAME}" || return $?
+    fn_echo_warn "$1 of iTEMP=${iTEMP}"
 
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 

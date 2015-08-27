@@ -1334,7 +1334,7 @@ CREATE PROCEDURE sp_lohi(a_code INT(6) ZEROFILL) tag_lohi:BEGIN
     SELECT id,date,close FROM tempday WHERE id<=v_id_lo order by close DESC LIMIT 1 INTO v_id_hi, v_date2, v_high;
 
     -- 我们只预测两天，放大mavol5
-    SET v_mavol5 = IF(v_volume>v_mavol5, v_mavol5*.382+v_volume*.618, v_mavol5*1.14);
+    SET v_mavol5 = IF(v_volume>v_mavol5, v_mavol5*.382+v_volume*.618, v_mavol5);
 
     -- high=low，创历史新低，如此可得出第一根阳线
     -- IF v_id_hi = v_id_lo THEN
