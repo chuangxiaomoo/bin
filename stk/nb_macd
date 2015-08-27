@@ -3,47 +3,8 @@
 . `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
 . /etc/common.rc
 
-function fn_routine_1_0()
+function fn_routine_10()
 {
-    tips_cnt=0
-    tips_got=''
-
-    while read code symble FM cond1 op cond2 tips; do
-        if ! ${istest} && [ "$code" != '/' ]; then                              # istest
-            echo do fenbi ${code}...
-            fenbi ${code} >& ${error}
-            xt_ret $? "down ${code}" || { cat ${error}; return $?; }
-        fi
-        if [ "${code}" = '/' ] && [ -n "$code0" ]; then # code is -
-            code=$code0
-        else
-            FM=${FM} macd ${code}                       # 自FM固定为5后，可只作一次macd
-            xt_ret $? "macd error" || return $?
-        fi
-
-        sql="SELECT IF(${cond1} ${op} ${cond2}, 1, 0) FROM mm55 WHERE code=${code} and FM=${FM}"
-        ret=`mysql -N kts <<<"${sql}"`
-
-        # echo "${sql}"
-
-        if [ "${ret}" = 1 ]; then
-            fn_echo_succ "$code.$symble.$FM $cond1 $op $cond2"
-            fn_echo_warn "$tips"
-            let tips_cnt++
-        elif [ "${ret}" = "" ]; then
-            fn_echo_fail "bad condition ${code}: ${cond1} ${op} ${cond2}"
-            fn_bell "duang.wav duang.wav"
-        fi
-        code0=$code
-    done<<<"`grep ${PATTERN:-'^[-036]'} .soptter.macd`"
-    
-    local i
-    for (( i=${tips_cnt}; i>0; i-=3 )); do
-        tips_got="${tips_got} duang.wav msg.wav"    # 2个股+2指数 = 一级戒备
-    done
-    #echo ${tips_got}
-    [ -n "${tips_got}" ] && fn_bell "$tips_got"
-
     fn_echo_warn '
     Warning:-----------------------------------------------------------------
     1. 跌不必贱，涨不必贵，水无贵贱。水能载舟，亦能覆舟，上善若水。
@@ -60,8 +21,8 @@ function fn_routine()
     tips_got=''
     >${list_limo}
 
-    while read code symble IF tips; do
-        [ "$IF" == 0 ] && continue
+    while read code symble COND0 tips; do
+        [ "$COND0" == 0 ] && continue
         if ! ${istest} && [ "$code" != '/' ]; then                              # istest
             echo do fenbi ${code}...
             fenbi ${code} >& ${error}
@@ -90,7 +51,8 @@ function fn_routine()
             sql="SELECT abs(dif)<0.382 || (CURRENT_TIMESTAMP()-datetime)>1000 FROM mm55 WHERE code=${code} and FM=5"
             ret=`mysql -N kts <<<"${sql}"`
 
-            if ${istest} || grep -q "x${code}"<<<"${forces}" || [ "${ret}" = 1 ] || [ "${ret}" = "" ]; then
+            if ${istest} || grep -q "x${code}"<<<"${forces}" || [ "${ret}" = 1 ] || 
+                [ "${ret}" = "" ] || ([ "${COND0}" != B ] && [ "${COND0}" != S ]); then
                 echo "do _dif_ ${code}..."
                 forces=${forces//x${code}/}   # 进入临界的macd要连续判断
                 FM=5 macd ${code}
@@ -99,42 +61,51 @@ function fn_routine()
         fi
 
         # sina分时数据缺失会导致ma80(F15)失真，若此，则使用{b|s}
-        case ${IF:-B} in
-        B|b)
-            if [ ${IF} = B ] && [ "${limo}" -gt 0 ] && [ "${limo}" -ge ${buyn:-3} ]; then
-                fn_echo_succ "$code.$symble.limo ${IF}"
-                let tips_cnt++
+        case ${COND0:-B} in
+        B|b|bm)
+            if [ ${COND0} = B ] && [ "${limo}" -gt 0 ] && [ "${limo}" -ge ${buyn:-3} ]; then
+                fn_echo_succ "$code.$symble.limo ${COND0}"
+                let tips_cnt+=100
             fi
-            sql="SELECT IF(dif>0&&close>fa15, 1, 0) FROM mm55 WHERE code=${code} and FM=5"
+            if [ "${COND0}" = bm ]; then
+                sql="SELECT IF(macd>0, 1, 0) FROM mm55 WHERE code=${code} and FM=5"
+            else
+                sql="SELECT IF(dif>0&&close>=fa15, 1, 0) FROM mm55 WHERE code=${code} and FM=5"
+            fi
             ret=`mysql -N kts <<<"${sql}"`
             if [ "${ret}" = 1 ]; then
-                fn_echo_succ "$code.$symble.macd ${IF}"
+                fn_echo_succ "$code.$symble.macd ${COND0}"
                 forces="x${code}${forces}"
-                let tips_cnt++
+                let tips_cnt+=100
             fi
             ;;
-        S|s)
-            if [ ${IF} = S ] && [ "${limo}" -lt 0 ] && [ "${limo#-}" -lt 3 ]; then
-                fn_echo_succ "$code.$symble.limo ${IF}"
+        S|s|sm)
+            if [ ${COND0} = S ] && [ "${limo}" -le 0 ] && [ "${limo#-}" -lt 3 ]; then
+                fn_echo_succ "$code.$symble.limo ${COND0}"
                 let tips_cnt++
             fi
-            sql="SELECT IF(dif<0&&close<fa15, 1, 0) FROM mm55 WHERE code=${code} and FM=5"
+            if [ "${COND0}" = sm ]; then
+                sql="SELECT IF(macd<0, 1, 0) FROM mm55 WHERE code=${code} and FM=5"
+            else
+                sql="SELECT IF(dif<0&&close<=fa15, 1, 0) FROM mm55 WHERE code=${code} and FM=5"
+            fi
             ret=`mysql -N kts <<<"${sql}"`
             if [ "${ret}" = 1 ]; then
-                fn_echo_succ "$code.$symble.macd ${IF}"
+                fn_echo_succ "$code.$symble.macd ${COND0}"
                 forces="x${code}${forces}"
                 let tips_cnt++
             fi
             ;;
         *)
-            sql="SELECT IF(${IF}, 1, 0) FROM mm55 WHERE code=${code} and FM=15"
+            grep -q -E 'dif|macd' <<< "${COND0}" && FM=5 || FM=15
+            sql="SELECT IF(${COND0}, 1, 0) FROM mm55 WHERE code=${code} and FM=${FM}"
             ret=`mysql -N kts <<<"${sql}"`
             if [ "${ret}" = 1 ]; then
-                fn_echo_succ "$code.$symble.cond ${IF}"
+                fn_echo_succ "$code.$symble.cond ${COND0}"
                 fn_echo_warn "$tips"
-                let tips_cnt++
+                grep -q '>' <<< "${COND0}" && let tips_cnt+=100 || let tips_cnt++
             elif [ "${ret}" = "" ]; then
-                fn_echo_fail "bad cond: ${IF}"
+                fn_echo_fail "bad cond: ${COND0}"
                 fn_bell "msg.wav msg.wav msg.wav"
             fi
             ;;
@@ -155,8 +126,11 @@ function fn_routine()
     done<<<"`grep ${PATTERN:-'^[/036]'} .soptter.macd`"
     
     local i
-    for (( i=${tips_cnt}; i>0; i-=10 )); do
-        tips_got="${tips_got} duang.wav msg.wav"    # 2个股+2指数 = 一级戒备
+    for (( i=${tips_cnt}; i>99; i-=400 )); do
+        tips_got="${tips_got} msg.wav"              # 2个股+2指数 = 一级戒备
+    done
+    for ((              ; i>0;  i-=4  )); do
+        tips_got="${tips_got} duang.wav"            # 2个股+2指数 = 一级戒备
     done
     #echo ${tips_got}
     if [ -n "${tips_got}" ]; then
@@ -177,8 +151,8 @@ function fn_loop()
     while :; do
         fn_isresting && { sleep 150; continue; }
         fn_routine
-        echo "to sleeping ${intv:=120}s"        # F5x3有效突破，即3线之内，低点抬高，高点亦抬高
-        sleep ${intv}                           #               若是大阳线，则不破1/2长度
+        echo "to sleeping ${STEP:=120}s"        # F5x3有效突破，即3线之内，低点抬高，高点亦抬高
+        sleep ${STEP}                           #               若是大阳线，则不破1/2长度
     done
     return $?
 }

@@ -863,29 +863,34 @@ function fn_lohi()
 
     DROP="DROP TABLE IF EXISTS "
     iNUM=${NUM:-5}
-    iTEMP=${END}
-    iCURR=${END}                       # prev+temp = 灵活推演
-    iPREV=`END=${iCURR} fn_get_prev`    #
+    TAM=${TAM//END/${END}}                                              # 字串END，代表今天
+    TAM=${TAM:-`mysql -N kts <<< "SELECT max(end) from mat_lohi"`}      # 开市后才能指定MAT
+    iTEMP=${TAM}
+    iCURR=`END=${TAM} fn_get_prev`
+    iPREV=`END=${iCURR} fn_get_prev`                                    # prev+temp = 灵活推演
+
+    #echo END: ${END} curr: ${iCURR}  temp:${iTEMP} prev:${iPREV}; exit
+
+    hilo_temp="( SELECT * FROM mat_lohi WHERE end='${iTEMP}' and num=${iNUM} )"
     hilo_curr="( SELECT * FROM mat_lohi WHERE end='${iCURR}' and num=${iNUM} )"
     hilo_prev="( SELECT * FROM mat_lohi WHERE end='${iPREV}' and num=${iNUM} )"
-       d_temp="SELECT * from day where date='${iTEMP}'" 
-       d_curr="SELECT * from day where date='${iCURR}'" 
-       d_prev="SELECT * from day where date='${iPREV}'" 
+       d_temp="SELECT * from day where date='${iTEMP}'"     # 最新day数据，可以是开市数据
+       d_curr="SELECT * from day where date='${iCURR}'"     # 次新day数据，必是必市后数据
 
     inout_codes="
+    $DROP        d_temp;
+    CREATE TABLE d_temp LIKE day;
+    INSERT INTO  d_temp ${d_temp};
     $DROP        d_curr;
     CREATE TABLE d_curr LIKE day;
     INSERT INTO  d_curr ${d_curr};
-    $DROP        d_prev;
-    CREATE TABLE d_prev LIKE day;
-    INSERT INTO  d_prev ${d_prev};
 
     $DROP        prev_codes;
     CREATE TABLE prev_codes LIKE codes;
     INSERT INTO  prev_codes(code) 
         SELECT code FROM (
             SELECT t.code, round(100*(d.close-t.low)/t.low, 2) as increas
-            FROM ${hilo_prev} as t, d_prev as d
+            FROM ${hilo_prev} as t, d_curr as d
             WHERE t.code=d.code ORDER by increas DESC LIMIT ${LIMIT:-40}    -- PREV排名前40
         ) as t;
 
@@ -894,9 +899,13 @@ function fn_lohi()
     INSERT INTO  curr_codes(code) 
         SELECT code FROM (
             SELECT t.code, round(100*(d.close-t.low)/t.low, 2) as increas
-            FROM ${hilo_curr} as t, d_curr as d
+            FROM ${hilo_curr} as t, d_temp as d
             WHERE t.code=d.code ORDER by increas DESC LIMIT ${LIMIT:-40}    -- CURR排名前40
         ) as t;
+
+    $DROP        sit_codes;
+    CREATE TABLE sit_codes LIKE codes;
+    INSERT INTO  sit_codes(code) SELECT p.code FROM prev_codes as p, curr_codes as c  WHERE p.code=c.code;
 
     $DROP        out_codes;
     CREATE TABLE out_codes LIKE codes;
@@ -916,21 +925,22 @@ function fn_lohi()
         round(100*(d.close-t.high)/t.low, 2) as decline,
         ${RISE} as rise,
         round((d.volume/t.mavol5), 2) as tov,
-        c.nmc, c.name  FROM 
-        ${hilo_curr} as t, d_curr as d, cap as c          
+        round((d.amount/10000), 1) as eYi,
+        round((c.nmc/10000), 1) as nmcYi, c.name  
+        FROM ${hilo_curr} as t, d_temp as d, cap as c
         WHERE t.code=d.code and t.code=c.code
         HAVING 1 ${EXCLUDE} 
         ORDER by increas ${ASC:-DESC} ) as newton
-        WHERE code IN (SELECT code FROM ${1}_codes)       -- 新进 = 今天前40-(2天的交集)
+        WHERE code IN (SELECT code FROM ${1}_codes)                 -- 新进 = 今天前40-(2天的交集)
       HAVING 1 ${COND} ORDER by ${field:-increas} ${ASC:-DESC}      -- 淘汰 = 昨天前40-(2天的交集)
       "
     }
 
     field=$1
     case $1 in
-    in|out)
+    in|out|sit)
         field=$2
-        fn_echo_warn "$1 after ${iCURR}"
+        fn_echo_warn "$1 of TAM=${iTEMP}"
         function fn_yi_descend()
         {
           tempday="${inout_codes}"
@@ -958,23 +968,26 @@ function fn_lohi()
         fi
         function fn_yi_descend()
         {
+          iTEMP=`END=${iTEMP} fn_get_next`
+          iTEMP=${iTEMP:-${TAM}}
           tempday="
-          CREATE TEMPORARY TABLE tempday LIKE day;
-          INSERT INTO tempday SELECT * from day where date='${iTEMP}';
           "
           # delete停牌个股
           tbl_super_dive="
+          $DROP tempday; CREATE TABLE tempday LIKE day;
+          INSERT INTO tempday SELECT * from day where date='${iTEMP}';
           SELECT * FROM (
             SELECT ${columns}, 
             round(100*(d.close-t.low)/t.low, 2)  as increas,
             round(100*(d.close-t.high)/t.low, 2) as decline,
             ${RISE} as rise,
             round((d.volume/t.mavol5), 2) as tov,
-            c.nmc, c.name  
-            FROM ${hilo_prev} as t, ${TEMPDAY} as d, cap as c
+            round((d.amount/10000), 1) as eYi,
+            round((c.nmc/10000), 1) as nmcYi, c.name  
+            FROM ${hilo_temp} as t, ${TEMPDAY} as d, cap as c
             WHERE t.code = d.code and t.code=c.code HAVING 1 ${EXCLUDE}
-            ORDER by lohi ${ASC:-DESC} LIMIT ${LIMIT:-40} ) as t
-          HAVING 1 ${COND} ORDER by ${1:-lohi} ${ASC:-DESC}
+            ORDER by increas ${ASC:-DESC} LIMIT ${LIMIT:-40} ) as t
+          HAVING 1 ${COND} ORDER by ${1:-increas} ${ASC:-DESC}
           "
           echo "${tbl_super_dive}"
         }
@@ -1065,7 +1078,8 @@ function fn_macd()
     SELECT code,FM,datetime%1000000 as time,
         ${fields}, TRUNCATE(mavol5/mavol20, 2) as nb,
         round(abs((close-fa15)/fa15/.01), 2) as abs,
-            cvgenc, ${limo} as limo, dif FROM mm55
+            -- cvgenc, 
+            ${limo} as limo, dif,macd FROM mm55
             HAVING 1 ${COND} ${inLIST}
             ORDER by ${field:-code},FM ${ASC:-ASC};
 	" | mysql -t kts
@@ -1093,23 +1107,23 @@ function fn_main()
     "ma240_usage        {1~9}                 # 分析ma 5 13 34 55"
     "dif120             code...               # cost:(close-ma120) & sort by #{ASC:id}"
     # ----------------  ABOVE IS FIXED SEQUENCE --------------------
-    "updown             [LIMIT:-13]           # 近期涨跌家数统计"
+    "xrd                field                 # #{OP:->}"
+    "ace                                      # +10%"
     "td_layout          code                  # 日内最高价时点分布.10:00am"
-    "ls                 {code|symbol}         # 日线数据 \$LIMIT"
     "cap                code                  # 查询nmc&cap"
     "name               code                  # 名"
-    "vol                {0|3|6|03}            # ^^3市成交^^"
-    "lsd                [{top|floor}][field]  # --- END YIST LIMIT 涨幅排名"
     "pma                code                  # NUM=5日平均"
     "fbi                                      # tbl_fbi"
     "acc                                      # tbl_adiff"
     "acf                                      # tbl_acfdiff"
     "tao5                                     # "
     "rdiff                                    # tbl_rdiff"
+    "vol                {0|3|6|03}            # ^^3市成交^^"
+    "ls                 {code|symbol}         # 日线数据 \$LIMIT"
+    "lsd                [{top|floor}][field]  # --- END YIST LIMIT 涨幅排名"
+    "updown             [LIMIT:-13]           # 近期涨跌家数统计"
     "hilo               field                 # field to sort by"
     "lohi               field                 # field to sort by"
-    "xrd                field                 # #{OP:->}"
-    "ace                                      # +10%"
     "lhb                excption              # 龙虎榜"
     "macd               [clean]               # macd-alarm-sys"
     "tri                                      # 3连阳"

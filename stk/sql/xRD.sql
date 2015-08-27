@@ -107,8 +107,8 @@ CREATE PROCEDURE sp_fmacd() tag_fmacd:BEGIN
     UPDATE  fmacd SET dif  = short_ema-long_ema;
 
 --  为加速macd时间，减少不必要的工作量 
---  call sp_ema('fmacd', 'dif',   'dea',       9);
---  UPDATE  fmacd SET macd = (dif -dea)*2 ;
+    call sp_ema('fmacd', 'dif',   'dea',       9);
+    UPDATE  fmacd SET macd = (dif -dea)*2 ;
 END tag_fmacd//
 
 
