@@ -46,9 +46,9 @@ function fn_routine()
             # macd计算作为BuySell的标配进行，但对其进行下列优化，触发执行
             # 0. 清空dif表
             # 1. 上一个时间单元abs(dif)<0.006
-            # 2. 上一个更新时间>10min
+            # 2. 上一个更新时间>5min
             # 3. ${istest}
-            sql="SELECT abs(dif)<0.382 || (CURRENT_TIMESTAMP()-datetime)>1000 FROM mm55 WHERE code=${code} and FM=5"
+            sql="SELECT abs(dif)<0.382 || (CURRENT_TIMESTAMP()-datetime)>500 FROM mm55 WHERE code=${code} and FM=5"
             ret=`mysql -N kts <<<"${sql}"`
 
             if ${istest} || grep -q "x${code}"<<<"${forces}" || [ "${ret}" = 1 ] || 
@@ -112,7 +112,7 @@ function fn_routine()
         esac
 
         x_mavol=`cat ${file_mavol}`
-        sql="SELECT IF(mavol5>880 && mavol5/mavol20>${x_mavol:-2}, 1, 0) FROM mm55 WHERE code=${code} and FM=15"
+        sql="SELECT IF(mavol5>2000 && mavol5/mavol20>${x_mavol:-2}, 1, 0) FROM mm55 WHERE code=${code} and FM=15"
         ret=`mysql -N kts <<<"${sql}"`
         if [ "${ret}" = 1 ]; then
             fn_echo_succ "$code.$symble.cond mavol5/mavol20>${x_mavol}"
@@ -140,9 +140,9 @@ function fn_routine()
 
     fn_echo_warn '
     Warning:-----------------------------------------------------------------
-    1. 跌不必贱，涨不必贵，水无贵贱。水能载舟，亦能覆舟，上善若水。
-    2. 根据大盘决定整体仓位
-    3. 当天出现过卖出信号的，当天不可以买入。可：dif第一次跌破时，小仓博反弹
+    1. 余额宝、钱去哪儿了？(加大打击内幕交易和操纵市场)
+    2. 3大指数全绿，徐工机械的盈利只是浮动
+    3. 3大指数全绿，买入信号是dif>0，而非macd>0
     '
 }
 
