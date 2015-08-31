@@ -891,18 +891,18 @@ function fn_lohi()
     CREATE TABLE prev_codes LIKE codes;
     INSERT INTO  prev_codes(code) 
         SELECT code FROM (
-            SELECT t.code, round(100*(d.close-t.low)/t.low, 2) as increas
+            SELECT t.code, round(100*(d.close-t.low)/t.low, 2) as incr
             FROM ${hilo_prev} as t, d_curr as d
-            WHERE t.code=d.code ORDER by increas DESC LIMIT ${LIMIT:-40}    -- PREV排名前40
+            WHERE t.code=d.code ORDER by incr DESC LIMIT ${LIMIT:-40}    -- PREV排名前40
         ) as t;
 
     $DROP        curr_codes;
     CREATE TABLE curr_codes LIKE codes;
     INSERT INTO  curr_codes(code) 
         SELECT code FROM (
-            SELECT t.code, round(100*(d.close-t.low)/t.low, 2) as increas
+            SELECT t.code, round(100*(d.close-t.low)/t.low, 2) as incr
             FROM ${hilo_curr} as t, d_temp as d
-            WHERE t.code=d.code ORDER by increas DESC LIMIT ${LIMIT:-40}    -- CURR排名前40
+            WHERE t.code=d.code ORDER by incr DESC LIMIT ${LIMIT:-40}    -- CURR排名前40
         ) as t;
 
     $DROP        sit_codes;
@@ -923,8 +923,8 @@ function fn_lohi()
       echo "
       SELECT * FROM (
         SELECT ${columns}, 
-        round(100*(d.close-t.low)/t.low, 2)  as increas,
-        round(100*(d.close-t.high)/t.low, 2) as decline,
+        round(100*(d.close-t.low)/t.low, 2)  as incr,
+        round(100*(d.close-t.high)/t.low, 2) as decn,
         ${RISE} as rise,
         round((d.volume/t.mavol5), 2) as tov,
         round((d.amount/10000), 1) as eYi,
@@ -932,9 +932,9 @@ function fn_lohi()
         FROM ${hilo_curr} as t, d_temp as d, cap as c
         WHERE t.code=d.code and t.code=c.code
         HAVING 1 ${EXCLUDE}
-        ORDER by increas ${ASC:-DESC} ) as newton
+        ORDER by incr ${ASC:-DESC} ) as newton
         WHERE code IN (SELECT code FROM ${1}_codes)                 -- 新进 = 今天前40-(2天的交集)
-      HAVING ${HAVING:-1} ORDER by ${field:-increas} ${ASC:-DESC}      -- 淘汰 = 昨天前40-(2天的交集)
+      HAVING ${HAVING:-1} ORDER by ${field:-incr} ${ASC:-DESC}      -- 淘汰 = 昨天前40-(2天的交集)
       "
     }
 
@@ -975,8 +975,9 @@ function fn_lohi()
           tbl_super_dive="
           SELECT * FROM (
             SELECT ${columns}, 
-            round(100*(d.close-t.low)/t.low, 2)  as increas,
-            round(100*(d.close-t.high)/t.low, 2) as decline,
+            round(100*(d.close-t.low)/t.low, 2)  as incr,
+            round(100*(d.close-t.high)/t.low, 2) as decn,
+            round(100*(d.amount/d.volume-d.yesc)/d.yesc, 2) as avri,
             ${RISE} as rise,
             round((d.volume/t.mavol5), 2) as tov,
             round((d.amount/10000), 1) as eYi,
@@ -984,8 +985,8 @@ function fn_lohi()
             FROM ${hilo_curr} as t, 
             ${TEMPDAY} as d, cap as c
             WHERE t.code = d.code and t.code=c.code HAVING 1 ${COND} ${EXCLUDE}
-            ORDER by increas ${ASC:-DESC} LIMIT ${LIMIT:-40} ) as t
-          HAVING ${HAVING:-1} ORDER by ${field:-increas} ${ASC:-DESC}
+            ORDER by incr ${ASC:-DESC} LIMIT ${LIMIT:-40} ) as t
+          HAVING ${HAVING:-1} ORDER by ${field:-incr} ${ASC:-DESC}
           "
           echo "${tempday}${tbl_super_dive}"
         }
