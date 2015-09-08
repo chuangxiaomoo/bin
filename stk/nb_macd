@@ -46,17 +46,27 @@ function fn_routine()
             # macd计算作为BuySell的标配进行，但对其进行下列优化，触发执行
             # 0. 清空dif表
             # 1. 上一个时间单元abs(dif)<0.006
-            # 2. 上一个更新时间>5min
+            # 2. 上一个更新时间>3min
             # 3. ${istest}
-            sql="SELECT abs(dif)<0.382 || (CURRENT_TIMESTAMP()-datetime)>500 FROM mm55 WHERE code=${code} and FM=5"
+            sql="SELECT abs(dif)<0.382 || (CURRENT_TIMESTAMP()-datetime)>300 FROM mm55 WHERE code=${code} and FM=5"
             ret=`mysql -N kts <<<"${sql}"`
 
-            if ${istest} || grep -q "x${code}"<<<"${forces}" || [ "${ret}" = 1 ] || 
-                [ "${ret}" = "" ] || ([ "${COND0}" != B ] && [ "${COND0}" != S ]); then
+            if ${istest} || grep -q "x${code}"<<<"${forces}" || [ "${ret}" = 1 ] || [ "${ret}" = "" ] || 
+                ([ "${COND0}" != B ] && [ "${COND0}" != S ]); then
                 echo "do _dif_ ${code}..."
                 forces=${forces//x${code}/}   # 进入临界的macd要连续判断
                 FM=5 macd ${code}
                 xt_ret $? "macd error" || return $?
+            fi
+
+            # 量比检查，只做一次
+            x_mavol=`cat ${file_mavol}`
+            sql="SELECT IF(mavol5>2000 && mavol5/mavol20>${x_mavol:-2}, 1, 0) FROM mm55 WHERE code=${code} and FM=15"
+            ret=`mysql -N kts <<<"${sql}"`
+            if [ "${ret}" = 1 ]; then
+                fn_echo_succ "$code.$symble.cond mavol5/mavol20>${x_mavol}"
+                tips_got='tweet.wav'
+                echo ${code} >> ${list_limo}
             fi
         fi
 
@@ -111,27 +121,21 @@ function fn_routine()
             ;;
         esac
 
-        x_mavol=`cat ${file_mavol}`
-        sql="SELECT IF(mavol5>2000 && mavol5/mavol20>${x_mavol:-2}, 1, 0) FROM mm55 WHERE code=${code} and FM=15"
-        ret=`mysql -N kts <<<"${sql}"`
-        if [ "${ret}" = 1 ]; then
-            fn_echo_succ "$code.$symble.cond mavol5/mavol20>${x_mavol}"
-            tips_got='tweet.wav'
-            echo ${code} >> ${list_limo}
-        fi
-
         [ "${tips_cnt}" -gt ${tips_old:-0} ] && echo ${code} >> ${list_limo}
         code0=$code
         tips_old=${tips_cnt}
     done<<<"`grep ${PATTERN:-'^[/036]'} .soptter.macd`"
     
+    #echo ${tips_cnt}
     local i
+    for (( i=tips_cnt%100; i>0;  i-=4  )); do
+        tips_got="${tips_got} duang.wav"            # 卖：2个股+2指数 = 一级戒备
+    done
+
     for (( i=${tips_cnt}; i>99; i-=400 )); do
-        tips_got="${tips_got} msg.wav"              # 2个股+2指数 = 一级戒备
+        tips_got="${tips_got} msg.wav"              # 买：2个股+2指数 = 一级戒备
     done
-    for ((              ; i>0;  i-=4  )); do
-        tips_got="${tips_got} duang.wav"            # 2个股+2指数 = 一级戒备
-    done
+    #echo ${i}
     #echo ${tips_got}
     if [ -n "${tips_got}" ]; then
          fn_bell "$tips_got"
@@ -139,10 +143,13 @@ function fn_routine()
     fi
 
     fn_echo_warn '
-    Warning:-----------------------------------------------------------------
+    Warning:--------------钱、势、惊、生---------------------------------
     1. 余额宝、钱去哪儿了？(加大打击内幕交易和操纵市场)
     2. 3大指数全绿，徐工机械的盈利只是浮动
-    3. 3大指数全绿，买入信号是dif>0，而非macd>0
+    3. 异于平常，即为背离(顺势者聪明钱，聪明钱不逆势)
+    4. 大高开危机：连板开板(光韵达)，6%之上，不买入(弱市)
+    5. 大股本危机：高于100亿，每天成交10亿(&市场变)
+    6. 大换手危机：连阳高于100%，1日高于前日1.6倍
     '
 }
 
@@ -151,7 +158,7 @@ function fn_loop()
     while :; do
         fn_isresting && { sleep 150; continue; }
         fn_routine
-        echo "to sleeping ${STEP:=120}s"        # F5x3有效突破，即3线之内，低点抬高，高点亦抬高
+        echo "to sleeping ${STEP:=108}s"        # F5x3有效突破，即3线之内，低点抬高，高点亦抬高
         sleep ${STEP}                           #               若是大阳线，则不破1/2长度
     done
     return $?

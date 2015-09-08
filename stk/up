@@ -158,7 +158,7 @@ function fn_hexun_day()
 function fn_trace()
 {
     file='/root/bin/stk/sql/trace'
-    colA="date,curr_asset,frozen,sh,cyb"
+    colA="date,curr_asset,frozen"   # ,sh,cyb"
     colA="A.${colA//,/,A.}"
 
     echo "
