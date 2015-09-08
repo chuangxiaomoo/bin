@@ -59,6 +59,7 @@ function fn_lsd()
     columns="code,yesc,open,close"
     columns=${columns:-'*'}
     columns=d.${columns//,/,d.}
+    TEMPDAY='day'
 
     fn_yist 
     echo ----- LIST:${#LIST[@]} COND@${END}: $COND -----
@@ -75,6 +76,22 @@ function fn_lsd()
         HAVING="rise<-9.93"
         field=${2:-nmc}
         ;;
+    l|list)
+        TAM=${END} SELECT lohi l; exit 0;
+        ;;
+    [0-9]*)
+        if [ "${1}" = 0 ]; then
+            LIMIT=2000 HAVING='rise>0' SELECT lsd
+            exit 0;
+        fi
+        LIMIT=${LIMIT:-2000}
+        field=${2:-rise}
+        DT=`DT="${END} 15:05:00" SELECT dorat | sed -n "${1}p"`
+        # echo ${DT}; exit
+        DT=(${DT})
+        TEMPDAY="(SELECT * FROM dorat WHERE date='${DT[0]}' && time='${DT[1]}')"
+        HAVING="rise>0"
+        ;;
     *)
         field=${1:-rise}
         ;;
@@ -83,11 +100,13 @@ function fn_lsd()
     function fn_sql()
     {
         sqls="
-        SELECT $columns, volume,amount, $RISE as rise, $TURNOV as tov, c.nmc, c.name
-                FROM day as d,cap as c where d.code = c.code and d.date = '${END}' 
+        SELECT $columns, volume,amount, 
+                $RISE as rise, 
+                $TURNOV as tov, c.nmc, c.name
+                FROM ${TEMPDAY} as d,cap as c where d.code = c.code and d.date = '${END}' 
                 HAVING ${HAVING:-1} ${COND} ${inLIST} ORDER BY ${field} ${ASC:-desc} limit ${LIMIT:-36}
         " 
-        #echo ${sqls}
+        # echo "${sqls}"
     }
     fn_sql $@ 
     mysql -t kts <<<"${sqls}"
@@ -432,7 +451,8 @@ function fn_wma()
 
 function fn_updown()
 {
-    START=`./SELECT get_open_days ${1:-13} | head -1`
+    NUM=${NUM:-5}
+    START=`./SELECT get_open_days ${NUM} | head -1`
 
     echo "
     From ${START} to ${END}...
@@ -445,6 +465,7 @@ function fn_updown()
     echo "
     SET @START='$START';
     SET @END='$END';
+    SET @NUM=${NUM};
     call sp_stat_change();
     SELECT * FROM tbl_stat_change ORDER by ${field:-date} ${ASC:-ASC};
     " | tee /dev/stderr >> $mps_god
@@ -1130,7 +1151,7 @@ function fn_main()
     "vol                {0|3|6|03}            # ^^3市成交^^"
     "ls                 {code|symbol}         # 日线数据 \$LIMIT"
     "lsd                [{top|floor}][field]  # --- END YIST LIMIT 涨幅排名"
-    "updown             [LIMIT:-13]           # 近期涨跌家数统计"
+    "updown                                   # 近期{NUM=13}涨跌家数统计"
     "hilo               field                 # field to sort by"
     "lohi               field                 # field to sort by"
     "lhb                excption              # 龙虎榜"
