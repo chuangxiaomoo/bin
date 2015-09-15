@@ -615,6 +615,7 @@ CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
     DECLARE v_inc       INT DEFAULT 0; 
     DECLARE v_dec0      INT DEFAULT 0; 
 
+    DECLARE v_inc10      INT DEFAULT 0; 
     DECLARE v_inc8p      INT DEFAULT 0; 
     DECLARE v_inc58      INT DEFAULT 0; 
     DECLARE v_inc25      INT DEFAULT 0; 
@@ -642,6 +643,7 @@ CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
         inc         INT(6) NOT NULL DEFAULT 0,
         dec0        INT(6) NOT NULL DEFAULT 0,
 
+        inc10        INT(6) NOT NULL DEFAULT 0,
         inc8p        INT(6) NOT NULL DEFAULT 0,
         inc58        INT(6) NOT NULL DEFAULT 0,
         inc25        INT(6) NOT NULL DEFAULT 0,
@@ -667,19 +669,20 @@ CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
         SELECT count(code) FROM tbl_change WHERE date=v_start                          INTO @cnt;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng>=0              INTO v_inc;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<0               INTO v_dec0;
-        SELECT count(code) FROM tbl_change WHERE date=v_start and chng>=8              INTO v_inc8p;
-        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<8 and chng>=5   INTO v_inc58;
-        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<5 and chng>=2   INTO v_inc25;
-        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<2 and chng>=0   INTO v_inc02;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng>9.94            INTO v_inc10;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng>=8 && chng<9.95 INTO v_inc8p;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<8  and chng>=5  INTO v_inc58;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<5  and chng>=2  INTO v_inc25;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<2  and chng>=0  INTO v_inc02;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<0  and chng>=-2 INTO v_dec02;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<-2 and chng>=-5 INTO v_dec25;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<-5 and chng>=-8 INTO v_dec58;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<-8              INTO v_dec8p;
 
         INSERT INTO tbl_stat_change(date, cnt, inc, dec0, 
-                inc8p ,inc58 ,inc25 ,inc02 ,dec02 ,dec25 ,dec58 ,dec8p )
+                inc10, inc8p ,inc58 ,inc25 ,inc02 ,dec02 ,dec25 ,dec58 ,dec8p )
         VALUES(v_start, @cnt, v_inc, v_dec0, 
-                v_inc8p ,v_inc58 ,v_inc25 ,v_inc02 ,v_dec02 ,v_dec25 ,v_dec58 ,v_dec8p );
+                v_inc10, v_inc8p ,v_inc58 ,v_inc25 ,v_inc02 ,v_dec02 ,v_dec25 ,v_dec58 ,v_dec8p );
         -- LEAVE tag_stat_change;
     END WHILE;
 
@@ -1285,6 +1288,7 @@ CREATE PROCEDURE sp_create_tbl_lohi() tag_tbl_lohi:BEGIN
         high        DECIMAL(6,2) NOT NULL DEFAULT 0,
         low         DECIMAL(6,2) NOT NULL DEFAULT 0,
         lohi        DECIMAL(6,2) NOT NULL DEFAULT 0,    -- 100*(high-low)/low
+        scale       DECIMAL(6,2) NOT NULL DEFAULT 0,
         mavol5      INT
     );
 --  DROP   TABLE IF EXISTS mat_lohi;
@@ -1299,6 +1303,7 @@ CREATE PROCEDURE sp_create_tbl_lohi() tag_tbl_lohi:BEGIN
         high        DECIMAL(6,2) NOT NULL DEFAULT 0,
         low         DECIMAL(6,2) NOT NULL DEFAULT 0,
         lohi        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        scale       DECIMAL(6,2) NOT NULL DEFAULT 0,
         mavol5      INT,
         INDEX(end,num,code)
     );
@@ -1317,6 +1322,7 @@ CREATE PROCEDURE sp_lohi(a_code INT(6) ZEROFILL) tag_lohi:BEGIN
     DECLARE v_lohi      DECIMAL(6,2) DEFAULT 0;
     DECLARE v_mavol5    INT DEFAULT 0;
     DECLARE v_volume    INT DEFAULT 0;
+    DECLARE v_scale     DECIMAL(6,2) DEFAULT 0;
 
     call sp_create_tempday();
 
@@ -1328,7 +1334,8 @@ CREATE PROCEDURE sp_lohi(a_code INT(6) ZEROFILL) tag_lohi:BEGIN
 
     SELECT count(*) FROM tempday INTO @v_len;
 
-    SELECT     volume    FROM tempday WHERE id =1       INTO v_volume;
+    SELECT     volume      FROM tempday WHERE id =1       INTO v_volume;
+    SELECT v_volume/volume FROM tempday WHERE id =2       INTO v_scale;
     SELECT sum(volume)/5 FROM tempday WHERE id<=5       INTO v_mavol5;
     SELECT id,date,close FROM tempday                   order by close asc  LIMIT 1 INTO v_id_lo, v_date1, v_low;
     SELECT id,date,close FROM tempday WHERE id<=v_id_lo order by close DESC LIMIT 1 INTO v_id_hi, v_date2, v_high;
@@ -1344,8 +1351,8 @@ CREATE PROCEDURE sp_lohi(a_code INT(6) ZEROFILL) tag_lohi:BEGIN
     SET v_lohi = 100*(v_high-v_low)/v_low;
     SET @len   = v_id_lo-v_id_hi + 1;
 
-    INSERT INTO tbl_lohi(code,date1,date2,   high,low,    lohi,off,  mavol5)
-             VALUES(a_code,v_date1,v_date2,v_high,v_low,v_lohi,@len, v_mavol5);
+    INSERT INTO tbl_lohi(code,date1,date2,   high,low,    lohi,off, scale,  mavol5)
+             VALUES(a_code,v_date1,v_date2,v_high,v_low,v_lohi,@len, v_scale, v_mavol5);
 END tag_lohi //
 
 -- 一些需要与shell通信的系统变量

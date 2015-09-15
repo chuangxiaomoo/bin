@@ -718,8 +718,8 @@ function fn_lohi()
         INSERT INTO zxg(code) SELECT code FROM day WHERE date='${iEND}' and code<765432;
         " | mysql kts
         sql_insert_mat_lohi="
-        INSERT INTO mat_lohi(end,num,code,date1,date2,off,high,low,lohi,mavol5)
-            SELECT  '${iEND}',${iNUM},code,date1,date2,off,high,low,lohi,mavol5 FROM tbl_lohi;
+        INSERT INTO mat_lohi(end,num,code,date1,date2,off,high,low,lohi,scale,mavol5)
+            SELECT  '${iEND}',${iNUM},code,date1,date2,off,high,low,lohi,scale,mavol5 FROM tbl_lohi;
         "
     fi
 

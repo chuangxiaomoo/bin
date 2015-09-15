@@ -200,7 +200,8 @@ function fn_str_2_date()
 
 function fn_isindex()
 {
-    [ "${1}" = '000001' ] || [ "${1}" = '399005' ] || [ "${1}" = '399006' ]
+    [ "${1}" = '000902' ] || [ "${1}" = '000001' ] || \
+    [ "${1}" = '399005' ] || [ "${1}" = '399006' ]
     return $?
 }
 
@@ -467,7 +468,7 @@ fn_group_nmc_layout()
 
 }
 
-main() 
+function main() 
 {
     list=(
         fn_group_nmc_layout
