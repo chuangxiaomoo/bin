@@ -71,6 +71,11 @@ function fn_echo_fail()
     return 0
 }
 
+function fn_echo_erro()
+{
+    echo "$1" > /dev/stderr
+}
+
 function fn_pkill_children()
 {
     local papa=$1

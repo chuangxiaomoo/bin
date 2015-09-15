@@ -70,6 +70,7 @@ function fn_2014_grandpa_inlaw()        { cat annual_2014_grandpa_inlaw ;}
 function fn_2014_report()               { cat annual_2014_report ;}
 function fn_2014_national_day()         { cat annual_2014_national_day ;}
 function fn_2015_plan()                 { cat annual_2015_plan ;}
+function fn_2015_event()                { cat annual_2015_event ;}
 function fn_2015_report()               { cat annual_2015_report ;}
     local opts=(
         plan_what                       # 基于`以终为始`的理念
@@ -90,6 +91,7 @@ function fn_2015_report()               { cat annual_2015_report ;}
         2014_report
         2014_national_day               # NationalDay
         2015_plan
+        2015_event
         2015_report
     )
     fn_print $@
@@ -535,9 +537,9 @@ function fn_12_wife()                   { cat girl_12_wife ;}
     local opts=(
         base       
         lovewords
+        11_2013相亲记                   # xiangqin 爱情观
         00_jiebao
         01_tingbao
-        11_2013相亲记                   # xiangqin
         12_wife                         # 贤良12妻
     )
     fn_print $@
@@ -735,6 +737,7 @@ function fn_estate()                    { cat estate ;}
 function fn_driver()                    { cat driver ;}
 function fn_cold()                      { cat cold ;}
 function fn_sport()                     { cat sport ;}
+function fn_guo()                       { cat guo ;}
 
 # 新教与天主教。信则得救，不信则下地狱 vs 助人行善
 # 一花一世界，一木一浮生，一草一天堂，一叶一如来，
@@ -765,6 +768,7 @@ function fn_main() {
         family                          # 难念的经 家国天下
         girl
         guang
+        guo                             # 碁
         huawei
         humor                           # 幽默
         herb                            # 中医

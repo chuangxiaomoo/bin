@@ -67,13 +67,13 @@ function fn_lsd()
 
     case $1 in
     t|top)
-        LIMIT=2000
-        HAVING="rise>9.93"
+        LIMIT=${LIMIT:-200}
+        HAVING="rise>9.94"
         field=${2:-nmc}
         ;;
     f|floor)
-        LIMIT=2000
-        HAVING="rise<-9.93"
+        LIMIT=${LIMIT:-200}
+        HAVING="rise<-9.94"
         field=${2:-nmc}
         ;;
     l|list)
@@ -81,16 +81,28 @@ function fn_lsd()
         ;;
     [0-9]*)
         if [ "${1}" = 0 ]; then
-            LIMIT=2000 HAVING='rise>0' SELECT lsd
+            LIMIT=${LIMIT:-200} HAVING='rise>0' SELECT lsd
             exit 0;
         fi
-        LIMIT=${LIMIT:-2000}
+        LIMIT=${LIMIT:-400}
         field=${2:-rise}
         DT=`DT="${END} 15:05:00" SELECT dorat | sed -n "${1}p"`
-        # echo ${DT}; exit
+        fn_echo_warn ${DT} # exit
         DT=(${DT})
         TEMPDAY="(SELECT * FROM dorat WHERE date='${DT[0]}' && time='${DT[1]}')"
         HAVING="rise>0"
+        ;;
+    u|usage)
+        echo "
+        lsd <param>:
+        usage           show usage
+        list            list 5min table
+        {0-9}*          index from 5min table
+        top             10%
+        floor           -10%
+        ''              top default
+        "
+        exit
         ;;
     *)
         field=${1:-rise}
@@ -124,7 +136,7 @@ function fn_ace()
 
     function fn_sql()
     {
-        sqls="SELECT code FROM day as d where d.date = '${date:-$1}' and ${RISE}>9.93 " 
+        sqls="SELECT code FROM day as d where d.date = '${date:-$1}' and ${RISE}>9.94 " 
         #echo ${sqls}
     }
 
@@ -452,6 +464,21 @@ function fn_wma()
 function fn_updown()
 {
     NUM=${NUM:-5}
+
+    if [ "${1}" = avri ]; then
+        dates=`./SELECT get_open_days ${NUM}`
+        echo -e "date    \tall\tlt5\tpercent rise"
+        local i=
+        for i in ${dates}; do
+            all=`TAM=${i} COND='rise>8          ' mopt='-N' NUM= LIMIT=800 SELECT lohi 2>/dev/null | wc -l`
+            lt5=`TAM=${i} COND='rise>8 && avri<5' mopt='-N' NUM= LIMIT=800 SELECT lohi 2>/dev/null | wc -l`
+            let percent=100*lt5/all
+            rise=`mysql -N kts <<<"SELECT TRUNCATE(100*(close-yesc)/yesc,2) FROM day WHERE code=900001 and date='${i}'"`
+            echo -e "$i\t${all}\t${lt5}\t${percent}\t${rise}"
+        done
+        exit
+    fi
+
     START=`./SELECT get_open_days ${NUM} | head -1`
 
     echo "
@@ -467,7 +494,7 @@ function fn_updown()
     SET @END='$END';
     SET @NUM=${NUM};
     call sp_stat_change();
-    SELECT * FROM tbl_stat_change ORDER by ${field:-date} ${ASC:-ASC};
+    SELECT * FROM tbl_stat_change ORDER by ${1:-date} ${ASC:-ASC};
     " | tee /dev/stderr >> $mps_god
 
     mysql $mo -t kts <<< "source $mps_god"
@@ -711,6 +738,18 @@ function fn_vol()
 function fn_dorat()
 {
     case $1 in
+    u|usage)
+        echo "
+        SELECT dorat <param>
+        u   usage
+        ld  date
+        *   date time
+        "
+        ;;
+    ld)
+        odr="ORDER by date ASC"
+        mysql -N kts<<< "SELECT DISTINCT date FROM dorat"
+        ;;
     *)
         # echo DT is ${DT} > /dev/stderr
         [ -n "${DT}" ] && DT=(${DT}) && 
@@ -947,9 +986,9 @@ function fn_lohi()
         round(100*(d.close-t.low)/t.low, 2)  as incr,
         round(100*(d.close-t.high)/t.low, 2) as decn,
         ${RISE} as rise,
-        round((d.volume/t.mavol5), 2) as tov,
+        round((d.volume/t.mavol5), 2) as tov, t.scale,
         round((d.amount/10000), 1) as eYi,
-        round((c.nmc/10000), 1) as nmcYi, c.name  
+        round((c.nmc/10000), 1) as nmcYi, c.name
         FROM ${hilo_curr} as t, d_temp as d, cap as c
         WHERE t.code=d.code and t.code=c.code
         HAVING 1 ${EXCLUDE}
@@ -972,7 +1011,7 @@ function fn_lohi()
         }
         ;;
     l|list)
-        DT="${iTEMP} 15:05:00" SELECT dorat | cat -n; exit 0
+        LIMIT=50 DT="${iTEMP} 15:05:00" SELECT dorat | cat -n; exit 0
         ;;
     [0-9]*|'')
         if [ -z "${1}" ]; then
@@ -1000,14 +1039,14 @@ function fn_lohi()
             round(100*(d.close-t.high)/t.low, 2) as decn,
             round(100*(d.amount/d.volume-d.yesc)/d.yesc, 2) as avri,
             ${RISE} as rise,
-            round((d.volume/t.mavol5), 2) as tov,
+            round((d.volume/t.mavol5), 2) as tov, t.scale,
             round((d.amount/10000), 1) as eYi,
-            round((c.nmc/10000), 1) as nmcYi, c.name  
+            round((c.nmc/10000), 1) as nmcYi, c.name
             FROM ${hilo_curr} as t, 
             ${TEMPDAY} as d, cap as c
             WHERE t.code = d.code and t.code=c.code HAVING 1 ${COND} ${EXCLUDE}
             ORDER by incr ${ASC:-DESC} LIMIT ${LIMIT:-40} ) as t
-          HAVING ${HAVING:-1} ORDER by ${field:-incr} ${ASC:-DESC}
+          HAVING ${HAVING:-1} ORDER by ${field:-tov} ${ASC:-DESC}
           "
           echo "${tempday}${tbl_super_dive}"
         }
@@ -1020,6 +1059,22 @@ function fn_lohi()
             0-9: tempday from dorat
             '' : 仅开市时间使用，取最新。闭市时间，请使用 SELECT lohi 1
             *  : usage
+        常用COND
+            --------------------------大盘不稳皆是浮动-------------------------
+            incr: 总涨幅，大于22%抛压增大
+            rise: 当前价格，决定赔率，大于7%控制仓位
+            avri: 抬高估值意愿，大于5%可操作性降低(大盘振荡形成抛压，次日难卖高价)
+            tov : 收集筹码能力，.5比较合适，过高(大于.7)可能会是：对敲出货、拉高出货。大盘高位放量，次日会低开
+                  时早缩量板，提高确定性，成本往前推1日，寄希望于次日再涨停
+                  跟风板，成本低，次日多直接出货
+            eYi : 展现资金实力，2Yi以下为宜
+            nmc : 盘小方便游资控盘，2Yi/5%换手，在50亿左右为宜
+                LIMIT=400 HAVING='rise<7 && avri>2 && rise>avri && tov>.3 && tov<.7 && eYi>.7&& nmcYi<80' TAM=END SELECT lohi 1
+ COND='incr<22' LIMIT=400 HAVING='rise<7 && avri>2 && rise>avri && tov>.3 && tov<.7 && eYi>.7&& nmcYi<80' TAM=END SELECT lohi 1
+            tov : 资金必须放量才可安全出逃，prev / prev2缩量，是very very vrey重要的指标
+                  早盘，大盘低开时，选择昨天缩量涨停，开盘rise<3
+                  尾盘，大盘下跌时，选择当天缩量小涨股
+                LIMIT=400 ASC=asc COND='tov<.8 && eYi>.8 && nmcYi<80' HAVING='rise>-1 && rise<2 ' TAM=END SELECT lohi 2 
         "
         exit
         ;;
@@ -1027,12 +1082,13 @@ function fn_lohi()
 
     [ -s "${exclude2}" ] && EXCLUDE="and code not in (`cat ${exclude2}`)"
 
-    fn_yi_descend $1
-    mysql $mo -t kts <<< "${tempday}${tbl_super_dive}"
+    fn_yi_descend $1 > /dev/stderr
+    mysql ${mopt:--t} kts <<< "${tempday}${tbl_super_dive}"
     xt_ret $? "${FUNCNAME}" || return $?
     fn_echo_warn "$1 of iTEMP=${iTEMP}"
 
-    [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
+    [ "${CHAO:=0}" -eq 0 ] && return
+    fn_echo_warn "----- CHAO:${CHAO} -----" 
 
     mysql -N kts <<<"${tempday}SELECT code FROM (${tbl_super_dive}) as tbl" > ${file_c}.desc
     xt_ret $? "" || return $?
@@ -1117,6 +1173,15 @@ function fn_macd()
     return $?
 }
 
+function fn_stat()
+{
+    fn_echo_warn "1000th换手率"
+    LIMIT=1000,1 END=${PREV} SELECT lsd tov
+    fn_echo_warn "1000th成交额"
+    LIMIT=1000,1 END=${PREV} SELECT lsd amount
+    return $?
+}
+
 function fn_main()
 {
     # mysql CURRENT_DATE();
@@ -1136,9 +1201,10 @@ function fn_main()
     "ma240              [sortfield:-ratio]    # "
     "ma240_usage        {1~9}                 # 分析ma 5 13 34 55"
     "dif120             code...               # cost:(close-ma120) & sort by #{ASC:id}"
+    "stat                                     # 大盘统计"
     # ----------------  ABOVE IS FIXED SEQUENCE --------------------
     "xrd                field                 # #{OP:->}"
-    "ace                                      # +10%"
+    "ace                                      # 10日内所有+10%"
     "td_layout          code                  # 日内最高价时点分布.10:00am"
     "cap                code                  # 查询nmc&cap"
     "name               code                  # 名"
@@ -1151,7 +1217,7 @@ function fn_main()
     "vol                {0|3|6|03}            # ^^3市成交^^"
     "ls                 {code|symbol}         # 日线数据 \$LIMIT"
     "lsd                [{top|floor}][field]  # --- END YIST LIMIT 涨幅排名"
-    "updown                                   # 近期{NUM=13}涨跌家数统计"
+    "updown             {avri}                # 近期{NUM=5}涨跌家数统计"
     "hilo               field                 # field to sort by"
     "lohi               field                 # field to sort by"
     "lhb                excption              # 龙虎榜"

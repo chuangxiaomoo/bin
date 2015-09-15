@@ -37,7 +37,7 @@ function fn_get_url()
     url0="http://webstock.quote.hermes.hexun.com/a/deal?"
     sec=szse 
     # 上证指数sse000001
-    if [ ${1:0:1} -eq 6 ] || [ $1 = "000001" ]; then
+    if [ ${1:0:1} -eq 6 ] || [ $1 = "000001" ] || [ $1 = "000902" ]; then
         sec=sse
     fi
     echo "${url0}code=${sec}${1}&start=${2}&number=1000"
