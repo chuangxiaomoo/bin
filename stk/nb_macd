@@ -108,6 +108,8 @@ function fn_routine()
             ;;
         *)
             grep -q -E 'dif|macd' <<< "${COND0}" && FM=5 || FM=15
+            COND0=${COND0//d1/dif}
+            COND0=${COND0//m1/macd}
             sql="SELECT IF(${COND0}, 1, 0) FROM mm55 WHERE code=${code} and FM=${FM}"
             ret=`mysql -N kts <<<"${sql}"`
             if [ "${ret}" = 1 ]; then

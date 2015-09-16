@@ -1068,13 +1068,29 @@ function fn_lohi()
                   时早缩量板，提高确定性，成本往前推1日，寄希望于次日再涨停
                   跟风板，成本低，次日多直接出货
             eYi : 展现资金实力，2Yi以下为宜
-            nmc : 盘小方便游资控盘，2Yi/5%换手，在50亿左右为宜
-                LIMIT=400 HAVING='rise<7 && avri>2 && rise>avri && tov>.3 && tov<.7 && eYi>.7&& nmcYi<80' TAM=END SELECT lohi 1
- COND='incr<22' LIMIT=400 HAVING='rise<7 && avri>2 && rise>avri && tov>.3 && tov<.7 && eYi>.7&& nmcYi<80' TAM=END SELECT lohi 1
+            nmc : 盘小方便游资控盘，2Yi/5%换手，在50亿左右为宜\
+        "
+        fn_echo_succ "\
+            选择强势的概念及板块很重要
+            scale小于1可以确保资金安全\
+        "
+        fn_echo_fail "\
+            09:35~50之间，应该有2~3波的白黄波浪前戏，直接拉升者，拒绝新鲜血液，多是耍流氓\
+        "
+        echo "\
+                COND='incr<22' \\
+                LIMIT=400 HAVING='rise<7 && avri>2 && rise>avri-.5 && tov>.2 && tov<.7 && eYi>.7&& nmcYi<80' TAM=END SELECT lohi 1
             tov : 资金必须放量才可安全出逃，prev / prev2缩量，是very very vrey重要的指标
                   早盘，大盘低开时，选择昨天缩量涨停，开盘rise<3
                   尾盘，大盘下跌时，选择当天缩量小涨股
                 LIMIT=400 ASC=asc COND='tov<.8 && eYi>.8 && nmcYi<80' HAVING='rise>-1 && rise<2 ' TAM=END SELECT lohi 2 
+        "
+        fn_echo_warn "\
+            超跌反弹在痛点变甜点(2015-09-16从超跌板块中找)：
+            强势股(黄海机械)，在反弹日表现往往不佳<提前支取黄线>
+            地板弹起(光韵达)，反弹前日表现好，可10%收益，护盘积极，但反弹日表现往往不佳
+            弱势股<航天长峰>，以跌停处理，身上背负套牢吸血之类，难以表现
+            均衡股<天喻信息>，不能跌停失去流动性，十字星，尾部发力与黄线重合最佳(有主力护航)
         "
         exit
         ;;
