@@ -48,6 +48,15 @@ CREATE PROCEDURE sp_mamacd() BEGIN
 
     SELECT max(datetime) FROM fenbi WHERE code=$1 ${TEST} into @max_dt;
 
+    -- 分钟20
+    IF ${1} IN (000902,000001,399005,399006) THEN 
+        SELECT sum(trade)/15  FROM (SELECT trade from fenbi 
+            WHERE code=${1} ${TEST} ORDER by datetime DESC LIMIT 15) as t INTO @fa15;
+    ELSE
+        SELECT sum(amount)/sum(volume)  FROM (SELECT volume, amount from fenbi          -- 加入成交量的权重
+            WHERE code=${1} ${TEST} ORDER by datetime DESC LIMIT 15) as t INTO @fa15;
+    END IF;
+
     INSERT into tmpfb_macd(code,datetime,trade,volume,amount) 
         SELECT code,datetime,trade,volume,amount FROM fenbi WHERE code=$1 ${TEST} and ( (
         (TRUNCATE(datetime%10000/100, 0)%${FM:=5})=0 and
@@ -55,13 +64,6 @@ CREATE PROCEDURE sp_mamacd() BEGIN
         datetime=@max_dt
         ) ORDER by datetime DESC LIMIT 80;
 
-IF ${1} IN (000001,399005,399006) THEN 
-    SELECT sum(trade)/15  FROM (SELECT trade from fenbi 
-        WHERE code=${1} ${TEST} ORDER by datetime DESC LIMIT 15) as t INTO @fa15;
-ELSE
-    SELECT sum(amount)/sum(volume)  FROM (SELECT volume, amount from fenbi          -- 加入成交量的权重
-        WHERE code=${1} ${TEST} ORDER by datetime DESC LIMIT 15) as t INTO @fa15;
-END IF;
 
     IF ${FM:-5} = 5 THEN 
         call sp_fmacd();                                                -- F5只用macd
@@ -78,7 +80,7 @@ END IF;
         SELECT sum(trade)/80 FROM tmpfb_macd WHERE id<=80  INTO @ma80;
         SELECT 100*(@ma20-@ma5 )/@ma5   INTO @cvgenc;                   -- 大周期/小周期 < .6%
 
-      IF ${1} NOT IN (000001,399005,399006) THEN 
+      IF ${1} NOT IN (000902,000001,399005,399006) THEN 
         SELECT sum(amount)/100 FROM (SELECT amount from fenbi 
             WHERE code=${1} ${TEST} ORDER by datetime DESC LIMIT 0,5)  as t INTO @mavol5;
         SELECT sum(amount)/400 FROM (SELECT amount from fenbi 
@@ -89,6 +91,19 @@ END IF;
         SELECT code+${FM}*1000000,code,${FM},@mavol20,@mavol5,@cvgenc,@fa15,@ma5,@ma10,@ma20,@ma40,@ma80,datetime,trade 
             FROM tmpfb_macd WHERE id=1;
     END IF;
+
+    IF ${FM:-5} = 5 && ${1} = 000902 THEN 
+      TRUNCATE tmpfb_macd;
+      INSERT into tmpfb_macd(code,datetime,trade,volume,amount) 
+        SELECT code,datetime,trade,volume,amount FROM fenbi WHERE code=$1 ORDER by datetime DESC LIMIT 80;
+      call sp_fmacd();                                                -- F5只用macd
+      -- SELECT dif,dea,macd FROM fmacd ORDER by id DESC LIMIT 1;
+
+      REPLACE INTO mm55(freq,code,FM,dif,dea,macd)
+      SELECT code+15*1000000,code,15,dif,dea,macd 
+          FROM fmacd ORDER by id DESC LIMIT 1;
+    END IF;
+
 END //
 call sp_mamacd();
     " >> $mps_god

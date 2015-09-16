@@ -1,24 +1,24 @@
 # code  symbol    SB0:s.bm.b.sm 请把非SB排在第一行以实时更新macd(dif)
 
-000902	中证流通  0
--     	上证指数  close<fa15
--     	上证指数  close>ma10
--     	上证指数  close>fa15/.996
--     	上证指数  abs((close-fa15)/fa15/.01)>.382
+000902	中证流通  sm
+/     	中证流通  m1>0&&d1<0
+-     	中证流通  close>ma10
+-     	中证流通  close>fa15/.996
+-     	中证流通  abs((close-fa15)/fa15/.01)>.382
 
-399005	中小板指  b
+399005	中小板指  sm
 -     	中小板指  close<fa15
 -     	中小板指  close>ma10
 -     	中小板指  close>fa15/.996 
 -     	中小板指  abs((close-fa15)/fa15/.01)>.382
 
-399006	创业板指  b
+399006	创业板指  sm
 -      	创业板指  bm
 -     	创业板指  close>fa15/.996
 -     	创业板指  abs((close-fa15)/fa15/.01)>.382
 
 # ----  buy
-600855	航天长峰  dif>-0.18
+600855	航天长峰  sm
 
 # ----  sell
 
