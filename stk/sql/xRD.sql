@@ -1289,6 +1289,7 @@ CREATE PROCEDURE sp_create_tbl_lohi() tag_tbl_lohi:BEGIN
         low         DECIMAL(6,2) NOT NULL DEFAULT 0,
         lohi        DECIMAL(6,2) NOT NULL DEFAULT 0,    -- 100*(high-low)/low
         scale       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        zYi         DECIMAL(6,2) NOT NULL DEFAULT 0,
         mavol5      INT
     );
 --  DROP   TABLE IF EXISTS mat_lohi;
@@ -1304,6 +1305,7 @@ CREATE PROCEDURE sp_create_tbl_lohi() tag_tbl_lohi:BEGIN
         low         DECIMAL(6,2) NOT NULL DEFAULT 0,
         lohi        DECIMAL(6,2) NOT NULL DEFAULT 0,
         scale       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        zYi         DECIMAL(6,1) NOT NULL DEFAULT 0,
         mavol5      INT,
         INDEX(end,num,code)
     );
@@ -1323,19 +1325,21 @@ CREATE PROCEDURE sp_lohi(a_code INT(6) ZEROFILL) tag_lohi:BEGIN
     DECLARE v_mavol5    INT DEFAULT 0;
     DECLARE v_volume    INT DEFAULT 0;
     DECLARE v_scale     DECIMAL(6,2) DEFAULT 0;
+    DECLARE v_zYi       DECIMAL(6,1) DEFAULT 0;
 
     call sp_create_tempday();
 
     SET @sqls=concat('
-        INSERT INTO tempday(code,date,yesc,open,high,low,close,volume)
-        SELECT code,date,yesc,open,high,low,close,volume FROM day WHERE code=', 
+        INSERT INTO tempday(code,date,yesc,open,high,low,close,volume,amount)
+        SELECT code,date,yesc,open,high,low,close,volume,amount FROM day WHERE code=', 
         a_code, " and date<= '", @END, "' order by date DESC LIMIT ", @NUM);
     PREPARE stmt from @sqls; EXECUTE stmt;
 
     SELECT count(*) FROM tempday INTO @v_len;
 
-    SELECT     volume      FROM tempday WHERE id =1       INTO v_volume;
-    SELECT v_volume/volume FROM tempday WHERE id =2       INTO v_scale;
+--  SELECT volume          FROM tempday WHERE id =1     INTO v_volume;
+    SELECT volume,amount/10000  FROM tempday WHERE id =1     INTO v_volume,v_zYi;
+    SELECT v_volume/volume      FROM tempday WHERE id =2     INTO v_scale;
     SELECT sum(volume)/5 FROM tempday WHERE id<=5       INTO v_mavol5;
     SELECT id,date,close FROM tempday                   order by close asc  LIMIT 1 INTO v_id_lo, v_date1, v_low;
     SELECT id,date,close FROM tempday WHERE id<=v_id_lo order by close DESC LIMIT 1 INTO v_id_hi, v_date2, v_high;
@@ -1351,8 +1355,8 @@ CREATE PROCEDURE sp_lohi(a_code INT(6) ZEROFILL) tag_lohi:BEGIN
     SET v_lohi = 100*(v_high-v_low)/v_low;
     SET @len   = v_id_lo-v_id_hi + 1;
 
-    INSERT INTO tbl_lohi(code,date1,date2,   high,low,    lohi,off, scale,  mavol5)
-             VALUES(a_code,v_date1,v_date2,v_high,v_low,v_lohi,@len, v_scale, v_mavol5);
+    INSERT INTO tbl_lohi(code,date1,date2,   high,low,    lohi,off, scale,  zYi, mavol5)
+             VALUES(a_code,v_date1,v_date2,v_high,v_low,v_lohi,@len, v_scale, v_zYi, v_mavol5);
 END tag_lohi //
 
 -- 一些需要与shell通信的系统变量

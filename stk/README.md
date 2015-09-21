@@ -53,9 +53,10 @@
 # 战争           .doc/war.md
 # 短线战法       .doc/dagger.md
 # 中线战法       .doc/pike.md
-# 打板精要       .doc/daban.md          -- 盘面解读
 # 空间域         .doc/space.md
-# 仓位管理       .doc/position.md       -- 核心理论: 价、量、macd、势、攻、防
+# 打板精要       .doc/daban.md          -- 龙头战法、龙飞虎、龙虎榜
+# 仓位管理       .doc/position.md       -- 核心理论: 价.量.macd.势.攻.防
+# 魔论           .doc/molun.md          -- 预测体系
 # 交易系统       .doc/tradesys.md
 # 独孤九剑       .doc/dugu9jian.md      -- 成本.信息进化论.解N变量方程组
 # 事件冲击       .doc/event.md          -- 高管增持 定增 加息 gushequ大数据

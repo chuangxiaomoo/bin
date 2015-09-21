@@ -44,6 +44,14 @@ function fn_echo_line()
     echo '|'${BASH_LINENO[0]}'|' $*; 
 }
 
+function fn_echo_blue()
+{
+    FG=34 BG=40
+    TEXT="$@"
+    echo -ne "\E[${FG};${BG}m${TEXT}\n\E[0m" > /dev/stderr
+    return 0
+}
+
 # echo yellow
 function fn_echo_warn()
 {
@@ -58,7 +66,7 @@ function fn_echo_succ()
 {
     FG=32 BG=40
     TEXT="$@"
-    echo -ne "\E[${FG};${BG}m${TEXT}\n\E[0m"
+    echo -ne "\E[${FG};${BG}m${TEXT}\n\E[0m" > /dev/stderr
     return 0
 }
 
@@ -69,11 +77,6 @@ function fn_echo_fail()
     TEXT="$@"
     echo -ne "\E[${FG};${BG}m${TEXT}\n\E[0m" > /dev/stderr
     return 0
-}
-
-function fn_echo_erro()
-{
-    echo "$1" > /dev/stderr
 }
 
 function fn_pkill_children()

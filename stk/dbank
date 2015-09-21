@@ -122,7 +122,6 @@ yjyg_rip='/dev/shm/yjyg_rip'
 file_focus='/tmp/kts/focus'
 file_ma120='/tmp/kts/ma120'
 file_ma240='/tmp/kts/ma240'
-file_mavol='/tmp/kts/mavol'
  file_2015='/tmp/kts/2015'
  list_limo='/tmp/kts/limo'
  date_dif3='/tmp/kts/dif3'
@@ -446,7 +445,7 @@ fn_group_nmc_layout()
     mysql -t kts <<< "$sqls_curr"
 
     mysql -N  kts <<< "SELECT * FROM cap;" | awk 'BEGIN {
-        list="5000 1000 800 400 200 100 50 20 10 5 0";
+        list="5000 1000 800 400 200 100 80 50 40 30 20 10 5 0";
         arr_size=split(list, arr_list, " ");
     } {
         count++;

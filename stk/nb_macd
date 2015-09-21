@@ -22,6 +22,7 @@ function fn_routine()
     >${list_limo}
 
     while read code symble COND0 tips; do
+        # echo "read code=${code} ${COND0}"
         [ "$COND0" == 0 ] && continue
         if ! ${istest} && [ "$code" != '/' ]; then                              # istest
             echo do fenbi ${code}...
@@ -29,48 +30,27 @@ function fn_routine()
             xt_ret $? "down ${code}" || { cat ${error}; return $?; }
         fi
 
-        if [ "${code}" = '/' ]; then # code is -
+        if [ "${code}" = '/' ]; then
             code=$code0
         else
+            # sina分时数据缺失会导致ma80(F15)失真，因此
+            # macd计算作为BuySell的标配进行，不做任何限制
+            echo "do _dif_ ${code}..."
+            FM=5 macd ${code}
+            xt_ret $? "macd error" || return $?
+
             FM=15 macd ${code}
             xt_ret $? "macd error" || return $?
 
-            sql='(FM=15)*IF(close>=fa15, 1, -1)*((fa15>=ma5)+(fa15>=ma10)+(fa15>=ma20)+(fa15>=ma40)+(fa15>=ma80))'
+            sql='(FM=15)*IF(close>=fa20, 1, -1)*((fa20>=ma5)+(fa20>=ma10)+(fa20>=ma20)+(fa20>=ma40)+(fa20>=ma80))'
             sql="SELECT ${sql} FROM mm55 WHERE code=${code} and FM=15"
             limo=`mysql -N kts <<<"${sql}"`
 
             # 5日线上，B用4数，S用3数；5日线下，B用3数，S用3数
             sql="SELECT IF(close>ma80,4,3) FROM mm55 WHERE code=${code} and FM=15"
             buyn=`mysql -N kts <<<"${sql}"`
-
-            # macd计算作为BuySell的标配进行，但对其进行下列优化，触发执行
-            # 0. 清空dif表
-            # 1. 上一个时间单元abs(dif)<0.006
-            # 2. 上一个更新时间>3min
-            # 3. ${istest}
-            sql="SELECT abs(dif)<0.382 || (CURRENT_TIMESTAMP()-datetime)>300 FROM mm55 WHERE code=${code} and FM=5"
-            ret=`mysql -N kts <<<"${sql}"`
-
-            if ${istest} || grep -q "x${code}"<<<"${forces}" || [ "${ret}" = 1 ] || [ "${ret}" = "" ] || 
-                ([ "${COND0}" != B ] && [ "${COND0}" != S ]); then
-                echo "do _dif_ ${code}..."
-                forces=${forces//x${code}/}   # 进入临界的macd要连续判断
-                FM=5 macd ${code}
-                xt_ret $? "macd error" || return $?
-            fi
-
-            # 量比检查，只做一次
-            x_mavol=`cat ${file_mavol}`
-            sql="SELECT IF(mavol5>2000 && mavol5/mavol20>${x_mavol:-2}, 1, 0) FROM mm55 WHERE code=${code} and FM=15"
-            ret=`mysql -N kts <<<"${sql}"`
-            if [ "${ret}" = 1 ]; then
-                fn_echo_succ "$code.$symble.cond mavol5/mavol20>${x_mavol}"
-                tips_got='tweet.wav'
-                echo ${code} >> ${list_limo}
-            fi
         fi
 
-        # sina分时数据缺失会导致ma80(F15)失真，若此，则使用{b|s}
         case ${COND0:-B} in
         B|b|bm)
             if [ ${COND0} = B ] && [ "${limo}" -gt 0 ] && [ "${limo}" -ge ${buyn:-3} ]; then
@@ -80,12 +60,11 @@ function fn_routine()
             if [ "${COND0}" = bm ]; then
                 sql="SELECT IF(macd>0, 1, 0) FROM mm55 WHERE code=${code} and FM=5"
             else
-                sql="SELECT IF(dif>0&&close>=fa15, 1, 0) FROM mm55 WHERE code=${code} and FM=5"
+                sql="SELECT IF(dif>0&&close>=fa20, 1, 0) FROM mm55 WHERE code=${code} and FM=5"
             fi
             ret=`mysql -N kts <<<"${sql}"`
             if [ "${ret}" = 1 ]; then
                 fn_echo_succ "$code.$symble.macd ${COND0}"
-                forces="x${code}${forces}"
                 let tips_cnt+=100
             fi
             ;;
@@ -97,24 +76,21 @@ function fn_routine()
             if [ "${COND0}" = sm ]; then
                 sql="SELECT IF(macd<0, 1, 0) FROM mm55 WHERE code=${code} and FM=5"
             else
-                sql="SELECT IF(dif<0&&close<=fa15, 1, 0) FROM mm55 WHERE code=${code} and FM=5"
+                sql="SELECT IF(dif<0&&close<=fa20, 1, 0) FROM mm55 WHERE code=${code} and FM=5"
             fi
             ret=`mysql -N kts <<<"${sql}"`
             if [ "${ret}" = 1 ]; then
                 fn_echo_succ "$code.$symble.macd ${COND0}"
-                forces="x${code}${forces}"
                 let tips_cnt++
             fi
             ;;
         *)
-            grep -q -E 'dif|macd' <<< "${COND0}" && FM=5 || FM=15
-            COND0=${COND0//d1/dif}
-            COND0=${COND0//m1/macd}
+            grep -q -E 'd1|m1' <<< "${COND0}" && macd ${code} f1
+            grep -q -E 'dif|macd|d1|m1' <<< "${COND0}" && FM=5 || FM=15
             sql="SELECT IF(${COND0}, 1, 0) FROM mm55 WHERE code=${code} and FM=${FM}"
             ret=`mysql -N kts <<<"${sql}"`
             if [ "${ret}" = 1 ]; then
-                fn_echo_succ "$code.$symble.cond ${COND0}"
-                fn_echo_warn "$tips"
+                fn_echo_succ "$code.$symble.cond ${COND0} ${tip}"
                 grep -q '>' <<< "${COND0}" && let tips_cnt+=100 || let tips_cnt++
             elif [ "${ret}" = "" ]; then
                 fn_echo_fail "bad cond: ${COND0}"
@@ -144,15 +120,19 @@ function fn_routine()
          YIST=${list_limo} SELECT macd
     fi
 
-    fn_echo_warn '
+    fn_echo_warn "\
     Warning:--------------钱、势、惊、生---------------------------------
     1. 余额宝、钱去哪儿了？(加大打击内幕交易和操纵市场)
     2. 3大指数全绿，徐工机械的盈利只是浮动
-    3. 异于平常，即为背离(顺势者聪明钱，聪明钱不逆势)
+    3. 异于平常，即为背离(顺势者聪明钱，聪明钱不逆势)"
+    fn_echo_fail "\
     4. 大高开危机：连板开板(光韵达)，6%之上，不买入(弱市)
     5. 大股本危机：高于100亿，每天成交10亿(&市场变)
-    6. 大换手危机：连阳高于100%，1日高于前日1.6倍
-    '
+    6. 大换手危机：连阳高于100%，1日高于前日1.6倍"
+    fn_echo_succ "\
+    7. 20%涨幅请减半仓
+    8. 智者先考虑风险、再考虑盈利。愚者反之。
+    "
 }
 
 function fn_loop()
@@ -160,7 +140,7 @@ function fn_loop()
     while :; do
         fn_isresting && { sleep 150; continue; }
         fn_routine
-        echo "to sleeping ${STEP:=108}s"        # F5x3有效突破，即3线之内，低点抬高，高点亦抬高
+        echo "to sleeping ${STEP:=100}s"        # F5x3有效突破，即3线之内，低点抬高，高点亦抬高
         sleep ${STEP}                           #               若是大阳线，则不破1/2长度
     done
     return $?
@@ -194,7 +174,6 @@ function fn_test_code()
 function fn_main()
 {
     istest=false
-    echo '2' >${file_mavol}
     case $1 in
     l|loop)
         fn_loop
