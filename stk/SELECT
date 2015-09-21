@@ -121,7 +121,7 @@ function fn_lsd()
         # echo "${sqls}"
     }
     fn_sql $@ 
-    mysql -t kts <<<"${sqls}"
+    mysql ${mopt:--t} kts <<<"${sqls}"
 
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
@@ -988,7 +988,7 @@ function fn_lohi()
         ${RISE} as rise,
         round((d.volume/t.mavol5), 2) as tov, t.scale,
         round((d.amount/10000), 1) as eYi,
-        round((c.nmc/10000), 1) as nmcYi, c.name
+        round((c.shares*d.close/10000), 1) as nmcYi, c.name
         FROM ${hilo_curr} as t, d_temp as d, cap as c
         WHERE t.code=d.code and t.code=c.code
         HAVING 1 ${EXCLUDE}
@@ -1007,7 +1007,7 @@ function fn_lohi()
         {
           tempday="${inout_codes}"
           tbl_super_dive=`fn_in_or_out $1`
-          fn_echo_erro "${tbl_super_dive}"
+          fn_echo_blue "${tbl_super_dive}"
         }
         ;;
     l|list)
@@ -1040,8 +1040,8 @@ function fn_lohi()
             round(100*(d.amount/d.volume-d.yesc)/d.yesc, 2) as avri,
             ${RISE} as rise,
             round((d.volume/t.mavol5), 2) as tov, t.scale,
-            round((d.amount/10000), 1) as eYi,
-            round((c.nmc/10000), 1) as nmcYi, c.name
+            round((d.amount/10000), 1) as eYi, zYi,
+            round((c.shares*d.close/10000), 1) as nmcYi, c.name
             FROM ${hilo_curr} as t, 
             ${TEMPDAY} as d, cap as c
             WHERE t.code = d.code and t.code=c.code HAVING 1 ${COND} ${EXCLUDE}
@@ -1072,14 +1072,15 @@ function fn_lohi()
         "
         fn_echo_succ "\
             选择强势的概念及板块很重要
-            scale小于1可以确保资金安全\
+            scale小于1可以确保资金安全.查看10涨幅不可太高(吃亏在.黄海机械)
         "
         fn_echo_fail "\
-            09:35~50之间，应该有2~3波的白黄波浪前戏，直接拉升者，拒绝新鲜血液，多是耍流氓\
+            弱势行情追高尽量下午追(13:45后) -- 创业板B 中小板B (后知后觉比较好追)
+            09:35~50之间，应该有2~3波..白黄缠绕..，直接拉升者，拒绝新鲜血液，多是耍流氓\
         "
         echo "\
-                COND='incr<22' \\
-                LIMIT=400 HAVING='rise<7 && avri>2 && rise>avri-.5 && tov>.2 && tov<.7 && eYi>.7&& nmcYi<80' TAM=END SELECT lohi 1
+        COND='incr<22' \\
+        LIMIT=600 HAVING='rise<7&&avri>2 && rise>avri-.6 && tov>.2&&tov<.7 && eYi>.6&& nmcYi<80&&(scale<1.5||zYi<2)' TAM=END SELECT lohi 1
             tov : 资金必须放量才可安全出逃，prev / prev2缩量，是very very vrey重要的指标
                   早盘，大盘低开时，选择昨天缩量涨停，开盘rise<3
                   尾盘，大盘下跌时，选择当天缩量小涨股
@@ -1111,6 +1112,55 @@ function fn_lohi()
 
     up file_to_table $file_c.desc
     xt_ret $? "${FUNCNAME}" || return $?
+}
+
+
+function fn_ban()
+{
+    iDATE=`END=${TAM:-${END}} fn_get_prev`
+    tempday="(SELECT * FROM day WHERE date='${iDATE}')"
+    sql="SELECT round(d.close*shares/10000,1) as col FROM cap as c, ${tempday} as d WHERE c.code=d.code ORDER by col ASC LIMIT 770,1"
+    smlYi=`mysql -N kts <<<"${sql}"`
+    sql="SELECT round(d.close*shares/10000,1) as col FROM cap as c, ${tempday} as d WHERE c.code=d.code ORDER by col ASC LIMIT 1540,1"
+    midYi=`mysql -N kts <<<"${sql}"`
+    sql="SELECT round(d.volume/shares, 4)     as col FROM cap as c, ${tempday} as d WHERE c.code=d.code ORDER by col ASC LIMIT 1160,1"
+    tov=`mysql -N kts <<<"${sql}"`
+
+    # echo ${tov} ${smlYi} ${midYi} ; exit
+
+    factor=${ZIZE:-0.25}    # tov(30min) ~= 25%，3个10分钟分别是：<12:8:5> * 优秀因子1.5 0940 0945 0950=>  0.18 0.25 0.30
+
+    fn_run()
+    {
+    # 有时小票连续3板也是好票 <300314	戴维医疗>，特别是10点前封板票
+    COND='incr<22' LIMIT=1400 HAVING="avri>2&&rise>avri-.6 && tov>${factor} and ${xCOND}" TAM=END SELECT lohi ${1:-1} # 2>/dev/null
+    }
+
+    fn_echo_blue "small"
+    xCOND="eYi>nmcYi*${factor}*${tov} && nmcYi<=${smlYi}"
+    fn_run $1
+    xt_ret $? "" || return $?
+
+    fn_echo_succ "middle"
+    xCOND="eYi>nmcYi*${factor}*${tov} && nmcYi>${smlYi}&&nmcYi<${midYi}"
+    fn_run $1 2>/dev/null
+    xt_ret $? "" || return $?
+
+    fn_echo_warn "large"
+    xCOND="eYi>nmcYi*${factor}*${tov} && nmcYi>=${midYi}"
+    fn_run $1 2>/dev/null
+    xt_ret $? "" || return $?
+
+    # 底部、中部，拒绝顶部
+    fn_echo_warn "scale<1.2"
+    xCOND="eYi>nmcYi*${factor}*${tov}"
+    COND='incr>=22 && scale<1.2' LIMIT=1400 HAVING="avri>2&&rise>avri-.6 && tov>${factor} and ${xCOND}" TAM=END SELECT lohi ${1:-1} 2>/dev/null
+    xt_ret $? "" || return $?
+}
+
+function fn_sban()
+{
+    ZIZE=0.18 fn_ban
 }
 
 
@@ -1174,14 +1224,14 @@ function fn_macd()
         ;;
     esac
 
-    fields='close,fa15,ma5,ma10,ma20,ma40,ma80,mavol5,mavol20'
-    limo='(FM=15)*IF(close>=fa15, 1, -1)*((fa15>=ma5)+(fa15>=ma10)+(fa15>=ma20)+(fa15>=ma40)+(fa15>=ma80))'
+    fields='close,fa20,ma5,ma10,ma20,ma40,ma80'
+    limo='(FM=15)*IF(close>=fa20, 1, -1)*((fa20>=ma5)+(fa20>=ma10)+(fa20>=ma20)+(fa20>=ma40)+(fa20>=ma80))'
     echo "
     SELECT code,FM,datetime%1000000 as time,
-        ${fields}, TRUNCATE(mavol5/mavol20, 2) as nb,
-        round(abs((close-fa15)/fa15/.01), 2) as abs,
-            -- cvgenc, 
-            ${limo} as limo, dif,macd FROM mm55
+        ${fields},
+        round(100*( abs(ma5-ma10)/ma10 + abs(ma20-ma10)/ma10 ), 2) as abs,
+            cvgenc,
+            ${limo} as limo, d1,m1,dif,macd FROM mm55
             HAVING 1 ${COND} ${inLIST}
             ORDER by ${field:-code},FM ${ASC:-ASC};
 	" | mysql -t kts
@@ -1191,10 +1241,13 @@ function fn_macd()
 
 function fn_stat()
 {
-    fn_echo_warn "1000th换手率"
-    LIMIT=1000,1 END=${PREV} SELECT lsd tov
-    fn_echo_warn "1000th成交额"
-    LIMIT=1000,1 END=${PREV} SELECT lsd amount
+    fn_echo_warn "1160th换手率"
+    LIMIT=1160,1 END=${PREV} SELECT lsd tov
+    fn_echo_blue "1160th成交额"
+    LIMIT=1160,1 END=${PREV} SELECT lsd amount
+    fn_echo_succ "770,1540流通市值"
+    LIMIT=770,1  END=${PREV} SELECT lsd nmc
+    LIMIT=1540,1 END=${PREV} SELECT lsd nmc
     return $?
 }
 
@@ -1236,6 +1289,8 @@ function fn_main()
     "updown             {avri}                # 近期{NUM=5}涨跌家数统计"
     "hilo               field                 # field to sort by"
     "lohi               field                 # field to sort by"
+    "ban                condi [time]          # 条件. 0945后使用"
+    "sban               condi [time]          # 条件. 0940使用"
     "lhb                excption              # 龙虎榜"
     "macd               [clean]               # macd-alarm-sys"
     "tri                                      # 3连阳"
