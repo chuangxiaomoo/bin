@@ -50,7 +50,7 @@
 # 笛卡尔实践     .doc/Descartes.md
 # 目标&策略&纪律 .doc/discipline.md
 
-# 战争           .doc/war.md
+# 战争           .doc/war.md            -- 认识自已，首先认识作为人的共性
 # 短线战法       .doc/dagger.md
 # 中线战法       .doc/pike.md
 # 空间域         .doc/space.md

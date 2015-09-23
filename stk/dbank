@@ -17,12 +17,10 @@ helpmsg="
 "
 
 cd ~/bin/stk
-export END=${END}
 export PATH=.:~/bin:$PATH
 
 [ "${DEBUG:-0}" = 1 ] && 
 SUBOUT='/dev/stdout' || SUBOUT='/dev/null'
-
 
 XTBL=${XTBL:+and code not in (SELECT code FROM $XTBL)}
 
@@ -110,6 +108,7 @@ yjyg_rip='/dev/shm/yjyg_rip'
 
        lhb='/tmp/kts/lhb'
    lhb_raw='/tmp/kts/lhb.raw'
+   lhb_rip='/tmp/kts/lhb.rip'
      error='/tmp/kts/error'
      cache='/tmp/kts/cache'
     buffer='/tmp/kts/buffer'

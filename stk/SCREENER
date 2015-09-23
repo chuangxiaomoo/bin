@@ -686,6 +686,12 @@ function fn_lohi()
         mysql -N kts<<< "SELECT end,num FROM ( SELECT DISTINCT end,num FROM mat_lohi ) as t"
         exit
         ;;
+    d)
+        END=`mysql -N kts <<< "SELECT date from day WHERE code=900001 ORDER by date DESC LIMIT ${2:-0},1"`
+        mysql -N kts<<< "DELETE FROM mat_lohi WHERE end='${END}'"
+        fn_echo_succ "DELETE ${END} FROM mat_lohi succ!"
+        exit
+        ;;
     l)
         echo "     0  ${END}"
         echo "
@@ -699,6 +705,7 @@ function fn_lohi()
         local i
         for (( i=${sta}; i<=${end}; i+=1 )); do
             SCREENER lohi ${i}
+            xt_ret $? "error or interupted" || exit
         done
         exit
         ;;
@@ -708,6 +715,7 @@ function fn_lohi()
     *)
         echo "
         SCREENER lohi <param>
+            d num: del date of index num
             exist: exist dates
             list : dates list with num
             n    : 0 is latest
@@ -721,16 +729,16 @@ function fn_lohi()
     fn_txttbl
 
     iEND=${END:-${PREV}}
-    iNUM=${NUM:-5}
+    iNUM=${NUM:-8}
     if [ -z "${YIST}" ]; then
         echo "
         TRUNCATE TABLE zxg;
         INSERT INTO zxg(code) SELECT code FROM day WHERE date='${iEND}' and code<765432;
         " | mysql kts
         sql_insert_mat_lohi="
-        INSERT INTO mat_lohi(end,num,code,date1,date2,off,high,low,lohi,scale,zYi,mavol5)
-            SELECT  '${iEND}',${iNUM},code,date1,date2,off,high,low,lohi,scale,zYi,mavol5 FROM tbl_lohi;
-        "
+        INSERT INTO mat_lohi(end,num,code,date1,date2,off,high,low,lohi,scale,zYi,volume,mavol5)
+            SELECT  '${iEND}',${iNUM},code,date1,date2,off,high,low,lohi,scale,zYi,volume,mavol5 FROM tbl_lohi;"
+        # --------------------------------------------------------------- 记得修改正面的 tbl_lohi
     fi
 
     sqls="SELECT count(id) FROM mat_lohi WHERE end='${iEND}' and num=${iNUM} LIMIT 1;"
@@ -741,8 +749,8 @@ function fn_lohi()
         fn_echo_warn "${iEND}:${iNUM} exist, copy it"
         echo "
         TRUNCATE TABLE tbl_lohi;
-        INSERT INTO tbl_lohi(code,date1,date2,off,high,low,lohi,mavol5)
-                     SELECT  code,date1,date2,off,high,low,lohi,mavol5 FROM mat_lohi WHERE end='${iEND}' and num=${iNUM};
+        INSERT INTO tbl_lohi(code,date1,date2,off,high,low,lohi,scale,zYi,volume,mavol5)
+                     SELECT  code,date1,date2,off,high,low,lohi,scale,zYi,volume,mavol5 FROM mat_lohi WHERE end='${iEND}' and num=${iNUM};
 
         " | mysql kts
         return 0

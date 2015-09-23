@@ -106,11 +106,11 @@ function fn_routine()
     
     #echo ${tips_cnt}
     local i
-    for (( i=tips_cnt%100; i>0;  i-=4  )); do
+    for (( i=tips_cnt%100; i>0;  i-=3  )); do
         tips_got="${tips_got} duang.wav"            # 卖：2个股+2指数 = 一级戒备
     done
 
-    for (( i=${tips_cnt}; i>99; i-=400 )); do
+    for (( i=${tips_cnt}; i>99; i-=300 )); do
         tips_got="${tips_got} msg.wav"              # 买：2个股+2指数 = 一级戒备
     done
     #echo ${i}
