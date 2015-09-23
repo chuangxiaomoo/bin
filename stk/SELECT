@@ -919,12 +919,12 @@ function fn_hilo()
 
 function fn_lohi()
 {
-    columns='code,date1,date2,off,high,low,lohi'
+    columns='off,high,low,lohi'
     columns=${columns:-'*'}
-    columns=t.${columns//,/,t.}
+    columns="t.code,DATE_FORMAT(t.date1,'%m-%d')as date1,DATE_FORMAT(t.date2,'%m-%d')as date2,t.${columns//,/,t.}"
 
     DROP="DROP TABLE IF EXISTS "
-    iNUM=${NUM:-5}
+    iNUM=${NUM:-8}
     TAM=${TAM//END/${END}}                                              # TAM代表mat_lohi中最高日期，亦TEMPDAY的日期
     TAM=${TAM:-`mysql -N kts <<< "SELECT max(end) from mat_lohi"`}      # 开市后才能指定MAT
     iTEMP=${TAM}
@@ -984,7 +984,7 @@ function fn_lohi()
       SELECT * FROM (
         SELECT ${columns}, 
         round(100*(d.close-t.low)/t.low, 2)  as incr,
-        round(100*(d.close-t.high)/t.low, 2) as decn,
+        round(100*(max(t.high,d.close)-d.close)/d.close, 2) as decn,
         ${RISE} as rise,
         round((d.volume/t.mavol5), 2) as tov, t.scale,
         round((d.amount/10000), 1) as eYi,
@@ -1013,8 +1013,9 @@ function fn_lohi()
     l|list)
         LIMIT=50 DT="${iTEMP} 15:05:00" SELECT dorat | cat -n; exit 0
         ;;
-    [0-9]*|'')
-        if [ -z "${1}" ]; then
+    [0-9]*|f|'')
+        if [ -z "${1}" ] || [ "${1}" = f ]; then
+            field=$2
             TEMPDAY="tempday"
             iTEMP=`END=${iTEMP} fn_get_next`    # 仅开市时间使用，取最新。闭市时间，请使用 SELECT lohi 1
             iTEMP=${iTEMP:-${TAM}}
@@ -1036,17 +1037,18 @@ function fn_lohi()
           SELECT * FROM (
             SELECT ${columns}, 
             round(100*(d.close-t.low)/t.low, 2)  as incr,
-            round(100*(d.close-t.high)/t.low, 2) as decn,
+            round(100*(GREATEST(t.high,d.close)-d.close)/GREATEST(t.high,d.close), 2) as decn,
             round(100*(d.amount/d.volume-d.yesc)/d.yesc, 2) as avri,
             ${RISE} as rise,
-            round((d.volume/t.mavol5), 2) as tov, t.scale,
+            round((d.volume/t.volume), 2) as tov,
+            round((d.volume/t.mavol5), 2) as tov5, t.scale,
             round((d.amount/10000), 1) as eYi, zYi,
             round((c.shares*d.close/10000), 1) as nmcYi, c.name
             FROM ${hilo_curr} as t, 
             ${TEMPDAY} as d, cap as c
             WHERE t.code = d.code and t.code=c.code HAVING 1 ${COND} ${EXCLUDE}
-            ORDER by incr ${ASC:-DESC} LIMIT ${LIMIT:-40} ) as t
-          HAVING ${HAVING:-1} ORDER by ${field:-tov} ${ASC:-DESC}
+            ORDER by incr ${ASC:-DESC} LIMIT 1000 ) as t
+          HAVING ${HAVING:-1} ORDER by ${field:-tov} ${ASC:-DESC} LIMIT ${LIMIT:-40}
           "
           echo "${tempday}${tbl_super_dive}"
         }
@@ -1058,6 +1060,7 @@ function fn_lohi()
             out: dates list with num
             0-9: tempday from dorat
             '' : 仅开市时间使用，取最新。闭市时间，请使用 SELECT lohi 1
+            f  : ORDER by field
             *  : usage
         常用COND
             --------------------------大盘不稳皆是浮动-------------------------
@@ -1070,23 +1073,20 @@ function fn_lohi()
             eYi : 展现资金实力，2Yi以下为宜
             nmc : 盘小方便游资控盘，2Yi/5%换手，在50亿左右为宜\
         "
-        fn_echo_succ "\
+        fn_echo_succ "
             选择强势的概念及板块很重要
-            scale小于1可以确保资金安全.查看10涨幅不可太高(吃亏在.黄海机械)
-        "
-        fn_echo_fail "\
+            scale小于1可以确保资金安全.查看10涨幅不可太高(吃亏在.黄海机械)"
+        fn_echo_fail "
             弱势行情追高尽量下午追(13:45后) -- 创业板B 中小板B (后知后觉比较好追)
-            09:35~50之间，应该有2~3波..白黄缠绕..，直接拉升者，拒绝新鲜血液，多是耍流氓\
-        "
-        echo "\
+            09:35~50之间，应该有2~3波..白黄缠绕..，直接拉升者，拒绝新鲜血液，多是耍流氓"
+        echo "
         COND='incr<22' \\
         LIMIT=600 HAVING='rise<7&&avri>2 && rise>avri-.6 && tov>.2&&tov<.7 && eYi>.6&& nmcYi<80&&(scale<1.5||zYi<2)' TAM=END SELECT lohi 1
             tov : 资金必须放量才可安全出逃，prev / prev2缩量，是very very vrey重要的指标
                   早盘，大盘低开时，选择昨天缩量涨停，开盘rise<3
                   尾盘，大盘下跌时，选择当天缩量小涨股
-                LIMIT=400 ASC=asc COND='tov<.8 && eYi>.8 && nmcYi<80' HAVING='rise>-1 && rise<2 ' TAM=END SELECT lohi 2 
-        "
-        fn_echo_warn "\
+        LIMIT=400 ASC=asc COND='tov<.8 && eYi>.8 && nmcYi<80' HAVING='rise>-1 && rise<2 ' TAM=END SELECT lohi 2 "
+        fn_echo_warn "
             超跌反弹在痛点变甜点(2015-09-16从超跌板块中找)：
             强势股(黄海机械)，在反弹日表现往往不佳<提前支取黄线>
             地板弹起(光韵达)，反弹前日表现好，可10%收益，护盘积极，但反弹日表现往往不佳
@@ -1126,18 +1126,19 @@ function fn_ban()
     sql="SELECT round(d.volume/shares, 4)     as col FROM cap as c, ${tempday} as d WHERE c.code=d.code ORDER by col ASC LIMIT 1160,1"
     tov=`mysql -N kts <<<"${sql}"`
 
-    # echo ${tov} ${smlYi} ${midYi} ; exit
+    fn_echo_succ ${tov} ${smlYi} ${midYi}
 
     factor=${ZIZE:-0.25}    # tov(30min) ~= 25%，3个10分钟分别是：<12:8:5> * 优秀因子1.5 0940 0945 0950=>  0.18 0.25 0.30
 
     fn_run()
     {
     # 有时小票连续3板也是好票 <300314	戴维医疗>，特别是10点前封板票
-    COND='incr<22' LIMIT=1400 HAVING="avri>2&&rise>avri-.6 && tov>${factor} and ${xCOND}" TAM=END SELECT lohi ${1:-1} # 2>/dev/null
+    incr="incr<${incr:-22}"
+    COND="${incr}" LIMIT=1400 HAVING="avri>2&&rise>avri-.6 && tov>${factor}&&tov<.8 && ${xCOND}" TAM=END SELECT lohi ${1:-1}
     }
 
     fn_echo_blue "small"
-    xCOND="eYi>nmcYi*${factor}*${tov} && nmcYi<=${smlYi}"
+    incr=30 xCOND="eYi>nmcYi*${factor}*${tov} && nmcYi<=${smlYi}"
     fn_run $1
     xt_ret $? "" || return $?
 
@@ -1189,18 +1190,34 @@ function fn_lhb()
     sql="SELECT max(date) FROM lhb"
     max_dt=`mysql -N kts <<< "${sql}"`
     case $1 in
-    e|exception)
+    c|cause)
         mysql -t kts <<<"SELECT DISTINCT cause FROM lhb"
         mysql -t kts <<<"SELECT * FROM lhb WHERE date='${max_dt}' and (
                             cause='tov_to_20' or 
                             cause='rzrq_to_50')"
         ;;
-    '')
-        fn_execute -l | grep "lhb" && exit
+    [036][0-9][0-9]*)
+        sql="SELECT * FROM lhb WHERE code=$1"
+        mysql -t kts <<<"${sql}"
+        ;;
+    [1-3])
+        sta=`date --date="${1} month ago" +'%F'`
+        sql="SELECT code,count(code) as num FROM lhb WHERE date>'${sta}' GROUP by code ORDER by num DESC LIMIT ${LIMIT:-30}"
+        mysql -t kts <<<"${sql}"
+        ;;
+    [5~9]|1[0-8])
+        sta=`date --date="${1} day ago" +'%F'`
+        sql="SELECT code,count(code) as num FROM lhb WHERE date>'${sta}' GROUP by code ORDER by num DESC LIMIT ${LIMIT:-30}"
+        mysql -t kts <<<"${sql}"
         ;;
     *)
-        field=${1:-rise}
-            ;;
+        echo "
+        SELECT lhb <param>
+        c       上榜原因列表
+        1~3     1~3月内上榜次数统计
+        5~18    5~18天内上榜次数统计
+        "
+        ;;
     esac
     
     return $?
@@ -1241,6 +1258,7 @@ function fn_macd()
 
 function fn_stat()
 {
+    # echo ${PREV}; exit
     fn_echo_warn "1160th换手率"
     LIMIT=1160,1 END=${PREV} SELECT lsd tov
     fn_echo_blue "1160th成交额"

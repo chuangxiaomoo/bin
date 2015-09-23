@@ -17,6 +17,7 @@ function fn_main()
     maps=(
         创业板.BLK      .blk.cyb
 
+        中证龙头.BLK    .blk.zzlt
         上证50.BLK      .blk.sz50
         深证成指.BLK    .blk.szcz
         创业板指.BLK    .blk.cybz

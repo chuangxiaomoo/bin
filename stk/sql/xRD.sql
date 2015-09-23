@@ -1290,6 +1290,7 @@ CREATE PROCEDURE sp_create_tbl_lohi() tag_tbl_lohi:BEGIN
         lohi        DECIMAL(6,2) NOT NULL DEFAULT 0,    -- 100*(high-low)/low
         scale       DECIMAL(6,2) NOT NULL DEFAULT 0,
         zYi         DECIMAL(6,2) NOT NULL DEFAULT 0,
+        volume      INT,
         mavol5      INT
     );
 --  DROP   TABLE IF EXISTS mat_lohi;
@@ -1306,6 +1307,7 @@ CREATE PROCEDURE sp_create_tbl_lohi() tag_tbl_lohi:BEGIN
         lohi        DECIMAL(6,2) NOT NULL DEFAULT 0,
         scale       DECIMAL(6,2) NOT NULL DEFAULT 0,
         zYi         DECIMAL(6,1) NOT NULL DEFAULT 0,
+        volume      INT,
         mavol5      INT,
         INDEX(end,num,code)
     );
@@ -1355,8 +1357,8 @@ CREATE PROCEDURE sp_lohi(a_code INT(6) ZEROFILL) tag_lohi:BEGIN
     SET v_lohi = 100*(v_high-v_low)/v_low;
     SET @len   = v_id_lo-v_id_hi + 1;
 
-    INSERT INTO tbl_lohi(code,date1,date2,   high,low,    lohi,off, scale,  zYi, mavol5)
-             VALUES(a_code,v_date1,v_date2,v_high,v_low,v_lohi,@len, v_scale, v_zYi, v_mavol5);
+    INSERT INTO tbl_lohi(code,date1,date2,   high,low,    lohi,off, scale,  volume, zYi, mavol5)
+             VALUES(a_code,v_date1,v_date2,v_high,v_low,v_lohi,@len, v_scale,v_volume,v_zYi, v_mavol5);
 END tag_lohi //
 
 -- 一些需要与shell通信的系统变量
