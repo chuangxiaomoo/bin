@@ -48,6 +48,7 @@ mps_acc="sql/acc.sql"
 mps_acf="sql/acf.sql"
 mps_god="/var/God.sql"
 sql_temp='/dev/shm/sql.temp'
+sql_tempday='/dev/shm/sql.tempday'
 mps_ma2015="/var/ma2015.sql"
 
 p_bin='/root/bin/stk/bin/'
@@ -410,9 +411,12 @@ function fn_sqls()
     SELECT round(sum(nmc)/(10000*10000),2), 
            round(sum(cap)/(10000*10000),2) FROM $TBL WHERE 1  ${inLIST}  INTO @nmc_Wanyi, @cap_Wanyi;
     SELECT round(sum(nmc)/(10000*10000),2) FROM $TBL WHERE code>400000 ${inLIST} INTO @nmc_sh;
+    SELECT count(code)                     FROM $TBL WHERE code>400000 ${inLIST} INTO @N_sh;
     SELECT round(sum(nmc)/(10000*10000),2) FROM $TBL WHERE code<100000 ${inLIST} INTO @nmc_sz;
+    SELECT count(code)                     FROM $TBL WHERE code<100000 ${inLIST} INTO @N_sz;
     SELECT round(sum(nmc)/(10000*10000),2) FROM $TBL WHERE code>100000 and code<400000 ${inLIST} INTO @nmc_cyb;
-    SELECT max(date), @cap_Wanyi, @nmc_Wanyi, @nmc_sh, @nmc_sz, @nmc_cyb FROM cap;
+    SELECT count(code)                     FROM $TBL WHERE code>100000 and code<400000 ${inLIST} INTO @N_cyb;
+    SELECT max(date), @cap_Wanyi, @nmc_Wanyi, @nmc_sh,@N_sh, @nmc_sz,@N_sz, @nmc_cyb,@N_cyb FROM cap;
     "
 
     if [ "${inLIST}" = '' ]; then

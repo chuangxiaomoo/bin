@@ -94,13 +94,13 @@ function fn_lsd()
         ;;
     u|usage)
         echo "
-        lsd <param>:
-        usage           show usage
-        list            list 5min table
-        {0-9}*          index from 5min table
-        top             10%
-        floor           -10%
-        ''              top default
+        SELECT lsd <param>:
+        usage   show usage
+        list    list 5min table
+        {0-9}*  index from 5min table
+        top     10%
+        floor   -10%
+        ''      top default
         "
         exit
         ;;
@@ -705,7 +705,8 @@ function fn_vol()
     get_vol() 
     {
     echo "
-    SELECT date, sum(volume), sum(amount), sum(amount)/sum(volume) as trade 
+    SELECT date, round(sum(volume)/10000, 2) as Volume, 
+        round(sum(amount)/10000, 2) as Amount, round(sum(amount)/sum(volume), 2) as Trade
         FROM day WHERE date<='${END}' ${COND} ${inLIST}
         GROUP by date 
         ORDER by date DESC
@@ -756,7 +757,7 @@ function fn_dorat()
         COND0="WHERE DATE_FORMAT(CONCAT(date, ' ', time), '%Y-%m-%d %T')<='${DT[@]}'"
         odr="ORDER by date DESC, time DESC"
         # date<='${DT[0]}' and time<='${DT[1]}'"
-        mysql -N kts<<< "SELECT date,time FROM ( SELECT DISTINCT date, time FROM dorat ) as t ${COND0} ${odr} LIMIT ${LIMIT:-48}"
+        mysql -N kts<<< "SELECT date,time FROM ( SELECT DISTINCT date, time FROM dorat ) as t ${COND0} ${odr} LIMIT ${LIMIT:-50}"
         #fn_execute -l | grep dorat && exit
         ;;
     esac
@@ -924,9 +925,11 @@ function fn_lohi()
     columns="t.code,DATE_FORMAT(t.date1,'%m-%d')as date1,DATE_FORMAT(t.date2,'%m-%d')as date2,t.${columns//,/,t.}"
 
     DROP="DROP TABLE IF EXISTS "
+    PREV=`mysql -N kts <<< "SELECT max(end) from mat_lohi"`
     iNUM=${NUM:-8}
     TAM=${TAM//END/${END}}                                              # TAM代表mat_lohi中最高日期，亦TEMPDAY的日期
-    TAM=${TAM:-`mysql -N kts <<< "SELECT max(end) from mat_lohi"`}      # 开市后才能指定MAT
+    TAM=${TAM//PREV/${PREV}}                                            # 
+    TAM=${TAM:-${PREV}}                                                 # 开市后才能指定MAT
     iTEMP=${TAM}
     iCURR=`END=${TAM} fn_get_prev`
     iPREV=`END=${iCURR} fn_get_prev`                                    # prev+temp = 灵活推演
@@ -1029,6 +1032,7 @@ function fn_lohi()
             # echo ${DT}; exit
             DT=(${DT})
             TEMPDAY="(SELECT * FROM dorat WHERE date='${DT[0]}' && time='${DT[1]}')"
+            echo "${TEMPDAY}" > ${sql_tempday}
         fi
         function fn_yi_descend()
         {
@@ -1071,7 +1075,7 @@ function fn_lohi()
                   时早缩量板，提高确定性，成本往前推1日，寄希望于次日再涨停
                   跟风板，成本低，次日多直接出货
             eYi : 展现资金实力，2Yi以下为宜
-            nmc : 盘小方便游资控盘，2Yi/5%换手，在50亿左右为宜\
+            nmc : 盘小方便游资控盘，2Yi/5%换手，在50亿左右为宜
         "
         fn_echo_succ "
             选择强势的概念及板块很重要
@@ -1080,8 +1084,8 @@ function fn_lohi()
             弱势行情追高尽量下午追(13:45后) -- 创业板B 中小板B (后知后觉比较好追)
             09:35~50之间，应该有2~3波..白黄缠绕..，直接拉升者，拒绝新鲜血液，多是耍流氓"
         echo "
-        COND='incr<22' \\
-        LIMIT=600 HAVING='rise<7&&avri>2 && rise>avri-.6 && tov>.2&&tov<.7 && eYi>.6&& nmcYi<80&&(scale<1.5||zYi<2)' TAM=END SELECT lohi 1
+        COND='incr<22'
+        LIMIT=600 HAVING='rise<7&&avri>2 && rise>avri-.6 && tov>.2&&tov<.7 && nmcYi<80&&(scale<1.5||zYi<2)' TAM=END SELECT lohi 1
             tov : 资金必须放量才可安全出逃，prev / prev2缩量，是very very vrey重要的指标
                   早盘，大盘低开时，选择昨天缩量涨停，开盘rise<3
                   尾盘，大盘下跌时，选择当天缩量小涨股
@@ -1102,7 +1106,7 @@ function fn_lohi()
     fn_yi_descend $1 > /dev/stderr
     mysql ${mopt:--t} kts <<< "${tempday}${tbl_super_dive}"
     xt_ret $? "${FUNCNAME}" || return $?
-    fn_echo_warn "$1 of iTEMP=${iTEMP}"
+    fn_echo_warn "TAM=$TAM time=${DT[1]} index=$1"
 
     [ "${CHAO:=0}" -eq 0 ] && return
     fn_echo_warn "----- CHAO:${CHAO} -----" 
@@ -1161,7 +1165,40 @@ function fn_ban()
 
 function fn_sban()
 {
-    ZIZE=0.18 fn_ban
+
+    case $1 in
+    40)
+        ZIZE=0.18 fn_ban; exit
+        ;;
+    47)
+        ZIZE=0.25 fn_ban; exit
+        ;;
+    END|PREV)
+        TAM=${TAM:-$1} SELECT lohi ${2:-1} ${3}; exit
+        ;;
+    .99)
+        TAM=${TAM:-END} COND='tov<=1 && rise>9.93' SELECT lohi ${2:-1} ${3}; exit
+        ;;
+    g1)
+        TAM=${TAM:-END} COND='tov>1 && rise>9.93' SELECT lohi ${2:-1} ${3}; exit
+        ;;
+    c|code)
+        TAM=${TAM:-END} COND="code=$2" SELECT lohi ${3:-1}; exit
+        ;;
+    u|*)
+        echo "
+        SELECT sban <param>
+            40  : 0940 tov .18
+            47  : 0947 tov .25
+            .99 : tov<=1 && rise>9.93
+            g1  : tov>1 && rise>9.93
+            TAM : SET TAM={END|PREV}
+            c   : c code [i]
+            *   : usage
+        "
+        ;;
+    esac
+
 }
 
 
@@ -1196,6 +1233,19 @@ function fn_lhb()
                             cause='tov_to_20' or 
                             cause='rzrq_to_50')"
         ;;
+    201?-??-??|END|PREV)
+        date=${1}
+        date=${date//END/${END}}
+        date=${date//PREV/${PREV}}
+        fn_echo_warn "lhb of ${date}"
+        columns='code,chng,amount,buy,sell,cause,bloo,sloo'
+        columns=l.${columns//,/,l.}
+        sql="
+            SELECT ${columns},(bloo-sloo) as net, c.nmc, c.name FROM lhb as l,cap as c
+            WHERE l.code=c.code && l.date='$date' ${COND} ORDER by ${2:-bloo} DESC
+        "
+        mysql -t kts <<<"${sql}"
+        ;;
     [036][0-9][0-9]*)
         sql="SELECT * FROM lhb WHERE code=$1"
         mysql -t kts <<<"${sql}"
@@ -1216,6 +1266,7 @@ function fn_lhb()
         c       上榜原因列表
         1~3     1~3月内上榜次数统计
         5~18    5~18天内上榜次数统计
+        date    2015-xx-xx
         "
         ;;
     esac
@@ -1258,14 +1309,51 @@ function fn_macd()
 
 function fn_stat()
 {
-    # echo ${PREV}; exit
-    fn_echo_warn "1160th换手率"
-    LIMIT=1160,1 END=${PREV} SELECT lsd tov
-    fn_echo_blue "1160th成交额"
-    LIMIT=1160,1 END=${PREV} SELECT lsd amount
-    fn_echo_succ "770,1540流通市值"
-    LIMIT=770,1  END=${PREV} SELECT lsd nmc
-    LIMIT=1540,1 END=${PREV} SELECT lsd nmc
+    fn_realtimetov0() {
+        LIMIT=2 SELECT vol $1
+        case $1 in
+        0) CONd='and code<100000' ;;
+        3) CONd='and code>=300000 and code<400000' ;;
+        6) CONd='and code>=600000 and code<700000' ;;
+        03)CONd='and code<400000' ;;
+        a) CONd='and code<700000' ;;
+        *) echo "SELECT stat {t|tt} 0|3|6|03|a" ;;
+        esac
+        echo "
+            SELECT sum(amount) FROM ${TEMPDAY:-day} WHERE date='${END}' ${CONd} INTO @curr;
+            SELECT ROUND(@curr/sum(amount), 2) as ratio FROM day WHERE date='${PREV}' ${CONd};
+        " | mysql -N kts
+    }
+    case $1 in
+    m|mid)
+        # echo ${PREV}; exit
+        fn_echo_warn "1160th换手率"
+        LIMIT=1160,1 END=${PREV} SELECT lsd tov
+        fn_echo_blue "1160th成交额"
+        LIMIT=1160,1 END=${PREV} SELECT lsd amount
+        fn_echo_succ "770,1540流通市值"
+        LIMIT=770,1  END=${PREV} SELECT lsd nmc
+        LIMIT=1540,1 END=${PREV} SELECT lsd nmc
+        ;;
+    t|realtimetov|tt|tempdaytov)
+        [ "${1}" = tt ] && TEMPDAY="`cat ${sql_tempday}` as d"
+        list=${@:2}
+        local i=
+        for i in ${list:-0 3 6}; do
+            fn_echo_warn "realtimetov of ${i//a/all}"
+            fn_realtimetov0 ${i} || exit
+        done
+        ;;
+    *)
+        echo "
+        SELECT stat <param>:
+        m   middle of 1160
+        t   realtimetov
+        tt  tempdaytov
+        "
+        exit
+        ;;
+    esac
     return $?
 }
 
@@ -1308,7 +1396,7 @@ function fn_main()
     "hilo               field                 # field to sort by"
     "lohi               field                 # field to sort by"
     "ban                condi [time]          # 条件. 0945后使用"
-    "sban               condi [time]          # 条件. 0940使用"
+    "sban               condi [time]          # super ban"
     "lhb                excption              # 龙虎榜"
     "macd               [clean]               # macd-alarm-sys"
     "tri                                      # 3连阳"
