@@ -28,7 +28,6 @@ XTBL=${XTBL:+and code not in (SELECT code FROM $XTBL)}
 #HAVING="${HAVING}${GEM:+ and d.code>300000 and d.code<400000}"
 
 COND=${COND:+and $COND }${XTBL}
-COND="${COND}${GEM:+ and d.code>300000 and d.code<400000}"
 
 WGET='timeout 34 /usr/bin/wget'
 W3M='timeout  60 /usr/bin/w3m'
@@ -162,6 +161,18 @@ function fn_txttbl()
         TBL=yist
         TBL=yist up file_to_table ${YIST}
     fi
+}
+
+function fn_chao()
+{
+    [ "${CHAO:=0}" -eq 0 ] && return
+    [ -z "${sqls}" ] && fn_echo_warn "sqls is empty" && exit
+    TEXT=${1:-$file_c}
+    mysql -N kts <<<"${PREFIX}SELECT code FROM (${sqls}) as tbl" > ${TEXT} 
+    fn_echo_warn "output codes to ${TEXT}"
+    # up file_to_table ${TEXT}
+    # xt_ret $? "${FUNCNAME}" || return $?
+    return $?
 }
 
 function fn_yist()

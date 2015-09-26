@@ -9,6 +9,7 @@ alias       END=''
 alias       NUM=''
 alias       TBL=''
 alias      COND=''
+alias     CAUSE=''
 alias    HAVING=''
 #lias      FINA=''      # S_I_N_A conflict with Svn
 alias      PREV=''
