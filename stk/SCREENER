@@ -736,8 +736,8 @@ function fn_lohi()
         INSERT INTO zxg(code) SELECT code FROM day WHERE date='${iEND}' and code<765432;
         " | mysql kts
         sql_insert_mat_lohi="
-        INSERT INTO mat_lohi(end,num,code,date1,date2,off,high,low,lohi,scale,zYi,volume,mavol5)
-            SELECT  '${iEND}',${iNUM},code,date1,date2,off,high,low,lohi,scale,zYi,volume,mavol5 FROM tbl_lohi;"
+        INSERT INTO mat_lohi(end,num,code,date1,date2,off,high,low,lohi,scale,amount,volume,mavol5)
+            SELECT  '${iEND}',${iNUM},code,date1,date2,off,high,low,lohi,scale,amount,volume,mavol5 FROM tbl_lohi;"
         # --------------------------------------------------------------- 记得修改正面的 tbl_lohi
     fi
 
@@ -749,8 +749,8 @@ function fn_lohi()
         fn_echo_warn "${iEND}:${iNUM} exist, copy it"
         echo "
         TRUNCATE TABLE tbl_lohi;
-        INSERT INTO tbl_lohi(code,date1,date2,off,high,low,lohi,scale,zYi,volume,mavol5)
-                     SELECT  code,date1,date2,off,high,low,lohi,scale,zYi,volume,mavol5 FROM mat_lohi WHERE end='${iEND}' and num=${iNUM};
+        INSERT INTO tbl_lohi(code,date1,date2,off,high,low,lohi,scale,amount,volume,mavol5)
+                     SELECT  code,date1,date2,off,high,low,lohi,scale,amount,volume,mavol5 FROM mat_lohi WHERE end='${iEND}' and num=${iNUM};
 
         " | mysql kts
         return 0

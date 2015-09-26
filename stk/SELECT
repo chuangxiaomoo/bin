@@ -130,12 +130,7 @@ function fn_lsd()
     }
     fn_sql $@ 
     mysql ${mopt:--t} kts <<<"${sqls}"
-
-    [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
-
-    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > $file_c 
-    up file_to_table $file_c
-    xt_ret $? "${FUNCNAME}" || return $?
+    fn_chao
 }
 
 function fn_ace()
@@ -228,11 +223,7 @@ function fn_rat()
     echo "$sqls">/dev/stderr 
     mysql -t kts<<<"$sqls"
 
-    [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
-
-    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > $file_c.rat 
-    up file_to_table $file_c.rat
-    xt_ret $? "${FUNCNAME}" || return $?
+    fn_chao $file_c.rat
 }
 
 function fn_tri()
@@ -267,11 +258,7 @@ function fn_tri()
     echo "$sqls">/dev/stderr 
     mysql -t kts<<<"$sqls"
 
-    [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
-
-    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > $file_c 
-    up file_to_table $file_c
-    xt_ret $? "${FUNCNAME}" || return $?
+    fn_chao
 }
 
 function fn_dif3()
@@ -430,11 +417,7 @@ function fn_dirtio()
     xt_ret $? "" || return $?
 
     fn_echo_warn "dif3@${DT3[@]}.${STEP:-1}"
-    [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
-
-    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > ${file_c}.dir
-    up file_to_table ${file_c}.dir
-    xt_ret $? "${FUNCNAME}" || return $?
+    fn_chao ${file_c}.dir
 }
 
 function fn_wma()
@@ -462,11 +445,7 @@ function fn_wma()
     " 
     echo "${sqls}" | tee /dev/stderr | mysql $mo -t kts
 
-    [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
-
-    mysql -N kts <<<"SELECT code FROM (${sqls}) as tbl" > $file_c 
-    up file_to_table $file_c
-    xt_ret $? "${FUNCNAME}" || return $?
+    fn_chao
 }
 
 function fn_updown()
@@ -532,12 +511,8 @@ function fn_6maishenjian()
     fn_get_tbl_6jian_dive $1
     mysql $mo -t kts <<< "${tempday}${tbl_super_dive}"
     xt_ret $? "${FUNCNAME}" || return $?
-    
-    [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
-    mysql -N kts <<<"${tempday}SELECT code FROM (${tbl_super_dive}) as tbl" > $file_c 
-    up file_to_table $file_c
-    xt_ret $? "${FUNCNAME}" || return $?
+    PREFIX=${tempday} sqls=${tbl_super_dive} fn_chao
 }
 
 function fn_dugu9jian()
@@ -577,12 +552,8 @@ function fn_dugu9jian()
     fn_get_tbl_9jian_dive $1
     mysql ${mo:-'-t'} kts <<< "${tempday}${tbl_super_dive}"
     xt_ret ${PIPESTATUS[0]} "${FUNCNAME}" || return $?
-    
-    [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
 
-    mysql -N kts <<<"${tempday}SELECT code FROM (${tbl_super_dive}) as tbl" > $file_c 
-    up file_to_table $file_c
-    xt_ret $? "${FUNCNAME}" || return $?
+    PREFIX=${tempday} sqls=${tbl_super_dive} fn_chao
 }
 
 function fn_tao5()
@@ -904,19 +875,12 @@ function fn_hilo()
     mysql $mo -t kts <<< "${tempday}${tbl_super_dive}"
     xt_ret $? "${FUNCNAME}" || return $?
 
-    [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
-
-    mysql -N kts <<<"${tempday}SELECT code FROM (${tbl_super_dive}) as tbl" > ${file_c}
-    xt_ret $? "" || return $?
-
-    up file_to_table $file_c
-    xt_ret $? "${FUNCNAME}" || return $?
+    PREFIX=${tempday} sqls=${tbl_super_dive} fn_chao
 }
 
 function fn_lohi()
 {
-    columns='off,high,low,lohi'
-    columns=${columns:-'*'}
+    columns='off,lohi'
     columns="t.code,DATE_FORMAT(t.date1,'%m-%d')as date1,DATE_FORMAT(t.date2,'%m-%d')as date2,t.${columns//,/,t.}"
 
     DROP="DROP TABLE IF EXISTS "
@@ -1029,23 +993,26 @@ function fn_lohi()
             TEMPDAY="(SELECT * FROM dorat WHERE date='${DT[0]}' && time='${DT[1]}')"
             echo "${TEMPDAY}" > ${sql_tempday}
         fi
+
+        ABBR=t fn_yist
         function fn_yi_descend()
         {
-          # delete停牌个股
           tbl_super_dive="
           SELECT * FROM (
             SELECT ${columns}, 
             round(100*(d.close-t.low)/t.low, 2)  as incr,
             round(100*(GREATEST(t.high,d.close)-d.close)/GREATEST(t.high,d.close), 2) as decn,
+            round(t.amount/t.volume, 2) as yesc, d.close,
             round(100*(d.amount/d.volume-d.yesc)/d.yesc, 2) as avri,
             ${RISE} as rise,
             round((d.volume/t.volume), 2) as tov,
             round((d.volume/t.mavol5), 2) as tov5, t.scale,
-            round((d.amount/10000), 1) as eYi, zYi,
+            round((d.amount/10000), 1) as eYi, 
+            round((t.amount/10000), 1) as zYi,
             round((c.shares*d.close/10000), 1) as nmcYi, c.name
             FROM ${hilo_curr} as t, 
             ${TEMPDAY} as d, cap as c
-            WHERE t.code = d.code and t.code=c.code HAVING 1 ${COND} ${EXCLUDE}
+            ${WHERE} t.code = d.code and t.code=c.code HAVING 1 ${COND} ${EXCLUDE}
             ORDER by incr ${ASC:-DESC} LIMIT 1000 ) as t
           HAVING ${HAVING:-1} ORDER by ${field:-tov} ${ASC:-DESC} LIMIT ${LIMIT:-40}
           "
@@ -1103,16 +1070,8 @@ function fn_lohi()
     xt_ret $? "${FUNCNAME}" || return $?
     fn_echo_warn "TAM=$TAM time=${DT[1]} index=$1"
 
-    [ "${CHAO:=0}" -eq 0 ] && return
-    fn_echo_warn "----- CHAO:${CHAO} -----" 
-
-    mysql -N kts <<<"${tempday}SELECT code FROM (${tbl_super_dive}) as tbl" > ${file_c}.desc
-    xt_ret $? "" || return $?
-
-    up file_to_table $file_c.desc
-    xt_ret $? "${FUNCNAME}" || return $?
+    PREFIX=${tempday} sqls=${tbl_super_dive} fn_chao
 }
-
 
 function fn_ban()
 {
@@ -1196,7 +1155,6 @@ function fn_sban()
 
 }
 
-
 function fn_xrd()
 {
     mysql kts <<<"SELECT * from xRD WHERE date${OP:->}'${END}' order by ${1:-date} ASC"
@@ -1219,13 +1177,24 @@ function fn_cap()
 
 function fn_lhb()
 {
+    if [ -n "${CAUSE}" ]; then
+        CAUSE=`
+                sed -e "s/3/cause='3up20'/"     \
+                    -e "s/7/cause='up7'/"       \
+                    -e "s/f/cause='hilo15'/"    \
+                    -e "s/'s'/cause='s3up12'/"  \
+                    -e "s/t/cause='tov20'/"     \
+                    -e 's/ /||/g' <<< "${CAUSE}"`
+        # echo ${CAUSE}; exit
+        CAUSE="and (${CAUSE})"
+    fi
     sql="SELECT max(date) FROM lhb"
     max_dt=`mysql -N kts <<< "${sql}"`
     case $1 in
     c|cause)
         mysql -t kts <<<"SELECT DISTINCT cause FROM lhb"
         mysql -t kts <<<"SELECT * FROM lhb WHERE date='${max_dt}' and (
-                            cause='tov_to_20' or 
+                            cause='tov_to_20' or
                             cause='rzrq_to_50')"
         ;;
     l|list)
@@ -1236,11 +1205,13 @@ function fn_lhb()
         fn_echo_warn "lhb of ${date}"
         columns='code,chng,amount,buy,sell,cause,bloo,sloo'
         columns=l.${columns//,/,l.}
-        sql="
+        sqls="
             SELECT ${columns},(bloo-sloo) as net, c.nmc, c.name FROM lhb as l,cap as c
-            WHERE l.code=c.code && l.date='$date' ${COND} ORDER by ${2:-bloo} DESC
+            WHERE l.code=c.code && l.date='$date' ${CAUSE} ${COND} ORDER by ${3:-bloo} DESC
         "
-        mysql -t kts <<<"${sql}"
+        # echo ${sql}; exit
+        mysql -t kts <<<"${sqls}"
+        fn_chao
         ;;
     [036][0-9][0-9]*)
         sql="SELECT * FROM lhb WHERE code=$1"
@@ -1264,15 +1235,18 @@ function fn_lhb()
         5~18    5~18天内上榜次数统计
         d [i]   指定日列表，i不指定时为0，代表今天
 
-        COND
-        COND=\"cause='up7'\"
+        CAUSE='3 7 f s t'
+        3   3up20
+        7   up7
+        f   hilo15
+        s   s3up12
+        t   tov20
         "
         ;;
     esac
-    
+
     return $?
 }
-
 
 function fn_macd()
 {
