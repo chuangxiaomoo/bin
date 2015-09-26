@@ -1,0 +1,6 @@
+#! /bin/bash
+
+set -f
+
+bc -l <<< "$*"
+    

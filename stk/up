@@ -285,48 +285,56 @@ function fn_load_directory()
     return $?
 }
 
+function fn_file_to_table_quick()
+{
+    f_yist='/tmp/kts/yist'
+    cat ${YIST}|awk '/^[036]/{print $1}' > $f_yist
+    echo "
+    DROP TABLE IF EXISTS yist;
+    CREATE TABLE yist (
+        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0
+    );
+    LOAD DATA LOCAL INFILE '$f_yist' INTO TABLE yist(code);
+    " | mysql kts
+}
+
 function fn_file_to_table()
 {
-    [ -z "$1" ] && echo "Usage: file_to_table {file|code...}" && exit 1
-    # echo $@ && exit
-    # D:\dzh2\USERDATA\block
-    # 每个自选股都有自己的独特代码，现以8为实现
-    # Linux中的vim ga 不是很准确的，不能完全解码uni-code，到xp中就OK了。
-    # echo "obase=16;ibase=16; 87+A" | bc
-    # mysql -N -B kts <<< "SELECT code FROM cap WHERE code < 50 order by code;" | xargs up 6 > /winc/relay/自选股.BLK
+    if [ -f "${1}" ]; then
+        [ ! -s "${1}" ] && fn_echo_fail "Error: file ${$1} is empty" && exit 1
+        lst=(`awk '/^[036]/{print $1}' ${*}`)
+        file_fr="from $1"
+    elif [ -n "${1}" ]; then
+        lst=(${@})
+    else
+        fn_echo_fail "Usage: file_to_table {file|code...}" && exit 1
+    fi
 
-    # HEAD="\xa6\x00Q\xff\x01"
-    # DELI="\x00}\xa9\x00\x91\xb9\x88R"
-    TBL=${TBL:-zxg}
-   #HEAD="\xa5\x00Q\xff"            # 不带时间
-   #DELI="\x00\x00\x00\x00"
-    HEAD="\xa6\x00\x51\xff\x01"     # 带时间排序功能
-    DELI="\x00\x20\x66\x01"
-    sql_insert0=''
-
-    echo "DROP TABLE IF EXISTS ${TBL};
+    echo "
+        DROP TABLE IF EXISTS ${TBL:=zxg};
         CREATE TABLE ${TBL} (
             id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
             code        INT(6) ZEROFILL NOT NULL DEFAULT 0
         );
         INSERT INTO ${TBL} (code) VALUES
+        `sed -e 's/^/(/' -e 's/ /),(/g' -e 's/$/);/' <<< "${lst[@]}"` 
     " > ${sql_temp}
-
-    if [ -f "${1}" ]; then
-        [ -z "cat ${1}" ] && echo "Error: file ${$1} is null" && exit 1
-        lst=(`awk '/^[036]/{print $1}' ${*}`)
-        file_fr="from $1"
-    else
-        lst=(${@})
-    fi
-    echo ${lst[@]} | sed -e 's/^/(/' -e 's/ /),(/g' -e 's/$/);/' >> ${sql_temp}
 
     mysql kts < ${sql_temp}
     xt_ret $? "${FUNCNAME}" || return $?
 
+    return 0    # no dzh 自选股.BLK TEMPORARY
+
+    # D:\dzh2\USERDATA\block
+    # 每个自选股都有自己的独特代码，现以8为实现
+    # Linux中的vim ga 不是很准确的，不能完全解码uni-code，到xp中就OK了。
+    HEAD="\xa6\x00\x51\xff\x01"     # 带时间排序功能，不带时间: HEAD="\xa5\x00Q\xff"
+    DELI="\x00\x20\x66\x01"         # 不带时间: DELI="\x00\x00\x00\x00"
+
     f_zxg='/dzh2/USERDATA/block/自选股.BLK'
     test -f ${f_zxg}
-    xt_ret $? "" || return $?
+    xt_ret $? "${f_zxg} not exist" || exit 1
 
     {
     echo -n -e $HEAD
@@ -351,7 +359,7 @@ function fn_file_to_table()
     echo
     } > ${f_zxg}
 
-    echo "    add ${#lst[@]} code ${file_fr} to ${TBL} over."
+    echo "    add ${#lst[@]} code ${file_fr} to ${TBL} over." > /dev/stderr
 }
 
 function fn_table_to_file()

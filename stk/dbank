@@ -166,28 +166,16 @@ function fn_txttbl()
 
 function fn_yist()
 {
-    # f_yist='/tmp/kts/yist'
-    # if [ -f "${YIST}" ]; then
-    #     cat ${YIST}|awk '/^[036]/{print $1}' > $f_yist
-    #     [ ! -s "${f_yist}" ] && return
-    #     echo "
-    #     DROP TABLE IF EXISTS yist;
-    #     CREATE TABLE yist (
-    #         id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
-    #         code        INT(6) ZEROFILL NOT NULL DEFAULT 0
-    #     );
-    #     LOAD DATA LOCAL INFILE '$f_yist' INTO TABLE yist(code);
-    #     " | mysql kts
-    #     inLIST="and code in (SELECT code from yist)"
-    # fi
-    # return
-
     if [ -f "${YIST}" ]; then
         LIST=(`cat ${YIST}|awk '/^[036]/{print $1}' | xargs`)
         [ -z "${LIST[0]}" ] && return
         inLIST="and code in (`tr ' ' ','<<<${LIST[@]}`)"
+
+        TBL=yist up file_to_table ${YIST}
+        WHERE=",yist as y WHERE ${ABBR:-d}.code=y.code &&"
+    else
+        WHERE="WHERE"
     fi
-    #echo ${LIST}; exit
 }
 
 function fn_str_2_date()

@@ -102,9 +102,11 @@ alias   xgrep="find . -name '*' -type f | xargs grep --color"
 alias  upconf="rm -f /home/s/fs/opt/conf/config.*; svn up /home/s/fs/opt/conf/config.org;" 
 alias  clrnfs="Svn | grep nfs | awk '{print $2}' | xargs rm -f"
 alias fbcache="sync; echo 3 > /proc/sys/vm/drop_caches"
+alias    Calc='set -f; fn_calc'
 
-# soptter
-function M()        { m1 $@ | tail -18; } # M() { m1 $@ | nl -w 3 -s' ' | less -i ;}
+fn_calc()       { bc -l <<< "scale=3;$*"; set +f; }
+
+function M()    { m1 $@ | tail -18; } # M() { m1 $@ | nl -w 3 -s' ' | less -i ;}
 
 lwd() 
 {

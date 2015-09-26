@@ -66,4 +66,4 @@
 # 洪粉家人       .doc/hongrong.md
 # 瑞鹤仙         .doc/yxkrrhx.md        -- 桃谷
 # 逻辑           .doc/logic.md
-# 操盘日记       .doc/diary.md
+# 操盘日记       .doc/diary2.md

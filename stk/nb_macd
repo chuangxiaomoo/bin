@@ -23,7 +23,7 @@ function fn_routine()
 
     while read code symble COND0 tips; do
         # echo "read code=${code} ${COND0}"
-        [ "$COND0" == 0 ] && continue
+        [ "${COND0:-0}" == 0 ] && continue
         if ! ${istest} && [ "$code" != '/' ]; then                              # istest
             echo do fenbi ${code}...
             fenbi ${code} >& ${error}
@@ -140,7 +140,7 @@ function fn_loop()
     while :; do
         fn_isresting && { sleep 150; continue; }
         fn_routine
-        echo "to sleeping ${STEP:=100}s"        # F5x3有效突破，即3线之内，低点抬高，高点亦抬高
+        echo "to sleeping ${STEP:=80}s"        # F5x3有效突破，即3线之内，低点抬高，高点亦抬高
         sleep ${STEP}                           #               若是大阳线，则不破1/2长度
     done
     return $?
