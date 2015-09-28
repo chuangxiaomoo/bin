@@ -54,16 +54,15 @@
 # 短线战法       .doc/dagger.md
 # 中线战法       .doc/pike.md
 # 空间域         .doc/space.md
-# 打板精要       .doc/daban.md          -- 龙头战法、龙飞虎、龙虎榜
-# 仓位管理       .doc/position.md       -- 核心理论: 价.量.macd.势.攻.防
-# 魔论           .doc/molun.md          -- 预测体系
 # 交易系统       .doc/tradesys.md
 # 独孤九剑       .doc/dugu9jian.md      -- 成本.信息进化论.解N变量方程组
 # 事件冲击       .doc/event.md          -- 高管增持 定增 加息 gushequ大数据
 # 缠中说禅       .chan/chan.md
 # 莫大仙岳居     .doc/sulon.md
-# 花荣之习惯     .doc/huarong.md        -- tov换手的秘密
 # 洪粉家人       .doc/hongrong.md
 # 瑞鹤仙         .doc/yxkrrhx.md        -- 桃谷
 # 逻辑           .doc/logic.md
+# 魔论           .doc/molun.md          -- 大盘预测体系
+# 打板精要       .doc/daban.md          -- 个股龙头战法、龙飞虎、龙虎榜
+# 仓位管理       .doc/position.md       -- 核心理论: 价.量.macd.势.攻.防
 # 操盘日记       .doc/diary2.md
