@@ -72,12 +72,12 @@ function fn_lsd()
     fn_yist
     echo ----- LIST:${#LIST[@]} COND@${END}: $COND -----
 
-
     case $1 in
     t|top)
         LIMIT=${LIMIT:-200}
         HAVING="rise>9.94"
         field=${2:-nmc}
+        chao=${chao}.top
         ;;
     f|floor)
         LIMIT=${LIMIT:-200}
@@ -113,6 +113,7 @@ function fn_lsd()
         exit
         ;;
     *)
+        chao=${chao}.lsd
         field=${1:-rise}
         ;;
     esac
@@ -223,7 +224,7 @@ function fn_rat()
     echo "$sqls">/dev/stderr 
     mysql -t kts<<<"$sqls"
 
-    fn_chao $file_c.rat
+    fn_chao $chao.rat
 }
 
 function fn_tri()
@@ -417,7 +418,7 @@ function fn_dirtio()
     xt_ret $? "" || return $?
 
     fn_echo_warn "dif3@${DT3[@]}.${STEP:-1}"
-    fn_chao ${file_c}.dir
+    fn_chao ${chao}.dir
 }
 
 function fn_wma()
@@ -1013,7 +1014,7 @@ function fn_lohi()
             FROM ${hilo_curr} as t, 
             ${TEMPDAY} as d, cap as c
             ${WHERE} t.code = d.code and t.code=c.code HAVING 1 ${COND} ${EXCLUDE}
-            ORDER by incr ${ASC:-DESC} LIMIT 1000 ) as t
+            ORDER by incr ${ASC:-DESC} ) as t
           HAVING ${HAVING:-1} ORDER by ${field:-tov} ${ASC:-DESC} LIMIT ${LIMIT:-40}
           "
           echo "${tempday}${tbl_super_dive}"
@@ -1070,7 +1071,7 @@ function fn_lohi()
     xt_ret $? "${FUNCNAME}" || return $?
     fn_echo_warn "TAM=$TAM time=${DT[1]} index=$1"
 
-    PREFIX=${tempday} sqls=${tbl_super_dive} fn_chao
+    PREFIX=${tempday} sqls=${tbl_super_dive} fn_chao ${chao}.lohi
 }
 
 function fn_ban()
@@ -1119,8 +1120,13 @@ function fn_ban()
 
 function fn_sban()
 {
-
     case $1 in
+    a|avri)
+        local i
+        for (( i=${NUM:-35}0; i>0; i-=4 )); do
+            echo
+        done
+        ;;
     40)
         ZIZE=0.18 fn_ban; exit
         ;;
@@ -1142,6 +1148,7 @@ function fn_sban()
     u|*)
         echo "
         SELECT sban <param>
+            a   : close>avri-1
             40  : 0940 tov .18
             47  : 0947 tov .25
             .99 : tov<=1 && rise>9.93
@@ -1152,7 +1159,6 @@ function fn_sban()
         "
         ;;
     esac
-
 }
 
 function fn_xrd()
@@ -1294,7 +1300,7 @@ function fn_stat()
         esac
         echo "
             SELECT sum(amount) FROM ${TEMPDAY:-day} WHERE date='${END}' ${CONd} INTO @curr;
-            SELECT ROUND(@curr/sum(amount), 2) as ratio FROM day WHERE date='${PREV}' ${CONd};
+            SELECT ROUND(@curr/sum(amount), 3) as ratio FROM day WHERE date='${PREV}' ${CONd};
         " | mysql -N kts
     }
     case $1 in
@@ -1318,7 +1324,7 @@ function fn_stat()
         list=${@:2}
         local i=
         for i in ${list:-0 3 6 a}; do
-            fn_echo_warn "realtimetov of ${i//a/all} @${END} ${time}"
+            fn_echo_warn "realtimetov of __${i//a/all}__ @${END} ${time}"
             fn_realtimetov0 ${i} || exit
         done
         ;;
@@ -1341,6 +1347,8 @@ function fn_main()
     CURR=`fn_maxdate`
     END=${END:-${CURR}}
     PREV=`fn_get_prev`
+    END=${END//END/${CURR}}
+    END=${END//PREV/${PREV}}
 
     cmdlist=(
     "dugu9jian          [sortfield]           # nine sword"
