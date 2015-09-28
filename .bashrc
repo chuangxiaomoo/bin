@@ -4,6 +4,7 @@
 
 alias        FM=''
 alias       ASC=''
+alias       TEE=''
 alias       TAM=''
 alias       END=''
 alias       NUM=''

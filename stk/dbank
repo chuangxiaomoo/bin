@@ -107,12 +107,12 @@ yjyg_raw='/dev/shm/yjyg_raw'
 yjyg_rip='/dev/shm/yjyg_rip'
 
        lhb='/tmp/kts/lhb'
+      chao='/tmp/kts/chao'
    lhb_raw='/tmp/kts/lhb.raw'
    lhb_rip='/tmp/kts/lhb.rip'
      error='/tmp/kts/error'
      cache='/tmp/kts/cache'
     buffer='/tmp/kts/buffer'
-    file_c='/tmp/kts/chao'
    file_wb='/tmp/kts/wb'
    daydump='/tmp/kts/day.dump'
   exclude0='/tmp/kts/exclude0'
@@ -131,7 +131,7 @@ mkdir -p /dev/shm/fenbi
 
 touch $cache
 touch $buffer
-touch $file_c
+touch $chao
 touch $file_wb
 touch $exclude0
 touch $exclude1
@@ -167,9 +167,9 @@ function fn_chao()
 {
     [ "${CHAO:=0}" -eq 0 ] && return
     [ -z "${sqls}" ] && fn_echo_warn "sqls is empty" && exit
-    TEXT=${1:-$file_c}
-    mysql -N kts <<<"${PREFIX}SELECT code FROM (${sqls}) as tbl" > ${TEXT} 
-    fn_echo_warn "output codes to ${TEXT}"
+    TEXT=${1:-$chao}
+    mysql -N kts <<<"${PREFIX}SELECT code FROM (${sqls}) as tbl" | tee ${TEE} ${TEXT} > /dev/null 
+    fn_echo_warn "`wc -l < ${TEXT}` rows to ${TEXT}"
     # up file_to_table ${TEXT}
     # xt_ret $? "${FUNCNAME}" || return $?
     return $?
