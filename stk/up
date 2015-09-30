@@ -103,6 +103,17 @@ function fn_add_yesclose()
 
 function fn_hexun_day()
 {
+    {
+        echo "    get flock 19..."
+        flock 19
+        echo "    got flock 19..."
+        fn_hexun_day0
+        xt_ret $? "fail: day0" || return $?
+    } 19<>'/dev/shm/up2'
+}
+
+function fn_hexun_day0()
+{
     mkdir -p ${hx_dayclose%/*}
 
     unarm_close_forbid=true \
@@ -241,13 +252,8 @@ function fn_del_hexun_day()
 
 function fn_redo_hexun_day()
 {
-    {
-        echo "    get flock..."
-        flock 21
-        echo "    got flock..."
-        fn_del_hexun_day && fn_hexun_day
-        xt_ret $? "fail: day" || return $?
-    } 21<>'/dev/shm/up4'
+    fn_hexun_day
+    xt_ret $? "fail: day" || return $?
 
     sql="SELECT ${RISE} as rise FROM day as d WHERE date='${OPENDATE}' ORDER by rise DESC LIMIT 1"
     maxrise=`mysql kts -N <<<"${sql}"`

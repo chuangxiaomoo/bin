@@ -879,29 +879,8 @@ function fn_hilo()
     PREFIX=${tempday} sqls=${tbl_super_dive} fn_chao
 }
 
-function fn_lohi()
+function fn_inout()
 {
-    columns='off,lohi'
-    columns="t.code,DATE_FORMAT(t.date1,'%m-%d')as date1,DATE_FORMAT(t.date2,'%m-%d')as date2,t.${columns//,/,t.}"
-
-    DROP="DROP TABLE IF EXISTS "
-    PREV=`mysql -N kts <<< "SELECT max(end) from mat_lohi"`
-    iNUM=${NUM:-8}
-    TAM=${TAM//END/${END}}                                              # TAM代表mat_lohi中最高日期，亦TEMPDAY的日期
-    TAM=${TAM//PREV/${PREV}}                                            # 
-    TAM=${TAM:-${END}}                                                  # 开市后才能指定MAT
-    iTEMP=${TAM}
-    iCURR=`END=${TAM} fn_get_prev`
-    iPREV=`END=${iCURR} fn_get_prev`                                    # prev+temp = 灵活推演
-
-    # echo END: ${END} TAM:${TAM} temp:${iTEMP} curr: ${iCURR} prev:${iPREV}; exit
-
-    hilo_temp="( SELECT * FROM mat_lohi WHERE end='${iTEMP}' and num=${iNUM} )"
-    hilo_curr="( SELECT * FROM mat_lohi WHERE end='${iCURR}' and num=${iNUM} )"
-    hilo_prev="( SELECT * FROM mat_lohi WHERE end='${iPREV}' and num=${iNUM} )"
-       d_temp="SELECT * from day where date='${iTEMP}'"     # 最新day数据，可以是开市数据
-       d_curr="SELECT * from day where date='${iCURR}'"     # 次新day数据，必是必市后数据
-
     inout_codes="
     $DROP        d_temp;
     CREATE TABLE d_temp LIKE day;
@@ -960,18 +939,42 @@ function fn_lohi()
       HAVING ${HAVING:-1} ORDER by ${field:-incr} ${ASC:-DESC}      -- 淘汰 = 昨天前40-(2天的交集)
       "
     }
+    function fn_yi_descend()
+    {
+      tempday="${inout_codes}"
+      tbl_super_dive=`fn_in_or_out $1`
+      fn_echo_blue "${tbl_super_dive}"
+    }
+    
+    return $?
+}
+
+function fn_lohi()
+{
+    columns='lohi'
+    columns="t.code,DATE_FORMAT(t.date1,'%m-%d')as date1,DATE_FORMAT(t.date2,'%m-%d')as date2,t.${columns//,/,t.}"
+
+    DROP="DROP TABLE IF EXISTS "
+    iNUM=${NUM:-8}                          # PREV=`mysql -N kts <<< "SELECT max(end) from mat_lohi"`
+    TAM=${TAM:-${END}}                      # 开市后才能指定MAT
+    TAM=${TAM//END/${END}}                  # TAM代表mat_lohi中最高日期，亦TEMPDAY的日期
+    TAM=${TAM//PREV/${PREV}}                # 
+    iTEMP=${TAM}
+    iCURR=`END=${TAM} fn_get_prev`
+    iPREV=`END=${iCURR} fn_get_prev`        # prev+temp = 灵活推演
+
+    # echo END: ${END} TAM:${TAM} temp:${iTEMP} curr: ${iCURR} prev:${iPREV}; exit
+
+    hilo_temp="( SELECT * FROM mat_lohi WHERE end='${iTEMP}' and num=${iNUM} )"
+    hilo_curr="( SELECT * FROM mat_lohi WHERE end='${iCURR}' and num=${iNUM} )"
+    hilo_prev="( SELECT * FROM mat_lohi WHERE end='${iPREV}' and num=${iNUM} )"
+       d_temp="SELECT * from day where date='${iTEMP}'"     # 最新day数据，可以是开市数据
+       d_curr="SELECT * from day where date='${iCURR}'"     # 次新day数据，必是必市后数据
 
     field=$1
     case $1 in
     in|out|sit)
-        field=$2
-        fn_echo_warn "$1 of TAM=${iTEMP}"
-        function fn_yi_descend()
-        {
-          tempday="${inout_codes}"
-          tbl_super_dive=`fn_in_or_out $1`
-          fn_echo_blue "${tbl_super_dive}"
-        }
+        field=$2; fn_inout
         ;;
     l|list)
         LIMIT=50 DT="${iTEMP} 15:05:00" SELECT dorat | cat -n; exit 0
@@ -1003,8 +1006,9 @@ function fn_lohi()
             SELECT ${columns}, 
             round(100*(d.close-t.low)/t.low, 2)  as incr,
             round(100*(GREATEST(t.high,d.close)-d.close)/GREATEST(t.high,d.close), 2) as decn,
-            round(t.amount/t.volume, 2) as yesc, d.close,
-            round(100*(d.amount/d.volume-d.yesc)/d.yesc, 2) as avri,
+            round(t.amount/t.volume, 2) as yavri, d.close,
+            round(100*(d.high-d.yesc)/d.yesc, 1) as hiri,
+            round(100*(d.amount/d.volume-d.yesc)/d.yesc, 1) as avri,
             ${RISE} as rise,
             round((d.volume/t.volume), 2) as tov,
             round((d.volume/t.mavol5), 2) as tov5, t.scale,
@@ -1015,7 +1019,7 @@ function fn_lohi()
             ${TEMPDAY} as d, cap as c
             ${WHERE} t.code = d.code and t.code=c.code HAVING 1 ${COND} ${EXCLUDE}
             ORDER by incr ${ASC:-DESC} ) as t
-          HAVING ${HAVING:-1} ORDER by ${field:-tov} ${ASC:-DESC} LIMIT ${LIMIT:-40}
+          HAVING ${HAVING:-1} ORDER by ${field:-tov} ${ASC:-DESC} LIMIT ${LIMIT:-36}
           "
           echo "${tempday}${tbl_super_dive}"
         }
@@ -1122,9 +1126,13 @@ function fn_sban()
 {
     case $1 in
     a|avri)
-        local i
-        for (( i=${NUM:-35}0; i>0; i-=4 )); do
-            echo
+        fn_get_ratio_close2open idxopen
+        # echo ${idxopen} ${tov_pcnt}; exit
+        for (( i=${START:=${idxopen}}; i>${STOP:-0}; i-=1 )); do
+            [ "${i}" -ne "${START}" ] && YIST=${chao}.temp 
+            iCOND="hiri>5 && rise>avri-.6 && avri>0 && avri<9.93 && tov<${tov_pcnt} && nmcYi<80"
+            LIMIT=3000 YIST=${YIST} COND=${iCOND} CHAO=1 SELECT lohi ${i}
+            cp ${chao}.lohi ${chao}.temp
         done
         ;;
     40)
