@@ -292,10 +292,15 @@ function fn_get_ratio_close2open()
         sec_open=14400
     fi
 
-    # echo $sec_open
-    # sec_pcnt=$(expr ${sec_open}00 / 14400)
-    sec_pcnt=$(bc -l <<<"scale=4; 14400/${sec_open}")
-    echo $sec_pcnt
+
+    if [ "${1}" = 'idxopen' ]; then
+        let idxopen=${sec_open}/300
+        let idxopen=idxopen
+        tov_pcnt=$(bc -l <<<"scale=2; 1.4*${sec_open}/14400")
+    else
+        sec_pcnt=$(bc -l <<<"scale=4; 14400/${sec_open}")
+        echo $sec_pcnt
+    fi
 }
 
 function fn_maxdate() 
