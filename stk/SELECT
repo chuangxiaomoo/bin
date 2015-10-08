@@ -1262,6 +1262,11 @@ function fn_lhb()
     return $?
 }
 
+function fn_fmacd()
+{
+    mysql -t kts <<< "SELECT * FROM fmacd";
+}
+
 function fn_macd()
 {
     fn_yist
@@ -1318,9 +1323,9 @@ function fn_stat()
         LIMIT=1160,1 END=${PREV} SELECT lsd tov
         fn_echo_blue "1160th成交额"
         LIMIT=1160,1 END=${PREV} SELECT lsd amount
-        fn_echo_succ "770,1540流通市值"
-        LIMIT=770,1  END=${PREV} SELECT lsd nmc
-        LIMIT=1540,1 END=${PREV} SELECT lsd nmc
+        fn_echo_succ "897(2345*.382),1789(2345*.618*1.235)流通市值"
+        ASC=asc LIMIT=897,1  END=${PREV} SELECT lsd nmc
+        ASC=asc LIMIT=1789,1 END=${PREV} SELECT lsd nmc
         ;;
     t|realtimetov|tt|tempdaytov)
         if [ "${1}" = tt ]; then
@@ -1393,6 +1398,7 @@ function fn_main()
     "sban               condi [time]          # super ban"
     "lhb                excption              # 龙虎榜"
     "macd               [clean]               # macd-alarm-sys"
+    "fmacd                                                    "
     "tri                                      # 3连阳"
     )
 

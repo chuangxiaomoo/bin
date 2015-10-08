@@ -125,7 +125,7 @@ function fn_main()
 {
     code=${1}
     fn_iscode ${code}
-    xt_ret $? "Usage: macd code" || return $?
+    xt_ret $? "Usage: macd code [f1]" || return $?
 
     if [ "${2}" = 'f1' ]; then
         echo "do macd1 ${code}..."
