@@ -738,6 +738,7 @@ function fn_driver()                    { cat driver ;}
 function fn_cold()                      { cat cold ;}
 function fn_sport()                     { cat sport ;}
 function fn_guo()                       { cat guo ;}
+function fn_physics()                   { cat physics ;}
 
 # 新教与天主教。信则得救，不信则下地狱 vs 助人行善
 # 一花一世界，一木一浮生，一草一天堂，一叶一如来，
@@ -804,6 +805,7 @@ function fn_main() {
         zhenhuan                        # 甄嬛体
         sanxing三省
         life_is_a_bus                   # 公交车
+        physics 
     )
     fn_print $@
 }
