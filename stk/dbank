@@ -167,10 +167,19 @@ function fn_chao()
 {
     [ "${CHAO:=0}" -eq 0 ] && return
     [ -z "${sqls}" ] && fn_echo_warn "sqls is empty" && exit
-    TEXT=${1:-$chao}
-    mysql -N kts <<<"${PREFIX}SELECT code FROM (${sqls}) as tbl" | tee ${TEE} ${TEXT} > /dev/null 
-    fn_echo_warn "`wc -l < ${TEXT}` rows to ${TEXT}"
-    # up file_to_table ${TEXT}
+    PLAIN=${1:-$chao}
+    mysql -N kts <<<"${PREFIX}SELECT code FROM (${sqls}) as tbl" | tee ${TEE} ${PLAIN} > /dev/null 
+    fn_echo_warn "`wc -l < ${PLAIN}` rows to ${PLAIN}"
+    fn_10jqka() 
+    {
+      xargs < ${PLAIN} | sed 's/^/ /' | sed  \
+        -e 's# 6#\\x07\\x116#g' \
+        -e 's# 0#\\x07!3#g' \
+        -e 's# 3#\\x07!3#g' > ${buffer}
+      echo -e "\x13\x00`cat ${buffer}`" > /winc/zxg/自选股.sel
+    }
+    fn_10jqka
+    # up file_to_table ${PLAIN}
     # xt_ret $? "${FUNCNAME}" || return $?
     return $?
 }
