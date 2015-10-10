@@ -18,6 +18,7 @@ function fn_routine_10()
 function fn_routine()
 {
     tips_cnt=0
+    tips_old=0
     tips_got=''
     >${list_limo}
 
@@ -99,7 +100,7 @@ function fn_routine()
             ;;
         esac
 
-        [ "${tips_cnt}" -gt ${tips_old:-0} ] && echo ${code} >> ${list_limo}
+        [ "${tips_cnt}" -gt ${tips_old} ] && echo ${code} >> ${list_limo}
         code0=$code
         tips_old=${tips_cnt}
     done<<<"`grep ${PATTERN:-'^[/036]'} .soptter.macd`"

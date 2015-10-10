@@ -833,6 +833,74 @@ call sp_ma2015();
     return $?
 }
 
+function fn_download_Money()
+{
+    host='http://www.sipf.com.cn'
+
+    fn_echo_succ "余额期末数\t日平均数\t银证转账+\t银证转账-\t银证转账net
+    
+    "
+    dates=(
+    "/NewCH/zt/01/94402.shtml"    201501
+    "/NewCH/zt/12/93151.shtml"    201412
+    "/NewCH/zt/11/92201.shtml"    201411
+    "/NewCH/zt/10/90801.shtml"    201410
+    "/NewCH/zt/09/89104.shtml"    201409
+    "/NewCH/zt/08/88352.shtml"    201408
+    "/NewCH/zt/07/87752.shtml"    201407
+    "/NewCH/zt/06/87102.shtml"    201406
+    "/NewCH/zt/05/86303.shtml"    201405
+    "/NewCH/zt/04/85854.shtml"    201404
+    )
+    for (( i=${#dates[@]}-1; i>0; i-=2 )); do
+        let j=i-1
+        echo -e "month: \t${dates[$i]}"
+        w3m -dump "${host}/${dates[$j]}" | grep '201.\.' | sed 's/,//g' | \
+            awk '{printf "%s\t%s\t%s\t%s\t%s\n", $2,$3,$4,$5,$6}'
+    done
+
+    dates=(
+    "/NewCH/zt/09/100802.shtml"   201509
+    "/NewCH/zt/08/100352.shtml"   201508
+    "/NewCH/zt/07/99752.shtml"    201507
+    "/NewCH/zt/06/98652.shtml"    201506
+    "/NewCH/zt/05/97802.shtml"    201505
+    "/NewCH/zt/04/97002.shtml"    201504
+    "/NewCH/zt/03/96352.shtml"    201503
+    "/NewCH/zt/02/95209.shtml"    201502
+    )
+    local i
+    for (( i=${#dates[@]}-1; i>0; i-=2 )); do
+        let j=i-1
+        echo -e "month: \t${dates[$i]}"
+        w3m -dump "${host}/${dates[$j]}" | grep 证券交易结算资金 | sed 's/,//g' | \
+            awk '{printf "%s\t%s\t%s\t%s\t%s\n", $4,$6,$8,$10,$12}'
+    done 
+
+}
+
+function fn_parser_Money()
+{
+    awk '
+    BEGIN { sum=0; free0=5755; net=0; }
+    {
+        if (1 == index($1,"month:")) {
+            printf "%s\t%s\n", $1,$2
+        } else {
+            net=net+$5;
+            sum=(free0-$1)+$5+sum;
+            printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", free0, $1,$2,$3,$4,$5,sum,net
+            free0=$1;
+        }
+    }' ~/bin/stk/sql/money
+}
+
+function fn_money()
+{
+    # fn_download_Money | tee ~/bin/stk/sql/money
+    fn_parser_Money
+}
+
 function fn_main()
 {
     CURR=`fn_maxdate`
@@ -866,6 +934,7 @@ function fn_main()
     "dorat  [loop]                      # 量比数据，loop when run@crontab"
     "ma2015                             # "
     "trace                              # "
+    "money                              # "
     "power                              # 权重分析"
     )
 
