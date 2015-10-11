@@ -1,4 +1,5 @@
-# .doc/diary.md 已经成为历史
+# .doc/diary.md           已经成为历史
+# .doc/fundmanagement.md  初出茅庐的记录 
 
 # 600997	开滦股份
 

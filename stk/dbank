@@ -168,15 +168,18 @@ function fn_chao()
     [ "${CHAO:=0}" -eq 0 ] && return
     [ -z "${sqls}" ] && fn_echo_warn "sqls is empty" && exit
     PLAIN=${1:-$chao}
-    mysql -N kts <<<"${PREFIX}SELECT code FROM (${sqls}) as tbl" | tee ${TEE} ${PLAIN} > /dev/null 
-    fn_echo_warn "`wc -l < ${PLAIN}` rows to ${PLAIN}"
+    mysql -N kts <<<"${PREFIX}SELECT code FROM (${sqls}) as tbl" |grep '^[036]'| tee ${TEE} ${PLAIN} > /dev/null 
+    rows=`wc -l < ${PLAIN}`
+    rowx=`bc -l <<< "obase=16;${rows}"`
+    fn_echo_warn "$rows rows to ${PLAIN}"
     fn_10jqka() 
     {
-      xargs < ${PLAIN} | sed 's/^/ /' | sed  \
-        -e 's# 6#\\x07\\x116#g' \
-        -e 's# 0#\\x07!3#g' \
-        -e 's# 3#\\x07!3#g' > ${buffer}
-      echo -e "\x13\x00`cat ${buffer}`" > /winc/zxg/自选股.sel
+      xargs <${PLAIN} | sed 's/^/ /' | sed  \
+        -e 's# 6#6#g' \
+        -e 's# 0#!0#g' \
+        -e 's# 3#!3#g' > ${buffer}
+      echo -ne "\x${rowx}\x00`cat ${buffer}`" > /winc/zxg/自选股.sel
+      cp ${PLAIN} /winc/zxg/chao.txt
     }
     fn_10jqka
     # up file_to_table ${PLAIN}
