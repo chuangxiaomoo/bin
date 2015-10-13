@@ -25,7 +25,7 @@ fn_realtime()
     }' | tr ' ' ',' | sed 's/,$//g'`
 
     # 深证综指 sz399106
-    indexlist='sh000001,sh000016,sz399300,sz399004,sz399005,,sz399006'
+    indexlist='sh000001,sh000016,sz399300,sz399101,sz399004,sz399005,,sz399006'
     $W3M -dump "http://hq.sinajs.cn/list=${indexlist},${comma_sepa_list}" > ${rt_stdout} 
     xt_ret $? "NETWORK" || return $?
 

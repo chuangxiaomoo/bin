@@ -765,7 +765,7 @@ function fn_lohi()
     call sp_visit_tbl('${TBL:-zxg}', @fn_lohi);
     ${sql_insert_mat_lohi}
     " | tee -a $mps_god
-    mysql $mo -t kts <<< "source $mps_god"
+    mysql $mo -t kts < $mps_god
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
