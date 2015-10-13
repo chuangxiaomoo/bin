@@ -42,13 +42,8 @@ url_sh000001='http://hq.sinajs.cn/list=sh000001'
 
 mod_fbi=100
 mod_mi5=100
-mps_org="sql/xRD.sql"
-mps_acc="sql/acc.sql"
-mps_acf="sql/acf.sql"
-mps_god="/var/God.sql"
 sql_temp='/dev/shm/sql.temp'
 sql_tempday='/dev/shm/sql.tempday'
-mps_ma2015="/var/ma2015.sql"
 
 p_bin='/root/bin/stk/bin/'
 warehs='/opt0/warehs'
@@ -106,6 +101,12 @@ yjbb_rip='/dev/shm/yjbb_rip'
 yjyg_raw='/dev/shm/yjyg_raw'
 yjyg_rip='/dev/shm/yjyg_rip'
 
+   mps_org="sql/xRD.sql"
+   mps_acc="sql/acc.sql"
+   mps_acf="sql/acf.sql"
+   mps_nbm="/tmp/kts/nbm.sql"
+   mps_god="/tmp/kts/God.sql"
+mps_ma2015="/tmp/kts/ma2015.sql"
        lhb='/tmp/kts/lhb'
       chao='/tmp/kts/chao'
    lhb_raw='/tmp/kts/lhb.raw'
@@ -170,7 +171,8 @@ function fn_chao()
     PLAIN=${1:-$chao}
     mysql -N kts <<<"${PREFIX}SELECT code FROM (${sqls}) as tbl" |grep '^[036]'| tee ${TEE} ${PLAIN} > /dev/null 
     rows=`wc -l < ${PLAIN}`
-    rowx=`bc -l <<< "obase=16;${rows}"`
+    rowx1=`bc <<< "obase=16;${rows}%256"`
+    rowx2=`bc <<< "obase=16;${rows}/256"`
     fn_echo_warn "$rows rows to ${PLAIN}"
     fn_10jqka() 
     {
@@ -178,7 +180,7 @@ function fn_chao()
         -e 's# 6#6#g' \
         -e 's# 0#!0#g' \
         -e 's# 3#!3#g' > ${buffer}
-      echo -ne "\x${rowx}\x00`cat ${buffer}`" > /winc/zxg/自选股.sel
+      echo -ne "\x${rowx1}\x${rowx2}`cat ${buffer}`" > /winc/zxg/自选股.sel
       cp ${PLAIN} /winc/zxg/chao.txt
     }
     fn_10jqka
@@ -211,7 +213,7 @@ function fn_str_2_date()
 function fn_isindex()
 {
     [ "${1}" = '000902' ] || [ "${1}" = '000001' ] || \
-    [ "${1}" = '399005' ] || [ "${1}" = '399006' ]
+    [ "${1}" = '399005' ] || [ "${1}" = '399006' ] || [ "${1}" = '399101' ]
     return $?
 }
 

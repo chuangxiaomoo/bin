@@ -289,5 +289,4 @@ function fn_main()
     return $?
 }
 
-# kmysql <<< "SELECT * FROM fenbi WHERE code=000001 or code=399005 or code=399006" > ~/fenbi
 fn_main $@

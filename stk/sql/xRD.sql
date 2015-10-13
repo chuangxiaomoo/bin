@@ -385,9 +385,9 @@ CREATE PROCEDURE sp_create_tbl_ma240() tag_ma240:BEGIN
         ma5         DECIMAL(6,3) NOT NULL DEFAULT 0,        
         ma10        DECIMAL(6,3) NOT NULL DEFAULT 0,        
         ma20        DECIMAL(6,3) NOT NULL DEFAULT 0,        
+        ma40        DECIMAL(6,3) NOT NULL DEFAULT 0,
         ma60        DECIMAL(6,3) NOT NULL DEFAULT 0,
-        ma120       DECIMAL(6,3) NOT NULL DEFAULT 0,
-        ma240       DECIMAL(6,3) NOT NULL DEFAULT 0
+        ma120       DECIMAL(6,3) NOT NULL DEFAULT 0
     );
 END tag_ma240 //
 
@@ -1181,9 +1181,9 @@ CREATE PROCEDURE sp_ma60x240(a_code INT(6) ZEROFILL) tag_ma60x240:BEGIN
     DECLARE v_ma5      DECIMAL(6,3) DEFAULT 0;
     DECLARE v_ma10     DECIMAL(6,3) DEFAULT 0.001;
     DECLARE v_ma20     DECIMAL(6,3) DEFAULT 0.001;
+    DECLARE v_ma40     DECIMAL(6,3) DEFAULT 0.001;
     DECLARE v_ma60     DECIMAL(6,3) DEFAULT 0;
     DECLARE v_ma120    DECIMAL(6,3) DEFAULT 0.001;
-    DECLARE v_ma240    DECIMAL(6,3) DEFAULT 0;
 
     call sp_create_tempday();
 
@@ -1204,18 +1204,18 @@ CREATE PROCEDURE sp_ma60x240(a_code INT(6) ZEROFILL) tag_ma60x240:BEGIN
         SELECT SUM(close)/20   FROM tempday WHERE id<=20  INTO v_ma20 ;
     END IF;
 
-    IF @v_len >= 120 THEN 
+    IF @v_len >= 60 THEN 
+        SELECT SUM(close)/40   FROM tempday WHERE id<=40  INTO v_ma40 ;
         SELECT SUM(close)/60   FROM tempday WHERE id<=60  INTO v_ma60 ;
-        SELECT SUM(close)/120  FROM tempday WHERE id<=120 INTO v_ma120;
     END IF;
-    IF @v_len >= 240 THEN 
-        SELECT SUM(close)/240  FROM tempday WHERE id<=240 INTO v_ma240;
+    IF @v_len >= 120 THEN 
+        SELECT SUM(close)/120  FROM tempday WHERE id<=120 INTO v_ma120;
     END IF;
 
     -- SELECT v_ma60, v_ma120, v_ma240;
 
-    INSERT INTO tbl_ma240 (code,     date,  close,  ma5,  ma10,  ma20,  ma60,   ma120,   ma240)
-                    VALUES(a_code, v_date,v_close,v_ma5,v_ma10,v_ma20,v_ma60, v_ma120, v_ma240);
+    INSERT INTO tbl_ma240 (code,     date,  close,  ma5,  ma10,  ma20,   ma40,  ma60,   ma120)
+                    VALUES(a_code, v_date,v_close,v_ma5,v_ma10,v_ma20, v_ma40,v_ma60, v_ma120);
 END tag_ma60x240 //
 
 DROP PROCEDURE IF EXISTS sp_stat_linqi//

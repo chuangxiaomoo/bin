@@ -8,7 +8,7 @@
 #(TRUNCATE(datetime%10000/100+1, 0)%5)=0 or (TRUNCATE(datetime%1000000/100, 0)%1500)=0
 function fn_macd()
 {
-    head -n -5 $mps_org > $mps_god
+    head -n -5 $mps_org > $mps_nbm
     test -n "${DT}" && TEST="and datetime<=${DT}"
 
     echo "
@@ -49,7 +49,7 @@ CREATE PROCEDURE sp_mamacd() BEGIN
     SELECT max(datetime) FROM fenbi WHERE code=$1 ${TEST} into @max_dt;
 
     -- 分钟20
-    IF ${1} IN (000902,000001,399005,399006) THEN 
+    IF ${1} IN (000902,000001,399101,399005,399006) THEN 
         SELECT sum(trade)/20  FROM (SELECT trade from fenbi 
             WHERE code=${1} ${TEST} ORDER by datetime DESC LIMIT 20) as t INTO @fa20;
     ELSE
@@ -86,15 +86,15 @@ CREATE PROCEDURE sp_mamacd() BEGIN
     END IF;
 END //
 call sp_mamacd();
-    " >> $mps_god
+    " >> $mps_nbm
 
-    mysql $mo -t kts <<< "source $mps_god"
+    mysql $mo -t kts <<< "source $mps_nbm"
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
 function fn_macd_f1()
 {
-    head -n -5 $mps_org > $mps_god
+    head -n -5 $mps_org > $mps_nbm
     test -n "${DT}" && TEST="and datetime<=${DT}"
 
     FM=5
@@ -115,9 +115,9 @@ CREATE PROCEDURE sp_mamacd_f1() BEGIN
     UPDATE mm55 SET d1=@d1, m1=@m1 WHERE freq=$1+${FM}*1000000;
 END //
 call sp_mamacd_f1();
-    " >> $mps_god
+    " >> $mps_nbm
 
-    mysql $mo -t kts <<< "source $mps_god"
+    mysql $mo -t kts <<< "source $mps_nbm"
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
