@@ -61,8 +61,8 @@
 # 洪粉家人       .doc/hongrong.md
 # 瑞鹤仙         .doc/yxkrrhx.md        -- 桃谷
 # 逻辑           .doc/logic.md
-# 物理           .doc/physics
-# 魔论           .doc/molun.md          -- 大盘预测体系
+# 物理           .doc/physics.md
+# 魔论           .doc/Molun.md          -- 大盘预测体系
 # 打板精要       .doc/daban.md          -- 个股龙头战法、龙飞虎、龙虎榜
 # 仓位管理       .doc/position.md       -- 核心理论: 价.量.macd.势.攻.防
 # 操盘日记       .doc/diary2.md
