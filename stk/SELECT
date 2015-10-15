@@ -52,7 +52,7 @@ function fn_list_date()
 
 function fn_get_date()
 {
-    mysql -N kts <<< "SELECT date from day WHERE code=900001 ORDER by date DESC LIMIT ${1:-0},${2:-1}"
+    mysql -N kts <<< "SELECT date from day WHERE code=900001 and date<='${END}' ORDER by date DESC LIMIT ${1:-0},${2:-1}"
 }
 
 
@@ -71,7 +71,7 @@ function fn_lsd()
     TEMPDAY='day'
 
     fn_yist
-    echo ----- LIST:${#LIST[@]} COND@${END}: $COND -----
+    fn_echo_warn "----- LIST:${#LIST[@]} COND@${END}: $COND -----"
 
     case $1 in
     t|top)
@@ -122,7 +122,7 @@ function fn_lsd()
     function fn_sql()
     {
         sqls="
-        SELECT $columns, volume,amount, 
+        SELECT ${CID}$columns, volume,amount, 
                 $RISE as rise, 
                 $TURNOV as tov, c.nmc, c.name
                 FROM ${TEMPDAY} as d, cap as c ${WHERE} d.code = c.code and d.date = '${END}' 
@@ -386,7 +386,6 @@ function fn_dirtio()
     fn_dif3 ${@} # up DT, with param 'up', update dif3
     fn_yist
 
-
     SCALE=`fn_get_ratio_close2open`
     xt_ret $? "" || return $?
 
@@ -430,8 +429,8 @@ function fn_wma()
     columns=code,close,ma5,ma10,ma20
     columns=t.${columns//,/,t.}
 
-    fn_yist 
-    echo ----- LIST:${#LIST[@]} COND@${END}: $COND -----
+    fn_yist
+    fn_echo_warn "----- LIST:${#LIST[@]} COND@${END}: $COND -----"
 
     sqls="
     SELECT ${columns}, 
@@ -769,7 +768,7 @@ function fn_dif120()
     fi
 
     fn_yist 
-    echo ----- LIST:${#LIST[@]} COND@${END}: $COND -----
+    fn_echo_warn "----- LIST:${#LIST[@]} COND@${END}: $COND -----"
 
     tbl_day="(SELECT * FROM day WHERE date='${END}' ${inLIST})"
 
@@ -835,7 +834,7 @@ function fn_ma240()
 
     ABBR=ma fn_yist
     fn_build_sqls $1
-    echo ----- LIST:${#LIST[@]} COND@${END}: $COND -----
+    fn_echo_warn "----- LIST:${#LIST[@]} COND@${END}: $COND -----"
     echo "$sqls">/dev/stderr 
     mysql -t kts<<<"$sqls"
 
@@ -980,6 +979,40 @@ function fn_lohi()
         ;;
     l|list)
         LIMIT=50 DT="${iTEMP} 15:05:00" SELECT dorat | cat -n; exit 0
+        ;;
+    s|shrinkage)
+        off=${2:-5}
+        sta=`fn_get_date ${off}`    # echo ${sta}; exit
+        count=`mysql -N kts<<<"SELECT count(*) FROM mat_lohi WHERE end='${END}'"`
+        if [ "${count}" -eq 0 ]; then
+            echo "Warning: mat_lohi is not lateast! to update with [SCREENER lohi 0~n]"; exit
+        fi
+
+        echo "
+        $DROP tempday; CREATE TABLE tempday(
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        rise        DECIMAL(6,1) NOT NULL DEFAULT 0,
+        INDEX(code)
+        );
+        INSERT INTO tempday
+        SELECT d1.code, round(100*(d2.close-d1.close)/d1.close, 1) as rise FROM
+        (SELECT code,close FROM day WHERE date='${sta}') as d1,
+        (SELECT code,close FROM day WHERE date='${END}') as d2 WHERE d1.code=d2.code
+        " | mysql kts
+
+        puppy="
+            end,m.code, count(scale) as off,sum(scale) as shirnk, rise,
+            round(100*sum(volume)/c.shares,1) as tov, round(c.nmc/10000, 1) as nmc, c.name"
+        sqls="
+            SELECT ${puppy} FROM mat_lohi as m, cap as c, tempday as d
+            WHERE m.code=c.code && m.code=d.code && end>'${sta}' and end<='${END}' 
+            GROUP by code HAVING off>=${off} && shirnk<=${off} && tov<${off}*15 ${COND}
+            ORDER by shirnk ASC LIMIT ${LIMIT:-36}
+        " 
+        # echo "$sqls"; exit
+        mysql -t kts <<< "${sqls}"
+        fn_chao ${chao}.shrinkage
+        exit 0
         ;;
     [0-9]*|f|'')
         if [ -z "${1}" ] || [ "${1}" = f ]; then
@@ -1196,7 +1229,7 @@ function fn_lhb()
     if [ -n "${CAUSE}" ]; then
         CAUSE=`
                 sed -e "s/3/cause='3up20'/"     \
-                    -e "s/7/cause='up7'/"       \
+                    -e "s/7/chng>=7/"           \
                     -e "s/f/cause='hilo15'/"    \
                     -e "s/'s'/cause='s3up12'/"  \
                     -e "s/t/cause='tov20'/"     \
@@ -1219,11 +1252,11 @@ function fn_lhb()
     d|date)
         date=`fn_get_date ${2:-0}`
         fn_echo_warn "lhb of ${date}"
-        columns='code,chng,amount,buy,sell,cause,bloo,sloo'
+        columns='code,cause,chng,amount,buy,sell,bloo,sloo'
         columns=l.${columns//,/,l.}
         sqls="
             SELECT ${columns},(bloo-sloo) as net, c.nmc, c.name FROM lhb as l,cap as c
-            WHERE l.code=c.code && l.date='$date' ${CAUSE} ${COND} ORDER by ${3:-bloo} DESC
+            WHERE l.code=c.code && l.date='$date' ${CAUSE} ${COND} ORDER by ${3:-net} DESC
         "
         # echo ${sql}; exit
         mysql -t kts <<<"${sqls}"
@@ -1244,12 +1277,14 @@ function fn_lhb()
         sqls=${sql} fn_chao ${chao}
         
         ;;
-    [1-3])
-        sta=`date --date="${1} month ago" +'%F'`
-        wsql="WHERE date>'${sta}' && date<='${END}' && (cause='up7' || cause='3up20') "
+    +7)
+        sta=`date --date="${2} day ago" +'%F'`
+        off=`mysql -N kts <<< "SELECT count(*) from day WHERE code=900001 and date>='${sta}' && date<='${END}'"`
+        wsql="WHERE date>'${sta}' && date<='${END}' && (chng>=7 || cause='3up20') "
         sql="SELECT code,count(code) as num FROM lhb ${wsql} GROUP by code ORDER by num DESC LIMIT ${LIMIT:-30}"
         sql="SELECT * FROM ($sql) as t HAVING 1 ${COND}"
         mysql -t kts <<<"${sql}"
+        fn_echo_succ "${sta} wday:`date --date=${sta} +'%w'` off:${off}"
         sqls=${sql} fn_chao ${chao}
         ;;
     [5~9]|1[0-8])
@@ -1262,7 +1297,7 @@ function fn_lhb()
         SELECT lhb <param>
         c       上榜原因列表
         +10 n   n日内涨停次数
-        1~3     1~3月内上榜次数统计
+        +7  n   n日内因+7+20上榜次数统计
         5~18    5~18天内上榜次数统计
         d [i]   指定日列表，i不指定时为0，代表今天
 

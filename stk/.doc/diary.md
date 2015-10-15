@@ -2134,47 +2134,6 @@
 
   3. 2个月周期走势 共振 IPO重启 之双概率
 
-# 2014-10-26 ma ema macd 
-
-  ma    移动平均
-
-  ema   EMAtoday=α * Pricetoday + ( 1 - α ) * EMAyesterday;
-        α为平滑指数，一般取作2/(N+1).
-        EMA函数对近期的价格加强了权重比，`更能及时反映近期价格波动情况`。
-
-  简化  进行加权后，EMA的值近似其1/2周期的ma，ma(5,13)macd(26,12,9)几乎在同一时间产生交叉。
-        EMA =α.P + (1-α).EMA'
-            =α.P + (1-α).(α.P' + (1-α).EMA'')
-            =α.P + (1-α).α.P' + (1-α)^2.EMA''
-           ~=α.P + α.P' + (1-α)^2.EMA''
-
-  macd
-        call sp_ema('macd', 'close', 'short_ema', 12);    # 双周交易日
-        call sp_ema('macd', 'close', 'long_ema',  26);    # 单月交易日
-        UPDATE  macd SET dif  = short_ema-long_ema;
-        call sp_ema('macd', 'dif'  , 'dea',       9);
-        UPDATE  macd SET macd = (dif - dea) * 2 ;
-        ---
-        EMA12 = 前一日EMA12 X 11/13 + 今日收盘 X 2/13     # 5日平均
-        EMA26 = 前一日EMA26 X 25/27 + 今日收盘 X 2/27     # 10日平均
-        DIF   = EMA12 - EMA26
-        DEA   = 前一日DIF   X 8/10  + 今日DIF X 2/10      # DIF的平均值
-
-  macd的物理意义
-        dif                   >>> __加速度a=平均速度之差/t__
-        = (v1 - v2)/t 
-        = (s1/t - s2/t)/t     >>> s即是价格，t是时间轴之常量=>价格即是速度，EMA即平均速度
-        = short_ema-long_ema  >>> dif不是严格的加速度，因周期short被long包含，long=2.short，即有延迟，但可以防抖
-                                  可用子级别解决延迟问题
-        macd 
-        = (dif-dea) * 2       >>> __a的差分亦即加速度的加速度__
-
-  dif+macd的物理意义
-        dif+macd=dif+2.(dif-dea)，即可提前1/2时间考察单位操作，short=12时，<提前3个时间单位>
-        macd(F1)考察单位 6  => 3分钟
-        macd(F5)考察单位 30 => 15分钟
-
-
 # 2014-10-27 oracle
 
   1. buy 
@@ -2215,7 +2174,6 @@
 
   一、任何事情，都可以拆分。
   二、把拆分的工作，定下時間(`deadline`)，分階段一一完成。
-
 
 # 2014-10-27 term
 

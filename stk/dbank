@@ -198,6 +198,7 @@ function fn_yist()
 
         TBL=yist up file_to_table ${YIST}
         WHERE=",yist as y WHERE ${ABBR:-d}.code=y.code &&"
+        CID="y.id,"
     else
         WHERE="WHERE"
     fi
