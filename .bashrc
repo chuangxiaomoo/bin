@@ -80,6 +80,7 @@ alias   iwd='vi /root/.awd'
 alias   gwd='cd `cat ~/.swd`'                       # save pwd  [popd]
 alias    cs='cscope -Rbq *'
 alias vboxr='/etc/init.d/vboxadd-service restart'   # ;umount -a 2>/dev/null; mount -a
+alias  8cat='iconv -f cp936 -t utf8'
 
 alias    v1='vi /root/bin/m1'
 alias    v2='vi /root/bin/m2'

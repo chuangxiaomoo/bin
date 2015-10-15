@@ -8,61 +8,63 @@
 
 > 前言
 
-# 王新平12建议   .doc/wang12.md
-# 王大爷的金融   .doc/wanghaibin.md
-# 橡胶的混沌时段 .doc/wang_oak.md
-# 交易的哲学体系 .doc/wang_trade.md           -- 价值观体系
-# 交易的哲学2    .doc/wang_trade2.md
+# 王新平12建议    .doc/wang12.md
+# 王大爷的金融    .doc/wanghaibin.md
+# 橡胶的混沌时段  .doc/wang_oak.md
+# 交易的哲学体系  .doc/wang_trade.md           -- 价值观体系
+# 交易的哲学2     .doc/wang_trade2.md
 
-# 量子力学       .doc/quantum_meCHANics.md
-# 行为心理学     .doc/behaviorism.md
-# 想看的书       .doc/books.md
-# 本质论         .doc/essential.md            -- 我是谁？从哪来？到哪去？
-# 决定论         .doc/model.md                -- 打造自己的交易模型
-# 鸿观           .doc/hongguan.md
+# 量子力学        .doc/quantum_meCHANics.md
+# 行为心理学      .doc/behaviorism.md
+# 想看的书        .doc/books.md
+# 本质论          .doc/essential.md            -- 我是谁？从哪来？到哪去？
+# 决定论          .doc/model.md                -- 打造自己的交易模型
+# 鸿观            .doc/hongguan.md
 
 > 构建体系
 
-# 阴阳           .doc/yinyang.md
-# 笛卡尔的金融   .doc/descartes.md
+# 阴阳            .doc/yinyang.md
+# 笛卡尔的金融    .doc/descartes.md
 
-# 保守主义       .doc/conservatism.md
-# 趋势理论       .doc/trade.md
-# 单理论之殇     .doc/hurt.md
-# 信息进化论     .doc/info_evolution.md
+# 保守主义        .doc/conservatism.md
+# 趋势理论        .doc/trade.md
+# 单理论之殇      .doc/hurt.md
+# 信息进化论      .doc/info_evolution.md
 
-# 程序员道德     .doc/virtue.md
+# 程序员道德      .doc/virtue.md
 
 > 杂论 -- 所有的竞局都不是单一能力的较量，而是综合实力的对抗。
 
-# 追风消息论     .doc/excitation_response.md
-# 谋“势”战略     .doc/围棋谋势.md
-# 筹码分析法     .doc/六道轮回.千古兴衰.md
-# 缺口理论       .doc/gap_theory.md
-# 涨停理论       .doc/swing10.md
+# 追风消息论      .doc/excitation_response.md
+# 谋“势”战略      .doc/围棋谋势.md
+# 筹码分析法      .doc/六道轮回.千古兴衰.md
+# 缺口理论        .doc/gap_theory.md
+# 涨停理论        .doc/swing10.md
 
 > 实践 -- 旧有的技术架构已经不足以支撑更大的梦想
 
-# 心战           .doc/psy.md
-# 张小龙         .doc/zhangxiaolong.md
-# 总结2020       .doc/2013.md           -- 2014 2015 2016
-# 笛卡尔实践     .doc/Descartes.md
-# 目标&策略&纪律 .doc/discipline.md
+# 心战            .doc/psy.md
+# 张小龙          .doc/zhangxiaolong.md
+# 总结2020        .doc/2013.md            -- 2014 2015 2016
+# 笛卡尔实践      .doc/Descartes.md
+# 目标&策略&纪律  .doc/discipline.md
 
-# 战争           .doc/war.md            -- 认识自已，首先认识作为人的共性
-# 短线战法       .doc/dagger.md
-# 中线战法       .doc/pike.md
-# 空间域         .doc/space.md
-# 交易系统       .doc/tradesys.md
-# 独孤九剑       .doc/dugu9jian.md      -- 成本.信息进化论.解N变量方程组
-# 事件冲击       .doc/event.md          -- 高管增持 定增 加息 gushequ大数据
-# 缠中说禅       .chan/chan.md
-# 莫大仙岳居     .doc/sulon.md
-# 洪粉家人       .doc/hongrong.md
-# 瑞鹤仙         .doc/yxkrrhx.md        -- 桃谷
-# 逻辑           .doc/logic.md
-# 物理           .doc/physics.md
-# 魔论           .doc/Molun.md          -- 大盘预测体系
-# 打板精要       .doc/daban.md          -- 个股龙头战法、龙飞虎、龙虎榜
-# 仓位管理       .doc/position.md       -- 核心理论: 价.量.macd.势.攻.防
-# 操盘日记       .doc/diary2.md
+# 战争            .doc/war.md             -- 认识自已，首先认识作为人的共性
+# 短线战法        .doc/dagger.md
+# 中线战法        .doc/pike.md
+# 空间域          .doc/space.md
+# 交易系统        .doc/tradesys.md
+# 独孤九剑        .doc/dugu9jian.md       -- 成本.信息进化论.解N变量方程组
+# 事件冲击        .doc/event.md           -- 高管增持 定增 加息 gushequ大数据
+# 缠中说禅        .chan/chan.md
+# 莫大仙岳居      .doc/sulon.md
+# 洪粉家人        .doc/hongrong.md
+# 瑞鹤仙          .doc/yxkrrhx.md         -- 桃谷
+# 逻辑            .doc/logic.md
+# 物理            .doc/physics.md
+# 魔论            .doc/Molun.md           -- 大盘预测体系
+# 打板精要        .doc/daban.md           -- 个股龙头战法、龙飞虎、龙虎榜
+# 仓位管理        .doc/position.md        -- 核心理论: 价.量.macd.势.攻.防
+# 操盘日记        .doc/diary2.md
+# 日报            .doc/report.md
+# 龙虎榜          .doc/lhb.md             -- Yjyg

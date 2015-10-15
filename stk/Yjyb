@@ -36,7 +36,7 @@ function fn_load()
 
 function fn_dload()
 {
-    date=${1:-'2015-06-30'}
+    date=${1:-'2015-09-30'}
 
     fn_url() 
     { 
@@ -51,13 +51,6 @@ function fn_dload()
         exit 1
     fi
 
-    # 预亏    -3
-    # 预减    -2
-    # 减亏    -1
-    # 持平    0
-    # 预警    0
-    # 预盈    1
-    # 预增    2
     cat ${yjyg_raw} |tr -d '\n' |
         sed -e '1s/^...//' -e '1s/...$//' -e 's/","/\n/g' |
         sed -e 's/预亏/-3/g' -e 's/预减/-2/g' -e 's/减亏/-1/g' -e 's/持平/0/g' \
@@ -86,17 +79,32 @@ function fn_select()
     fn_yist 
     echo ----- LIST:${#LIST[@]} COND@${END}: $COND -----
 
-      # -- and pcnt>0 and type>0
-    echo "
-    SELECT y.*, 10000*c.close/(profit/(c.cap/c.close)) as PE, c.nmc,c.shares
+    columns="date,public,code,pcnt,type"
+    columns=y.${columns//,/,y.}
+
+    sqls="
+    SELECT ${columns}, 
+        round(profip/100000000,2) as prev, 
+        round(profit/100000000,2) as curr,
+        round(profit/(c.cap/c.close)/10000,2) as Eps,
+        round(10000*c.close/(profit/c.shares), 2) as PE, 
+        round(c.nmc/10000,1) as nmc, c.name
         FROM tbl_yjyg as y, cap as c 
         WHERE y.code=c.code 
-        -- and type>0 and pcnt>100
         HAVING 1 ${COND} ${inLIST} 
-        ORDER by ${1:-PE} ASC LIMIT ${LIMIT:-50}
-    " | mysql -t kts
+        ORDER by ${1:-curr} DESC LIMIT ${LIMIT:-50}
+    " 
+    mysql -t kts <<< "${sqls}"
+    fn_chao ${chao}.Yjyb
     
     return $?
+}
+function fn_layout()
+{
+    echo "
+    SELECT date, public, count(code) FROM tbl_yjyg GROUP by public  
+        ORDER by public DESC
+    " | mysql -t kts
 }
 
 function fn_main()
@@ -108,10 +116,26 @@ function fn_main()
     2|select)
         fn_select "${@:2}"
         ;;
+    3|layout)
+        fn_layout
+        ;;
     *)
-        echo "Usage: 
-        yjyg {1|dload}      code...
-        yjyg {2|select}
+        echo "
+    Usage: 
+        Yjyg {1|dload}  [2015-xx-xx]    # 下载YJYG
+        Yjyg {2|select}
+        Yjyg {3|layout}                 # public日期分布
+
+    type:
+        -3  预亏    
+        -2  预减        prev+ curr+ profit -20%+
+        -1  减亏    
+         0  持平/预警   prev+ curr+ profit -10%
+         1  预盈/扭亏   prev- curr+
+         2  预增        prev+ curr+
+
+    常用条件:
+        COND=\"nmc<200&&public='2015-10-15' && type=2\" Yjyb 2 pcnt
         "
         exit
         ;;
