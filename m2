@@ -729,6 +729,7 @@ function fn_Small_Stakes_Hold_em()      { cat texaspoker_Small_Stakes_Hold_em ;}
     fn_print $@
 }
 
+function fn_game_theory()               { cat game_theory ;}
 function fn_debate_competition()        { cat debate_competition ;}
 function fn_super_speech()              { cat super_speech ;}
 function fn_advertisement()             { cat advertisement ;}
@@ -804,6 +805,7 @@ function fn_main() {
         zhenhuan                        # 甄嬛体
         sanxing三省
         life_is_a_bus                   # 公交车
+        game_theory
     )
     fn_print $@
 }

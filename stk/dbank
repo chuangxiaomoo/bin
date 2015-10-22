@@ -22,12 +22,9 @@ export PATH=.:~/bin:$PATH
 [ "${DEBUG:-0}" = 1 ] && 
 SUBOUT='/dev/stdout' || SUBOUT='/dev/null'
 
-XTBL=${XTBL:+and code not in (SELECT code FROM $XTBL)}
-
-#HAVING=${COND:+HAVING $COND }${XTBL}
-#HAVING="${HAVING}${GEM:+ and d.code>300000 and d.code<400000}"
-
-COND=${COND:+and $COND }${XTBL}
+XTBL="${XTBL:+and code not in (SELECT code FROM $XTBL)}"
+COND="${COND:+and $COND }${XTBL}"
+DROP="DROP TABLE IF EXISTS "
 
 WGET='timeout 34 /usr/bin/wget'
 W3M='timeout  60 /usr/bin/w3m'
@@ -107,10 +104,10 @@ yjyg_rip='/dev/shm/yjyg_rip'
    mps_nbm="/tmp/kts/nbm.sql"
    mps_god="/tmp/kts/God.sql"
 mps_ma2015="/tmp/kts/ma2015.sql"
-       lhb='/tmp/kts/lhb'
       chao='/tmp/kts/chao'
    lhb_raw='/tmp/kts/lhb.raw'
    lhb_rip='/tmp/kts/lhb.rip'
+   lhb_pro='/tmp/kts/lhb.pro'
      error='/tmp/kts/error'
      cache='/tmp/kts/cache'
     buffer='/tmp/kts/buffer'
@@ -169,7 +166,7 @@ function fn_chao()
     [ "${CHAO:=0}" -eq 0 ] && return
     [ -z "${sqls}" ] && fn_echo_warn "sqls is empty" && exit
     PLAIN=${1:-$chao}
-    mysql -N kts <<<"${PREFIX}SELECT code FROM (${sqls}) as tbl" |grep '^[036]'| tee ${TEE} ${PLAIN} > /dev/null 
+    mysql -N kts <<<"${PREFIX}SELECT code FROM (${sqls}) as tbl" |grep '^[036]'| uniq|tee ${TEE} ${PLAIN} > /dev/null 
     rows=`wc -l < ${PLAIN}`
     rowx1=`bc <<< "obase=16;${rows}%256"`
     rowx2=`bc <<< "obase=16;${rows}/256"`
@@ -331,9 +328,18 @@ function fn_get_prev()
 
 function fn_get_next()
 {
-    # `END=${iCURR} fn_get_next`; [ -z "${iTEMP}" ] && { fn_echo_fail "empty next of ${iCURR}"; exit; }
     sqls="SELECT date FROM day WHERE code=900001 and date>'$END'"
     mysql -N kts<<<"${sqls} ORDER by date ASC LIMIT 1"
+}
+
+function fn_xtempday()
+{
+    local table=${TBL:-xtempday}
+    echo "
+    $DROP ${table}; CREATE TABLE ${table} LIKE day;
+    INSERT INTO ${table} SELECT * from day where date='${1:-$END}';
+    " | mysql kts
+    return $?
 }
 
 function fn_create_tbl_codes()

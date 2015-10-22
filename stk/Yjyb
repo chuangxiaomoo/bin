@@ -110,21 +110,21 @@ function fn_layout()
 function fn_main()
 {
     case $1 in
-    1|dload)
-        fn_dload "${@:2}"
+    l|layout)
+        fn_layout
         ;;
-    2|select)
+    s|select)
         fn_select "${@:2}"
         ;;
-    3|layout)
-        fn_layout
+    d|dload)
+        fn_dload "${@:2}"
         ;;
     *)
         echo "
     Usage: 
-        Yjyg {1|dload}  [2015-xx-xx]    # 下载YJYG
-        Yjyg {2|select}
-        Yjyg {3|layout}                 # public日期分布
+        Yjyg {l|layout}                 # public日期分布
+        Yjyg {s|select}                 # SELECT
+        Yjyg {d|dload}  [2015-xx-xx]    # 下载YJYG
 
     type:
         -3  预亏    
