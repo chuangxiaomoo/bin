@@ -615,7 +615,6 @@ function fn_ipo()
 
 }
 
-
 function fn_lhb()
 {
     sql="SELECT max(date) FROM lhb"
@@ -623,8 +622,8 @@ function fn_lhb()
     max_dt=${max_dt/NULL/2015-07-08}
     sql="SELECT date from day WHERE code=900001 and date>'${max_dt}' ORDER by date ASC"
     dates=(`mysql -N kts <<<"${sql}"`)
-    # echo ${sql}
-    # echo ${dates[@]}
+    #dates=(2015-08-12 2015-08-14 2015-08-07)
+    #echo ${dates[@]}
 
     if [ "${#dates[@]}" -eq 0 ]; then
         echo "It's latest" ; exit
@@ -645,17 +644,24 @@ function fn_lhb0()
     # $1      $2      $3      $4              $5   $6         $7          $8      $9          $10      $11
     # 序号  代码    名称      相关链接    涨跌幅  龙虎榜成  买入额(万)  占总成交  卖出额(万)  占总成交 上榜原因
 
-    cat ${lhb_raw} | grep -A1000 '^序号' | grep '^[0-9]' | 
-    sed -e 's/ N//g' > ${lhb_rip}
+    # ' N' 恒顺众日升 乱码
+    cat ${lhb_raw} | grep -A1000 '^1\>' |
+        sed -e 's/^           /999 1 2 3 4/' -e 's/ N\>//g' |
+        grep '^[0-9]' > ${lhb_rip}
+    #           12345678901
     awk -v v_date=$1 '
     BEGIN{ nr=0 } {
-        if ($1<nr) {
+        if ($1==999) {
+            printf "%s\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%s\t\n", \
+                    v_date, code,chng,$6,$7,$8,$9,$10,$11;
+        } else if ($1<nr) {
             exit
-        }
-        if ($2<700000) {
+        } else if ($2<700000) {
             printf "%s\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%s\t\n", \
                     v_date, $2,$5,$6,$7,$8,$9,$10,$11;
             nr=$1;  
+            code=$2;
+            chng=$5;
         }
     }' ${lhb_rip} | 
     sed \
@@ -670,9 +676,12 @@ function fn_lhb0()
     -e 's/S、ST、.ST连续三个交易日跌幅.*/s3dn12/g'                      \
     -e 's/S、ST、.ST连续三个交易日涨幅.*/s3up12/g'                      \
     -e 's/连续三个交易日收盘价涨幅偏离值累计20%/3up20/g'                \
-    -e 's/连续三个交易日收盘价跌幅偏离值累计20%/3dn20/g'  > ${lhb}
-    
-    lines=`wc -l<${lhb}`
+    -e 's/连续三个交易日收盘价跌幅偏离值累计20%/3dn20/g'  > ${lhb_pro}
+
+    awk '{print $2}' ${lhb_pro} | grep -q '^6'
+    xt_ret $? "Error: sh_sec lhb is not released" || return $?
+
+    lines=`wc -l<${lhb_pro}`
     if [ "${lines}" -lt 5 ]; then
         echo "Bad lhb data: ${url}"
         exit
@@ -695,7 +704,7 @@ function fn_lhb0()
     );
 
     DELETE FROM lhb WHERE date='$1';
-    LOAD DATA LOCAL INFILE '${lhb}' INTO 
+    LOAD DATA LOCAL INFILE '${lhb_pro}' INTO 
     TABLE lhb(date,code,chng,amount,buy,bloo,sell,sloo,cause);
     " | mysql -u root kts
 
@@ -901,6 +910,42 @@ function fn_money()
     fn_parser_Money
 }
 
+function fn_fenbi()
+{
+    code=$1
+    date=$2
+    #code=399006
+    fn_iscode ${code}
+    xt_ret $? "arg1 not code" || return $?
+
+    [ "${#date}" -eq 8 ]
+    xt_ret $? "date format 2015mmdd" || return $?
+
+    sql="SELECT round(datetime/1000000) as dt, TRUNCATE(datetime%1000000/100,0) as time FROM fenbi"
+    mysql -N kts <<< "${sql} WHERE code=${code} HAVING dt=${date}" | awk '{print $2}' > /tmp/kts/fenbi.up1
+
+    close=`mysql -N kts <<< "SELECT max(trade) FROM fenbi WHERE code=${code} and datetime>${date}000000"`
+    # echo ${close};exit
+    grep -v -f /tmp/kts/fenbi.up1 sql/min.table > /tmp/kts/fenbi.up2
+    rows=`wc -l < /tmp/kts/fenbi.up2`
+    
+    if [ "${rows}" -eq 0 ]; then
+        echo rows is 0, exit
+        exit
+    else
+        echo rows: ${rows}
+    fi
+
+    awk -v v_code=${code} -v v_date=${date} -v v_close=${close} '{
+        printf "%s\t%s%06d\t%.2f\t%d\t%d\n", v_code, v_date,$1*100+55, v_close, 0,0
+    }' /tmp/kts/fenbi.up2 > ${buffer}
+
+    echo "
+    LOAD DATA LOCAL INFILE '${buffer}' INTO TABLE fenbi(code, datetime, trade, volume, amount)
+    " | mysql kts
+    
+}
+
 function fn_main()
 {
     CURR=`fn_maxdate`
@@ -934,6 +979,7 @@ function fn_main()
     "dorat  [loop]                      # 量比数据，loop when run@crontab"
     "ma2015                             # "
     "trace                              # "
+    "fenbi  code 2015mmdd               # "
     "money                              # "
     "power                              # 权重分析"
     )

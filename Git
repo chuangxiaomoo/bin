@@ -53,7 +53,9 @@ function fn_main()
     d|diff)
         git diff ${filelist}
         ;;
-
+    log|l)
+        git log -p ${filelist}
+        ;;
     dp)
         git diff HEAD^ HEAD ${filelist}
         ;;

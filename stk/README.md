@@ -67,4 +67,4 @@
 # 仓位管理        .doc/position.md        -- 核心理论: 价.量.macd.势.攻.防
 # 操盘日记        .doc/diary2.md
 # 日报            .doc/report.md
-# 龙虎榜          .doc/lhb.md             -- Yjyg
+# 龙虎榜          .doc/lhb.md

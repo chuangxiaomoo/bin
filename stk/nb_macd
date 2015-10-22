@@ -88,6 +88,9 @@ function fn_routine()
         *)
             grep -q -E 'd1|m1' <<< "${COND0}" && macd ${code} f1
             grep -q -E 'dif|macd|d1|m1' <<< "${COND0}" && FM=5 || FM=15
+            COND0=${COND0//m6/macd}
+            COND0=${COND0//d6/dif}
+            # echo ${COND0}; exit
             sql="SELECT IF(${COND0}, 1, 0) FROM mm55 WHERE code=${code} and FM=${FM}"
             ret=`mysql -N kts <<<"${sql}"`
             if [ "${ret}" = 1 ]; then
@@ -141,7 +144,7 @@ function fn_loop()
     while :; do
         fn_isresting && { sleep 150; continue; }
         fn_routine
-        echo "to sleeping ${STEP:=80}s"        # F5x3有效突破，即3线之内，低点抬高，高点亦抬高
+        echo "to sleeping ${STEP:=72}s"         # F5x3有效突破，即3线之内，低点抬高，高点亦抬高
         sleep ${STEP}                           #               若是大阳线，则不破1/2长度
     done
     return $?

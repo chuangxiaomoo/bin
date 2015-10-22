@@ -48,8 +48,13 @@ function fn_hexun()
     code=$1
 
     >${buffer}
-    [ "${dt}" -lt ${datetime9} ]
-    xt_ret $? "Latest@${dt}>${datetime9}" || return 0
+    if [ "${dt}" = NULL ]; then
+        fn_echo_line "down index data first time..."
+        dt=${datetime0}
+    else
+        [ "${dt}" -lt ${datetime9} ]
+        xt_ret $? "Latest@${dt}>${datetime9}" || return 0
+    fi
 
     # 防止在macd(F5)时，1分钟有两个记录
     if [ "${dt}" -gt ${datetime0} ]; then
@@ -147,13 +152,14 @@ function fn_fenbi()
 
     if fn_isindex $code; then
         if [ "${dt}" = NULL ]; then
-            echo "down index data first time..."
+            fn_echo_line"down index data first time..."
             dt=${datetime0}
         fi
     else
         if [ "${dt}" = NULL ]; then
             echo "exec [ ./mi5 ${code} ] for NULL database..."
             ./mi5 ${code}
+            dt=`mysql -N kts <<< "${sql}"`
             fn_hexun ${code}
             return $?
         else

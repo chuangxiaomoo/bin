@@ -43,23 +43,17 @@ function fn_ls()
 	" | mysql -t kts
 }
 
-function fn_list_date()
-{
-    printf "%6d\t" 0
-    mysql -N kts <<< "SELECT date from day WHERE code=900001 ORDER by date DESC LIMIT 1"
-    mysql -N kts <<< "SELECT date from day WHERE code=900001 ORDER by date DESC LIMIT 1,${LIMIT:-10}" | cat -n
-}
-
 function fn_get_date()
 {
-    mysql -N kts <<< "SELECT date from day WHERE code=900001 and date<='${END}' ORDER by date DESC LIMIT ${1:-0},${2:-1}"
+    # 不带参数，默认为了，取最新
+    local sta=${1:-1}
+    let sta--
+    mysql -N kts <<< "SELECT date from day WHERE code=900001 and date<='${END}' ORDER by date DESC LIMIT ${sta:-0},${2:-1}"
 }
 
-
-function fn_get_open_days()
+function fn_list_date()
 {
-    # mysql -N kts <<< "SELECT date from day WHERE code = 900001 " | tail -${1:-13}
-    LIMIT=13 fn_list_date 
+    fn_get_date 1 ${1:-10} | cat -n
 }
 
 function fn_lsd()
@@ -76,13 +70,13 @@ function fn_lsd()
     case $1 in
     t|top)
         LIMIT=${LIMIT:-200}
-        HAVING="rise>9.94"
+        HAVING="rise>9.93"
         field=${2:-nmc}
         chao=${chao}.top
         ;;
     f|floor)
         LIMIT=${LIMIT:-200}
-        HAVING="rise<-9.94"
+        HAVING="rise<-9.93"
         field=${2:-nmc}
         ;;
     l|list)
@@ -137,24 +131,30 @@ function fn_lsd()
 
 function fn_ace()
 {
-    dates=(`mysql -N kts <<< "SELECT date from day WHERE code=900001 ORDER by date DESC LIMIT ${LIMIT:-1},10"`)
+    dates=(`fn_get_date ${1:-1} ${2:-10}`)
 
     function fn_sql()
     {
-        sqls="SELECT code FROM day as d where d.date = '${date:-$1}' and ${RISE}>9.94 " 
-        #echo ${sqls}
+        sqls="SELECT ${2} FROM day as d,cap as c where d.code=c.code && d.date = '$1' and ${RISE}>9.93 ${@:3}"
+        # echo "${sqls}"; exit 1
+        mysql -N kts <<<"${sqls}"
     }
 
-    > .soptter.ace
     local i=
+    printf "%-12s%6s\t%6s\t%6s\t%6s\t%6s\n" date rows nmc20 nmc75 amt20 amt75
     for i in ${dates[@]}; do
-        fn_sql $i 
-        mysql -N kts <<<"${sqls}" >> .soptter.ace
+        rows=`fn_sql $i "count(d.code)"`
+        pct20=`bc <<< "${rows}*20/100"`
+        pct75=`bc <<< "${rows}*75/100"`
+        nmc20=`fn_sql $i nmc ORDER    by nmc    ASC LIMIT ${pct20},1`
+        nmc75=`fn_sql $i nmc ORDER    by nmc    ASC LIMIT ${pct75},1`
+        amt20=`fn_sql $i amount ORDER by amount ASC LIMIT ${pct20},1`
+        amt75=`fn_sql $i amount ORDER by amount ASC LIMIT ${pct75},1`
+         
+        echo ${i} ${rows} ${nmc20} ${nmc75} ${amt20} ${amt75} |
+        awk '{printf "%s  %6d\t%6.2f\t%6.2f\t%6.2f\t%6.2f\n", $1, $2, $3/10000,$4/10000,$5/10000,$6/10000 }'
     done
 
-    sort -u .soptter.ace -o .soptter.ace
-    echo "Selcect `wc -l<.soptter.ace` From (${dates[@]}) into .soptter.ace"
-        
     return $?
 }
 
@@ -452,8 +452,6 @@ function fn_wma()
 function fn_updown()
 {
     NUM=${NUM:-5}
-
-    let NUM--
     START=`fn_get_date ${NUM}`
 
     echo "
@@ -955,7 +953,6 @@ function fn_lohi()
     columns='lohi'
     columns="t.code,DATE_FORMAT(t.date1,'%m-%d')as date1,DATE_FORMAT(t.date2,'%m-%d')as date2,t.${columns//,/,t.}"
 
-    DROP="DROP TABLE IF EXISTS "
     iNUM=${NUM:-8}                          # PREV=`mysql -N kts <<< "SELECT max(end) from mat_lohi"`
     TAM=${TAM:-${END}}                      # 开市后才能指定MAT
     TAM=${TAM//END/${END}}                  # TAM代表mat_lohi中最高日期，亦TEMPDAY的日期
@@ -1005,7 +1002,7 @@ function fn_lohi()
             round(100*sum(volume)/c.shares,1) as tov, round(c.nmc/10000, 1) as nmc, c.name"
         sqls="
             SELECT ${puppy} FROM mat_lohi as m, cap as c, tempday as d
-            WHERE m.code=c.code && m.code=d.code && end>'${sta}' and end<='${END}' 
+            WHERE m.code=c.code && m.code=d.code && end>='${sta}' and end<='${END}' 
             GROUP by code HAVING off>=${off} && shirnk<=${off} && tov<${off}*15 ${COND}
             ORDER by shirnk ASC LIMIT ${LIMIT:-36}
         " 
@@ -1038,7 +1035,7 @@ function fn_lohi()
         {
           tbl_super_dive="
           SELECT * FROM (
-            SELECT ${columns}, 
+            SELECT ${CID}${columns}, 
             round(100*(d.close-t.low)/t.low, 2)  as incr,
             round(100*(GREATEST(t.high,d.close)-d.close)/GREATEST(t.high,d.close), 2) as decn,
             round(t.amount/t.volume, 2) as yavri, d.close,
@@ -1228,11 +1225,11 @@ function fn_lhb()
 {
     if [ -n "${CAUSE}" ]; then
         CAUSE=`
-                sed -e "s/3/cause='3up20'/"     \
-                    -e "s/7/chng>=7/"           \
-                    -e "s/f/cause='hilo15'/"    \
-                    -e "s/'s'/cause='s3up12'/"  \
-                    -e "s/t/cause='tov20'/"     \
+                sed -e "s/3/cause='3up20'/"             \
+                    -e "s/7/cause='up7'/"               \
+                    -e "s/8/chng>=9.832/"               \
+                    -e "s/'s'/cause='s3up12'/"          \
+                    -e "s/t/cause='tov20'/"             \
                     -e 's/ /||/g' <<< "${CAUSE}"`
         # echo ${CAUSE}; exit
         CAUSE="and (${CAUSE})"
@@ -1242,21 +1239,57 @@ function fn_lhb()
     case $1 in
     c|cause)
         mysql -t kts <<<"SELECT DISTINCT cause FROM lhb"
-        mysql -t kts <<<"SELECT * FROM lhb WHERE date='${max_dt}' and (
-                            cause='tov_to_20' or
-                            cause='rzrq_to_50')"
         ;;
-    l|list)
-        fn_list_date
+    d|dates)
+        fn_list_date $2
         ;;
-    d|date)
-        date=`fn_get_date ${2:-0}`
-        fn_echo_warn "lhb of ${date}"
-        columns='code,cause,chng,amount,buy,sell,bloo,sloo'
+    x|del)
+        date=`fn_get_date ${2:-1}`
+        mysql kts <<< "DELETE FROM lhb WHERE date='${date}'"
+        xt_ret $? "del fail" || return $?
+        fn_echo_succ "del from lhb@${date}"
+        ;;
+    n|s|S|select)
+        if [ $1 = S ]; then
+            fdate='date,'
+            field=$2
+        else
+            field=$3
+            date=`fn_get_date ${2:-1}`
+            fn_echo_warn "lhb of ${date}"
+
+            if [ "${1}" = n ]; then
+                xdate=`END=${date} fn_get_next`
+                sql_next="
+                ${RISE} as nrise,
+                TRUNCATE(100*(d.open-d.yesc)/d.yesc, 2) as nopri,
+                "
+            fi
+            fn_xtempday ${xdate:-${date}}
+            xt_ret $? "xtempday error" || return $?
+            sql_date="&& l.date='$date'"
+            grep -q "causee='3up20" <<<"${CAUSE}" && e2oo="round(d.amount/10000, 2) as e2oo,"
+        fi
+
+        fn_echo_warn "CAUSE: ${CAUSE}"
+
+        columns="${fdate}code,cause,chng"
         columns=l.${columns//,/,l.}
         sqls="
-            SELECT ${columns},(bloo-sloo) as net, c.nmc, c.name FROM lhb as l,cap as c
-            WHERE l.code=c.code && l.date='$date' ${CAUSE} ${COND} ORDER by ${3:-net} DESC
+            SELECT ${columns}, ${sql_next}
+            round(l.buy/bloo/(d.close*c.nmc/c.close)*10000, 1) as tov,
+            round(l.amount/10000, 2) as amount,
+            round(l.buy/10000, 2) as buy,
+            round(l.sell/10000, 2) as sell,
+            bloo,sloo,
+            (bloo-sloo) as net,
+            round(bloo/sloo, 2) as bsp,
+            ${e2oo}
+            round(l.buy/bloo/100, 2) as eYi,
+            round(c.nmc/10000, 1) as nmc,
+            c.name FROM lhb as l,cap as c, xtempday as d 
+            WHERE l.code=c.code && l.code=d.code ${sql_date} ${CAUSE} 
+            HAVING 1 ${COND} ORDER by ${field:-bloo} DESC LIMIT ${LIMIT:-48}
         "
         # echo ${sql}; exit
         mysql -t kts <<<"${sqls}"
@@ -1267,7 +1300,7 @@ function fn_lhb()
         mysql -t kts <<<"${sql}"
         ;;
     +10)
-        sta=`date --date="${2:-8} day ago" +'%F'`
+        sta=`fn_get_date ${2:-1}`
         off=`mysql -N kts <<< "SELECT count(*) from day WHERE code=900001 and date>='${sta}' && date<='${END}'"`
         tbl="SELECT * FROM day WHERE date>='${sta}' && date<='${END}' and (close-yesc)/yesc>.0993"
         sql="SELECT code,count(code) as num FROM (${tbl}) as t GROUP by code ORDER by num DESC LIMIT ${LIMIT:-30}"
@@ -1275,36 +1308,32 @@ function fn_lhb()
         mysql -t kts <<<"${sql}"
         fn_echo_succ "${sta} wday:`date --date=${sta} +'%w'` off:${off}"
         sqls=${sql} fn_chao ${chao}
-        
         ;;
-    +7)
-        sta=`date --date="${2} day ago" +'%F'`
+    g)
+        sta=`fn_get_date ${2:-1}`
         off=`mysql -N kts <<< "SELECT count(*) from day WHERE code=900001 and date>='${sta}' && date<='${END}'"`
-        wsql="WHERE date>'${sta}' && date<='${END}' && (chng>=7 || cause='3up20') "
+        wsql="WHERE date>='${sta}' && date<='${END}' && (chng>=3.82)"
         sql="SELECT code,count(code) as num FROM lhb ${wsql} GROUP by code ORDER by num DESC LIMIT ${LIMIT:-30}"
         sql="SELECT * FROM ($sql) as t HAVING 1 ${COND}"
         mysql -t kts <<<"${sql}"
         fn_echo_succ "${sta} wday:`date --date=${sta} +'%w'` off:${off}"
         sqls=${sql} fn_chao ${chao}
         ;;
-    [5~9]|1[0-8])
-        sta=`date --date="${1} day ago" +'%F'`
-        sql="SELECT code,count(code) as num FROM lhb WHERE date>'${sta}' GROUP by code ORDER by num DESC LIMIT ${LIMIT:-30}"
-        mysql -t kts <<<"${sql}"
-        ;;
     *)
+        fn_echo_succ "\tlhb max_date@${max_dt}"
         echo "
         SELECT lhb <param>
-        c       上榜原因列表
         +10 n   n日内涨停次数
-        +7  n   n日内因+7+20上榜次数统计
-        5~18    5~18天内上榜次数统计
-        d [i]   指定日列表，i不指定时为0，代表今天
+        c       上榜原因list
+        d       日期list
+        g n     n日内因+3.82%上榜次数统计
+        s [i]   SELECT日期，i不指定时为1，代表今天
+        x [i]   指定dele日期，i不指定时为1，代表今天
 
-        CAUSE='3 7 f s t'
+        CAUSE='3 7 8 s t'
         3   3up20
         7   up7
-        f   hilo15
+        8   +5%         ----- 3+7=8
         s   s3up12
         t   tov20
         "
@@ -1393,6 +1422,8 @@ function fn_stat()
             fn_realtimetov0 ${i} || exit
         done
         ;;
+    +10)
+        ;;
     *)
         echo "
         SELECT stat <param>:
@@ -1419,7 +1450,7 @@ function fn_main()
     "dugu9jian          [sortfield]           # nine sword"
     "6maishenjian       [sortfield]           # #{DATE2} to specify diff-day"
     "get_comma_cloumns  [tbl_name:-day]       # 逗分列名"
-    "get_open_days      [LIMIT:-13 [desc]]    # 开市日列表"
+    "list_date          num                   # num默认10"
     "wma                [sortfield:tov5]      # 均价+现成513.静态rat"
     "rat                [sortfield:-ratio]    # wma+day-->动态rat，实时速度快"
     "dorat                                    # 时间为表名list"
@@ -1430,7 +1461,7 @@ function fn_main()
     "stat                                     # 大盘统计"
     # ----------------  ABOVE IS FIXED SEQUENCE --------------------
     "xrd                field                 # #{OP:->}"
-    "ace                                      # 10日内所有+10%"
+    "ace                sta num               # 10日内所有+10% amount nmc 统计"
     "td_layout          code                  # 日内最高价时点分布.10:00am"
     "cap                code                  # 查询nmc&cap"
     "name               code                  # 名"
