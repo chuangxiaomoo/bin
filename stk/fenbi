@@ -40,12 +40,26 @@ function fn_get_url()
     if [ ${1:0:1} -eq 6 ] || [ $1 = "000001" ] || [ $1 = "000902" ]; then
         sec=sse
     fi
-    echo "${url0}code=${sec}${1}&start=${2}&number=1000"
+    echo "${url0}code=${sec}${1}&start=${2}&number=${3:-1000}"
+}
+
+
+function fn_2530()
+{
+    CURR=`fn_maxdate`
+    datetime0="${CURR//-/}092500"
+    dt=NULL
+    fn_iscode ${1}
+    xt_ret $? "${1} error" || return $?
+    SCOPE25=2 fn_hexun ${1} 100
+    
+    return $?
 }
 
 function fn_hexun()
 {
     code=$1
+    num=$2
 
     >${buffer}
     if [ "${dt}" = NULL ]; then
@@ -68,7 +82,7 @@ function fn_hexun()
    #[ "${dt}" -lt ${datetime0} ] && dt=${datetime0}
 
     while :; do
-        url=`fn_get_url ${code} ${dt}`
+        url=`fn_get_url ${code} ${dt} ${num}`
 
         echo ${url};
         ${W3M} -dump "${url}" > ${fenbi_raw}
@@ -98,7 +112,9 @@ function fn_hexun()
             break
         fi
 
-        # exit # uncomment to w3m once
+        if [ "${SCOPE25:-0}" -gt 0 ]; then
+            break
+        fi
     done
 
     true && {
@@ -284,6 +300,10 @@ function fn_main()
         ;;
     f|fb2day)
         fn_fb2day ${@:2}
+        ;;
+    2|2530)
+        echo "SELECT * FROM fenbi WHERE code=000025 HAVING (datetime%1000000<093100)"
+        fn_2530 ${@:2}
         ;;
     *)
         for i in ${@:-''}; do
