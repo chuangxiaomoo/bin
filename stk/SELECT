@@ -117,6 +117,7 @@ function fn_lsd()
     {
         sqls="
         SELECT ${CID}$columns, volume,amount, 
+                $OPRI as opri, 
                 $RISE as rise, 
                 $TURNOV as tov, c.nmc, c.name
                 FROM ${TEMPDAY} as d, cap as c ${WHERE} d.code = c.code and d.date = '${END}' 
@@ -1225,19 +1226,22 @@ function fn_lhb()
 {
     if [ -n "${CAUSE}" ]; then
         CAUSE=`
-                sed -e "s/3/cause='3up20'/"             \
-                    -e "s/7/cause='up7'/"               \
-                    -e "s/8/chng>=9.832/"               \
-                    -e "s/'s'/cause='s3up12'/"          \
-                    -e "s/t/cause='tov20'/"             \
+                sed -e "s/\<3\>/cause='3up20'/"      \
+                    -e "s/\<7\>/cause='up7'/"        \
+                    -e "s/\<8\>/chng>=9.832/"        \
+                    -e "s/'s'/cause='s3up12'/"       \
+                    -e "s/t/cause='tov20'/"          \
+                    -e "s/b>/bloo>/"                 \
+                    -e "s/p>/\&\&bsp>/"              \
                     -e 's/ /||/g' <<< "${CAUSE}"`
         # echo ${CAUSE}; exit
         CAUSE="and (${CAUSE})"
     fi
+
     sql="SELECT max(date) FROM lhb"
     max_dt=`mysql -N kts <<< "${sql}"`
     case $1 in
-    c|cause)
+    r|cause)
         mysql -t kts <<<"SELECT DISTINCT cause FROM lhb"
         ;;
     d|dates)
@@ -1249,20 +1253,28 @@ function fn_lhb()
         xt_ret $? "del fail" || return $?
         fn_echo_succ "del from lhb@${date}"
         ;;
-    n|s|S|select)
+    c|n|s|S|select)
         if [ $1 = S ]; then
             fdate='date,'
             field=$2
+        elif [ $1 = c ]; then
+            fn_iscode $2
+            xt_ret $? "code:${2}" || return $?
+            COND="${COND} and code=${2}"
+            fdate='date,'
+            field=${3:-date}
+            LIMIT=5
         else
             field=$3
             date=`fn_get_date ${2:-1}`
             fn_echo_warn "lhb of ${date}"
 
             if [ "${1}" = n ]; then
+                field=${field:-Xrise}
                 xdate=`END=${date} fn_get_next`
                 sql_next="
-                ${RISE} as nrise,
-                TRUNCATE(100*(d.open-d.yesc)/d.yesc, 2) as nopri,
+                ${RISE} as Xrise,
+                TRUNCATE(100*(d.open-d.yesc)/d.yesc, 2) as Xopri,
                 "
             fi
             fn_xtempday ${xdate:-${date}}
@@ -1288,8 +1300,8 @@ function fn_lhb()
             round(l.buy/bloo/100, 2) as eYi,
             round(c.nmc/10000, 1) as nmc,
             c.name FROM lhb as l,cap as c, xtempday as d 
-            WHERE l.code=c.code && l.code=d.code ${sql_date} ${CAUSE} 
-            HAVING 1 ${COND} ORDER by ${field:-bloo} DESC LIMIT ${LIMIT:-48}
+            WHERE l.code=c.code && l.code=d.code ${sql_date} 
+            HAVING 1 ${CAUSE} ${COND} ORDER by ${field:-bsp} DESC LIMIT ${LIMIT:-48}
         "
         # echo ${sql}; exit
         mysql -t kts <<<"${sqls}"
@@ -1324,7 +1336,8 @@ function fn_lhb()
         echo "
         SELECT lhb <param>
         +10 n   n日内涨停次数
-        c       上榜原因list
+        c code  指定代码
+        r       上榜原因list
         d       日期list
         g n     n日内因+3.82%上榜次数统计
         s [i]   SELECT日期，i不指定时为1，代表今天
@@ -1336,6 +1349,7 @@ function fn_lhb()
         8   +5%         ----- 3+7=8
         s   s3up12
         t   tov20
+        b   bloo.bsp    ----- 7&&(b>15p>2)
         "
         ;;
     esac
