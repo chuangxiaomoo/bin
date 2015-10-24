@@ -33,7 +33,8 @@
     } 
 
 # for
-    awk '{ for (i = 2; i <= NF; i++)
+    awk '{ 
+        for (i = 2; i <= NF; i++)
                 printf("%s ", $i)
                 printf("\n")
     }' filename

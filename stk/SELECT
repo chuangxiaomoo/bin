@@ -636,7 +636,7 @@ function fn_name()
     xt_ret $? "Usage: name code" || exit $?
 
     echo "SELECT code, 
-            TRUNCATE(nmc/10000, 1) as nmc, 
+            TRUNCATE(nmc/10000, 1) as nmcYi,
             -- TRUNCATE(shares/10000,2) as shares, 
             name FROM cap WHERE code=${code}
     " | mysql kts
@@ -1451,6 +1451,37 @@ function fn_stat()
     return $?
 }
 
+function fn_blk()
+{
+    case $1 in
+    l|layout)
+        field=${2:-code}
+        echo "
+        SELECT hex(n.blk) as blk,count(m.code) as num,n.sym FROM blk_name as n, blk_memb as m
+         WHERE n.blk=m.blk
+         GROUP by blk ORDER by num DESC LIMIT ${LIMIT:-36};
+        " | mysql -t kts
+        ;;
+    c|code)
+        fn_iscode ${code:=$2}
+        xt_ret $? "" || return $?
+        fn_name ${code}
+
+        field=${3:-blk}
+        echo "
+        SELECT m.code, hex(n.blk) as blk, n.sym FROM blk_name as n, blk_memb as m
+         WHERE n.blk=m.blk and code=${code}
+         ORDER by ${field} DESC LIMIT ${LIMIT:-36};
+        " | mysql -t kts
+        ;;
+    *)
+        echo
+        ;;
+    esac
+
+    return $?
+}
+
 function fn_main()
 {
     # mysql CURRENT_DATE();
@@ -1497,6 +1528,7 @@ function fn_main()
     "macd               [clean]               # macd-alarm-sys"
     "fmacd                                                    "
     "tri                                      # 3连阳"
+    "blk                                      # 板块信息"
     )
 
     # `ASC=任意值`时使用'DESC'，弃用
