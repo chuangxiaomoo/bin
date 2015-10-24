@@ -1474,8 +1474,30 @@ function fn_blk()
          ORDER by ${field} DESC LIMIT ${LIMIT:-36};
         " | mysql -t kts
         ;;
+    a|ace)
+        off=${2:-1}
+        xCOND="TRUNCATE(100*(close-yesc)/yesc, 2)>${DOOR:-9.93}"
+        dates=(`fn_get_date 1 ${off}`)
+
+        for (( i=${off}-1; i>=0; i-- )); do
+            date=${dates[$i]}
+            fn_xtempday ${date}
+            fn_echo_succ "DOOR date: ${date}"
+            echo "
+            SELECT hex(n.blk) as xblk, count(m.code) as num, n.sym FROM blk_name as n, blk_memb as m, xtempday as d
+            WHERE n.blk=m.blk and m.code=d.code 
+             GROUP by xblk HAVING xblk not in('CE54', 'DAE8', 'DBD4', 'D886')
+             ORDER by num DESC LIMIT ${LIMIT:-48};
+            " | mysql -t kts
+        done
+        ;;
     *)
-        echo
+        echo "
+        SELECT blk <param>
+        l               # layout
+        c code          # code关联的所有板块
+        a off           # 指定off日内的热门，看点在<可查看历史日spot>
+        "
         ;;
     esac
 
