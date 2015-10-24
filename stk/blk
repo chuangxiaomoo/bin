@@ -1,4 +1,6 @@
 #! /bin/bash
+. `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
+. /etc/common.rc
 
 # 小金属
 # 除了用在军工上以外，很多新兴产业都要用到，主要包括
@@ -10,7 +12,7 @@
 
 # 深证100R(对派息进行除权以减少波动)及深证100P均属于深证100指数,二者样本股组合完全相同
 
-function fn_main()
+function fn_main0()
 {
     CWD=${PWD}
     BLK='/dzh2/USERDATA/block'
@@ -50,6 +52,32 @@ function fn_main()
         grep -f /dev/shm/.blk .codelist > ${maps[${j}]}
     done
     return $?
+}
+
+function fn_main()
+{
+    iconv -f cp936 -t utf8 .ccept.ini | grep -E '^40=|^B3=|^[0-9A-F]{4}=[^$]' | grep -v ':' > ${blk_name}.raw
+    iconv -f cp936 -t utf8 .ccept.ini | grep -E '^40=|^B3=|^[0-9A-F]{4}=[^$]' | grep    ':' > ${blk_list}
+    sed -i -e 's/^/0x/g' -e 's/=/\t/g' ${blk_name}.raw
+    sed -i -e 's/^/0x/g' -e 's/[0-9][0-9]://g' -e 's/=/,/g' -e 's/,$//g' ${blk_list}
+
+    awk '{printf "%d\t%s\n", $1,$2}' ${blk_name}.raw > ${blk_name}
+
+    awk -F ',' '{
+        for (i = 2; i <= NF; i++) {
+            printf("%d\t%s\n", $1,$i)
+        }
+    }' ${blk_list} > ${blk_memb}
+
+    echo "
+    TRUNCATE TABLE blk_name;
+    TRUNCATE TABLE blk_memb;
+    LOAD DATA LOCAL INFILE '${blk_name}' INTO TABLE blk_name;
+    LOAD DATA LOCAL INFILE '${blk_memb}' INTO TABLE blk_memb;
+    " | mysql kts
+    xt_ret $? "mysql" || return $?
+    
+    fn_echo_succ "up blk succ!"
 }
 
 fn_main

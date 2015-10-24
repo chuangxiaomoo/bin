@@ -946,6 +946,32 @@ function fn_fenbi()
     
 }
 
+function fn_blk()
+{    
+    iconv -f cp936 -t utf8 .ccept.ini | grep -E '^40=|^B3=|^[0-9A-F]{4}=[^$]' | grep -v ':' > ${blk_name}.raw
+    iconv -f cp936 -t utf8 .ccept.ini | grep -E '^40=|^B3=|^[0-9A-F]{4}=[^$]' | grep    ':' > ${blk_list}
+    sed -i -e 's/^/0x/g' -e 's/=/\t/g' ${blk_name}.raw
+    sed -i -e 's/^/0x/g' -e 's/[0-9][0-9]://g' -e 's/=/,/g' -e 's/,$//g' ${blk_list}
+
+    awk '{printf "%d\t%s\n", $1,$2}' ${blk_name}.raw > ${blk_name}
+
+    awk -F ',' '{
+        for (i = 2; i <= NF; i++) {
+            printf("%d\t%s\n", $1,$i)
+        }
+    }' ${blk_list} > ${blk_memb}
+
+    echo "
+    TRUNCATE TABLE blk_name;
+    TRUNCATE TABLE blk_memb;
+    LOAD DATA LOCAL INFILE '${blk_name}' INTO TABLE blk_name;
+    LOAD DATA LOCAL INFILE '${blk_memb}' INTO TABLE blk_memb;
+    " | mysql kts
+    xt_ret $? "mysql" || return $?
+    
+    fn_echo_succ "up blk succ!"
+}
+
 function fn_main()
 {
     CURR=`fn_maxdate`
@@ -982,6 +1008,7 @@ function fn_main()
     "fenbi  code 2015mmdd               # "
     "money                              # "
     "power                              # 权重分析"
+    "blk                                # 板块信息"
     )
 
     # 存储过程函数文件的最后5行都是注释

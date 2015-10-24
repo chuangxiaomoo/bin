@@ -25,6 +25,18 @@ CREATE TABLE cap (
     name    CHAR(16)
 );
 
+CREATE TABLE blk_name (
+    blk     INT, 
+    sym     CHAR(64),
+    INDEX(blk)
+);
+
+CREATE TABLE blk_memb (
+    blk     INT,
+    code    INT(6)  ZEROFILL, 
+    INDEX(blk,code)
+);
+
 -- 对于AUTO_INCREMENT，可以用DEFAULT
 --  INSERT INTO stamp_min values(DEFAULT, '2008-08-08', '08:08:08')
 
