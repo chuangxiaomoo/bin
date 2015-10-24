@@ -342,7 +342,7 @@ function fn_xtempday()
     local table=${TBL:-xtempday}
     echo "
     $DROP ${table}; CREATE TABLE ${table} LIKE day;
-    INSERT INTO ${table} SELECT * from day where date='${1:-$END}';
+    INSERT INTO ${table} SELECT * from day where date='${1:-$END}' HAVING ${xCOND:-1};
     " | mysql kts
     return $?
 }
