@@ -25,6 +25,7 @@ SUBOUT='/dev/stdout' || SUBOUT='/dev/null'
 XTBL="${XTBL:+and code not in (SELECT code FROM $XTBL)}"
 COND="${COND:+and $COND }${XTBL}"
 DROP="DROP TABLE IF EXISTS "
+WHERE="WHERE"
 
 WGET='timeout 34 /usr/bin/wget'
 W3M='timeout  60 /usr/bin/w3m'
@@ -32,6 +33,7 @@ W3M='timeout  60 /usr/bin/w3m'
 OPRI='TRUNCATE(100*(d.open-d.yesc)/d.yesc, 2)'
 RISE='TRUNCATE(100*(d.close-d.yesc)/d.yesc, 2)'
 PEAK='TRUNCATE(100*(d.high-d.close)/yesc, 2)'
+nmcYi='round(nmc/10000, 1)'
 TROUGH='TRUNCATE(100*(d.close-d.low)/yesc, 2)'
 TURNOV='TRUNCATE(100*d.volume*c.close/c.nmc, 2)'
 TURNOV0='TRUNCATE(100*d.volume/@shares0, 2)'
@@ -196,19 +198,46 @@ function fn_yist()
     if [ -f "${YIST}" ]; then
         LIST=(`cat ${YIST}|awk '/^[036]/{print $1}' | xargs`)
         [ -z "${LIST[0]}" ] && return
+        TBL=yist up file_to_table ${YIST}
+
+        # scene 1
         inLIST="and code in (`tr ' ' ','<<<${LIST[@]}`)"
 
-        TBL=yist up file_to_table ${YIST}
+        # scene 2
         WHERE=",yist as y WHERE ${ABBR:-d}.code=y.code &&"
         CID="y.id,"
-    else
-        WHERE="WHERE"
     fi
+}
+
+function fn_xblk()
+{
+    if [ "${1}" = notNULL ] && [ -z "${BLK}" ]; then
+        fn_echo_fail '$BLK mustnot NULL'
+        exit
+    fi
+
+    [ -z "${BLK}" ] && return
+
+    BLK=(${BLK}); BLK=${BLK[@]}           # 去回车
+    local xCOND="blk=0x${BLK// /||blk=0x}"
+    #echo ${xCOND}; exit
+    echo "
+    $DROP        xblk;
+    CREATE TABLE xblk LIKE codes;
+    INSERT INTO  xblk(code) 
+    SELECT DISTINCT code FROM blk_memb WHERE ${xCOND};
+    " | mysql kts
+    WHERE=",xblk as x WHERE ${ABBR:-d}.code=x.code &&"
+}
+
+function fn_date_2_str()
+{
+    echo ${1//-/}
 }
 
 function fn_str_2_date()
 {
-    dt2=$1
+    local dt2=$1
     echo ${dt2:0:4}-${dt2:4:2}-${dt2:6:2}
     # echo ${dt2:8:2}:${dt2:10:2}:${dt2:12:2}
 }
@@ -336,6 +365,27 @@ function fn_get_next()
     sqls="SELECT date FROM day WHERE code=900001 and date>'$END'"
     mysql -N kts<<<"${sqls} ORDER by date ASC LIMIT 1"
 }
+
+function fn_get_date()
+{
+    # 不带参数，默认为了，取最新
+    local sta=${1:-1}
+    local code=${CODE:-900001}
+    let sta--
+    sqls="
+        SELECT date from day 
+        WHERE code=${code} and date<='${END}' 
+        ORDER by date DESC LIMIT ${sta},${2:-1}
+    "
+    #echo ${sqls}; exit
+    mysql -N kts <<< "${sqls}"
+}
+
+function fn_list_date()
+{
+    fn_get_date 1 ${1:-10} | cat -n
+}
+
 
 function fn_xtempday()
 {

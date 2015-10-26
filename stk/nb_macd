@@ -55,7 +55,7 @@ function fn_routine()
         case ${COND0:-B} in
         B|b|bm)
             if [ ${COND0} = B ] && [ "${limo}" -gt 0 ] && [ "${limo}" -ge ${buyn:-3} ]; then
-                fn_echo_succ "$code.$symble.limo ${COND0}"
+                fn_echo_succ "$code.$symble.${FM}.limo ${COND0}"
                 let tips_cnt+=100
             fi
             if [ "${COND0}" = bm ]; then
@@ -65,13 +65,13 @@ function fn_routine()
             fi
             ret=`mysql -N kts <<<"${sql}"`
             if [ "${ret}" = 1 ]; then
-                fn_echo_succ "$code.$symble.macd ${COND0}"
+                fn_echo_succ "$code.$symble.${FM}.macd ${COND0}"
                 let tips_cnt+=100
             fi
             ;;
         S|s|sm)
             if [ ${COND0} = S ] && [ "${limo}" -le 0 ] && [ "${limo#-}" -lt 3 ]; then
-                fn_echo_succ "$code.$symble.limo ${COND0}"
+                fn_echo_succ "$code.$symble.${FM}.limo ${COND0}"
                 let tips_cnt++
             fi
             if [ "${COND0}" = sm ]; then
@@ -81,7 +81,7 @@ function fn_routine()
             fi
             ret=`mysql -N kts <<<"${sql}"`
             if [ "${ret}" = 1 ]; then
-                fn_echo_succ "$code.$symble.macd ${COND0}"
+                fn_echo_succ "$code.$symble.${FM}.macd ${COND0}"
                 let tips_cnt++
             fi
             ;;
@@ -94,7 +94,7 @@ function fn_routine()
             sql="SELECT IF(${COND0}, 1, 0) FROM mm55 WHERE code=${code} and FM=${FM}"
             ret=`mysql -N kts <<<"${sql}"`
             if [ "${ret}" = 1 ]; then
-                fn_echo_succ "$code.$symble.cond ${COND0} ${tip}"
+                fn_echo_succ "$code.$symble.${FM}.cond ${COND0} ${tip}"
                 grep -q '>' <<< "${COND0}" && let tips_cnt+=100 || let tips_cnt++
             elif [ "${ret}" = "" ]; then
                 fn_echo_fail "bad cond: ${COND0}"

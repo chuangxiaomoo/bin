@@ -50,6 +50,9 @@ function fn_do_once()
     $WGET "${sina}date=${date}&symbol=${sec}${code}" -O ${fenbi_raw1} 2>/dev/null
     xt_ret $? "timeout" || return $?
 
+    [ -f "${fenbi_raw1}" ]
+    xt_ret $? "${fenbi_raw1} not exist" || return $?
+
     fn_parser_load
     xt_ret $? "" || return $?
 }
@@ -57,6 +60,11 @@ function fn_do_once()
 
 function fn_do_scope()
 {
+    HMS=`date +%H%M%S`
+    if [ "${HMS}" -lt 203000 ]; then
+        DAYSTART=1
+    fi
+
     today=`date +%F`
     sql="SELECT max(datetime) FROM fenbi WHERE code=${code}"
     datetime=`mysql -N kts <<< "${sql}"`
@@ -92,9 +100,9 @@ function fn_do_scope()
         # acf默认以tov5/20 vol_hour 为单位进行环比，5天为同比。计算，量比为2时，NUM=20
         sql="
         SELECT date FROM (SELECT date FROM day 
-        WHERE code=${code} ORDER by date DESC LIMIT ${NUM:-4}) as tbl ORDER by date ASC"
+        WHERE code=${code} ORDER by date DESC LIMIT ${DAYSTART:-0},${NUM:-5}) as tbl ORDER by date ASC"
     else
-        [ `date +%H%M%S` -gt 153000 ] && equal='='
+        [ ${HMS} -gt 153000 ] && equal='='
         sql="SELECT date FROM day WHERE code=${code} and date>'${fmaxdate}' and date<${equal}'${today}';"
     fi
 
@@ -120,6 +128,15 @@ function fn_download()
     if [ -n "${END}" ]; then
         fn_isdate ${END} 
         xt_ret $? "invalid END[$2]" || return $?
+        YMD=`fn_date_2_str ${END}`
+
+        sql="SELECT max(datetime) FROM fenbi WHERE code=${code} and datetime<${YMD}150000"
+        maxdt=`mysql -N kts <<< "${sql}"`
+        #echo ${maxdt} ${YMD}092000
+        if [ "${maxdt/NULL/${YMD}090000}" -gt ${YMD}092000 ]; then
+            fn_echo_warn "${END} data exist"
+            exit
+        fi
         date=${END} fn_do_once
         xt_ret $? "" || return $?
     else
