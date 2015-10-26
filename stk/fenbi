@@ -43,15 +43,70 @@ function fn_get_url()
     echo "${url0}code=${sec}${1}&start=${2}&number=${3:-1000}"
 }
 
-
-function fn_2530()
+function fn_lsd()
 {
-    CURR=`fn_maxdate`
-    datetime0="${CURR//-/}092500"
-    dt=NULL
-    fn_iscode ${1}
-    xt_ret $? "${1} error" || return $?
-    SCOPE25=2 fn_hexun ${1} 100
+    code=$1
+    fn_iscode ${code} 
+    xt_ret $? "${code} is not code" || return $?
+    YIST=${chao}.fblsd
+    echo $code > ${YIST}
+
+    dates=(`CODE=$code fn_get_date 1 ${2:-3}`)
+    #echo ${dates[@]}; exit
+
+    for date in ${dates[@]}; do
+        iYMD=`fn_date_2_str ${date}`
+        YIST=${YIST} DT=${iYMD}${TIME:-092800} fenbi lhb
+    done
+    
+    return $?
+}
+
+function fn_lhb()
+{
+    datetime0="${END//-/}092500"
+    datetime1="${END//-/}092800"
+    datetime3="${END//-/}100000"
+    datetime9="${END//-/}150000"
+
+    if [ ! -f "${YIST}" ]; then
+        fn_echo_fail 'NULL $YIST'
+        exit
+    fi
+
+    field=$1
+    #fn_echo_blue "END:${END} CURR:${CURR}"
+
+    for code in `cat ${YIST}`; do
+        if [ "${END}" = ${CURR} ]; then
+            sql="SELECT max(datetime) FROM fenbi WHERE code=${code}"
+            maxdt=`mysql -N kts <<< "${sql}"`
+            # 最小时间
+            # sql="SELECT max(datetime) FROM fenbi WHERE code=${code}"
+            # mysql -N kts <<< "${sql}"
+            [ "${maxdt/NULL/${datetime0}}" -gt ${datetime3} ] && continue
+            fn_echo_succ "up ${code}>${maxdt}..."
+            fenbi ${code}
+        else
+            END=${END} mi5 ${code}
+        fi
+    done
+
+    ABBR=f fn_yist
+
+    fn_xtempday ${PREV}
+
+    echo "
+    SELECT f.code, max(datetime),
+        round(100*(f.trade-d.close)/d.close, 2) as rise,
+        round(sum(f.amount)/100, 2)as Wan, 
+        sum(f.volume) as Shou, round(sum(f.volume)/(d.volume),1) as tov,
+        ${nmcYi} as nmcYi, c.name
+    FROM cap as c, fenbi as f, xtempday as d $WHERE f.code=d.code && f.code=c.code 
+        && datetime>=$datetime0 and datetime<=${DT:-${datetime1}}
+    GROUP by f.code
+    ORDER by ${field:-tov} ASC
+    " | mysql -t kts
     
     return $?
 }
@@ -112,7 +167,7 @@ function fn_hexun()
             break
         fi
 
-        if [ "${SCOPE25:-0}" -gt 0 ]; then
+        if [ "${SCOPE60:-0}" -gt 0 ]; then
             break
         fi
     done
@@ -174,7 +229,7 @@ function fn_fenbi()
     else
         if [ "${dt}" = NULL ]; then
             echo "exec [ ./mi5 ${code} ] for NULL database..."
-            ./mi5 ${code}
+            NUM=2 ./mi5 ${code}                 # 只更新昨天的sina.fenbi数据
             dt=`mysql -N kts <<< "${sql}"`
             fn_hexun ${code}
             return $?
@@ -208,8 +263,8 @@ function fn_squeeze()
     
     local i=
     for i in ${codes}; do
-        sqls="SELECT date FROM day WHERE code=${i} ORDER by date DESC LIMIT 40,1"
-        date=`mysql -N kts<<<"${sqls}"`
+        fn_isindex ${i} && continue
+        date=`CODe=${i} fn_get_date 20`   # 20天前
         dt=${date//-/}160000
         fn_isdatetime ${dt}
         xt_ret $? "bad format: ${dt}" || return $?
@@ -264,20 +319,32 @@ function fn_auto_fb()
 
 function fn_usage()
 {
-    echo "Usage: fenbi code..."
-    echo "       fenbi l|lscode"
-    echo "       fenbi a|auto_fb"
-    echo "       fenbi s|squeeze"
-    echo "       fenbi r|realtime code"
-    echo "       fenbi r5|real_ac5 code"
-    echo "       fenbi fb2day code"
-    echo "       fenbi d|delete [code]    # without code, clear 10days ago"
+    #   r|realtime  code        # acf 相关
+    #   r5|real_ac5 code        # acf 相关
+    echo "
+    Usage: fenbi <param>
+        l|lscode 
+        a|auto_fb 
+        s|squeeze               # del 20天前的数据
+        f|fb2day  code          #
+        d|delete  code          # without code, clear 10days ago 
+        lhb      [field]        # YIST列表中的tov
+        lsd       code          # code近3日换手
+    "
     exit
 }
 
 function fn_main()
 {
     echo "`date +%T`@${BASH_SOURCE##*/} $@" >> /tmp/kts/dtrace
+
+    if [ -n "${DT}" ]; then
+        END=`fn_str_2_date ${DT}`
+    fi
+
+    CURR=`fn_maxdate`
+    END=${END:-${CURR}}
+    PREV=`fn_get_prev`
 
     case $1 in
     l|lscode)
@@ -301,9 +368,11 @@ function fn_main()
     f|fb2day)
         fn_fb2day ${@:2}
         ;;
-    2|2530)
-        echo "SELECT * FROM fenbi WHERE code=000025 HAVING (datetime%1000000<093100)"
-        fn_2530 ${@:2}
+    lhb)
+        fn_lhb ${@:2}
+        ;;
+    lsd)
+        fn_lsd ${@:2}
         ;;
     *)
         for i in ${@:-''}; do
