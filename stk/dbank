@@ -29,14 +29,16 @@ WHERE="WHERE"
 
 WGET='timeout 34 /usr/bin/wget'
 W3M='timeout  60 /usr/bin/w3m'
-# round(100*vol5/(c.nmc/c.close),2) as tov5, 
 OPRI='TRUNCATE(100*(d.open-d.yesc)/d.yesc, 2)'
 RISE='TRUNCATE(100*(d.close-d.yesc)/d.yesc, 2)'
 PEAK='TRUNCATE(100*(d.high-d.close)/yesc, 2)'
-nmcYi='round(nmc/10000, 1)'
+nmcYi='round(nmc/10000, 1) as nmcYi'
 TROUGH='TRUNCATE(100*(d.close-d.low)/yesc, 2)'
 TURNOV='TRUNCATE(100*d.volume*c.close/c.nmc, 2)'
 TURNOV0='TRUNCATE(100*d.volume/@shares0, 2)'
+sql_avrg="round( (100*(d.amount/d.volume-d.yesc)/d.yesc), 1) as avrg,"
+sql_tov="round(100*d.volume/(c.nmc/c.close),2) as tov,"
+sql_eTranz="round(d.amount/10000, 1) as eTranz,"
 
 url_sh000001='http://hq.sinajs.cn/list=sh000001'
 
@@ -173,7 +175,9 @@ function fn_chao()
     [ "${CHAO:=0}" -eq 0 ] && return
     [ -z "${sqls}" ] && fn_echo_warn "sqls is empty" && exit
     PLAIN=${1:-$chao}
-    mysql -N kts <<<"${PREFIX}SELECT code FROM (${sqls}) as tbl" |grep '^[036]'| uniq|tee ${TEE} ${PLAIN} > /dev/null 
+    sql_chao="${PREFIX}SELECT code FROM (${sqls}) as t"
+    # echo "${sql_chao}"; exit
+    mysql -N kts <<<"${sql_chao}" |grep '^[036]'| uniq|tee ${TEE} ${PLAIN} > /dev/null 
     rows=`wc -l < ${PLAIN}`
     rowx1=`bc <<< "obase=16;${rows}%256"`
     rowx2=`bc <<< "obase=16;${rows}/256"`
@@ -356,13 +360,14 @@ function fn_maxdate()
 
 function fn_get_prev()
 {
-    sqls="SELECT date FROM day WHERE code=900001 and date<='$END'"
-    mysql -N kts<<<"${sqls} ORDER by date DESC LIMIT ${STEP:-1},1"
+    # 当END不存在时，亦正确
+    sqls="SELECT date FROM day WHERE code=${CODE:-900001} and date<'$END'"
+    mysql -N kts<<<"${sqls} ORDER by date DESC LIMIT ${STEP:-0},1"
 }
 
 function fn_get_next()
 {
-    sqls="SELECT date FROM day WHERE code=900001 and date>'$END'"
+    sqls="SELECT date FROM day WHERE code=${CODE:-900001} and date>'$END'"
     mysql -N kts<<<"${sqls} ORDER by date ASC LIMIT 1"
 }
 
@@ -390,9 +395,16 @@ function fn_list_date()
 function fn_xtempday()
 {
     local table=${TBL:-xtempday}
+
+    if fn_iscode $1; then
+        sql_cond="code=${1}"
+    else
+        sql_cond="date='${1:-$END}'"
+    fi
+
     echo "
     $DROP ${table}; CREATE TABLE ${table} LIKE day;
-    INSERT INTO ${table} SELECT * from day where date='${1:-$END}' HAVING ${xCOND:-1};
+    INSERT INTO ${table} SELECT * from day where ${sql_cond} HAVING ${xCOND:-1};
     " | mysql kts
     return $?
 }

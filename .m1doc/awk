@@ -69,6 +69,11 @@ awk 'BEGIN{info="it is a test";tlen=split(info,tA," ");
         print substr("'"${String}"'",3,4) # skid
     }'
 
+# 比较字符串
+
+ 直接用 <, ==, > 比较符比较。
+ echo | awk 'a="test";b="test";if(a==b) print "a equals b"'
+ echo | awk 'a="test";b="test123";if(a<b) print "a is less than b"'
 
 # 正则
     awk '/foo/ { print $0 }' BBS-list
