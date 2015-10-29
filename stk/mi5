@@ -61,7 +61,9 @@ function fn_do_once()
 function fn_do_scope()
 {
     HMS=`date +%H%M%S`
-    if [ "${HMS}" -lt 203000 ]; then
+   iYMD=`date +%Y%m%d`
+   maxD=`fn_maxdate`
+    if [ "${iYMD}${HMS}" -lt ${maxD//-/}203000 ]; then
         DAYSTART=1
     fi
 

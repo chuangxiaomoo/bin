@@ -105,15 +105,16 @@ function fn_lsd()
         sqls="
         SELECT ${CID}$columns, volume,amount, 
                 $OPRI as opri, 
+                ${sql_avrg}
                 $RISE as rise, 
-                $TURNOV as tov, c.nmc, c.name
+                $TURNOV as tov, ${nmcYi}, c.name
                 FROM ${TEMPDAY} as d, cap as c ${WHERE} d.code = c.code and d.date = '${END}' 
                 HAVING ${HAVING:-1} ${COND} ORDER BY ${field} ${ASC:-desc} limit ${LIMIT:-36}
         " 
         # echo "${sqls}"; exit
     }
     fn_sql $@ 
-    mysql ${mopt:--t} kts <<<"${sqls}"
+    mysql ${OPT:--t} kts <<<"${sqls}"
     fn_chao
 }
 
@@ -1032,8 +1033,8 @@ function fn_lohi()
             round(100*(d.high-d.yesc)/d.yesc, 2) as hiri,
             round(100*(d.amount/d.volume-d.yesc)/d.yesc, 1) as avri,
             ${RISE} as rise,
-            round((d.volume/t.volume), 2) as tov,
-            round((d.volume/t.mavol5), 2) as tov5, t.scale,
+            round((d.volume/t.volume), 2) as prop,
+            round((d.volume/t.mavol5), 2) as prop5, t.scale,
             round((d.amount/10000), 1) as eYi, 
             round((t.amount/10000), 1) as zYi,
             round((c.shares*d.close/10000), 1) as nmcYi, c.name
@@ -1041,7 +1042,7 @@ function fn_lohi()
             ${TEMPDAY} as d, cap as c
             ${WHERE} t.code = d.code and t.code=c.code HAVING 1 ${COND} ${EXCLUDE}
             ORDER by incr ${ASC:-DESC} ) as t
-          HAVING ${HAVING:-1} ORDER by ${field:-tov} ${ASC:-ASC} LIMIT ${LIMIT:-36}
+          HAVING ${HAVING:-1} ORDER by ${field:-prop} ${ASC:-ASC} LIMIT ${LIMIT:-36}
           "
           echo "${tempday}${tbl_super_dive}"
         }
@@ -1093,7 +1094,7 @@ function fn_lohi()
     [ -s "${exclude2}" ] && EXCLUDE="and code not in (`cat ${exclude2}`)"
 
     fn_yi_descend $1 > /dev/stderr
-    mysql ${mopt:--t} kts <<< "${tempday}${tbl_super_dive}"
+    mysql ${OPT:--t} kts <<< "${tempday}${tbl_super_dive}"
     xt_ret $? "${FUNCNAME}" || return $?
     fn_echo_warn "TAM=$TAM time=${DT[1]} index=$1"
 
@@ -1215,13 +1216,13 @@ function fn_lhb()
 {
     if [ -n "${CAUSE}" ]; then
         CAUSE=`
-                sed -e "s/\<3\>/cause='3up20'/"      \
-                    -e "s/\<7\>/cause='up7'/"        \
-                    -e "s/\<8\>/chng>=9.832/"        \
-                    -e "s/'s'/cause='s3up12'/"       \
-                    -e "s/t/cause='tov20'/"          \
-                    -e "s/b>/bloo>/"                 \
-                    -e "s/p>/\&\&bsp>/"              \
+                sed -e "s/\<c3\>/cause='3up20'/"    \
+                    -e "s/\<c7\>/cause='up7'/"      \
+                    -e "s/\<c8\>/chng>=9.832/"      \
+                    -e "s/\<cs\>/cause='s3up12'/"   \
+                    -e "s/\<ct\>/cause='tov20'/"    \
+                    -e "s/b>/bloo>/"                \
+                    -e "s/p>/\&\&bsp>/"             \
                     -e 's/ /||/g' <<< "${CAUSE}"`
         # echo ${CAUSE}; exit
         CAUSE="and (${CAUSE})"
@@ -1269,10 +1270,14 @@ function fn_lhb()
         elif [ $1 = c ]; then
             fn_iscode $2
             xt_ret $? "code:${2}" || return $?
+            fn_xtempday $2
+            xt_ret $? "xtempday error" || return $?
             COND="${COND} and code=${2}"
             fdate='date,'
             field=${3:-date}
-            LIMIT=5
+            sql_date="&& l.date=d.date"
+            sql_xtempday=", xtempday as d"
+            LIMIT=${LIMIT:-5}
         else # n s
             field=$3
             date=`fn_get_date ${2:-1}`
@@ -1290,7 +1295,7 @@ function fn_lhb()
             xt_ret $? "xtempday error" || return $?
             grep -q "causee='3up20" <<<"${CAUSE}" && e2oo="round(d.amount/10000, 2) as e2oo,"
 
-            sql_tov="round(l.buy/bloo/(d.close*c.nmc/c.close)*10000, 1) as tov,"
+            #sql_tov0="round(l.buy/bloo/(d.close*c.nmc/c.close)*10000, 1) as tov,"
             sql_xtempday=", xtempday as d"
             sql_date="&& l.code=d.code && l.date='$date'"
         fi
@@ -1308,9 +1313,9 @@ function fn_lhb()
             bloo,sloo,
             (bloo-sloo) as net,
             round(bloo/sloo, 2) as bsp,
+            ${sql_avrg}
             ${e2oo}
-            round(l.buy/bloo/100, 2) as eYi,
-            ${nmcYi} as nmcYi,
+            round(l.buy/bloo/100, 2) as eYi, ${nmcYi},
             c.name FROM lhb as l,cap as c ${sql_xtempday}
             WHERE l.code=c.code ${sql_date} 
             HAVING 1 ${CAUSE} ${COND} ORDER by ${field:-bsp} DESC LIMIT ${LIMIT:-48}
@@ -1318,6 +1323,12 @@ function fn_lhb()
         #echo "${sqls}"; exit
         mysql -t kts <<<"${sqls}"
         fn_chao
+        ;;
+    a|o)
+        CAUSE=${1/a/'&&'}
+        CAUSE=${CAUSE/o/'||'}
+        CAUSE="(c8${CAUSE}(b>15p>2))||(chng<-4.9&&bsp>2)" COND="${aCOND}" SELECT lhb s ${2:-1} ${3:-avrg}
+        #echo $CAUSE
         ;;
     *)
         fn_echo_succ "\tlhb max_date@${max_dt}"
@@ -1330,15 +1341,16 @@ function fn_lhb()
         g n     n日内因+3.82%上榜次数统计
         s [i]   SELECT日期，i不指定时为1，代表今天
         x [i]   指定dele日期，i不指定时为1，代表今天
+        a|AND   CAUSE='(8&&(b>15p>2))' COND=\$aCOND
+        o|OR    CAUSE='(8||(b>15p>2))' COND=\$aCOND
 
-        CAUSE='8&&(b>15p>2)' 
         CAUSE='3 7 8 s t'
-        3   3up20
-        7   up7
-        8   +5%         ----- 3+7=8
-        s   s3up12
-        t   tov20
-        b   bloo.bsp    
+        c3   3up20
+        c7   up7
+        c8   +5%         ----- 3+7=8
+        cs   s3up12
+        ct   tov20
+        b>p> bloo.bsp    tov!>20 && avrg>7 && opri>3 (tov太大即3日内到头 && 和大猪在一起 && 起飞的欲望)
         "
         ;;
     esac
@@ -1475,7 +1487,7 @@ function fn_blk()
         sta=`fn_get_date ${off}`
         fn_sqls() {
         sqls="
-        SELECT d.code,sum(${RISE}) as rise, ${nmcYi} as nmcYi, c.name FROM day as d, cap as c 
+        SELECT d.code,sum(${RISE}) as rise, ${nmcYi}, c.name FROM day as d, cap as c 
             ${WHERE} d.code = c.code and d.date>='${sta}' && d.date<='${END}'
             GROUP by code 
             HAVING ${HAVING:-1} ${COND} and rise>${DOOR:-'-100'}
@@ -1520,7 +1532,7 @@ function fn_blk()
         blk!=0x40       -- 226 | 新股与次新股
         )"
         echo "
-        SELECT m.code,count(m.code) as num, ${nmcYi} as nmcYi, c.name as num FROM blk_memb as m, cap as c
+        SELECT m.code,count(m.code) as num, ${nmcYi}, c.name as num FROM blk_memb as m, cap as c
         ${WHERE} m.code=c.code ${EXCLUDE} 
         GROUP by code HAVING 1 ${COND}
         ORDER by num ASC LIMIT 100
@@ -1538,6 +1550,26 @@ function fn_blk()
         ;;
     esac
 
+    return $?
+}
+
+function fn_yysj()
+{
+    if [ "${1}" = 'd' ]; then
+        sql_date="and date='$2'"
+    else
+        echo "
+        SELECT DISTINCT date FROM yysj ORDER by date ASC;
+        " | mysql -t kts
+        fn_echo_warn "Usage: SELECT yysj d <date>"
+        exit
+    fi
+    sqls="
+    SELECT * FROM yysj 
+    HAVING ${HAVING:-1} ${COND} ${sql_date} ORDER BY ${field:-code} ${ASC:-asc}
+    "    
+    mysql ${OPT:--t} kts <<<"${sqls}"
+    fn_chao ${chao}.yysj
     return $?
 }
 
@@ -1585,9 +1617,10 @@ function fn_main()
     "sban               condi [time]          # super ban"
     "lhb                excption              # 龙虎榜"
     "macd               [clean]               # macd-alarm-sys"
-    "fmacd                                                    "
+    "fmacd                                    # 单个代码的macd"
     "tri                                      # 3连阳"
     "blk                                      # 板块信息"
+    "yysj                                     # 预约时间"
     )
 
     # `ASC=任意值`时使用'DESC'，弃用

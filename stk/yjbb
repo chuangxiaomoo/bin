@@ -7,7 +7,7 @@ function fn_get_url()
 {
     url="http://data.eastmoney.com/bbsj/stock${code}/yjbb.html"
 
-    # 默认使用 RAW for detail
+    # 默认使用 RAW for select
     if [ "${RAW}" != 1 ]; then
         w3m -dump ${url} | grep -A24 "点击进入年报大全"
         return 0
@@ -20,7 +20,7 @@ function fn_get_url()
         SELECT cap.name, d.code, round(d.close/${earning[0]},2) as EPS, 
             round(d.close/${earning[0]}/${earning[1]},2) as PEG,
             cap.nmc FROM day as d, cap
-            WHERE  d.code=${code} and d.date='${END}' and d.code=cap.code;
+            WHERE  d.code=${code} and d.date='${END}' and d.code=cap.code
         " | mysql -N kts
         xt_ret $? "" || return $?
     fi
@@ -113,7 +113,7 @@ function fn_dl_all()
 }
 
 
-function fn_detail()
+function fn_select()
 {
     #olumns='code,EPS,revenue,r_grw_y,r_grw_q,profit,p_grw_y,p_grw_q,netassets,RoE,cashflow'
     columns='y.date,y.code,round(c.close/EPS,2) as PE'
@@ -125,7 +125,7 @@ function fn_detail()
     # 保持每日cap的更新
     if [ -z "${YIST}" ]; then
         fn_iscode $1 
-        xt_ret $? "" || { echo "Usage: yjbb 1 code..." && exit; }
+        xt_ret $? "" || { echo "Usage: yjbb s code..." && exit; }
         YIST=${file_ma120}
         xargs -n1 <<<"${*}" | sed 's/^0*//g' | xargs printf "%06d\n" > ${YIST}
     fi
@@ -134,24 +134,18 @@ function fn_detail()
     echo ----- LIST:${#LIST[@]} COND@${END}: $COND -----
 
     stamp='2015-05-20'
-    echo "
-    SELECT $columns, c.nmc, c.name FROM tbl_yjbb as y, cap as c
+    sqls="
+    SELECT $columns, ${nmcYi}, c.name 
+        FROM tbl_yjbb as y, cap as c
         WHERE y.code=c.code and y.date>'${stamp}'
         HAVING 1 ${COND} ${inLIST} 
-        ORDER by code,${field:-date} ${ASC:-DESC} limit ${LIMIT:-48};
-    " | mysql -t kts
-    
-    return $?
-}
-
-
-function fn_soptter()
-{
-    echo "
-    SELECT *, count(code) as count FROM tbl_yjbb WHERE p_grw_y>15 and RoE > 10 GROUP by code ORDER by count DESC LIMIT 100;
+        ORDER by ${field:-p_grw_y} ${ASC:-DESC} limit ${LIMIT:-36}
     "
+    mysql -t kts <<<"${sqls}"
+    fn_chao
     return $?
 }
+
 function fn_manual()
 {
     echo "
@@ -178,22 +172,19 @@ function fn_manual()
 function fn_main()
 {
     case $1 in
-   #1|online)
-   #    fn_online "${@:2}"
-   #    ;;
-    1|detail)
-        fn_detail "${@:2}"
+    s|select)
+        fn_select "${@:2}"
         ;;
     3|dl_all)
         fn_dl_all "${@:2}"
         ;;
-    4|load)
+    load)
         fn_load "${@:2}"
         ;;
     5|soptter)
         fn_soptter "${@:2}"
         ;;
-    6|ls_date)
+    ls|ls_date)
         mysql -t kts <<< "SELECT DISTINCT date FROM tbl_yjbb";
         ;;
     7|dele)
@@ -204,14 +195,16 @@ function fn_main()
         fn_manual
         ;;
     *)
-        echo "Usage: 
-        yjbb {1|detail}     code...         # 数据查询
-        yjbb {3|dl_all}     20yy-mm-dd      # 更新数据
-        yjbb {4|load}       file
-        yjbb {5|soptter}
-        yjbb {6|ls_date}                    # 最新数据日期
-        yjbb {7|dele}       20yy-mm-dd
-        yjbb {m|manual}                     # 指标说明
+        echo "
+        Usage: yjbb <param>
+            s|select      code...       # YIST or code...
+            d|dl_all      20yy-mm-dd    # 更新数据
+            l|load        file
+           ls|ls_date                   # 列出数据日期
+            7|dele        20yy-mm-dd
+            m|manual                    # 指标说明
+        CONDi:
+        nmcYi<200 && r_grw_y>0          # 营业额增长，医药在此表现突出
         "
         exit
         ;;

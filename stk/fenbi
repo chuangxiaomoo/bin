@@ -43,12 +43,12 @@ function fn_get_url()
     echo "${url0}code=${sec}${1}&start=${2}&number=${3:-1000}"
 }
 
-function fn_lsd()
+function fn_code()
 {
     code=$1
     fn_iscode ${code} 
     xt_ret $? "${code} is not code" || return $?
-    YIST=${chao}.fblsd
+    YIST=${chao}.code
     echo $code > ${YIST}
 
     dates=(`CODE=$code fn_get_date 1 ${2:-3}`)
@@ -56,7 +56,7 @@ function fn_lsd()
 
     for date in ${dates[@]}; do
         iYMD=`fn_date_2_str ${date}`
-        YIST=${YIST} DT=${iYMD}${TIME:-092800} fenbi lhb
+        YIST=${YIST} DT=${iYMD}${TIME:-092800} CODE=${code} fenbi lhb
     done
     
     return $?
@@ -64,17 +64,17 @@ function fn_lsd()
 
 function fn_lhb()
 {
+    field=$1
     datetime0="${END//-/}092500"
     datetime1="${END//-/}092800"
-    datetime3="${END//-/}100000"
+    datetime3="${END//-/}100000"        # stamp
     datetime9="${END//-/}150000"
+    DT=${DT:-${datetime1}}
 
     if [ ! -f "${YIST}" ]; then
         fn_echo_fail 'NULL $YIST'
         exit
     fi
-
-    field=$1
     #fn_echo_blue "END:${END} CURR:${CURR}"
 
     for code in `cat ${YIST}`; do
@@ -84,7 +84,7 @@ function fn_lhb()
             # 最小时间
             # sql="SELECT max(datetime) FROM fenbi WHERE code=${code}"
             # mysql -N kts <<< "${sql}"
-            [ "${maxdt/NULL/${datetime0}}" -gt ${datetime3} ] && continue
+            [ "${maxdt/NULL/${datetime0}}" -gt ${DT} ] && continue
             fn_echo_succ "up ${code}>${maxdt}..."
             fenbi ${code}
         else
@@ -93,20 +93,26 @@ function fn_lhb()
     done
 
     ABBR=f fn_yist
-
     fn_xtempday ${PREV}
+    #echo ${PREV} prev
 
-    echo "
-    SELECT f.code, max(datetime),
+    tempfb="(SELECT * FROM fenbi WHERE datetime>=$datetime0 and datetime<=${DT} ORDER by datetime DESC)"
+    sqls="
+    SELECT f.code, max(datetime), f.trade,
+        round(sum(f.volume), 0) as Shou,
+        ${sql_eTranz}
+        ${sql_tov}
+        ${sql_avrg}
         round(100*(f.trade-d.close)/d.close, 2) as rise,
-        round(sum(f.amount)/100, 2)as Wan, 
-        sum(f.volume) as Shou, round(sum(f.volume)/(d.volume),1) as tov,
-        ${nmcYi} as nmcYi, c.name
-    FROM cap as c, fenbi as f, xtempday as d $WHERE f.code=d.code && f.code=c.code 
-        && datetime>=$datetime0 and datetime<=${DT:-${datetime1}}
+        round(sum(f.volume)/(d.volume),1) as prop,
+        ${nmcYi}, c.name
+    FROM cap as c, ${tempfb} as f, xtempday as d $WHERE f.code=d.code && f.code=c.code 
     GROUP by f.code
-    ORDER by ${field:-tov} ASC
-    " | mysql -t kts
+    HAVING ${HAVING:-1} ${COND}
+    ORDER by ${field:-prop} ASC
+    " 
+    mysql -t kts <<< "${sqls}"
+    fn_chao
     
     return $?
 }
@@ -317,10 +323,81 @@ function fn_auto_fb()
     return $?
 }
 
+function fn_shou()
+{
+    field=$1
+    sed -i -e '/代码/d' -e '/^$/d' -e 's/S.//g' -e 's/  */\t/g' ${chao}.shou
+    echo "
+    DROP TABLE IF EXISTS shou;
+    CREATE TABLE shou(
+        id      int(4) ZEROFILL PRIMARY key AUTO_INCREMENT NOT NULL,
+        code    INT(6)  ZEROFILL,
+        name    CHAR(16),
+        rise    DECIMAL(6,2) NOT NULL DEFAULT 0,
+        trade   DECIMAL(6,2) NOT NULL DEFAULT 0,
+        Shou    INT NOT NULL DEFAULT 0,
+        INDEX(code)
+    );
+
+    LOAD DATA LOCAL INFILE '${chao}.shou' INTO 
+    TABLE shou(code, name, rise, trade, shou);
+    " | mysql kts
+
+    # quantum prop
+    # FLOOR() and ROUND()
+    fn_xtempday ${PREV}
+    sqls="
+    SELECT s.code, s.trade, round(s.Shou/100) as Shou,
+        ${sql_eTranz}
+        ${sql_tov}
+        ${sql_avrg}
+        s.rise,
+        round(s.shou/d.volume/100, 1) as prop,
+        ${nmcYi}, c.name
+    FROM cap as c, shou as s, xtempday as d $WHERE s.code=d.code && s.code=c.code 
+    HAVING ${HAVING:-1} ${COND}
+    ORDER by ${field:-prop} ASC
+    "
+    mysql -t kts <<< "${sqls}"
+    fn_chao ${chao}.fenbi
+}
+
+#r|realtime)
+#    fenbi ${2} && PPLUS=${PPLUS:-5} SCREENER act ${2}
+#    ;;
+#r5|real_ac5)
+#    fenbi ${2} && PPLUS=${PPLUS:-5} SCREENER ac5 ${2}
+#    ;;
+#   r|realtime  code        # acf 相关
+#   r5|real_ac5 code        # acf 相关
+#   NOW=${NOW:-`date +%F`}  # 废弃NOW，fenbi 0925需要0930才可以下载
+#   END=${END/NOW/${NOW}}   # END=NOW，day在当日无数据时使用，0930前使用
+function fn_main()
+{
+    echo "`date +%T`@${BASH_SOURCE##*/} $@" >> /tmp/kts/dtrace
+    [ -n "${DT}" ] && END=`fn_str_2_date ${DT}`
+
+    CURR=`fn_maxdate`
+    END=${END:-${CURR}}
+    PREV=`fn_get_prev`
+
+    case $1 in
+    l|lscode)   fn_lscode           ;;
+    a|auto_fb)  fn_auto_fb ${@:2}   ;;
+    s|squeeze)  fn_squeeze          ;;
+    d|delete)   fn_delete ${@:2}    ;;
+    f|fb2day)   fn_fb2day ${@:2}    ;;
+    shou)       fn_shou   ${@:2}    ;;
+    lhb)        fn_lhb  ${@:2}      ;;
+    c|code)     fn_code ${@:2}      ;;
+    *)          for i in ${@:-''};  do
+                    fn_fenbi $i && fn_echo_succ "DL and load mini-fenbi of ${code} succ!"
+                done                ;;
+    esac
+}
+
 function fn_usage()
 {
-    #   r|realtime  code        # acf 相关
-    #   r5|real_ac5 code        # acf 相关
     echo "
     Usage: fenbi <param>
         l|lscode 
@@ -328,60 +405,10 @@ function fn_usage()
         s|squeeze               # del 20天前的数据
         f|fb2day  code          #
         d|delete  code          # without code, clear 10days ago 
-        lhb      [field]        # YIST列表中的tov
-        lsd       code          # code近3日换手
-    "
-    exit
-}
-
-function fn_main()
-{
-    echo "`date +%T`@${BASH_SOURCE##*/} $@" >> /tmp/kts/dtrace
-
-    if [ -n "${DT}" ]; then
-        END=`fn_str_2_date ${DT}`
-    fi
-
-    CURR=`fn_maxdate`
-    END=${END:-${CURR}}
-    PREV=`fn_get_prev`
-
-    case $1 in
-    l|lscode)
-        fn_lscode
-        ;;
-    a|auto_fb)
-        fn_auto_fb ${@:2}
-        ;;
-    r|realtime)
-        fenbi ${2} && PPLUS=${PPLUS:-5} SCREENER act ${2}
-        ;;
-    r5|real_ac5)
-        fenbi ${2} && PPLUS=${PPLUS:-5} SCREENER ac5 ${2}
-        ;;
-    s|squeeze)
-        fn_squeeze
-        ;;
-    d|delete)
-        fn_delete ${@:2}
-        ;;
-    f|fb2day)
-        fn_fb2day ${@:2}
-        ;;
-    lhb)
-        fn_lhb ${@:2}
-        ;;
-    lsd)
-        fn_lsd ${@:2}
-        ;;
-    *)
-        for i in ${@:-''}; do
-            fn_fenbi $i && fn_echo_succ "DL and load mini-fenbi of ${code} succ!"
-        done
-        ;;
-    esac
-
-    return $?
+        lhb      [field]        # YIST列表中的tov, END=NOW @Morning
+        shou                    # 导出<code name rise trade volume> ==> /tmp/kts/chao.shou
+        c|code    code          # code近3日换手
+    "; exit
 }
 
 fn_main $@
