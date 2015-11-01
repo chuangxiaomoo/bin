@@ -391,7 +391,6 @@ function fn_list_date()
     fn_get_date 1 ${1:-10} | cat -n
 }
 
-
 function fn_xtempday()
 {
     local table=${TBL:-xtempday}

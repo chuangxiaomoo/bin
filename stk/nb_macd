@@ -144,7 +144,7 @@ function fn_loop()
     while :; do
         fn_isresting && { sleep 150; continue; }
         fn_routine
-        echo "to sleeping ${STEP:=72}s"         # F5x3有效突破，即3线之内，低点抬高，高点亦抬高
+        echo "to sleeping ${STEP:=62}s"         # F5x3有效突破，即3线之内，低点抬高，高点亦抬高
         sleep ${STEP}                           #               若是大阳线，则不破1/2长度
     done
     return $?
