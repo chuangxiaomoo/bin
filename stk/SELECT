@@ -1222,7 +1222,7 @@ function fn_lhb()
                     -e "s/\<cs\>/cause='s3up12'/"   \
                     -e "s/\<ct\>/cause='tov20'/"    \
                     -e "s/b>/bloo>/"                \
-                    -e "s/p>/\&\&bsp>/"             \
+                    -e "s/p>/${LOGIC}bsp>/"         \
                     -e 's/ /||/g' <<< "${CAUSE}"`
         # echo ${CAUSE}; exit
         CAUSE="and (${CAUSE})"
@@ -1275,49 +1275,55 @@ function fn_lhb()
             COND="${COND} and code=${2}"
             fdate='date,'
             field=${3:-date}
-            sql_date="&& l.date=d.date"
+            sql_relate="&& l.date=d.date"
             sql_xtempday=", xtempday as d"
             LIMIT=${LIMIT:-8}
-        else # n s
+        else # s
             field=$3
             date=`fn_get_date ${2:-1}`
             fn_echo_warn "lhb of ${date}"
 
-            if [ "${1}" = n ]; then
-                field=${field:-Xrise}
+            fn_xtempday ${date}
+            xt_ret $? "xtempday error" || return $?
+
+            sql_relate="&& l.code=d.code && l.date='$date'"
+            sql_xtempday=", xtempday as d"
+
+            # 自动处理apple
+            RET=`mysql -N kts <<< "SELECT IF('${date}'<'${CURR}', 1, 0)"`
+            if [ "${RET}" -eq 1 ]; then
+                field=${field:-apple}
                 xdate=`END=${date} fn_get_next`
+
+                TBL=x fn_xtempday ${xdate}
+                xt_ret $? "xtempday error" || return $?
+                sql_relate="&& l.code=x.code ${sql_relate}"
+                sql_xtempday="${sql_xtempday}, x"
                 sql_next="
-                ${RISE} as Xrise,
-                TRUNCATE(100*(d.open-d.yesc)/d.yesc, 2) as Xopri,
+                ${APPLE} as apple,
+                ROUND(100*(x.open-x.yesc)/x.yesc, 1) as Xopri,
                 "
             fi
-            fn_xtempday ${xdate:-${date}}
-            xt_ret $? "xtempday error" || return $?
-            grep -q "causee='3up20" <<<"${CAUSE}" && e2oo="round(d.amount/10000, 2) as e2oo,"
-
-            #sql_tov0="round(l.buy/bloo/(d.close*c.nmc/c.close)*10000, 1) as tov,"
-            sql_xtempday=", xtempday as d"
-            sql_date="&& l.code=d.code && l.date='$date'"
         fi
 
         fn_echo_warn "CAUSE: ${CAUSE}"
 
-        columns="${fdate}code,cause,chng"
+        columns="${fdate}code,cause"
         columns=l.${columns//,/,l.}
         sqls="
-            SELECT ${columns}, ${sql_next}
+            SELECT ${columns}, round(chng,1) as chng,
+            ${sql_next}
             ${sql_tov}
-            round(l.amount/10000, 2) as amount,
+            round(l.amount/10000, 2) as eLHB,
             round(l.buy/10000, 2) as buy,
             round(l.sell/10000, 2) as sell,
             bloo,sloo,
             (bloo-sloo) as net,
             round(bloo/sloo, 2) as bsp,
             ${sql_avrg}
-            ${e2oo}
-            round(l.buy/bloo/100, 2) as eYi, ${nmcYi},
+            round(l.buy/bloo/100, 2) as eYi, ${nmcYi0},
             c.name FROM lhb as l,cap as c ${sql_xtempday}
-            WHERE l.code=c.code ${sql_date} 
+            WHERE l.code=c.code ${sql_relate} 
             HAVING 1 ${CAUSE} ${COND} ORDER by ${field:-bsp} DESC LIMIT ${LIMIT:-48}
         "
         #echo "${sqls}"; exit
@@ -1325,9 +1331,9 @@ function fn_lhb()
         fn_chao
         ;;
     a|o)
-        CAUSE=${1/a/'&&'}
-        CAUSE=${CAUSE/o/'||'}
-        CAUSE="(c8${CAUSE}(b>15p>1.8))||(chng<-4.9&&bsp>2)" COND="${aCOND}" SELECT lhb s ${2:-1} ${3:-avrg}
+        LOGIC=${1/a/'\&\&'}
+        LOGIC=${LOGIC/o/'||'}
+        LOGIC=${LOGIC} CAUSE="(c8&&(b>13.8p>1.62))||(chng<-4.9&&bsp>2)" COND="${aCOND}" SELECT lhb s ${2:-1} ${3:-avrg}
         #echo $CAUSE
         ;;
     *)
