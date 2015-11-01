@@ -168,9 +168,11 @@ function fn_hexun_day0()
 
 function fn_trace()
 {
-    file='/root/bin/stk/sql/trace'
-    colA="date,curr_asset,frozen"   # ,sh,cyb"
+    frog='/root/bin/stk/sql/trace.md'
+    colA="date,curr_asset,frozen"       # ,sh,cyb"
     colA="A.${colA//,/,A.}"
+
+    grep -v '^#' ${frog} > ${buffer}
 
     echo "
         DROP TABLE IF EXISTS trace;
@@ -183,7 +185,7 @@ function fn_trace()
             cyb         DECIMAL(9,2) DEFAULT 0
         );
 
-        LOAD DATA LOCAL INFILE '${file}' INTO TABLE trace(date,curr_asset,frozen,sh,cyb);
+        LOAD DATA LOCAL INFILE '${buffer}' INTO TABLE trace(date,curr_asset,frozen,sh,cyb);
 
            SELECT ${colA}, 
                (A.curr_asset-B.curr_asset) as earning, 
