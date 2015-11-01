@@ -62,6 +62,17 @@ function fn_code()
     return $?
 }
 
+function fn_attention()
+{
+    fn_echo_warn "\
+    1. avrg尽量高   -- 安全系数高
+    2. tov < 15%    -- 安定团结指数, 同时除去高nmc
+    3. opri> 3%     -- 向上推高指数
+    4. prop尽量低   -- 惜售指数\
+    "
+    return $?
+}
+
 function fn_lhb()
 {
     field=$1
@@ -94,6 +105,7 @@ function fn_lhb()
 
     ABBR=f fn_yist
     fn_xtempday ${PREV}
+    TBL=e fn_xtempday ${END}
     #echo ${PREV} prev
 
     tempfb="(SELECT * FROM fenbi WHERE datetime>=$datetime0 and datetime<=${DT} ORDER by datetime DESC)"
@@ -103,16 +115,21 @@ function fn_lhb()
         ${sql_eTranz}
         ${sql_tov}
         ${sql_avrg}
-        round(100*(f.trade-d.close)/d.close, 2) as rise,
+        round(100*(f.trade-d.close)/d.close, 2) as opri,
         round(sum(f.volume)/(d.volume),1) as prop,
+        round(sum(f.volume)/(d.volume) / (100*(f.trade-d.close)/d.close), 2) * 
+            IF(d.volume/(c.nmc/c.close)>.2 && (f.trade>d.close) , -1, 1) +
+            IF(c.nmc>100*10000, 3, 0) as fire,
+        round(100*(e.close-e.yesc)/e.yesc, 2) as apple,
         ${nmcYi}, c.name
-    FROM cap as c, ${tempfb} as f, xtempday as d $WHERE f.code=d.code && f.code=c.code 
+    FROM cap as c, ${tempfb} as f, xtempday as d, e $WHERE f.code=d.code && f.code=c.code && f.code=e.code
     GROUP by f.code
     HAVING ${HAVING:-1} ${COND}
-    ORDER by ${field:-prop} ASC
+    ORDER by ${field:-fire} ASC
     " 
     mysql -t kts <<< "${sqls}"
     fn_chao
+    fn_attention
     
     return $?
 }
@@ -246,7 +263,8 @@ function fn_fenbi()
 
             if [ ${#dates[@]} -ne 0 ]; then
                 echo "There are dates(${dates[@]}) of ${code} absent, trying ./mi5 ${code}..."
-                mi5 ${code}         # 可能会有空数据
+                NUM=2 mi5 ${code}         # 可能会有空数据
+                dt=`mysql -N kts <<< "${sql}"`
                 fn_hexun ${code}    # 否则会再次执行 fn_hexun
                 return $?       
             else
@@ -332,7 +350,6 @@ function fn_shou()
     CREATE TABLE shou(
         id      int(4) ZEROFILL PRIMARY key AUTO_INCREMENT NOT NULL,
         code    INT(6)  ZEROFILL,
-        name    CHAR(16),
         rise    DECIMAL(6,2) NOT NULL DEFAULT 0,
         trade   DECIMAL(6,2) NOT NULL DEFAULT 0,
         Shou    INT NOT NULL DEFAULT 0,
@@ -340,7 +357,7 @@ function fn_shou()
     );
 
     LOAD DATA LOCAL INFILE '${chao}.shou' INTO 
-    TABLE shou(code, name, rise, trade, shou);
+    TABLE shou(code, rise, trade, shou);
     " | mysql kts
 
     # quantum prop

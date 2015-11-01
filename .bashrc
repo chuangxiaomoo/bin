@@ -108,7 +108,10 @@ alias  clrnfs="Svn | grep nfs | awk '{print $2}' | xargs rm -f"
 alias fbcache="sync; echo 3 > /proc/sys/vm/drop_caches"
 alias    Calc='set -f; fn_calc'
 
-fn_calc()       { bc -l <<< "scale=3;$*"; set +f; }
+fn_calc()       
+{ 
+    expr0="scale=${SCALE:-3};$@"; bc -l <<< "${expr0}"; set +f; 
+}
 
 function M()    { m1 $@ | tail -18; } # M() { m1 $@ | nl -w 3 -s' ' | less -i ;}
 

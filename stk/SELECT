@@ -1277,7 +1277,7 @@ function fn_lhb()
             field=${3:-date}
             sql_date="&& l.date=d.date"
             sql_xtempday=", xtempday as d"
-            LIMIT=${LIMIT:-5}
+            LIMIT=${LIMIT:-8}
         else # n s
             field=$3
             date=`fn_get_date ${2:-1}`
@@ -1327,7 +1327,7 @@ function fn_lhb()
     a|o)
         CAUSE=${1/a/'&&'}
         CAUSE=${CAUSE/o/'||'}
-        CAUSE="(c8${CAUSE}(b>15p>2))||(chng<-4.9&&bsp>2)" COND="${aCOND}" SELECT lhb s ${2:-1} ${3:-avrg}
+        CAUSE="(c8${CAUSE}(b>15p>1.8))||(chng<-4.9&&bsp>2)" COND="${aCOND}" SELECT lhb s ${2:-1} ${3:-avrg}
         #echo $CAUSE
         ;;
     *)
