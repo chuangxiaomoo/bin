@@ -65,10 +65,10 @@ function fn_code()
 function fn_attention()
 {
     fn_echo_warn "\
-    1. avrg尽量高   -- 安全系数高
-    2. tov < 15%    -- 安定团结指数, 同时除去高nmc
-    3. opri> 3%     -- 向上推高指数
-    4. prop尽量低   -- 惜售指数\
+    1. avrg尽量高       -- 安全系数高
+    2. tov<15 nmc<100   -- 安定团结指数, 同时除去高nmc
+    3. opri> 3%         -- 向上推高指数
+    4. prop尽量低       -- 惜售指数\
     "
     return $?
 }
@@ -82,9 +82,12 @@ function fn_lhb()
     datetime9="${END//-/}150000"
     DT=${DT:-${datetime1}}
 
+    YIST=${YIST:-${chao}}
     if [ ! -f "${YIST}" ]; then
         fn_echo_fail 'NULL $YIST'
         exit
+    else
+        fn_echo_warn "YIST.${YIST}"
     fi
     #fn_echo_blue "END:${END} CURR:${CURR}"
 
@@ -109,28 +112,30 @@ function fn_lhb()
     #echo ${PREV} prev
 
     tempfb="(SELECT * FROM fenbi WHERE datetime>=$datetime0 and datetime<=${DT} ORDER by datetime DESC)"
+   #test_shou='*100'
+    RISE="round(100*(f.trade-d.close)/d.close,2)"
     sqls="
     SELECT f.code, max(datetime), f.trade,
-        round(sum(f.volume), 0) as Shou,
+        round(sum(f.volume)${test_shou}, 0) as shou,
         ${sql_eTranz}
         ${sql_tov}
         ${sql_avrg}
         round(100*(f.trade-d.close)/d.close, 2) as opri,
-        round(sum(f.volume)/(d.volume),1) as prop,
-        round(sum(f.volume)/(d.volume) / (100*(f.trade-d.close)/d.close), 2) * 
-            IF(d.volume/(c.nmc/c.close)>.2 && (f.trade>d.close) , -1, 1) +
-            IF(c.nmc>100*10000, 3, 0) as fire,
+        round(sum(f.volume)/(d.volume),2) as prop,
+        (round(sum(f.volume)/(d.volume) 
+            /IF( abs(${RISE}+${XZZ:-1})<.6, .6, abs(${RISE}+${XZZ:-1})), 2)
+            +IF(d.volume/(c.nmc/c.close)>.2, 20,0)
+            +IF(${nmcYi0}>${DOOR_nmc}, 100, 0) 
+        )*IF( (${RISE}+${XZZ:-1})>0 , 1, -1)  as fire,
         round(100*(e.close-e.yesc)/e.yesc, 2) as apple,
-        ${nmcYi}, c.name
+        ${nmcYi0} as nmcYi, c.name
     FROM cap as c, ${tempfb} as f, xtempday as d, e $WHERE f.code=d.code && f.code=c.code && f.code=e.code
     GROUP by f.code
     HAVING ${HAVING:-1} ${COND}
     ORDER by ${field:-fire} ASC
     " 
-    mysql -t kts <<< "${sqls}"
+    mysql ${OPT:-'-t'} kts <<< "${sqls}"
     fn_chao
-    fn_attention
-    
     return $?
 }
 
@@ -350,30 +355,37 @@ function fn_shou()
     CREATE TABLE shou(
         id      int(4) ZEROFILL PRIMARY key AUTO_INCREMENT NOT NULL,
         code    INT(6)  ZEROFILL,
-        rise    DECIMAL(6,2) NOT NULL DEFAULT 0,
         trade   DECIMAL(6,2) NOT NULL DEFAULT 0,
-        Shou    INT NOT NULL DEFAULT 0,
+        shou    INT NOT NULL DEFAULT 0,
+        opri    DECIMAL(6,2) NOT NULL DEFAULT 0,
         INDEX(code)
     );
 
     LOAD DATA LOCAL INFILE '${chao}.shou' INTO 
-    TABLE shou(code, rise, trade, shou);
+    TABLE shou(code, trade, shou, opri);
     " | mysql kts
 
-    # quantum prop
-    # FLOOR() and ROUND()
+    [ "${DTF}" != ${END} ] && PREV=$END
     fn_xtempday ${PREV}
+    fn_echo_warn PREV.${PREV}
     sqls="
-    SELECT s.code, s.trade, round(s.Shou/100) as Shou,
+    SELECT s.code, s.trade, round(s.shou/100) as shou,
         ${sql_eTranz}
         ${sql_tov}
         ${sql_avrg}
-        s.rise,
-        round(s.shou/d.volume/100, 1) as prop,
-        ${nmcYi}, c.name
+        s.opri,
+        round(s.shou/d.volume/100, 2) as prop,
+
+        (abs(
+            round((s.shou/100)/d.volume
+            /IF( abs(opri+${XZZ:-1})<.6, .6, abs(opri+${XZZ:-1})), 2))
+            +IF(d.volume/(c.nmc/c.close)>.2, 20,0)
+            +IF(c.nmc>${DOOR_nmc}*10000, 100, 0) 
+        )*IF( (opri+${XZZ:-1})>0 , 1, -1)  as fire,
+        ${nmcYi0} as nmcYi, c.name
     FROM cap as c, shou as s, xtempday as d $WHERE s.code=d.code && s.code=c.code 
     HAVING ${HAVING:-1} ${COND}
-    ORDER by ${field:-prop} ASC
+    ORDER by ${field:-fire} ASC
     "
     mysql -t kts <<< "${sqls}"
     fn_chao ${chao}.fenbi
@@ -387,8 +399,8 @@ function fn_shou()
 #    ;;
 #   r|realtime  code        # acf 相关
 #   r5|real_ac5 code        # acf 相关
-#   NOW=${NOW:-`date +%F`}  # 废弃NOW，fenbi 0925需要0930才可以下载
-#   END=${END/NOW/${NOW}}   # END=NOW，day在当日无数据时使用，0930前使用
+#   DTF=${DTF:-}  # 废弃DTF，fenbi 0925需要0930才可以下载
+#   END=${END/DTF/${DTF}}   # END=DTF，day在当日无数据时使用，0930前使用
 function fn_main()
 {
     echo "`date +%T`@${BASH_SOURCE##*/} $@" >> /tmp/kts/dtrace
@@ -397,6 +409,9 @@ function fn_main()
     CURR=`fn_maxdate`
     END=${END:-${CURR}}
     PREV=`fn_get_prev`
+    DOOR_nmc=100
+    DTF=${DTF:-`date +%F`}
+    DTF=${DTF//END/${END}}
 
     case $1 in
     l|lscode)   fn_lscode           ;;
@@ -422,10 +437,11 @@ function fn_usage()
         s|squeeze               # del 20天前的数据
         f|fb2day  code          #
         d|delete  code          # without code, clear 10days ago 
-        lhb      [field]        # YIST列表中的tov, END=NOW @Morning
-        shou                    # 导出<code name rise trade volume> ==> /tmp/kts/chao.shou
-        c|code    code          # code近3日换手
-    "; exit
+        lhb      [field]        # YIST列表中的tov
+        shou                    # 信息输入 [/tmp/kts/chao.shou] 进行测试 [DTF=END]
+        c|code    code [NUM]    # code近{NUM:-3}日换手
+    "
+    fn_attention; exit
 }
 
 fn_main $@
