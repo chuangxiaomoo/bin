@@ -29,12 +29,14 @@ WHERE="WHERE"
 
 WGET='timeout 34 /usr/bin/wget'
 W3M='timeout  60 /usr/bin/w3m'
+
+# FLOOR() and ROUND()
 OPRI='TRUNCATE(100*(d.open-d.yesc)/d.yesc, 2)'
 RISE='TRUNCATE(100*(d.close-d.yesc)/d.yesc, 2)'
 PEAK='TRUNCATE(100*(d.high-d.close)/yesc, 2)'
 APPLE='ROUND(100*(x.close-x.yesc)/x.yesc, 1)'
 nmcYi='round(nmc/10000, 1) as nmcYi'
-nmcYi0='round(nmc*d.close/c.close/10000, 1) as nmcYi'
+nmcYi0='round(nmc*d.close/c.close/10000, 1)'
 TROUGH='TRUNCATE(100*(d.close-d.low)/yesc, 2)'
 TURNOV='TRUNCATE(100*d.volume*c.close/c.nmc, 2)'
 TURNOV0='TRUNCATE(100*d.volume/@shares0, 2)'
@@ -151,7 +153,7 @@ function fn_isresting()
 {
     hhmmss=`date +%H%M%S`
     if ([ ${hhmmss} -ge 113000 ] && [ ${hhmmss} -lt 130000 ]) ||
-        [ ${hhmmss} -lt 093200 ] || [ ${hhmmss} -gt 145800 ]; then
+        [ ${hhmmss} -lt 093210 ] || [ ${hhmmss} -gt 145800 ]; then
         echo "is resting @${hhmmss}..."; 
         return 0
     else
@@ -272,10 +274,21 @@ function fn_isdatetime()
     test ${#1} -eq 14
 }
 
+function fn_issqltrue()
+{
+    RET=`mysql kts <<< "SELECT IF(${*}, 0, 1)"`
+    return $RET
+}
+
 function fn_write() 
 {
     # wall -n <<<"abc" 2>/dev/null
     mesg y; write root /dev/pts/0 <<< "${1}"
+}
+
+function fn_maxdate() 
+{
+    mysql -N kts <<< "SELECT max(date) from day WHERE code = 900001;"
 }
 
 function fn_timestamp_market() 
@@ -303,7 +316,7 @@ function fn_timestamp_market()
         " && return 1
     fi
 
-    MAXDATE=`mysql -N kts <<< "SELECT max(date) from day WHERE code = 900001"`
+    MAXDATE=`fn_maxdate`
     if [ "$MAXDATE" = "${OPENDATE}" ]; then
         if [ "${is_del_routine}" != 'true' ]; then
             echo "
@@ -353,11 +366,6 @@ function fn_get_ratio_close2open()
         sec_pcnt=$(bc -l <<<"scale=4; 14400/${sec_open}")
         echo $sec_pcnt
     fi
-}
-
-function fn_maxdate() 
-{
-    mysql -N kts <<< "SELECT max(date) from day WHERE code = 900001;"
 }
 
 function fn_get_prev()
@@ -447,7 +455,7 @@ function fn_cp_tbl()
     " | mysql kts
 }
 
-echo "`date +%F.%T` ${BASH_SOURCE##*/}" >> /var/dbank.trace
+echo "`date +%F.%T` ${BASH_SOURCE[1]}" >> /var/dbank.trace
 
 [ "${BASH_SOURCE##*/}" != "${0##*/}" ] && return 0
 

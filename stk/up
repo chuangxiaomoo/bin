@@ -257,15 +257,15 @@ function fn_redo_hexun_day()
     fn_hexun_day
     xt_ret $? "fail: day" || return $?
 
-    sql="SELECT ${RISE} as rise FROM day as d WHERE date='${OPENDATE}' ORDER by rise DESC LIMIT 1"
-    maxrise=`mysql kts -N <<<"${sql}"`
-    if [ "${maxrise%%.*}" -gt 10 ]; then
+    sql="SELECT count(code) FROM day WHERE date='${OPENDATE}' and ((close-yesc)/yesc > .101)"
+    num_gt10=`mysql kts -N <<<"${sql}"`
+    if [ "${num_gt10}" -ge 30 ]; then
         # 修正yesc数据
         # iPREV=`END=${OPENDATE} fn_get_prev`
         # echo "
         # UPDATE day as dd,(SELECT * FROM day WHERE date='${iPREV}') as yy SET dd.yesc=yy.close WHERE dd.code=yy.code && dd.date='${OPENDATE}'
         # " | mysql kts
-        fn_echo_warn "Bad yesc"
+        fn_echo_warn "${sql}"
         fn_bell "msg.wav msg.wav"
     fi
 
@@ -276,7 +276,6 @@ function fn_redo_hexun_day()
         echo "    redo hexun_day fail #_#
         "
     fi
-    return $RET
 }
 
 function fn_load_directory()
