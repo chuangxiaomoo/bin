@@ -1321,7 +1321,7 @@ function fn_lhb()
             (bloo-sloo) as net,
             round(bloo/sloo, 2) as bsp,
             ${sql_avrg}
-            round(l.buy/bloo/100, 2) as eYi, ${nmcYi0} as nmcYi,
+            round(l.buy/bloo/100, 2) as eYi, ${nmcYi0},
             c.name FROM lhb as l,cap as c ${sql_xtempday}
             WHERE l.code=c.code ${sql_relate} 
             HAVING 1 ${CAUSE} ${COND} ORDER by ${field:-bsp} DESC LIMIT ${LIMIT:-48}
@@ -1333,7 +1333,8 @@ function fn_lhb()
     a|o)
         LOGIC=${1/a/'\&\&'}
         LOGIC=${LOGIC/o/'||'}
-        LOGIC=${LOGIC} CAUSE="(c8&&(b>13.8p>1.62))||(chng<-4.9&&bsp>2)" COND="${aCOND}" SELECT lhb s ${2:-1} ${3:-avrg}
+        CAUSE="(c8&&(b>13.8p>1.38))||(chng<-4.9&&bsp>2)"
+        LOGIC=${LOGIC} CAUSE="${CAUSE}" COND="${COND#and}" SELECT lhb s ${2:-1} ${3:-avrg}
         #echo $CAUSE
         ;;
     *)
@@ -1420,14 +1421,18 @@ function fn_stat()
     }
     case $1 in
     m|mid)
-        # echo ${PREV}; exit
         fn_echo_warn "1160th换手率"
-        LIMIT=1160,1 END=${PREV} SELECT lsd tov
+        LIMIT=1160,1 END=${END} SELECT lsd tov
         fn_echo_blue "1160th成交额"
-        LIMIT=1160,1 END=${PREV} SELECT lsd amount
+        LIMIT=1160,1 END=${END} SELECT lsd amount
         fn_echo_succ "897(2345*.382),1789(2345*.618*1.235)流通市值"
-        ASC=asc LIMIT=897,1  END=${PREV} SELECT lsd nmc
-        ASC=asc LIMIT=1789,1 END=${PREV} SELECT lsd nmc
+        ASC=asc LIMIT=897,1  END=${END} SELECT lsd nmc
+        ASC=asc LIMIT=1789,1 END=${END} SELECT lsd nmc
+        fn_echo_fail "涨停板市值中位数"
+        num=`OPT='-N' LIMIT=400 END=${END} SELECT lsd t amount 2>/dev/null | wc -l`
+        let LIMIT=num/2-3
+        LIMIT="${LIMIT},2" END=${END} SELECT lsd t amount
+        fn_echo_succ "***** Layout @${END} ******"
         ;;
     t|realtimetov|tt|tempdaytov)
         if [ "${1}" = tt ]; then
@@ -1581,12 +1586,11 @@ function fn_yysj()
 
 function fn_main()
 {
-    # mysql CURRENT_DATE();
     CURR=`fn_maxdate`
-    END=${END:-${CURR}}
-    PREV=`fn_get_prev`
-    END=${END//END/${CURR}}
-    END=${END//PREV/${PREV}}
+    END=${END:-${CURR}}                             # 指定为NUL
+    END=${END//END/${CURR}}                         # 指定为END
+    PREV=`END=${END//PREV/${CURR}} fn_get_prev`     # 指定为PREV
+    END=${END//PREV/${PREV}}                        # echo P:${PREV} E:${END}; exit
 
     cmdlist=(
     "dugu9jian          [sortfield]           # nine sword"

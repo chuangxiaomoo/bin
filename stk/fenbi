@@ -64,12 +64,13 @@ function fn_code()
 
 function fn_attention()
 {
-    fn_echo_warn "\
-    1. avrg尽量高       -- 安全系数高
-    2. tov<15 nmc<100   -- 安定团结指数, 同时除去高nmc
-    3. opri> 3%         -- 向上推高指数
-    4. prop尽量低       -- 惜售指数\
-    "
+    fn_echo_warn "
+    o 更新数据: 09:15前，ZXG.931数据、DOOR_eTranz(tov.nmc不是绝对的)、F10.Beer并进行初步筛选
+    1 集合竞价: 09:25 1Line/10s，2min=12根为考查范围，后6根中连续4绿，或共6绿，即淘汰
+    2 opri>3>5% Power(opri) > Floor(fire)，一个体面(不可太低)且足够筹码上车(不可太高)的价格。
+    3 avrg盟约: 歃血的高avrg，是明日涨幅的保单。高opri是高avrg的保单。连缩涨停降低前期avrg，勿参。
+    4 放成交量: 成交放大为新增资金，如果才是明天上涨的保证。
+    " 2>/dev/stdout | sed 's/    //g';
     return $?
 }
 
@@ -123,12 +124,14 @@ function fn_lhb()
         round(100*(f.trade-d.close)/d.close, 2) as opri,
         round(sum(f.volume)/(d.volume),2) as prop,
         (round(sum(f.volume)/(d.volume) 
-            /IF( abs(${RISE}+${XZZ:-1})<.6, .6, abs(${RISE}+${XZZ:-1})), 2)
-            +IF(d.volume/(c.nmc/c.close)>.2, 20,0)
-            +IF(${nmcYi0}>${DOOR_nmc}, 100, 0) 
+            /IF(abs(${RISE}+${XZZ:-1})<.6, .6, abs(${RISE}+${XZZ:-1})), 2)
+            +IF(${sql_avrg%as*}<6.18,                                           10,0)
+            +IF(d.volume/(c.nmc/c.close)>.2&& ${sql_eTranz%as*}>${DOOR_eTranz}, 20,0)
+            +IF(${nmcYi0%as*}>${DOOR_nmc},                                      100, 0)
+            +IF(${RISE}>9.93,                                                   800, 0)
         )*IF( (${RISE}+${XZZ:-1})>0 , 1, -1)  as fire,
         round(100*(e.close-e.yesc)/e.yesc, 2) as apple,
-        ${nmcYi0} as nmcYi, c.name
+        ${nmcYi0}, c.name
     FROM cap as c, ${tempfb} as f, xtempday as d, e $WHERE f.code=d.code && f.code=c.code && f.code=e.code
     GROUP by f.code
     HAVING ${HAVING:-1} ${COND}
@@ -376,19 +379,21 @@ function fn_shou()
         s.opri,
         round(s.shou/d.volume/100, 2) as prop,
 
-        (abs(
-            round((s.shou/100)/d.volume
-            /IF( abs(opri+${XZZ:-1})<.6, .6, abs(opri+${XZZ:-1})), 2))
-            +IF(d.volume/(c.nmc/c.close)>.2, 20,0)
-            +IF(c.nmc>${DOOR_nmc}*10000, 100, 0) 
+        (round((s.shou/100)/d.volume
+            /IF( abs(opri+${XZZ:-1})<.6, .6, abs(opri+${XZZ:-1})), 2)
+            +IF(${sql_avrg%as*}<6.18,                                           10,0)
+            +IF(d.volume/(c.nmc/c.close)>.2&& ${sql_eTranz%as*}>${DOOR_eTranz}, 20,0)
+            +IF(${nmcYi0%as*}>${DOOR_nmc},                                      100, 0) 
+            +IF(opri>9.93,                                                      800, 0)
         )*IF( (opri+${XZZ:-1})>0 , 1, -1)  as fire,
-        ${nmcYi0} as nmcYi, c.name
+        ${nmcYi0}, c.name
     FROM cap as c, shou as s, xtempday as d $WHERE s.code=d.code && s.code=c.code 
     HAVING ${HAVING:-1} ${COND}
     ORDER by ${field:-fire} ASC
     "
     mysql -t kts <<< "${sqls}"
     fn_chao ${chao}.fenbi
+    fn_attention; exit
 }
 
 #r|realtime)
@@ -409,7 +414,6 @@ function fn_main()
     CURR=`fn_maxdate`
     END=${END:-${CURR}}
     PREV=`fn_get_prev`
-    DOOR_nmc=100
     DTF=${DTF:-`date +%F`}
     DTF=${DTF//END/${END}}
 
@@ -444,4 +448,6 @@ function fn_usage()
     fn_attention; exit
 }
 
+DOOR_nmc=100
+DOOR_eTranz=4.5
 fn_main $@
