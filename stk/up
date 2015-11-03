@@ -1023,6 +1023,14 @@ function fn_yysj()
     return $?
 }
 
+function fn_cha()
+{
+    cat ${@} > ${chao}.merge
+    xt_ret $? "merge ${@}" || return $?
+    PLAIN=${chao}.merge fn_10jqka
+    return $?
+}
+
 function fn_main()
 {
     CURR=`fn_maxdate`
@@ -1050,7 +1058,7 @@ function fn_main()
     "dump_day_2_tmp START END           # 导出日线到${daydump} \${START:-\$END} \${END:-\${END}}"
     "trs_min_2_day                      # 最后一笔分线转日线"
     "wind                               # wind(close<avrg)"
-    "day code                           # DL 1year data from znz"
+    "day    code                        # DL 1year data from znz"
     "ipo                                # DL ipo codes from east"
     "lhb                                # 龙虎榜"
     "dorat  [loop]                      # 量比数据，loop when run@crontab"
@@ -1061,6 +1069,7 @@ function fn_main()
     "money                              # "
     "power                              # 权重分析"
     "blk                                # 板块信息"
+    "cha    file...                     # 合并多个文件到chao.merge"
     )
 
     # 存储过程函数文件的最后5行都是注释

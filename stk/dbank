@@ -174,6 +174,20 @@ function fn_txttbl()
     fi
 }
 
+fn_10jqka() 
+{
+    rows=`wc -l < ${PLAIN}`
+    rowx1=`bc <<< "obase=16;${rows}%256"`
+    rowx2=`bc <<< "obase=16;${rows}/256"`
+    fn_echo_warn "$rows rows to ${PLAIN}"
+    xargs <${PLAIN} | sed 's/^/ /' | sed  \
+        -e 's# 6#6#g' \
+        -e 's# 0#!0#g' \
+        -e 's# 3#!3#g' > ${buffer}
+    echo -ne "\x${rowx1}\x${rowx2}`cat ${buffer}`" > /winc/zxg/自选股.sel
+    cp ${PLAIN} /winc/zxg/chao.txt
+}
+
 function fn_chao()
 {
     [ "${CHAO:=0}" -eq 0 ] && return
@@ -182,19 +196,6 @@ function fn_chao()
     sql_chao="${PREFIX}SELECT code FROM (${sqls}) as t"
     # echo "${sql_chao}"; exit
     mysql -N kts <<<"${sql_chao}" |grep '^[036]'| uniq|tee ${TEE} ${PLAIN} > /dev/null 
-    rows=`wc -l < ${PLAIN}`
-    rowx1=`bc <<< "obase=16;${rows}%256"`
-    rowx2=`bc <<< "obase=16;${rows}/256"`
-    fn_echo_warn "$rows rows to ${PLAIN}"
-    fn_10jqka() 
-    {
-      xargs <${PLAIN} | sed 's/^/ /' | sed  \
-        -e 's# 6#6#g' \
-        -e 's# 0#!0#g' \
-        -e 's# 3#!3#g' > ${buffer}
-      echo -ne "\x${rowx1}\x${rowx2}`cat ${buffer}`" > /winc/zxg/自选股.sel
-      cp ${PLAIN} /winc/zxg/chao.txt
-    }
     fn_10jqka
     # up file_to_table ${PLAIN}
     # xt_ret $? "${FUNCNAME}" || return $?
