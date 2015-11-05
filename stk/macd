@@ -85,7 +85,7 @@ END //
 call sp_mamacd();
     " >> $mps_nbm
 
-    mysql $mo -t kts <<< "source $mps_nbm"
+    mysql $OPT -t kts <<< "source $mps_nbm"
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -114,7 +114,7 @@ END //
 call sp_mamacd_f1();
     " >> $mps_nbm
 
-    mysql $mo -t kts <<< "source $mps_nbm"
+    mysql $OPT -t kts <<< "source $mps_nbm"
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
