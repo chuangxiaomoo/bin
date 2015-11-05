@@ -583,6 +583,7 @@ function fn_1003_张勋复辟()             { cat ljsw_1003_张勋复辟 ;}
 function fn_1017_外交()                 { cat ljsw_1017_外交 ;}
 function fn_1008_怎样炼成世界级高手()   { cat ljsw_1008_怎样炼成世界级高手 ;}
 function fn_0521_物种战争()             { cat ljsw_0521_物种战争 ;}
+function fn_7777_howtobe()              { cat ljsw_7777_howtobe ;}
     local opts=(
         voice
         00_曾国藩
@@ -612,6 +613,7 @@ function fn_0521_物种战争()             { cat ljsw_0521_物种战争 ;}
         1008_怎样炼成世界级高手
                                         # 2015
         0521_物种战争                                        
+        7777_howtobe                    # 什么是好的？
     )
     fn_print $@
 }

@@ -500,13 +500,15 @@ function fn_rzrq()
     CREATE TABLE rzrq (
         id      INT PRIMARY key AUTO_INCREMENT NOT NULL,
         date    DATE NOT NULL,
-        bala    DECIMAL(10,2) NOT NULL,
+        net     DECIMAL(10,2) NOT NULL,
+        INDEX(date)
     );
 
-    LOAD DATA LOCAL INFILE '${cache}' INTO 
-    TABLE rzrq(date,bala);
+    LOAD DATA LOCAL INFILE '${cache}' INTO TABLE rzrq(date,net);
     " | mysql kts
-    return 0
+    xt_ret $? "" || return $?
+
+    fn_echo_succ "up rzrq succ"
 }
 
 function fn_wind()
@@ -859,13 +861,19 @@ call sp_ma2015();
     return $?
 }
 
-function fn_download_Money()
+function fn_sipf()
 {
-    host='http://www.sipf.com.cn'
-
     fn_echo_succ "余额期末数\t日平均数\t银证转账+\t银证转账-\t银证转账net
-    
     "
+    url="
+http://www.sipf.com.cn/NewCH/zt/10/101253.shtml
+    "
+    w3m -dump $url | grep 证券交易结算资金 | sed 's/,//g' | \
+        awk '{printf "%s\t%s\t%s\t%s\t%s\n", $4,$6,$8,$10,$12}'
+
+    # 两部分数据格式不一样，所以分的两部分
+    exit
+    host='http://www.sipf.com.cn'
     dates=(
     "/NewCH/zt/01/94402.shtml"    201501
     "/NewCH/zt/12/93151.shtml"    201412
@@ -924,6 +932,9 @@ function fn_parser_Money()
 
 function fn_calc_balance()
 {
+    cp sql/money.clean ${chao}.clean
+    xt_ret $? "" || return $?
+
     head -n -5 $mps_org > $mps_nbm
     
     echo "
@@ -966,12 +977,6 @@ call sp_mamacd();
     return $?
 }
 
-function fn_money()
-{
-    fn_calc_balance
-    echo
-}
-
 function fn_wklist()
 {
     # fn_download_Money | tee ~/bin/stk/sql/money
@@ -996,8 +1001,46 @@ function fn_wklist()
         date_prev=${date}
         wkday_prev=$wkday
     done < ${chao}.wkday > ${chao}.wklist
+    fn_echo_succ "save to ${chao}.wklist"
     
     return $?
+}
+
+function fn_money()
+{
+    usage="
+    券商经纪资金一周只更新一次。步骤如下：
+    s|sipf      1 修改url手动更新数据
+    z|zzlt      2 从同花顺获取数据，更新到表.中证流通.zzlt
+    w|wklist    3 生成日期对chao.wklist，从zzlt打印当下星期的Monday和Friday输出
+    手动合成    4 由13合成money.clean
+    b|bala      5 从money.clean，生成表balance
+    r|rzrq      6 更新RZRQ数据
+    l|list      7 联合查讯
+    u|usage     * 打印Usage
+    "
+    case $1 in
+    s|sipf)
+        fn_sipf
+        ;;
+    z|zzlt)
+        fn_zzlt
+        ;;
+    w|wklist)
+        fn_wklist
+        ;;
+    r|rzrq)
+        fn_rzrq
+        ;;
+    b|bala)
+        fn_calc_balance
+        echo
+        ;;
+    u|*)
+        echo "${usage}"
+        ;;
+    esac
+
 }
 
 function fn_fenbi()
@@ -1186,9 +1229,7 @@ function fn_main()
     "yysj                               # 预约时间"
     "trace                              # "
     "fenbi  code 2015mmdd               # "
-    "zzlt                               # 1. 中证流通"
-    "rzrq                               # 2. 更新RZRQ业务数据"
-    "money                              # "
+    "money                              # ---------资金分析---------"
     "power                              # 权重分析"
     "blk                                # 板块信息"
     "merge  file...                     # 合并多个文件到chao.merge"
