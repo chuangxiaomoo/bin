@@ -59,6 +59,7 @@
 # 缠中说禅        .chan/chan.md
 # 莫大仙岳居      .doc/sulon.md
 # 洪粉家人        .doc/hongrong.md
+# 花家军          .doc/huajiajun.md
 # 瑞鹤仙          .doc/yxkrrhx.md         -- 桃谷
 # 逻辑            .doc/logic.md
 # 魔论            .doc/Molun.md           -- 大盘预测体系
