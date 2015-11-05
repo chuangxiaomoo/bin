@@ -125,10 +125,10 @@ function fn_lhb()
         round(sum(f.volume)/(d.volume),2) as prop,
         (round(sum(f.volume)/(d.volume) 
             /IF(abs(${RISE}+${XZZ:-1})<.6, .6, abs(${RISE}+${XZZ:-1})), 2)
-            +IF(${sql_avrg%as*}<6.18,                                           10,0)
-            +IF(d.volume/(c.nmc/c.close)>.2&& ${sql_eTranz%as*}>${DOOR_eTranz}, 20,0)
-            +IF(${nmcYi0%as*}>${DOOR_nmc},                                      100, 0)
-            +IF(${RISE}>9.93,                                                   800, 0)
+            +IF(${sql_avrg%as*}<6.18 && (${RISE}+${XZZ:-1})<${sql_avrg%as*},10,0)
+            +IF(${sql_eTranz%as*}>${DOOR_eTranz},                           20,0)
+            +IF(${nmcYi0%as*}>${DOOR_nmc},                                  100,0)
+            +IF(${RISE}>9.93,                                               800,0)
         )*IF( (${RISE}+${XZZ:-1})>0 , 1, -1)  as fire,
         round(100*(e.close-e.yesc)/e.yesc, 2) as apple,
         ${nmcYi0}, c.name
@@ -351,6 +351,7 @@ function fn_auto_fb()
 
 function fn_shou()
 {
+    fn_yist
     field=$1
     sed -i -e '/代码/d' -e '/^$/d' -e 's/S.//g' -e 's/  */\t/g' ${chao}.shou
     echo "
@@ -381,10 +382,10 @@ function fn_shou()
 
         (round((s.shou/100)/d.volume
             /IF( abs(opri+${XZZ:-1})<.6, .6, abs(opri+${XZZ:-1})), 2)
-            +IF(${sql_avrg%as*}<6.18,                                           10,0)
-            +IF(d.volume/(c.nmc/c.close)>.2&& ${sql_eTranz%as*}>${DOOR_eTranz}, 20,0)
-            +IF(${nmcYi0%as*}>${DOOR_nmc},                                      100, 0) 
-            +IF(opri>9.93,                                                      800, 0)
+            +IF(${sql_avrg%as*}<6.18 && (opri+${XZZ:-1})<${sql_avrg%as*}, 10,0)
+            +IF(${sql_eTranz%as*}>${DOOR_eTranz}                        , 20,0)
+            +IF(${nmcYi0%as*}>${DOOR_nmc}                               , 100, 0) 
+            +IF(opri>9.93                                               , 800, 0)
         )*IF( (opri+${XZZ:-1})>0 , 1, -1)  as fire,
         ${nmcYi0}, c.name
     FROM cap as c, shou as s, xtempday as d $WHERE s.code=d.code && s.code=c.code 
@@ -449,5 +450,5 @@ function fn_usage()
 }
 
 DOOR_nmc=100
-DOOR_eTranz=4.5
+DOOR_eTranz=4
 fn_main $@

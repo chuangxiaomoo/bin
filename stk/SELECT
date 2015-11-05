@@ -1234,10 +1234,10 @@ function fn_lhb()
     r|cause)
         mysql -t kts <<<"SELECT DISTINCT cause FROM lhb"
         ;;
-    d|dates)
+    l|dates)
         fn_list_date $2
         ;;
-    x|del)
+    d|del)
         date=`fn_get_date ${2:-1}`
         mysql kts <<< "DELETE FROM lhb WHERE date='${date}'"
         xt_ret $? "del fail" || return $?
@@ -1331,11 +1331,17 @@ function fn_lhb()
         fn_chao
         ;;
     a|o)
-        LOGIC=${1/a/'\&\&'}
-        LOGIC=${LOGIC/o/'||'}
-        CAUSE="(c8&&(b>13.8p>1.38))||(chng<-4.9&&bsp>2)"
+        LOGIC=${1/o/'||'}
+        LOGIC=${LOGIC/a/'\&\&'}
+        CAUSE="(c8&&(b>${BLOO:-13.8}p>1.38))||(chng<-4.9&&bsp>2)"
         LOGIC=${LOGIC} CAUSE="${CAUSE}" COND="${COND#and}" SELECT lhb s ${2:-1} ${3:-avrg}
         #echo $CAUSE
+        ;;
+    x)
+        BLOO=25;
+        LOGIC=${1/x/'\&\&'}
+        CAUSE="(c8&&(b>${BLOO}p>1.38))"
+        LOGIC=${LOGIC} CAUSE="${CAUSE}" COND="${COND#and}" SELECT lhb s ${2:-1} ${3:-bloo}
         ;;
     *)
         fn_echo_succ "\tlhb max_date@${max_dt}"
@@ -1344,12 +1350,13 @@ function fn_lhb()
         +10 n   n日内涨停次数
         c code  指定代码
         r       上榜原因list
-        d       日期list
+        l       日期list
         g n     n日内因+3.82%上榜次数统计
         s [i]   SELECT日期，i不指定时为1，代表今天
-        x [i]   指定dele日期，i不指定时为1，代表今天
+        d [i]   指定dele日期，i不指定时为1，代表今天
         a|AND   CAUSE='(8&&(b>15p>2))' COND=\$aCOND
         o|OR    CAUSE='(8||(b>15p>2))' COND=\$aCOND
+        x|XOR   b>25
 
         CAUSE='3 7 8 s t'
         c3   3up20

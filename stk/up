@@ -478,20 +478,36 @@ function fn_redo_hexun_day_fr_min()
     return 0
 }
 
-function fn_up_rzrq_codes_tbl()
+function fn_rzrq()
 {
+    > ${buffer}
+    url0='http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx?type=FD&sty=SHSZHSSUM'
+
+    pages=4
+    for (( i=1; i<=${pages}; i+=1 )); do
+        url="${url0}&st=0&sr=1&p=${i}&ps=100&js=var%20EJcawWJn={pages:(pc),data:[(x)]}"
+        w3m -dump "${url}" > ${cache}
+        xt_ret $? "" || return $?
+        
+        cat ${cache} | tr -d '\n' |
+            sed -e '1s/^.*data:.//' -e '$s/]}/\n/' |
+            sed 's/","/\n/g'  | tr -d '"' >> ${buffer}
+    done
+    awk -F',' '{printf "%s\t%.2f\n", $1,$4/100000000}' ${buffer} > ${cache}
+
     echo "
-    DROP TABLE IF EXISTS rzrq_codes;
-    CREATE TABLE rzrq_codes (
-        id      INT(6) PRIMARY key AUTO_INCREMENT NOT NULL,
-        code    INT(6)  ZEROFILL
+    DROP TABLE IF EXISTS rzrq;
+    CREATE TABLE rzrq (
+        id      INT PRIMARY key AUTO_INCREMENT NOT NULL,
+        date    DATE NOT NULL,
+        bala    DECIMAL(10,2) NOT NULL,
     );
 
-    INSERT INTO rzrq_codes(code) SELECT DISTINCT  code FROM rzrq_day;
+    LOAD DATA LOCAL INFILE '${cache}' INTO 
+    TABLE rzrq(date,bala);
     " | mysql kts
     return 0
 }
-
 
 function fn_wind()
 {
@@ -905,10 +921,83 @@ function fn_parser_Money()
     }' ~/bin/stk/sql/money
 }
 
+
+function fn_calc_balance()
+{
+    head -n -5 $mps_org > $mps_nbm
+    
+    echo "
+    DROP TABLE IF EXISTS balance;
+    CREATE TABLE balance(
+        id      int PRIMARY key AUTO_INCREMENT NOT NULL,
+        mon     DATE NOT NULL,
+        fri     DATE NOT NULL,
+        close   INT DEFAULT 0,
+        avrg    INT DEFAULT 0,
+        kin     INT DEFAULT 0,
+        kout    INT DEFAULT 0,
+        net     INT DEFAULT 0,
+        balance INT DEFAULT 0,
+        INDEX(mon)
+    );
+
+    LOAD DATA LOCAL INFILE '${chao}.clean' INTO 
+    TABLE balance(mon,fri,close,avrg,kin,kout,net);
+    " | mysql kts
+
+    echo "
+DROP PROCEDURE IF EXISTS sp_mamacd //
+CREATE PROCEDURE sp_mamacd() BEGIN
+    DECLARE v_i INT DEFAULT 1;
+    SET @v_len = 0;
+    SELECT max(id) FROM balance INTO @v_len;
+    loop_visit: REPEAT
+        SELECT sum(net) FROM balance WHERE id<=v_i INTO @sumofnet;
+        UPDATE balance SET balance=@sumofnet WHERE id=v_i;
+        SET v_i = v_i + 1;
+    UNTIL v_i > @v_len END REPEAT;
+
+END //
+call sp_mamacd();
+    " >> $mps_nbm
+    mysql $OPT -t kts <"$mps_nbm"
+    
+    fn_echo_succ "balance..."
+    return $?
+}
+
 function fn_money()
 {
+    fn_calc_balance
+    echo
+}
+
+function fn_wklist()
+{
     # fn_download_Money | tee ~/bin/stk/sql/money
-    fn_parser_Money
+    # fn_parser_Money
+    echo "
+    SELECT date,wkday FROM zzlt;
+    " |  mysql -N kts  > ${chao}.wkday
+
+    date_prev=NULL
+    wkday_prev=6
+
+    while read date wkday; do
+        if [ "${date_prev}" != NULL ]; then
+            dif=$(( ($(date -d "${date}" +%s) - $(date -d "${date_prev}" +%s))/(24*60*60) ))
+        else
+            dif=0
+        fi
+        if [ "${wkday}" -lt ${wkday_prev} ] || [ ${dif} -gt 7 ]; then
+            wknew=${wkday}
+            echo -e -n "${date_prev}\n${date}\t"
+        fi
+        date_prev=${date}
+        wkday_prev=$wkday
+    done < ${chao}.wkday > ${chao}.wklist
+    
+    return $?
 }
 
 function fn_fenbi()
@@ -944,7 +1033,6 @@ function fn_fenbi()
     echo "
     LOAD DATA LOCAL INFILE '${buffer}' INTO TABLE fenbi(code, datetime, trade, volume, amount)
     " | mysql kts
-    
 }
 
 function fn_blk()
@@ -1023,12 +1111,45 @@ function fn_yysj()
     return $?
 }
 
-function fn_cha()
+function fn_merge()
 {
+    [ -f "${1}" ]
+    xt_ret $? "${1} not exist" || return $?
+
     cat ${@} > ${chao}.merge
     xt_ret $? "merge ${@}" || return $?
     PLAIN=${chao}.merge fn_10jqka
     return $?
+}
+
+function fn_zzlt()
+{
+    [ -f "${chao}.zzlt" ]
+    xt_ret $? "" || return $?
+
+    sed -i -e '/时间/d' -e '/^$/d' -e 's/,/\t/g' -e 's/  */\t/g' \
+        -e 's/一/1/g' \
+        -e 's/二/2/g' \
+        -e 's/三/3/g' \
+        -e 's/四/4/g' \
+        -e 's/五/5/g' ${chao}.zzlt
+
+    echo "
+    DROP TABLE IF EXISTS zzlt;
+    CREATE TABLE zzlt(
+        id      int(4) PRIMARY key AUTO_INCREMENT NOT NULL,
+        date    DATE NOT NULL,
+        wkday   INT,
+        close   DECIMAL(6,2) NOT NULL,
+        INDEX(date)
+    );
+
+    LOAD DATA LOCAL INFILE '${chao}.zzlt' INTO 
+    TABLE zzlt(date,wkday,@dummy,@dummy,@dummy,close);
+    " | mysql -u root kts
+    
+    fn_echo_succ "up zzlt..."
+
 }
 
 function fn_main()
@@ -1048,7 +1169,6 @@ function fn_main()
     "up_tbl_xRD [--keep.PWR -k]         # --- 使用当前除权数据 --keep.PWR"
     "file_to_table {code...|file}       # 写file到表{TBL:-zxg}，并........ZXG.BLK........"
     "table_to_file {table:-chao}        # 添加表{table:-chao}到/tmp/zxg"
-    "up_rzrq_codes_tbl                  # 更新RZRQ业务数据"
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
     "checkcode file                     # "
     "html                               # flush YIST=.soptter.xxx soptter result into html"
@@ -1066,10 +1186,12 @@ function fn_main()
     "yysj                               # 预约时间"
     "trace                              # "
     "fenbi  code 2015mmdd               # "
+    "zzlt                               # 1. 中证流通"
+    "rzrq                               # 2. 更新RZRQ业务数据"
     "money                              # "
     "power                              # 权重分析"
     "blk                                # 板块信息"
-    "cha    file...                     # 合并多个文件到chao.merge"
+    "merge  file...                     # 合并多个文件到chao.merge"
     )
 
     # 存储过程函数文件的最后5行都是注释

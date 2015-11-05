@@ -287,11 +287,6 @@ function fn_write()
     mesg y; write root /dev/pts/0 <<< "${1}"
 }
 
-function fn_maxdate() 
-{
-    mysql -N kts <<< "SELECT max(date) from day WHERE code = 900001;"
-}
-
 function fn_timestamp_market() 
 {
     DATETIME=(`$W3M -dump ${url_sh000001} | awk -F',' '{print $(NF-2), $(NF-1)}'`)
@@ -367,6 +362,11 @@ function fn_get_ratio_close2open()
         sec_pcnt=$(bc -l <<<"scale=4; 14400/${sec_open}")
         echo $sec_pcnt
     fi
+}
+
+function fn_maxdate() 
+{
+    mysql -N kts <<< "SELECT max(date) from day WHERE code = 900001;"
 }
 
 function fn_get_prev()
