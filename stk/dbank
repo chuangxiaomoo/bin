@@ -136,6 +136,8 @@ file_ma240='/tmp/kts/ma240'
  list_limo='/tmp/kts/limo'
  date_dif3='/tmp/kts/dif3'
   date_wma='/tmp/kts/wma'
+  wolf_raw='/tmp/kts/wolf.raw'
+  wolf_rip='/tmp/kts/wolf.rip'
 
 mkdir -p /tmp/kts
 mkdir -p /dev/shm/fenbi
@@ -415,6 +417,33 @@ function fn_xtempday()
     echo "
     $DROP ${table}; CREATE TABLE ${table} LIKE day;
     INSERT INTO ${table} SELECT * from day where ${sql_cond} HAVING ${xCOND:-1};
+    " | mysql kts
+    return $?
+}
+
+function fn_xdde()
+{
+    # 1. 可以统计多日
+    # 2. 可以从分时中复盘
+    local table=${TBL:-xdde}
+
+    if [ "${TBL}" = dde ] || [ "${TBL}" = mat_dde ]; then
+        fn_echo_fail "TBL[${TBL}] must not dde or mat_dde"
+        return 1
+    fi
+
+    if fn_iscode $1; then
+        sql_cond="code=${1}"
+    else
+        sql_cond="date='${1:-$END}'"
+        if [ -n "${2}" ]; then
+        sql_cond="${sql_cond} && time='${2}'"
+        fi
+    fi
+
+    echo "
+    $DROP ${table}; CREATE TABLE ${table} LIKE dde;
+    INSERT INTO ${table} SELECT * from ${DDE:-dde} where ${sql_cond} HAVING ${xCOND:-1};
     " | mysql kts
     return $?
 }
