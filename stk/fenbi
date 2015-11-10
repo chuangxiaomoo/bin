@@ -62,18 +62,6 @@ function fn_code()
     return $?
 }
 
-function fn_attention()
-{
-    fn_echo_warn "
-    o 更新数据: 09:15前，ZXG.931数据、DOOR_eTranz(tov.nmc不是绝对的)、F10.Beer并进行初步筛选
-    1 集合竞价: 09:25 1Line/10s，2min=12根为考查范围，后6根中连续4绿，或共6绿，即淘汰
-    2 opri>3>5% Power(opri) > Floor(fire)，一个体面(不可太低)且足够筹码上车(不可太高)的价格。
-    3 avrg盟约: 歃血的高avrg，是明日涨幅的保单。高opri是高avrg的保单。连缩涨停降低前期avrg，勿参。
-    4 放成交量: 成交放大为新增资金，如果才是明天上涨的保证。
-    " 2>/dev/stdout | sed 's/    //g';
-    return $?
-}
-
 function fn_lhb()
 {
     field=$1
@@ -432,7 +420,18 @@ function fn_main()
                 done                ;;
     esac
 }
-
+function fn_attention()
+{
+    fn_echo_warn "
+    o 更新数据: 09:15前，ZXG.931数据、DOOR_eTranz(tov.nmc不是绝对的)、F10.Beer并进行初步筛选
+    1 集合竞价: 09:25 1Line/10s，2min=12根为考查范围，后6根中连续4绿，或共6绿，即淘汰
+    2 opri>3>5% Power(opri) > Floor(fire)，一个体面(不可太低)且足够筹码上车(不可太高)的价格。
+    3 avrg盟约: 歃血的高avrg，是明日涨幅的保单。高opri是高avrg的保单。连缩涨停降低前期avrg，勿参。
+    4 放成交量: 成交放大为新增资金，如果才是明天上涨的保证。
+    5 生死防线: 在opri上下设一道护城河，而不是集合竞价买卖。
+    " 2>/dev/stdout | sed 's/    //g';
+    return $?
+}
 function fn_usage()
 {
     echo "
@@ -450,5 +449,5 @@ function fn_usage()
 }
 
 DOOR_nmc=100
-DOOR_eTranz=4
+DOOR_eTranz=5.2
 fn_main $@

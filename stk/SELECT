@@ -1372,6 +1372,49 @@ function fn_lhb()
     return $?
 }
 
+function fn_wolf()
+{
+    sql_maxdate="SELECT max(date) FROM dde"
+    max_dt=`mysql -N kts <<< "${sql_maxdate}"`
+
+    if [ "${max_dt}" != ${CURR} ]; then
+        fn_echo_fail "dde is lagged"
+        return 1
+    fi
+
+    case $1 in
+    l|dates)
+        fn_list_date $2
+        ;;
+    s|select)
+        fn_xdde
+        xt_ret $? "" || return $?
+
+        ;;
+    *)
+        fn_echo_succ "\tlhb max_date@${max_dt}"
+        echo "
+        SELECT wolf <param>
+        +10 n   n日内涨停次数
+        c code  指定代码
+        r       上榜原因list
+        l       日期list
+
+        CAUSE='3 7 8 s t'
+        c3   3up20
+        c7   up7
+        c8   +5%         ----- 3+7=8
+        cs   s3up12
+        ct   tov20
+        b>p> bloo.bsp    tov!>20 && avrg>7 && opri>3 (tov太大即3日内到头 && 和大猪在一起 && 起飞的欲望)
+        "
+        ;;
+    esac
+
+    
+    return $?
+}
+
 function fn_fmacd()
 {
     mysql -t kts <<< "SELECT * FROM fmacd";
@@ -1633,6 +1676,7 @@ function fn_main()
     "ban                condi [time]          # 条件. 0945后使用"
     "sban               condi [time]          # super ban"
     "lhb                excption              # 龙虎榜"
+    "wolf                                     # DDE"
     "macd               [clean]               # macd-alarm-sys"
     "fmacd                                    # 单个代码的macd"
     "tri                                      # 3连阳"

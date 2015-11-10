@@ -172,7 +172,7 @@ function fn_trace()
     colA="date,curr_asset,frozen"       # ,sh,cyb"
     colA="A.${colA//,/,A.}"
 
-    grep -v '^#' ${frog} > ${buffer}
+    grep -v '^#' ${frog} | sed 's/  */\t/g'> ${buffer}
 
     echo "
         DROP TABLE IF EXISTS trace;
