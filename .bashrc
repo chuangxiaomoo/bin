@@ -5,6 +5,7 @@
 alias        FM=''
 alias       ASC=''
 alias       BLK=''
+alias      DOOR=''
 alias       TEE=''
 alias       TAM=''
 alias       END=''

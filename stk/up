@@ -104,7 +104,7 @@ function fn_add_yesclose()
 function fn_hexun_day()
 {
     {
-        echo "    get flock 19..."
+        echo "    try flock 19..."
         flock 19
         echo "    got flock 19..."
         fn_hexun_day0
@@ -740,6 +740,19 @@ function fn_dorat()
         ;;
     esac
 
+    # [ $hhmm = 0940 ] || [ $hhmm = 0950 ] || [ $hhmm = 1015 ]
+    hhmm=`date +%H%M | sed 's/^0//'`;
+    
+    if [ "${hhmm}" -lt 1340 ]; then
+        let got30=hhmm%100%15
+    else
+        let got30=hhmm%100%30
+    fi
+
+    if [ "${got30}" -le 1 ] || [ $hhmm = 935 ]; then
+        fn_bell "online.wav"
+    fi
+
     if [ -z "${TBL}" ]; then
         fn_redo_hexun_day || FINA=1 up 4
         xt_ret $? "" || return $?
@@ -866,7 +879,7 @@ function fn_sipf()
     fn_echo_succ "余额期末数\t日平均数\t银证转账+\t银证转账-\t银证转账net
     "
     url="
-http://www.sipf.com.cn/NewCH/zt/10/101253.shtml
+http://www.sipf.com.cn/NewCH/zt/11/101752.shtml
     "
     w3m -dump $url | grep 证券交易结算资金 | sed 's/,//g' | \
         awk '{printf "%s\t%s\t%s\t%s\t%s\n", $4,$6,$8,$10,$12}'
@@ -913,7 +926,7 @@ http://www.sipf.com.cn/NewCH/zt/10/101253.shtml
 
 }
 
-function fn_parser_Money()
+function fn_nets()
 {
     awk '
     BEGIN { sum=0; free0=5755; net=0; }
@@ -930,7 +943,7 @@ function fn_parser_Money()
 }
 
 
-function fn_calc_balance()
+function fn_bala()
 {
     cp sql/money.clean ${chao}.clean
     xt_ret $? "" || return $?
@@ -973,14 +986,12 @@ call sp_mamacd();
     " >> $mps_nbm
     mysql $OPT -t kts <"$mps_nbm"
     
-    fn_echo_succ "balance..."
+    fn_echo_succ "TABLE balance done..."
     return $?
 }
 
 function fn_wklist()
 {
-    # fn_download_Money | tee ~/bin/stk/sql/money
-    # fn_parser_Money
     echo "
     SELECT date,wkday FROM zzlt;
     " |  mysql -N kts  > ${chao}.wkday
@@ -994,6 +1005,7 @@ function fn_wklist()
         else
             dif=0
         fi
+        fn_echo_warn haha: "${wkday}" -lt ${wkday_prev}
         if [ "${wkday}" -lt ${wkday_prev} ] || [ ${dif} -gt 7 ]; then
             wknew=${wkday}
             echo -e -n "${date_prev}\n${date}\t"
@@ -1010,10 +1022,11 @@ function fn_money()
 {
     usage="
     券商经纪资金一周只更新一次。步骤如下：
-    s|sipf      1 修改url手动更新数据
+    s|sipf      0 修改url手动更新数据 并且 >>sql/money -> sql/money.clean
+    n|nets      1 计算叠加的.净流入 >> sql/money.clean
     z|zzlt      2 从同花顺获取数据，更新到表.中证流通.zzlt
-    w|wklist    3 生成日期对chao.wklist，从zzlt打印当下星期的Monday和Friday输出
-    手动合成    4 由13合成money.clean
+    w|wklist    3 生成日期对 /tmp/kts/chao.wklist ，从zzlt打印当下星期的Monday和Friday输出
+    手动合成    4 由13合成 money.clean
     b|bala      5 从money.clean，生成表balance
     r|rzrq      6 更新RZRQ数据
     l|list      7 联合查讯
@@ -1022,6 +1035,9 @@ function fn_money()
     case $1 in
     s|sipf)
         fn_sipf
+        ;;
+    n|nets)
+        fn_nets
         ;;
     z|zzlt)
         fn_zzlt
@@ -1033,14 +1049,32 @@ function fn_money()
         fn_rzrq
         ;;
     b|bala)
-        fn_calc_balance
+        fn_bala
         echo
+        ;;
+    l|listbana)
+        fn_listbana
         ;;
     u|*)
         echo "${usage}"
         ;;
     esac
 
+}
+function fn_listbana()
+{
+    fn_echo_warn "
+    cat /Export/Table.txt | awk 'BEGIN{sum=0; } { sum+=$3; } END{print sum}' ==> 37.1965万亿  5746.20
+    "
+    echo "
+    SELECT b.*,r.net as bala_rzrq,(b.balance+r.net)as bala_sum,z.close,
+    round(371965*z.close/5746.20,2) as LT, 
+    round(b.balance+r.net-4234.66)as Dif_bala_sum,
+    round((371965*z.close/5746.20-193466.21)/5.5,2) as Dif_LT_55
+    FROM balance as b, rzrq as r,zzlt as z 
+    WHERE b.fri=r.date && b.fri=z.date 
+    ORDER by fri ${ASC:-DESC} LIMIT ${LIMIT:-40}
+    " | mysql ${OPT:--t} kts
 }
 
 function fn_fenbi()
@@ -1167,32 +1201,52 @@ function fn_merge()
 
 function fn_zzlt()
 {
-    [ -f "${chao}.zzlt" ]
-    xt_ret $? "" || return $?
-
-    sed -i -e '/时间/d' -e '/^$/d' -e 's/,/\t/g' -e 's/  */\t/g' \
-        -e 's/一/1/g' \
-        -e 's/二/2/g' \
-        -e 's/三/3/g' \
-        -e 's/四/4/g' \
-        -e 's/五/5/g' ${chao}.zzlt
-
     echo "
-    DROP TABLE IF EXISTS zzlt;
-    CREATE TABLE zzlt(
+    -- DROP TABLE IF EXISTS zzlt;
+    CREATE TABLE IF NOT EXISTS zzlt(
         id      int(4) PRIMARY key AUTO_INCREMENT NOT NULL,
         date    DATE NOT NULL,
         wkday   INT,
         close   DECIMAL(6,2) NOT NULL,
         INDEX(date)
-    );
+    );"| mysql kts
 
+    maxdate=`mysql -N kts <<< "SELECT max(date) FROM zzlt"`
+    fn_echo_succ "maxdate is ${maxdate}"
+
+    if [ "${maxdate}" != NULL ]; then
+        iconv -f cp936 -t utf8 /Export/Table.txt | grep -A200 "${maxdate}"  > "${chao}.zzlt"
+        xt_ret $? "bad Table.txt" || return $?
+
+        sed -i "/${maxdate}/d" ${chao}.zzlt
+        xt_ret $? "" || return $?
+    else
+        iconv -f cp936 -t utf8 /Export/Table.txt > "${chao}.zzlt"
+        fn_echo_warn "first do zzlt"
+    fi
+
+    [ -f "${chao}.zzlt" ]
+    xt_ret $? "" || return $?
+
+    sed -i -e '/时间/d' -e 's/,/\t/g' -e 's/  */\t/g' \
+        -e 's/\t\t/\t/g'\
+        -e 's/一/1/g'   \
+        -e 's/二/2/g'   \
+        -e 's/三/3/g'   \
+        -e 's/四/4/g'   \
+        -e 's/五/5/g'   \
+        -e 's///g'    \
+        -e '/^$/d'      ${chao}.zzlt
+
+    fn_echo_succ "content to load:"
+    cat ${chao}.zzlt
+
+    echo "
     LOAD DATA LOCAL INFILE '${chao}.zzlt' INTO 
     TABLE zzlt(date,wkday,@dummy,@dummy,@dummy,close);
     " | mysql -u root kts
     
-    fn_echo_succ "up zzlt..."
-
+    fn_echo_succ "up zzlt OK"
 }
 
 function fn_main()

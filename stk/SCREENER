@@ -683,7 +683,7 @@ function fn_lohi()
 {
     case $1 in
     e)
-        mysql -N kts<<< "SELECT end,num FROM ( SELECT DISTINCT end,num FROM mat_lohi ) as t" | tail -20
+        mysql -N kts<<< "SELECT DISTINCT end FROM mat_lohi ORDER by end DESC LIMIT 10" | cat -n
         exit
         ;;
     d)
