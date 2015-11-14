@@ -36,6 +36,7 @@ RISE='TRUNCATE(100*(d.close-d.yesc)/d.yesc, 2)'
 PEAK='TRUNCATE(100*(d.high-d.close)/yesc, 2)'
 APPLE='ROUND(100*(x.close-x.yesc)/x.yesc, 1)'
 nmcYi='round(nmc/10000, 1) as nmcYi'
+# ${nmcYi0%as*} 去as
 nmcYi0='round(nmc*d.close/c.close/10000, 1) as nmcYi'
 TROUGH='TRUNCATE(100*(d.close-d.low)/yesc, 2)'
 TURNOV='TRUNCATE(100*d.volume*c.close/c.nmc, 2)'
@@ -421,29 +422,27 @@ function fn_xtempday()
     return $?
 }
 
-function fn_xdde()
+function fn_xCol()
 {
-    # 1. 可以统计多日
-    # 2. 可以从分时中复盘
-    local table=${TBL:-xdde}
+    [ "${#}" -eq 3 ]
+    xt_ret $? "argc:${#}" || return $?
 
-    if [ "${TBL}" = dde ] || [ "${TBL}" = mat_dde ]; then
-        fn_echo_fail "TBL[${TBL}] must not dde or mat_dde"
-        return 1
-    fi
-
-    if fn_iscode $1; then
-        sql_cond="code=${1}"
-    else
-        sql_cond="date='${1:-$END}'"
-        if [ -n "${2}" ]; then
-        sql_cond="${sql_cond} && time='${2}'"
-        fi
-    fi
+    case ${xCol:=date} in
+    code)
+        fn_iscode ${3}
+        xt_ret $? "" || return $?
+        sql_cond="${xCol}='${3}'"
+        ;;
+    *)  # 默认date类型
+        fn_isdate ${3}
+        xt_ret $? "" || return $?
+        sql_cond="${xCol}='${3}'"
+        ;;
+    esac
 
     echo "
-    $DROP ${table}; CREATE TABLE ${table} LIKE dde;
-    INSERT INTO ${table} SELECT * from ${DDE:-dde} where ${sql_cond} HAVING ${xCOND:-1};
+    $DROP ${table:=$2}; CREATE TABLE ${table} LIKE ${1};
+    INSERT INTO ${table} SELECT * from ${1} where ${sql_cond} and ${xCOND:-1};
     " | mysql kts
     return $?
 }

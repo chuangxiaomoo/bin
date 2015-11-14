@@ -1316,13 +1316,13 @@ function fn_lhb()
             SELECT ${columns}, round(chng,1) as chng,
             ${sql_next}
             ${sql_tov}
+            round(l.amount/10000, 2) as eLHB,
             round(l.buy/10000, 2) as buy,
             round(l.sell/10000, 2) as sell,
             bloo,sloo,
-            (bloo-sloo) as net,
+            round((l.buy-l.sell)/${nmcYi0%as*}/100,2) as net,
             round(bloo/sloo, 2) as bsp,
             ${sql_avrg}
-            round(l.amount/10000, 2) as eLHB,
             round(l.buy/bloo/100, 2) as eYi, ${nmcYi0},
             c.name FROM lhb as l,cap as c ${sql_xtempday}
             WHERE l.code=c.code ${sql_relate} 
@@ -1376,55 +1376,125 @@ function fn_lhb()
 
 function fn_wolf()
 {
+    function fn_isqls()
+    {
+        sqls="
+            SELECT ${fdate}w.code, w.rise,
+            round( (100*(w.amount/shou-d.yesc)/d.yesc), 1) as avrg,
+            tov,
+            round(nmc*net/100, 2) as eWolf,
+            (pbuy+nbuy) as buy,
+            (psell+nsell) as sell,
+            round(100*(pbuy+nbuy)/tov, 1) as bloo,
+            round(100*(psell+nsell)/tov, 1) as sloo,
+            round(net, 1) as net,
+            round((pbuy/nbuy), 1) as Go,
+            round((pbuy+nbuy)/(psell+nsell), 2) as bsp,
+            round((w.shou/h.volume), 1) as prop,
+    --      round((w.shou/t.mavol5), 1) as prop5, 
+            h.scale,
+            round(w.amount/10000, 2) as eYi, 
+            nmc as nmcYi, w.name 
+            FROM xdde as w ${sql_xtempday}, curr_lohi as h
+    --      HAVING可以加速
+            ${WHERE} w.code=d.code && w.code=h.code ${sql_relate} && ${HAVING:-1} 
+            HAVING 1 ${CAUSE} ${COND} ${ORDER:-ORDER by ${field} DESC} LIMIT ${LIMIT:-36}
+        "
+        #echo "${sqls}"; exit
+    }
+
+    function fn_list_times()
+    {
+        fn_echo_warn "time @${END}"
+        mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC" | cat -n
+        exit
+    }
+
+    if [ -n "${CAUSE}" ]; then
+        CAUSE=`
+                sed -e "s/c3/rise<9.93/"    \
+                    -e "s/c5/avrg>5/"       \
+                    -e "s/c1/Go>1/"         \
+                    -e 's/A/\&\&/g'         \
+                    -e 's/O/||/g' <<< "${CAUSE}"`
+        # echo ${CAUSE}; exit
+        CAUSE="and (${CAUSE})"
+        fn_echo_warn "CAUSE: ${CAUSE}"
+    fi
+
     sql_maxdate="SELECT max(date) FROM dde"
     max_dt=`mysql -N kts <<< "${sql_maxdate}"`
-
-    if [ "${max_dt}" != ${CURR} ]; then
-        fn_echo_fail "dde is lagged"
-        return 1
-    fi
+    [ "${max_dt}" != ${CURR} ] && { fn_echo_fail "dde is lagged"; return 1; }
+    sql_maxend="SELECT max(end) FROM mat_lohi"
+    max_end=`mysql -N kts <<< "${sql_maxend}"`
+    [ "${max_end}" != ${PREV} ] && { fn_echo_fail "lohi is lagged"; return 1; }
+   #hilo_curr="( SELECT * FROM mat_lohi WHERE end='${PREV}' and num=${iNUM:-8} )"
 
     case $1 in
     l|dates)
         fn_list_date $2
         ;;
-    s|select)
-        fn_yist
+    c|cd|code)
+        fn_iscode $2
+        xt_ret $? "code:${2}" || return $?
+        fn_xtempday $2
+        xt_ret $? "xtempday error" || return $?
 
-        fn_isdigit ${2:-1}
-        xt_ret $? "\$2[$2] must be digit" || return $?
 
-        field=${2:-bsp}
-        date=`fn_get_date ${2:-1}`
-        fn_echo_warn "wolf of ${date} ${field}"
+        if [ "${1}" = cd ]; then
+            fdate="w.date,"
+            ORDER="ORDER by date DESC"
+            iTBL=dde
+        else
+            fdate="DATE_FORMAT(w.date,'%m-%d')as date,time,"
+            ORDER="ORDER by date DESC, time DESC"
+        fi
 
-        fn_xdde ${date}
+        xCol=code fn_xCol ${iTBL:-mat_dde} xdde ${2}
         xt_ret $? "" || return $?
+
+        COND="${COND} and code=${2}"
+        sql_relate="&& w.date=d.date"
+        sql_xtempday=", xtempday as d"
+        LIMIT=${LIMIT:-20}
+        fn_isqls
+        mysql -t kts <<<"${sqls}"
+        fn_chao
+        ;;
+    s|st|select)
+        fn_yist
+        sta=${2:-1}
+        fn_isdigit ${sta}
+        if [ "${?}" -eq 0 ]; then
+            field=${3:-net}
+        else
+            field=$2; sta=1; 
+        fi
+
+        if [ "$1" = st ]; then
+            [ "${2}" = l ] && fn_list_times
+            let sta--
+            stime=`mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC LIMIT ${sta},1"`
+            xCOND="time='${stime}'" xCol=date fn_xCol mat_dde xdde ${END}
+            xt_ret $? "" || return $?
+        else
+            date=`fn_get_date ${sta}`
+            stime=`mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${date}' ORDER by time DESC LIMIT 1"`
+            xCol=date fn_xCol dde xdde ${date}
+            xt_ret $? "" || return $?
+        fi
+
+        PREV=`END=${date:-${END}} fn_get_prev`
+        xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
+        xt_ret $? "" || return $?
+
+        fn_echo_warn "wolf of ${date:-${END}}.${stime:-latest} ${field}"
 
         fn_xtempday ${date}
         xt_ret $? "xtempday error" || return $?
         sql_xtempday=", xtempday as d"
 
-        columns=code,pcnt,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name
-
-        sqls="
-            SELECT w.code, w.rise,
-            round( (100*(w.amount/shou-d.yesc)/d.yesc), 1) as avrg,
-            tov,
-            round(nmc*(pbuy+nbuy)/100, 2) as buy,
-            round(nmc*(psell+nsell)/100, 2) as sell,
-            round(100*(pbuy+nbuy)/tov, 2) as bloo,
-            round(100*(psell+nsell)/tov, 2) as sloo,
-            round(100*(pbuy+nbuy-psell-nsell)/tov, 2) as net,
-            round((pbuy+nbuy)/(psell+nsell), 2) as bsp,
-            round(nmc*(pbuy+nbuy+psell+nsell)/100, 2) as eWolf,
-            round(w.amount/10000, 2) as eYi, 
-            nmc as nmcYi, w.name 
-            FROM xdde as w ${sql_xtempday}
-            ${WHERE} w.code=d.code
-            HAVING 1 ${COND} ORDER by ${field} DESC LIMIT ${LIMIT:-36}
-        "
-        #echo "${sqls}"; exit
+        fn_isqls
         mysql -t kts <<<"${sqls}"
         fn_chao
         ;;
@@ -1432,17 +1502,19 @@ function fn_wolf()
         fn_echo_succ "\tlhb max_date@${max_dt}"
         echo "
         SELECT wolf <param>
-        c code  指定代码
-        l       日期list
-        s       SELECT
+        l           date-list
+        s           SELECT
+        st  idx|l   SELECT time or list-times
+        c   code    指定代码
+        cd  code    指定代码
 
-        CAUSE='3 7 8 s t'
-        c3   3up20
-        c7   up7
-        c8   +5%         ----- 3+7=8
-        cs   s3up12
-        ct   tov20
-        b>p> bloo.bsp    tov!>20 && avrg>7 && opri>3 (tov太大即3日内到头 && 和大猪在一起 && 起飞的欲望)
+        CAUSE:
+        c3  rise<9.93
+        "
+        fn_echo_warn "
+        DESCRIPTION
+        alpha dde_net/tov>10%，越大则攻击力越强。
+        wolf  buy(positive/negtive)>1，越大则攻击力越强。
         "
         ;;
     esac
@@ -1560,7 +1632,7 @@ function fn_blk()
          GROUP by blk ORDER by num DESC LIMIT ${LIMIT:-36};
         " | mysql -t kts
         ;;
-    a|ace)
+    s|sort)
         off=${2:-1}
         xCOND="TRUNCATE(100*(close-yesc)/yesc, 2)>${DOOR:-9.93}"
         dates=(`fn_get_date 1 ${off}`)
@@ -1573,7 +1645,7 @@ function fn_blk()
             SELECT hex(n.blk) as xblk, count(m.code) as num, n.sym FROM blk_name as n, blk_memb as m, xtempday as d
             WHERE n.blk=m.blk and m.code=d.code 
              GROUP by xblk HAVING xblk not in('CE54', 'DAE8', 'DBD4', 'D886')
-             ORDER by num DESC LIMIT ${LIMIT:-36};
+             ORDER by num DESC LIMIT ${LIMIT:-16};
             " | mysql -t kts
         done
         ;;
@@ -1639,7 +1711,7 @@ function fn_blk()
         echo "
         SELECT blk <param>
         l               # layout
-        a off           # 指定off日内的热门，看点在<可查看历史日spot>
+        s off           # sort 指定off日内的热门，看点在<可查看历史日spot>
         b [off]         # 列出指定BLKs关联code的涨幅
         c code          # 显示code关联的所有板块
         u blk           # blk中code关联的blk数目排名，越小，概念越纯正

@@ -11,6 +11,8 @@ function fn_up_raw()
     fresh=600
     epoch=`date --date="${fresh} minute ago" +%s`
     t1500=`date --date="${CURR} 15:00:00" +%s`
+    t1130=`date --date="${CURR} 11:30:00" +%s`
+    t1300=`date --date="${CURR} 13:00:00" +%s`
 
     if [ "${ctime}" -lt ${epoch} ]; then
         past=`echo "scale=1;${fresh}+(${epoch}-${ctime})/60" | bc -l`
@@ -20,6 +22,7 @@ function fn_up_raw()
 
     # 收盘后处理
     [ "${ctime}" -gt ${t1500} ] && ctime=${t1500}
+    [ "${ctime}" -gt ${t1130} ] && [ "${ctime}" -lt ${t1300} ] && ctime=${t1130}
     HHMMSS=`date -d @${ctime} +%T`
 
     # 代码   名称  机构动向     主动买入比  被动买入比  主动卖出比  被动卖出比 
@@ -36,7 +39,7 @@ function fn_up_raw()
         -e "/${tag_blank}/d" -e '/^$/d' ${wolf_raw}         \
         | awk '{
             printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%.2f\t%.2f\t%s\n", 
-            $1,$3,$4,$5,$6,$7,$8,$9,10,$11/10000,$12, $13/10000, $14/100000000,$2
+            $1,$3,$4,$5,$6,$7,$8,$9,$10,$11/10000,$12, $13/10000, $14/100000000,$2
         }' \
         | sed "s/^/${CURR}\t${HHMMSS}\t/g" > ${wolf_rip}
 
@@ -54,7 +57,7 @@ function fn_up_rip()
         date        date NOT NULL DEFAULT 0,
         time        time NOT NULL, 
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
-        pcnt        DECIMAL(6,2) NOT NULL DEFAULT 0, -- dec(p-n)/sum(p+n)
+        net         DECIMAL(6,2) NOT NULL DEFAULT 0, -- dec(p-n)/sum(p+n)
         pbuy        DECIMAL(6,2) NOT NULL DEFAULT 0,
         nbuy        DECIMAL(6,2) NOT NULL DEFAULT 0,
         psell       DECIMAL(6,2) NOT NULL DEFAULT 0,
@@ -75,15 +78,15 @@ function fn_up_rip()
     DROP   TEMPORARY TABLE IF EXISTS ddx;
     CREATE TEMPORARY TABLE ddx LIKE mat_dde;
     LOAD DATA LOCAL INFILE '${wolf_rip}' INTO TABLE 
-           ddx(date,time,code,pcnt,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name);
+           ddx(date,time,code,net,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name);
 
     DELETE FROM     dde WHERE date='${CURR}';
-    INSERT INTO     dde(date,time,code,pcnt,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name)
-        SELECT date,time,code,pcnt,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name FROM ddx;
+    INSERT INTO     dde(date,time,code,net,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name)
+        SELECT date,time,code,net,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name FROM ddx;
 
     DELETE FROM mat_dde WHERE date='${CURR}' && time='${HHMMSS}';
-    INSERT INTO mat_dde(date,time,code,pcnt,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name) 
-        SELECT date,time,code,pcnt,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name FROM ddx;
+    INSERT INTO mat_dde(date,time,code,net,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name) 
+        SELECT date,time,code,net,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name FROM ddx;
     " | mysql kts   
     return $?
 }
@@ -112,7 +115,7 @@ function fn_main()
 
     *)
         echo "
-        Usage: wolf <param>...
+        Usage:  wolf <param>...
         up      update database from newest file
         "
         ;;
