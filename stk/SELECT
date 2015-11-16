@@ -1374,6 +1374,34 @@ function fn_lhb()
     return $?
 }
 
+function fn_realtime_wolf() 
+{
+    case $i in
+    0) YIST= fn_yist;iCOND='and d.code<100000' ;;
+    3) YIST= fn_yist;iCOND='and d.code>=300000 and d.code<400000' ;;
+    6) YIST= fn_yist;iCOND='and d.code>=600000 and d.code<700000' ;;
+    03)YIST= fn_yist;iCOND='and d.code<400000' ;;
+    a) YIST= fn_yist;iCOND='and d.code<700000' ;;
+    c)
+        iCOND=; YIST='.blk.cybz'
+        fn_yist
+        ;;
+    z)
+        iCOND=; YIST='.blk.zxbz'
+        fn_yist
+        ;;
+    *) echo "SELECT wolf real 0|3|6|03|c|z|a";exit; ;;
+    esac
+    #fn_echo_warn "SELECT sum(nmc*net)/sum(nmc) FROM dde $WHERE date='${END}' ${iCOND}"
+
+    if [ "${once}" = '' ]; then
+        fn_echo_warn "code\tnet\ttov @${END}"; once=1
+    fi
+    echo "
+    SELECT '$i', round(sum(nmc*net)/sum(nmc), 2), round(sum(amount)/100/sum(nmc), 2) FROM dde as d $WHERE date='${END}' ${iCOND};
+    " | mysql -N kts
+}
+
 function fn_wolf()
 {
     function fn_isqls()
@@ -1398,7 +1426,7 @@ function fn_wolf()
             FROM xdde as w ${sql_xtempday}, curr_lohi as h
     --      HAVING可以加速
             ${WHERE} w.code=d.code && w.code=h.code ${sql_relate} && ${HAVING:-1} 
-            HAVING 1 ${CAUSE} ${COND} ${ORDER:-ORDER by ${field} DESC} LIMIT ${LIMIT:-36}
+            HAVING 1 ${CAUSE} ${COND} ${ORDER:-ORDER by ${field} ${ASC:-DESC}} LIMIT ${LIMIT:-36}
         "
         #echo "${sqls}"; exit
     }
@@ -1424,15 +1452,24 @@ function fn_wolf()
 
     sql_maxdate="SELECT max(date) FROM dde"
     max_dt=`mysql -N kts <<< "${sql_maxdate}"`
+    sql_mindate="SELECT min(date) FROM dde"
+    min_dt=`mysql -N kts <<< "${sql_mindate}"`
     [ "${max_dt}" != ${CURR} ] && { fn_echo_fail "dde is lagged"; return 1; }
     sql_maxend="SELECT max(end) FROM mat_lohi"
     max_end=`mysql -N kts <<< "${sql_maxend}"`
-    [ "${max_end}" != ${PREV} ] && { fn_echo_fail "lohi is lagged"; return 1; }
+    fn_issqltrue "'${max_end}' >= '${PREV}'"
+    [ "${?}" -ne 0 ] && { fn_echo_fail "lohi is lagged"; return 1; }
    #hilo_curr="( SELECT * FROM mat_lohi WHERE end='${PREV}' and num=${iNUM:-8} )"
 
     case $1 in
     l|dates)
         fn_list_date $2
+        ;;
+    r|realtime)
+        param=${@:2}
+        for i in ${param:-NULL}; do
+            fn_realtime_wolf $i
+        done
         ;;
     c|cd|code)
         fn_iscode $2
@@ -1499,7 +1536,7 @@ function fn_wolf()
         fn_chao
         ;;
     *)
-        fn_echo_succ "\tlhb max_date@${max_dt}"
+        fn_echo_succ "\twolf date ${min_dt}~${max_dt}"
         echo "
         SELECT wolf <param>
         l           date-list
@@ -1565,16 +1602,16 @@ function fn_stat()
     fn_realtimetov0() {
         LIMIT=2 SELECT vol $1
         case $1 in
-        0) CONd='and code<100000' ;;
-        3) CONd='and code>=300000 and code<400000' ;;
-        6) CONd='and code>=600000 and code<700000' ;;
-        03)CONd='and code<400000' ;;
-        a) CONd='and code<700000' ;;
+        0) iCOND='and code<100000' ;;
+        3) iCOND='and code>=300000 and code<400000' ;;
+        6) iCOND='and code>=600000 and code<700000' ;;
+        03)iCOND='and code<400000' ;;
+        a) iCOND='and code<700000' ;;
         *) echo "SELECT stat {t|tt} 0|3|6|03|a" ;;
         esac
         echo "
-            SELECT sum(amount) FROM ${TEMPDAY:-day} WHERE date='${END}' ${CONd} INTO @curr;
-            SELECT ROUND(@curr/sum(amount), 3) as ratio FROM day WHERE date='${PREV}' ${CONd};
+            SELECT sum(amount) FROM ${TEMPDAY:-day} WHERE date='${END}' ${iCOND} INTO @curr;
+            SELECT ROUND(@curr/sum(amount), 3) as ratio FROM day WHERE date='${PREV}' ${iCOND};
         " | mysql -N kts
     }
     case $1 in

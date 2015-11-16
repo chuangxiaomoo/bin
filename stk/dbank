@@ -177,7 +177,7 @@ function fn_txttbl()
     fi
 }
 
-fn_10jqka() 
+fn_gen_10jqka_sel() 
 {
     rows=`wc -l < ${PLAIN}`
     rowx1=`bc <<< "obase=16;${rows}%256"`
@@ -199,7 +199,7 @@ function fn_chao()
     sql_chao="${PREFIX}SELECT code FROM (${sqls}) as t"
     # echo "${sql_chao}"; exit
     mysql -N kts <<<"${sql_chao}" |grep '^[036]'| uniq|tee ${TEE} ${PLAIN} > /dev/null 
-    fn_10jqka
+    fn_gen_10jqka_sel
     # up file_to_table ${PLAIN}
     # xt_ret $? "${FUNCNAME}" || return $?
     return $?
@@ -218,7 +218,34 @@ function fn_yist()
         # scene 2
         WHERE=",yist as y WHERE ${ABBR:-d}.code=y.code &&"
         CID="y.id,"
+    else
+        WHERE=WHERE
     fi
+}
+
+function fn_get_export_file()
+{
+    epath='/Export/'
+    efile=${epath}/`ls -t ${epath} | head -1`
+    ctime=`ls -lt --time-style=+%s ${efile} | awk '{print $6}'`
+    fresh=600
+    epoch=`date --date="${fresh} minute ago" +%s`
+    t1500=`date --date="${CURR} 15:00:00" +%s`
+    t1130=`date --date="${CURR} 11:30:00" +%s`
+    t1300=`date --date="${CURR} 13:00:00" +%s`
+
+    if [ "${ctime}" -lt ${epoch} ]; then
+        past=`echo "scale=1;${fresh}+(${epoch}-${ctime})/60" | bc -l`
+        fn_echo_fail "[fresh:${fresh}] ${efile} is lagged ${past} min"
+        return 1
+    fi
+
+    # 收盘后处理
+    [ "${ctime}" -gt ${t1500} ] && ctime=${t1500}
+    [ "${ctime}" -gt ${t1130} ] && [ "${ctime}" -lt ${t1300} ] && ctime=${t1130}
+    HHMMSS=`date -d @${ctime} +%T`
+    
+    return 0
 }
 
 function fn_xblk()
@@ -280,7 +307,7 @@ function fn_isdatetime()
 
 function fn_issqltrue()
 {
-    RET=`mysql kts <<< "SELECT IF(${*}, 0, 1)"`
+    RET=`mysql -N kts <<< "SELECT IF(${*}, 0, 1)"`
     return $RET
 }
 

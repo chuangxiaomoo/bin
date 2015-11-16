@@ -743,11 +743,11 @@ function fn_dorat()
     # [ $hhmm = 0940 ] || [ $hhmm = 0950 ] || [ $hhmm = 1015 ]
     hhmm=`date +%H%M | sed 's/^0//'`;
     
-    if [ "${hhmm}" -lt 1340 ]; then
-        let got30=hhmm%100%15
-    else
-        let got30=hhmm%100%30
-    fi
+    # if [ "${hhmm}" -lt 1400 ]; then
+          let got30=hhmm%100%15
+    # else
+    #     let got30=hhmm%100%30
+    # fi
 
     if [ "${got30}" -le 1 ] || [ $hhmm = 935 ]; then
         fn_bell "online.wav"
@@ -1112,32 +1112,6 @@ function fn_fenbi()
     " | mysql kts
 }
 
-function fn_blk()
-{    
-    iconv -f cp936 -t utf8 .ccept.ini | grep -E '^40=|^B3=|^[0-9A-F]{4}=[^$]' | grep -v ':' > ${blk_name}.raw
-    iconv -f cp936 -t utf8 .ccept.ini | grep -E '^40=|^B3=|^[0-9A-F]{4}=[^$]' | grep    ':' > ${blk_list}
-    sed -i -e 's/^/0x/g' -e 's/=/\t/g' ${blk_name}.raw
-    sed -i -e 's/^/0x/g' -e 's/[0-9][0-9]://g' -e 's/=/,/g' -e 's/,$//g' ${blk_list}
-
-    awk '{printf "%d\t%s\n", $1,$2}' ${blk_name}.raw > ${blk_name}
-
-    awk -F ',' '{
-        for (i = 2; i <= NF; i++) {
-            printf("%d\t%s\n", $1,$i)
-        }
-    }' ${blk_list} > ${blk_memb}
-
-    echo "
-    TRUNCATE TABLE blk_name;
-    TRUNCATE TABLE blk_memb;
-    LOAD DATA LOCAL INFILE '${blk_name}' INTO TABLE blk_name;
-    LOAD DATA LOCAL INFILE '${blk_memb}' INTO TABLE blk_memb;
-    " | mysql kts
-    xt_ret $? "mysql" || return $?
-    
-    fn_echo_succ "up blk succ!"
-}
-
 function fn_yysj()
 {
     pages=0       # assign to 0 to SKIP download, 100 to normal DL
@@ -1285,7 +1259,6 @@ function fn_main()
     "fenbi  code 2015mmdd               # "
     "money                              # ---------资金分析---------"
     "power                              # 权重分析"
-    "blk                                # 板块信息"
     "merge  file...                     # 合并多个文件到chao.merge"
     )
 
