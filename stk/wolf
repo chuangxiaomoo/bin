@@ -5,29 +5,12 @@
 
 function fn_up_raw()
 {
-    epath='/Export/'
-    efile=`ls -t ${epath} | head -1`
-    ctime=`ls -lt --time-style=+%s ${epath}/${efile} | awk '{print $6}'`
-    fresh=600
-    epoch=`date --date="${fresh} minute ago" +%s`
-    t1500=`date --date="${CURR} 15:00:00" +%s`
-    t1130=`date --date="${CURR} 11:30:00" +%s`
-    t1300=`date --date="${CURR} 13:00:00" +%s`
-
-    if [ "${ctime}" -lt ${epoch} ]; then
-        past=`echo "scale=1;${fresh}+(${epoch}-${ctime})/60" | bc -l`
-        fn_echo_fail "[fresh:${fresh}] ${efile} is laged ${past} min"
-        return 1
-    fi
-
-    # 收盘后处理
-    [ "${ctime}" -gt ${t1500} ] && ctime=${t1500}
-    [ "${ctime}" -gt ${t1130} ] && [ "${ctime}" -lt ${t1300} ] && ctime=${t1130}
-    HHMMSS=`date -d @${ctime} +%T`
+    fn_get_export_file
+    xt_ret $? "" || return $?
 
     # 代码   名称  机构动向     主动买入比  被动买入比  主动卖出比  被动卖出比 
     # 涨幅%  现价  涨速%        总手        换手        金额        流通市值    所属行业
-    iconv -f cp936 -t utf8 ${epath}/${efile} | tail -n+2 > ${wolf_raw}
+    iconv -f cp936 -t utf8 ${efile} | tail -n+2 > ${wolf_raw}
     if ! grep -q SZ300 ${wolf_raw}; then
         fn_echo_fail "not a wolf file"
         return 1
@@ -43,7 +26,6 @@ function fn_up_raw()
         }' \
         | sed "s/^/${CURR}\t${HHMMSS}\t/g" > ${wolf_rip}
 
-    # 13:43:31
     # echo ${efile} ${ctime} ${epoch} $HHMMSS
     
     return $?
