@@ -1265,7 +1265,7 @@ function fn_lhb()
         ;;
     c|n|s|S)
         if [ $1 = S ]; then
-            fdate='date,'
+            col_date='date,'
             field=$2
         elif [ $1 = c ]; then
             fn_iscode $2
@@ -1273,7 +1273,7 @@ function fn_lhb()
             fn_xtempday $2
             xt_ret $? "xtempday error" || return $?
             COND="${COND} and code=${2}"
-            fdate='date,'
+            col_date='date,'
             field=${3:-date}
             sql_relate="&& l.date=d.date"
             sql_xtempday=", xtempday as d"
@@ -1310,7 +1310,7 @@ function fn_lhb()
 
         fn_echo_warn "CAUSE: ${CAUSE}"
 
-        columns="${fdate}code,cause"
+        columns="${col_date}code,cause"
         columns=l.${columns//,/,l.}
         sqls="
             SELECT ${columns}, round(chng,1) as chng,
@@ -1402,35 +1402,72 @@ function fn_realtime_wolf()
     " | mysql -N kts
 }
 
+function fn_wolf_sqls()
+{
+    DOOR=${DOOR:-0}
+    yesc='(trade/(1+rise/100))'
+    sqls="
+        SELECT ${col_date}w.code, w.rise,
+        round( (100*(w.amount/shou-$yesc)/$yesc), 1) as avrg,
+        tov,
+        round(nmc*net/100, 2) as eWolf,
+        (pbuy+nbuy) as buy,
+        (psell+nsell) as sell,
+        round(100*(pbuy+nbuy)/tov, 1) as bloo,
+        round(100*(psell+nsell)/tov, 1) as sloo,
+        round(net, 1) as net,
+        round((pbuy/nbuy), 1) as Go,
+        round((pbuy+nbuy)/(psell+nsell), 2) as bsp,
+        round((w.shou/h.volume), 1) as prop, h.scale,
+        round(w.amount/10000, 2) as eYi, 
+        nmc as nmcYi, w.name 
+        FROM xdde as w, curr_lohi as h
+        ${WHERE} w.code=h.code && net>${DOOR}     -- WHERE(net>0)加速3倍
+        HAVING 1 ${CAUSE} ${COND} ${ORDER:-ORDER by ${field} ${ASC:-DESC}} LIMIT ${LIMIT:-36}
+    "
+    fn_echo_warn "wolf of ${date:-${END}}.${stime:-latest} [DOOR:${DOOR}] ${field}"
+    #echo "${sqls}"; exit
+}
+
+function fn_nDDE_sqls()
+{
+    DOOR=${DOOR:-0}
+    yesc='(trade/(1+rise/100))'
+    sqls="
+    SELECT 
+            sum(rise) as wise, 
+            sum(net) as wet,
+        t.* FROM (
+        SELECT w.date,w.code, w.rise,
+        round( (100*(w.amount/shou-$yesc)/$yesc), 1) as avrg,
+        tov,
+        round(nmc*net/100, 2) as eWolf,
+        (pbuy+nbuy) as buy,
+        (psell+nsell) as sell,
+        round(100*(pbuy+nbuy)/tov, 1) as bloo,
+        round(100*(psell+nsell)/tov, 1) as sloo,
+        round(net, 1) as net,
+        round((pbuy/nbuy), 1) as Go,
+        round((pbuy+nbuy)/(psell+nsell), 2) as bsp,
+        round((w.shou/h.volume), 1) as prop, h.scale,
+        round(w.amount/10000, 2) as eYi, 
+        nmc as nmcYi, w.name 
+        FROM ${WOLf} as w, curr_lohi as h
+        ${WHERE} w.code=h.code
+        && w.date>='${STA}' && w.date<='${END}' 
+        ORDER by code ASC, date DESC
+    ) as t 
+    GROUP by code LIMIT 5;
+    "
+    #   GROUP by code 
+    #   HAVING 1 ${CAUSE} ${COND} ORDER by ${field} ${ASC:-DESC}} LIMIT ${LIMIT:-24}
+    #-- && net>${DOOR}     -- WHERE(net>0)加速3倍
+    fn_echo_warn "wolf of ${date:-${END}}.${stime:-latest} [DOOR:${DOOR}] ${field}"
+    # echo "${sqls}"; exit
+}
+
 function fn_wolf()
 {
-    function fn_isqls()
-    {
-        sqls="
-            SELECT ${fdate}w.code, w.rise,
-            round( (100*(w.amount/shou-d.yesc)/d.yesc), 1) as avrg,
-            tov,
-            round(nmc*net/100, 2) as eWolf,
-            (pbuy+nbuy) as buy,
-            (psell+nsell) as sell,
-            round(100*(pbuy+nbuy)/tov, 1) as bloo,
-            round(100*(psell+nsell)/tov, 1) as sloo,
-            round(net, 1) as net,
-            round((pbuy/nbuy), 1) as Go,
-            round((pbuy+nbuy)/(psell+nsell), 2) as bsp,
-            round((w.shou/h.volume), 1) as prop,
-    --      round((w.shou/t.mavol5), 1) as prop5, 
-            h.scale,
-            round(w.amount/10000, 2) as eYi, 
-            nmc as nmcYi, w.name 
-            FROM xdde as w ${sql_xtempday}, curr_lohi as h
-    --      HAVING可以加速
-            ${WHERE} w.code=d.code && w.code=h.code ${sql_relate} && ${HAVING:-1} 
-            HAVING 1 ${CAUSE} ${COND} ${ORDER:-ORDER by ${field} ${ASC:-DESC}} LIMIT ${LIMIT:-36}
-        "
-        #echo "${sqls}"; exit
-    }
-
     function fn_list_times()
     {
         fn_echo_warn "time @${END}"
@@ -1474,16 +1511,13 @@ function fn_wolf()
     c|cd|code)
         fn_iscode $2
         xt_ret $? "code:${2}" || return $?
-        fn_xtempday $2
-        xt_ret $? "xtempday error" || return $?
-
 
         if [ "${1}" = cd ]; then
-            fdate="w.date,"
+            col_date="w.date,"
             ORDER="ORDER by date DESC"
             iTBL=dde
         else
-            fdate="DATE_FORMAT(w.date,'%m-%d')as date,time,"
+            col_date="DATE_FORMAT(w.date,'%m-%d')as date,time,"
             ORDER="ORDER by date DESC, time DESC"
         fi
 
@@ -1491,10 +1525,37 @@ function fn_wolf()
         xt_ret $? "" || return $?
 
         COND="${COND} and code=${2}"
-        sql_relate="&& w.date=d.date"
-        sql_xtempday=", xtempday as d"
         LIMIT=${LIMIT:-20}
-        fn_isqls
+        DOOR=-50 fn_wolf_sqls
+        mysql -t kts <<<"${sqls}"
+        fn_chao
+        ;;
+    n|nDDE)
+        fn_yist
+        sta=${2:-1}
+        fn_isdigit ${sta}
+        if [ "${?}" -eq 0 ]; then
+            field=${3:-net}
+        else
+            field=$2; sta=1; 
+        fi
+
+        [ "${2}" = l ] && fn_list_times
+
+        if [ ${sta} -eq 1 ]; then
+            echo "
+            "
+        else
+            echo "
+            "
+        fi
+
+        PREV=`END=${date:-${END}} fn_get_prev`
+        xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
+
+        NUM=${NUM:-2}
+        STA=`fn_get_date ${NUM}`
+        WOLf=dde fn_nDDE_sqls
         mysql -t kts <<<"${sqls}"
         fn_chao
         ;;
@@ -1525,13 +1586,7 @@ function fn_wolf()
         xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
         xt_ret $? "" || return $?
 
-        fn_echo_warn "wolf of ${date:-${END}}.${stime:-latest} ${field}"
-
-        fn_xtempday ${date}
-        xt_ret $? "xtempday error" || return $?
-        sql_xtempday=", xtempday as d"
-
-        fn_isqls
+        fn_wolf_sqls
         mysql -t kts <<<"${sqls}"
         fn_chao
         ;;
@@ -1539,11 +1594,13 @@ function fn_wolf()
         fn_echo_succ "\twolf date ${min_dt}~${max_dt}"
         echo "
         SELECT wolf <param>
-        l           date-list
-        s           SELECT
-        st  idx|l   SELECT time or list-times
-        c   code    指定代码
-        cd  code    指定代码
+        l               date-list
+        n|nDDE  idx     {NUM:-2}日DDE统计，变量代表日数
+        r|RT            SELECT
+        s               SELECT
+        st      idx|l   SELECT time or list-times
+        c       code    按15分钟统计
+        cd      code    按日统计
 
         CAUSE:
         c3  rise<9.93

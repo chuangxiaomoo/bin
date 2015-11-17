@@ -81,118 +81,21 @@ function fn_10jqka()
     fn_echo_succ "up blk succ!"
 }
 
-function fn_up_bbd()
-{
-    echo "
-    CREATE TABLE IF NOT EXISTS mat_bbd (
-        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
-        date        date NOT NULL DEFAULT 0,
-        time        time NOT NULL, 
-
-        rise        DECIMAL(12,2) NOT NULL DEFAULT 0,
-        dde         DECIMAL(12,2) NOT NULL DEFAULT 0,
-
-        bbd_net     DECIMAL(12,2) NOT NULL DEFAULT 0,
-        bbd_amount  DECIMAL(12,2) NOT NULL DEFAULT 0,
-        bbd_buy     DECIMAL(12,2) NOT NULL DEFAULT 0,
-        bbd_sell    DECIMAL(12,2) NOT NULL DEFAULT 0,
-
-        up          INT,
-        down        INT,
-        name        CHAR(16),
-        INDEX(date,time,name)
-    );
-
-    CREATE TABLE IF NOT EXISTS bbd LIKE mat_bbd;
-
-    DROP   TEMPORARY TABLE IF EXISTS bbx;
-    CREATE TEMPORARY TABLE bbx LIKE mat_bbd;
-    LOAD DATA LOCAL INFILE '${wolf_rip}' INTO TABLE 
-           bbx(date,time,rise,dde,bbd_net,bbd_amount,bbd_buy,bbd_sell,up,down,name);
-
-    DELETE FROM     bbd WHERE date='${CURR}';
-    INSERT INTO     bbd(date,time,rise,dde,bbd_net,bbd_amount,bbd_buy,bbd_sell,up,down,name)
-        SELECT date,time,rise,dde,bbd_net,bbd_amount,bbd_buy,bbd_sell,up,down,name FROM bbx;
-
-    DELETE FROM mat_bbd WHERE date='${CURR}' && time='${HHMMSS}';
-    INSERT INTO mat_bbd(date,time,rise,dde,bbd_net,bbd_amount,bbd_buy,bbd_sell,up,down,name) 
-        SELECT date,time,rise,dde,bbd_net,bbd_amount,bbd_buy,bbd_sell,up,down,name FROM bbx;
-    " | mysql kts   
-    return $?
-}
-
-function fn_bbd()
-{
-    fn_get_export_file
-    xt_ret $? "" || return $?
-
-    # 代码   名称  机构动向     主动买入比  被动买入比  主动卖出比  被动卖出比 
-    # 涨幅%  现价  涨速%        总手        换手        金额        流通市值    所属行业
-    iconv -f cp936 -t utf8 ${efile} | tail -n+2 > ${wolf_raw}
-    if ! grep -q '机器人概念' ${wolf_raw}; then
-        fn_echo_fail "not a bbd file"
-        return 1
-    fi
-
-    tag_blank='--.--.--'
-    sed -e 's///g' -e 's/S.//g' -e 's/ //g'               \
-        -e 's/%//g' -e 's/\t$//g' -e 's/\t\t*/\t/g'         \
-        -e "/${tag_blank}/d" -e '/^$/d' ${wolf_raw}         \
-        | awk '{
-            printf "%s\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%s\t%s\t%s\n",
-            $2,$3,$4/10000,$5/10000,$6/10000,$7/10000,$8,$9,$1
-        }' \
-        | sed "s/^/${CURR}\t${HHMMSS}\t/g" > ${wolf_rip}
-    xt_ret $? "" || return $?
-
-    # echo ${efile} ${ctime} ${epoch} $HHMMSS
-
-    fn_up_bbd
-    xt_ret $? "" || return $?
-}
-
-function fn_layout_bbd()
-{
-    sqls="
-    SELECT l.code,count(l.code) as num, c.name FROM 
-        (SELECT m.code FROM (
-            SELECT name FROM bbd ORDER by bbd_amount DESC LIMIT ${LIMIT:-2}) as t, 
-            blk_name as n, blk_memb as m 
-            WHERE n.sym=t.name && n.blk=m.blk) as l, cap as c 
-    WHERE l.code=c.code 
-    GROUP by code 
-    HAVING 1 ${COND}
-    ORDER by num DESC
-    " 
-    mysql ${OPT:--t} kts <<<"${sqls}"
-    fn_chao ${chao}.bbd
-}
-
-
 function fn_main()
 {
     CURR=`fn_maxdate`
     case $1 in
-    b|B|BBD)
-        fn_bbd
-        ;;
     d|dzh)
         fn_dzh
         ;;
     t|10jqka)
         fn_10jqka
         ;;
-    l|layout_bbd)
-        fn_layout_bbd
-        ;;
     *)
         echo "
         Usage: blk <param>
         dzh         # dzh
         10jqka      # 同花顺
-        bbd         # 操盘热点导入
-        c           # 热点code
-        l           # 热点layout，观察概念叠加
         "
         ;;
     esac
