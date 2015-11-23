@@ -193,10 +193,10 @@ function fn_main()
         ;;
     h|*)
         echo "
-        Usage:  wolf <param>...
-        up      # DDE 
-        bbd     # 操盘热点导入
-        layout  # 热点layout，观察概念叠加
+        Usage:  wolf <param>...             (4/3):1 14.28   门槛
+        up      # DDE                       (3/2):1 20      登堂
+        bbd     # 操盘热点导入              (5/3):1 25      入室
+        layout  # 热点layout，观察概念叠加  (2/1):1 33      太极
         "
         ;;
     esac

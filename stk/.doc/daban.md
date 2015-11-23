@@ -1,4 +1,6 @@
-# dde.大单净量的思考 .doc/wolf.md
+# dde.大单净量的思考 
+.doc/wolf.md
+.doc/spot.md
 
 alpha dde_net/tov>10%，越大则攻击力越强。
 wolf  buy(positive/negtive)>1，越大则攻击力越强。[]()
