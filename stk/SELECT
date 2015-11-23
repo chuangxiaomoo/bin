@@ -1374,23 +1374,17 @@ function fn_lhb()
     return $?
 }
 
-function fn_realtime_wolf() 
+function fn_BBD_wolf() 
 {
+    fn_usage() { echo "SELECT wolf real 0|3|6|03|a|y";exit; }
     case $i in
     0) YIST= fn_yist;iCOND='and d.code<100000' ;;
     3) YIST= fn_yist;iCOND='and d.code>=300000 and d.code<400000' ;;
     6) YIST= fn_yist;iCOND='and d.code>=600000 and d.code<700000' ;;
     03)YIST= fn_yist;iCOND='and d.code<400000' ;;
     a) YIST= fn_yist;iCOND='and d.code<700000' ;;
-    c)
-        iCOND=; YIST='.blk.cybz'
-        fn_yist
-        ;;
-    z)
-        iCOND=; YIST='.blk.zxbz'
-        fn_yist
-        ;;
-    *) echo "SELECT wolf real 0|3|6|03|c|z|a";exit; ;;
+    y) [ -z "${YIST}" ] && fn_usage || iCOND= fn_yist ;;
+    *) fn_usage ;;
     esac
     #fn_echo_warn "SELECT sum(nmc*net)/sum(nmc) FROM dde $WHERE date='${END}' ${iCOND}"
 
@@ -1398,35 +1392,60 @@ function fn_realtime_wolf()
         fn_echo_warn "code\tnet\ttov @${END}"; once=1
     fi
     echo "
-    SELECT '$i', round(sum(nmc*net)/sum(nmc), 2), round(sum(amount)/100/sum(nmc), 2) FROM dde as d $WHERE date='${END}' ${iCOND};
+    SELECT '$i', round(sum(nmc*net)/sum(nmc), 2), round(sum(amount)/100/sum(nmc), 2) 
+    FROM dde as d $WHERE date='${END}' ${iCOND};
     " | mysql -N kts
 }
 
 function fn_wolf_sqls()
 {
+    # 线性化是个好东西，但是还是应该分开来，而且各个指标都要满足
+    # col_Git='round(net*7/ LEAST( 7, round((mavol5/(100*nmc/trade)+14)/4) ), 2) as net5' # 4 5 6 7
+    SEC_113000=41400
+    SEC_093000=34200
+    SEC_110000=39600
+    col_vtov="IF( TIME_TO_SEC(time) <= ${SEC_113000}, TIME_TO_SEC(time)-${SEC_093000}, TIME_TO_SEC(time)-${SEC_110000} )"
+    col_vtov="ROUND((3600*4)/${col_vtov}*shou/h.volume, 2)"
+    field=${field:-net}
     DOOR=${DOOR:-0}
     yesc='(trade/(1+rise/100))'
     sqls="
-        SELECT ${col_date}w.code, w.rise,
+        SELECT ${col_date} w.code, w.rise,
         round( (100*(w.amount/shou-$yesc)/$yesc), 1) as avrg,
         tov,
-        round(nmc*net/100, 2) as eWolf,
+        round(nmc*(pbuy+nbuy)/100, 2) as eWolf,
         (pbuy+nbuy) as buy,
         (psell+nsell) as sell,
         round(100*(pbuy+nbuy)/tov, 1) as bloo,
         round(100*(psell+nsell)/tov, 1) as sloo,
-        round(net, 1) as net,
-        round((pbuy/nbuy), 1) as Go,
+        net,
+        round((pbuy/nbuy), 2) as Go,
         round((pbuy+nbuy)/(psell+nsell), 2) as bsp,
+        ${col_vtov} as vtov,
         round((w.shou/h.volume), 1) as prop, h.scale,
         round(w.amount/10000, 2) as eYi, 
-        nmc as nmcYi, w.name 
+        nmc as nmcYi ${col_name}
         FROM xdde as w, curr_lohi as h
-        ${WHERE} w.code=h.code && net>${DOOR}     -- WHERE(net>0)加速3倍
+        ${WHERE} w.code=h.code && w.date<='${END}' ${iCOND} && net>${DOOR}     -- WHERE(net>0)加速3倍
         HAVING 1 ${CAUSE} ${COND} ${ORDER:-ORDER by ${field} ${ASC:-DESC}} LIMIT ${LIMIT:-36}
     "
     fn_echo_warn "wolf of ${date:-${END}}.${stime:-latest} [DOOR:${DOOR}] ${field}"
     #echo "${sqls}"; exit
+}
+
+function fn_asm_nDDE()
+{
+    echo "
+    DROP   TABLE IF EXISTS nDDE;
+    CREATE TABLE nDDE LIKE mat_dde;
+    INSERT INTO nDDE(date,time,code,net,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name) 
+        SELECT date,time,code,net,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name FROM dde
+        WHERE date>='${STA}' && date<'${END}';
+    INSERT INTO nDDE(date,time,code,net,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name) 
+        SELECT date,time,code,net,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name FROM mat_dde
+        WHERE date='${END}' && time='${stime}';
+    " | mysql kts
+    xt_ret $? "" || return $?
 }
 
 function fn_nDDE_sqls()
@@ -1434,19 +1453,21 @@ function fn_nDDE_sqls()
     DOOR=${DOOR:-0}
     yesc='(trade/(1+rise/100))'
     sqls="
-    SELECT 
-            sum(rise) as wise, 
-            sum(net) as wet,
-        t.* FROM (
+    SELECT code,
+        sum(net>=0) as red,
+        sum(rise) as wise, 
+        sum(net) as wet,
+        rise,avrg,tov,eWolf,buy,sell,net,Go,bsp,prop,scale,eYi,nmcYi,name
+        FROM (
         SELECT w.date,w.code, w.rise,
         round( (100*(w.amount/shou-$yesc)/$yesc), 1) as avrg,
         tov,
         round(nmc*net/100, 2) as eWolf,
         (pbuy+nbuy) as buy,
         (psell+nsell) as sell,
-        round(100*(pbuy+nbuy)/tov, 1) as bloo,
-        round(100*(psell+nsell)/tov, 1) as sloo,
-        round(net, 1) as net,
+        -- round(100*(pbuy+nbuy)/tov, 1) as bloo,
+        -- round(100*(psell+nsell)/tov, 1) as sloo,
+        round(net, 2) as net,
         round((pbuy/nbuy), 1) as Go,
         round((pbuy+nbuy)/(psell+nsell), 2) as bsp,
         round((w.shou/h.volume), 1) as prop, h.scale,
@@ -1456,14 +1477,13 @@ function fn_nDDE_sqls()
         ${WHERE} w.code=h.code
         && w.date>='${STA}' && w.date<='${END}' 
         ORDER by code ASC, date DESC
-    ) as t 
-    GROUP by code LIMIT 5;
+    ) as t
+    GROUP by code 
+    HAVING 1 ${CAUSE} ${COND} ORDER by ${field} ${ASC:-DESC} LIMIT ${LIMIT:-24}
     "
-    #   GROUP by code 
-    #   HAVING 1 ${CAUSE} ${COND} ORDER by ${field} ${ASC:-DESC}} LIMIT ${LIMIT:-24}
     #-- && net>${DOOR}     -- WHERE(net>0)加速3倍
-    fn_echo_warn "wolf of ${date:-${END}}.${stime:-latest} [DOOR:${DOOR}] ${field}"
-    # echo "${sqls}"; exit
+    fn_echo_warn "wolf of ${END}.${stime:-latest} [NUM:${NUM}] [DOOR:${DOOR}] ${field}"
+    #echo "${sqls}"; exit
 }
 
 function fn_wolf()
@@ -1477,10 +1497,11 @@ function fn_wolf()
 
     if [ -n "${CAUSE}" ]; then
         CAUSE=`
-                sed -e "s/c3/rise<9.93/"    \
-                    -e "s/c5/avrg>5/"       \
-                    -e "s/c1/Go>1/"         \
-                    -e 's/A/\&\&/g'         \
+                sed -e "s/c9/rise>9.93/"        \
+                    -e "s/c8/rise<9.93/"        \
+                    -e "s/c5/avrg>5/"           \
+                    -e "s/c1/Go>1 A bsp>=1.5/"  \
+                    -e 's/A/\&\&/g'             \
                     -e 's/O/||/g' <<< "${CAUSE}"`
         # echo ${CAUSE}; exit
         CAUSE="and (${CAUSE})"
@@ -1495,17 +1516,17 @@ function fn_wolf()
     sql_maxend="SELECT max(end) FROM mat_lohi"
     max_end=`mysql -N kts <<< "${sql_maxend}"`
     fn_issqltrue "'${max_end}' >= '${PREV}'"
-    [ "${?}" -ne 0 ] && { fn_echo_fail "lohi is lagged"; return 1; }
+    [ "${?}" -ne 0 ] && { fn_echo_fail "lohi is lagged, updating..."; SCREENER lohi 1; return 1; }
    #hilo_curr="( SELECT * FROM mat_lohi WHERE end='${PREV}' and num=${iNUM:-8} )"
 
     case $1 in
     l|dates)
         fn_list_date $2
         ;;
-    r|realtime)
+    b|BBD)
         param=${@:2}
         for i in ${param:-NULL}; do
-            fn_realtime_wolf $i
+            fn_BBD_wolf $i
         done
         ;;
     c|cd|code)
@@ -1524,8 +1545,10 @@ function fn_wolf()
         xCol=code fn_xCol ${iTBL:-mat_dde} xdde ${2}
         xt_ret $? "" || return $?
 
-        COND="${COND} and code=${2}"
+        iCOND="and w.code=${2}"
         LIMIT=${LIMIT:-20}
+        col_name=
+        fn_name ${2}
         DOOR=-50 fn_wolf_sqls
         mysql -t kts <<<"${sqls}"
         fn_chao
@@ -1535,27 +1558,29 @@ function fn_wolf()
         sta=${2:-1}
         fn_isdigit ${sta}
         if [ "${?}" -eq 0 ]; then
-            field=${3:-net}
+            field=${3:-wet}
         else
             field=$2; sta=1; 
         fi
 
         [ "${2}" = l ] && fn_list_times
 
-        if [ ${sta} -eq 1 ]; then
-            echo "
-            "
-        else
-            echo "
-            "
-        fi
+        # 非实时统计，重新组装wOLF
 
         PREV=`END=${date:-${END}} fn_get_prev`
         xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
 
         NUM=${NUM:-2}
         STA=`fn_get_date ${NUM}`
-        WOLf=dde fn_nDDE_sqls
+
+        if [ ${sta} -ne 1 ]; then
+            let sta--
+            stime=`mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC LIMIT ${sta},1"`
+            WOLF=nDDE
+            fn_asm_nDDE
+            xt_ret $? "" || return $?
+        fi
+        WOLf=${WOLF:-dde} fn_nDDE_sqls
         mysql -t kts <<<"${sqls}"
         fn_chao
         ;;
@@ -1564,7 +1589,7 @@ function fn_wolf()
         sta=${2:-1}
         fn_isdigit ${sta}
         if [ "${?}" -eq 0 ]; then
-            field=${3:-net}
+            field=$3
         else
             field=$2; sta=1; 
         fi
@@ -1586,6 +1611,7 @@ function fn_wolf()
         xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
         xt_ret $? "" || return $?
 
+        col_name=',w.name'
         fn_wolf_sqls
         mysql -t kts <<<"${sqls}"
         fn_chao
@@ -1596,7 +1622,7 @@ function fn_wolf()
         SELECT wolf <param>
         l               date-list
         n|nDDE  idx     {NUM:-2}日DDE统计，变量代表日数
-        r|RT            SELECT
+        b|BBD           沪深BBD统计
         s               SELECT
         st      idx|l   SELECT time or list-times
         c       code    按15分钟统计
@@ -1609,6 +1635,8 @@ function fn_wolf()
         DESCRIPTION
         alpha dde_net/tov>10%，越大则攻击力越强。
         wolf  buy(positive/negtive)>1，越大则攻击力越强。
+
+        field=eWolf END=PREV COND='rise<9.93 && Go>1.5 && nmcYi<200'  SELECT wolf st 6
         "
         ;;
     esac

@@ -155,7 +155,7 @@ touch $file_ma240
 function fn_isresting()
 {
     hhmmss=`date +%H%M%S`
-    if ([ ${hhmmss} -ge 113000 ] && [ ${hhmmss} -lt 130000 ]) ||
+    if ([ ${hhmmss} -gt 113000 ] && [ ${hhmmss} -lt 130100 ]) ||
         [ ${hhmmss} -lt 093210 ] || [ ${hhmmss} -gt 145800 ]; then
         echo "is resting @${hhmmss}..."; 
         return 0
@@ -350,6 +350,17 @@ function fn_timestamp_market()
             " && return 1
         fi
     fi 
+}
+
+function fn_get_vtov()
+{
+    HMS=$1
+    SEC_113000=41400
+    SEC_093000=34200
+    SEC_110000=39600
+    echo "
+    SELECT IF( TIME_TO_SEC('${HMS}') <= ${SEC_113000}, TIME_TO_SEC('${HMS}')-${SEC_093000}, TIME_TO_SEC('${HMS}')-${SEC_110000} )/(3600*4)
+    " | mysql -N
 }
 
 function fn_get_ratio_close2open() 
@@ -627,12 +638,18 @@ fn_group_nmc_layout()
 
 }
 
+fn_test()
+{
+    fn_get_vtov 14:00:00
+}
+
 function main() 
 {
     list=(
         fn_group_nmc_layout
         fn_rank_by_nmc
         fn_4yist
+        fn_test
     )        
 
     match_word=(`echo ${list[@]}| xargs -n1 | cat -n | grep  "\<$1\>"`)
