@@ -143,7 +143,7 @@ GDP             60万亿
 
 # 最近的比热是7 = 100/(3%*5)
 
-root@mooLite:~/bin/stk# END=2015-11-10 SELECT wolf r 0 3 6 z c a _小涨0.34%，开始连续4天都是缩量...花说量越大越好，是有大原因的_
+root@mooLite:~/bin/stk# END=2015-11-10 SELECT wolf r 0 3 6 z c a _a=-.13 小涨0.34%，开始连续4天都是缩量...花说量越大越好，是有大原因的_
 code    net     tov @2015-11-10
 0       -0.17   4.20
 3       -0.24   5.98
@@ -151,7 +151,7 @@ code    net     tov @2015-11-10
 z       -0.27   3.54
 c       -0.15   4.89
 a       -0.13   3.20
-root@mooLite:~/bin/stk# END=2015-11-11 SELECT wolf r 0 3 6 z c a _小涨1.08%_
+root@mooLite:~/bin/stk# END=2015-11-11 SELECT wolf r 0 3 6 z c a _a=-.07 小涨1.08%_
 code    net     tov @2015-11-11
 0       -0.06   3.88
 3       -0.04   6.14
@@ -159,7 +159,7 @@ code    net     tov @2015-11-11
 z       -0.10   3.12
 c       -0.17   4.94
 a       -0.07   2.90
-root@mooLite:~/bin/stk# END=2015-11-12 SELECT wolf r 0 3 6 z c a _小跌_
+root@mooLite:~/bin/stk# END=2015-11-12 SELECT wolf r 0 3 6 z c a _a=-.17 小跌_
 code    net     tov @2015-11-12
 0       -0.22   4.33
 3       -0.45   6.78
@@ -167,7 +167,7 @@ code    net     tov @2015-11-12
 z       -0.30   3.66
 c       -0.54   5.57
 a       -0.17   3.13
-root@mooLite:~/bin/stk# END=2015-11-13 SELECT wolf r 0 3 6 z c a _大跌的一天_
+root@mooLite:~/bin/stk# END=2015-11-13 SELECT wolf r 0 3 6 z c a _a=-.19 大跌的一天_
 code    net     tov @2015-11-13
 0       -0.24   3.98
 3       -0.49   6.05
@@ -175,4 +175,11 @@ code    net     tov @2015-11-13
 z       -0.25   3.02
 c       -0.38   4.61
 a       -0.19   2.94
+
+# 资金与K线的连结
+
+1 中证流通K线与资金成完全正比
+2 各板块K线形成的波形叠加成<中证流通>的波形
+3 个股走势四个阶段：筑底、正超越、筑顶、负超越。顶和底之间，总有一位置，使得价格与价值重合。<或许叠加了一定的溢价>
+4 操作方案：寻找那些从筑底中起飞的票(连续资金正流入)。<经过2次以上diff后的数据更加有意义>
 

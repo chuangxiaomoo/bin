@@ -1216,14 +1216,15 @@ function fn_lhb()
 {
     if [ -n "${CAUSE}" ]; then
         CAUSE=`
-                sed -e "s/\<c3\>/cause='3up20'/"    \
-                    -e "s/\<c7\>/cause='up7'/"      \
-                    -e "s/\<c8\>/chng>=9.832/"      \
-                    -e "s/\<cs\>/cause='s3up12'/"   \
-                    -e "s/\<ct\>/cause='tov20'/"    \
+                sed -e "s/c3/cause='3up20'/"        \
+                    -e "s/c7/cause='up7'/"          \
+                    -e "s/c8/chng>=9.832/"          \
+                    -e "s/cs/cause='s3up12'/"       \
+                    -e "s/ct/cause='tov20'/"        \
                     -e "s/b>/bloo>/"                \
                     -e "s/p>/${LOGIC}bsp>/"         \
-                    -e 's/ /||/g' <<< "${CAUSE}"`
+                    -e 's/A/\&\&/g'                 \
+                    -e 's/O/||/g' <<< "${CAUSE}"`
         # echo ${CAUSE}; exit
         CAUSE="and (${CAUSE})"
     fi
@@ -1454,7 +1455,7 @@ function fn_nDDE_sqls()
     yesc='(trade/(1+rise/100))'
     sqls="
     SELECT code,
-        sum(net>=0) as red,
+        sum(net>=${DOOR}) as red,
         sum(rise) as wise, 
         sum(net) as wet,
         rise,avrg,tov,eWolf,buy,sell,net,Go,bsp,prop,scale,eYi,nmcYi,name
@@ -1496,11 +1497,16 @@ function fn_wolf()
     }
 
     if [ -n "${CAUSE}" ]; then
+        case ${CAUSE} in
+        ct) LIMIT=;;
+        esac
+
         CAUSE=`
                 sed -e "s/c9/rise>9.93/"        \
                     -e "s/c8/rise<9.93/"        \
                     -e "s/c5/avrg>5/"           \
                     -e "s/c1/Go>1 A bsp>=1.5/"  \
+                    -e "s/ct/net>0 A rise>0/"   \
                     -e 's/A/\&\&/g'             \
                     -e 's/O/||/g' <<< "${CAUSE}"`
         # echo ${CAUSE}; exit
@@ -1585,7 +1591,7 @@ function fn_wolf()
         fn_chao
         ;;
     s|st|select)
-        fn_yist
+        ABBR=w fn_yist
         sta=${2:-1}
         fn_isdigit ${sta}
         if [ "${?}" -eq 0 ]; then
@@ -1621,26 +1627,27 @@ function fn_wolf()
         echo "
         SELECT wolf <param>
         l               date-list
-        n|nDDE  idx     {NUM:-2}日DDE统计，变量代表日数
+        n|nDDE  idx     {NUM:-2}日DDE统计，变量代表日倒数索引
         b|BBD           沪深BBD统计
         s               SELECT
         st      idx|l   SELECT time or list-times
         c       code    按15分钟统计
-        cd      code    按日统计
-
-        CAUSE:
-        c3  rise<9.93
+        cd      code    按日统计\
         "
-        fn_echo_warn "
-        DESCRIPTION
-        alpha dde_net/tov>10%，越大则攻击力越强。
-        wolf  buy(positive/negtive)>1，越大则攻击力越强。
-
-        field=eWolf END=PREV COND='rise<9.93 && Go>1.5 && nmcYi<200'  SELECT wolf st 6
+        fn_echo_warn "\
+        CAUSE:
+        c1  攻击性  短期资金涌入，Go>1&&bsp>=1.5
+        ct  高换手  短线活跃资金，net>0Arise>0      -- 前两档和>1亿，并BSP>2
+        cT  博反弹  浙江永强
+        c5  >7保底  avrg>5
+        c8  非涨停  rise<9.93
+        c9  涨停    rise>9.93
+        "
+        fn_echo_succ "\
+        LIMIT=80 DOOR=-.1 COND='red>=4&&wise<15&&wet>1'  NUM=5 SELECT wolf nDDE
         "
         ;;
     esac
-
     
     return $?
 }
