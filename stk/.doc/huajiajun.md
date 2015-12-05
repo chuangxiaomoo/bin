@@ -6,3 +6,4 @@
 .doc/hua_孙子兵法.md
 .doc/hua_筹码理论.md
 .doc/hua_老卓波段.md
+.doc/hua_实盘挑战赛.md 

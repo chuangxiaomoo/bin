@@ -694,7 +694,7 @@ function fn_vol()
 function fn_dorat()
 {
     case $1 in
-    u|usage)
+    h|u|usage)
         echo "
         SELECT dorat <param>
         u   usage
@@ -1406,8 +1406,9 @@ function fn_wolf_sqls()
     SEC_093000=34200
     SEC_110000=39600
     col_vtov="IF( TIME_TO_SEC(time) <= ${SEC_113000}, TIME_TO_SEC(time)-${SEC_093000}, TIME_TO_SEC(time)-${SEC_110000} )"
-    col_vtov="ROUND((3600*4)/${col_vtov}*shou/h.volume, 2)"
-    field=${field:-net}
+    col_vtov="ROUND((3600*4)/${col_vtov}*shou/h.volume, 2) as vtov,"
+    col_tet="ROUND(net/(1-top10_ajst_aR), 2) as Tet,"
+    field=${field:-Tet}
     DOOR=${DOOR:-0}
     yesc='(trade/(1+rise/100))'
     sqls="
@@ -1420,14 +1421,15 @@ function fn_wolf_sqls()
         round(100*(pbuy+nbuy)/tov, 1) as bloo,
         round(100*(psell+nsell)/tov, 1) as sloo,
         net,
+        ${col_tet}
         round((pbuy/nbuy), 2) as Go,
         round((pbuy+nbuy)/(psell+nsell), 2) as bsp,
-        ${col_vtov} as vtov,
+     -- ${col_vtov}
         round((w.shou/h.volume), 1) as prop, h.scale,
         round(w.amount/10000, 2) as eYi, 
         nmc as nmcYi ${col_name}
-        FROM xdde as w, curr_lohi as h
-        ${WHERE} w.code=h.code && w.date<='${END}' ${iCOND} && net>${DOOR}     -- WHERE(net>0)加速3倍
+        FROM xdde as w, curr_lohi as h, top10 as t
+        ${WHERE} w.code=h.code && w.code=t.code && w.date<='${END}' ${iCOND} && net>${DOOR}     -- WHERE(net>0)加速3倍
         HAVING 1 ${CAUSE} ${COND} ${ORDER:-ORDER by ${field} ${ASC:-DESC}} LIMIT ${LIMIT:-36}
     "
     fn_echo_warn "wolf of ${date:-${END}}.${stime:-latest} [DOOR:${DOOR}] ${field}"
@@ -1458,7 +1460,9 @@ function fn_nDDE_sqls()
         sum(net>=${DOOR}) as red,
         sum(rise) as wise, 
         sum(net) as wet,
-        rise,avrg,tov,eWolf,buy,sell,net,Go,bsp,prop,scale,eYi,nmcYi,name
+        rise,avrg,tov,
+        sum(eWolf) as eWolfs,
+        buy,sell,net,Go,bsp,prop,scale,eYi,nmcYi,name
         FROM (
         SELECT w.date,w.code, w.rise,
         round( (100*(w.amount/shou-$yesc)/$yesc), 1) as avrg,
@@ -1466,8 +1470,6 @@ function fn_nDDE_sqls()
         round(nmc*net/100, 2) as eWolf,
         (pbuy+nbuy) as buy,
         (psell+nsell) as sell,
-        -- round(100*(pbuy+nbuy)/tov, 1) as bloo,
-        -- round(100*(psell+nsell)/tov, 1) as sloo,
         round(net, 2) as net,
         round((pbuy/nbuy), 1) as Go,
         round((pbuy+nbuy)/(psell+nsell), 2) as bsp,
@@ -1629,7 +1631,7 @@ function fn_wolf()
         l               date-list
         n|nDDE  idx     {NUM:-2}日DDE统计，变量代表日倒数索引
         b|BBD           沪深BBD统计
-        s               SELECT
+        s       idx     SELECT
         st      idx|l   SELECT time or list-times
         c       code    按15分钟统计
         cd      code    按日统计\
@@ -1871,6 +1873,39 @@ function fn_yysj()
     return $?
 }
 
+function fn_dde()
+{
+    NUM=${NUM:-4}
+    dates=(`fn_get_date 1 ${NUM}`)
+    let NUM=NUM-1
+
+    local i
+    for (( i=0; i<${NUM}; i+=1 )); do
+        let j=i+1
+        iCURR=${dates[$i]}
+        iPREV=${dates[$j]}
+        #echo ${iCURR} ${iPREV}
+        sqls="
+        SELECT C.code FROM 
+        (SELECT code,net FROM dde WHERE date='${iCURR}') as C,
+        (SELECT code,net FROM dde WHERE date='${iPREV}') as P
+        ${WHERE} C.code=P.code and C.net>=P.net
+        "
+        mysql -N kts <<<"${sqls}" > ${chao}.dde
+
+        fn_echo_warn "got `wc -l<${chao}.dde` @${iCURR} ${j}"
+
+        if [ "${j}" -eq ${NUM} ]; then
+            fn_echo_succ "gen zxg fro 10jqka"
+            PLAIN=${chao}.dde fn_gen_10jqka_sel
+        else
+            ABBR=C YIST=${chao}.dde fn_yist
+        fi
+    done
+    
+    return $?
+}
+
 function fn_main()
 {
     CURR=`fn_maxdate`
@@ -1914,6 +1949,7 @@ function fn_main()
     "sban               condi [time]          # super ban"
     "lhb                excption              # 龙虎榜"
     "wolf                                     # DDE"
+    "dde                                      # DDE"
     "macd               [clean]               # macd-alarm-sys"
     "fmacd                                    # 单个代码的macd"
     "tri                                      # 3连阳"
