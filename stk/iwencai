@@ -1,0 +1,163 @@
+#! /bin/bash
+. `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
+. /etc/common.rc
+
+
+function fn_shares_h()
+{
+    # KEY:  香港上市股大于0万股
+    fn_get_export_file
+    xt_ret $? "" || return $?
+
+    iconv -f cp936 -t utf8 ${efile} | tail -n+3 > ${wolf_raw}   # 从iwencai取数据，去前2行
+    if ! grep -q '601398.SH' ${wolf_raw}; then
+        fn_echo_fail "not a wolf file"
+        return 1
+    fi
+
+    tag_blank='--.--.--'
+    sed -e 's///g' -e 's/.S[ZH]//g' -e 's/ //g'           \
+        -e 's/%//g' -e 's/\t$//g' -e 's/\t\t*/\t/g'         \
+        -e "/${tag_blank}/d" -e '/^$/d' ${wolf_raw}         \
+        | awk '{
+            printf "%s\t%.2f\t%s\n", 
+            $1,$5*10000,$2
+        }' | sed '/--/d' > ${wolf_rip}.shares_h
+
+    # echo ${efile} ${ctime} ${epoch} $HHMMSS
+    echo "
+    ${DROP} shares_h;
+    CREATE TABLE IF NOT EXISTS shares_h(
+        code            INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        shares_h        DECIMAL(16,2) NOT NULL,
+        name            CHAR(16),
+        INDEX(code)
+    );
+    LOAD DATA LOCAL INFILE '${wolf_rip}.shares_h' INTO TABLE shares_h;
+    " | mysql kts
+    xt_ret $? "" || return $?
+}
+
+function fn_top10()
+{
+#   # KEY:  十大流通股东持股数/流通a股，总股本
+#   fn_get_export_file
+#   xt_ret $? "" || return $?
+
+#   iconv -f cp936 -t utf8 ${efile} | tail -n+3 > ${wolf_raw}   # 从iwencai取数据，去前2行
+#   if ! grep -q '601398.SH' ${wolf_raw}; then
+#       fn_echo_fail "not a wolf file"
+#       return 1
+#   fi
+
+#   tag_blank='--.--.--'
+#   sed -e 's///g' -e 's/.S[ZH]//g' -e 's/ //g'           \
+#       -e 's/%//g' -e 's/\t$//g' -e 's/\t\t*/\t/g'         \
+#       -e "/${tag_blank}/d" -e '/^$/d' ${wolf_raw}         \
+#       | awk '{
+#           printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\n", 
+#           $1,$5,$6,$7,$8,$9,$2
+#       }' | sed '/--/d' > ${wolf_rip}.iwencai              # -- 即‘温氏股份’
+
+    # echo ${efile} ${ctime} ${epoch} $HHMMSS
+    echo "
+    ${DROP} top10;
+    CREATE TABLE IF NOT EXISTS top10(
+        code            INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        top10           DECIMAL(16,2) NOT NULL,     -- top10流通和
+        curr_a          DECIMAL(16,2) NOT NULL,     -- 流通A
+        shares          DECIMAL(16,2) NOT NULL,     -- 总股本
+        top10_curr_aR   DECIMAL(8,2) NOT NULL,      -- 
+        top10_sharesR   DECIMAL(6,2) NOT NULL,      --
+        top10_ajst_aR   DECIMAL(6,2) NOT NULL,      -- 经过修正top10占比
+        name            CHAR(16),
+        INDEX(code)
+    );
+    LOAD DATA LOCAL INFILE '${wolf_rip}.curr_top10' INTO 
+    TABLE top10( code ,top10 ,curr_a ,shares ,top10_curr_aR ,top10_sharesR ,name );
+    " | mysql kts
+    xt_ret $? "" || return $?
+}
+
+function fn_curr_b()
+{
+    # KEY:  只导出以下四个列
+    # 代码          名称        流通A股     流通B股
+    fn_get_export_file
+    xt_ret $? "" || return $?
+
+    iconv -f cp936 -t utf8 ${efile} | tail -n+2 > ${wolf_raw}
+    if ! grep -q '000725' ${wolf_raw}; then
+        fn_echo_fail "not a wolf file"
+        return 1
+    fi
+
+    tag_blank='--.--.--'
+    sed -e 's///g' -e 's/^S[HZ]//g' -e 's/ //g'         \
+        -e 's/%//g' -e 's/\t$//g' -e 's/\t\t*/\t/g'         \
+        -e "/${tag_blank}/d" -e '/^$/d' ${wolf_raw}         \
+        | awk '{
+            if ($4 != 0) {
+                printf "%s\t%s\t%s\t%s\n", $1,$3,$4,$2
+            }
+        }' | sed '/--/d' > ${wolf_rip}.curr_b                      # -- 即‘没有发行B股’
+
+    # echo ${efile} ${ctime} ${epoch} $HHMMSS
+    echo "
+    ${DROP} curr_b;
+    CREATE TABLE IF NOT EXISTS curr_b(
+        code            INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        curr_a          DECIMAL(16,2) NOT NULL,     -- 流通A
+        curr_b          DECIMAL(16,2) NOT NULL,     -- 流通A
+        name            CHAR(16),
+        INDEX(code)
+    );
+    LOAD DATA LOCAL INFILE '${wolf_rip}.curr_b' INTO TABLE curr_b;
+    " | mysql kts
+    xt_ret $? "" || return $?
+}
+
+
+function fn_ajdust()
+{
+    echo "
+    UPDATE top10 SET top10_ajst_aR = top10_curr_aR;
+    UPDATE top10 as a,curr_b as b SET top10_ajst_aR = top10_curr_aR*( b.curr_a/(b.curr_a+b.curr_b) ) * 0.9
+            WHERE a.code=b.code;
+    UPDATE top10 as a,shares_h as h SET top10_ajst_aR = top10_curr_aR*( (a.shares-h.shares_h)/a.shares ) * 0.9
+            WHERE a.code=h.code;
+
+    UPDATE top10 SET top10_ajst_aR = top10_ajst_aR * 0.8 WHERE top10_ajst_aR>1;
+
+    UPDATE top10 SET top10_ajst_aR = 0.92  WHERE code = 002693;	    -- 双成药业 解禁
+    UPDATE top10 SET top10_ajst_aR = 0.71  WHERE code = 002686;     -- 亿利达
+    UPDATE top10 SET top10_ajst_aR = 0.02  WHERE code = 002703;     -- 浙江世宝
+    UPDATE top10 SET top10_ajst_aR = 0.21  WHERE code = 002594;     -- 比亚迪
+    UPDATE top10 SET top10_ajst_aR = 0.06  WHERE code = 600871;     -- 石化油服
+    UPDATE top10 SET top10_ajst_aR = 0.80  WHERE code = 600688;     -- 上海石化
+    UPDATE top10 SET top10_ajst_aR = 0.56  WHERE code = 600981;     -- 汇鸿集团 增发
+
+    " | mysql kts
+    return $?
+}
+
+function fn_main()
+{
+    CURR=`fn_maxdate`
+    END=${END:-${CURR}}                             # 指定为NUL
+    END=${END//END/${CURR}}                         # 指定为END
+    PREV=`END=${END//PREV/${CURR}} fn_get_prev`     # 指定为PREV
+    END=${END//PREV/${PREV}}                        # echo P:${PREV} E:${END}; exit
+
+    cmdlist=(
+    "top10                                    # 十大流通股东"
+    "curr_b                                   # 流通B股"
+    "shares_h                                 # H股"
+    "ajdust                                   # 修正H股B股带入的权重"
+    )
+
+    fn_execute "$@"
+}
+
+fn_main "$@"
+
