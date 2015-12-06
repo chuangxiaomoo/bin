@@ -1414,7 +1414,7 @@ function fn_wolf_sqls()
     sqls="
         SELECT ${col_date} w.code, w.rise,
         round( (100*(w.amount/shou-$yesc)/$yesc), 1) as avrg,
-        tov,
+        ROUND(tov/(1-top10_ajst_aR), 2) as vtov,
         round(nmc*(pbuy+nbuy)/100, 2) as eWolf,
         (pbuy+nbuy) as buy,
         (psell+nsell) as sell,
@@ -1424,7 +1424,6 @@ function fn_wolf_sqls()
         ${col_tet}
         round((pbuy/nbuy), 2) as Go,
         round((pbuy+nbuy)/(psell+nsell), 2) as bsp,
-     -- ${col_vtov}
         round((w.shou/h.volume), 1) as prop, h.scale,
         round(w.amount/10000, 2) as eYi, 
         nmc as nmcYi ${col_name}
@@ -1456,13 +1455,14 @@ function fn_nDDE_sqls()
     DOOR=${DOOR:-0}
     yesc='(trade/(1+rise/100))'
     sqls="
-    SELECT code,
+    SELECT t.code,
         sum(net>=${DOOR}) as red,
         sum(rise) as wise, 
         sum(net) as wet,
-        rise,avrg,tov,
+        ROUND(sum(tov/(1-top10_ajst_aR)), 2) as vtov,
+        rise,avrg,
         sum(eWolf) as eWolfs,
-        buy,sell,net,Go,bsp,prop,scale,eYi,nmcYi,name
+        buy,sell,net,Go,bsp,prop,scale,eYi,nmcYi, t.name
         FROM (
         SELECT w.date,w.code, w.rise,
         round( (100*(w.amount/shou-$yesc)/$yesc), 1) as avrg,
@@ -1480,7 +1480,7 @@ function fn_nDDE_sqls()
         ${WHERE} w.code=h.code
         && w.date>='${STA}' && w.date<='${END}' 
         ORDER by code ASC, date DESC
-    ) as t
+    ) as t, top10 WHERE t.code=top10.code
     GROUP by code 
     HAVING 1 ${CAUSE} ${COND} ORDER by ${field} ${ASC:-DESC} LIMIT ${LIMIT:-24}
     "

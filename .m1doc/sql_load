@@ -16,11 +16,11 @@
 . 定制列 
 
     -- SET子句可以被用于提供不是来源于输入文件的值。把column3设置为当前日期和时间
-    LOAD DATA INFILE 'file.txt' INTO TABLE t1 (column1, column2)
+    LOAD DATA LOCAL INFILE 'file.txt' INTO TABLE t1 (column1, column2)
         SET column3 = CURRENT_TIMESTAMP;
 
 . 丢弃列
 
-    LOAD DATA INFILE 'file.txt' INTO TABLE t1 
+    LOAD DATA LOCAL INFILE 'file.txt' INTO TABLE t1 
         (column1, @dummy, column2, @dummy, column3);
 
