@@ -71,13 +71,14 @@ function fn_lsd()
         ;;
     [0-9]*)
         if [ "${1}" = 0 ]; then
+            fn_echo_warn ${DT}
             LIMIT=${LIMIT:-200} HAVING='rise>0' SELECT lsd
             exit 0;
         fi
         LIMIT=${LIMIT:-400}
         field=${2:-rise}
         DT=`DT="${END} 15:05:00" SELECT dorat | sed -n "${1}p"`
-        fn_echo_warn ${DT} # exit
+        fn_echo_warn ${DT}
         DT=(${DT})
         TEMPDAY="(SELECT * FROM dorat WHERE date='${DT[0]}' && time='${DT[1]}')"
         HAVING="rise>0"
@@ -95,18 +96,20 @@ function fn_lsd()
         exit
         ;;
     *)
-        chao=${chao}.lsd
         field=${1:-rise}
         ;;
     esac
 
     function fn_sql()
     {
+        [ "${field}" = 'dive' ] && 
+        sql_dive="round( (100*(d.amount/d.volume-d.close)/d.close), 1) as dive,"
         sqls="
         SELECT ${CID}$columns, volume,amount, 
                 $OPRI as opri, 
                 ${sql_avrg}
                 $RISE as rise, 
+                ${sql_dive}
                 $TURNOV as tov, ${nmcYi}, c.name
                 FROM ${TEMPDAY} as d, cap as c ${WHERE} d.code = c.code and d.date = '${END}' 
                 HAVING ${HAVING:-1} ${COND} ORDER BY ${field} ${ASC:-desc} limit ${LIMIT:-36}
@@ -115,7 +118,7 @@ function fn_lsd()
     }
     fn_sql $@ 
     mysql ${OPT:--t} kts <<<"${sqls}"
-    fn_chao
+    fn_chao ${chao}.lsd
 }
 
 function fn_ace()
@@ -1311,8 +1314,12 @@ function fn_lhb()
 
         fn_echo_warn "CAUSE: ${CAUSE}"
 
+        ABBR=l fn_yist
+        xt_ret $? "" || return $?
+
         columns="${col_date}code,cause"
         columns=l.${columns//,/,l.}
+
         sqls="
             SELECT ${columns}, round(chng,1) as chng,
             ${sql_next}
@@ -1326,7 +1333,7 @@ function fn_lhb()
             ${sql_avrg}
             round(l.buy/bloo/100, 2) as eYi, ${nmcYi0},
             c.name FROM lhb as l,cap as c ${sql_xtempday}
-            WHERE l.code=c.code ${sql_relate} 
+            $WHERE l.code=c.code ${sql_relate} 
             HAVING 1 ${CAUSE} ${COND} ORDER by ${field:-bsp} DESC LIMIT ${LIMIT:-36}
         "
         #echo "${sqls}"; exit
@@ -1426,7 +1433,7 @@ function fn_wolf_sqls()
         round((pbuy+nbuy)/(psell+nsell), 2) as bsp,
         round((w.shou/h.volume), 1) as prop, h.scale,
         round(w.amount/10000, 2) as eYi, 
-        nmc as nmcYi ${col_name}
+        ROUND(nmc/(1-top10_ajst_aR), 2) as nmcYi ${col_name}
         FROM xdde as w, curr_lohi as h, top10 as t
         ${WHERE} w.code=h.code && w.code=t.code && w.date<='${END}' ${iCOND} && net>${DOOR}     -- WHERE(net>0)加速3倍
         HAVING 1 ${CAUSE} ${COND} ${ORDER:-ORDER by ${field} ${ASC:-DESC}} LIMIT ${LIMIT:-36}
@@ -1752,15 +1759,37 @@ function fn_stat()
     return $?
 }
 
+function fn_topX()
+{
+    date=`fn_get_date ${1:-1} 1`
+    echo "
+        SELECT * FROM topN WHERE date='${date}' ORDER by rise DESC LIMIT ${LIMIT:-15};
+    " | mysql -t kts
+    
+    return $?
+}
+
 function fn_blk()
 {
     case $1 in
+    top)
+        fn_topX $2
+        ;;
+    10)
+        export END=`fn_get_date ${2:-1} 1`
+        fn_echo_succ "Classify @${END}"
+        ABBR=m fn_yist
+        CHAO=1 LIMIT=${LIMIT:-3000} COND="rise>${DOOR:-9.93}" SELECT lsd ${3}> /dev/null
+        iCOND="and n.blk not in(0xDBD9,0xCE54,0xD886,0x40,0xDAE8,0xDBD4,0xD953)" \
+        YIST='/tmp/kts/chao.lsd' fn_blk layout
+        ;;
     l|layout)
+        ABBR=m fn_yist
         field=${2:-code}
         echo "
         SELECT hex(n.blk) as blk,count(m.code) as num,n.sym FROM blk_name as n, blk_memb as m
-         WHERE n.blk=m.blk
-         GROUP by blk ORDER by num DESC LIMIT ${LIMIT:-36};
+         $WHERE n.blk=m.blk ${iCOND}
+         GROUP by blk ORDER by num DESC LIMIT ${LIMIT:-32};
         " | mysql -t kts
         ;;
     s|sort)
@@ -1818,6 +1847,16 @@ function fn_blk()
         fn_echo_blue "to find ${2}"
         LIMIT=300 fn_blk l | grep ${2}
         ;;
+    d|dif)
+        sqls="
+        SELECT T1.code, name FROM
+        (SELECT code FROM blk_memb WHERE blk=0x${2}) as T1,
+        (SELECT code FROM blk_memb WHERE blk=0x${3}) as T2, cap
+        WHERE T1.code=T2.code && T1.code=cap.code
+        "
+        #echo "${sqls}"; exit
+        mysql -t kts <<< "${sqls}"
+        ;;
     u|uniq)
         BLK=${2}
         field=${4:-rise}
@@ -1831,21 +1870,26 @@ function fn_blk()
         blk!=0xD953 &&  -- 243 | 参股金融    
         blk!=0x40       -- 226 | 新股与次新股
         )"
-        echo "
-        SELECT m.code,count(m.code) as num, ${nmcYi}, c.name as num FROM blk_memb as m, cap as c
+        sqls="
+        SELECT m.code,count(m.code) as num, ${nmcYi}, c.name FROM blk_memb as m, cap as c
         ${WHERE} m.code=c.code ${EXCLUDE} 
         GROUP by code HAVING 1 ${COND}
-        ORDER by num ASC LIMIT 100
-        " | mysql -t kts
+        ORDER by num ASC LIMIT ${LIMIT:-500}
+        " 
+        mysql -t kts <<< "${sqls}"
+        fn_chao ${chao}.blk
         ;;
     *)
         echo "
         SELECT blk <param>
         l               # layout
-        s off           # sort 指定off日内的热门，看点在<可查看历史日spot>
-        b [off]         # 列出指定BLKs关联code的涨幅
-        c code          # 显示code关联的所有板块
-        u blk           # blk中code关联的blk数目排名，越小，概念越纯正
+        10  idate iF5   # 涨停板概念分类 {DOOR:-10}，查讯iF5: SELECT lohi l
+        s   off         # sort 指定off日内的热门，看点在<可查看历史日spot>
+        b   [off]       # 列出指定BLKs关联code的涨幅
+        c   code        # 显示code关联的所有板块
+        u   blk         # blk中code关联的blk数目排名，越小，概念越纯正。
+                        # 1. 输出指定板块 chao.blk
+        top off         # 热点
         "
         ;;
     esac
@@ -1906,6 +1950,49 @@ function fn_dde()
     return $?
 }
 
+
+function fn_g20()
+{
+    STA=`fn_get_date 20 1` #echo ${STA}
+    case $1 in
+    g20)
+        sqls="
+        SELECT date,code,close,max(close),count(code) as num  FROM
+        ( SELECT * FROM day WHERE date>='${STA}' && date<='${END}' ORDER by date DESC ) as d
+        GROUP by code HAVING max(date)='${END}' && close=max(close) && num>8;
+        " 
+        ;;
+    kid)
+        sqls="
+        SELECT date,code, close/yesc as rise, count(code) as num  FROM
+        ( SELECT * FROM day WHERE date>='${STA}' && date<='${END}' ORDER by date DESC ) as d
+        GROUP by code HAVING max(date)='${END}' && rise>=1 && num<=8 ORDER by rise DESC;
+        " 
+        ;;
+    *|u)
+        echo "SELECT g20 {kid|g20}"; exit
+        ;;
+    esac
+
+    mysql -t kts <<<"${sqls}"
+    fn_chao ${chao}.max20
+
+    return $?
+}
+
+
+function fn_dive()
+{
+    dates=`fn_get_date 1 ${1:-10}`
+
+    local i=
+    for i in ${dates}; do
+        COND="dive>${DOOR:-10}" END=${i} SELECT lsd dive
+    done
+
+    return $?
+}
+
 function fn_main()
 {
     CURR=`fn_maxdate`
@@ -1943,8 +2030,10 @@ function fn_main()
     "ls                 {code|symbol}         # 日线数据 \$LIMIT"
     "lsd                [{top|floor}][field]  # --- END YIST LIMIT 涨幅排名"
     "updown                                   # 近期{NUM=5}涨跌家数统计"
+    "dive                                     # 跳水第2日买进"
     "hilo               field                 # field to sort by"
     "lohi               field                 # field to sort by"
+    "g20                                      # 创20日新高"
     "ban                condi [time]          # 条件. 0945后使用"
     "sban               condi [time]          # super ban"
     "lhb                excption              # 龙虎榜"

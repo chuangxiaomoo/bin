@@ -57,6 +57,7 @@ function fn_dzh()
 function fn_10jqka()
 {
     iconv -f cp936 -t utf8 /10jqka/BlockUpdate/block_conception.ini > .10jqka.ini
+    iconv -f cp936 -t utf8 /10jqka/BlockUpdate/block_industry.ini  >> .10jqka.ini
     cat .10jqka.ini | grep -E '^40=|^B3=|^[0-9A-F]{4}=[^$]' | grep -v ':' > ${blk_name}.raw
     cat .10jqka.ini | grep -E '^40=|^B3=|^[0-9A-F]{4}=[^$]' | grep    ':' > ${blk_list}
     sed -i -e 's/^/0x/g' -e 's/=/\t/g' ${blk_name}.raw

@@ -26,6 +26,7 @@ XTBL="${XTBL:+and code not in (SELECT code FROM $XTBL)}"
 COND="${COND:+and $COND }${XTBL}"
 DROP="DROP TABLE IF EXISTS "
 WHERE="WHERE"
+CREATE="CREATE TABLE IF NOT EXISTS "
 
 WGET='timeout 34 /usr/bin/wget'
 W3M='timeout  60 /usr/bin/w3m'
@@ -196,7 +197,7 @@ function fn_chao()
     [ "${CHAO:=0}" -eq 0 ] && return
     [ -z "${sqls}" ] && fn_echo_warn "sqls is empty" && exit
     PLAIN=${1:-$chao}
-    sql_chao="${PREFIX}SELECT code FROM (${sqls}) as t"
+    sql_chao="${PREFIX}SELECT code FROM (${sqls//;/}) as t"
     # echo "${sql_chao}"; exit
     mysql -N kts <<<"${sql_chao}" |grep '^[036]'| uniq|tee ${TEE} ${PLAIN} > /dev/null 
     fn_gen_10jqka_sel
@@ -424,7 +425,7 @@ function fn_get_next()
     mysql -N kts<<<"${sqls} ORDER by date ASC LIMIT 1"
 }
 
-function fn_get_date()
+function fn_get_date()  # para1: start para2: offset
 {
     # 不带参数，默认为了，取最新
     local sta=${1:-1}
