@@ -1,4 +1,5 @@
 .doc/hua_layout.md
+.doc/hua_花语录.md
 .doc/hua_题材爆破.md
 .doc/hua_阳明心学.md
 .doc/hua_资金量能.md

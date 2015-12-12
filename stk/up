@@ -1223,6 +1223,69 @@ function fn_zzlt()
     fn_echo_succ "up zzlt OK"
 }
 
+function fn_top()
+{
+    dates=`fn_get_date ${1:-1} ${2:-1} `
+
+    local i=
+    for i in ${dates}; do
+        fn_echo_succ "up top @${i}"
+        END=${i} fn_topX
+    done
+}
+
+function fn_topX()
+{
+    sqls="
+    SELECT n.blk FROM blk_name as n, blk_memb as m
+     WHERE n.blk=m.blk
+     GROUP by blk HAVING count(m.code)<240;
+    " 
+
+    blks=`mysql -N kts<<<"${sqls}"`
+
+    fn_xtempday $2
+    xt_ret $? "xtempday error" || return $?
+
+    echo "
+ -- $DROP topN;
+    $CREATE topN (
+        date    date,
+        blk     INT,
+        sym     CHAR(64),
+        rise    DECIMAL(6,2) NOT NULL DEFAULT 0,
+        INDEX(date,blk)
+    );
+    $DROP topX;
+    $CREATE topX LIKE topN;
+    " | mysql kts
+
+    for i in ${blks}; do
+        # mysql -t kts <<< "SELECT code FROM blk_memb WHERE blk=${i}"
+        SAMPLES=`mysql -N kts <<< "SELECT IF(count(code)>10, 10, count(code)) FROM blk_memb WHERE blk=${i}"`
+        # echo ${SAMPLES}; exit
+        echo "
+        INSERT INTO topX (date,blk,sym,rise)
+        SELECT '${END}', blk, sym, sum(rise)/${SAMPLES} FROM
+        (
+        SELECT d.code, round(100*(close-yesc)/yesc, 2) as rise 
+        FROM
+        xtempday as d,
+        (SELECT code FROM blk_memb WHERE blk=${i}) as b
+        WHERE d.code=b.code ORDER by rise DESC LIMIT ${SAMPLES}
+        ) as top13, blk_name WHERE blk=${i}
+        " | mysql -t kts
+    done
+
+    echo "
+        DELETE FROM topN WHERE date='${END}';
+        INSERT INTO topN SELECT * FROM topX ORDER by rise DESC;
+    " | mysql -t kts
+
+    return $?
+}
+
+
 function fn_main()
 {
     CURR=`fn_maxdate`
@@ -1260,6 +1323,7 @@ function fn_main()
     "money                              # ---------资金分析---------"
     "power                              # 权重分析"
     "merge  file...                     # 合并多个文件到chao.merge"
+    "top [N]                            # 更新N日的板块涨幅"
     )
 
     # 存储过程函数文件的最后5行都是注释
