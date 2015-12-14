@@ -330,43 +330,6 @@ function fn_file_to_table()
 
     mysql kts < ${sql_temp}
     xt_ret $? "${FUNCNAME}" || return $?
-
-    return 0    # no dzh 自选股.BLK TEMPORARY
-
-    # D:\dzh2\USERDATA\block
-    # 每个自选股都有自己的独特代码，现以8为实现
-    # Linux中的vim ga 不是很准确的，不能完全解码uni-code，到xp中就OK了。
-    HEAD="\xa6\x00\x51\xff\x01"     # 带时间排序功能，不带时间: HEAD="\xa5\x00Q\xff"
-    DELI="\x00\x20\x66\x01"         # 不带时间: DELI="\x00\x00\x00\x00"
-
-    f_zxg='/dzh2/USERDATA/block/自选股.BLK'
-    test -f ${f_zxg}
-    xt_ret $? "${f_zxg} not exist" || exit 1
-
-    {
-    echo -n -e $HEAD
-    local i=
-    local index=0
-    for i in ${lst[@]}; do
-        case $i in
-        [67]*)
-            echo -n SH$i
-            ;;
-        [03]*)
-            echo -n SZ$i
-            ;;
-        *)
-            fn_echo_fail "    skip invalide code $i" > /dev/stderr && continue # 上面的数据库添加时没有做检查
-            ;;
-        esac
-        TIME="${DELI}\x"$index"\x7c\xfa\x54"  # Byte1是秒数计时，可用于100个排序
-        echo -n -e $TIME
-        let index++
-    done ;
-    echo
-    } > ${f_zxg}
-
-    echo "    add ${#lst[@]} code ${file_fr} to ${TBL} over." > /dev/stderr
 }
 
 function fn_table_to_file()

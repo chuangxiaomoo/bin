@@ -183,27 +183,68 @@ fn_gen_10jqka_sel()
     rows=`wc -l < ${PLAIN}`
     rowx1=`bc <<< "obase=16;${rows}%256"`
     rowx2=`bc <<< "obase=16;${rows}/256"`
-    fn_echo_warn "$rows rows to ${PLAIN}"
     xargs <${PLAIN} | sed 's/^/ /' | sed  \
         -e 's# 6#6#g' \
         -e 's# 0#!0#g' \
         -e 's# 3#!3#g' > ${buffer}
     echo -ne "\x${rowx1}\x${rowx2}`cat ${buffer}`" > /winc/zxg/自选股.sel
     cp ${PLAIN} /winc/zxg/chao.txt
+    fn_echo_warn "$rows rows to ${PLAIN}"
+   #fn_echo_warn "$rows rows to /winc/zxg/自选股.sel"
+}
+
+fn_gen_dzh_blk()
+{
+    # 每个自选股都有自己的独特代码，现以8为实现
+    # Linux中的vim ga 不是很准确的，不能完全解码uni-code，到xp中就OK了。
+    HEAD="\xa6\x00\x51\xff\x01"     # 带时间排序功能，不带时间: HEAD="\xa5\x00Q\xff"
+    DELI="\x00\x20\x66\x01"         # 不带时间: DELI="\x00\x00\x00\x00"
+
+    test -f "${DZH_ZXG:=/dzh2/USERDATA/block/自选股${NUM}.BLK}"
+    xt_ret $? "${DZH_ZXG} not exist" || exit 1
+
+    {
+    echo -n -e $HEAD
+    local index=0
+    while read i; do
+        case $i in
+        [67]*)
+            echo -n SH$i
+            ;;
+        [03]*)
+            echo -n SZ$i
+            ;;
+        esac
+        TIME="${DELI}\x"$index"\x7c\xfa\x54"  # Byte1是秒数计时，可用于100个排序
+        echo -n -e $TIME
+        let index++
+    done<<<"`grep ${PATTERN:-'^[/036]'} ${PLAIN}`"
+    echo
+    } > ${DZH_ZXG}
+    fn_echo_warn "$index rows to ${PLAIN}"
+    fn_echo_warn "$index rows to ${DZH_ZXG}"
 }
 
 function fn_chao()
 {
     [ "${CHAO:=0}" -eq 0 ] && return
+
     [ -z "${sqls}" ] && fn_echo_warn "sqls is empty" && exit
     PLAIN=${1:-$chao}
     sql_chao="${PREFIX}SELECT code FROM (${sqls//;/}) as t"
     # echo "${sql_chao}"; exit
     mysql -N kts <<<"${sql_chao}" |grep '^[036]'| uniq|tee ${TEE} ${PLAIN} > /dev/null 
-    fn_gen_10jqka_sel
+
+
+    if [ "${DZH}" = 1 ]; then
+        fn_gen_dzh_blk
+    else
+        fn_gen_10jqka_sel
+    fi
+
+    return $?
     # up file_to_table ${PLAIN}
     # xt_ret $? "${FUNCNAME}" || return $?
-    return $?
 }
 
 function fn_yist()
