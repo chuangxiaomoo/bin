@@ -267,7 +267,7 @@ function fn_peeloff_blk()
     INSERT INTO  xblk(code) 
     SELECT DISTINCT code FROM blk_memb WHERE ${hexCOND};
     " | mysql kts
-    inBLK="${iABBR:-d}.code=xblk.code"       # 勿用 WHERE ABBR 以免影响 YIST
+    inBLK="${ABBR:-d}.code=xblk.code"       # 勿用 WHERE ABBR 以免影响 YIST
 }
 
 function fn_date_2_str()

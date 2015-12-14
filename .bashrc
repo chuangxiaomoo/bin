@@ -13,6 +13,7 @@ alias       NUM=''
 alias       TBL=''
 alias       XZZ=''
 alias      COND=''
+alias      CHAO=''
 alias     CAUSE=''
 alias    HAVING=''
 #lias      FINA=''      # S_I_N_A conflict with Svn
