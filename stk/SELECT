@@ -968,7 +968,7 @@ function fn_lohi()
         field=$2; fn_inout
         ;;
     l|list)
-        LIMIT=50 DT="${iTEMP} 15:05:00" SELECT dorat | cat -n; exit 0
+        LIMIT=80 DT="${iTEMP} 15:05:00" SELECT dorat | cat -n; exit 0
         ;;
     s|shrinkage)
         off=${2:-5}
@@ -1678,6 +1678,13 @@ function fn_macd()
         COND="and code=$1"
         field=$2
         ;;
+    u|h)
+        echo "
+        c           # clean mm55
+        000002      # 只显示单个代码的macd
+        "
+        exit
+        ;;
     *)
         field=$1
         ;;
@@ -1775,6 +1782,15 @@ function fn_blk()
     top)
         fn_topX $2
         ;;
+    l|layout)
+        ABBR=m fn_yist
+        field=${2:-code}
+        echo "
+        SELECT hex(n.blk) as blk,count(m.code) as num,n.sym FROM blk_name as n, blk_memb as m
+         $WHERE n.blk=m.blk ${iCOND}
+         GROUP by blk ORDER by num DESC LIMIT ${iLIMIT:-12};
+        " | mysql -t kts
+        ;;
     10)
         export END=`fn_get_date ${2:-1} 1`
         fn_echo_succ "Classify @${END}"
@@ -1783,41 +1799,15 @@ function fn_blk()
         iCOND="and n.blk not in(0xDBD9,0xCE54,0xD886,0x40,0xDAE8,0xDBD4,0xD953)" \
         YIST='/tmp/kts/chao.lsd' fn_blk layout
         ;;
-    l|layout)
-        ABBR=m fn_yist
-        field=${2:-code}
-        echo "
-        SELECT hex(n.blk) as blk,count(m.code) as num,n.sym FROM blk_name as n, blk_memb as m
-         $WHERE n.blk=m.blk ${iCOND}
-         GROUP by blk ORDER by num DESC LIMIT ${LIMIT:-32};
-        " | mysql -t kts
-        ;;
-    s|sort)
-        off=${2:-1}
-        xCOND="TRUNCATE(100*(close-yesc)/yesc, 2)>${DOOR:-9.93}"
-        dates=(`fn_get_date 1 ${off}`)
-
-        for (( i=${off}-1; i>=0; i-- )); do
-            date=${dates[$i]}
-            fn_xtempday ${date}
-            fn_echo_succ "DOOR date: ${date}"
-            echo "
-            SELECT hex(n.blk) as xblk, count(m.code) as num, n.sym FROM blk_name as n, blk_memb as m, xtempday as d
-            WHERE n.blk=m.blk and m.code=d.code 
-             GROUP by xblk HAVING xblk not in('CE54', 'DAE8', 'DBD4', 'D886')
-             ORDER by num DESC LIMIT ${LIMIT:-16};
-            " | mysql -t kts
-        done
-        ;;
-    b|blk)
-        fn_xblk notNULL
+    11)
+        fn_peeloff_blk use_var_BLK
         off=${2:-1}
         field=${3:-rise}
         sta=`fn_get_date ${off}`
         fn_sqls() {
         sqls="
-        SELECT d.code,sum(${RISE}) as rise, ${nmcYi}, c.name FROM day as d, cap as c 
-            ${WHERE} d.code = c.code and d.date>='${sta}' && d.date<='${END}'
+        SELECT d.code,sum(${RISE}) as rise, ${nmcYi}, c.name FROM day as d, cap as c, xblk
+            ${WHERE} ${inBLK} && d.code=c.code and d.date>='${sta}' && d.date<='${END}'
             GROUP by code 
             HAVING ${HAVING:-1} ${COND} and rise>${DOOR:-'-100'}
             ORDER BY ${field} ${ASC:-desc} limit ${LIMIT:-36}
@@ -1828,6 +1818,23 @@ function fn_blk()
         mysql -t kts <<< "${sqls}"
         LIMIT=3000 fn_sqls
         fn_chao
+        ;;
+    123)
+        size=${2:-3}
+        xCOND="TRUNCATE(100*(close-yesc)/yesc, 2)>${DOOR:-9.93}"
+        dates=(`fn_get_date 1 ${size}`)
+
+        for (( i=${size}-1; i>=0; i-- )); do
+            date=${dates[$i]}
+            fn_xtempday ${date}
+            fn_echo_succ "DOOR date: ${date}"
+            echo "
+            SELECT hex(n.blk) as xblk, count(m.code) as num, n.sym FROM blk_name as n, blk_memb as m, xtempday as d
+            WHERE n.blk=m.blk and m.code=d.code 
+             GROUP by xblk HAVING xblk not in('CE54', 'DAE8', 'DBD4', 'D886')
+             ORDER by num DESC LIMIT ${LIMIT:-16};
+            " | mysql -t kts
+        done
         ;;
     c|code)
         for code in ${@:2}; do
@@ -1856,12 +1863,12 @@ function fn_blk()
         "
         #echo "${sqls}"; exit
         mysql -t kts <<< "${sqls}"
+        fn_chao ${chao}.blk
         ;;
-    u|uniq)
-        BLK=${2}
-        field=${4:-rise}
+    u|union)
+        BLK=${@:2}
 
-        ABBR=m fn_xblk
+        iABBR=m fn_peeloff_blk
         EXCLUDE="&&(
         blk!=0xCE54 &&  -- 898 | 融资融券    
         blk!=0xDAE8 &&  -- 574 | 沪港通概念  
@@ -1871,8 +1878,9 @@ function fn_blk()
         blk!=0x40       -- 226 | 新股与次新股
         )"
         sqls="
-        SELECT m.code,count(m.code) as num, ${nmcYi}, c.name FROM blk_memb as m, cap as c
-        ${WHERE} m.code=c.code ${EXCLUDE} 
+        SELECT m.code,count(m.code) as num, ${nmcYi}, c.name 
+               FROM blk_memb as m, cap as c, xblk
+        ${WHERE} ${inBLK} && m.code=c.code ${EXCLUDE} 
         GROUP by code HAVING 1 ${COND}
         ORDER by num ASC LIMIT ${LIMIT:-500}
         " 
@@ -1884,12 +1892,13 @@ function fn_blk()
         SELECT blk <param>
         l               # layout
         10  idate iF5   # 涨停板概念分类 {DOOR:-10}，查讯iF5: SELECT lohi l
-        s   off         # sort 指定off日内的热门，看点在<可查看历史日spot>
-        b   [off]       # 列出指定BLKs关联code的涨幅
+        11  iF5         # 列出变量BLK关联的code涨幅，iF5为5分钟数据索引
+        123 size        # for(i<size)循环_10_的内容，但这是平均值
         c   code        # 显示code关联的所有板块
-        u   blk         # blk中code关联的blk数目排名，越小，概念越纯正。
-                        # 1. 输出指定板块 chao.blk
-        top off         # 热点
+        d   blk blk2    # 求两个blk的交集
+        u   blk [...]   # 求几个blk的交集(.c时可作为输出)
+                        # blk中code关联的blk数目排名，越小，概念越纯正。
+        top off         # 热点(对[up top]的结果进行显示)
         "
         ;;
     esac

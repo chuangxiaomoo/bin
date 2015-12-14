@@ -98,7 +98,7 @@ function fn_routine()
                 grep -q '>' <<< "${COND0}" && let tips_cnt+=100 || let tips_cnt++
             elif [ "${ret}" = "" ]; then
                 fn_echo_fail "bad cond: ${COND0}"
-                fn_bell "msg.wav msg.wav msg.wav"
+                fn_bell "msg.wav"
             fi
             ;;
         esac

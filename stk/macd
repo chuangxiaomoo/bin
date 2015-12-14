@@ -67,6 +67,9 @@ CREATE PROCEDURE sp_mamacd() BEGIN
     call sp_fmacd();                                                -- F5只用macd
 
     IF ${FM:-5} = 5 THEN 
+        SELECT sum(trade)/10 FROM tmpfb_macd WHERE id<=10  INTO @ma10;
+        SELECT sum(trade)/20 FROM tmpfb_macd WHERE id<=20  INTO @ma20;
+
         REPLACE INTO mm55(freq,code,FM,cvgenc,fa20,ma5,ma10,ma20,ma40,ma80,datetime,close,dif,dea,macd)
             SELECT code+${FM}*1000000,code,${FM},@cvgenc,@fa20,@ma5,@ma10,@ma20,@ma40,@ma80,datetime,close,dif,dea,macd
                 FROM fmacd ORDER by id DESC LIMIT 1;
@@ -122,7 +125,11 @@ function fn_main()
 {
     code=${1}
     fn_iscode ${code}
-    xt_ret $? "Usage: macd code [f1]" || return $?
+    xt_ret $? "
+    Usage:
+    macd code [f1]          # 计算macd
+    SELECT macd c           # 清空mm55
+    " || return $?
 
     if [ "${2}" = 'f1' ]; then
         echo "do macd1 ${code}..."

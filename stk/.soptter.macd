@@ -8,7 +8,8 @@
 
 # dif+macd>0
 
-399300  HS300     0
+399300  HS300     macd<0&&close<ma20
+/       HS300     macd>0&&close>ma20
 
 399101	中小板综  0
 
@@ -18,7 +19,7 @@
 -     	中小板指  close>fa15/.996 
 -     	中小板指  abs((close-fa15)/fa15/.01)>.382
 
-399006	创业板指  0
+399006	创业板指  close>ma20
 -      	创业板指  close<2485
 -     	创业板指  close>fa15/.996
 -     	创业板指  abs((close-fa15)/fa15/.01)>.382
