@@ -156,7 +156,7 @@ touch $file_ma240
 function fn_isresting()
 {
     hhmmss=`date +%H%M%S`
-    if ([ ${hhmmss} -gt 113000 ] && [ ${hhmmss} -lt 130100 ]) ||
+    if ([ ${hhmmss} -gt 113059 ] && [ ${hhmmss} -lt 130059 ]) ||
         [ ${hhmmss} -lt 093210 ] || [ ${hhmmss} -gt 145800 ]; then
         echo "is resting @${hhmmss}..."; 
         return 0
@@ -249,25 +249,25 @@ function fn_get_export_file()
     return 0
 }
 
-function fn_xblk()
+function fn_peeloff_blk()
 {
-    if [ "${1}" = notNULL ] && [ -z "${BLK}" ]; then
+    if [ "${1}" = use_var_BLK ] && [ -z "${BLK}" ]; then
         fn_echo_fail '$BLK mustnot NULL'
         exit
     fi
 
     [ -z "${BLK}" ] && return
 
-    BLK=(${BLK}); BLK=${BLK[@]}           # 去回车
-    local xCOND="blk=0x${BLK// /||blk=0x}"
-    #echo ${xCOND}; exit
+    BLK=(${BLK//,/ }); BLK=${BLK[@]}              # 去回车
+    local hexCOND="blk=0x${BLK// /||blk=0x}"
+    #echo ${hexCOND}; exit
     echo "
     $DROP        xblk;
     CREATE TABLE xblk LIKE codes;
     INSERT INTO  xblk(code) 
-    SELECT DISTINCT code FROM blk_memb WHERE ${xCOND};
+    SELECT DISTINCT code FROM blk_memb WHERE ${hexCOND};
     " | mysql kts
-    WHERE=",xblk as x WHERE ${ABBR:-d}.code=x.code &&"
+    inBLK="${iABBR:-d}.code=xblk.code"       # 勿用 WHERE ABBR 以免影响 YIST
 }
 
 function fn_date_2_str()

@@ -267,12 +267,12 @@ function fn_01_战术()                   { cat stk_01_战术 ;}
 function fn_02_小数据()                 { cat stk_02_小数据 ;}
 function fn_03_大数据()                 { cat stk_03_大数据 ;}
 function fn_07_牛眼投资法()             { cat stk_07_牛眼投资法 ;}
-function fn_10_dazhihui()               { cat stk_10_dazhihui ;}
 function fn_11_N_XD_XR_DR()             { cat stk_11_N_XD_XR_DR ;}
 function fn_13_除权后的股票难以上涨()   { cat stk_13_除权后的股票难以上涨 ;}
 function fn_15_逐笔_分笔_分时_逐单()    { cat stk_15_逐笔_分笔_分时_逐单 ;}
 
 function fn_20_fenbi()                  { cat stk_20_fenbi ;}
+function fn_10_dazhihui()               { cat stk_10_dazhihui ;}
 function fn_tdx()                       { cat stk_tdx ;}
 
 function fn_jc_这不是独家买卖()         { cat stk_jc_这不是独家买卖 ;}
