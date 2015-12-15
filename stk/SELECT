@@ -1921,11 +1921,11 @@ function fn_blk_delta_codes()
 
 function fn_blk_delta_layout()
 {
-    DOOR=${DOOR:-0.5}
     sqls="
-    SELECT hex(n.blk) as blk,count(m.code) as num, n.sym, max(drise) as maxR, 
-        ROUND( sum( rise)/count(m.code), 2 ) as avri,
-        ROUND( sum(drise)/count(m.code), 2 ) as avrDr
+    SELECT hex(n.blk) as blk,count(m.code) as num, n.sym, 
+        max(drise) as maxDri,
+        ROUND( sum(drise)/count(m.code), 2 ) as avDri,
+        ROUND( sum( rise)/count(m.code), 2 ) as avri
         FROM blk_name as n, blk_memb as m,
         (
         SELECT code, ROUND(100*(close-yesc)/yesc,2) as rise, 
@@ -1935,7 +1935,7 @@ function fn_blk_delta_layout()
         $WHERE m.blk=n.blk && m.code=dlt.code AND m.blk not in ${EXCLUDE_BLK}
         GROUP by blk 
         HAVING 1 ${COND}
-        ORDER by ${1:-num} ${ASC:-DESC} LIMIT ${LIMIT:-20};
+        ORDER by num ${ASC:-DESC}, ${1:-avDri} DESC LIMIT ${LIMIT:-20};
     "
 
     #echo "${sqls}"; exit
@@ -2021,6 +2021,8 @@ function fn_blk()
             fn_blk_delta ${@:2}
             ;;
         l|layout)
+            # 从3个维度考量：数量、delta涨幅、最高涨幅
+            fn_echo_warn "DOOR:${DOOR:=0.5}"
             cat ${info}.delta
             fn_blk_delta_layout ${@:3}
             ;;
@@ -2035,12 +2037,6 @@ function fn_blk()
             "
             ;;
         esac
-        ;;
-    deltas)
-        # 从3个维度考量：数量、平均涨幅、最高涨幅
-        sqls="
-        SELECT * FROM 
-        "
         ;;
     66)
         fn_peeloff_blk

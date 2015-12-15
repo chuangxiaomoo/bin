@@ -1226,7 +1226,6 @@ function fn_main()
     "money                              # ---------资金分析---------"
     "power                              # 权重分析"
     "merge  file...                     # 合并多个文件到chao.merge"
-    "top [N]                            # 更新N日的板块涨幅"
     )
 
     # 存储过程函数文件的最后5行都是注释
