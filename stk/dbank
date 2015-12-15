@@ -120,6 +120,7 @@ blk_list='/tmp/kts/blk_list'
    mps_nbm="/tmp/kts/nbm.sql"
    mps_god="/tmp/kts/God.sql"
 mps_ma2015="/tmp/kts/ma2015.sql"
+      info='/tmp/kts/info'
       chao='/tmp/kts/chao'
    lhb_raw='/tmp/kts/lhb.raw'
    lhb_rip='/tmp/kts/lhb.rip'
@@ -499,9 +500,10 @@ function fn_set_END()
 
 function fn_get_time()
 {
+    let STEP=${STEP:-1}-1
     dts="SELECT DISTINCT time FROM dorat"
     odr="ORDER by date DESC, time DESC"
-    iHMS=`mysql -N kts<<<"${dts} WHERE date='${END}' && time<='${HMS:-15:05:00}' ${odr} LIMIT ${STEP:-1},1"`
+    iHMS=`mysql -N kts<<<"${dts} WHERE date='${END}' && time<='${HMS:-15:05:00}' ${odr} LIMIT ${STEP},1"`
 
     if [ -z "${iHMS}" ]; then
         fn_echo_fail "${STEP:-1} unit b4 ${HMS} is EMPTY"
