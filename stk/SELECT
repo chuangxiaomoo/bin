@@ -52,7 +52,7 @@ function fn_lsd()
     TEMPDAY='day'
 
     fn_yist
-    fn_echo_warn "----- LIST:${#LIST[@]} COND@${END}: $COND -----"
+    fn_echo_warn "----- LIST:${#LIST[@]} HAVING:${HAVING} COND@${END}: $COND -----"
 
     case $1 in
     t|top)
@@ -81,7 +81,7 @@ function fn_lsd()
         fn_echo_warn ${DT}
         DT=(${DT})
         TEMPDAY="(SELECT * FROM dorat WHERE date='${DT[0]}' && time='${DT[1]}')"
-        HAVING="rise>0"
+        HAVING="${HAVING:-rise>0}"
         ;;
     u|usage)
         echo "
@@ -107,6 +107,7 @@ function fn_lsd()
         sqls="
         SELECT ${CID}$columns, volume,amount, 
                 $OPRI as opri, 
+                $HIRI as hiri, 
                 ${sql_avrg}
                 $RISE as rise, 
                 ${sql_dive}
@@ -114,7 +115,7 @@ function fn_lsd()
                 FROM ${TEMPDAY} as d, cap as c ${WHERE} d.code = c.code and d.date = '${END}' 
                 HAVING ${HAVING:-1} ${COND} ORDER BY ${field} ${ASC:-desc} limit ${LIMIT:-36}
         " 
-        # echo "${sqls}"; exit
+        #echo "${sqls}"; exit
     }
     fn_sql $@ 
     mysql ${OPT:--t} kts <<<"${sqls}"
@@ -715,7 +716,7 @@ function fn_dorat()
         COND0="WHERE DATE_FORMAT(CONCAT(date, ' ', time), '%Y-%m-%d %T')<='${DT[@]}'"
         odr="ORDER by date DESC, time DESC"
         # date<='${DT[0]}' and time<='${DT[1]}'"
-        mysql -N kts<<< "SELECT date,time FROM ( SELECT DISTINCT date, time FROM dorat ) as t ${COND0} ${odr} LIMIT ${LIMIT:-50}"
+        mysql -N kts<<< "SELECT date,time FROM ( SELECT DISTINCT date, time FROM dorat ) as t ${COND0} ${odr} LIMIT ${LIMIT:-80}"
         #fn_execute -l | grep dorat && exit
         ;;
     esac
@@ -1433,7 +1434,7 @@ function fn_wolf_sqls()
         round((pbuy+nbuy)/(psell+nsell), 2) as bsp,
         round((w.shou/h.volume), 1) as prop, h.scale,
         round(w.amount/10000, 2) as eYi, 
-        ROUND(nmc/(1-top10_ajst_aR), 2) as nmcYi ${col_name}
+        ROUND(nmc*(1-top10_ajst_aR), 2) as nmcYi ${col_name}
         FROM xdde as w, curr_lohi as h, top10 as t
         ${WHERE} w.code=h.code && w.code=t.code && w.date<='${END}' ${iCOND} && net>${DOOR}     -- WHERE(net>0)加速3倍
         HAVING 1 ${CAUSE} ${COND} ${ORDER:-ORDER by ${field} ${ASC:-DESC}} LIMIT ${LIMIT:-36}
@@ -1796,39 +1797,71 @@ function fn_blk()
         ;;
     l|layout)
         ABBR=m fn_yist
-        field=${2:-code}
+        field=${2}
         echo "
         SELECT hex(n.blk) as blk,count(m.code) as num,n.sym FROM blk_name as n, blk_memb as m
          $WHERE n.blk=m.blk AND n.blk not in ${EXCLUDE_BLK}
-         GROUP by blk ORDER by num DESC LIMIT ${LIMIT:-20};
+         GROUP by blk ORDER by ${field:-num} ${ASC:-DESC} LIMIT ${LIMIT:-20};
         " | mysql -t kts
         ;;
     10)
-        export END=`fn_get_date ${2:-1} 1`
         fn_echo_succ "Classify @${END}"
         ABBR=m fn_yist
-        CHAO=1 LIMIT=3000 COND="rise>${DOOR:-9.93}" SELECT lsd ${3}> /dev/null
+        CHAO=1 LIMIT=3000 COND="rise>${DOOR:-9.93}" SELECT lsd ${2}> /dev/null
         YIST='/tmp/kts/chao.lsd' fn_blk layout
         ;;
-    11)
-        fn_peeloff_blk use_var_BLK
+    10s)
+        CHAO=1 fn_blk u ${BLK} > /dev/null
+        xt_ret $? "BLK:${BLK}" || return $?
+        YIST=/tmp/kts/chao.blk.union \
+        COND="rise>${DOOR:-9.93}" SELECT lsd ${@:2}
+        xt_ret $? "" || return $?
+        ;;
+    delta)
+        HMS1=`STEP=0 fn_get_time`
+        HMS2=`HMS=${HMS1} STEP=${2:-1} fn_get_time`
+        columns="code,date,yesc,open,high,low,close,volume,amount"
+        echo end: ${HMS1}
+        echo sta: ${HMS2}
+
+        echo "
+        $DROP delta;
+        $CREATE delta LIKE day;
+        INSERT INTO delta 
+        SELECT t1.code,t1.date,t1.yesc,t1.open, (t1.close-t2.close), t1.low,t1.close,t1.volume,t1.amount
+        FROM 
+        ( SELECT ${columns} FROM dorat WHERE date='${END}' and time='${HMS1}' ) as t1,
+        ( SELECT ${columns} FROM dorat WHERE date='${END}' and time='${HMS2}' ) as t2
+        WHERE t1.code=t2.code;
+        " | mysql kts
+        sqls="
+        SELECT code,ROUND(100*high/yesc,2) as drise FROM delta 
+            HAVING drise>${DOOR:-1} 
+            ORDER by drise DESC
+        "
+        CHAO=1 fn_chao ${chao}.blk.drise
+        YIST='/tmp/kts/chao.blk.drise' fn_blk layout
+        ;;
+    deltas)
+        ;;
+    66)
+        fn_peeloff_blk
         off=${2:-1}
-        field=${3:-rise}
         sta=`fn_get_date ${off}`
         fn_sqls() {
         sqls="
-        SELECT d.code,sum(${RISE}) as rise, ${nmcYi}, c.name FROM day as d, cap as c, xblk
-            ${WHERE} ${inBLK} && d.code=c.code and d.date>='${sta}' && d.date<='${END}'
+        SELECT d.code,sum(${RISE}) as rise, ${nmcYi}, c.name FROM day as d, cap as c ${frBLK}
+            ${WHERE} d.code=c.code and d.date>='${sta}' && d.date<='${END}' ${inBLK}
             GROUP by code 
             HAVING ${HAVING:-1} ${COND} and rise>${DOOR:-'-100'}
-            ORDER BY ${field} ${ASC:-desc} limit ${LIMIT:-36}
+            ORDER BY ${field:-rise} ${ASC:-desc} LIMIT ${LIMIT:-36}
         " 
         }
         fn_sqls
         #echo "${sqls}" ; exit
         mysql -t kts <<< "${sqls}"
         LIMIT=3000 fn_sqls
-        fn_chao
+        fn_chao ${chao}.blk.66
         ;;
     123)
         size=${2:-3}
@@ -1866,44 +1899,59 @@ function fn_blk()
         LIMIT=300 fn_blk l | grep ${2}
         ;;
     d|dif)
+        ABBR=T1 fn_yist
+        sqls="
+        SELECT T1.code, name FROM
+        (SELECT code FROM blk_memb WHERE blk=0x${2}) as T1, cap
+        $WHERE T1.code=cap.code AND T1.code NOT IN 
+        (SELECT code FROM blk_memb WHERE blk=0x${3})
+        "
+        #echo "${sqls}"; exit
+        mysql -t kts <<< "${sqls}"
+        fn_chao ${chao}.blk.dif
+        ;;
+    A|intersection)
+        ABBR=T1 fn_yist
         sqls="
         SELECT T1.code, name FROM
         (SELECT code FROM blk_memb WHERE blk=0x${2}) as T1,
         (SELECT code FROM blk_memb WHERE blk=0x${3}) as T2, cap
-        WHERE T1.code=T2.code && T1.code=cap.code
+        $WHERE T1.code=T2.code && T1.code=cap.code
         "
         #echo "${sqls}"; exit
         mysql -t kts <<< "${sqls}"
-        fn_chao ${chao}.blk
+        fn_chao ${chao}.blk.A
         ;;
     u|union)
         BLK=${@:2}
         ABBR=m fn_yist
         ABBR=m fn_peeloff_blk
-
-
         sqls="
         SELECT m.code,count(m.code) as num, ${nmcYi}, c.name 
-               FROM blk_memb as m, cap as c, xblk
-        ${WHERE} ${inBLK} && m.code=c.code && blk NOT IN ${EXCLUDE_BLK} 
+               FROM blk_memb as m, cap as c ${frBLK}
+        ${WHERE} m.code=c.code ${inBLK} && blk NOT IN ${EXCLUDE_BLK} 
         GROUP by code HAVING 1 ${COND}
         ORDER by num ASC LIMIT ${LIMIT:-500}
         " 
         mysql -t kts <<< "${sqls}"
-        fn_chao ${chao}.blk
+        fn_chao ${chao}.blk.union
         ;;
     *)
         echo "
-        SELECT blk <param>
-        l               # layout
-        10  idate iF5   # 涨停板概念分类 {DOOR:-10}，查讯iF5: SELECT lohi l
-        11  iF5         # 列出变量BLK关联的code涨幅，iF5为5分钟数据索引
-        123 size        # for(i<size)循环_10_的内容，但这是平均值
-        c   code        # 显示code关联的所有板块
-        d   blk blk2    # 求两个blk的交集
-        u   blk [...]   # 求几个blk的交集(.c时可作为输出)
-                        # blk中code关联的blk数目排名，越小，概念越纯正。
-        top off         # 热点(对[up top]的结果进行显示)
+        SELECT blk <param>  # 注：使用HAVING向<SELECT lsd>传递条件
+        l                   # layout
+        10      iF5         # 涨停板概念分类 {DOOR:-10}，查讯iF5: SELECT lohi l
+        10s     iF5         # 列出变量BLK关联的code涨幅，iF5为5分钟数据索引
+        delta               # 做差
+        deltas              # 做差结果BLK提取显示
+        66      off         # off日内代码累计涨幅
+        123     size        # for(i<size)循环_10_的内容，但这是平均值
+        c       code        # 显示code关联的所有板块
+        d       big small   # 求两个blk的差集 big-small 
+        A       blk blk2    # 求两个blk的交集
+        u       blk [...]   # 求几个blk的并集(.c时可作为输出)
+                            # blk中code关联的blk数目排名，越小，概念越纯正。
+        top     off         # 热点(对[up top]的结果进行显示)
         "
         ;;
     esac
@@ -2009,12 +2057,6 @@ function fn_dive()
 
 function fn_main()
 {
-    CURR=`fn_maxdate`
-    END=${END:-${CURR}}                             # 指定为NUL
-    END=${END//END/${CURR}}                         # 指定为END
-    PREV=`END=${END//PREV/${CURR}} fn_get_prev`     # 指定为PREV
-    END=${END//PREV/${PREV}}                        # echo P:${PREV} E:${END}; exit
-
     cmdlist=(
     "dugu9jian          [sortfield]           # nine sword"
     "6maishenjian       [sortfield]           # #{DATE2} to specify diff-day"
@@ -2063,6 +2105,7 @@ function fn_main()
     # `ASC=任意值`时使用'DESC'，弃用
     # ASC=${ASC:+'DESC'}  # ASC=${ASC:-'ASC'}
     # ASC=${ASC:-'ASC'}
+    fn_set_END
     fn_execute "$@"
 }
 

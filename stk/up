@@ -758,8 +758,11 @@ function fn_dorat()
 
     fn_echo_succ "    succ: insert dorat ${sec_dt[@]}"
     
-    nb_2015=`cat /tmp/kts/2015 2>/dev/null`
-    if [ "${nb_2015:-1}" -eq 1 ]; then
+   #nb_2015=`cat /tmp/kts/2015 2>/dev/null`
+   #if [ "${nb_2015:-1}" -eq 1 ]; then
+    let got21=hhmm%100%30
+    if [ "${got21:-0}" -lt 2 ]; then
+        #echo got21:${got21}@${hhmm} >> /tmp/kts/got21
         fn_bell "system.wav"
     fi
 
