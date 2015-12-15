@@ -1767,13 +1767,211 @@ function fn_stat()
     return $?
 }
 
+function fn_xtempfen()
+{
+    fen=`STEP=${STEP:-1} fn_get_time`
+    fn_echo_succ "Peel off time@${fen}..."
+
+    local table=${TBL:-xtempday}
+    columns='code,date,yesc,open,high,low,close,volume,amount'
+
+    echo "
+    $DROP ${table}; CREATE TABLE ${table} LIKE day;
+    INSERT INTO ${table} 
+    SELECT ${columns} from dorat WHERE date='${END}' and time='${fen}';
+    " | mysql kts
+    return $?
+}
+
 function fn_topX()
 {
-    date=`fn_get_date ${1:-1} 1`
+    sqls="
+    SELECT n.blk FROM blk_name as n, blk_memb as m
+     WHERE n.blk=m.blk AND n.blk NOT in ${EXCLUDE_BLK//,0x40/} 
+     GROUP by blk
+    " 
+
+    blks=`mysql -N kts<<<"${sqls}"`
+
+    if [ -z "${STEP}" ]; then
+        fn_xtempday
+        xt_ret $? "xtempday error" || return $?
+    else
+        fn_xtempfen
+        xt_ret $? "xtempfen error" || return $?
+    fi
+
     echo "
-        SELECT * FROM topN WHERE date='${date}' ORDER by rise DESC LIMIT ${LIMIT:-15};
+    $DROP topN;
+    $CREATE topN (
+        date    date,
+        blk     INT,
+        sym     CHAR(64),
+        SAMPLES INT, 
+        rise    DECIMAL(6,2) NOT NULL DEFAULT 0,
+        INDEX(date,blk)
+    );
+    $DROP topX;
+    $CREATE topX LIKE topN;
+    " | mysql kts
+
+    for i in ${blks}; do
+        # mysql -t kts <<< "SELECT code FROM blk_memb WHERE blk=${i}"
+        SAMPLES=`mysql -N kts <<< "SELECT IF(count(code)>10, 10, count(code)) FROM blk_memb WHERE blk=${i}"`
+        # echo ${SAMPLES}; exit
+        echo "
+        INSERT INTO topX (date,blk,sym,SAMPLES,rise)
+        SELECT '${END}', blk, sym, ${SAMPLES}, sum(rise)/${SAMPLES} FROM
+        (
+        SELECT d.code, round(100*(close-yesc)/yesc, 2) as rise 
+        FROM
+        xtempday as d,
+        (SELECT code FROM blk_memb WHERE blk=${i}) as b
+        WHERE d.code=b.code ORDER by rise DESC LIMIT ${SAMPLES}
+        ) as top13, blk_name WHERE blk=${i}
+        " | mysql -t kts
+    done
+
+    echo "
+        DELETE FROM topN WHERE date='${END}';
+        INSERT INTO topN SELECT * FROM topX ORDER by rise DESC;
     " | mysql -t kts
+
+    return $?
+}
+
+function fn_top()
+{
+    case $1 in
+    l)
+        echo "
+            SELECT DISTINCT date FROM topN ORDER by date DESC LIMIT ${LIMIT:-15};
+        " | mysql -t kts
+        ;;
+    d)
+        sta=$2
+        seq=`seq ${sta:-1} ${3} $4`
+        for i in ${seq}; do
+            date=`fn_get_date ${i} 1`
+            echo "
+                DELETE FROM topN WHERE date='${date}'
+            " | mysql -t kts
+            fn_echo_succ "DELETE ${date} FROM topN done..."
+        done
+        ;;
+    s)
+        sta=$2
+        for i in `seq ${sta:-1} ${3} $4`; do
+            date=`fn_get_date ${i} 1`
+            idate=`mysql -N kts<<<"SELECT DISTINCT date FROM topN WHERE date='${date}'"`
+            if [ -z "${idate}" ]; then
+                fn_echo_succ "CREATE ${date} INTO topN..."
+                END=${date} fn_topX
+            fi
+            echo "
+            SELECT date,hex(blk),sym,SAMPLES,rise FROM topN 
+                WHERE date='${date}' ORDER by ${field:-rise} DESC LIMIT ${LIMIT:-20};
+            " | mysql -t kts
+        done
+        ;;
+    i)
+        fn_top d
+        STEP=${2:-1} END=${date} fn_topX
+        echo "
+        SELECT date,hex(blk),sym,SAMPLES,rise FROM topN 
+            WHERE date='${date}' ORDER by ${field:-rise} DESC LIMIT ${LIMIT:-20};
+        " | mysql -t kts
+        ;;
+    *)
+        echo "
+        SELECT blk top 
+        l           # list DATE
+        d sta,end   # 删除 (sta,step,end)
+        s sta,end   # 查询
+        i [iF5]     # 查询iF5
+        u           # USAGE
+        "
+        ;;
+    esac
     
+    return $?
+}
+
+function fn_blk_delta_codes()
+{
+    DOOR=${DOOR:-0.5}
+    ABBR=d fn_peeloff_blk ${1}
+    sqls="
+        SELECT d.code, 
+            ROUND(100*(d.close-yesc)/yesc,2) as rise, 
+            ROUND(100*high/yesc,2) as drise,
+            name
+        FROM delta as d, cap as c ${frBLK}
+        WHERE d.code=c.code ${inBLK}
+        HAVING drise>${DOOR} ORDER by ${filed:-drise} DESC
+    "
+
+    #echo "${sqls}"; exit
+    mysql -t kts <<< "${sqls}"
+    xt_ret $? "" || return $?
+
+    CHAO=1 fn_chao ${chao}.blk.drise
+    return $?
+}
+
+function fn_blk_delta_layout()
+{
+    DOOR=${DOOR:-0.5}
+    sqls="
+    SELECT hex(n.blk) as blk,count(m.code) as num, n.sym, max(drise) as maxR, 
+        ROUND( sum( rise)/count(m.code), 2 ) as avri,
+        ROUND( sum(drise)/count(m.code), 2 ) as avrDr
+        FROM blk_name as n, blk_memb as m,
+        (
+        SELECT code, ROUND(100*(close-yesc)/yesc,2) as rise, 
+            ROUND(100*high/yesc,2) as drise FROM delta 
+            HAVING drise>${DOOR} ORDER by drise DESC
+        ) as dlt
+        $WHERE m.blk=n.blk && m.code=dlt.code AND m.blk not in ${EXCLUDE_BLK}
+        GROUP by blk 
+        HAVING 1 ${COND}
+        ORDER by ${1:-num} ${ASC:-DESC} LIMIT ${LIMIT:-20};
+    "
+
+    #echo "${sqls}"; exit
+    mysql -t kts <<< "${sqls}"
+    return $?
+
+}
+
+function fn_blk_delta()
+{
+    if [ "${#}" -eq 2 ]; then                               # sta STEP
+        HMS1=${HMS:-`STEP=${1} fn_get_time`}
+        HMS2=`HMS=${HMS1} STEP=${2} fn_get_time`
+    else                                                    # STEP
+        HMS1=${HMS:-`STEP=1 fn_get_time`}
+        HMS2=`HMS=${HMS1} STEP=${1} fn_get_time`
+    fi
+
+    echo "\
+    end: ${HMS1}
+    sta: ${HMS2}\
+    " | tee ${info}.delta
+    columns="code,date,yesc,open,high,low,close,volume,amount"
+
+    echo "
+    $DROP delta;
+    $CREATE delta LIKE day;
+    INSERT INTO delta 
+    SELECT t1.code,t1.date,t1.yesc,t1.open, (t1.close-t2.close), t1.low,t1.close,t1.volume,t1.amount
+    FROM 
+    ( SELECT ${columns} FROM dorat WHERE date='${END}' and time='${HMS1}' ) as t1,
+    ( SELECT ${columns} FROM dorat WHERE date='${END}' and time='${HMS2}' ) as t2
+    WHERE t1.code=t2.code;
+    " | mysql kts
+
+    fn_echo_succ "    gen delta succ!"
     return $?
 }
 
@@ -1786,14 +1984,14 @@ function fn_blk()
     0xDA4D,  -- 305 | 央企国资改革
     0xD953,  -- 243 | 参股金融    
     0xD886,  -- 100 | 证金持股
-    0xDB9B,  -- 81  | 转融券标的
-    0x40     -- 226 | 新股与次新股
+    0xDB9B   -- 81  | 转融券标的
+   ,0x40     -- 226 | 新股与次新股
     )"
 #   EXCLUDE_BLK="(0x1234)"
 
     case $1 in
     top)
-        fn_topX $2
+        fn_top ${@:2}
         ;;
     l|layout)
         ABBR=m fn_yist
@@ -1818,31 +2016,31 @@ function fn_blk()
         xt_ret $? "" || return $?
         ;;
     delta)
-        HMS1=`STEP=0 fn_get_time`
-        HMS2=`HMS=${HMS1} STEP=${2:-1} fn_get_time`
-        columns="code,date,yesc,open,high,low,close,volume,amount"
-        echo end: ${HMS1}
-        echo sta: ${HMS2}
-
-        echo "
-        $DROP delta;
-        $CREATE delta LIKE day;
-        INSERT INTO delta 
-        SELECT t1.code,t1.date,t1.yesc,t1.open, (t1.close-t2.close), t1.low,t1.close,t1.volume,t1.amount
-        FROM 
-        ( SELECT ${columns} FROM dorat WHERE date='${END}' and time='${HMS1}' ) as t1,
-        ( SELECT ${columns} FROM dorat WHERE date='${END}' and time='${HMS2}' ) as t2
-        WHERE t1.code=t2.code;
-        " | mysql kts
-        sqls="
-        SELECT code,ROUND(100*high/yesc,2) as drise FROM delta 
-            HAVING drise>${DOOR:-1} 
-            ORDER by drise DESC
-        "
-        CHAO=1 fn_chao ${chao}.blk.drise
-        YIST='/tmp/kts/chao.blk.drise' fn_blk layout
+        case $2 in
+        [0-9]*)
+            fn_blk_delta ${@:2}
+            ;;
+        l|layout)
+            cat ${info}.delta
+            fn_blk_delta_layout ${@:3}
+            ;;
+        b|blk)
+            fn_blk_delta_codes ${3}
+            ;;
+        *)
+            echo "SELECT blk delta
+            [STA] STEP      # gen delta
+            b     BLK       # 单独展示一个BLK的细节
+            l     FIELD     # layout {DOOR:-0.5}
+            "
+            ;;
+        esac
         ;;
     deltas)
+        # 从3个维度考量：数量、平均涨幅、最高涨幅
+        sqls="
+        SELECT * FROM 
+        "
         ;;
     66)
         fn_peeloff_blk
@@ -1943,7 +2141,7 @@ function fn_blk()
         10      iF5         # 涨停板概念分类 {DOOR:-10}，查讯iF5: SELECT lohi l
         10s     iF5         # 列出变量BLK关联的code涨幅，iF5为5分钟数据索引
         delta               # 做差
-        deltas              # 做差结果BLK提取显示
+        deltas  STEP DOOR   # 做差结果BLK提取显示
         66      off         # off日内代码累计涨幅
         123     size        # for(i<size)循环_10_的内容，但这是平均值
         c       code        # 显示code关联的所有板块
