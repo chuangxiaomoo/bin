@@ -32,6 +32,7 @@ WGET='timeout 34 /usr/bin/wget'
 W3M='timeout  60 /usr/bin/w3m'
 
 # FLOOR() and ROUND()
+HIRI='TRUNCATE(100*(d.high-d.yesc)/d.yesc, 2)'
 OPRI='TRUNCATE(100*(d.open-d.yesc)/d.yesc, 2)'
 RISE='TRUNCATE(100*(d.close-d.yesc)/d.yesc, 2)'
 PEAK='TRUNCATE(100*(d.high-d.close)/yesc, 2)'
@@ -200,8 +201,7 @@ fn_gen_dzh_blk()
     HEAD="\xa6\x00\x51\xff\x01"     # 带时间排序功能，不带时间: HEAD="\xa5\x00Q\xff"
     DELI="\x00\x20\x66\x01"         # 不带时间: DELI="\x00\x00\x00\x00"
 
-    test -f "${DZH_ZXG:=/dzh2/USERDATA/block/自选股${NUM}.BLK}"
-    xt_ret $? "${DZH_ZXG} not exist" || exit 1
+    touch "${DZH_ZXG:=/dzh2/USERDATA/block/自选股${NUM}.BLK}"
 
     {
     echo -n -e $HEAD
@@ -292,12 +292,8 @@ function fn_get_export_file()
 
 function fn_peeloff_blk()
 {
-    if [ "${1}" = use_var_BLK ] && [ -z "${BLK}" ]; then
-        fn_echo_fail '$BLK mustnot NULL'
-        exit
-    fi
-
-    [ -z "${BLK}" ] && return
+    BLK=${BLK:-${1}}
+    [ -z "${BLK}" ] && return 1
 
     BLK=(${BLK//,/ }); BLK=${BLK[@]}              # 去回车
     local hexCOND="blk=0x${BLK// /||blk=0x}"
@@ -308,7 +304,8 @@ function fn_peeloff_blk()
     INSERT INTO  xblk(code) 
     SELECT DISTINCT code FROM blk_memb WHERE ${hexCOND};
     " | mysql kts
-    inBLK="${ABBR:-d}.code=xblk.code"       # 勿用 WHERE ABBR 以免影响 YIST
+    inBLK="&& ${ABBR:-d}.code=xblk.code"       # 勿用 WHERE ABBR 以免影响 YIST
+    frBLK=",xblk"
 }
 
 function fn_date_2_str()
@@ -466,12 +463,12 @@ function fn_get_next()
     mysql -N kts<<<"${sqls} ORDER by date ASC LIMIT 1"
 }
 
-function fn_get_date()  # para1: start para2: offset
+function fn_get_date()  
 {
-    # 不带参数，默认为了，取最新
+    # Usage: fn_get_date offset size
     local sta=${1:-1}
     local code=${CODE:-900001}
-    let sta--
+    let sta--           #sta=offset-1
     sqls="
         SELECT date from day 
         WHERE code=${code} and date<='${END}' 
@@ -479,6 +476,39 @@ function fn_get_date()  # para1: start para2: offset
     "
     #echo ${sqls}; exit
     mysql -N kts <<< "${sqls}"
+}
+
+function fn_set_END()
+{
+    CURR=`fn_maxdate`
+
+    if [ -n "${END}" ]; then
+        END=${END//END/${CURR}}                         # 指定为END
+        PREV=`END=${END//PREV/${CURR}} fn_get_prev`     # 指定为PREV
+        END=${END//PREV/${PREV}}                        # echo P:${PREV} E:${END}; exit
+    elif [ -n "${iEND}" ]; then 
+        END=`END=${CURR} fn_get_date ${iEND} 1`         # 使用iEND时，必是从CURR倒数起
+    else
+        END=${END:-${CURR}}                             # 指定为CURR
+    fi
+
+    PREV=`fn_get_prev`
+
+    #echo iEND:${iEND} END:${END} PREV:${PREV}; exit
+}
+
+function fn_get_time()
+{
+    dts="SELECT DISTINCT time FROM dorat"
+    odr="ORDER by date DESC, time DESC"
+    iHMS=`mysql -N kts<<<"${dts} WHERE date='${END}' && time<='${HMS:-15:05:00}' ${odr} LIMIT ${STEP:-1},1"`
+
+    if [ -z "${iHMS}" ]; then
+        fn_echo_fail "${STEP:-1} unit b4 ${HMS} is EMPTY"
+        exit 1
+    fi
+    echo ${iHMS}
+    return 0
 }
 
 function fn_list_date()
