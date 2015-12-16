@@ -1,0 +1,6 @@
+#! /bin/bash
+
+ps  -ef | grep -q [s]mbd     && stop smbd
+ps  -ef | grep -q [w]hoopsie && stop whoopsie
+free -m | grep Mem | awk '{ if ($4 < 128) { printf("3") > "/proc/sys/vm/drop_caches"} }';
+
