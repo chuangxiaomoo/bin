@@ -707,7 +707,7 @@ function fn_dorat()
     hhmm=`date +%H%M | sed 's/^0//'`;
     
     # if [ "${hhmm}" -lt 1400 ]; then
-          let got30=hhmm%100%15
+          let got30=hhmm%100%30
     # else
     #     let got30=hhmm%100%30
     # fi

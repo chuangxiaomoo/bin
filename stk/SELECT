@@ -1915,7 +1915,7 @@ function fn_blk_delta_codes()
     mysql -t kts <<< "${sqls}"
     xt_ret $? "" || return $?
 
-    CHAO=1 fn_chao ${chao}.blk.drise
+    CHAO=1 fn_chao ${chao}.opt.drise
     return $?
 }
 
@@ -2011,7 +2011,7 @@ function fn_blk()
     10s)
         CHAO=1 fn_blk u ${BLK} > /dev/null
         xt_ret $? "BLK:${BLK}" || return $?
-        YIST=/tmp/kts/chao.blk.union \
+        YIST=/tmp/kts/chao.opt.union \
         COND="rise>${DOOR:-9.93}" SELECT lsd ${@:2}
         xt_ret $? "" || return $?
         ;;
@@ -2055,7 +2055,7 @@ function fn_blk()
         #echo "${sqls}" ; exit
         mysql -t kts <<< "${sqls}"
         LIMIT=3000 fn_sqls
-        fn_chao ${chao}.blk.66
+        fn_chao ${chao}.opt.66
         ;;
     123)
         size=${2:-3}
@@ -2102,7 +2102,7 @@ function fn_blk()
         "
         #echo "${sqls}"; exit
         mysql -t kts <<< "${sqls}"
-        fn_chao ${chao}.blk.dif
+        fn_chao ${chao}.opt.dif
         ;;
     A|intersection)
         ABBR=T1 fn_yist
@@ -2114,7 +2114,7 @@ function fn_blk()
         "
         #echo "${sqls}"; exit
         mysql -t kts <<< "${sqls}"
-        fn_chao ${chao}.blk.A
+        fn_chao ${chao}.opt.A
         ;;
     u|union)
         BLK=${@:2}
@@ -2128,7 +2128,7 @@ function fn_blk()
         ORDER by num ASC LIMIT ${LIMIT:-500}
         " 
         mysql -t kts <<< "${sqls}"
-        fn_chao ${chao}.blk.union
+        fn_chao ${chao}.opt.union
         ;;
     *)
         echo "
