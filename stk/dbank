@@ -202,7 +202,7 @@ fn_gen_dzh_blk()
     HEAD="\xa6\x00\x51\xff\x01"     # 带时间排序功能，不带时间: HEAD="\xa5\x00Q\xff"
     DELI="\x00\x20\x66\x01"         # 不带时间: DELI="\x00\x00\x00\x00"
 
-    touch "${DZH_ZXG:=/dzh2/USERDATA/block/自选股${NUM}.BLK}"
+    touch "${DZH_ZXG:=/dzh2/USERDATA/block/${ZXG:-自选股${NUM}}.BLK}"
 
     {
     echo -n -e $HEAD
@@ -236,12 +236,11 @@ function fn_chao()
     # echo "${sql_chao}"; exit
     mysql -N kts <<<"${sql_chao}" |grep '^[036]'| uniq|tee ${TEE} ${PLAIN} > /dev/null 
 
-
-    if [ "${DZH}" = 1 ]; then
-        fn_gen_dzh_blk
-    else
-        fn_gen_10jqka_sel
-    fi
+    case ${DZH} in
+    P) return               ;;
+    1) fn_gen_dzh_blk       ;;
+    *) fn_gen_10jqka_sel    ;;
+    esac
 
     return $?
     # up file_to_table ${PLAIN}

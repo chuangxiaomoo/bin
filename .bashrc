@@ -22,7 +22,7 @@ alias    HAVING=''
 alias      PREV=''
 alias      YIST=''
 alias      STEP=''
-alias      ZIZE=''
+alias       ZXG=''      # ZIZE 用 NUM STEP 替换
 alias     LIMIT=''
 alias     nmemb=''
 alias       mip='PREV=3 mi5 '
