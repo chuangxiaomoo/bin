@@ -2009,7 +2009,7 @@ function fn_blk()
         YIST='/tmp/kts/chao.lsd' fn_blk layout
         ;;
     10s)
-        CHAO=1 fn_blk u ${BLK} > /dev/null
+        DZH=P CHAO=1 fn_blk u ${BLK} > /dev/null
         xt_ret $? "BLK:${BLK}" || return $?
         YIST=/tmp/kts/chao.opt.union \
         COND="rise>${DOOR:-9.93}" SELECT lsd ${@:2}

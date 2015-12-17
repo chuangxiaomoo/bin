@@ -33,12 +33,14 @@ function fn_dzh()
     )
     local i j
     for (( i=0,j=1; i<${#maps[@]}; i+=2,j+=2 )); do
-        test ${maps[${j}]} -nt ${BLK}/${maps[${i}]} && continue
-        echo ${maps[${i}]} ${maps[${j}]}
+        blk_file=${maps[${j}]}
+        ln -sf ~/bin/stk/${blk_file} /tmp/kts/chao${blk_file}
+        test ${blk_file} -nt ${BLK}/${maps[${i}]} && continue
+        echo ${maps[${i}]} ${blk_file}
         cat ${BLK}/${maps[${i}]} | \
             tr -cd '[0-9SZH]' | sed 's/S[HZ]/\n/g'| \
             tail -n+2 | sort -g | grep '^[036]' > /dev/shm/.blk
-        grep -f /dev/shm/.blk .codelist > ${maps[${j}]}
+        grep -f /dev/shm/.blk .codelist > ${blk_file} 
     done
     return $?
 }
@@ -47,11 +49,20 @@ function fn_10jqka()
 {
     iconv -f cp936 -t utf8 /10jqka/BlockUpdate/block_conception.ini > .10jqka.ini
     iconv -f cp936 -t utf8 /10jqka/BlockUpdate/block_industry.ini  >> .10jqka.ini
+
     cat .10jqka.ini | grep -E '^40=|^B3=|^[0-9A-F]{4}=[^$]' | grep -v ':' > ${blk_name}.raw
     cat .10jqka.ini | grep -E '^40=|^B3=|^[0-9A-F]{4}=[^$]' | grep    ':' > ${blk_list}
-    sed -i -e 's/^/0x/g' -e 's/=/\t/g' ${blk_name}.raw
-    sed -i -e 's/^/0x/g' -e 's/[0-9][0-9]://g' -e 's/=/,/g' -e 's/,$//g' ${blk_list}
 
+    sed -i -e 's/[0-9][0-9]://g' -e 's/=/,/g' -e 's/,$//g' ${blk_list}
+
+    # 2个关键文件格式(.perference.blk.md 处理)
+    # blk_name.raw  FFC1=板块名
+    # blk_list      FFC1,000004,000403
+    grep '^#.*=' .perference.blk.md | sed 's/^# *//g' >> ${blk_name}.raw
+    grep '^FF' .perference.blk.md | awk '{print $1}' >> ${blk_list}
+
+    sed -i -e 's/^/0x/g' -e 's/=/\t/g' ${blk_name}.raw
+    sed -i -e 's/^/0x/g' ${blk_list}
     awk '{printf "%d\t%s\n", $1,$2}' ${blk_name}.raw > ${blk_name}
 
     awk -F ',' '{
@@ -59,6 +70,9 @@ function fn_10jqka()
             printf("%d\t%s\n", $1,$i)
         }
     }' ${blk_list} > ${blk_memb}
+
+    sort -u ${blk_name} -o ${blk_name}
+    sort -u ${blk_memb} -o ${blk_memb}
 
     echo "
     TRUNCATE TABLE blk_name;
@@ -78,7 +92,7 @@ function fn_main()
     d|dzh)
         fn_dzh
         ;;
-    10jqka)
+    10|10jqka)
         fn_10jqka
         ;;
     *)
