@@ -23,6 +23,9 @@ function fn_routine()
     >${list_limo}
 
     while read code symble COND0 tips; do
+        if [ "${code}" = 3dcybz ]; then
+            OPER=${COND0}; continue
+        fi
         # echo "read code=${code} ${COND0}"
         [ "${COND0:-0}" == 0 ] && continue
         if ! ${istest} && [ "$code" != '/' ]; then                              # istest
@@ -142,8 +145,9 @@ function fn_routine()
 function fn_loop()
 {
     while :; do
-        fn_isresting && { sleep 150; continue; }
+       #fn_isresting && { sleep 150; continue; }
         fn_routine
+        fn_dif_300_6
         echo "to sleeping ${STEP:=62}s"         # F5x3有效突破，即3线之内，低点抬高，高点亦抬高
         sleep ${STEP}                           #               若是大阳线，则不破1/2长度
     done
@@ -162,6 +166,7 @@ function fn_test_all()
 {
     fn_routine
     xt_ret $? "" || return $?
+    fn_dif_300_6
 }
 
 function fn_test_code()
@@ -175,8 +180,60 @@ function fn_test_code()
     return $?
 }
 
+function fn_get_yesc()
+{
+    HMS=`date +%H%M%S | sed 's/^0//'`
+
+    if [ "${HMS}" -lt 93500 ]; then
+        fn_echo_fail "It's time b4 093500, please wait"
+        exit
+    fi
+
+    fn_get_yesc0()
+    {
+        sqls="
+        SELECT round(sum(trade)/count(trade),2) FROM fenbi 
+        WHERE code=${CODE} and datetime>=${PREV//-/}150000 and datetime<${PREV//-/}160000
+        " 
+        mysql -N kts <<<"${sqls}"
+    }
+
+    y006=`CODE=399006 fn_get_yesc0`
+    y300=`CODE=399300 fn_get_yesc0`
+
+    if [ -z "${y006}" ] || [ -z "${y300}" ]; then
+        echo "
+        Absent!!!
+        yesc_006: $y006
+        yesc_300: $y300
+        "
+        exit 1
+    fi
+    return $?
+}
+
+function fn_dif_300_6()
+{
+    sqls="
+    SELECT trade FROM fenbi WHERE code=399300 ORDER by datetime DESC LIMIT 1 INTO @c300;
+    SELECT trade FROM fenbi WHERE code=399006 ORDER by datetime DESC LIMIT 1 INTO @c006;
+--  SELECT 99999, ROUND(100*(@c300-$y300)/$y300, 2), ROUND( 100*(@c006-$y006)/$y006, 2);
+    SELECT IF( ((@c300-$y300)/$y300 ${OPER:='>'} (@c006-$y006)/$y006), 1, 0 );
+    " 
+    #mysql -N kts <<<"${sqls}"; exit
+    RET=`mysql -N kts <<<"${sqls}"`
+    if [ "${RET}" = 1 ]; then
+        fn_echo_fail "    Go: 300 ${OPER} 006"
+        fn_bell "tweet.wav tweet.wav"
+    fi
+    return $?
+}
+
 function fn_main()
 {
+    fn_set_END
+    fn_get_yesc
+
     istest=false
     case $1 in
     l|loop)

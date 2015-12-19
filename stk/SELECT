@@ -444,8 +444,8 @@ function fn_wma()
 
 function fn_updown()
 {
-    NUM=${NUM:-5}
-    START=`fn_get_date ${NUM}`
+    let iNUM=${NUM:-5}+1
+    START=`fn_get_date ${iNUM}`
 
     echo "
     From ${START} to ${END}...
@@ -455,12 +455,16 @@ function fn_updown()
     > $mps_god
     head -n -5 $mps_org >> $mps_god
 
+    cols1=id,date,cnt,yiz10,inc10,hit10,
+    cols2=inc,dec0,eq0,inc8p,inc5p,inc2p,inc0p,dec0d,dec2d,dec5d,dec8d
+
     echo "
     SET @START='$START';
     SET @END='$END';
     SET @NUM=${NUM};
     call sp_stat_change();
-    SELECT * FROM tbl_stat_change ORDER by ${1:-date} ${ASC:-ASC};
+    SELECT ${cols1} ROUND(100*inc10/hit10,2) as succ, ${cols2}
+        FROM tbl_stat_change ORDER by ${1:-date} ${ASC:-ASC};
     " | tee /dev/stderr >> $mps_god
 
     mysql $mo -t kts <<< "source $mps_god"
@@ -2104,6 +2108,20 @@ function fn_blk()
         mysql -t kts <<< "${sqls}"
         fn_chao ${chao}.opt.dif
         ;;
+    !)  
+        if [ -z "${YIST}" ]; then
+            fn_echo_fail "Usage: YIST=xxx SELECT ! blk..."
+            exit
+        fi
+        ABBR=c fn_yist
+        ABBR=c fn_peeloff_blk
+        sqls="
+        SELECT c.code, name FROM cap as c ${frBLK}
+        $WHERE c.code NOT IN (SELECT code FROM xblk)
+        "
+        mysql -t kts <<< "${sqls}"
+        fn_chao ${chao}.opt.notin
+        ;;
     A|intersection)
         ABBR=T1 fn_yist
         sqls="
@@ -2141,11 +2159,12 @@ function fn_blk()
         66      off         # off日内代码累计涨幅
         123     size        # for(i<size)循环_10_的内容，但这是平均值
         c       code        # 显示code关联的所有板块
+        !       blk [...]   # FROM YIST not in (blk...)
         d       big small   # 求两个blk的差集 big-small 
         A       blk blk2    # 求两个blk的交集
         u       blk [...]   # 求几个blk的并集(.c时可作为输出)
                             # blk中code关联的blk数目排名，越小，概念越纯正。
-        top     off         # 热点(对[up top]的结果进行显示)
+        top     arg...      # 热点(对[up top]的结果进行显示)
         "
         ;;
     esac

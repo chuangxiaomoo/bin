@@ -10,7 +10,7 @@ function fn_up_raw()
     # 代码   名称  机构动向     主动买入比  被动买入比  主动卖出比  被动卖出比 
     # 涨幅%  现价  涨速%        总手        换手        金额        流通市值    所属行业
     iconv -f cp936 -t utf8 ${efile} | tail -n+2 > ${wolf_raw}
-    if ! grep -q SZ300 ${wolf_raw}; then
+    if ! grep -q '^S[HZ]' ${wolf_raw}; then
         fn_echo_fail "not a wolf file"
         return 1
     fi
@@ -177,6 +177,14 @@ function fn_layout_bbd()
     fn_chao ${chao}.bbd
 }
 
+function fn_zxg()
+{
+    fn_up_raw
+    xt_ret $? "" || return $?
+    cat ${wolf_rip} | awk '{printf "%s\t%s\n", $3, $NF}' | sed "s/^/$1/g"
+    return $?
+}
+
 function fn_main()
 {
     CURR=`fn_maxdate`
@@ -191,12 +199,16 @@ function fn_main()
     l|layout_bbd)
         fn_layout_bbd
         ;;
+    z|zxg)
+        fn_zxg ${@:2}
+        ;;
     h|*)
         echo "
         Usage:  wolf <param>...             (4/3):1 14.28   门槛
         up      # DDE                       (3/2):1 20      登堂
         bbd     # 操盘热点导入              (5/3):1 25      入室
         layout  # 热点layout，观察概念叠加  (2/1):1 33      太极
+        zxg     # 打印自选股
         "
         ;;
     esac
