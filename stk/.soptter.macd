@@ -1,29 +1,30 @@
 # code  symbol    SB0:s.bm.b.sm 请把非SB排在第一行以实时更新macd(dif)
 
+# 沪深300 vs CYB
+3dcybz  HS.CYBZ   >
+
+# dif+macd>0
+399300  HS300     close<1
+/       HS300     macd>0&&close>ma10
+-       HS300     macd<0&&close<ma10
+
+399006	创业板指  close<1
+-      	创业板指  macd>0&&close>ma10
+-     	创业板指  close>fa15/.996
+-     	创业板指  abs((close-fa15)/fa15/.01)>.382
+
 000902	中证流通  0
 -     	中证流通  d1>2.42
 -     	中证流通  close>ma10
 -     	中证流通  close>fa15/.996
 -     	中证流通  abs((close-fa15)/fa15/.01)>.382
 
-# dif+macd>0
-
-399300  HS300     close<1
--       HS300     macd>0&&close>ma10
-/       HS300     macd<0&&close<ma10
-
 399101	中小板综  0
-
 399005	中小板指  0
 -     	中小板指  close<fa15
 -     	中小板指  close>ma10
 -     	中小板指  close>fa15/.996 
 -     	中小板指  abs((close-fa15)/fa15/.01)>.382
-
-399006	创业板指  macd>0&&close>ma10
--      	创业板指  close<2485
--     	创业板指  close>fa15/.996
--     	创业板指  abs((close-fa15)/fa15/.01)>.382
 
 # ----  buy       d1+m1>0
 300470	日机密封	0

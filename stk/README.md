@@ -70,3 +70,4 @@
 # 个股日报        .doc/diary2.md
 # 打板门          .doc/daban.md
 # 龙虎榜          .doc/lhb.md
+# 股票们          .doc/codes.md
