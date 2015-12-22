@@ -62,7 +62,7 @@ function fn_cap()
 
     # update .codelist
     cd ${workdir}
-    mysql -N -B kts<<<"SELECT code,name FROM cap order by code asc;" > .codelist
+    mysql -N -B kts<<<"SELECT code,name FROM cap order by code asc;" | sed 's/ //g' > .codelist
 
 
     if [ `wc -l<.codelist` -gt 3000 ]; then
@@ -581,7 +581,7 @@ function fn_ipo()
     > ${rip}
 
     local i
-    for (( i=1; i<=2; i+=1 )); do
+    for (( i=1; i<=1; i+=1 )); do
         url="http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx?type=NS&sty=NSST&st=12&sr=-1&p=${i}&ps=50"
 
         echo dump ${url}
@@ -590,11 +590,16 @@ function fn_ipo()
         # 's/,AN//g' 剔除申购准备中的票
         cat ${tmp} |sed -e '1s/(\[//' -e '$s/])//' -e 's/,AN//g' -e 's/"//g' | tr -d '\n' |
                     sed -e 's/AN201/\n&/g' -e 's/AN//g' | 
-                    awk -F',' '/^201/{printf "%d\t%s\t%20s\n", $1/1000000000000,$5,$4}'  > ${raw}
+                    awk -F',' '/^201/{printf "%d\t%s\t%s\n", $1/1000000000000,$5,$4}'  > ${raw}
 
         cat ${raw} >> ${rip}
     done
 
+    fn_echo_succ "
+    日期为审批公告发布日期
+    未申购的公司不在列表之内
+    列表文件: ${rip}
+    "
 }
 
 function fn_lhb()
@@ -706,11 +711,8 @@ function fn_dorat()
     # [ $hhmm = 0940 ] || [ $hhmm = 0950 ] || [ $hhmm = 1015 ]
     hhmm=`date +%H%M | sed 's/^0//'`;
     
-    # if [ "${hhmm}" -lt 1400 ]; then
-          let got30=hhmm%100%30
-    # else
-    #     let got30=hhmm%100%30
-    # fi
+    [ "${hhmm}" = 930 ] && sleep 30
+    let got30=hhmm%100%30
 
     if [ "${got30}" -le 1 ] || [ $hhmm = 935 ] || [ $hhmm = 940 ] || [ $hhmm = 950 ]; then
         fn_bell "online.wav"
