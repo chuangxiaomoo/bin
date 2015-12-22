@@ -52,7 +52,7 @@ function fn_lsd()
     TEMPDAY='day'
 
     fn_yist
-    fn_echo_warn "----- LIST:${#LIST[@]} HAVING:${HAVING} COND@${END}: $COND -----"
+    fn_echo_warn "----- LIST:${#LIST[@]} HAVING:${HAVING//SEL*=/} COND@${END}: $COND -----"
 
     case $1 in
     t|top)
@@ -71,19 +71,17 @@ function fn_lsd()
         ;;
     [0-9]*)
         if [ "${1}" = 0 ]; then
-            fn_echo_warn ${DT}
-            LIMIT=${LIMIT:-200} HAVING='rise>0' SELECT lsd
-            exit 0;
+            fn_echo_warn "NR is 0"
+            LIMIT=${LIMIT:-200} HAVING='rise>0' SELECT lsd; exit 0;
         fi
         LIMIT=${LIMIT:-400}
         field=${2:-rise}
-        DT=`DT="${END} 15:05:00" SELECT dorat | sed -n "${1}p"`
-        fn_echo_warn ${DT}
-        DT=(${DT})
-        TEMPDAY="(SELECT * FROM dorat WHERE date='${DT[0]}' && time='${DT[1]}')"
+        iTime=`fn_get_time ${1}`
+        TEMPDAY="(SELECT * FROM dorat WHERE date='${END}' && time='${iTime}')"
         HAVING="${HAVING:-rise>0}"
+        fn_echo_warn ${iTime}
         ;;
-    u|usage)
+    u|h|usage)
         echo "
         SELECT lsd <param>:
         usage   show usage
@@ -117,9 +115,17 @@ function fn_lsd()
         " 
         #echo "${sqls}"; exit
     }
-    fn_sql $@ 
-    mysql ${OPT:--t} kts <<<"${sqls}"
-    fn_chao ${chao}.lsd
+
+    fn_sql $@
+    case ${PARTS:-4} in
+    1) return                               ;;
+    2) CHAO=1 fn_chao ${chao}.${chao2:-lsd} ;;
+    3) mysql ${OPT:--t} kts <<<"${sqls}"
+       CHAO=1 fn_chao ${chao}.${chao2:-lsd} ;;
+    *) mysql ${OPT:--t} kts <<<"${sqls}"
+       fn_chao ${chao}.${chao2:-lsd}        ;;
+    esac
+
 }
 
 function fn_ace()
@@ -444,7 +450,7 @@ function fn_wma()
 
 function fn_updown()
 {
-    let iNUM=${NUM:-5}+1
+    let iNUM=${NUM:=5}+1
     START=`fn_get_date ${iNUM}`
 
     echo "
@@ -715,13 +721,14 @@ function fn_dorat()
         mysql -N kts<<< "SELECT DISTINCT date FROM dorat"
         ;;
     *)
-        # echo DT is ${DT} > /dev/stderr
-        [ -n "${DT}" ] && DT=(${DT}) && 
-        COND0="WHERE DATE_FORMAT(CONCAT(date, ' ', time), '%Y-%m-%d %T')<='${DT[@]}'"
-        odr="ORDER by date DESC, time DESC"
-        # date<='${DT[0]}' and time<='${DT[1]}'"
-        mysql -N kts<<< "SELECT date,time FROM ( SELECT DISTINCT date, time FROM dorat ) as t ${COND0} ${odr} LIMIT ${LIMIT:-80}"
-        #fn_execute -l | grep dorat && exit
+        # 只提供当天的times
+        if [ -n "${DT}" ]; then
+            DT=(${DT})
+            END=${DT[0]}
+            HMS=${DT[1]}
+        fi
+        odrLimit="ORDER by time DESC LIMIT ${LIMIT:-80}"
+        mysql -N kts<<< "SELECT DISTINCT date,time FROM dorat WHERE date='${END}' && time<='${HMS:-15:05:00}' ${odrLimit}"
         ;;
     esac
 
@@ -973,7 +980,7 @@ function fn_lohi()
         field=$2; fn_inout
         ;;
     l|list)
-        LIMIT=80 DT="${iTEMP} 15:05:00" SELECT dorat | cat -n; exit 0
+        LIMIT=80 END="${iTEMP}" SELECT dorat | cat -n; exit 0
         ;;
     s|shrinkage)
         off=${2:-5}
@@ -1022,7 +1029,7 @@ function fn_lohi()
             "
         else
             field=$2
-            DT=`DT="${iTEMP} 15:05:00" SELECT dorat | sed -n "${1}p"`
+            DT=`END=${iTEMP} SELECT dorat | sed -n "${1}p"`
             # echo ${DT}; exit
             DT=(${DT})
             TEMPDAY="(SELECT * FROM dorat WHERE date='${DT[0]}' && time='${DT[1]}')"
@@ -1290,9 +1297,9 @@ function fn_lhb()
         else # s
             fn_isdigit ${2:-1}
             xt_ret $? "\$2[$2] must be digit" || return $?
-            field=$3
+            field=${3:-apple}
             date=`fn_get_date ${2:-1}`
-            fn_echo_warn "lhb of ${date}"
+            fn_echo_warn "lhb of ${date} by ${field}"
 
             fn_xtempday ${date}
             xt_ret $? "xtempday error" || return $?
@@ -1303,7 +1310,6 @@ function fn_lhb()
             # 自动处理apple
             RET=`mysql -N kts <<< "SELECT IF('${date}'<'${CURR}', 1, 0)"`
             if [ "${RET}" -eq 1 ]; then
-                field=${field:-apple}
                 xdate=`END=${date} fn_get_next`
 
                 TBL=x fn_xtempday ${xdate}
@@ -1329,7 +1335,7 @@ function fn_lhb()
             SELECT ${columns}, round(chng,1) as chng,
             ${sql_next}
             ${sql_tov}
-            round(l.amount/10000, 2) as eLHB,
+            round((buy-sell)/10000, 2) as eLHB,
             round(l.buy/10000, 2) as buy,
             round(l.sell/10000, 2) as sell,
             bloo,sloo,
@@ -1710,6 +1716,48 @@ function fn_macd()
     return $?
 }
 
+function fn_update_stati_ban()
+{
+    nrLIST=${#LIST[@]}
+    sql_earning="
+    INSERT INTO stati_ban SELECT 
+                 '${END}' as date,
+              '${nrLIST}' as nrLIST,
+              count(code) as num,
+    sum(hiri)/count(code) as e_hiri,
+    sum(opri)/count(code) as e_opri,
+    sum(rise)/count(code) as e_clri,
+    sum(avrg)/count(code) as e_avrg
+    FROM (${sqls//;/}) as t
+    "
+
+    if [ "${UPDATE_STATI_CODES:-0}" = 1 ]; then
+        echo "
+        SELECT code FROM (${sqls//;/}) as t
+        " | mysql -N kts >> ${chao}.stati_ban
+    fi
+    mysql -t kts <<<"${sql_earning}"
+    xt_ret $? "" || return $?
+}
+
+function fn_create_stati_ban()
+{
+    echo "
+    $DROP stati_ban;
+    $CREATE stati_ban (
+        date    date,
+        nrLIST  INT,
+        num     INT,
+        e_hiri  DECIMAL(6,2) NOT NULL DEFAULT 0,
+        e_opri  DECIMAL(6,2) NOT NULL DEFAULT 0,
+        e_clri  DECIMAL(6,2) NOT NULL DEFAULT 0,
+        e_avrg  DECIMAL(6,2) NOT NULL DEFAULT 0,
+        INDEX(date)
+    );
+    " | mysql kts
+    > ${chao}.stati_ban
+}
+
 function fn_stat()
 {
     fn_realtimetov0() {
@@ -1756,7 +1804,51 @@ function fn_stat()
             fn_realtimetov0 ${i} || exit
         done
         ;;
-    +10)
+    ban)
+        fn_create_stati_ban
+        dates=(`fn_get_date 1 ${NUM:-3}`)
+        local i
+        for (( i=0,j=1; i<${#dates[@]}-1; i++,j++ )); do
+            export END=${dates[$i]}
+            export PREV=${dates[$j]} #echo ${PREV} ${END}; continue
+            # 全天
+            YIST=  END=${PREV} PARTS=2 LIMIT=300 HAVING="rise>9.93&&avrg<9.93"  chao2=full fn_lsd
+            YIST=${chao}.full PARTS=1 LIMIT=300 fn_lsd
+            fn_update_stati_ban
+            # 上午
+            YIST=${chao}.full  END=${PREV} PARTS=2 LIMIT=300 HAVING="rise>9.93"  chao2=mid HMS=13:00:00 fn_lsd 1
+            YIST=${chao}.mid PARTS=1 LIMIT=300 fn_lsd
+            fn_update_stati_ban
+        done
+
+        mysql -t kts <<<"SELECT *,(e_clri-e_opri)as e_next FROM stati_ban"
+        ;;
+    yiz)
+        fn_notin_blk FFA1
+        fn_create_stati_ban
+        dates=(`fn_get_date 1 ${NUM:-3}`)
+        local i
+        for (( i=0,j=1,k=2; i<${#dates[@]}-2; i++,j++,k++ )); do
+            export PREV2=${dates[$k]} 
+            export PREV=${dates[$j]}
+            export END=${dates[$i]}
+            # 一字 
+            YIST=  END=${PREV2} PARTS=2 LIMIT=300 HAVING="rise>9.93&&avrg>9.93 ${notinBLK}" chao2=prev2 fn_lsd
+
+            # 开板，PARTS=3时不
+            YIST=${chao}.prev2 END=${PREV} PARTS=2 LIMIT=300 HAVING="avrg<9.93" chao2=prev  fn_lsd
+            END=${PREV} fn_update_stati_ban
+
+            # 再日
+            YIST=${chao}.prev END=${END} PARTS=1 LIMIT=300 fn_lsd
+            UPDATE_STATI_CODES=1 \
+            END=${END}  fn_update_stati_ban
+            xt_ret $? "" || return $?
+        done
+
+        mysql -t kts <<<"SELECT *,(e_clri-e_opri)as e_next FROM stati_ban"
+
+        fn_echo_succ "`wc -l ${chao}.stati_ban`"
         ;;
     *)
         echo "
@@ -1764,6 +1856,8 @@ function fn_stat()
         m   middle of 1160
         t   realtimetov
         tt  tempdaytov
+        ban 涨停板收益统计
+        yiz 一字板收益统计
         "
         exit
         ;;
@@ -1773,7 +1867,7 @@ function fn_stat()
 
 function fn_xtempfen()
 {
-    fen=`STEP=${STEP:-1} fn_get_time`
+    fen=`fn_get_time $1`
     fn_echo_succ "Peel off time@${fen}..."
 
     local table=${TBL:-xtempday}
@@ -1801,7 +1895,8 @@ function fn_topX()
         fn_xtempday
         xt_ret $? "xtempday error" || return $?
     else
-        fn_xtempfen
+        let NR=STEP++
+        fn_xtempfen ${NR}
         xt_ret $? "xtempfen error" || return $?
     fi
 
@@ -1904,7 +1999,7 @@ function fn_top()
 function fn_blk_delta_codes()
 {
     DOOR=${DOOR:-0.5}
-    ABBR=d fn_peeloff_blk ${1}
+    ABBR=d BLK_CAN_NOT_BE_NULL=1 fn_peeloff_blk ${1}
     sqls="
         SELECT d.code, 
             ROUND(100*(d.close-yesc)/yesc,2) as rise, 
@@ -1950,13 +2045,9 @@ function fn_blk_delta_layout()
 
 function fn_blk_delta()
 {
-    if [ "${#}" -eq 2 ]; then                               # sta STEP
-        HMS1=${HMS:-`STEP=${1} fn_get_time`}
-        HMS2=`HMS=${HMS1} STEP=${2} fn_get_time`
-    else                                                    # STEP
-        HMS1=${HMS:-`STEP=1 fn_get_time`}
-        HMS2=`HMS=${HMS1} STEP=${1} fn_get_time`
-    fi
+    let NR=${1}+1
+    HMS1=`fn_get_time`          # HMS不精确时亦可用
+    HMS2=`fn_get_time ${NR}`
 
     echo "\
     end: ${HMS1}
@@ -2021,8 +2112,8 @@ function fn_blk()
         ;;
     delta)
         case $2 in
-        [0-9]*)
-            fn_blk_delta ${@:2}
+        s|step)
+            fn_blk_delta ${3:-1}
             ;;
         l|layout)
             # 从3个维度考量：数量、delta涨幅、最高涨幅
@@ -2035,9 +2126,9 @@ function fn_blk()
             ;;
         *)
             echo "SELECT blk delta
-            [STA] STEP      # gen delta
-            b     BLK       # 单独展示一个BLK的细节
-            l     FIELD     # layout {DOOR:-0.5}
+            s       STEP    # \$HMS不指定时，默认15:05:00
+            l       FIELD   # layout {DOOR:-0.5}
+            b       BLK     # 单独展示一个BLK的细节
             "
             ;;
         esac
@@ -2120,7 +2211,7 @@ function fn_blk()
         $WHERE c.code NOT IN (SELECT code FROM xblk)
         "
         mysql -t kts <<< "${sqls}"
-        fn_chao ${chao}.opt.notin
+        fn_chao ${chao}.opt.minus
         ;;
     A|intersection)
         ABBR=T1 fn_yist
@@ -2154,8 +2245,7 @@ function fn_blk()
         l                   # layout
         10      iF5         # 涨停板概念分类 {DOOR:-10}，查讯iF5: SELECT lohi l
         10s     iF5         # 列出变量BLK关联的code涨幅，iF5为5分钟数据索引
-        delta               # 做差
-        deltas  STEP DOOR   # 做差结果BLK提取显示
+        delta   {s|l|b}     # 做差、显示layout、显示layout中一个BLK的细节
         66      off         # off日内代码累计涨幅
         123     size        # for(i<size)循环_10_的内容，但这是平均值
         c       code        # 显示code关联的所有板块

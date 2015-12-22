@@ -159,7 +159,7 @@ function fn_isresting()
 {
     hhmmss=`date +%H%M%S`
     if ([ ${hhmmss} -gt 113059 ] && [ ${hhmmss} -lt 130059 ]) ||
-        [ ${hhmmss} -lt 093210 ] || [ ${hhmmss} -gt 145800 ]; then
+        [ ${hhmmss} -lt 093000 ] || [ ${hhmmss} -gt 145800 ]; then
         echo "is resting @${hhmmss}..."; 
         return 0
     else
@@ -249,6 +249,11 @@ function fn_chao()
 
 function fn_yist()
 {
+    # WHERE 在最前可备为 reentry-function
+    CID=
+    LIST=
+    inLIST=
+    WHERE=WHERE
     if [ -f "${YIST}" ]; then
         LIST=(`cat ${YIST}|awk '/^[036]/{print $1}' | xargs`)
         [ -z "${LIST[0]}" ] && return
@@ -258,10 +263,8 @@ function fn_yist()
         inLIST="and code in (`tr ' ' ','<<<${LIST[@]}`)"
 
         # scene 2
-        WHERE=",yist as y WHERE ${ABBR:-d}.code=y.code &&"
         CID="y.id,"
-    else
-        WHERE=WHERE
+        WHERE=",yist as y WHERE ${ABBR:-d}.code=y.code &&"
     fi
 }
 
@@ -282,18 +285,26 @@ function fn_get_export_file()
         return 1
     fi
 
+    let t_next0900=$t1500+18*60*60
+
     # 收盘后处理
-    [ "${ctime}" -gt ${t1500} ] && ctime=${t1500}
+    [ "${ctime}" -gt ${t1500} ] && [ "${ctime}" -lt ${t_next0900} ] && ctime=${t1500}
     [ "${ctime}" -gt ${t1130} ] && [ "${ctime}" -lt ${t1300} ] && ctime=${t1130}
     HHMMSS=`date -d @${ctime} +%T`
-    
+
     return 0
 }
 
 function fn_peeloff_blk()
 {
     BLK=${BLK:-${1}}
-    [ -z "${BLK}" ] && return 1
+    if [ -z "${BLK}" ]; then
+        if [ "${BLK_CAN_NOT_BE_NULL:-0}" = 1 ]; then
+            fn_echo_fail "BLK_CAN_NOT_BE_NULL"; exit
+        else
+            return
+        fi
+    fi
 
     BLK=(${BLK//,/ }); BLK=${BLK[@]}              # 去回车
     local hexCOND="blk=0x${BLK// /||blk=0x}"
@@ -306,6 +317,22 @@ function fn_peeloff_blk()
     " | mysql kts
     frBLK=",xblk"
     inBLK="&& ${ABBR:-d}.code=xblk.code"       # 勿用 WHERE ABBR 以免影响 YIST
+}
+
+function fn_notin_blk()
+{
+    BLK=${BLK:-${1}}
+    if [ -z "${BLK}" ]; then
+        if [ "${BLK_CAN_NOT_BE_NULL:-0}" = 1 ]; then
+            fn_echo_fail "BLK_CAN_NOT_BE_NULL"; exit
+        else
+            return
+        fi
+    fi
+    BLK=(${BLK//,/ }); BLK=${BLK[@]}              # 去回车
+    local hexCOND="blk=0x${BLK// /||blk=0x}"
+    
+    notinBLK="&& ${ABBR:-d}.code NOT IN (SELECT code FROM blk_memb WHERE ${hexCOND})"
 }
 
 function fn_date_2_str()
@@ -499,17 +526,16 @@ function fn_set_END()
 
 function fn_get_time()
 {
-    let STEP=${STEP:-1}-1
-    dts="SELECT DISTINCT time FROM dorat"
-    odr="ORDER by date DESC, time DESC"
-    iHMS=`mysql -N kts<<<"${dts} WHERE date='${END}' && time<='${HMS:-15:05:00}' ${odr} LIMIT ${STEP},1"`
-
+    # 接受一个参数，与 <SELECT lohi l> 的输出保持一致
+    NR=${1:-1}
+    let sta=${NR}-1
+    odrLimit="ORDER by time DESC LIMIT ${sta},1"
+    iHMS=`mysql -N kts<<<"SELECT DISTINCT time FROM dorat WHERE date='${END}' && time<='${HMS:-15:05:00}' ${odrLimit}"`
     if [ -z "${iHMS}" ]; then
-        fn_echo_fail "${STEP:-1} unit b4 ${HMS} is EMPTY"
+        fn_echo_fail "No.${NR} is EMPTY"
         exit 1
     fi
     echo ${iHMS}
-    return 0
 }
 
 function fn_list_date()
