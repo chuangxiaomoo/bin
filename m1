@@ -794,7 +794,7 @@ function fn_regedit()                   { cat win_regedit ;}
         win7                    # 快捷键
         rightclick              # 添加右键编辑 gvim bc3
         excel
-        word                    # 
+        word                    # office
         visio
         mpp                     # msproject task
         beyondcompare3          # BC3 bc3

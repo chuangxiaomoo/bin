@@ -7,8 +7,8 @@ function fn_up_raw()
     fn_get_export_file
     xt_ret $? "" || return $?
 
-    # 代码   名称  机构动向     主动买入比  被动买入比  主动卖出比  被动卖出比 
-    # 涨幅%  现价  涨速%        总手        换手        金额        流通市值    所属行业
+    # 代码   名称  DDE大单净量  主动买入比  被动买入比  主动卖出比  被动卖出比 
+    # 涨幅%  现价  涨速%        总手        换手        金额        流通市值
     iconv -f cp936 -t utf8 ${efile} | tail -n+2 > ${wolf_raw}
     if ! grep -q '^S[HZ]' ${wolf_raw}; then
         fn_echo_fail "not a wolf file"
@@ -18,12 +18,24 @@ function fn_up_raw()
     tag_blank='--.--.--'
     sed -e 's///g' -e 's/S.//g' -e 's/ //g'               \
         -e 's/%//g' -e 's/\t$//g' -e 's/\t\t*/\t/g'         \
-        -e "/${tag_blank}/d" -e '/^$/d' ${wolf_raw}         \
-        | awk '{
+        -e "/${tag_blank}/d" -e '/^$/d' ${wolf_raw} > ${wolf_raw}.mid
+
+    hhmm=`date +%H%M | sed 's/^0//'`;
+    if [ "${hhmm}" -lt 931 ]; then
+    # 代码  名称  涨幅  涨速    DDE大单净量 换手 量比   金额    流通市值
+        sed '/--.--/d' ${wolf_raw}.mid |\
+        awk '{
             printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%.2f\t%.2f\t%s\n", 
-            $1,$3,$4,$5,$6,$7,$8,$9,$10,$11/10000,$12, $13/10000, $14/100000000,$2
+            $1,$5, 0,0,0,0,      $3,0,$4,   0,          $6,$8/10000,$9/100000000,$2
         }' \
         | sed "s/^/${CURR}\t${HHMMSS}\t/g" > ${wolf_rip}
+    else
+        awk '{
+            printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%.2f\t%.2f\t%s\n", 
+            $1,$3, $4,$5,$6,$7,  $8,$9,$10, $11/10000,  $12,$13/10000, $14/100000000,$2
+        }' ${wolf_raw}.mid \
+        | sed "s/^/${CURR}\t${HHMMSS}\t/g" > ${wolf_rip}
+    fi
 
     # echo ${efile} ${ctime} ${epoch} $HHMMSS
     
@@ -79,7 +91,7 @@ function fn_up_dde()
     fn_up_rip
     xt_ret $? "" || return $?
 
-    fn_echo_succ "wolf up succ @${CURR} ${HHMMSS}"
+    fn_echo_succ "wolf up `wc -l<${wolf_rip}` raws succ @${YYMMDD} ${HHMMSS}"
 }
 
 function fn_bbd_database()

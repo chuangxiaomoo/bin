@@ -1427,7 +1427,7 @@ function fn_wolf_sqls()
     col_vtov="ROUND((3600*4)/${col_vtov}*shou/h.volume, 2) as vtov,"
     col_tet="ROUND(net/(1-top10_ajst_aR), 2) as Tet,"
     field=${field:-Tet}
-    DOOR=${DOOR:-0}
+    DOOR=${DOOR:-.6}
     yesc='(trade/(1+rise/100))'
     sqls="
         SELECT ${col_date} w.code, w.rise,
@@ -1470,7 +1470,7 @@ function fn_asm_nDDE()
 
 function fn_nDDE_sqls()
 {
-    DOOR=${DOOR:-0}
+    DOOR=${DOOR:--.6}
     yesc='(trade/(1+rise/100))'
     sqls="
     SELECT t.code,
@@ -1664,7 +1664,8 @@ function fn_wolf()
         c9  涨停    rise>9.93
         "
         fn_echo_succ "\
-        LIMIT=80 DOOR=-.1 COND='red>=4&&wise<15&&wet>1'  NUM=5 SELECT wolf nDDE
+        涨停潜力股
+        DOOR=-.6 LIMIT=300 COND='rise>2&&rise<9.93' SELECT wolf s rise
         "
         ;;
     esac
@@ -1822,6 +1823,10 @@ function fn_stat()
         done
 
         mysql -t kts <<<"SELECT *,(e_clri-e_opri)as e_next FROM stati_ban"
+        fn_echo_succ "
+        奇数行，全天数据
+        偶数行，上午封板数据
+        "
         ;;
     yiz)
         fn_notin_blk FFA1
@@ -2080,7 +2085,7 @@ function fn_blk()
     0xD953,  -- 243 | 参股金融    
     0xD886,  -- 100 | 证金持股
     0xDB9B   -- 81  | 转融券标的
-   ,0x40     -- 226 | 新股与次新股
+-- ,0x40     -- 226 | 新股与次新股
     )"
 #   EXCLUDE_BLK="(0x1234)"
 
@@ -2089,11 +2094,12 @@ function fn_blk()
         fn_top ${@:2}
         ;;
     l|layout)
+        ABBR=m fn_notin_blk FFA1
         ABBR=m fn_yist
         field=${2}
         echo "
         SELECT hex(n.blk) as blk,count(m.code) as num,n.sym FROM blk_name as n, blk_memb as m
-         $WHERE n.blk=m.blk AND n.blk not in ${EXCLUDE_BLK}
+         $WHERE n.blk=m.blk AND n.blk not in ${EXCLUDE_BLK} ${notinBLK}
          GROUP by blk ORDER by ${field:-num} ${ASC:-DESC} LIMIT ${LIMIT:-20};
         " | mysql -t kts
         ;;
@@ -2104,9 +2110,10 @@ function fn_blk()
         YIST='/tmp/kts/chao.lsd' fn_blk layout
         ;;
     10s)
-        DZH=P CHAO=1 fn_blk u ${BLK} > /dev/null
+        ABBR=m fn_notin_blk FFA1
+        DZH=N CHAO=1 fn_blk u ${BLK} > /dev/null
         xt_ret $? "BLK:${BLK}" || return $?
-        YIST=/tmp/kts/chao.opt.union \
+        YIST='/tmp/kts/chao.opt.union' \
         COND="rise>${DOOR:-9.93}" SELECT lsd ${@:2}
         xt_ret $? "" || return $?
         ;;
@@ -2226,6 +2233,7 @@ function fn_blk()
         fn_chao ${chao}.opt.A
         ;;
     u|union)
+        fn_echo_succ ${notinBLK}
         BLK=${@:2}
         ABBR=m fn_yist
         ABBR=m fn_peeloff_blk
@@ -2233,9 +2241,10 @@ function fn_blk()
         SELECT m.code,count(m.code) as num, ${nmcYi}, c.name 
                FROM blk_memb as m, cap as c ${frBLK}
         ${WHERE} m.code=c.code ${inBLK} && blk NOT IN ${EXCLUDE_BLK} 
-        GROUP by code HAVING 1 ${COND}
+        GROUP by code HAVING 1 ${COND} ${notinBLK}
         ORDER by num ASC LIMIT ${LIMIT:-500}
         " 
+        #echo "${sqls}">/dev/stderr; exit
         mysql -t kts <<< "${sqls}"
         fn_chao ${chao}.opt.union
         ;;
