@@ -9,3 +9,4 @@
 .doc/hua_老卓波段.md
 .doc/hua_第2次分享.md 
 .doc/hua_实盘挑战赛.md 
+.doc/hua_争论的背后.md

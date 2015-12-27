@@ -45,11 +45,11 @@ function fn_ls()
 
 function fn_lsd()
 {
-    # where d.code = c.code 非常重要，不重叠的field不需要加‘tbl_name.’
-    columns="code,yesc,open,close"
-    columns=${columns:-'*'}
-    columns=d.${columns//,/,d.}
-    TEMPDAY='day'
+    # where d.code = c.code 非常重要，不重叠的FIELD不需要加‘tbl_name.’
+    local columns="code,yesc,open,close"
+          columns=${columns:-'*'}
+          columns=d.${columns//,/,d.}
+    local TEMPDAY='day'
 
     fn_yist
     fn_echo_warn "----- LIST:${#LIST[@]} HAVING:${HAVING//SEL*=/} COND@${END}: $COND -----"
@@ -58,16 +58,16 @@ function fn_lsd()
     t|top)
         LIMIT=${LIMIT:-200}
         HAVING="rise>9.93"
-        field=${2:-nmc}
+        FIELD=${2:-nmc}
         chao=${chao}.top
         ;;
     f|floor)
         LIMIT=${LIMIT:-200}
         HAVING="rise<-9.93"
-        field=${2:-nmc}
+        FIELD=${2:-nmc}
         ;;
     l|list)
-        TAM=${END} SELECT lohi l; exit 0;
+        SELECT lohi l; exit 0;
         ;;
     [0-9]*)
         if [ "${1}" = 0 ]; then
@@ -75,7 +75,7 @@ function fn_lsd()
             LIMIT=${LIMIT:-200} HAVING='rise>0' SELECT lsd; exit 0;
         fi
         LIMIT=${LIMIT:-400}
-        field=${2:-rise}
+        FIELD=${2:-rise}
         iTime=`fn_get_time ${1}`
         TEMPDAY="(SELECT * FROM dorat WHERE date='${END}' && time='${iTime}')"
         HAVING="${HAVING:-rise>0}"
@@ -94,13 +94,13 @@ function fn_lsd()
         exit
         ;;
     *)
-        field=${1:-rise}
+        FIELD=${1:-rise}
         ;;
     esac
 
     function fn_sql()
     {
-        [ "${field}" = 'dive' ] && 
+        [ "${FIELD}" = 'dive' ] && 
         sql_dive="round( (100*(d.amount/d.volume-d.close)/d.close), 1) as dive,"
         sqls="
         SELECT ${CID}$columns, volume,amount, 
@@ -111,14 +111,14 @@ function fn_lsd()
                 ${sql_dive}
                 $TURNOV as tov, ${nmcYi}, c.name
                 FROM ${TEMPDAY} as d, cap as c ${WHERE} d.code = c.code and d.date = '${END}' 
-                HAVING ${HAVING:-1} ${COND} ORDER BY ${field} ${ASC:-desc} limit ${LIMIT:-36}
+                HAVING ${HAVING:-1} ${COND} ORDER BY ${FIELD} ${ASC:-desc} limit ${LIMIT:-36}
         " 
         #echo "${sqls}"; exit
     }
 
     fn_sql $@
     case ${PARTS:-4} in
-    1) return                               ;;
+    1) return                               ;; # 不输出code，不输出mysql结果
     2) CHAO=1 fn_chao ${chao}.${chao2:-lsd} ;;
     3) mysql ${OPT:--t} kts <<<"${sqls}"
        CHAO=1 fn_chao ${chao}.${chao2:-lsd} ;;
@@ -187,7 +187,7 @@ function fn_rat()
     # 0. Make sure U've done [up 4]?
     # 1. 以PREV为标，自动处理生成 tbl_mavol520s，只需上午更新一次 tbl_mavol520s
     # 2. 使用多表tbl_mavol520s tbl_day`联合查询`得到数据
-    field=${1:-v1v5}
+    FIELD=${1:-v1v5}
 
     DT=(${DT:-`mysql -N kts<<<"SELECT date,time FROM stamp_day ORDER by id DESC LIMIT 1"`})
     SCALE=`DT=${DT[@]} fn_get_ratio_close2open`
@@ -217,7 +217,7 @@ function fn_rat()
         d.amount,c.nmc,c.name FROM tbl_mavol520s as ma, 
         ${tbl_day} as d, cap as c
         WHERE ma.code=d.code and ma.code=c.code 
-        HAVING 1 ${COND} ORDER by ${field} ${ASC:-DESC} limit ${LIMIT:-36}" 
+        HAVING 1 ${COND} ORDER by ${FIELD} ${ASC:-DESC} limit ${LIMIT:-36}" 
     }
     fn_build_sqls
 
@@ -229,7 +229,7 @@ function fn_rat()
 
 function fn_tri()
 {
-    field=${1:-rising}
+    FIELD=${1:-rising}
     STEP=${STEP:-7}
     # D3=(${DT:-`mysql -N kts<<<"SELECT date FROM day WHERE code=900001 and date<='${END}' ORDER by date DESC LIMIT 0,1"`})
     D2=${END}
@@ -252,7 +252,7 @@ function fn_tri()
         ${t0} as t0, cap as c
         WHERE d.code=t1.code && d.code=t0.code and d.code=c.code   -- 取样本数40 = 2000*20%，7天可翻倍
               ORDER by rising DESC limit 40 ) as t
-        ${COND} ORDER by ${field:-rising} ${ASC:-DESC} limit ${LIMIT:-40}
+        ${COND} ORDER by ${FIELD:-rising} ${ASC:-DESC} limit ${LIMIT:-40}
     " 
     }
     fn_build_sqls
@@ -377,10 +377,10 @@ function fn_dirtio()
         # echo ${DT};exit
         ;;
     *)
-        field=$1
+        FIELD=$1
         ;;
     esac
-    field=${field:-$2}
+    FIELD=${FIELD:-$2}
 
     fn_dif3 ${@} # up DT, with param 'up', update dif3
     fn_yist
@@ -408,7 +408,7 @@ function fn_dirtio()
         FROM dif3 as d, tbl_mavol520s as ma, cap as c           -- USE INDEX(code)
         WHERE d.code=ma.code && d.code=c.code                   -- av_ri = rise-av_op
         HAVING 1 ${COND} ${inLIST} 
-        ORDER by ${field:-dirtio} ${ASC:-DESC} limit ${LIMIT:-32}" 
+        ORDER by ${FIELD:-dirtio} ${ASC:-DESC} limit ${LIMIT:-32}" 
     }
     fn_build_sqls
 
@@ -485,7 +485,6 @@ function fn_6maishenjian()
     columns=t.${columns//,/,t.}
 
     DATE2=${DATE2:-${END}}
-    [ -s "${exclude1}" ] && EXCLUDE="and code not in (`cat ${exclude1}`)"
 
     echo ----- COND: $COND -----
     function fn_get_tbl_6jian_dive()
@@ -504,7 +503,7 @@ function fn_6maishenjian()
                        round((avrg-d.close)/(d.close-(t.close+t.low)/2),2) as odds, 
                        c.name 
             FROM ${tablex:-tbl_6mai} as t, cap as c, tempday as d
-            WHERE t.code = c.code and t.code = d.code HAVING 1 ${COND} ${EXCLUDE}
+            WHERE t.code = c.code and t.code = d.code HAVING 1 ${COND}
             ORDER by ${1:-wchng} ${ASC:-asc} limit ${LIMIT:-36}     # COND='nmc<250000 and lchng<-9.7 and off<21'
         "
         echo "${tbl_super_dive}"
@@ -524,7 +523,6 @@ function fn_dugu9jian()
     columns=t.${columns//,/,t.}
 
     DATE2=`mysql -N kts <<< "SELECT date2 from ${tablex:-tbl_9jian} LIMIT 1"`
-    [ -s "${exclude0}" ] && EXCLUDE="and code not in (`cat ${exclude0}`)"
 
     echo ----- COND: $COND -----
     function fn_get_tbl_9jian_dive()
@@ -545,7 +543,7 @@ function fn_dugu9jian()
                         round(100*(t.close-avrg)/avrg,2) as wchng, 
                         c.name 
            FROM ${tablex:-tbl_9jian} as t, cap as c, tempday as d
-           WHERE t.code = c.code and t.code = d.code HAVING 1 ${COND} ${EXCLUDE}
+           WHERE t.code = c.code and t.code = d.code HAVING 1 ${COND}
            ORDER by ${1:-lchng} ${ASC:-asc} limit ${LIMIT:-36}      # COND='nmc<250000 and lchng<-9.7 and off<21' 
         "
         echo "${tbl_super_dive}"
@@ -809,7 +807,7 @@ function fn_ma240()
     {
     sqls="SELECT date FROM day WHERE code=900001 and date<='${END}' ORDER by date DESC LIMIT 4,1"
     ago5=`mysql -N kts<<<"${sqls}" 2>/dev/null`
-    field=${1:-x_sho}
+    FIELD=${1:-x_sho}
     sqls="
     SELECT ${columns},
         round(100*(ma.close-ma5  )/ma5  ,1)as pma5,
@@ -826,7 +824,7 @@ function fn_ma240()
         c.nmc,c.name FROM tbl_ma240 as ma, cap as c
         ${WHERE} ma.code=c.code and ma5!=0 and ma.date>'${ago5}' 
         HAVING 1 and code<600000 && nmc<1500000 && pma5>-2 ${COND}
-        ORDER by ${field} ${ASC:-ASC} limit ${LIMIT:-24}" 
+        ORDER by ${FIELD} ${ASC:-ASC} limit ${LIMIT:-24}" 
     }
 
     # .0001 使得新股 x_sho x_long 都为 2.000
@@ -854,7 +852,6 @@ function fn_hilo()
     columns=${columns:-'*'}
     columns=t.${columns//,/,t.}
 
-    [ -s "${exclude2}" ] && EXCLUDE="and code not in (`cat ${exclude2}`)"
 
     function fn_yi_dive()
     {
@@ -870,7 +867,7 @@ function fn_hilo()
         round(100*(d.close-t.close)/t.close, 2) as rebound, c.nmc, c.name   -- t.close=(open+close)/2
         FROM tbl_hilo as t, tempday as d, cap as c
         WHERE t.code = d.code and t.code=c.code
-        HAVING 1 ${COND} ${EXCLUDE}
+        HAVING 1 ${COND}
         ORDER by ${1:-chng} ${ASC:-ASC} LIMIT ${LIMIT:-36}
         "
         echo "${tbl_super_dive}"
@@ -937,10 +934,10 @@ function fn_inout()
         round((c.shares*d.close/10000), 1) as nmcYi, c.name
         FROM ${hilo_curr} as t, d_temp as d, cap as c
         WHERE t.code=d.code and t.code=c.code
-        HAVING 1 ${EXCLUDE}
+        HAVING 1
         ORDER by incr ${ASC:-DESC} ) as newton
         WHERE code IN (SELECT code FROM ${1}_codes)                 -- 新进 = 今天前40-(2天的交集)
-      HAVING ${HAVING:-1} ORDER by ${field:-incr} ${ASC:-DESC}      -- 淘汰 = 昨天前40-(2天的交集)
+      HAVING ${HAVING:-1} ORDER by ${FIELD:-incr} ${ASC:-DESC}      -- 淘汰 = 昨天前40-(2天的交集)
       "
     }
     function fn_yi_descend()
@@ -955,32 +952,24 @@ function fn_inout()
 
 function fn_lohi()
 {
-    columns='lohi'
-    columns="t.code,DATE_FORMAT(t.date1,'%m-%d')as date1,DATE_FORMAT(t.date2,'%m-%d')as date2,t.${columns//,/,t.}"
-
     iNUM=${NUM:-8}                          # PREV=`mysql -N kts <<< "SELECT max(end) from mat_lohi"`
-    TAM=${TAM:-${END}}                      # 开市后才能指定MAT
-    TAM=${TAM//END/${END}}                  # TAM代表mat_lohi中最高日期，亦TEMPDAY的日期
-    TAM=${TAM//PREV/${PREV}}                # 
-    iTEMP=${TAM}
-    iCURR=`END=${TAM} fn_get_prev`
+    iCURR=`fn_get_prev`
     iPREV=`END=${iCURR} fn_get_prev`        # prev+temp = 灵活推演
 
-    # echo END: ${END} TAM:${TAM} temp:${iTEMP} curr: ${iCURR} prev:${iPREV}; exit
+    # echo END: ${END} curr: ${iCURR} prev:${iPREV}; exit
 
-    hilo_temp="( SELECT * FROM mat_lohi WHERE end='${iTEMP}' and num=${iNUM} )"
+    hilo_temp="( SELECT * FROM mat_lohi WHERE end='${END}' and num=${iNUM} )"
     hilo_curr="( SELECT * FROM mat_lohi WHERE end='${iCURR}' and num=${iNUM} )"
     hilo_prev="( SELECT * FROM mat_lohi WHERE end='${iPREV}' and num=${iNUM} )"
-       d_temp="SELECT * from day where date='${iTEMP}'"     # 最新day数据，可以是开市数据
+       d_temp="SELECT * from day where date='${END}'"     # 最新day数据，可以是开市数据
        d_curr="SELECT * from day where date='${iCURR}'"     # 次新day数据，必是必市后数据
 
-    field=$1
     case $1 in
     in|out|sit)
-        field=$2; fn_inout
+        fn_inout
         ;;
     l|list)
-        LIMIT=80 END="${iTEMP}" SELECT dorat | cat -n; exit 0
+        LIMIT=80 SELECT dorat | cat -n; exit 0
         ;;
     s|shrinkage)
         off=${2:-5}
@@ -1017,19 +1006,21 @@ function fn_lohi()
         fn_chao ${chao}.shrinkage
         exit 0
         ;;
-    [0-9]*|f|'')
-        if [ -z "${1}" ] || [ "${1}" = f ]; then
-            field=$2
+    i|lsd)
+        iF5=$2
+        if [ "${1}" = lsd ]; then
+            COND= YIST=  END=${PREV} PARTS=2 LIMIT=300 chao2=prev HAVING="rise>${DOOR:-9.93}" fn_lsd
+            YIST=${chao}.prev
+        fi
+
+        if [ -z "${iF5}" ]; then
             TEMPDAY="tempday"
-            iTEMP=`END=${iTEMP} fn_get_next`    # 仅开市时间使用，取最新。闭市时间，请使用 SELECT lohi 1
-            iTEMP=${iTEMP:-${TAM}}
             tempday="
             $DROP tempday; CREATE TABLE tempday LIKE day;
-            INSERT INTO tempday SELECT * from day where date='${iTEMP}';
+            INSERT INTO tempday SELECT * from day where date='${END}';
             "
         else
-            field=$2
-            DT=`END=${iTEMP} SELECT dorat | sed -n "${1}p"`
+            DT=`SELECT dorat | sed -n "${iF5}p"`
             # echo ${DT}; exit
             DT=(${DT})
             TEMPDAY="(SELECT * FROM dorat WHERE date='${DT[0]}' && time='${DT[1]}')"
@@ -1037,27 +1028,34 @@ function fn_lohi()
         fi
 
         ABBR=t fn_yist
+        fn_notin_blk FFA1
+
         function fn_yi_descend()
         {
+          columns="d.code,DATE_FORMAT(t.date1,'%m-%d')as date1,DATE_FORMAT(t.date2,'%m-%d')as date2,t.lohi"
+
           tbl_super_dive="
           SELECT * FROM (
             SELECT ${CID}${columns}, 
             round(100*(d.close-t.low)/t.low, 2)  as incr,
             round(100*(GREATEST(t.high,d.close)-d.close)/GREATEST(t.high,d.close), 2) as decn,
-            round(t.amount/t.volume, 2) as yavri, d.close,
+         -- round(t.amount/t.volume, 2) as yavri, 
+            d.close,
+            $OPRI as opri, 
             round(100*(d.high-d.yesc)/d.yesc, 2) as hiri,
             round(100*(d.amount/d.volume-d.yesc)/d.yesc, 1) as avri,
             ${RISE} as rise,
-            round((d.volume/t.volume), 2) as prop,
-            round((d.volume/t.mavol5), 2) as prop5, t.scale,
+         -- round((d.volume/t.mavol5), 2) as prop5, 
+            round((100*d.volume/c.shares), 2) as tov, 
+            round((d.volume/t.volume), 2) as prop, t.scale,
             round((d.amount/10000), 1) as eYi, 
-            round((t.amount/10000), 1) as zYi,
+         -- round((t.amount/10000), 1) as zYi,
             round((c.shares*d.close/10000), 1) as nmcYi, c.name
             FROM ${hilo_curr} as t, 
             ${TEMPDAY} as d, cap as c
-            ${WHERE} t.code = d.code and t.code=c.code HAVING 1 ${COND} ${EXCLUDE}
+            ${WHERE} t.code = d.code and t.code=c.code HAVING 1 ${COND} ${notinBLK}
             ORDER by incr ${ASC:-DESC} ) as t
-          HAVING ${HAVING:-1} ORDER by ${field:-prop} ${ASC:-ASC} LIMIT ${LIMIT:-36}
+          HAVING ${HAVING:-1} ORDER by ${FIELD:-prop} ${ASC:-DESC} LIMIT ${LIMIT:-36}
           "
           echo "${tempday}${tbl_super_dive}"
         }
@@ -1065,17 +1063,18 @@ function fn_lohi()
     u|*)
         echo "
         SELECT lohi <param>
-            in : exist dates
-            out: dates list with num
-            0-9: tempday from dorat
-            '' : 仅开市时间使用，取最新。闭市时间，请使用 SELECT lohi 1
-            f  : ORDER by field
-            *  : usage
+            s n       : 连续n天缩量
+            in        : exist dates
+            out       : dates list with num
+            i|lsd iF5 : from dorat，iF5为空时取最新
+            *         : usage
         常用COND
             --------------------------大盘不稳皆是浮动-------------------------
             incr: 总涨幅，大于22%抛压增大
             rise: 当前价格，决定赔率，大于7%控制仓位
             avri: 抬高估值意愿，大于5%可操作性降低(大盘振荡形成抛压，次日难卖高价)
+           scale: 昨天的放量倍数
+            prop：今天的放量倍数
             tov : 收集筹码能力，.5比较合适，过高(大于.7)可能会是：对敲出货、拉高出货。大盘高位放量，次日会低开
                   时早缩量板，提高确定性，成本往前推1日，寄希望于次日再涨停
                   跟风板，成本低，次日多直接出货
@@ -1090,11 +1089,11 @@ function fn_lohi()
             09:35~50之间，应该有2~3波..白黄缠绕..，直接拉升者，拒绝新鲜血液，多是耍流氓"
         echo "
         COND='incr<22'
-        LIMIT=600 HAVING='rise<7&&avri>2 && rise>avri-.6 && tov>.2&&tov<.7 && nmcYi<80&&(scale<1.5||zYi<2)' TAM=END SELECT lohi 1
+        LIMIT=600 HAVING='rise<7&&avri>2 && rise>avri-.6 && tov>.2&&tov<.7 && nmcYi<80&&(scale<1.5||zYi<2)' SELECT lohi 1
             tov : 资金必须放量才可安全出逃，prev / prev2缩量，是very very vrey重要的指标
                   早盘，大盘低开时，选择昨天缩量涨停，开盘rise<3
                   尾盘，大盘下跌时，选择当天缩量小涨股
-        LIMIT=400 ASC=asc COND='tov<.8 && eYi>.8 && nmcYi<80' HAVING='rise>-1 && rise<2 ' TAM=END SELECT lohi 2 "
+        LIMIT=400 ASC=asc COND='tov<.8 && eYi>.8 && nmcYi<80' HAVING='rise>-1 && rise<2 ' SELECT lohi 2 "
         fn_echo_warn "
             超跌反弹在痛点变甜点(2015-09-16从超跌板块中找)：
             强势股(黄海机械)，在反弹日表现往往不佳<提前支取黄线>
@@ -1106,19 +1105,17 @@ function fn_lohi()
         ;;
     esac
 
-    [ -s "${exclude2}" ] && EXCLUDE="and code not in (`cat ${exclude2}`)"
-
-    fn_yi_descend $1 > /dev/stderr
+    fn_yi_descend $1 # > /dev/stderr
     mysql ${OPT:--t} kts <<< "${tempday}${tbl_super_dive}"
     xt_ret $? "${FUNCNAME}" || return $?
-    fn_echo_warn "TAM=$TAM time=${DT[1]} index=$1"
+    fn_echo_warn "END=$END time=${DT[1]} index=$1"
 
     PREFIX=${tempday} sqls=${tbl_super_dive} fn_chao ${chao}.lohi
 }
 
 function fn_ban()
 {
-    iDATE=`END=${TAM:-${END}} fn_get_prev`
+    iDATE=`fn_get_prev`
     tempday="(SELECT * FROM day WHERE date='${iDATE}')"
     sql="SELECT round(d.close*shares/10000,1) as col FROM cap as c, ${tempday} as d WHERE c.code=d.code ORDER by col ASC LIMIT 770,1"
     smlYi=`mysql -N kts <<<"${sql}"`
@@ -1135,7 +1132,7 @@ function fn_ban()
     {
     # 有时小票连续3板也是好票 <300314	戴维医疗>，特别是10点前封板票
     incr="incr<${incr:-22}"
-    COND="${incr}" LIMIT=1400 HAVING="avri>2&&rise>avri-.6 && tov>${factor}&&tov<.8 && ${xCOND}" TAM=END SELECT lohi ${1:-1}
+    COND="${incr}" LIMIT=1400 HAVING="avri>2&&rise>avri-.6 && tov>${factor}&&tov<.8 && ${xCOND}" SELECT lohi ${1:-1}
     }
 
     fn_echo_blue "small"
@@ -1156,7 +1153,7 @@ function fn_ban()
     # 底部、中部，拒绝顶部
     fn_echo_warn "scale<1.2"
     xCOND="eYi>nmcYi*${factor}*${tov}"
-    COND='incr>=22 && scale<1.2' LIMIT=1400 HAVING="avri>2&&rise>avri-.6 && tov>${factor} and ${xCOND}" TAM=END SELECT lohi ${1:-1} 2>/dev/null
+    COND='incr>=22 && scale<1.2' LIMIT=1400 HAVING="avri>2&&rise>avri-.6 && tov>${factor} and ${xCOND}" SELECT lohi ${1:-1} 2>/dev/null
     xt_ret $? "" || return $?
 }
 
@@ -1179,17 +1176,14 @@ function fn_sban()
     47)
         ZIZE=0.25 fn_ban; exit
         ;;
-    END|PREV)
-        TAM=${TAM:-$1} SELECT lohi ${2:-1} ${3}; exit
-        ;;
     .99)
-        TAM=${TAM:-END} COND='tov<=1 && rise>9.93' SELECT lohi ${2:-1} ${3}; exit
+        COND='tov<=1 && rise>9.93' SELECT lohi ${2:-1} ${3}; exit
         ;;
     g1)
-        TAM=${TAM:-END} COND='tov>1 && rise>9.93' SELECT lohi ${2:-1} ${3}; exit
+        COND='tov>1 && rise>9.93' SELECT lohi ${2:-1} ${3}; exit
         ;;
     c|code)
-        TAM=${TAM:-END} COND="code=$2" SELECT lohi ${3:-1}; exit
+        COND="code=$2" SELECT lohi ${3:-1}; exit
         ;;
     u|*)
         echo "
@@ -1199,7 +1193,6 @@ function fn_sban()
             47  : 0947 tov .25
             .99 : tov<=1 && rise>9.93
             g1  : tov>1 && rise>9.93
-            TAM : SET TAM={END|PREV}
             c   : c code [i]
             *   : usage
         "
@@ -1282,7 +1275,7 @@ function fn_lhb()
     c|n|s|S)
         if [ $1 = S ]; then
             col_date='date,'
-            field=$2
+            FIELD=$2
         elif [ $1 = c ]; then
             fn_iscode $2
             xt_ret $? "code:${2}" || return $?
@@ -1290,16 +1283,16 @@ function fn_lhb()
             xt_ret $? "xtempday error" || return $?
             COND="${COND} and code=${2}"
             col_date='date,'
-            field=${3:-date}
+            FIELD=${3:-date}
             sql_relate="&& l.date=d.date"
             sql_xtempday=", xtempday as d"
             LIMIT=${LIMIT:-8}
         else # s
             fn_isdigit ${2:-1}
             xt_ret $? "\$2[$2] must be digit" || return $?
-            field=${3:-apple}
+            FIELD=${3:-apple}
             date=`fn_get_date ${2:-1}`
-            fn_echo_warn "lhb of ${date} by ${field}"
+            fn_echo_warn "lhb of ${date} by ${FIELD}"
 
             fn_xtempday ${date}
             xt_ret $? "xtempday error" || return $?
@@ -1345,7 +1338,7 @@ function fn_lhb()
             round(l.buy/bloo/100, 2) as eYi, ${nmcYi0},
             c.name FROM lhb as l,cap as c ${sql_xtempday}
             $WHERE l.code=c.code ${sql_relate} 
-            HAVING 1 ${CAUSE} ${COND} ORDER by ${field:-bsp} DESC LIMIT ${LIMIT:-36}
+            HAVING 1 ${CAUSE} ${COND} ORDER by ${FIELD:-bsp} DESC LIMIT ${LIMIT:-36}
         "
         #echo "${sqls}"; exit
         mysql -t kts <<<"${sqls}"
@@ -1426,7 +1419,7 @@ function fn_wolf_sqls()
     col_vtov="IF( TIME_TO_SEC(time) <= ${SEC_113000}, TIME_TO_SEC(time)-${SEC_093000}, TIME_TO_SEC(time)-${SEC_110000} )"
     col_vtov="ROUND((3600*4)/${col_vtov}*shou/h.volume, 2) as vtov,"
     col_tet="ROUND(net/(1-top10_ajst_aR), 2) as Tet,"
-    field=${field:-Tet}
+    FIELD=${FIELD:-Tet}
     DOOR=${DOOR:-.6}
     yesc='(trade/(1+rise/100))'
     sqls="
@@ -1447,9 +1440,9 @@ function fn_wolf_sqls()
         ROUND(nmc*(1-top10_ajst_aR), 2) as nmcYi ${col_name}
         FROM xdde as w, curr_lohi as h, top10 as t
         ${WHERE} w.code=h.code && w.code=t.code && w.date<='${END}' ${iCOND} && net>${DOOR}     -- WHERE(net>0)加速3倍
-        HAVING 1 ${CAUSE} ${COND} ${ORDER:-ORDER by ${field} ${ASC:-DESC}} LIMIT ${LIMIT:-36}
+        HAVING 1 ${CAUSE} ${COND} ${ORDER:-ORDER by ${FIELD} ${ASC:-DESC}} LIMIT ${LIMIT:-36}
     "
-    fn_echo_warn "wolf of ${date:-${END}}.${stime:-latest} [DOOR:${DOOR}] ${field}"
+    fn_echo_warn "wolf of ${date:-${END}}.${stime:-latest} [DOOR:${DOOR}] ${FIELD}"
     #echo "${sqls}"; exit
 }
 
@@ -1500,10 +1493,10 @@ function fn_nDDE_sqls()
         ORDER by code ASC, date DESC
     ) as t, top10 WHERE t.code=top10.code
     GROUP by code 
-    HAVING 1 ${CAUSE} ${COND} ORDER by ${field} ${ASC:-DESC} LIMIT ${LIMIT:-24}
+    HAVING 1 ${CAUSE} ${COND} ORDER by ${FIELD} ${ASC:-DESC} LIMIT ${LIMIT:-24}
     "
     #-- && net>${DOOR}     -- WHERE(net>0)加速3倍
-    fn_echo_warn "wolf of ${END}.${stime:-latest} [NUM:${NUM}] [DOOR:${DOOR}] ${field}"
+    fn_echo_warn "wolf of ${END}.${stime:-latest} [NUM:${NUM}] [DOOR:${DOOR}] ${FIELD}"
     #echo "${sqls}"; exit
 }
 
@@ -1584,9 +1577,9 @@ function fn_wolf()
         sta=${2:-1}
         fn_isdigit ${sta}
         if [ "${?}" -eq 0 ]; then
-            field=${3:-wet}
+            FIELD=${3:-wet}
         else
-            field=$2; sta=1; 
+            FIELD=$2; sta=1; 
         fi
 
         [ "${2}" = l ] && fn_list_times
@@ -1615,9 +1608,9 @@ function fn_wolf()
         sta=${2:-1}
         fn_isdigit ${sta}
         if [ "${?}" -eq 0 ]; then
-            field=$3
+            FIELD=$3
         else
-            field=$2; sta=1; 
+            FIELD=$2; sta=1; 
         fi
 
         if [ "$1" = st ]; then
@@ -1688,7 +1681,7 @@ function fn_macd()
         ;;
     [0-9]*)
         COND="and code=$1"
-        field=$2
+        FIELD=$2
         ;;
     u|h)
         echo "
@@ -1698,7 +1691,7 @@ function fn_macd()
         exit
         ;;
     *)
-        field=$1
+        FIELD=$1
         ;;
     esac
 
@@ -1711,7 +1704,7 @@ function fn_macd()
             cvgenc,
             ${limo} as limo, d1,m1,dif,macd FROM mm55
             HAVING 1 ${COND} ${inLIST}
-            ORDER by ${field:-code},FM ${ASC:-ASC};
+            ORDER by ${FIELD:-code},FM ${ASC:-ASC};
 	" | mysql -t kts
     
     return $?
@@ -1974,7 +1967,7 @@ function fn_top()
             fi
             echo "
             SELECT date,hex(blk),sym,SAMPLES,rise FROM topN 
-                WHERE date='${date}' ORDER by ${field:-rise} DESC LIMIT ${LIMIT:-20};
+                WHERE date='${date}' ORDER by ${FIELD:-rise} DESC LIMIT ${LIMIT:-20};
             " | mysql -t kts
         done
         ;;
@@ -1983,7 +1976,7 @@ function fn_top()
         STEP=${2:-1} END=${date} fn_topX
         echo "
         SELECT date,hex(blk),sym,SAMPLES,rise FROM topN 
-            WHERE date='${date}' ORDER by ${field:-rise} DESC LIMIT ${LIMIT:-20};
+            WHERE date='${date}' ORDER by ${FIELD:-rise} DESC LIMIT ${LIMIT:-20};
         " | mysql -t kts
         ;;
     *)
@@ -2096,11 +2089,11 @@ function fn_blk()
     l|layout)
         ABBR=m fn_notin_blk FFA1
         ABBR=m fn_yist
-        field=${2}
+        FIELD=${2}
         echo "
         SELECT hex(n.blk) as blk,count(m.code) as num,n.sym FROM blk_name as n, blk_memb as m
          $WHERE n.blk=m.blk AND n.blk not in ${EXCLUDE_BLK} ${notinBLK}
-         GROUP by blk ORDER by ${field:-num} ${ASC:-DESC} LIMIT ${LIMIT:-20};
+         GROUP by blk ORDER by ${FIELD:-num} ${ASC:-DESC} LIMIT ${LIMIT:-20};
         " | mysql -t kts
         ;;
     10)
@@ -2150,7 +2143,7 @@ function fn_blk()
             ${WHERE} d.code=c.code and d.date>='${sta}' && d.date<='${END}' ${inBLK}
             GROUP by code 
             HAVING ${HAVING:-1} ${COND} and rise>${DOOR:-'-100'}
-            ORDER BY ${field:-rise} ${ASC:-desc} LIMIT ${LIMIT:-36}
+            ORDER BY ${FIELD:-rise} ${ASC:-desc} LIMIT ${LIMIT:-36}
         " 
         }
         fn_sqls
@@ -2182,11 +2175,11 @@ function fn_blk()
             xt_ret $? "" || return $?
             fn_name ${code}
 
-            field=${3:-blk}
+            FIELD=${3:-blk}
             echo "
              SELECT m.code, hex(n.blk) as blk, n.sym FROM blk_name as n, blk_memb as m
              WHERE n.blk=m.blk and code=${code}
-             ORDER by ${field} DESC LIMIT ${LIMIT:-36};
+             ORDER by ${FIELD} DESC LIMIT ${LIMIT:-36};
             " | mysql -t kts
         done
         ;;
@@ -2284,7 +2277,7 @@ function fn_yysj()
     fi
     sqls="
     SELECT * FROM yysj 
-    HAVING ${HAVING:-1} ${COND} ${sql_date} ORDER BY ${field:-code} ${ASC:-asc}
+    HAVING ${HAVING:-1} ${COND} ${sql_date} ORDER BY ${FIELD:-code} ${ASC:-asc}
     "    
     mysql ${OPT:--t} kts <<<"${sqls}"
     fn_chao ${chao}.yysj
@@ -2383,7 +2376,7 @@ function fn_main()
     "dif120             code...               # cost:(close-ma120) & sort by #{ASC:id}"
     "stat                                     # 大盘统计"
     # ----------------  ABOVE IS FIXED SEQUENCE --------------------
-    "xrd                field                 # #{OP:->}"
+    "xrd                FIELD                 # #{OP:->}"
     "ace                sta num               # 10日内所有+10% amount nmc 统计"
     "td_layout          code                  # 日内最高价时点分布.10:00am"
     "cap                code                  # 查询nmc&cap"
@@ -2396,11 +2389,11 @@ function fn_main()
     "rdiff                                    # tbl_rdiff"
     "vol                {0|3|6|03}            # ^^3市成交^^"
     "ls                 {code|symbol}         # 日线数据 \$LIMIT"
-    "lsd                [{top|floor}][field]  # --- END YIST LIMIT 涨幅排名"
+    "lsd                [{top|floor}][FIELD]  # --- END YIST LIMIT 涨幅排名"
     "updown                                   # 近期{NUM=5}涨跌家数统计"
     "dive                                     # 跳水第2日买进"
-    "hilo               field                 # field to sort by"
-    "lohi               field                 # field to sort by"
+    "hilo               FIELD                 # FIELD to sort by"
+    "lohi               FIELD                 # FIELD to sort by"
     "g20                                      # 创20日新高"
     "ban                condi [time]          # 条件. 0945后使用"
     "sban               condi [time]          # super ban"
