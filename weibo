@@ -1,0 +1,5 @@
+#! /bin/bash
+
+sed -i 's/\\//g' $1
+cp $1 /tmp/kts/chao.html
+w3m -dump /tmp/kts/chao.html
