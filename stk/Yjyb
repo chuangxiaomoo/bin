@@ -36,7 +36,7 @@ function fn_load()
 
 function fn_dload()
 {
-    date=${1:-'2015-09-30'}
+    date=${1:-'2015-12-31'}
 
     fn_url() 
     { 
@@ -92,7 +92,7 @@ function fn_select()
         FROM tbl_yjyg as y, cap as c 
         WHERE y.code=c.code 
         HAVING 1 ${COND} ${inLIST} 
-        ORDER by ${1:-curr} DESC LIMIT ${LIMIT:-50}
+        ORDER by ${FIELD:-public} DESC LIMIT ${LIMIT:-50}
     " 
     mysql -t kts <<< "${sqls}"
     fn_chao ${chao}.Yjyb

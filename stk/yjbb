@@ -175,7 +175,7 @@ function fn_main()
     s|select)
         fn_select "${@:2}"
         ;;
-    3|dl_all)
+    d|dl_all)
         fn_dl_all "${@:2}"
         ;;
     load)
