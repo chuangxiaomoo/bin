@@ -1053,7 +1053,8 @@ function fn_lohi()
             round((c.shares*d.close/10000), 1) as nmcYi, c.name
             FROM ${hilo_curr} as t, 
             ${TEMPDAY} as d, cap as c
-            ${WHERE} t.code = d.code and t.code=c.code HAVING 1 ${COND} ${notinBLK}
+            ${WHERE} t.code = d.code and t.code=c.code 
+            HAVING 1 ${COND} ${notinBLK}
             ORDER by incr ${ASC:-DESC} ) as t
           HAVING ${HAVING:-1} ORDER by ${FIELD:-prop} ${ASC:-DESC} LIMIT ${LIMIT:-36}
           "
@@ -1071,35 +1072,14 @@ function fn_lohi()
         常用COND
             --------------------------大盘不稳皆是浮动-------------------------
             incr: 总涨幅，大于22%抛压增大
-            rise: 当前价格，决定赔率，大于7%控制仓位
-            avri: 抬高估值意愿，大于5%可操作性降低(大盘振荡形成抛压，次日难卖高价)
-           scale: 昨天的放量倍数
-            prop：今天的放量倍数
-            tov : 收集筹码能力，.5比较合适，过高(大于.7)可能会是：对敲出货、拉高出货。大盘高位放量，次日会低开
-                  时早缩量板，提高确定性，成本往前推1日，寄希望于次日再涨停
-                  跟风板，成本低，次日多直接出货
-            eYi : 展现资金实力，2Yi以下为宜
-            nmc : 盘小方便游资控盘，2Yi/5%换手，在50亿左右为宜
+       avri/bvri: 今日/昨日 均价    均衡股<天喻信息>，十字星，尾部发力与黄线重合最佳(有主力护航)
+      prop/scale: 今日/昨天 量比    强势股的概念及板块很重要，scale<2可以确保资金安全.
         "
-        fn_echo_succ "
-            选择强势的概念及板块很重要
-            scale小于1可以确保资金安全.查看10涨幅不可太高(吃亏在.黄海机械)"
-        fn_echo_fail "
-            弱势行情追高尽量下午追(13:45后) -- 创业板B 中小板B (后知后觉比较好追)
-            09:35~50之间，应该有2~3波..白黄缠绕..，直接拉升者，拒绝新鲜血液，多是耍流氓"
-        echo "
+        fn_echo_warn "
+        盘尾有更大的确定性：
         COND='incr<22'
         LIMIT=600 HAVING='rise<7&&avri>2 && rise>avri-.6 && tov>.2&&tov<.7 && nmcYi<80&&(scale<1.5||zYi<2)' SELECT lohi 1
-            tov : 资金必须放量才可安全出逃，prev / prev2缩量，是very very vrey重要的指标
-                  早盘，大盘低开时，选择昨天缩量涨停，开盘rise<3
-                  尾盘，大盘下跌时，选择当天缩量小涨股
-        LIMIT=400 ASC=asc COND='tov<.8 && eYi>.8 && nmcYi<80' HAVING='rise>-1 && rise<2 ' SELECT lohi 2 "
-        fn_echo_warn "
-            超跌反弹在痛点变甜点(2015-09-16从超跌板块中找)：
-            强势股(黄海机械)，在反弹日表现往往不佳<提前支取黄线>
-            地板弹起(光韵达)，反弹前日表现好，可10%收益，护盘积极，但反弹日表现往往不佳
-            弱势股<航天长峰>，以跌停处理，身上背负套牢吸血之类，难以表现
-            均衡股<天喻信息>，不能跌停失去流动性，十字星，尾部发力与黄线重合最佳(有主力护航)
+        LIMIT=400 ASC=asc COND='tov<.8 && eYi>.8 && nmcYi<80' HAVING='rise>-1 && rise<2 ' SELECT lohi 2
         "
         exit
         ;;
@@ -2266,22 +2246,27 @@ function fn_blk()
 
 function fn_yysj()
 {
-    if [ "${1}" = 'd' ]; then
-        sql_date="and date='$2'"
-    else
+
+    case $1 in
+    d|date)
         echo "
         SELECT DISTINCT date FROM yysj ORDER by date ASC;
         " | mysql -t kts
         fn_echo_warn "Usage: SELECT yysj d <date>"
         exit
-    fi
-    sqls="
-    SELECT * FROM yysj 
-    HAVING ${HAVING:-1} ${COND} ${sql_date} ORDER BY ${FIELD:-code} ${ASC:-asc}
-    "    
-    mysql ${OPT:--t} kts <<<"${sqls}"
-    fn_chao ${chao}.yysj
-    return $?
+        ;;
+    s|select)
+        sqls="
+        SELECT * FROM yysj 
+        HAVING ${HAVING:-1} ${COND} ${sql_date} ORDER BY ${FIELD:-date} ${ASC:-asc} LIMIT ${LIMIT:-36}
+        "    
+        mysql ${OPT:--t} kts <<<"${sqls}"
+        fn_chao ${chao}.yysj
+        ;;
+    *|u|h)
+        echo "Usage: SELECT yysj {date|select}"
+        ;;
+    esac
 }
 
 function fn_dde()

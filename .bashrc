@@ -2,7 +2,6 @@
 
 # make sure no space b4 the 2nd '
 
-alias        FM=''
 alias       ASC=''
 alias       BLK=''
 alias      DOOR=''

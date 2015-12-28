@@ -1082,11 +1082,12 @@ function fn_fenbi()
 
 function fn_yysj()
 {
-    pages=0       # assign to 0 to SKIP download, 100 to normal DL
+    pages=100       # assign to 0 to SKIP download, 100 to normal DL
 
     [ ${pages} != 0 ] && >${buffer}
 
-    date=2015-09-30
+    # 通过F12查看时间 http://data.eastmoney.com/bbsj/201512/yysj.html
+    date=2015-12-31
     suffix='&js=var%20aisNXBuK={pages:(pc),data:[(x)]}&stat=0'
     url0="http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx?type=SR&sty=YYSJ&"
 
@@ -1094,6 +1095,7 @@ function fn_yysj()
     for (( i=1; i<=${pages}; i+=1 )); do
         fn_echo_succ "downlode ${i}..."
         url="${url0}fd=${date}&st=2&sr=1&p=${i}&ps=400${suffix}"
+        # echo ${url}; exit
         w3m -cols 84 -dump "${url}" > ${cache}
         #
         [ "${pages}" -gt 10 ] && pages=`awk -F '[:,]' '/aisNXBuK/{print $2}' ${cache}`
@@ -1205,12 +1207,45 @@ function fn_dig()
     return $?
 }
 
+
+function fn_market()
+{
+    url0="http://data.eastmoney.com/Notice/Noticelist.aspx?type=0&market=${market}&"
+
+    w3m -cols 1000 -dump "${url0}date=${date}" > ${temp} 
+    pages=`cat ${temp} | grep '下一页' | sed 's/下一页.*//g' | awk '{print $NF}'`
+    # echo "${url0}date=${date}"
+    fn_echo_warn "market=${market}&date=${date}&pages=$pages"
+
+    local i
+    for (( i=2; i<=${pages:-0}; i+=1 )); do
+        echo "market=${market}&date=${date}&page=$i ..."
+        url="${url0}date=${date}&page=$i"
+        w3m -cols 1000 -dump "${url}" >> ${temp}
+    done
+
+    return $?
+}
+
+function fn_notice()
+{
+    notice=${chao}.notice
+    ln -sfT /opt/notice ${chao}.notice
+
+    date=${END}
+    >${notice}/${date}
+
+    local market=
+    for market in sh_a sz_a zxb cyb sh_b sz_b; do
+        temp=${chao}.notice.${market}
+        fn_market
+       #grep '更多公告股吧研报' ${temp} | grep '^[036]' >> ${notice}/${date}
+        grep '更多公告股吧研报' ${temp} >> ${notice}/${date}
+    done
+}
+
 function fn_main()
 {
-    CURR=`fn_maxdate`
-    END=${END:-${CURR}}
-    PREV=`fn_get_prev`
-
     cmdlist=(
     # fixed sequence
     "cap [--keep.FIN -k]                # (max(中国石油)=2万亿 sum(nmc)=20万亿)"
@@ -1243,12 +1278,14 @@ function fn_main()
     "power                              # 权重分析"
     "merge  file...                     # 合并多个文件到chao.merge"
     "dig                                #  从<chao.dig>输入，并输出到<dig.txt>"
+    "notice                             #  更新公告 /opt/notice/"
     )
 
     # 存储过程函数文件的最后5行都是注释
     cd $workdir
     head -n -5 $mps_org > $mps_god
 
+    fn_set_END
     fn_execute "$@"
 }
 
