@@ -683,7 +683,7 @@ function fn_lohi()
 {
     case $1 in
     e)
-        mysql -N kts<<< "SELECT DISTINCT end FROM mat_lohi ORDER by end DESC LIMIT 10" | cat -n
+        mysql -N kts<<< "SELECT DISTINCT end FROM mat_lohi ORDER by end DESC LIMIT ${LIMIT:-10}" | cat -n
         exit
         ;;
     d)
@@ -693,9 +693,8 @@ function fn_lohi()
         exit
         ;;
     l)
-        echo "     0  ${END}"
         echo "
-        SELECT date from day WHERE code=900001 ORDER by date DESC LIMIT ${LIMIT:-1},10
+        SELECT date from day WHERE code=900001 ORDER by date DESC LIMIT ${LIMIT:-10}
         " | mysql -N kts | cat -n
         exit
         ;;

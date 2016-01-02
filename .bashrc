@@ -5,6 +5,7 @@
 alias       ASC=''
 alias       BLK=''
 alias      DOOR=''
+alias     DEBUG=''
 alias       TEE=''
 alias       END=''
 alias      iEND=''
@@ -21,6 +22,7 @@ alias    HAVING=''
 alias      PREV=''
 alias      YIST=''
 alias      STEP=''
+alias     SCALE=''      # 通放大倍数 
 alias       ZXG=''      # ZIZE 用 NUM STEP 替换
 alias     LIMIT=''
 alias     nmemb=''

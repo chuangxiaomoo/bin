@@ -1242,6 +1242,8 @@ function fn_notice()
        #grep '更多公告股吧研报' ${temp} | grep '^[036]' >> ${notice}/${date}
         grep '更多公告股吧研报' ${temp} >> ${notice}/${date}
     done
+
+    fn_echo_succ "@succ ${notice}/${date}"
 }
 
 function fn_main()

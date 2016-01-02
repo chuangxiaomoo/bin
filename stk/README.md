@@ -71,3 +71,4 @@
 # 打板门          .doc/daban.md
 # 龙虎榜          .doc/lhb.md
 # 股票们          .doc/codes.md
+# 公告            .doc/notice.md
