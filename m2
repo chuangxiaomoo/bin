@@ -185,7 +185,7 @@ function fn_tiandao()                   { cat book_tiandao book_遥远的救世�
 
 function fn_mindhacks()                 { cat mindhacks ;}
 function fn_guang()    	                { cat guang ;}
-function fn_words()    	                { cat words ;}
+function fn_words()    	                { cat words ;}      # juzi
 function fn_music()    	                { cat music ;}
 function fn_poet()    	                { cat poet ;}
 function fn_english()                   { cat english ;}
@@ -529,14 +529,14 @@ function fn_animals()                   { cat humor_animals ;}
 
 function fn_girl()                      {
 function fn_base()                      { cat girl_base ;}
-function fn_lovewords()                 { cat girl_lovewords ;}
+function fn_loveletter()                { cat girl_loveletter ;}
 function fn_00_jiebao()                 { cat girl_00_jiebao ;}
 function fn_01_tingbao()                { cat girl_01_tingbao ;}
 function fn_11_2013相亲记()             { cat girl_11_2013相亲记 ;}
 function fn_12_wife()                   { cat girl_12_wife ;}
     local opts=(
         base       
-        lovewords
+        loveletter
         11_2013相亲记                   # xiangqin 爱情观
         00_jiebao
         01_tingbao
@@ -807,6 +807,7 @@ function fn_main() {
         sanxing三省
         life_is_a_bus                   # 公交车
         game_theory
+        redwine 
     )
     fn_print $@
 }

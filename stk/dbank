@@ -435,10 +435,9 @@ function fn_get_ratio_close2open()
 {
     # ratio = 4小时/sum(open)，用于预测当日量比
     # 在 ./SELECT 通过变量 ratio=`fn_get_ratio_close2open`
-    DT=${DT:-`mysql -N kts<<<"SELECT date,time FROM stamp_day ORDER by id DESC LIMIT 1"`}
-    sec_dt=(${DT})
-    sec_date=${sec_dt[0]}
-    sec_curr=$(date +%s -d "${sec_dt[*]}")
+    HMS=${HMS:-`fn_get_time 1`}
+    sec_date=${END}
+    sec_curr=$(date +%s -d "${END} ${HMS}")
     sec_0930=$(date +%s -d "${sec_date} 09:30:00") 
     sec_1130=$(date +%s -d "${sec_date} 11:30:00")
     sec_1300=$(date +%s -d "${sec_date} 13:00:00")
@@ -527,7 +526,7 @@ function fn_set_END()
 
 function fn_get_time()
 {
-    # 接受一个参数，与 <SELECT lohi l> 的输出保持一致
+    # 接受一个参数<时间列表中的序号>，与 <SELECT lohi l> 的输出保持一致
     NR=${1:-1}
     let sta=${NR}-1
     odrLimit="ORDER by time DESC LIMIT ${sta},1"
