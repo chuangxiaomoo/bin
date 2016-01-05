@@ -53,48 +53,47 @@
 - 先记住典型，再推算之：-
 - Poker Odds Chart - Calculating Hand Odds In Texas Holde'em Poker -
 
-  Outs One Card  Two Card  One  Two
-  Num.     %         %     Card Card                 Draw Type
-                           Odds Odds
-  1    2%        4%        46   23   Backdoor Straight or Flush (Requires two cards)
-  2    4%        8%        22   12   Pocket Pair to Set
-  3    7%        13%       14   7    One Overcard
-  4    9%        17%       10   5    Inside Straight / Two Pair to Full House
- `5    11%       20%       8    4    One Pair to Two Pair or Set`
-  6    13%       24%       6.7  3.2  No Pair to Pair / Two Overcards
-  7    15%       28%       5.6  2.6  Set to Full House or Quads
-  8    17%       32%       4.7  2.2  Open Straight
-  --------------------------------------------------------------------------------
- `9    19%       35%       4.1  1.9  Flush`                                              0      0
-  10   22%       38%       3.6  1.6  Inside Straight & Two Overcards                     -.5    .3
-  11   24%       42%       3.2  1.4  Open Straight & One Overcard                        -.4    .2
- `12   26%       45%       2.8  1.2  Flush & Inside Straight / Flush & One Overcard`     -.4    .2
-  13   28%       48%       2.5  1.1                                                      -.3    .15
-  14   30%       51%       2.3  0.95                                                     -.2    .15
- `15   33%       54%       2.1  0.85 Flush & Open Straight / Flush & Two Overcards`      -.2    .1
-  --------------------------------------------------------------------------------       -.2    .1
-  16   34%       57%       1.9  0.75
-  17   37%       60%       1.7  0.66
-  18   41%       65%       1.6  0.6
+  Outs 1Card%  2Card%     1Card  2Card      Draw Type
+  Num.                    Odds   Odds
+  1    2%        4%        46     23    Backdoor Straight or Flush (Requires two cards)
+  2    4%        8%        22     12    Pocket Pair to Set
+  3    7%        13%       14     7     One Overcard
+  4    9%        17%       10     5     Inside Straight / Two Pair to Full House
+ `5    11%       20%       8      4     One Pair to Two Pair or Set`
+  6    13%       24%       6.7    3.2   No Pair to Pair / Two Overcards
+  7    15%       28%       5.6    2.6   Set to Full House or Quads
+  8    17%       32%       4.7    2.2   Open Straight
+  ----------------------------------------------------------------------------------
+ `9    19%       35%       4.1    1.9   Flush`                                              0      0
+  10   22%       38%       3.6    1.6   Inside Straight & Two Overcards                     -.5    .3
+  11   24%       42%       3.2    1.4   Open Straight & One Overcard                        -.4    .2
+ `12   26%       45%       2.8    1.2   Flush & Inside Straight / Flush & One Overcard`     -.4    .2
+  13   28%       48%       2.5    1.1                                                       -.3    .15
+  14   30%       51%       2.3    0.95                                                      -.2    .15
+ `15   33%       54%       2.1    0.85  Flush & Open Straight / Flush & Two Overcards`      -.2    .1
+  ----------------------------------------------------------------------------------       -.2    .1
+  16   34%       57%       1.9    0.75
+  17   37%       60%       1.7    0.66
+  18   41%       65%       1.6    0.6
 
 # 反向成败比.读法.理解
 
-  1. 底池赔率是杠杆，反向成败比是能力
+  1. 底池赔率是杠杆，反向成败比是能力。能力一定要大于杠杆
 
   因为我方是分母，所以数值越小，盈利越稳定，能力越大。
-  8    17%       32%       4.7  2.2  Open Straight
+  8    17%       32%       4.7  2.2   Open Straight
                                 输2.2赢1
-  2. 1-Card记忆
+  2. 1-Card记忆(x代表outs数)
 
-  Agn-Odds = (47-x)-1   turn
-  Agn-Odds = (46-x)-1   river, 依次算一遍，就有印象了
+  Agn-Odds = (47/x)-1   turn
+  Agn-Odds = (46/x)-1   river, 依次算一遍，就有印象了
 
   3. 2-Card记忆
 
   5及以下，两倍关系
   5以上， Round(1Card/2, 1) - .2
 
-  但是，大于1时，你就可以ALL-in了
+  但是，小于1时，你可以不要记了，因为可以ALL-in了
 
 # 底池成败比(Pot Odds) 
 

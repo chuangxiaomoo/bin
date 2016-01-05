@@ -1048,9 +1048,9 @@ function fn_listbana()
 function fn_fenbi()
 {
     code=$1
-    date=$2
+    date=${2:-${END//-/}}
     #code=399006
-    fn_iscode ${code}
+    fn_iscode ${code} || fn_isindex ${code}
     xt_ret $? "arg1 not code" || return $?
 
     [ "${#date}" -eq 8 ]
