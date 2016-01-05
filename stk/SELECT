@@ -971,7 +971,12 @@ function fn_lohi()
             YIST=${chao}.prev
         elif [ "${1}" = bvri ]; then
             # 条件2是给反包股如<天银机电2015-12-29>
-            END=${PREV} COND="((100*(avri-bvri)/bvri>${DOORb:-1.6})||(prop>1.38&&rise>3))" LIMIT=2000 PARTS=2 chao2=bvri SCALE= SELECT lohi i
+              CONDb="((100*(avri-bvri)/bvri>${DOORb:-1.6})||(prop>1.38&&rise>3))"
+            # 放量不明显的个股
+            # CONDb="((100*(avri-bvri)/bvri>${DOORb:-1.0})||(prop>1.06&&rise>2))"
+            # 熔断缩量版本
+            # CONDb="((100*(avri-bvri)/bvri>${DOORb:-'-2'})||(prop>0.8&&rise>0))"
+            END=${PREV} COND="${CONDb}" LIMIT=2000 PARTS=2 chao2=bvri SCALE= SELECT lohi i
             YIST=${chao}.bvri
         fi
 
