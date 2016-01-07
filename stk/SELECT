@@ -38,8 +38,8 @@ function fn_ls()
         SELECT $fields, $PEAK as peak, $TROUGH as trough, $RISE as rise, $TURNOV0 as turnover
         FROM day as d
         WHERE d.code = ${code} and d.date <= '${END}'
-        ${COND} ORDER by date DESC limit ${LIMIT:-13}
-    ) as tbl ORDER by date ASC;
+        ORDER by date DESC
+    ) as tbl HAVING 1 ${COND} ORDER by ${FIELD:-date} ASC LIMIT ${LIMIT:-80};
 	" | mysql -t kts
 }
 
@@ -1028,7 +1028,7 @@ function fn_lohi()
             HAVING 1 ${COND} 
             ${notinBLK}
             ORDER by incr ${ASC:-DESC} ) as t
-          HAVING ${HAVING:-1} ORDER by ${FIELD:-prop} ${ASC:-DESC} LIMIT ${LIMIT:-36}
+          HAVING ${HAVING:-1} ORDER by ${FIELD:-prop} ${ASC:-DESC} LIMIT ${LIMIT:-80}
           "
           [ ${DEBUG:-0} -eq 1 ] && echo "${tempday}${tbl_super_dive}"
         }
@@ -2321,35 +2321,33 @@ function fn_dde()
 }
 
 
-function fn_g20()
+function fn_max()
 {
-    STA=`fn_get_date 20 1` #echo ${STA}
-    case $1 in
-    g20)
-        sqls="
-        SELECT date,code,close,max(close),count(code) as num  FROM
-        ( SELECT * FROM day WHERE date>='${STA}' && date<='${END}' ORDER by date DESC ) as d
-        GROUP by code HAVING max(date)='${END}' && close=max(close) && num>8;
-        " 
-        ;;
-    kid)
-        sqls="
-        SELECT date,code, close/yesc as rise, count(code) as num  FROM
-        ( SELECT * FROM day WHERE date>='${STA}' && date<='${END}' ORDER by date DESC ) as d
-        GROUP by code HAVING max(date)='${END}' && rise>=1 && num<=8 ORDER by rise DESC;
-        " 
-        ;;
-    *|u)
-        echo "SELECT g20 {kid|g20}"; exit
-        ;;
-    esac
+    STA=`fn_get_date ${1:-5} 1` #echo ${STA}
+    let half=${1}/2
+    sqls="
+    SELECT date,code,close,max(close),count(code) as num  FROM
+    ( SELECT * FROM day $WHERE date>='${STA}' && date<='${END}' ORDER by date DESC ) as d
+    GROUP by code HAVING max(date)='${END}' && close=max(close) && num>${half};
+    "
 
-    mysql -t kts <<<"${sqls}"
-    fn_chao ${chao}.max20
+    if [ "${1}" -gt 5 ]; then
+        mysql -t kts <<<"${sqls}"
+    fi
+
+    fn_chao ${chao}.${chao2:-max20}
+    chao2=
 
     return $?
 }
 
+
+function fn_g20()
+{
+    CHAO=1 chao2=max5 fn_max 5
+    YIST=${chao}.max5 chao2=max${1} fn_max ${1:-20}
+    return $?
+}
 
 function fn_dive()
 {
