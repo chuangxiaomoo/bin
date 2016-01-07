@@ -844,6 +844,14 @@ call sp_ma2015();
 
 function fn_sipf()
 {
+    w3m -cols 999 -dump 'http://data.eastmoney.com/cjsj/bankTransfer.html' > ${chao}.sipf
+    grep '^201[3-9]' ${chao}.sipf | sed -e 's/[年月]/-/g' -e 's/日//g' -e 's/  */\t/g' | \
+        sed 's/\t[0-9.]*\t[0-9.%-]*$//g' | sort -k1 | grep -A1000 '2014-03-31' > ${chao}.ssss
+
+    fn_echo_succ "succ and 使用sina数据后自动返回!"
+
+    return
+
     fn_echo_succ "余额期末数\t日平均数\t银证转账+\t银证转账-\t银证转账net
     "
     url="
@@ -891,23 +899,20 @@ http://www.sipf.com.cn/NewCH/zt/11/101752.shtml
         w3m -dump "${host}/${dates[$j]}" | grep 证券交易结算资金 | sed 's/,//g' | \
             awk '{printf "%s\t%s\t%s\t%s\t%s\n", $4,$6,$8,$10,$12}'
     done 
-
 }
 
 function fn_nets()
 {
+    # 2014-04 free0=5755
     awk '
     BEGIN { sum=0; free0=5755; net=0; }
     {
-        if (1 == index($1,"month:")) {
-            printf "%s\t%s\n", $1,$2
-        } else {
-            net=net+$5;
-            sum=(free0-$1)+$5+sum;
-            printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", free0, $1,$2,$3,$4,$5,sum,net
-            free0=$1;
-        }
-    }' ~/bin/stk/sql/money
+        net=net+$7;
+        sum=(free0-$3)+$7+sum;
+        printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", $1,$2,$3,$4,$5,$6,$7,sum,net
+        free0=$3;
+    }'  ${chao}.ssss > ~/bin/stk/sql/money.clean
+    fn_echo_succ "Done gen ~/bin/stk/sql/money.clean"
 }
 
 
@@ -990,14 +995,12 @@ function fn_money()
 {
     usage="
     券商经纪资金一周只更新一次。步骤如下：
-    s|sipf      0 修改url手动更新数据 并且 >>sql/money -> sql/money.clean
+    s|sipf      0 downLoad from sina 更新数据 并且 >> sql/money
     n|nets      1 计算叠加的.净流入 >> sql/money.clean
     z|zzlt      2 从同花顺获取数据，更新到表.中证流通.zzlt
-    w|wklist    3 生成日期对 /tmp/kts/chao.wklist ，从zzlt打印当下星期的Monday和Friday输出
-    手动合成    4 由13合成 money.clean
-    b|bala      5 从money.clean，生成表balance
-    r|rzrq      6 更新RZRQ数据
-    l|list      7 联合查讯
+    b|bala      3 从money.clean，生成表balance
+    r|rzrq      4 更新RZRQ数据
+    l|list      5 联合查讯
     u|usage     * 打印Usage
     "
     case $1 in
@@ -1033,13 +1036,20 @@ function fn_listbana()
 {
     fn_echo_warn "
     cat /Export/Table.txt | awk 'BEGIN{sum=0; } { sum+=$3; } END{print sum}' ==> 37.1965万亿  5746.20
+    net             当周银证增量
+    balance         自2014.4银证增量资金和
+    bala_rzrq       rzrq绝对资金
+    bala_sum        (银证+rzrq)资金
+    LT              流通总市值
+    Dif_bala        自2014.4的增量资金
+    Dif_LT_55
     "
     echo "
-    SELECT b.*,r.net as bala_rzrq,(b.balance+r.net)as bala_sum,z.close,
-    round(371965*z.close/5746.20,2) as LT, 
-    round(b.balance+r.net-4234.66)as Dif_bala_sum,
-    round((371965*z.close/5746.20-193466.21)/5.5,2) as Dif_LT_55
-    FROM balance as b, rzrq as r,zzlt as z 
+    SELECT b.*,r.net as bala_rzrq,(b.balance+r.net)as bala_sum,z.close as zzltC,
+        round(371965*z.close/5746.20,2) as LT, 
+        round(b.balance+r.net-4234.66)as Dif_bala,
+        round((371965*z.close/5746.20-193466.21)/5.5,2) as Dif_LT_55
+    FROM balance as b, rzrq as r, zzlt as z 
     WHERE b.fri=r.date && b.fri=z.date 
     ORDER by fri ${ASC:-DESC} LIMIT ${LIMIT:-40}
     " | mysql ${OPT:--t} kts
