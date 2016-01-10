@@ -35,11 +35,13 @@ function fn_ls()
     echo "
     SELECT nmc/close FROM cap WHERE code=${code} LIMIT 1 INTO @shares0;
     SELECT * FROM (
-        SELECT $fields, $PEAK as peak, $TROUGH as trough, $RISE as rise, $TURNOV0 as turnover
+        SELECT $fields, $PEAK as peak, $TROUGH as trough, 
+        ${sql_avrg}
+        $RISE as rise, $TURNOV0 as turnover
         FROM day as d
         WHERE d.code = ${code} and d.date <= '${END}'
         ORDER by date DESC
-    ) as tbl HAVING 1 ${COND} ORDER by ${FIELD:-date} ASC LIMIT ${LIMIT:-80};
+    ) as tbl HAVING 1 ${COND} ORDER by ${FIELD:-date} DESC LIMIT ${LIMIT:-48};
 	" | mysql -t kts
 }
 
@@ -971,7 +973,7 @@ function fn_lohi()
             YIST=${chao}.prev
         elif [ "${1}" = bvri ]; then
             # 条件2是给反包股如<天银机电2015-12-29>
-              CONDb="((100*(avri-bvri)/bvri>${DOORb:-1.6})||(prop>1.38&&rise>3))"
+              CONDb="((100*(avri-bvri)/bvri>${DOORb:-1.1})||(prop>1.00&&rise>3))"
             # 放量不明显的个股
             # CONDb="((100*(avri-bvri)/bvri>${DOORb:-1.0})||(prop>1.06&&rise>2))"
             # 熔断缩量版本
@@ -1009,7 +1011,7 @@ function fn_lohi()
           SELECT * FROM (
             SELECT ${CID}${columns}, 
             round(100*(d.close-t.low)/t.low, 2)  as incr,
-         -- round(100*(GREATEST(t.high,d.close)-d.close)/GREATEST(t.high,d.close), 2) as decn,
+            round(100*(GREATEST(t.high,d.close)-d.close)/GREATEST(t.high,d.close), 2) as decn,
             round(100*(t.amount/t.volume-d.yesc)/d.yesc, 1) as bvri, 
             d.close,
             $OPRI as opri,
@@ -1632,7 +1634,7 @@ function fn_wolf()
         col_name=',w.name'
         fn_wolf_sqls
         mysql -t kts <<<"${sqls}"
-        fn_chao
+        fn_chao ${chao}.wolf
         ;;
     *)
         fn_echo_succ "\twolf date ${min_dt}~${max_dt}"

@@ -21,6 +21,7 @@ function fn_up_raw()
         -e "/${tag_blank}/d" -e '/^$/d' ${wolf_raw} > ${wolf_raw}.mid
 
     hhmm=`date +%H%M | sed 's/^0//'`;
+    #hhmm=1500
     if [ "${hhmm}" -lt 931 ]; then
     # 代码  名称  涨幅  涨速    DDE大单净量 换手 量比   金额    流通市值
         sed '/--.--/d' ${wolf_raw}.mid |\
