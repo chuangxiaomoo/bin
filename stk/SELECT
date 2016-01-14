@@ -1055,8 +1055,8 @@ function fn_lohi()
     fn_echo_succ "\
 	盘尾下注确定性(prop<1.6<scale<2 无出货嫌疑&步步为营)：
 	SCALE放大prop
-    DOOR=8 COND='avri>(rise/3)&&rise>0&&tov>3 && scale>1.23&&prop>1.23 && scale<4&&prop<3' SELECT lohi lsd
-    COND='(avri>bvri||(rise>3&&prop>1.38)) && tov>3 && scale>1.23&&prop>1.23 && scale<4&&prop<3' SELECT lohi bvri
+    DOOR=8 COND='avri>(rise/3)&&rise>0&&tov>2 && scale>1.23&&prop>1.23 && scale<4&&prop<3' SELECT lohi lsd
+    COND='(avri>bvri||(rise>3&&prop>1.38)) && tov>2 && scale>1.23&&prop>1.23 && scale<4&&prop<3' SELECT lohi bvri
     " 2>&1 | sed 's/^  *//'
         exit
         ;;
@@ -1420,31 +1420,36 @@ function fn_scale()
 function fn_wolf_sqls()
 {
     col_tet="ROUND(net/(1-top10_ajst_aR), 2) as Tet,"
-    FIELD=${FIELD:-Tet}
+    FIELD=${FIELD:-net}
     DOOR=${DOOR:-.6}
     yesc='(trade/(1+rise/100))'
     sqls="
         SELECT ${col_date} w.code, w.rise,
-        round( (100*(w.amount/shou-$yesc)/$yesc), 1) as avrg,
-        ROUND(tov/(1-top10_ajst_aR), 2) as vtov,
+        round( (100*(w.amount/shou-$yesc)/$yesc), 1) as avrg, tov,
+    --  ROUND(tov/(1-top10_ajst_aR), 2) as vtov,
         round(nmc*(pbuy+nbuy)/100, 2) as eWolf,
         (pbuy+nbuy) as buy,
         (psell+nsell) as sell,
         round(100*(pbuy+nbuy)/tov, 1) as bloo,
         round(100*(psell+nsell)/tov, 1) as sloo,
         net,
-        ${col_tet}
+    --  ${col_tet}
         round((pbuy/nbuy), 2) as Go,
         round((pbuy+nbuy)/(psell+nsell), 2) as bsp,
         round((w.shou/h.volume), 1) as prop, h.scale,
         round(w.amount/10000, 2) as eYi, 
-        ROUND(nmc*(1-top10_ajst_aR), 2) as nmcYi ${col_name}
-        FROM xdde as w, curr_lohi as h, top10 as t
-        ${WHERE} w.code=h.code && w.code=t.code && w.date<='${END}' ${iCOND} && net>${DOOR}     -- WHERE(net>0)加速3倍
+        ROUND(nmc, 2) as nmcYi 
+    --  ROUND(nmc*(1-top10_ajst_aR), 2) as nmcYi 
+        ${col_name}
+        FROM xdde as w, curr_lohi as h
+    --  , top10 as t
+        ${WHERE} w.code=h.code 
+    --  && w.code=t.code 
+        && w.date<='${END}' ${iCOND} && net>${DOOR}     -- WHERE(net>0)加速3倍
         HAVING 1 ${CAUSE} ${COND} ${ORDER:-ORDER by ${FIELD} ${ASC:-DESC}} LIMIT ${LIMIT:-36}
     "
     fn_echo_warn "wolf of ${date:-${END}}.${stime:-latest} [DOOR:${DOOR}] ${FIELD}"
-    #echo "${sqls}"; exit
+    # echo "${sqls}"; exit
 }
 
 function fn_asm_nDDE()
@@ -1558,7 +1563,8 @@ function fn_wolf()
             ORDER="ORDER by date DESC"
             iTBL=dde
         else
-            col_date="DATE_FORMAT(w.date,'%m-%d')as date,time,"
+            #col_date="DATE_FORMAT(w.date,'%m-%d')as date,time,"
+            col_date="w.date,time,"
             ORDER="ORDER by date DESC, time DESC"
         fi
 
