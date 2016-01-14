@@ -22,7 +22,7 @@ function fn_up_raw()
 
     hhmm=`date +%H%M | sed 's/^0//'`;
     #hhmm=1500
-    if [ "${hhmm}" -lt 931 ]; then
+    if [ "${hhmm}" -gt 630 ] && [ "${hhmm}" -lt 931 ]; then
     # 代码  名称  涨幅  涨速    DDE大单净量 换手 量比   金额    流通市值
         sed '/--.--/d' ${wolf_raw}.mid |\
         awk '{

@@ -1212,8 +1212,10 @@ function fn_dig()
 
     sed 's/[036][0-9][0-9][0-9][0-9][0-9]/\n&\n/g' ${chao}.dig | grep '^[036]' | \
         grep .codelist -f - | \
-        tee /winc/zxg/dig.txt
-    sed -i 's/$/\r/' /winc/zxg/dig.txt
+        tee ${chao}.dig.rip
+    sed -i 's/$/\r/' ${chao}.dig.rip
+    PLAIN=${chao}.dig.rip fn_gen_10jqka_sel
+    fn_echo_succ "succ to 自选股.sel"
     return $?
 }
 
