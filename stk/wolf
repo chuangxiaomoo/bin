@@ -217,11 +217,11 @@ function fn_main()
         ;;
     h|*)
         echo "
-        Usage:  wolf <param>...             (4/3):1 14.28   门槛
-        up      # DDE                       (3/2):1 20      登堂
-        bbd     # 操盘热点导入              (5/3):1 25      入室
-        layout  # 热点layout，观察概念叠加  (2/1):1 33      太极
-        zxg     # 打印自选股
+        Usage:  wolf <param>...               # 机构动向=100*(buy-sell)/(buy+sell)
+        up      # DDE                         # (4/3):1 14.28   门槛
+        bbd     # 操盘热点导入                # (3/2):1 20      登堂
+        layout  # 热点layout，观察概念叠加    # (5/3):1 25      入室
+        zxg     # 打印自选股                  # (2/1):1 33      太极
         "
         ;;
     esac
