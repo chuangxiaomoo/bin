@@ -1075,7 +1075,8 @@ CREATE PROCEDURE sp_6maishenjian(a_code INT(6) ZEROFILL) tag_6mai:BEGIN
 
     call sp_create_tempday();
     SELECT nmc/close FROM cap WHERE code=a_code LIMIT 1 INTO v_shares;
-    SET v_shares0 = v_shares * @NMC_RATIO;
+    SELECT  2*(1-top10_ajst_aR) FROM top10 WHERE code=a_code LIMIT 1 INTO @currencyX2;
+    SET v_shares0 = v_shares * @NMC_RATIO * @currencyX2;
 
     -- 可以通过 turnover = latest(volume/shares); 来计算相应日期数 @NUM
     SET @sqls=concat('

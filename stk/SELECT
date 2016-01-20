@@ -119,7 +119,7 @@ function fn_lsd()
                 $TURNOV as tov, ${nmcYi}, c.name
                 FROM ${TEMPDAY} as d, cap as c ${WHERE} d.code = c.code and d.date = '${END}' 
                 HAVING ${HAVING:-1} ${COND} ORDER BY ${FIELD} ${ASC:-desc} limit ${LIMIT:-36}
-        " 
+        "
         #echo "${sqls}"; exit
     }
 
@@ -487,13 +487,13 @@ function fn_6maishenjian()
         "
         tbl_super_dive="
         SELECT t.code, DATE_FORMAT(date1,'%m-%d') as start, 
-                       DATE_FORMAT(date2,'%m-%d') as end, ${columns}, c.nmc, chng, 
+                       DATE_FORMAT(date2,'%m-%d') as end, ${columns}, chng, 
                        round(100*(t.low  - avrg)/avrg,2) as lchng, 
                        round(100*(t.close- avrg)/avrg,2) as wchng, 
                        round(100*(d.close- avrg)/avrg,2) as avrg_up, 
                        round(100*(d.close-(t.close+t.low)/2)/avrg,2) as trough_up, 
                        round((avrg-d.close)/(d.close-(t.close+t.low)/2),2) as odds, 
-                       c.name 
+                       ${nmcYi}, c.name 
             FROM ${tablex:-tbl_6mai} as t, cap as c, tempday as d
             WHERE t.code = c.code and t.code = d.code HAVING 1 ${COND}
             ORDER by ${1:-wchng} ${ASC:-asc} limit ${LIMIT:-36}     # COND='nmc<250000 and lchng<-9.7 and off<21'
@@ -527,13 +527,13 @@ function fn_dugu9jian()
         SELECT t.code,  DATE_FORMAT(date1,'%m-%d') as start, 
                         DATE_FORMAT(date2,'%m-%d') as end, ${columns}, 
                         round(avrg*(1-${ORACLE:-10}/100),2) as oracle, 
-                        c.nmc, chng, 
+                        chng,
                         $RISE as rise, 
                         $PEAK as peak, 
                         $TROUGH as trough,
                         round(100*(t.low-avrg)/avrg,2) as lchng, 
                         round(100*(t.close-avrg)/avrg,2) as wchng, 
-                        c.name 
+                       ${nmcYi}, c.name 
            FROM ${tablex:-tbl_9jian} as t, cap as c, tempday as d
            WHERE t.code = c.code and t.code = d.code HAVING 1 ${COND}
            ORDER by ${1:-lchng} ${ASC:-asc} limit ${LIMIT:-36}      # COND='nmc<250000 and lchng<-9.7 and off<21' 
@@ -1762,8 +1762,9 @@ function fn_stat()
 {
     case $1 in
     m|mid)
-        fn_echo_warn "1160th换手率"
-        LIMIT=1160,2 END=${END} SELECT lsd tov
+        fn_echo_warn "1160th,879th换手率"
+        LIMIT=1160,1 END=${END} SELECT lsd tov
+        ASC=DESC LIMIT=879,1 END=${END} SELECT lsd tov
         fn_echo_blue "1160th成交额"
         LIMIT=1160,2 END=${END} SELECT lsd amount
         fn_echo_succ "897(2345*.382),1789(2345*.618*1.235)流通市值"
@@ -2369,11 +2370,39 @@ function fn_dive()
     return $?
 }
 
+function fn_ATR()
+{
+    if [ -n "${*}" ]; then
+        echo ${*} | xargs -n1 > /tmp/kts/chao.ATR.in
+        YIST='/tmp/kts/chao.ATR.in'
+    fi
+    fn_yist
+    NUM=${NUM:-20}
+    STA=`fn_get_date ${NUM} 1` #echo ${STA}
+    let half=${NUM}/2
+    sqls="
+    SELECT * FROM (
+        SELECT date,code, 
+            sum( 100*GREATEST(high-low, high-yesc, yesc-low)/yesc )/count(code) as ATR,
+            count(code) as num FROM
+        ( SELECT d.* FROM day as d $WHERE date>='${STA}' && date<='${END}' ORDER by date DESC ) as d2
+        GROUP by code HAVING max(date)='${END}' && num>${half}
+    ) as t 
+    ORDER by ATR DESC LIMIT ${LIMIT:-80}
+    "
+
+    mysql -t kts <<<"${sqls}"
+
+    fn_chao ${chao}.${chao2:-ATR}
+
+    return $?
+}
+
 function fn_main()
 {
     cmdlist=(
-    "dugu9jian          [sortfield]           # nine sword"
-    "6maishenjian       [sortfield]           # #{DATE2} to specify diff-day"
+    "dugu9jian          [sortfield]           # chng只是(close-open)/open"
+    "6maishenjian       [sortfield]           # chng只是(close-open)/open"
     "comma              [tbl_name:-day]       # 逗分列名"
     "list_date          num                   # num默认10"
     "wma                [sortfield:tov5]      # 均价+现成513.静态rat"
@@ -2415,6 +2444,7 @@ function fn_main()
     "blk                                      # 板块信息"
     "yysj                                     # 预约时间"
     "scale                                    # 成交量放大倍数"
+    "ATR                                      # 真实波动率"
     )
 
     # `ASC=任意值`时使用'DESC'，弃用

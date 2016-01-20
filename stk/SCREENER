@@ -72,7 +72,7 @@ function fn_6maishenjian()
     mysql $mo -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
 
-    test -n "${1}" && SELECT 6maishenjian
+    SELECT 6maishenjian ${1}
 }
 
 function fn_taox_ratio0()
@@ -770,18 +770,9 @@ function fn_lohi()
 
 function fn_main()
 {
-    # END 非空赋值不要移植到dbank 
-    CURR=`fn_maxdate`
-    END=${END:-${CURR}}
-    PREV=`fn_get_prev`
-    [ `date +%H%M%S` -gt 150000 ] && CLOSING=${END} || CLOSING=${PREV}
-
-    fn_isdate ${END}
-    xt_ret $? "invalid END[$2]" || return $?
-
     cmdlist=(
-    "dugu9jian          [print]               # NUM=61 .NMC end.close analyze"
-    "6maishenjian       [print]               # NUM=61 min(close) sort by #{COL}"
+    "dugu9jian          [print]               # wchng是成本均线"
+    "6maishenjian       [print]               # wchng是成本均线"
     "9jian              code [field]          # #{NUM}日，个股成本分析"
     "6jian              code [field]          # #{NUM}日，个股成本分析"
     "nouse              [field]               # "
@@ -806,6 +797,8 @@ function fn_main()
     head -n -5 $mps_org > $mps_god
 
     # 为提高效率，可能使用临时表，调试时备份可使用 call sp_cp_tbl('fr', 'to');
+    fn_set_END
+    [ `date +%H%M%S` -gt 150000 ] && CLOSING=${END} || CLOSING=${PREV}
     fn_execute "$@" || return $?
 }
 

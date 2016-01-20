@@ -1227,26 +1227,22 @@ function fn_market()
     w3m -cols 1000 -dump "${url0}date=${date}" > ${temp} 
     pages=`cat ${temp} | grep '下一页' | sed 's/下一页.*//g' | awk '{print $NF}'`
     # echo "${url0}date=${date}"
-    fn_echo_warn "market=${market}&date=${date}&pages=$pages"
+    NL=N fn_echo_warn "market=${market}&date=${date}&pages=$pages\t"
 
     local i
     for (( i=2; i<=${pages:-0}; i+=1 )); do
-        echo "market=${market}&date=${date}&page=$i ..."
+        echo -n " $i"
+        # echo "market=${market}&date=${date}&page=$i ..."
         url="${url0}date=${date}&page=$i"
         w3m -cols 1000 -dump "${url}" >> ${temp}
     done
+    echo
 
     return $?
 }
 
-function fn_notice()
+function fn_notice0()
 {
-    notice=${chao}.notice
-    ln -sfT /opt/notice ${chao}.notice
-
-    date=${END}
-    >${notice}/${date}
-
     local market=
     for market in sh_a sz_a zxb cyb sh_b sz_b; do
         temp=${chao}.notice.${market}
@@ -1256,6 +1252,26 @@ function fn_notice()
     done
 
     fn_echo_succ "@succ ${notice}/${date}"
+    
+    return $?
+}
+
+function fn_notice()
+{
+    notice=${chao}.notice
+    ln -sfT /opt/notice ${chao}.notice
+
+    start=`ls -r /opt/notice | head -1`
+    today=`date +'%F'`
+
+    local i
+    for (( i=0; i<${1:-1}; i+=1 )); do
+        date=`date --date="${start} ${i} days" +'%F'`
+        #echo ${date};continue
+        >${notice}/${date}
+        fn_notice0
+        [ "${date}" = "${today}" ] && break
+    done
 }
 
 function fn_main()
