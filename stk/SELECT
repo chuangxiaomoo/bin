@@ -1019,14 +1019,15 @@ function fn_lohi()
             round(100*(d.amount/d.volume-d.yesc)/d.yesc, 1) as avri,
             ${RISE} as rise,
          -- round((d.volume/t.mavol5), 2) as prop5, 
-            round((100*d.volume/c.shares), 2) as tov, 
+         -- round((100*d.volume/c.shares), 2) as tov, 
+            ROUND((100*d.volume/c.shares)/(1-top10_ajst_aR), 2) as vtov,
             round((${SCALE:-1}*d.volume/t.volume), 2) as prop, t.scale,
             round((d.amount/10000), 1) as eYi, 
          -- round((t.amount/10000), 1) as zYi,
             round((c.shares*d.close/10000), 1) as nmcYi, c.name
-            FROM ${hilo_curr} as t, 
+            FROM ${hilo_curr} as t, top10,
             ${TEMPDAY} as d, cap as c
-            ${WHERE} t.code = d.code and t.code=c.code 
+            ${WHERE} t.code = d.code and t.code=c.code && t.code=top10.code
             HAVING 1 ${COND} 
             ${notinBLK}
             ORDER by incr ${ASC:-DESC} ) as t
@@ -1055,8 +1056,8 @@ function fn_lohi()
     fn_echo_succ "\
 	盘尾下注确定性(prop<1.6<scale<2 无出货嫌疑&步步为营)：
 	SCALE放大prop
-    DOOR=8 COND='avri>(rise/3)&&rise>0&&tov>2 && scale>1.23&&prop>1.23 && scale<4&&prop<3' SELECT lohi lsd
-    COND='(avri>bvri||(rise>3&&prop>1.38)) && tov>2 && scale>1.23&&prop>1.23 && scale<4&&prop<3' SELECT lohi bvri
+    DOOR=8 COND='avri>(rise/3)&&rise>0&&vtov>2 && scale>1.23&&prop>1.23 && scale<4&&prop<3' SELECT lohi lsd
+    COND='vtov>4 && (avri>bvri||(rise>3&&prop>1.38)) && scale>1.23&&prop>1.23 && scale<4&&prop<3' SELECT lohi bvri
     " 2>&1 | sed 's/^  *//'
         exit
         ;;
@@ -2377,18 +2378,19 @@ function fn_ATR()
         YIST='/tmp/kts/chao.ATR.in'
     fi
     fn_yist
-    NUM=${NUM:-20}
+    NUM=${NUM:-40}
     STA=`fn_get_date ${NUM} 1` #echo ${STA}
-    let half=${NUM}/2
+    let half=${NUM}/4
     sqls="
     SELECT * FROM (
         SELECT date,code, 
-            sum( 100*GREATEST(high-low, high-yesc, yesc-low)/yesc )/count(code) as ATR,
+            ROUND( sum( 100*GREATEST(high-low, high-yesc, yesc-low)/yesc )/count(code), 2 ) as ATR,
             count(code) as num FROM
-        ( SELECT d.* FROM day as d $WHERE date>='${STA}' && date<='${END}' ORDER by date DESC ) as d2
+        ( SELECT d.* FROM day as d $WHERE date>='${STA}' && date<='${END}' && high!=low && close>yesc
+          ORDER by date DESC ) as d2
         GROUP by code HAVING max(date)='${END}' && num>${half}
     ) as t 
-    ORDER by ATR DESC LIMIT ${LIMIT:-80}
+    ORDER by ATR DESC LIMIT ${LIMIT:-200}
     "
 
     mysql -t kts <<<"${sqls}"
@@ -2444,7 +2446,7 @@ function fn_main()
     "blk                                      # 板块信息"
     "yysj                                     # 预约时间"
     "scale                                    # 成交量放大倍数"
-    "ATR                                      # 真实波动率"
+    "ATR                                      # AverageTrueRangeOf阳线非一字板"
     )
 
     # `ASC=任意值`时使用'DESC'，弃用
