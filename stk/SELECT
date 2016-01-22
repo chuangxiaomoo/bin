@@ -972,12 +972,12 @@ function fn_lohi()
             COND= YIST=  END=${PREV} PARTS=2 LIMIT=300 chao2=prev HAVING="rise>${DOOR:-9.93}" fn_lsd
             YIST=${chao}.prev
         elif [ "${1}" = bvri ]; then
-            # 条件2是给反包股如<天银机电2015-12-29>
-              CONDb="((100*(avri-bvri)/bvri>${DOORb:-1.1})||(prop>1.00&&rise>3))"
+            # 大放量.抄底反包股如<天银机电2015-12-29>
+              CONDb="((avri-bvri>${DOORb:-1.1})||(prop>1.00&&rise>3))"
             # 放量不明显的个股
-            # CONDb="((100*(avri-bvri)/bvri>${DOORb:-1.0})||(prop>1.06&&rise>2))"
+            # CONDb="((avri-bvri>${DOORb:-1.0})||(prop>1.06&&rise>2))"
             # 熔断缩量版本
-            # CONDb="((100*(avri-bvri)/bvri>${DOORb:-'-2'})||(prop>0.8&&rise>0))"
+            # CONDb="((avri-bvri>${DOORb:-2.0})||(prop>0.8&&rise>0))"
             END=${PREV} COND="${CONDb}" LIMIT=2000 PARTS=2 chao2=bvri SCALE= SELECT lohi i
             YIST=${chao}.bvri
         fi
@@ -1011,14 +1011,14 @@ function fn_lohi()
           SELECT * FROM (
             SELECT ${CID}${columns}, 
             round(100*(d.close-t.low)/t.low, 2)  as incr,
-            round(100*(GREATEST(t.high,d.close)-d.close)/GREATEST(t.high,d.close), 2) as decn,
+         -- round(100*(GREATEST(t.high,d.close)-d.close)/GREATEST(t.high,d.close), 2) as decn,
             round(100*(t.amount/t.volume-d.yesc)/d.yesc, 1) as bvri, 
             d.close,
             $OPRI as opri,
             round(100*(d.high-d.yesc)/d.yesc, 2) as hiri,
             round(100*(d.amount/d.volume-d.yesc)/d.yesc, 1) as avri,
             ${RISE} as rise,
-         -- round((d.volume/t.mavol5), 2) as prop5, 
+            round((d.volume/t.mavol5), 2) as prop5, 
          -- round((100*d.volume/c.shares), 2) as tov, 
             ROUND((100*d.volume/c.shares)/(1-top10_ajst_aR), 2) as vtov,
             round((${SCALE:-1}*d.volume/t.volume), 2) as prop, t.scale,
@@ -1050,15 +1050,20 @@ function fn_lohi()
         指标说明：
             --------------------------大盘不稳皆是浮动-------------------------
             incr: 总涨幅，大于22%抛压增大
+            hiri: high出现与大盘最高点应该同步，dif(avrg)不应该把量能掏空了
        avri/bvri: 今日/昨日 均价    均衡股<天喻信息>，十字星，尾部发力与黄线重合最佳(有主力护航)
       prop/scale: 今日/昨天 量比    强势股的概念及板块很重要，scale<2可以确保资金安全.
         "
     fn_echo_succ "\
-	盘尾下注确定性(prop<1.6<scale<2 无出货嫌疑&步步为营)：
-	SCALE放大prop
     DOOR=8 COND='avri>(rise/3)&&rise>0&&vtov>2 && scale>1.23&&prop>1.23 && scale<4&&prop<3' SELECT lohi lsd
-    COND='vtov>4 && (avri>bvri||(rise>3&&prop>1.38)) && scale>1.23&&prop>1.23 && scale<4&&prop<3' SELECT lohi bvri
-    " 2>&1 | sed 's/^  *//'
+    1. 逐级放量，avri逐步抬高
+    COND='vtov>4 && (avri>bvri||(rise>3&&avri+1>bvri)) && scale>1.23&&prop>1.23 && scale<4&&prop<3' SELECT lohi bvri
+    2. 1级放量小，avri逐步抬高
+    COND='vtov>4 && (avri>bvri||(rise>3&&avri+1>bvri)) && scale>1.00&&prop>1.23 && scale<4&&prop<3' SELECT lohi bvri
+    3. 大放量后微缩量
+    COND='vtov>4 && (avri>bvri&&prop<1)                && scale>2.00&&prop5>1.4 && scale<4&&prop<3' SELECT lohi bvri
+    4. 底分型
+    " 2>&1 # | sed 's/^  *//'
         exit
         ;;
     esac
@@ -2373,14 +2378,19 @@ function fn_dive()
 
 function fn_ATR()
 {
+    NUM=${NUM:-40}
+    STA=`fn_get_date ${NUM} 1` #echo ${STA}
+    let half=${NUM}/${PARTS:-4}
+
     if [ -n "${*}" ]; then
         echo ${*} | xargs -n1 > /tmp/kts/chao.ATR.in
         YIST='/tmp/kts/chao.ATR.in'
+    else
+        CONDbig="and max(date)='${END}'"    # 当天阳线
     fi
+
     fn_yist
-    NUM=${NUM:-40}
-    STA=`fn_get_date ${NUM} 1` #echo ${STA}
-    let half=${NUM}/4
+
     sqls="
     SELECT * FROM (
         SELECT date,code, 
@@ -2388,11 +2398,12 @@ function fn_ATR()
             count(code) as num FROM
         ( SELECT d.* FROM day as d $WHERE date>='${STA}' && date<='${END}' && high!=low && close>yesc
           ORDER by date DESC ) as d2
-        GROUP by code HAVING max(date)='${END}' && num>${half}
+        GROUP by code HAVING num>${half} ${CONDbig}
     ) as t 
     ORDER by ATR DESC LIMIT ${LIMIT:-200}
     "
 
+    #echo "${sqls}"; exit
     mysql -t kts <<<"${sqls}"
 
     fn_chao ${chao}.${chao2:-ATR}
