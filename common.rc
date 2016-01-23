@@ -57,7 +57,9 @@ function fn_echo_warn()
 {
     FG=33 BG=40
     TEXT="$@"
-    echo -ne "\E[${FG};${BG}m${TEXT}\n\E[0m" > /dev/stderr
+    NL=${NL:-"\n"}
+    NL=${NL/N/}
+    echo -ne "\E[${FG};${BG}m${TEXT}${NL}\E[0m" > /dev/stderr
     return 0
 }
 

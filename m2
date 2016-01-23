@@ -72,6 +72,7 @@ function fn_2014_national_day()         { cat annual_2014_national_day ;}
 function fn_2015_plan()                 { cat annual_2015_plan ;}
 function fn_2015_event()                { cat annual_2015_event ;}
 function fn_2015_report()               { cat annual_2015_report ;}
+function fn_2016_event()                { cat annual_2016_event ;}
     local opts=(
         plan_what                       # 基于`以终为始`的理念
         report_what
@@ -93,6 +94,7 @@ function fn_2015_report()               { cat annual_2015_report ;}
         2015_plan
         2015_event
         2015_report
+        2016_event
     )
     fn_print $@
 }
