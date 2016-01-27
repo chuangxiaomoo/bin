@@ -1,15 +1,16 @@
 # code  symbol    SB0:s.bm.b.sm 请把非SB排在第一行以实时更新macd(dif)
+# 使用Ma时即ma(F15)，默认使用ma(F5)
 
 # 沪深300 vs CYB
-3dcybz  HS.CYBZ   >
+# 3dcybz  HS.CYBZ   <
 
 # dif+macd>0
-399300  HS300     close<1
-/       HS300     m1<0
+399300  HS300     0
+-       HS300     m1<0
 -       HS300     macd<0&&close<ma10
 
 399006	创业板指  close<1
-/      	创业板指  m1<0
+/      	创业板指  close<Ma20
 -     	创业板指  close>fa15/.996
 -     	创业板指  abs((close-fa15)/fa15/.01)>.382
 

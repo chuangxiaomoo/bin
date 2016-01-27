@@ -671,8 +671,7 @@ function fn_hilo()
 
     echo "
     SET @END='$END';
-    SET @NUM=${NUM:-20};
-    SET @NMC_RATIO=${NMC_RATIO:-1};
+    SET @NUM=${NUM:-30};
     call sp_visit_tbl('${TBL:-zxg}', @fn_hilo);
     " | tee -a $mps_god
     mysql $mo -t kts <<< "source $mps_god"
