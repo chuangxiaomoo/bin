@@ -293,7 +293,7 @@ function fn_execute()
         ;;
     +([0-9]))
         [ $1 -ge ${#cmdlist[@]} ] && \
-        fn_execute --list && echo -e "\n  -- fn_execute $1 too big --\n" && return
+        fn_execute --list && fn_echo_fail "  -- fn_execute $1 too big --\n" && return
 
         cmd=${cmdlist[$1]/ */}
         fn_${cmd} "${@:2}"

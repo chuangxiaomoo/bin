@@ -855,8 +855,9 @@ function fn_hilo()
         tbl_super_dive="
         -- rat1:最低日lo量比 rat2:lo+(lo+1)日量比
         SELECT ${columns}, 
+        -- dive:当前跳水幅度 rebound:反弹幅度离(low+close)/2
         round(100*(d.close-t.high)/t.high, 2) as dive, 
-        round(100*(d.close-t.close)/t.close, 2) as rebound, c.nmc, c.name   -- t.close=(open+close)/2
+        round(100*(d.close-t.close)/t.close, 2) as rebound, c.nmc, c.name   -- t.close=(low+close)/2
         FROM tbl_hilo as t, tempday as d, cap as c
         WHERE t.code = d.code and t.code=c.code
         HAVING 1 ${COND}
@@ -970,7 +971,7 @@ function fn_lohi()
         iF5=$2
         if [ "${1}" = bvri ]; then
             # 大放量.抄底反包股如<天银机电2015-12-29>
-              CONDb="((avri-bvri>${DOORb:-1.1})||(prop>1.00&&rise>3))"
+              CONDb="((avri-bvri>${DOORb:-1.1})||(prop>1.00&&rise>2.35))"
             # 放量不明显的个股
             # CONDb="((avri-bvri>${DOORb:-1.0})||(prop>1.06&&rise>2))"
             # 熔断缩量版本
@@ -1015,9 +1016,9 @@ function fn_lohi()
             round(100*(d.high-d.yesc)/d.yesc, 2) as hiri,
             round(100*(d.amount/d.volume-d.yesc)/d.yesc, 1) as avri,
             ${RISE} as rise,
-            round((d.volume/t.mavol5), 2) as prop5, 
          -- round((100*d.volume/c.shares), 2) as tov, 
             ROUND((100*d.volume/c.shares)/(1-top10_ajst_aR), 2) as vtov,
+            round((d.volume/t.mavol5), 2) as prop5, 
             round((${SCALE:-1}*d.volume/t.volume), 2) as prop, t.scale,
             round((d.amount/10000), 1) as eYi, 
          -- round((t.amount/10000), 1) as zYi,
@@ -1055,10 +1056,12 @@ function fn_lohi()
     1. 逐级放量，avri逐步抬高
     COND='vtov>4 && (avri>bvri||(rise>3&&avri+1>bvri)) && scale>1.23&&prop>1.23 && scale<4&&prop<3' SELECT lohi bvri
     2. 1级放量小，avri逐步抬高
-    COND='vtov>4 && (avri>bvri||(rise>3&&avri+1>bvri)) && scale>1.00&&prop>1.23 && scale<4&&prop<3' SELECT lohi bvri
+    COND='vtov>4 && (avri>bvri||(rise>3&&avri+1>bvri)) && scale>1.00&&prop>1.10 && scale<4&&prop<3' SELECT lohi bvri
     3. 大放量后微缩量
     COND='vtov>4 && (avri>bvri&&prop<1)                && scale>2.00&&prop5>1.4 && scale<4&&prop<3' SELECT lohi bvri
-    4. 底分型
+    4. 底分型(最低日:缩量微涨)
+    iEND=2 CHAO=1 LIMIT=2000 chao2=prev  COND='vtov>2 && avri<bvri && rise>-1 && prop>.8&&prop<1.1' SELECT lohi i
+    YIST=${chao}.prev COND='prop>1.4 && rise>0' SELECT lohi i       # 超跌至前低+连续两日DDE为正(中毅达.飞乐音响.当日冲涨停板)
     " 2>&1 # | sed 's/^  *//'
         exit
         ;;
@@ -2407,6 +2410,37 @@ function fn_ATR()
     return $?
 }
 
+function fn_notice()
+{
+    helpmsg="
+  消息高开低走有惊喜: 2015-12-11.亿帆鑫富
+    "
+    cmdlist=(
+    "收购                       若关联定向增发，增发价可作为支撑"
+    "重大合同"
+    "[^重].合同"
+    "利润分配                   高送转预案"
+    "高送转"
+    "股东权益变动               举牌"
+    )
+    case $1 in
+    [036][0-9][0-9][0-9]*)
+        cd /opt/notice/ && grep --color "${1}" * ;;
+    +([0-9]))
+        [ $1 -ge ${#cmdlist[@]} ] && \
+        fn_execute --list && fn_echo_fail "  -- fn_execute $1 too big --\n" && return
+        cmd=${cmdlist[$1]/ */}
+        cd /opt/notice/ && grep --color "${cmd}" *
+        ;;
+    *|l|--list)
+        fn_execute
+        ;;
+    esac
+
+    
+    return $?
+}
+
 function fn_main()
 {
     cmdlist=(
@@ -2425,35 +2459,36 @@ function fn_main()
     # ----------------  ABOVE IS FIXED SEQUENCE --------------------
     "xrd                FIELD                 # #{OP:->}"
     "ace                sta num               # 10日内所有+10% amount nmc 统计"
-    "td_layout          code                  # 日内最高价时点分布.10:00am"
     "cap                code                  # 查询nmc&cap"
     "name               code                  # 名"
     "pma                code                  # NUM=5日平均"
     "fbi                                      # tbl_fbi"
-    "acc                                      # tbl_adiff"
-    "acf                                      # tbl_acfdiff"
-    "tao5                                     # "
-    "rdiff                                    # tbl_rdiff"
+    #td_layout          code                  # 日内最高价时点分布.10:00am"
+    #acc                                      # tbl_adiff"
+    #acf                                      # tbl_acfdiff"
+    #tao5                                     # "
+    #rdiff                                    # tbl_rdiff"
+    #tri                                      # 3连阳"
+    #dive                                     # 跳水第2日买进"
+    #ban                condi [time]          # 条件. 0945后使用"
+    #sban               condi [time]          # super ban"
     "vol                {0|3|6|03}            # ^^3市成交^^"
     "ls                 {code|symbol}         # 日线数据 \$LIMIT"
     "lsd                [{top|floor}][FIELD]  # --- END YIST LIMIT 涨幅排名"
     "updown                                   # 近期{NUM=5}涨跌家数统计"
-    "dive                                     # 跳水第2日买进"
-    "hilo               FIELD                 # FIELD to sort by"
-    "lohi               FIELD                 # FIELD to sort by"
+    "hilo               FIELD                 # 跌幅统计"
+    "lohi               FIELD                 # 涨幅统计"
     "g20                                      # 创20日新高"
-    "ban                condi [time]          # 条件. 0945后使用"
-    "sban               condi [time]          # super ban"
     "lhb                excption              # 龙虎榜"
     "wolf                                     # DDE"
     "dde                                      # DDE"
     "macd               [clean]               # macd-alarm-sys"
     "fmacd                                    # 单个代码的macd"
-    "tri                                      # 3连阳"
     "blk                                      # 板块信息"
     "yysj                                     # 预约时间"
     "scale                                    # 成交量放大倍数"
     "ATR                                      # AverageTrueRangeOf阳线非一字板"
+    "notice                                   # 公告"
     )
 
     # `ASC=任意值`时使用'DESC'，弃用

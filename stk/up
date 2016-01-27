@@ -712,7 +712,7 @@ function fn_dorat()
     hhmm=`date +%H%M | sed 's/^0//'`;
     
     [ "${hhmm}" = 930 ] && sleep 30
-    let got30=hhmm%100%30
+    let got30=hhmm%100%30   # 半小时响铃一次
 
     if [ "${got30}" -le 1 ] || [ $hhmm = 935 ] || [ $hhmm = 940 ] || [ $hhmm = 950 ]; then
         fn_bell "online.wav"
@@ -1262,15 +1262,20 @@ function fn_notice()
     ln -sfT /opt/notice ${chao}.notice
 
     start=`ls -r /opt/notice | head -1`
-    today=`date +'%F'`
+
+    hhmm=`date +%H%M | sed 's/^0//'`;
+    [ "${hhmm}" -gt 1530 ] && news=1 || news=0
+    newest=`date --date="${news} days" +'%F'`
+
+    NUM=${NUM:-${1:-2}}
 
     local i
-    for (( i=0; i<${1:-1}; i+=1 )); do
+    for (( i=0; i<${NUM}; i+=1 )); do
         date=`date --date="${start} ${i} days" +'%F'`
         #echo ${date};continue
         >${notice}/${date}
         fn_notice0
-        [ "${date}" = "${today}" ] && break
+        [ "${date}" = "${newest}" ] && break
     done
 }
 
@@ -1307,8 +1312,8 @@ function fn_main()
     "money                              # ---------资金分析---------"
     "power                              # 权重分析"
     "merge  file...                     # 合并多个文件到chao.merge"
-    "dig                                #  从<chao.dig>输入，并输出到<dig.txt>"
-    "notice                             #  更新公告 /opt/notice/"
+    "dig                                # 从<chao.dig>输入，并输出到<dig.txt>"
+    "notice NUM                         # 至多NUM天，更新公告 /opt/notice/"
     )
 
     # 存储过程函数文件的最后5行都是注释
