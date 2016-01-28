@@ -970,10 +970,8 @@ function fn_lohi()
     i|bvri)
         iF5=$2
         if [ "${1}" = bvri ]; then
-            # 大放量.抄底反包股如<天银机电2015-12-29>
-              CONDb="((avri-bvri>${DOORb:-1.1})||(prop>1.00&&rise>2.35))"
-            # 放量不明显的个股
-            # CONDb="((avri-bvri>${DOORb:-1.0})||(prop>1.06&&rise>2))"
+            # 大放量.抄底反包股如<天银机电2015-12-29> 
+              CONDb="((avri-bvri>${DOORb:-1.1})||(prop>1.00&&rise>${YRISE:-1.23}))"
             # 熔断缩量版本
             # CONDb="((avri-bvri>${DOORb:-2.0})||(prop>0.8&&rise>0))"
             END=${PREV} COND="${CONDb}" LIMIT=2000 PARTS=2 chao2=bvri SCALE= SELECT lohi i
@@ -1029,7 +1027,7 @@ function fn_lohi()
             HAVING 1 ${COND} 
             ${notinBLK}
             ORDER by incr ${ASC:-DESC} ) as t
-          HAVING ${HAVING:-1} ORDER by ${FIELD:-prop} ${ASC:-DESC} LIMIT ${LIMIT:-80}
+          HAVING ${HAVING:-1} ORDER by ${FIELD:=prop} ${ASC:-DESC} LIMIT ${LIMIT:-80}
           "
           [ ${DEBUG:-0} -eq 1 ] && echo "${tempday}${tbl_super_dive}"
         }
@@ -1050,17 +1048,18 @@ function fn_lohi()
             incr: 总涨幅，大于22%抛压增大
             hiri: high出现与大盘最高点应该同步，dif(avrg)不应该把量能掏空了
        avri/bvri: 今日/昨日 均价    均衡股<天喻信息>，十字星，尾部发力与黄线重合最佳(有主力护航)
+           YRISE: 昨日的涨幅门限<1.23>，大跌时降低，大涨时调高
       prop/scale: 今日/昨天 量比    强势股的概念及板块很重要，scale<2可以确保资金安全.
         "
     fn_echo_succ "\
     1. 逐级放量，avri逐步抬高
-    COND='vtov>4 && (avri>bvri||(rise>3&&avri+1>bvri)) && scale>1.23&&prop>1.23 && scale<4&&prop<3' SELECT lohi bvri
+    COND='vtov>.5 && (avri>bvri||(rise>3&&avri+1>bvri)) && scale>1.23&&prop>1.23 && scale<4&&prop<3' SELECT lohi bvri
     2. 1级放量小，avri逐步抬高
-    COND='vtov>4 && (avri>bvri||(rise>3&&avri+1>bvri)) && scale>1.00&&prop>1.10 && scale<4&&prop<3' SELECT lohi bvri
+    COND='vtov>.5 && (avri>bvri||(rise>3&&avri+1>bvri)) && scale>1.06&&prop>1.00 && scale<4&&prop<3' SELECT lohi bvri
     3. 大放量后微缩量
-    COND='vtov>4 && (avri>bvri&&prop<1)                && scale>2.00&&prop5>1.4 && scale<4&&prop<3' SELECT lohi bvri
+    COND='vtov>.5 && (avri>bvri&&prop<=1.1)             && scale>2.00&&prop5>1.3 && scale<5&&prop<4' SELECT lohi bvri
     4. 底分型(最低日:缩量微涨)
-    iEND=2 CHAO=1 LIMIT=2000 chao2=prev  COND='vtov>2 && avri<bvri && rise>-1 && prop>.8&&prop<1.1' SELECT lohi i
+    iEND=2 CHAO=1 LIMIT=2000 chao2=prev  COND='vtov>.5  && avri<bvri && rise>-1 && prop>.8&&prop<1.1' SELECT lohi i
     YIST=${chao}.prev COND='prop>1.4 && rise>0' SELECT lohi i       # 超跌至前低+连续两日DDE为正(中毅达.飞乐音响.当日冲涨停板)
     " 2>&1 # | sed 's/^  *//'
         exit
@@ -1078,7 +1077,7 @@ function fn_lohi()
        PREFIX=${tempday} sqls=${tbl_super_dive} fn_chao ${chao}.${chao2:-lohi}          ;; # 响应CHAO
     esac
 
-    fn_echo_warn "END=$END time=${HMS} index=${iF5}"
+    fn_echo_warn "END=$END time=${HMS} index=${iF5} FIELD=${FIELD}"
 }
 
 function fn_ban()

@@ -105,8 +105,12 @@ fenbi_raw='/dev/shm/fenbi/raw'
 fenbi_raw1='/dev/shm/fenbi/raw1'
 fenbi_ripe='/dev/shm/fenbi/ripe'
 
+yjkb_raw='/dev/shm/yjkb_raw'
+yjkb_rip='/dev/shm/yjkb_rip'
+
 yjbb_raw='/dev/shm/yjbb_raw'
 yjbb_rip='/dev/shm/yjbb_rip'
+
 yjyg_raw='/dev/shm/yjyg_raw'
 yjyg_rip='/dev/shm/yjyg_rip'
 
