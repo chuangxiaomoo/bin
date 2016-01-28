@@ -148,7 +148,7 @@ function fn_loop()
     while :; do
        #fn_isresting && { sleep 150; continue; }
         fn_routine
-        # fn_dif_300_6
+        fn_dif_300_6
         echo "to sleeping ${STEP:=60}s"         # F5x3有效突破，即3线之内，低点抬高，高点亦抬高
         sleep ${STEP}                           #               若是大阳线，则不破1/2长度
     done
@@ -215,6 +215,7 @@ function fn_get_yesc()
 
 function fn_dif_300_6()
 {
+    [ "${OPER}" = 0 ] && return
     sqls="
     SELECT trade FROM fenbi WHERE code=399300 ORDER by datetime DESC LIMIT 1 INTO @c300;
     SELECT trade FROM fenbi WHERE code=399006 ORDER by datetime DESC LIMIT 1 INTO @c006;
