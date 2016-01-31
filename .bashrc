@@ -21,6 +21,7 @@ alias    HAVING=''
 #lias      FINA=''      # S_I_N_A conflict with Svn
 alias      PREV=''
 alias      YIST=''
+alias     YRISE=''
 alias      STEP=''
 alias     SCALE=''      # 通放大倍数 
 alias       ZXG=''      # ZIZE 用 NUM STEP 替换

@@ -971,7 +971,7 @@ function fn_lohi()
         iF5=$2
         if [ "${1}" = bvri ]; then
             # 大放量.抄底反包股如<天银机电2015-12-29> 
-              CONDb="((avri-bvri>${DOORb:-1.1})||(prop>1.00&&rise>${YRISE:-1.23}))"
+              CONDb="((avri-bvri>${DOORb:-1.1})||(prop>.938&&rise>${YRISE:-1.23}))"
             # 熔断缩量版本
             # CONDb="((avri-bvri>${DOORb:-2.0})||(prop>0.8&&rise>0))"
             END=${PREV} COND="${CONDb}" LIMIT=2000 PARTS=2 chao2=bvri SCALE= SELECT lohi i
@@ -1431,7 +1431,7 @@ function fn_wolf_sqls()
         SELECT ${col_date} w.code, w.rise,
         round( (100*(w.amount/shou-$yesc)/$yesc), 1) as avrg, tov,
     --  ROUND(tov/(1-top10_ajst_aR), 2) as vtov,
-        round(nmc*(pbuy+nbuy)/100, 2) as eWolf,
+        round(100*nmc*(pbuy+nbuy)/w.amount, 2) as eWolf,
         (pbuy+nbuy) as buy,
         (psell+nsell) as sell,
         round(100*(pbuy+nbuy)/tov, 1) as bloo,
@@ -1541,7 +1541,7 @@ function fn_wolf()
     max_dt=`mysql -N kts <<< "${sql_maxdate}"`
     sql_mindate="SELECT min(date) FROM dde"
     min_dt=`mysql -N kts <<< "${sql_mindate}"`
-    [ "${max_dt}" != ${CURR} ] && { fn_echo_fail "dde is lagged"; return 1; }
+    [ "${max_dt}" != ${CURR} ] && { fn_echo_fail "${max_dt} != ${CURR}, dde is lagged"; return 1; }
     sql_maxend="SELECT max(end) FROM mat_lohi"
     max_end=`mysql -N kts <<< "${sql_maxend}"`
     fn_issqltrue "'${max_end}' >= '${PREV}'"
@@ -2421,6 +2421,7 @@ function fn_notice()
     "利润分配                   高送转预案"
     "高送转"
     "股东权益变动               举牌"
+    "回购.*股份"
     )
     case $1 in
     [036][0-9][0-9][0-9]*)
