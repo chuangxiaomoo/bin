@@ -2409,6 +2409,51 @@ function fn_ATR()
     return $?
 }
 
+function fn_wee()
+{
+    NUM=${NUM:-3}
+    end1=${END}
+    sta1=`fn_get_date ${NUM} 1`
+    end2=`END=${sta1} fn_get_date 2 1`
+    sta2=`END=${end2} fn_get_date ${NUM} 1`
+    end3=`END=${sta2} fn_get_date 2 1`
+    sta3=`END=${end3} fn_get_date ${NUM} 1`
+
+    #echo $end1 $sta1 $end2 $sta2 $end3 $sta3; exit
+
+    fn_tbl() {
+    echo "
+    ( SELECT date,code, ROUND( sum(volume)/count(code), 2 ) as mavol 
+        FROM
+        ( SELECT d.* FROM day as d $WHERE date>='${1}' && date<='${2}'
+          ORDER by date DESC 
+        ) as d2 GROUP by code
+    )"
+    }
+
+    fn_yist
+    t1="`fn_tbl ${sta1} ${end1}`"
+    t2="`fn_tbl ${sta2} ${end2}`"
+    t3="`fn_tbl ${sta3} ${end3}`"
+
+    sqls="
+    SELECT t1.code, 
+        ROUND(t2.mavol/t3.mavol,2) as w1,
+        ROUND(t1.mavol/t2.mavol,2) as w2 FROM
+        ${t1} as t1,
+        ${t2} as t2,
+        ${t3} as t3 
+        WHERE t1.code=t2.code && t1.code=t3.code 
+        HAVING 1 ${COND}
+        LIMIT ${LIMIT:-200}
+    "
+
+    #echo "${sqls}"; exit
+    mysql -t kts <<<"${sqls}"
+    fn_chao ${chao}.${chao2:-wee}
+    return $?
+}
+
 function fn_notice()
 {
     helpmsg="
@@ -2478,6 +2523,7 @@ function fn_main()
     "updown                                   # 近期{NUM=5}涨跌家数统计"
     "hilo               FIELD                 # 跌幅统计"
     "lohi               FIELD                 # 涨幅统计"
+    "wee                                      # 战略战术共振"
     "g20                                      # 创20日新高"
     "lhb                excption              # 龙虎榜"
     "wolf                                     # DDE"
