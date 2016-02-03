@@ -37,15 +37,15 @@ OPRI='TRUNCATE(100*(d.open-d.yesc)/d.yesc, 2)'
 RISE='TRUNCATE(100*(d.close-d.yesc)/d.yesc, 2)'
 PEAK='TRUNCATE(100*(d.high-d.close)/yesc, 2)'
 APPLE='ROUND(100*(x.close-x.yesc)/x.yesc, 1)'
-nmcYi='round(nmc/10000, 1) as nmcYi'
+nmcYi='ROUND(nmc/10000, 1) as nmcYi'
 # ${nmcYi0%as*} 去as
-nmcYi0='round(nmc*d.close/c.close/10000, 1) as nmcYi'
-TROUGH='TRUNCATE(100*(d.close-d.low)/yesc, 2)'
-TURNOV='TRUNCATE(100*d.volume*c.close/c.nmc, 2)'
-TURNOV0='TRUNCATE(100*d.volume/@shares0, 2)'
-sql_avrg="round( (100*(d.amount/d.volume-d.yesc)/d.yesc), 1) as avrg,"
-sql_tov="round(100*d.volume/(c.nmc/c.close),2) as tov,"
-sql_eTranz="round(d.amount/10000, 1) as eTranz,"
+nmcYi0='ROUND(nmc*d.close/c.close/10000, 1) as nmcYi'
+TROUGH='ROUND(100*(d.close-d.low)/yesc, 2)'
+TURNOV='ROUND(100*d.volume*c.close/c.nmc, 2)'
+TURNOV0='ROUND(100*d.volume/@shares0, 2)'
+sql_avrg="ROUND( (100*(d.amount/d.volume-d.yesc)/d.yesc), 1) as avrg,"
+sql_tov="ROUND(100*d.volume/(c.nmc/c.close),2) as tov,"
+sql_eTranz="ROUND(d.amount/10000, 1) as eTranz,"
 
 url_sh000001='http://hq.sinajs.cn/list=sh000001'
 
@@ -175,7 +175,7 @@ function fn_isresting()
 function fn_txttbl()
 {
     if [ -n "${NMC_RATIO}" ]; then
-        iNUM=`mysql -N <<< "SELECT round(${NUM:-100}*${NMC_RATIO})"`
+        iNUM=`mysql -N <<< "SELECT ROUND(${NUM:-100}*${NMC_RATIO})"`
         NUM=${NUM:-$iNUM}
     fi
     if [ -f "${YIST}" ]; then
@@ -680,13 +680,13 @@ function fn_4yist()
 function fn_sqls()
 {
     sqls_curr="
-    SELECT round(sum(nmc)/(10000*10000),2), 
-           round(sum(cap)/(10000*10000),2) FROM $TBL WHERE 1  ${inLIST}  INTO @nmc_Wanyi, @cap_Wanyi;
-    SELECT round(sum(nmc)/(10000*10000),2) FROM $TBL WHERE code>400000 ${inLIST} INTO @nmc_sh;
+    SELECT ROUND(sum(nmc)/(10000*10000),2), 
+           ROUND(sum(cap)/(10000*10000),2) FROM $TBL WHERE 1  ${inLIST}  INTO @nmc_Wanyi, @cap_Wanyi;
+    SELECT ROUND(sum(nmc)/(10000*10000),2) FROM $TBL WHERE code>400000 ${inLIST} INTO @nmc_sh;
     SELECT count(code)                     FROM $TBL WHERE code>400000 ${inLIST} INTO @N_sh;
-    SELECT round(sum(nmc)/(10000*10000),2) FROM $TBL WHERE code<100000 ${inLIST} INTO @nmc_sz;
+    SELECT ROUND(sum(nmc)/(10000*10000),2) FROM $TBL WHERE code<100000 ${inLIST} INTO @nmc_sz;
     SELECT count(code)                     FROM $TBL WHERE code<100000 ${inLIST} INTO @N_sz;
-    SELECT round(sum(nmc)/(10000*10000),2) FROM $TBL WHERE code>100000 and code<400000 ${inLIST} INTO @nmc_cyb;
+    SELECT ROUND(sum(nmc)/(10000*10000),2) FROM $TBL WHERE code>100000 and code<400000 ${inLIST} INTO @nmc_cyb;
     SELECT count(code)                     FROM $TBL WHERE code>100000 and code<400000 ${inLIST} INTO @N_cyb;
     SELECT max(date), @cap_Wanyi, @nmc_Wanyi, @nmc_sh,@N_sh, @nmc_sz,@N_sz, @nmc_cyb,@N_cyb FROM cap;
     "

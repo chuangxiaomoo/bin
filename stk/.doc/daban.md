@@ -2,6 +2,7 @@
 .doc/wolf.md  招式及案例
 
 [乱世出妖股](http://xueqiu.com/4840925316/54491534)
+[为什么我买不到龙头股？](http://mp.weixin.qq.com/s?__biz=MzA4MTQyMzc2NA==&mid=403215731&idx=3&sn=69accf4cdab4ef74514c4cc08a3285fc)
 
 # 无限接近主流资金(造势、助势、顺势)
 

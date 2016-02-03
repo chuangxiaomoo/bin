@@ -924,7 +924,7 @@ function fn_inout()
         ${RISE} as rise,
         round((d.volume/t.mavol5), 2) as tov, t.scale,
         round((d.amount/10000), 1) as eYi,
-        round((c.shares*d.close/10000), 1) as nmcYi, c.name
+        ${nmcYi0}, c.name
         FROM ${hilo_curr} as t, d_temp as d, cap as c
         WHERE t.code=d.code and t.code=c.code
         HAVING 1
@@ -954,7 +954,7 @@ function fn_lohi()
     hilo_temp="( SELECT * FROM mat_lohi WHERE end='${END}' and num=${iNUM} )"
     hilo_curr="( SELECT * FROM mat_lohi WHERE end='${iCURR}' and num=${iNUM} )"
     hilo_prev="( SELECT * FROM mat_lohi WHERE end='${iPREV}' and num=${iNUM} )"
-       d_temp="SELECT * from day where date='${END}'"     # 最新day数据，可以是开市数据
+       d_temp="SELECT * from day where date='${END}'"       # 最新day数据，可以是开市数据
        d_curr="SELECT * from day where date='${iCURR}'"     # 次新day数据，必是必市后数据
 
     case $1 in
@@ -1014,13 +1014,13 @@ function fn_lohi()
             round(100*(d.high-d.yesc)/d.yesc, 2) as hiri,
             round(100*(d.amount/d.volume-d.yesc)/d.yesc, 1) as avri,
             ${RISE} as rise,
-         -- round((100*d.volume/c.shares), 2) as tov, 
-            ROUND((100*d.volume/c.shares)/(1-top10_ajst_aR), 2) as vtov,
+         -- ${TURNOV} as tov, 
+            ROUND((100*d.volume*c.close/c.nmc)/(1-top10_ajst_aR), 2) as vtov,
             round((d.volume/t.mavol5), 2) as prop5, 
             round((${SCALE:-1}*d.volume/t.volume), 2) as prop, t.scale,
             round((d.amount/10000), 1) as eYi, 
          -- round((t.amount/10000), 1) as zYi,
-            round((c.shares*d.close/10000), 1) as nmcYi, c.name
+            ${nmcYi0}, c.name
             FROM ${hilo_curr} as t, top10,
             ${TEMPDAY} as d, cap as c
             ${WHERE} t.code = d.code and t.code=c.code && t.code=top10.code
@@ -1061,6 +1061,8 @@ function fn_lohi()
     4. 底分型(最低日:缩量微涨)
     iEND=2 CHAO=1 LIMIT=2000 chao2=prev  COND='vtov>.5  && avri<bvri && rise>-1 && prop>.8&&prop<1.1' SELECT lohi i
     YIST=${chao}.prev COND='prop>1.4 && rise>0' SELECT lohi i       # 超跌至前低+连续两日DDE为正(中毅达.飞乐音响.当日冲涨停板)
+    5. WEEK级别
+    COND='w1>1.1&&w2>1' NUM=3 SELECT wee; COND='w1>1.1&&w2>1' NUM=4 SELECT wee
     " 2>&1 # | sed 's/^  *//'
         exit
         ;;
@@ -1425,30 +1427,28 @@ function fn_wolf_sqls()
 {
     col_tet="ROUND(net/(1-top10_ajst_aR), 2) as Tet,"
     FIELD=${FIELD:-net}
-    DOOR=${DOOR:-.6}
+    DOOR=${DOOR:--1}
     yesc='(trade/(1+rise/100))'
     sqls="
         SELECT ${col_date} w.code, w.rise,
-        round( (100*(w.amount/shou-$yesc)/$yesc), 1) as avrg, tov,
-    --  ROUND(tov/(1-top10_ajst_aR), 2) as vtov,
-        round(100*nmc*(pbuy+nbuy)/w.amount, 2) as eWolf,
-        (pbuy+nbuy) as buy,
-        (psell+nsell) as sell,
-        round(100*(pbuy+nbuy)/tov, 1) as bloo,
-        round(100*(psell+nsell)/tov, 1) as sloo,
+        ROUND( (100*(w.amount/shou-$yesc)/$yesc), 1) as avrg, tov,
+        ROUND(100*nmc*(pbuy+nbuy)/w.amount, 2) as eWolf,
+        pbuy,nbuy, psell,nsell,
+    --  (pbuy+nbuy) as buy,
+    --  (psell+nsell) as sell,
+    --  round(100*(pbuy+nbuy)/tov, 1) as bloo,
+    --  round(100*(psell+nsell)/tov, 1) as sloo,
         net,
     --  ${col_tet}
         round((pbuy/nbuy), 2) as Go,
+        round((nsell/psell), 2) as nGo,
         round((pbuy+nbuy)/(psell+nsell), 2) as bsp,
         round((w.shou/h.volume), 1) as prop, h.scale,
         round(w.amount/10000, 2) as eYi, 
         ROUND(nmc, 2) as nmcYi 
-    --  ROUND(nmc*(1-top10_ajst_aR), 2) as nmcYi 
         ${col_name}
         FROM xdde as w, curr_lohi as h
-    --  , top10 as t
         ${WHERE} w.code=h.code 
-    --  && w.code=t.code 
         && w.date<='${END}' ${iCOND} && net>${DOOR}     -- WHERE(net>0)加速3倍
         HAVING 1 ${CAUSE} ${COND} ${ORDER:-ORDER by ${FIELD} ${ASC:-DESC}} LIMIT ${LIMIT:-36}
     "
@@ -1558,11 +1558,11 @@ function fn_wolf()
             fn_BBD_wolf $i
         done
         ;;
-    c|cd|code)
+    c|cf|code)
         fn_iscode $2
         xt_ret $? "code:${2}" || return $?
 
-        if [ "${1}" = cd ]; then
+        if [ "${1}" = c ]; then
             col_date="w.date,"
             ORDER="ORDER by date DESC"
             iTBL=dde
@@ -1616,24 +1616,15 @@ function fn_wolf()
         ;;
     s|st|select)
         ABBR=w fn_yist
-        sta=${2:-1}
-        fn_isdigit ${sta}
-        if [ "${?}" -eq 0 ]; then
-            FIELD=$3
-        else
-            FIELD=$2; sta=1; 
-        fi
-
         if [ "$1" = st ]; then
-            [ "${2}" = l ] && fn_list_times
+            fn_isdigit ${sta:=$2} || fn_list_times
             let sta--
             stime=`mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC LIMIT ${sta},1"`
             xCOND="time='${stime}'" xCol=date fn_xCol mat_dde xdde ${END}
             xt_ret $? "" || return $?
         else
-            date=`fn_get_date ${sta}`
-            stime=`mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${date}' ORDER by time DESC LIMIT 1"`
-            xCol=date fn_xCol dde xdde ${date}
+            stime=`mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC LIMIT 1"`
+            xCol=date fn_xCol dde xdde ${END}
             xt_ret $? "" || return $?
         fi
 
@@ -1655,8 +1646,8 @@ function fn_wolf()
         b|BBD           沪深BBD统计
         s       idx     SELECT
         st      idx|l   SELECT time or list-times
-        c       code    按15分钟统计
-        cd      code    按日统计\
+        cf      code    按15分钟统计
+        c       code    按日统计\
         "
         fn_echo_warn "\
         CAUSE:
@@ -1667,6 +1658,8 @@ function fn_wolf()
         c8  非涨停  rise<9.93
         c9  涨停    rise>9.93"
         fn_echo_succ "
+        熵减表征eWolf=buy/tov
+        COND='eWolf>.5&&Go>1 && nmcYi<100' iEND=2 SELECT wolf s
         涨停潜力股
         DOOR=-.6 LIMIT=300 COND='rise>2&&rise<9.93' SELECT wolf s rise
         " 2>&1 | sed 's/^  *//g'
@@ -2437,20 +2430,23 @@ function fn_wee()
     t3="`fn_tbl ${sta3} ${end3}`"
 
     sqls="
-    SELECT t1.code, 
+    SELECT t1.code,
         ROUND(t2.mavol/t3.mavol,2) as w1,
-        ROUND(t1.mavol/t2.mavol,2) as w2 FROM
+        ROUND(t1.mavol/t2.mavol,2) as w2,
+        ROUND(100*t1.mavol*c.close/c.nmc,2) as tov FROM
         ${t1} as t1,
         ${t2} as t2,
-        ${t3} as t3 
-        WHERE t1.code=t2.code && t1.code=t3.code 
+        ${t3} as t3,
+        cap   as c
+        WHERE t1.code=c.code && t1.code=t2.code && t1.code=t3.code && t2.mavol>t3.mavol
         HAVING 1 ${COND}
+        ORDER by ${FIELD:-tov} DESC
         LIMIT ${LIMIT:-200}
     "
 
     #echo "${sqls}"; exit
     mysql -t kts <<<"${sqls}"
-    fn_chao ${chao}.${chao2:-wee}
+    fn_chao ${chao}.${chao2:-eek}${NUM}
     return $?
 }
 
@@ -2466,7 +2462,8 @@ function fn_notice()
     "利润分配                   高送转预案"
     "高送转"
     "股东权益变动               举牌"
-    "回购.*股份"
+    "回购.*股份                 国内回购只能注销，是真自救"
+    "挂牌转让"
     )
     case $1 in
     [036][0-9][0-9][0-9]*)
