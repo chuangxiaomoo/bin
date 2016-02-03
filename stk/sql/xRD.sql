@@ -637,6 +637,8 @@ CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
         date        date NOT NULL,
         chng        DECIMAL(6,2) NOT NULL DEFAULT 0,
         avrg        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        high        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        low         DECIMAL(6,2) NOT NULL DEFAULT 0,
         hit         DECIMAL(6,2) NOT NULL DEFAULT 0
     );
 
@@ -665,10 +667,6 @@ CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
         dec8d        INT(6) NOT NULL DEFAULT 0
     );
 
---  INSERT INTO tbl_change(code,date,chng,hit) SELECT 
---         code,date,100*(close-yesc)/yesc, 100*(high-yesc)/yesc FROM day 
---          WHERE date>=@START and date<=@END; # and code>300000 and code<400000;
-
     SET v_start=@START;
 
     -- @START 这天没有进入统计
@@ -677,17 +675,17 @@ CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
         -- SELECT v_start;
 
         TRUNCATE TABLE tbl_change;
-        INSERT INTO tbl_change(code,date,chng,avrg,hit) SELECT 
-               code,date,100*(close-yesc)/yesc, 100*(amount/volume-yesc)/yesc,100*(high-yesc)/yesc FROM day 
+        INSERT INTO tbl_change(code,date,chng,avrg,high,low,hit) SELECT 
+               code,date,100*(close-yesc)/yesc, 100*(amount/volume-yesc)/yesc,high,low,100*(high-yesc)/yesc FROM day 
                 WHERE date=v_start; # and code>300000 and code<400000;
 
         SELECT count(code) FROM tbl_change WHERE date=v_start                          INTO @cnt;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng>0               INTO v_inc;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng=0               INTO v_eq0;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<0               INTO v_dec0;
-        SELECT count(code) FROM tbl_change WHERE date=v_start and chng>9.93&&avrg<9.94 INTO v_inc10;
-        SELECT count(code) FROM tbl_change WHERE date=v_start and hit >9.93&&avrg<9.94 INTO v_hit10;
-        SELECT count(code) FROM tbl_change WHERE date=v_start and avrg>9.93            INTO v_yiz10;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng>9.93&&high!=low INTO v_inc10;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and hit >9.93&&high!=low INTO v_hit10;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and avrg>9.8 &&high =low INTO v_yiz10;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<9.93 &&chng>=8  INTO v_inc8p;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<8  and chng>=5  INTO v_inc5p;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<5  and chng>=2  INTO v_inc2p;

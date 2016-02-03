@@ -1267,7 +1267,7 @@ function fn_notice()
     [ "${hhmm}" -gt 1530 ] && news=1 || news=0
     newest=`date --date="${news} days" +'%F'`
 
-    NUM=${NUM:-${1:-2}}
+    NUM=${NUM:-${1:-7}}
 
     local i
     for (( i=0; i<${NUM}; i+=1 )); do
