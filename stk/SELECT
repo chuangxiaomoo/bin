@@ -943,6 +943,49 @@ function fn_inout()
     return $?
 }
 
+function fn_lohi_wind()
+{
+    echo "
+    SELECT * FROM (
+    SELECT A.date, A.wind, (A.wind-B.wind)as dif
+               FROM wind A INNER JOIN 
+                    wind B on(A.id=B.id-1) GROUP BY A.id
+    ) as t ORDER by ${FIELD:-date} DESC
+    " | mysql -t kts
+}
+
+function fn_lohi_wolf()
+{
+    LIMIT=${LIMIT:-60}
+
+    echo "
+    $DROP wind;
+    $CREATE wind (
+        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+        date        date NOT NULL,
+        wind        DECIMAL(6,2) NOT NULL DEFAULT 0
+    ) " | mysql kts
+    xt_ret $? "" || return $?
+
+    dates=(`fn_get_date 1 ${BLK:-8}`)
+    local i
+    for (( i=0,j=1; i<${#dates[@]}; i++,j++ )); do
+        echo   ${dates[$i]} ${i}...
+        export END=${dates[$i]}
+        LIMIT=${LIMIT} FIELD=incr PARTS=1 fn_lohi i
+        echo "
+        ${tempday}
+        INSERT INTO wind(date,wind)
+        SELECT '${END}', sum(incr)/${LIMIT} as wolf FROM (
+        ${tbl_super_dive}
+        ) as iwolf
+        " | mysql -N  kts
+        xt_ret $? "" || return $?
+    done
+
+    return $?
+}
+
 function fn_lohi()
 {
     iNUM=${NUM:-8}                          # PREV=`mysql -N kts <<< "SELECT max(end) from mat_lohi"`
@@ -1001,11 +1044,11 @@ function fn_lohi()
 
         function fn_yi_descend()
         {
-          columns="d.code,DATE_FORMAT(t.date1,'%m-%d')as date1,DATE_FORMAT(t.date2,'%m-%d')as date2,t.lohi"
+          columns="d.code,DATE_FORMAT(t.date1,'%m-%d')as date1,t.off,t.lohi" #t.low,
 
           tbl_super_dive="
           SELECT * FROM (
-            SELECT ${CID}${columns}, 
+            SELECT ${CID}${columns},
             round(100*(d.close-t.low)/t.low, 2)  as incr,
          -- round(100*(GREATEST(t.high,d.close)-d.close)/GREATEST(t.high,d.close), 2) as decn,
             round(100*(t.amount/t.volume-d.yesc)/d.yesc, 1) as bvri, 
@@ -1016,22 +1059,26 @@ function fn_lohi()
             ${RISE} as rise,
          -- ${TURNOV} as tov, 
             ROUND((100*d.volume*c.close/c.nmc)/(1-top10_ajst_aR), 2) as vtov,
-            round((d.volume/t.mavol5), 2) as prop5, 
+            round((${SCALE:-1}*d.volume/t.mavol5), 2) as prop5, 
             round((${SCALE:-1}*d.volume/t.volume), 2) as prop, t.scale,
             round((d.amount/10000), 1) as eYi, 
          -- round((t.amount/10000), 1) as zYi,
             ${nmcYi0}, c.name
             FROM ${hilo_curr} as t, top10,
             ${TEMPDAY} as d, cap as c
-            ${WHERE} t.code = d.code and t.code=c.code && t.code=top10.code
-            HAVING 1 ${COND} 
+            ${WHERE} t.code = d.code and t.code=c.code && t.code=top10.code -- && (d.high!=d.low&&d.high>d.yesc)
+            HAVING 1 ${COND}
             ${notinBLK}
             ORDER by incr ${ASC:-DESC} ) as t
-          HAVING ${HAVING:-1} ORDER by ${FIELD:=prop} ${ASC:-DESC} LIMIT ${LIMIT:-80}
+          HAVING ${HAVING:-1} ORDER by ${FIELD:=incr} ${ASC:-DESC} LIMIT ${LIMIT:-60}
           "
-          [ ${DEBUG:-0} -eq 1 ] && echo "${tempday}${tbl_super_dive}"
+          [ ${DEBUG:-0} -eq 1 ] && echo "${tempday}${tbl_super_dive}" && exit
         }
         ;;
+    wind)
+        fn_lohi_wind; exit ;;
+    wolf)
+        fn_lohi_wolf; exit ;;
     u|*)
         nouse="
             in        : exist dates
@@ -1042,6 +1089,8 @@ function fn_lohi()
             d|date    : list of date
             bvri  iF5 : bvri 增长
             i     iF5 : from dorat，iF5为空时取最新
+            wind      : 60统计
+            wolf      : 60支最活跃股
             *         : usage
         指标说明：
             --------------------------大盘不稳皆是浮动-------------------------

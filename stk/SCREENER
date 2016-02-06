@@ -680,14 +680,16 @@ function fn_hilo()
 
 function fn_lohi()
 {
+    iNUM=${NUM:-8}
+
     case $1 in
     e)
-        mysql -N kts<<< "SELECT DISTINCT end FROM mat_lohi ORDER by end DESC LIMIT ${LIMIT:-10}" | cat -n
+        mysql -N kts<<< "SELECT DISTINCT end FROM mat_lohi WHERE num=${iNUM} ORDER by end DESC LIMIT ${LIMIT:-10}" | cat -n
         exit
         ;;
     d)
         END=`mysql -N kts <<< "SELECT date from day WHERE code=900001 ORDER by date DESC LIMIT ${2:-0},1"`
-        mysql -N kts<<< "DELETE FROM mat_lohi WHERE end='${END}'"
+        mysql -N kts<<< "DELETE FROM mat_lohi WHERE end='${END}' and num=${iNUM}"
         fn_echo_succ "DELETE ${END} FROM mat_lohi succ!"
         exit
         ;;
@@ -723,22 +725,7 @@ function fn_lohi()
         ;;
     esac
 
-    fn_exclude ${exclude2}
-    fn_txttbl
-
     iEND=${END:-${PREV}}
-    iNUM=${NUM:-8}
-    if [ -z "${YIST}" ]; then
-        echo "
-        TRUNCATE TABLE zxg;
-        INSERT INTO zxg(code) SELECT code FROM day WHERE date='${iEND}' and code<765432;
-        " | mysql kts
-        sql_insert_mat_lohi="
-        INSERT INTO mat_lohi(end,num,code,date1,date2,off,high,low,lohi,scale,amount,volume,mavol5)
-            SELECT  '${iEND}',${iNUM},code,date1,date2,off,high,low,lohi,scale,amount,volume,mavol5 FROM tbl_lohi;"
-        # --------------------------------------------------------------- 记得修改正面的 tbl_lohi
-    fi
-
     sqls="SELECT count(id) FROM mat_lohi WHERE end='${iEND}' and num=${iNUM} LIMIT 1;"
     count=`mysql -N kts <<< "${sqls}"`
     xt_ret $? "" || return $?
@@ -748,8 +735,8 @@ function fn_lohi()
         echo "
         TRUNCATE TABLE tbl_lohi;
         INSERT INTO tbl_lohi(code,date1,date2,off,high,low,lohi,scale,amount,volume,mavol5)
-                     SELECT  code,date1,date2,off,high,low,lohi,scale,amount,volume,mavol5 FROM mat_lohi WHERE end='${iEND}' and num=${iNUM};
-
+                     SELECT  code,date1,date2,off,high,low,lohi,scale,amount,volume,mavol5 
+                     FROM    mat_lohi WHERE end='${iEND}' and num=${iNUM};
         " | mysql kts
         return 0
     fi
@@ -761,7 +748,8 @@ function fn_lohi()
     SET @NUM=${iNUM};
     SET @NMC_RATIO=${NMC_RATIO:-1};
     call sp_visit_tbl('${TBL:-zxg}', @fn_lohi);
-    ${sql_insert_mat_lohi}
+    INSERT INTO mat_lohi(end,num,code,date1,date2,off,high,low,lohi,scale,amount,volume,mavol5)
+        SELECT  '${iEND}',${iNUM},code,date1,date2,off,high,low,lohi,scale,amount,volume,mavol5 FROM tbl_lohi;
     " | tee -a $mps_god
     mysql $mo -t kts < $mps_god
     xt_ret $? "${FUNCNAME}" || return $?
