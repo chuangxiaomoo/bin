@@ -1304,7 +1304,7 @@ CREATE PROCEDURE sp_create_tbl_lohi() tag_tbl_lohi:BEGIN
         off         INT  NOT NULL DEFAULT 0,
         high        DECIMAL(6,2) NOT NULL DEFAULT 0,
         low         DECIMAL(6,2) NOT NULL DEFAULT 0,
-        lohi        DECIMAL(6,2) NOT NULL DEFAULT 0,    -- 100*(high-low)/low
+        lohi        DECIMAL(6,2)          DEFAULT 0,    -- 100*(high-low)/low
         scale       DECIMAL(6,2) NOT NULL DEFAULT 0,
         volume      DECIMAL(12,2) NOT NULL DEFAULT 0,
         amount      DECIMAL(12,2) NOT NULL DEFAULT 0,
@@ -1321,7 +1321,7 @@ CREATE PROCEDURE sp_create_tbl_lohi() tag_tbl_lohi:BEGIN
         off         INT  NOT NULL DEFAULT 0,
         high        DECIMAL(6,2) NOT NULL DEFAULT 0,
         low         DECIMAL(6,2) NOT NULL DEFAULT 0,
-        lohi        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        lohi        DECIMAL(6,2)          DEFAULT 0,
         scale       DECIMAL(6,2) NOT NULL DEFAULT 0,
         volume      DECIMAL(12,2) NOT NULL DEFAULT 0,
         amount      DECIMAL(12,2) NOT NULL DEFAULT 0,
@@ -1356,11 +1356,11 @@ CREATE PROCEDURE sp_lohi(a_code INT(6) ZEROFILL) tag_lohi:BEGIN
 
     SELECT count(*) FROM tempday INTO @v_len;
 
-    SELECT volume,amount   FROM tempday WHERE id =1     INTO v_volume,v_amount;
-    SELECT v_volume/volume FROM tempday WHERE id =2     INTO v_scale;
-    SELECT sum(volume)/5   FROM tempday WHERE id<=5       INTO v_mavol5;
-    SELECT id,date,close   FROM tempday                   order by close asc  LIMIT 1 INTO v_id_lo, v_date1, v_low;
-    SELECT id,date,close   FROM tempday WHERE id<=v_id_lo order by close DESC LIMIT 1 INTO v_id_hi, v_date2, v_high;
+    SELECT volume,amount        FROM tempday WHERE id =1         INTO v_volume,v_amount;
+    SELECT v_volume/volume      FROM tempday WHERE id =2         INTO v_scale;
+    SELECT sum(volume)/5        FROM tempday WHERE id<=5         INTO v_mavol5;
+    SELECT id,date,amount/volume FROM tempday                    order by close asc  LIMIT 1 INTO v_id_lo, v_date1, v_low;
+    SELECT id,date,close        FROM tempday WHERE id<=v_id_lo   order by close DESC LIMIT 1 INTO v_id_hi, v_date2, v_high;
 
     -- 我们只预测两天，因为有了volume，不再放大mavol5
     -- SET v_mavol5 = IF(v_volume>v_mavol5, v_volume*.618+v_mavol5*.382, v_mavol5*.618+v_volume*.382);
