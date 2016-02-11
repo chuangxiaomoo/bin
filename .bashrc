@@ -12,7 +12,6 @@ alias      iEND=''
 alias       HMS=''
 alias       NUM=''
 alias       TBL=''
-alias       XZZ=''
 alias      COND=''
 alias      CHAO=''
 alias     CAUSE=''
@@ -109,6 +108,7 @@ alias  dialog='TERM=linux dialog'
 alias psmysql='ps -ef | grep [m]ysql'
 alias   psw3m='ps -ef | grep [w]3m'
 alias  kmysql='mysql kts'
+alias   igrep="cd ~/bin; find .m* stk/ -name '*' -type f | xargs grep --color"
 alias   xgrep="find . -name '*' -type f | xargs grep --color"
 alias  upconf="rm -f /home/s/fs/opt/conf/config.*; svn up /home/s/fs/opt/conf/config.org;" 
 alias  clrnfs="Svn | grep nfs | awk '{print $2}' | xargs rm -f"
