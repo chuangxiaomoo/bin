@@ -102,7 +102,7 @@ function fn_2016_event()                { cat annual_2016_event ;}
 }
 
 #
-# Just like brain sort knowledge always, we need sort contineuously!
+# Just like BRAIN sort knowledge always, we need sort contineuously!
 # a BOOK can append with a reflect
 #
 function fn_book()                      {

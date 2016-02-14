@@ -988,6 +988,54 @@ function fn_lohi_wolf()
     return $?
 }
 
+function fn_lohi_mi5()
+{
+    LIMIT=${LIMIT:-60}
+
+    echo "
+    $DROP f5wind;
+    $CREATE f5wind (
+        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+        time        time NOT NULL,
+        f5wind      DECIMAL(6,2) NOT NULL DEFAULT 0,
+        red         INT 
+    ) " | mysql kts
+    xt_ret $? "" || return $?
+
+    HMSs=(`fn_get_time 1 ${BLK:-80}`)
+    nr=${#HMSs[@]}
+
+    if [ "${nr}" -gt 60 ]; then
+        iSTEP=3
+    elif [ "${nr}" -gt 40 ]; then
+        iSTEP=2
+    elif [ "${nr}" -gt 20 ]; then
+        iSTEP=1
+    fi
+    local i
+    for (( i=0; i<${nr}; i+=${iSTEP} )); do
+        let imod=i%5
+        [ "${imod}" = 0 ] && echo ${HMSs[$i]} ${i}...
+        export HMS=${HMSs[$i]}
+        LIMIT=${LIMIT} FIELD=incr PARTS=1 fn_lohi i 0
+        echo "
+        ${tempday}
+        INSERT INTO f5wind(time,f5wind,red)
+        SELECT '${HMS}', sum(rise)/${LIMIT} as wolf, sum(rise>${iDOOR:-0}) FROM (
+        ${tbl_super_dive}
+        ) as iwolf
+        " | mysql -N  kts
+        #echo "${tbl_super_dive}"; break;
+        xt_ret $? "" || return $?
+    done
+    fn_echo_succ "${END}"
+    echo "
+    SELECT * FROM f5wind
+    " | mysql -t kts
+
+    return $?
+}
+
 function fn_lohi()
 {
     iNUM=${NUM:-8}                          # PREV=`mysql -N kts <<< "SELECT max(end) from mat_lohi"`
@@ -1029,8 +1077,16 @@ function fn_lohi()
             $DROP tempday; CREATE TABLE tempday LIKE day;
             INSERT INTO tempday SELECT * from day where date='${END}';"
         else
-            HMS=`fn_get_time ${iF5}`
-            TEMPDAY="(SELECT * FROM dorat WHERE date='${END}' && time='${HMS}')"
+            # TEMPDAY="(SELECT * FROM dorat WHERE date='${END}' && time='${HMS}')"
+            # tempday=
+            # 使用 tempday比SELECT子语句快10倍
+            HMS=${HMS:-`fn_get_time ${iF5}`}
+            TEMPDAY="tempday"
+            tempday="
+            $DROP tempday; CREATE TABLE tempday LIKE day;
+            INSERT INTO tempday SELECT code,date,yesc,open,high,low,close,volume,amount 
+            FROM dorat WHERE date='${END}' && time='${HMS}';
+            "
         fi
 
         # echo HMS ${HMS}; exit
@@ -1081,6 +1137,8 @@ function fn_lohi()
         fn_lohi_wolf; exit ;;
     wind)
         fn_lohi_wind; exit ;;
+    mi5)
+        fn_lohi_mi5; exit ;;
     u|*)
         nouse="
             in        : exist dates
@@ -1093,6 +1151,7 @@ function fn_lohi()
             i     iF5 : from dorat，iF5为空时取最新
             wolf      : 统计#{BLK:-8}日内#{LIMIT:-60}支最活跃股的最高涨幅wind
             wind      : show.wind
+            mi5       : 统计#{BLK:-8}个5分钟走势
             *         : usage
         指标说明：
             --------------------------大盘不稳皆是浮动-------------------------
