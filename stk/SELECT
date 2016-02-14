@@ -947,7 +947,7 @@ function fn_lohi_wind()
 {
     echo "
     SELECT * FROM (
-    SELECT A.date, A.wind, (A.wind-B.wind)as dif
+    SELECT A.date, A.wind, A.red, (A.wind-B.wind)as dif
                FROM wind A INNER JOIN 
                     wind B on(A.id=B.id-1) GROUP BY A.id
     ) as t ORDER by ${FIELD:-date} DESC
@@ -963,11 +963,12 @@ function fn_lohi_wolf()
     $CREATE wind (
         id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
         date        date NOT NULL,
-        wind        DECIMAL(6,2) NOT NULL DEFAULT 0
+        wind        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        red         INT 
     ) " | mysql kts
     xt_ret $? "" || return $?
 
-    dates=(`fn_get_date 1 ${BLK:-8}`)
+    dates=(`fn_get_date 1 ${BLK:-20}`)
     local i
     for (( i=0,j=1; i<${#dates[@]}; i++,j++ )); do
         echo   ${dates[$i]} ${i}...
@@ -975,11 +976,12 @@ function fn_lohi_wolf()
         LIMIT=${LIMIT} FIELD=incr PARTS=1 fn_lohi i
         echo "
         ${tempday}
-        INSERT INTO wind(date,wind)
-        SELECT '${END}', sum(incr)/${LIMIT} as wolf FROM (
+        INSERT INTO wind(date,wind,red)
+        SELECT '${END}', sum(incr)/${LIMIT} as wolf, sum(rise>${iDOOR:-0}) FROM (
         ${tbl_super_dive}
         ) as iwolf
         " | mysql -N  kts
+        # echo "${tbl_super_dive}"; exit
         xt_ret $? "" || return $?
     done
 
@@ -1075,10 +1077,10 @@ function fn_lohi()
           [ ${DEBUG:-0} -eq 1 ] && echo "${tempday}${tbl_super_dive}" && exit
         }
         ;;
-    wind)
-        fn_lohi_wind; exit ;;
     wolf)
         fn_lohi_wolf; exit ;;
+    wind)
+        fn_lohi_wind; exit ;;
     u|*)
         nouse="
             in        : exist dates
@@ -1089,8 +1091,8 @@ function fn_lohi()
             d|date    : list of date
             bvri  iF5 : bvri 增长
             i     iF5 : from dorat，iF5为空时取最新
-            wind      : 60统计
-            wolf      : 60支最活跃股
+            wolf      : 统计#{BLK:-8}日内#{LIMIT:-60}支最活跃股的最高涨幅wind
+            wind      : show.wind
             *         : usage
         指标说明：
             --------------------------大盘不稳皆是浮动-------------------------
@@ -2569,7 +2571,7 @@ function fn_main()
     "updown                                   # 近期{NUM=5}涨跌家数统计"
     "hilo               FIELD                 # 跌幅统计"
     "lohi               FIELD                 # 涨幅统计"
-    "wee                                      # 战略战术共振"
+    "wee                                      # NUM日成交量放大倍数"
     "g20                                      # 创20日新高"
     "lhb                excption              # 龙虎榜"
     "wolf                                     # DDE"
