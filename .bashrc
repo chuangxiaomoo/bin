@@ -25,6 +25,8 @@ alias      STEP=''
 alias     SCALE=''      # 通放大倍数 
 alias       ZXG=''      # ZIZE 用 NUM STEP 替换
 alias     LIMIT=''
+alias    iLIMIT=''
+alias     iDOOR=''
 alias     nmemb=''
 alias       mip='PREV=3 mi5 '
 alias       OPT=''

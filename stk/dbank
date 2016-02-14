@@ -530,10 +530,11 @@ function fn_set_END()
 
 function fn_get_time()
 {
-    # 接受一个参数<时间列表中的序号>，与 <SELECT lohi l> 的输出保持一致
+    # arg1 <时间列表中的序号>，与 <SELECT lohi l> 的输出保持一致
+    # arg2 LIMIT, 默认1
     NR=${1:-1}
     let sta=${NR}-1
-    odrLimit="ORDER by time DESC LIMIT ${sta},1"
+    odrLimit="ORDER by time DESC LIMIT ${sta},${2:-1}"
     iHMS=`mysql -N kts<<<"SELECT DISTINCT time FROM dorat WHERE date='${END}' && time<='${HMS:-15:05:00}' ${odrLimit}"`
     if [ -z "${iHMS}" ]; then
         fn_echo_fail "No.${NR} is EMPTY"
