@@ -81,6 +81,9 @@ function fn_10jqka()
     LOAD DATA LOCAL INFILE '${blk_memb}' INTO TABLE blk_memb;
     " | mysql kts
     xt_ret $? "mysql" || return $?
+
+    # blk
+    CHAO=1 SELECT blk u 40 >& /dev/null && cp ${chao}.opt.union .blk.cixin
     
     fn_echo_succ "up blk succ!"
 }
