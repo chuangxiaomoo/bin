@@ -947,7 +947,7 @@ function fn_lohi_wind()
 {
     echo "
     SELECT * FROM (
-    SELECT A.date, A.incr, A.rise, A.red, (A.incr-B.incr)as dif
+    SELECT A.date, A.incr, A.rise, A.hico, A.red, (A.incr-B.incr)as dif
                FROM wind A INNER JOIN 
                     wind B on(A.id=B.id-1) GROUP BY A.id
     ) as t ORDER by ${FIELD:-date} DESC
@@ -965,6 +965,7 @@ function fn_lohi_wolf()
         date        date NOT NULL,
         incr        DECIMAL(6,2) NOT NULL DEFAULT 0,
         rise        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        hico        DECIMAL(6,2) NOT NULL DEFAULT 0,
         red         INT 
     ) " | mysql kts
     xt_ret $? "" || return $?
@@ -978,10 +979,9 @@ function fn_lohi_wolf()
         LIMIT=${LIMIT} FIELD=incr PARTS=1 fn_lohi i
         echo "
         ${tempday}
-        INSERT INTO wind(date,incr,rise,red)
-        SELECT '${END}', sum(incr)/${LIMIT}, sum(rise)/${LIMIT}, sum(rise>${iDOOR:-0}) FROM (
-        ${tbl_super_dive}
-        ) as iwolf
+        INSERT INTO wind(date,incr,rise,hico,red)
+        SELECT '${END}', sum(incr)/${LIMIT}, sum(rise)/${LIMIT}, sum(rise-hiri)/${LIMIT} as hico, sum(rise>${iDOOR:-0}) 
+        FROM ( ${tbl_super_dive} ) as iwolf
         " | mysql -N  kts
         # echo "${tbl_super_dive}"; exit
         xt_ret $? "" || return $?
@@ -1024,7 +1024,7 @@ function fn_lohi_mi5()
         echo "
         ${tempday}
         INSERT INTO f5rise(time,f5rise,hico,red)
-        SELECT '${HMS}', sum(rise)/${LIMIT} as wolf, sum(hiri-rise)/${LIMIT} as hico, sum(rise>${iDOOR:-0}) FROM (
+        SELECT '${HMS}', sum(rise)/${LIMIT} as wolf, sum(rise-hiri)/${LIMIT} as hico, sum(rise>${iDOOR:-0}) FROM (
         ${tbl_super_dive}
         ) as iwolf
         " | mysql -N  kts
@@ -2577,10 +2577,13 @@ function fn_wee()
 
 function fn_notice()
 {
-    helpmsg="
-  消息高开低走有惊喜: 2015-12-11.亿帆鑫富
-    "
+  helpmsg="
+  c     clean空文件
+  消息  高开低走有惊喜: 2015-12-11.亿帆鑫富
+  获+   是重要的关键字
+  "
     cmdlist=(
+    "增持                       看增持数量"
     "收购                       若关联定向增发，增发价可作为支撑"
     "重大合同"
     "[^重].合同"
@@ -2590,14 +2593,18 @@ function fn_notice()
     "回购.*股份                 国内回购只能注销，是真自救"
     "挂牌转让"
     )
+    cd /opt/notice/
     case $1 in
     [036][0-9][0-9][0-9]*)
-        cd /opt/notice/ && grep --color "${1}" * ;;
+        grep --color "${1}" * ;;
     +([0-9]))
         [ $1 -ge ${#cmdlist[@]} ] && \
         fn_execute --list && fn_echo_fail "  -- fn_execute $1 too big --\n" && return
         cmd=${cmdlist[$1]/ */}
-        cd /opt/notice/ && grep --color "${cmd}" *
+        grep --color "${cmd}" `ls -t | head -${NUM:-7}`
+        ;;
+    c|clean)
+        wc -l * | grep -w 0 | awk '{print $2}' | xargs rm -f
         ;;
     *|l|--list)
         fn_execute
