@@ -63,6 +63,7 @@
 # 瑞鹤仙          .doc/yxkrrhx.md         -- 桃谷
 # 逻辑            .doc/logic.md
 # 魔论            .doc/Molun.md           -- 大盘预测体系
+# 方法论          .doc/Methodology.md
 # 博弈论          .doc/gametheory.md
 # 物理            .doc/physics.md
 # 仓位管理        .doc/position.md        -- 核心理论: 价.量.macd.势.攻.防
