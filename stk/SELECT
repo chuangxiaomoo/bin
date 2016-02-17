@@ -65,13 +65,13 @@ function fn_lsd()
     t|top)
         LIMIT=${LIMIT:-200}
         HAVING="rise>${DOOR:-9.93}"
-        FIELD=${2:-nmc}
+        FIELD=${FIELD:-nmc}
         chao=${chao}.top
         ;;
     f|floor)
         LIMIT=${LIMIT:-200}
         HAVING="rise<-9.93"
-        FIELD=${2:-nmc}
+        FIELD=${FIELD:-nmc}
         ;;
     l|list)
         SELECT lohi l; exit 0;
@@ -82,7 +82,7 @@ function fn_lsd()
             LIMIT=${LIMIT:-200} HAVING='rise>0' SELECT lsd; exit 0;
         fi
         LIMIT=${LIMIT:-400}
-        FIELD=${2:-rise}
+        FIELD=${FIELD:-rise}
         iTime=`fn_get_time ${1}`
         TEMPDAY="(SELECT * FROM dorat WHERE date='${END}' && time='${iTime}')"
         HAVING="${HAVING:-rise>0}"
@@ -101,7 +101,7 @@ function fn_lsd()
         exit
         ;;
     *)
-        FIELD=${1:-rise}
+        FIELD=${FIELD:-rise}
         ;;
     esac
 
@@ -993,6 +993,9 @@ function fn_lohi_wolf()
 function fn_lohi_mi5()
 {
     LIMIT=${LIMIT:-60}
+    let jEND=${iEND:-1}+1
+    CHAO=1 chao2=mi5 PARTS=2 iEND=$jEND SELECT lohi i
+    export YIST=${chao}.mi5
 
     echo "
     $DROP f5rise;
@@ -1009,11 +1012,11 @@ function fn_lohi_mi5()
     nr=${#HMSs[@]}
 
     if [ "${nr}" -gt 60 ]; then
-        iSTEP=3
+        iSTEP=${iSTEP:-3}
     elif [ "${nr}" -gt 40 ]; then
-        iSTEP=2
+        iSTEP=${iSTEP:-2}
     elif [ "${nr}" -gt 20 ]; then
-        iSTEP=1
+        iSTEP=${iSTEP:-1}
     fi
     local i
     for (( i=0; i<${nr}; i+=${iSTEP:-1} )); do
@@ -1368,7 +1371,6 @@ function fn_lhb()
     c|n|s|S)
         if [ $1 = S ]; then
             col_date='date,'
-            FIELD=$2
         elif [ $1 = c ]; then
             fn_iscode $2
             xt_ret $? "code:${2}" || return $?
@@ -1376,14 +1378,13 @@ function fn_lhb()
             xt_ret $? "xtempday error" || return $?
             COND="${COND} and code=${2}"
             col_date='date,'
-            FIELD=${3:-date}
+            FIELD=${FIELD:-date}
             sql_relate="&& l.date=d.date"
             sql_xtempday=", xtempday as d"
             LIMIT=${LIMIT:-8}
         else # s
             fn_isdigit ${2:-1}
             xt_ret $? "\$2[$2] must be digit" || return $?
-            FIELD=${3:-apple}
             date=`fn_get_date ${2:-1}`
             fn_echo_warn "lhb of ${date} by ${FIELD}"
 
@@ -1406,6 +1407,7 @@ function fn_lhb()
                 ${APPLE} as apple,
                 ROUND(100*(x.open-x.yesc)/x.yesc, 1) as Xopri,
                 "
+                FIELD=${FIELD:-apple}
             fi
         fi
 
@@ -1883,18 +1885,20 @@ function fn_stat()
 {
     case $1 in
     m|mid)
-        fn_echo_warn "1160th,879th换手率"
-        LIMIT=1160,1 END=${END} SELECT lsd tov
-        ASC=DESC LIMIT=879,1 END=${END} SELECT lsd tov
-        fn_echo_blue "1160th成交额"
-        LIMIT=1160,2 END=${END} SELECT lsd amount
+        fn_echo_warn "1000,500换手率"
+        LIMIT=1000,1 END=${END} FIELD=tov SELECT lsd
+        ASC=DESC LIMIT=500,1 END=${END} FIELD=tov SELECT lsd
+        fn_echo_blue "500th成交额"
+        LIMIT=500,2 END=${END} SELECT lsd amount
         fn_echo_succ "897(2345*.382),1789(2345*.618*1.235)流通市值"
-        ASC=asc LIMIT=897,1  END=${END} SELECT lsd nmc
-        ASC=asc LIMIT=1789,1 END=${END} SELECT lsd nmc
-        fn_echo_fail "涨停板市值中位数"
-        num=`OPT='-N' LIMIT=400 END=${END} SELECT lsd t amount 2>/dev/null | wc -l`
+        ASC=asc LIMIT=897,1  END=${END} FIELD=nmc SELECT lsd
+        ASC=asc LIMIT=1789,1 END=${END} FIELD=nmc SELECT lsd
+        fn_echo_fail "涨停板amount中位数，top1/3，与amount500th相近"
+        num=`OPT='-N' LIMIT=400 END=${END} FIELD=amount SELECT lsd top 2>/dev/null | wc -l`
         let LIMIT=num/2-3
-        LIMIT="${LIMIT},2" END=${END} SELECT lsd t amount
+        LIMIT="${LIMIT},2" END=${END} FIELD=amount SELECT lsd top
+        let LIMIT=num/3-2
+        LIMIT="${LIMIT},2" END=${END} FIELD=amount SELECT lsd top
         fn_echo_succ "***** Layout @${END} ******"
         ;;
     t|time)
@@ -2486,7 +2490,7 @@ function fn_dive()
 
     local i=
     for i in ${dates}; do
-        COND="dive>${DOOR:-10}" END=${i} SELECT lsd dive
+        COND="dive>${DOOR:-10}" END=${i} FIELD=dive SELECT lsd
     done
 
     return $?
