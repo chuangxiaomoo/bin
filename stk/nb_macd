@@ -140,13 +140,14 @@ function fn_routine()
     fn_echo_succ "\
     7. 20%涨幅请减半仓
     8. 智者先考虑风险、再考虑盈利。愚者反之。
+    9. 09:45前cybz达到最高后下探破hs300，10:00前可能扳回。
     "
 }
 
 function fn_loop()
 {
     while :; do
-       #fn_isresting && { sleep 150; continue; }
+        fn_isresting && { sleep 150; continue; }
         fn_routine
         fn_dif_300_6
         echo "to sleeping ${STEP:=60}s"         # F5x3有效突破，即3线之内，低点抬高，高点亦抬高
@@ -185,8 +186,8 @@ function fn_get_yesc()
 {
     HMS=`date +%H%M%S | sed 's/^0//'`
 
-    if [ "${HMS}" -lt 93500 ]; then
-        fn_echo_fail "It's time b4 093500, please wait"
+    if [ "${HMS}" -lt 93130 ]; then
+        fn_echo_fail "It's time b4 093130, please wait"
         exit
     fi
 
@@ -215,17 +216,28 @@ function fn_get_yesc()
 
 function fn_dif_300_6()
 {
-    [ "${OPER}" = 0 ] && return
+
+    if [ "${OPER:='>'}" = 0 ]; then
+        return
+    elif [ "${OPER}" = '>' ]; then
+        iSTEP=.001
+    else
+        iSTEP=-0.001
+    fi
+
     sqls="
     SELECT trade FROM fenbi WHERE code=399300 ORDER by datetime DESC LIMIT 1 INTO @c300;
     SELECT trade FROM fenbi WHERE code=399006 ORDER by datetime DESC LIMIT 1 INTO @c006;
 --  SELECT 99999, ROUND(100*(@c300-$y300)/$y300, 2), ROUND( 100*(@c006-$y006)/$y006, 2);
-    SELECT IF( ((@c300-$y300)/$y300 ${OPER:='>'} (@c006-$y006)/$y006), 1, 0 );
+    SELECT IF( ((@c300-$y300)/$y300+${iSTEP}) ${OPER} (@c006-$y006)/$y006, 1, 0 ), 
+        ROUND(100* (@c300-$y300)/$y300, 2), 
+        ROUND(100* (@c006-$y006)/$y006, 2);
     " 
     #mysql -N kts <<<"${sqls}"; exit
-    RET=`mysql -N kts <<<"${sqls}"`
-    if [ "${RET}" = 1 ]; then
-        fn_echo_warn "    Go: 300 ${OPER} 006"
+    RET=(`mysql -N kts <<<"${sqls}"`)
+    fn_echo_succ "    STAT: hs300: ${RET[1]}  cybz: ${RET[2]}"
+    if [ "${RET[0]}" = 1 ]; then
+        fn_echo_warn "    STAT: 300 ${OPER} 006"
         { sleep 5; fn_bell "tweet.wav tweet.wav"; }&
     fi
     return $?

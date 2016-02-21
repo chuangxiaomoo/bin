@@ -73,3 +73,4 @@
 # 龙虎榜          .doc/lhb.md
 # 股票们          .doc/codes.md
 # 公告            .doc/notice.md
+# ERRORs          .doc/error.md
