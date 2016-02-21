@@ -1697,7 +1697,7 @@ function fn_wolf()
 
         if [ "${1}" = c ]; then
             col_date="w.date,"
-            ORDER="ORDER by date DESC"
+            ORDER="ORDER by ${FIELD:-date} DESC"
             iTBL=dde
         else
             #col_date="DATE_FORMAT(w.date,'%m-%d')as date,time,"
@@ -1773,7 +1773,7 @@ function fn_wolf()
     e)
         HMS=${HMS:-`fn_get_time 1`}
         iSCALE=`SCALE=A fn_scale ${HMS}`
-        eCOND="tov>${iSCALE}" FIELD=eWolf fn_wolf s
+        eCOND="tov>${iSCALE}" FIELD=eWolf fn_wolf st ${2}
         ;;
     *)
         fn_echo_succ "\twolf date ${min_dt}~${max_dt}"
