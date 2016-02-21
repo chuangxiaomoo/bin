@@ -123,8 +123,8 @@ function fn_02_韩非子()                 { cat book_02_韩非子 ;}
 function fn_aq_如何提问()               { cat book_aq_如何提问 ;}
 function fn_dt_暗时间()                 { cat book_dt_暗时间 ;}
 function fn_tf_把时间当作朋友()         { cat book_tf_把时间当作朋友;
-                                          cat TIME;
-                                          cat read_tf_把时间当作朋友 ;}
+                                          cat ref_lai ;
+                                          cat TIME; }
 function fn_yl_你的灯亮着吗()           { cat book_yl_你的灯亮着吗 
                                           cat read_yl_你的灯亮着吗 ;}
 function fn_lf_雷锋日记()               { cat book_lf_雷锋日记 ;}

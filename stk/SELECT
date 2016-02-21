@@ -972,10 +972,15 @@ function fn_lohi_wolf()
 
     dates=(`fn_get_date 1 ${BLK:-20}`)
     local i
-    for (( i=0,j=1; i<${#dates[@]}; i++,j++ )); do
+    for (( i=0,j=2; i<${#dates[@]}; i++,j++ )); do
         let imod=i%5
         [ "${imod}" = 0 ] && echo ${dates[$i]} ${i}...
         export END=${dates[$i]}
+
+        # uncomment below 2 lines to 统计最高高度
+        CHAO=1 chao2=mi5 PARTS=2 END= iEND=$j SELECT lohi i
+        export YIST=${chao}.mi5
+
         LIMIT=${LIMIT} FIELD=incr PARTS=1 fn_lohi i
         echo "
         ${tempday}
@@ -1573,9 +1578,10 @@ function fn_wolf_sqls()
         round(w.amount/10000, 2) as eYi, 
         ROUND(nmc, 2) as nmcYi 
         ${col_name}
-        FROM xdde as w, curr_lohi as h
-        ${WHERE} w.code=h.code 
-        && w.date<='${END}' ${iCOND} && net>${DOOR}     -- WHERE(net>0)加速3倍
+        FROM xdde as w , curr_lohi as h
+        ${WHERE} 
+        w.code=h.code && 
+        w.date<='${END}' ${iCOND} && ${eCOND:-1} && net>${DOOR}     -- WHERE(net>0)加速3倍
         HAVING 1 ${CAUSE} ${COND} ${ORDER:-ORDER by ${FIELD} ${ASC:-DESC}} LIMIT ${LIMIT:-36}
     "
     fn_echo_warn "wolf of ${date:-${END}}.${stime:-latest} [DOOR:${DOOR}] ${FIELD}"
@@ -1624,8 +1630,9 @@ function fn_nDDE_sqls()
         round(w.amount/10000, 2) as eYi, 
         nmc as nmcYi, w.name 
         FROM ${WOLf} as w, curr_lohi as h
-        ${WHERE} w.code=h.code
-        && w.date>='${STA}' && w.date<='${END}' 
+        ${WHERE} 
+        w.code=h.code && 
+        w.date>='${STA}' && w.date<='${END}' 
         ORDER by code ASC, date DESC
     ) as t, top10 WHERE t.code=top10.code
     GROUP by code 
@@ -1633,7 +1640,7 @@ function fn_nDDE_sqls()
     "
     #-- && net>${DOOR}     -- WHERE(net>0)加速3倍
     fn_echo_warn "wolf of ${END}.${stime:-latest} [NUM:${NUM}] [DOOR:${DOOR}] ${FIELD}"
-    #echo "${sqls}"; exit
+    echo "${sqls}"; exit
 }
 
 function fn_wolf()
@@ -1763,6 +1770,11 @@ function fn_wolf()
         mysql -t kts <<<"${sqls}"
         fn_chao ${chao}.wolf
         ;;
+    e)
+        HMS=${HMS:-`fn_get_time 1`}
+        iSCALE=`SCALE=A fn_scale ${HMS}`
+        eCOND="tov>${iSCALE}" FIELD=eWolf fn_wolf s
+        ;;
     *)
         fn_echo_succ "\twolf date ${min_dt}~${max_dt}"
         echo "
@@ -1770,7 +1782,7 @@ function fn_wolf()
         l               date-list
         n|nDDE  idx     {NUM:-2}日DDE统计，变量代表日倒数索引
         b|BBD           沪深BBD统计
-        s       idx     SELECT
+        s|e             e mean FIELD=eWolf
         st      idx|l   SELECT time or list-times
         cf      code    按15分钟统计
         c       code    按日统计\
@@ -2079,7 +2091,7 @@ function fn_top()
         ;;
     d)
         sta=$2
-        seq=`seq ${sta:-1} ${3} $4`
+        seq=`seq ${sta:-1} ${3}`
         for i in ${seq}; do
             date=`fn_get_date ${i} 1`
             echo "
@@ -2090,9 +2102,10 @@ function fn_top()
         ;;
     s)
         sta=$2
-        for i in `seq ${sta:-1} ${3} $4`; do
+        for i in `seq ${sta:-1} ${3}`; do
             date=`fn_get_date ${i} 1`
             idate=`mysql -N kts<<<"SELECT DISTINCT date FROM topN WHERE date='${date}'"`
+            echo ${date} + ${idate}
             if [ -z "${idate}" ]; then
                 fn_echo_succ "CREATE ${date} INTO topN..."
                 END=${date} fn_topX
@@ -2115,8 +2128,8 @@ function fn_top()
         echo "
         SELECT blk top 
         l           # list DATE
-        d sta,end   # 删除 (sta,step,end)
-        s sta,end   # 查询
+        d sta end   # 删除 seq(sta,{step,}end)
+        s sta end   # 生成&查询
         i [iF5]     # 查询iF5
         u           # USAGE
         "
@@ -2234,7 +2247,7 @@ function fn_blk()
         CHAO=1 LIMIT=3000 COND="rise>${DOOR:-9.93}" SELECT lsd ${2}> /dev/null
         YIST='/tmp/kts/chao.lsd' fn_blk layout
         ;;
-    10s)
+    ban)
         ABBR=m fn_notin_blk FFA1
         DZH=N CHAO=1 fn_blk u ${BLK} > /dev/null
         xt_ret $? "BLK:${BLK}" || return $?
@@ -2379,7 +2392,7 @@ function fn_blk()
         SELECT blk <param>  # 注：使用HAVING向<SELECT lsd>传递条件
         l                   # layout
         10      iF5         # 涨停板概念分类 {DOOR:-10}，查讯iF5: SELECT lohi l
-        10s     iF5         # 列出变量BLK关联的code涨幅，iF5为5分钟数据索引
+        ban     iF5         # 列出变量BLK关联的code涨幅，iF5为5分钟数据索引
         delta   {s|l|b}     # 做差、显示layout、显示layout中一个BLK的细节
         66      off         # off日内代码累计涨幅
         123     size        # for(i<size)循环_10_的内容，但这是平均值
@@ -2389,7 +2402,7 @@ function fn_blk()
         A       blk blk2    # 求两个blk的交集
         u       blk [...]   # 求几个blk的并集(.c时可作为输出)
                             # blk中code关联的blk数目排名，越小，概念越纯正。
-        top     arg...      # 热点(对[up top]的结果进行显示)
+        top     arg...      # [热点]分析
         "
         ;;
     esac
@@ -2587,8 +2600,10 @@ function fn_notice()
   获+   是重要的关键字
   "
     cmdlist=(
+    "非公开发行限售股           -----注意黑天鹅------"
     "增持                       看增持数量"
     "收购                       若关联定向增发，增发价可作为支撑"
+    "签署战略                   VR"
     "重大合同"
     "[^重].合同"
     "利润分配                   高送转预案"
