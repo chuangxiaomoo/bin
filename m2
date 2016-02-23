@@ -827,7 +827,7 @@ function fn_main() {
         life_is_a_bus                   # 公交车
         game_theory
         redwine 
-        stupid_things                   # 哪些年做过的蠢事
+        stupid_things                   # 哪些年做过的蠢事 habit
         xuexi
     )
     fn_print $@

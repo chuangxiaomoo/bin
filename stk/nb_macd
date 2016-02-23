@@ -231,9 +231,9 @@ function fn_dif_300_6()
 --  SELECT 99999, ROUND(100*(@c300-$y300)/$y300, 2), ROUND( 100*(@c006-$y006)/$y006, 2);
     SELECT IF( ((@c300-$y300)/$y300+${iSTEP}) ${OPER} (@c006-$y006)/$y006, 1, 0 ), 
         ROUND(100* (@c300-$y300)/$y300, 2), 
-        ROUND(100* (@c006-$y006)/$y006, 2);
+        ROUND(100* (@c006-$y006)/$y006, 2), @c006,$y006;
     " 
-    #mysql -N kts <<<"${sqls}"; exit
+    mysql -N kts <<<"${sqls}"; exit
     RET=(`mysql -N kts <<<"${sqls}"`)
     fn_echo_succ "    STAT: hs300: ${RET[1]}  cybz: ${RET[2]}"
     if [ "${RET[0]}" = 1 ]; then
