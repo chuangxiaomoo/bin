@@ -2,7 +2,7 @@
 # 使用Ma时即ma(F15)，默认使用ma(F5)
 
 # code  HS300CYB  OPER(>||<)
-3dcybz  HS.CYBZ   >
+3dcybz  HS.CYBZ   <
 
 # dif+macd>0
 399300  HS300     close<1

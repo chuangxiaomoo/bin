@@ -1581,8 +1581,8 @@ function fn_wolf_sqls()
         FROM xdde as w , curr_lohi as h
         ${WHERE} 
         w.code=h.code && 
-        w.date<='${END}' ${iCOND} && ${eCOND:-1} && net>${DOOR}     -- WHERE(net>0)加速3倍
-        HAVING 1 ${CAUSE} ${COND} ${ORDER:-ORDER by ${FIELD} ${ASC:-DESC}} LIMIT ${LIMIT:-36}
+        w.date<='${END}' ${iCOND} && net>${DOOR}     -- WHERE(net>0)加速3倍
+        HAVING 1 ${CAUSE} ${COND} && ${eCOND:-1}  ${ORDER:-ORDER by ${FIELD} ${ASC:-DESC}} LIMIT ${LIMIT:-36}
     "
     fn_echo_warn "wolf of ${date:-${END}}.${stime:-latest} [DOOR:${DOOR}] ${FIELD}"
     # echo "${sqls}"; exit
@@ -1770,10 +1770,16 @@ function fn_wolf()
         mysql -t kts <<<"${sqls}"
         fn_chao ${chao}.wolf
         ;;
-    e)
+    e|E)
         HMS=${HMS:-`fn_get_time 1`}
         iSCALE=`SCALE=A fn_scale ${HMS}`
-        eCOND="tov>${iSCALE}" FIELD=eWolf fn_wolf st ${2}
+        iNMC=100
+        case $1 in
+           e) eCOND="tov>${iSCALE} && nmcYi<=${iNMC}" ;;
+           E) eCOND="tov>${iSCALE} && nmcYi >${iNMC}";;
+        esac
+
+        FIELD=eWolf fn_wolf st ${2:-1}
         ;;
     *)
         fn_echo_succ "\twolf date ${min_dt}~${max_dt}"
