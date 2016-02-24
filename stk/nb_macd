@@ -220,9 +220,9 @@ function fn_dif_300_6()
     if [ "${OPER:='>'}" = 0 ]; then
         return
     elif [ "${OPER}" = '>' ]; then
-        iSTEP=.001
+        iSTEP=.0006
     else
-        iSTEP=-0.001
+        iSTEP=-0.0006
     fi
 
     sqls="
@@ -233,7 +233,7 @@ function fn_dif_300_6()
         ROUND(100* (@c300-$y300)/$y300, 2), 
         ROUND(100* (@c006-$y006)/$y006, 2), @c006,$y006;
     " 
-    mysql -N kts <<<"${sqls}"; exit
+    #mysql -N kts <<<"${sqls}"; exit
     RET=(`mysql -N kts <<<"${sqls}"`)
     fn_echo_succ "    STAT: hs300: ${RET[1]}  cybz: ${RET[2]}"
     if [ "${RET[0]}" = 1 ]; then
