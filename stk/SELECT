@@ -1117,11 +1117,17 @@ function fn_lohi()
             sql_tov="${TURNOV} as tov"
             tbl_condi=
             sql_eqcode=
+            fn_notin_blk 40
+        elif [ "${CIXIN}" = 2 ]; then
+            sql_tov="${TURNOV} as tov"
+            tbl_condi=
+            sql_eqcode=
+            YIST='.blk.cixin'
         else
             sql_tov="ROUND((100*d.volume*c.close/c.nmc)/(1-top10_ajst_aR), 2) as vtov"
             tbl_condi='top10,'
             sql_eqcode="&& t.code=${tbl_condi//,/}.code"
-            fn_notin_blk FFA1
+            fn_notin_blk 40
         fi
 
         ABBR=t fn_yist
@@ -1697,7 +1703,10 @@ function fn_wolf()
         ;;
     c|cf|code)
         fn_iscode $2
-        xt_ret $? "code:${2}" || return $?
+        xt_ret $? "Usage: SELECT wolf c code" || {
+        mysql -N kts<<< "SELECT DISTINCT date,time FROM dde ORDER by date DESC LIMIT ${LIMIT:-10}" | cat -n
+        return 1
+        }
 
         if [ "${1}" = c ]; then
             col_date="w.date,"
