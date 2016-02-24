@@ -1108,15 +1108,19 @@ function fn_lohi()
             fn_echo_succ SCALE ${SCALE}
         fi
 
-        if [ "${CIXIN:-0}" = 1 ]; then
+        #  默认不使用vtov
+        if [ "${CIXIN:=0}" = 0 ]; then
             sql_tov="${TURNOV} as tov"
-            tbl_cixin=
+            tbl_condi=
+            sql_eqcode='&& d.high != d.low'
+        elif [ "${CIXIN}" = 1 ]; then
+            sql_tov="${TURNOV} as tov"
+            tbl_condi=
             sql_eqcode=
-            YIST='.blk.cixin'
         else
             sql_tov="ROUND((100*d.volume*c.close/c.nmc)/(1-top10_ajst_aR), 2) as vtov"
-            tbl_cixin='top10,'
-            sql_eqcode="&& t.code=${tbl_cixin//,/}.code"
+            tbl_condi='top10,'
+            sql_eqcode="&& t.code=${tbl_condi//,/}.code"
             fn_notin_blk FFA1
         fi
 
@@ -1143,9 +1147,9 @@ function fn_lohi()
             round((d.amount/10000), 1) as eYi, 
          -- round((t.amount/10000), 1) as zYi,
             ${nmcYi0}, c.name
-            FROM ${hilo_curr} as t, ${tbl_cixin}
+            FROM ${hilo_curr} as t, ${tbl_condi}
             ${TEMPDAY} as d, cap as c
-            ${WHERE} t.code = d.code and t.code=c.code ${sql_eqcode} -- && (d.high!=d.low&&d.high>d.yesc)
+            ${WHERE} t.code = d.code and t.code=c.code ${sql_eqcode}
             HAVING 1 ${COND}
             ${notinBLK}
             ORDER by incr ${ASC:-DESC} ) as t
@@ -1558,7 +1562,7 @@ function fn_wolf_sqls()
 {
     col_tet="ROUND(net/(1-top10_ajst_aR), 2) as Tet,"
     FIELD=${FIELD:-net}
-    DOOR=${DOOR:--1}
+    DOOR=${DOOR:--5}
     yesc='(trade/(1+rise/100))'
     sqls="
         SELECT ${col_date} w.code, w.rise,
@@ -1584,7 +1588,7 @@ function fn_wolf_sqls()
         w.date<='${END}' ${iCOND} && net>${DOOR}     -- WHERE(net>0)加速3倍
         HAVING 1 ${CAUSE} ${COND} && ${eCOND:-1}  ${ORDER:-ORDER by ${FIELD} ${ASC:-DESC}} LIMIT ${LIMIT:-36}
     "
-    fn_echo_warn "wolf of ${date:-${END}}.${stime:-latest} [DOOR:${DOOR}] ${FIELD}"
+    fn_echo_warn "wolf of ${date:-${END}}.${stime:-latest} [DOOR:${DOOR}] [COND: ${eCOND}${iCOND}${COND}${CAUSE}] ${FIELD}"
     # echo "${sqls}"; exit
 }
 
@@ -1775,8 +1779,13 @@ function fn_wolf()
         iSCALE=`SCALE=A fn_scale ${HMS}`
         iNMC=100
         case $1 in
-           e) eCOND="tov>${iSCALE} && nmcYi<=${iNMC}" ;;
-           E) eCOND="tov>${iSCALE} && nmcYi >${iNMC}";;
+        e) 
+            iTOV=`CHAO=0 OPT='-N' LIMIT="800,1"  COND= SELECT lsd amount 2>/dev/null | awk '{printf "%.2f", $6/10000}'`
+            eCOND="eYi>${iTOV} && nmcYi<=${iNMC}" 
+          ;;
+        E) 
+            iTOV=`CHAO=0 OPT='-N' LIMIT="1250,1" COND= SELECT lsd amount 2>/dev/null | awk '{printf "%.2f", $6/10000}'`
+            eCOND="eYi>${iTOV} && nmcYi >${iNMC}";;
         esac
 
         FIELD=eWolf fn_wolf st ${2:-1}
@@ -1906,8 +1915,8 @@ function fn_stat()
         fn_echo_warn "1000,500换手率"
         LIMIT=1000,1 END=${END} FIELD=tov SELECT lsd
         ASC=DESC LIMIT=500,1 END=${END} FIELD=tov SELECT lsd
-        fn_echo_blue "500th成交额"
-        LIMIT=500,2 END=${END} SELECT lsd amount
+        fn_echo_blue "1250th成交额"
+        LIMIT=1250,2 END=${END} FIELD=amount SELECT lsd
         fn_echo_succ "897(2345*.382),1789(2345*.618*1.235)流通市值"
         ASC=asc LIMIT=897,1  END=${END} FIELD=nmc SELECT lsd
         ASC=asc LIMIT=1789,1 END=${END} FIELD=nmc SELECT lsd

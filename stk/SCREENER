@@ -102,16 +102,16 @@ function fn_taox_ratio0()
 
 function fn_taox_ratio()
 {
-    iEND=${1:-${END}}
+    END=${1:-${END}}
     TBL=${TBL:-'cap'}
     NUM=${NUM:-240}        # 需要200%，所以应该比较大
 
-    fn_isdate ${iEND} 
+    fn_isdate ${END} 
     xt_ret $? "    Usage: #{1} must be date like 2008-08-08" || return $?
 
     head -n -5 $mps_org > $mps_god
     echo "
-    SET @END='$iEND';
+    SET @END='$END';
     SET @NUM=${NUM};
     SET @FORCE=${FORCE:-0};
     SET @NMC_RATIO=${NMC_RATIO:-1};
@@ -690,7 +690,7 @@ function fn_lohi()
     d)
         END=`mysql -N kts <<< "SELECT date from day WHERE code=900001 ORDER by date DESC LIMIT ${2:-0},1"`
         mysql -N kts<<< "DELETE FROM mat_lohi WHERE end='${END}' and num=${iNUM}"
-        fn_echo_succ "DELETE ${END} FROM mat_lohi succ!"
+        fn_echo_succ "DELETE ${END}[${iNUM}] FROM mat_lohi succ!"
         exit
         ;;
     l)
@@ -725,31 +725,34 @@ function fn_lohi()
         ;;
     esac
 
-    iEND=${END:-${PREV}}
-    sqls="SELECT count(id) FROM mat_lohi WHERE end='${iEND}' and num=${iNUM} LIMIT 1;"
+    sqls="SELECT count(id) FROM mat_lohi WHERE end='${END}' and num=${iNUM} LIMIT 1;"
     count=`mysql -N kts <<< "${sqls}"`
     xt_ret $? "" || return $?
 
     if [ "${count:-0}" -gt 0 ]; then
-        fn_echo_warn "${iEND}:${iNUM} exist, copy it"
+        fn_echo_warn "${END}:${iNUM} exist, copy it"
         echo "
         TRUNCATE TABLE tbl_lohi;
         INSERT INTO tbl_lohi(code,date1,date2,off,high,low,lohi,scale,amount,volume,mavol5)
                      SELECT  code,date1,date2,off,high,low,lohi,scale,amount,volume,mavol5 
-                     FROM    mat_lohi WHERE end='${iEND}' and num=${iNUM};
+                     FROM    mat_lohi WHERE end='${END}' and num=${iNUM};
         " | mysql kts
         return 0
     fi
 
-    fn_echo_succ "    build lohi on ${iEND}..."
+    fn_echo_succ "    build lohi on ${END}..."
 
     echo "
-    SET @END='$iEND';
+    SET @END='$END';
     SET @NUM=${iNUM};
     SET @NMC_RATIO=${NMC_RATIO:-1};
+    $DROP zxg;
+    $CREATE zxg LIKE codes;
+    INSERT INTO zxg(code) SELECT code FROM day WHERE date='${END}' and code<888888;
+
     call sp_visit_tbl('${TBL:-zxg}', @fn_lohi);
     INSERT INTO mat_lohi(end,num,code,date1,date2,off,high,low,lohi,scale,amount,volume,mavol5)
-        SELECT  '${iEND}',${iNUM},code,date1,date2,off,high,low,lohi,scale,amount,volume,mavol5 FROM tbl_lohi;
+        SELECT  '${END}',${iNUM},code,date1,date2,off,high,low,lohi,scale,amount,volume,mavol5 FROM tbl_lohi;
     " | tee -a $mps_god
     mysql $mo -t kts < $mps_god
     xt_ret $? "${FUNCNAME}" || return $?
