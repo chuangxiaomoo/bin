@@ -1722,7 +1722,7 @@ function fn_wolf()
         xt_ret $? "" || return $?
 
         iCOND="and w.code=${2}"
-        LIMIT=${LIMIT:-20}
+        LIMIT=${LIMIT:-12}
         col_name=
         fn_name ${2}
         DOOR=-50 fn_wolf_sqls
@@ -1786,18 +1786,18 @@ function fn_wolf()
     e|E)
         HMS=${HMS:-`fn_get_time 1`}
         iSCALE=`SCALE=A fn_scale ${HMS}`
-        iNMC=100
+        iNMC=150
         case $1 in
         e) 
-            iTOV=`CHAO=0 OPT='-N' LIMIT="800,1"  COND= SELECT lsd amount 2>/dev/null | awk '{printf "%.2f", $6/10000}'`
+            iTOV=`CHAO=0 OPT='-N' LIMIT="800,1"  COND= YIST= FIELD= SELECT lsd amount 2>/dev/null | awk '{printf "%.2f", $6/10000}'`
             eCOND="eYi>${iTOV} && nmcYi<=${iNMC}" 
           ;;
         E) 
-            iTOV=`CHAO=0 OPT='-N' LIMIT="1250,1" COND= SELECT lsd amount 2>/dev/null | awk '{printf "%.2f", $6/10000}'`
+            iTOV=`CHAO=0 OPT='-N' LIMIT="1250,1" COND= YIST= FIELD= SELECT lsd amount 2>/dev/null | awk '{printf "%.2f", $6/10000}'`
             eCOND="eYi>${iTOV} && nmcYi >${iNMC}";;
         esac
 
-        FIELD=eWolf fn_wolf st ${2:-1}
+        FIELD=${FIELD:-eWolf} fn_wolf st ${2:-1}
         ;;
     *)
         fn_echo_succ "\twolf date ${min_dt}~${max_dt}"
