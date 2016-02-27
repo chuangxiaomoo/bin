@@ -714,7 +714,7 @@ function fn_dorat()
     [ "${hhmm}" = 930 ] && sleep 30
     let got30=hhmm%100%30   # 半小时响铃一次
 
-    if [ "${got30}" -le 1 ] || [ $hhmm = 935 ] || [ $hhmm = 940 ] || [ $hhmm = 950 ]; then
+    if [ "${got30}" -le 1 ] || [ $hhmm = 948 ]; then
         fn_bell "online.wav"
     fi
 
