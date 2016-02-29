@@ -685,12 +685,20 @@ function fn_lohi()
     case $1 in
     e)
         mysql -N kts<<< "SELECT DISTINCT end FROM mat_lohi WHERE num=${iNUM} ORDER by end DESC LIMIT ${LIMIT:-10}" | cat -n
+        top=`mysql -N kts<<< "SELECT DISTINCT end FROM mat_lohi WHERE num=${iNUM} ORDER by end DESC LIMIT 1"`
+        fn_echo_succ "date-list:"
+        fn_lohi l | grep -B100 --color ${top}
         exit
         ;;
     d)
-        END=`mysql -N kts <<< "SELECT date from day WHERE code=900001 ORDER by date DESC LIMIT ${2:-0},1"`
-        mysql -N kts<<< "DELETE FROM mat_lohi WHERE end='${END}' and num=${iNUM}"
-        fn_echo_succ "DELETE ${END}[${iNUM}] FROM mat_lohi succ!"
+        sta=${2:-0}
+        end=${3:-$sta}
+        local i=
+        for i in `seq $sta $end`; do
+            END=`mysql -N kts <<< "SELECT date from day WHERE code=900001 ORDER by date DESC LIMIT ${i},1"`
+            mysql -N kts<<< "DELETE FROM mat_lohi WHERE end='${END}' and num=${iNUM}"
+            fn_echo_succ "DELETE ${END}[${iNUM}] FROM mat_lohi succ!"
+        done
         exit
         ;;
     l)
@@ -710,16 +718,16 @@ function fn_lohi()
         exit
         ;;
     [0-9]*)
-        END=`mysql -N kts <<< "SELECT date from day WHERE code=900001 ORDER by date DESC LIMIT ${1:-0},1"`
+        END=`fn_get_date ${1}`
         ;;
     *)
         echo "
         SCREENER lohi <param>
-            d num: del date of index num
+            d s e: RELIZING, seq s e | xargs -I {} SCREENER lohi d {}
             exist: exist dates
             list : dates list with num
-            n    : 0 is latest
-            0~9  : 指定生成范围
+            n    : 1 is latest
+            1~99 : 指定生成范围
         "
         exit
         ;;

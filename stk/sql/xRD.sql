@@ -1356,11 +1356,12 @@ CREATE PROCEDURE sp_lohi(a_code INT(6) ZEROFILL) tag_lohi:BEGIN
 
     SELECT count(*) FROM tempday INTO @v_len;
 
-    SELECT volume,amount        FROM tempday WHERE id =1         INTO v_volume,v_amount;
-    SELECT v_volume/volume      FROM tempday WHERE id =2         INTO v_scale;
-    SELECT sum(volume)/5        FROM tempday WHERE id<=5         INTO v_mavol5;
-    SELECT id,date,amount/volume FROM tempday                    order by close asc  LIMIT 1 INTO v_id_lo, v_date1, v_low;
-    SELECT id,date,close        FROM tempday WHERE id<=v_id_lo   order by close DESC LIMIT 1 INTO v_id_hi, v_date2, v_high;
+    SELECT volume,amount         FROM tempday WHERE id =1         INTO v_volume,v_amount;
+    SELECT v_volume/volume       FROM tempday WHERE id =2         INTO v_scale;
+    SELECT sum(volume)/5         FROM tempday WHERE id<=5         INTO v_mavol5;
+    SELECT id,date,amount/volume FROM tempday                     order by close asc  LIMIT 1 INTO v_id_lo, v_date1, v_low;
+    SELECT id,date,close         FROM tempday WHERE id<=v_id_lo   order by close DESC LIMIT 1 INTO v_id_hi, v_date2, v_high;
+    SELECT min(close)            FROM tempday WHERE date>=v_date2                             INTO v_lohi;
 
     -- 我们只预测两天，因为有了volume，不再放大mavol5
     -- SET v_mavol5 = IF(v_volume>v_mavol5, v_volume*.618+v_mavol5*.382, v_mavol5*.618+v_volume*.382);
@@ -1370,7 +1371,9 @@ CREATE PROCEDURE sp_lohi(a_code INT(6) ZEROFILL) tag_lohi:BEGIN
     --     LEAVE tag_lohi;
     -- END IF;
 
-    SET v_lohi = 100*(v_high-v_low)/v_low;
+    -- lohi被征用为高点下落幅度，只作主升浪
+    -- SET v_lohi = 100*(v_high-v_low)/v_low;
+
     SET @len   = v_id_lo-v_id_hi + 1;
 
     INSERT INTO tbl_lohi(code,date1,date2,   high,low,    lohi,off, scale,  volume, amount, mavol5)
