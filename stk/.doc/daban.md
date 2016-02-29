@@ -1,3 +1,5 @@
+#
+
 .doc/spot.md  题材热点
 .doc/wolf.md  招式及案例
 

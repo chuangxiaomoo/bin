@@ -920,7 +920,6 @@ function fn_inout()
       SELECT * FROM (
         SELECT ${columns}, 
         round(100*(d.close-t.low)/t.low, 2)  as incr,
-        round(100*(max(t.high,d.close)-d.close)/d.close, 2) as decn,
         ${RISE} as rise,
         round((d.volume/t.mavol5), 2) as tov, t.scale,
         round((d.amount/10000), 1) as eYi,
@@ -1134,12 +1133,12 @@ function fn_lohi()
 
         function fn_yi_descend()
         {
-          columns="d.code,DATE_FORMAT(t.date1,'%m-%d')as date1,t.off,t.lohi" #t.low,
+          columns="d.code,DATE_FORMAT(t.date1,'%m-%d')as date1,t.off" #,t.lohi,t.low,
 
           tbl_super_dive="
           SELECT * FROM (
             SELECT ${CID}${columns},
-            round(100*(d.close-t.low)/t.low, 2)  as incr,
+            round(100*(d.close-t.low)/t.low, 2) as incr,
          -- round(100*(GREATEST(t.high,d.close)-d.close)/GREATEST(t.high,d.close), 2) as decn,
             round(100*(t.amount/t.volume-d.yesc)/d.yesc, 1) as bvri, 
             d.close,
@@ -1572,6 +1571,8 @@ function fn_wolf_sqls()
     yesc='(trade/(1+rise/100))'
     sqls="
         SELECT ${col_date} w.code, w.rise,
+        round(100*(trade-h.low)/h.low, 1) as incr,
+        round(100*(high-lohi)/lohi, 1) as jump,
         ROUND( (100*(w.amount/shou-$yesc)/$yesc), 1) as avrg, tov,
         ROUND(100*nmc*(pbuy+nbuy)/w.amount, 2) as eWolf,
         pbuy,nbuy, psell,nsell,
@@ -1581,9 +1582,9 @@ function fn_wolf_sqls()
     --  round(100*(psell+nsell)/tov, 1) as sloo,
         net,
     --  ${col_tet}
-        round((pbuy/nbuy), 2) as Go,
-        round((nsell/psell), 2) as nGo,
-        round((pbuy+nbuy)/(psell+nsell), 2) as bsp,
+    --  round((pbuy/nbuy), 2) as Go,
+    --  round((nsell/psell), 2) as nGo,
+        round((pbuy+nbuy)/(psell+nsell), 1) as bsp,
         round((w.shou/h.volume), 1) as prop, h.scale,
         round(w.amount/10000, 2) as eYi, 
         ROUND(nmc, 2) as nmcYi 
@@ -1783,18 +1784,16 @@ function fn_wolf()
         mysql -t kts <<<"${sqls}"
         fn_chao ${chao}.wolf
         ;;
-    e|E)
+    a|e|E)
         HMS=${HMS:-`fn_get_time 1`}
         iSCALE=`SCALE=A fn_scale ${HMS}`
         iNMC=150
+        eYi=${eYi:-.5}  # 千万大单占20%
+        #eYi=`CHAO=0 OPT='-N' LIMIT="800,1"  COND= YIST= FIELD= SELECT lsd amount 2>/dev/null | awk '{printf "%.2f", $6/10000}'`
         case $1 in
-        e) 
-            iTOV=`CHAO=0 OPT='-N' LIMIT="800,1"  COND= YIST= FIELD= SELECT lsd amount 2>/dev/null | awk '{printf "%.2f", $6/10000}'`
-            eCOND="eYi>${iTOV} && nmcYi<=${iNMC}" 
-          ;;
-        E) 
-            iTOV=`CHAO=0 OPT='-N' LIMIT="1250,1" COND= YIST= FIELD= SELECT lsd amount 2>/dev/null | awk '{printf "%.2f", $6/10000}'`
-            eCOND="eYi>${iTOV} && nmcYi >${iNMC}";;
+        a) eCOND="eYi>${eYi}"                      ;;
+        e) eCOND="eYi>${eYi} && nmcYi<=${iNMC}"    ;;
+        E) eCOND="eYi>${eYi} && nmcYi >${iNMC}"    ;;
         esac
 
         FIELD=${FIELD:-eWolf} fn_wolf st ${2:-1}
