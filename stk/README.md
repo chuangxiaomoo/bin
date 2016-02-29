@@ -67,7 +67,6 @@
 # 物理            .doc/physics.md
 # 仓位管理        .doc/position.md        -- 核心理论: 价.量.macd.势.攻.防
 # I问财.关键字    .doc/iwencai.md
-# 指数日报        .doc/index.report.md
 # 个股日报        .doc/diary2.md
 # 打板门          .doc/daban.md
 # 龙虎榜          .doc/lhb.md
