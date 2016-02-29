@@ -1572,7 +1572,7 @@ function fn_wolf_sqls()
     sqls="
         SELECT ${col_date} w.code, w.rise,
         round(100*(trade-h.low)/h.low, 1) as incr,
-        round(100*(high-lohi)/lohi, 1) as jump,
+        round(100*(high-LEAST(lohi,trade))/LEAST(lohi,trade), 1) as jump,
         ROUND( (100*(w.amount/shou-$yesc)/$yesc), 1) as avrg, tov,
         ROUND(100*nmc*(pbuy+nbuy)/w.amount, 2) as eWolf,
         pbuy,nbuy, psell,nsell,
