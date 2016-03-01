@@ -20,6 +20,7 @@
 # 本质论          .doc/essential.md            -- 我是谁？从哪来？到哪去？
 # 决定论          .doc/model.md                -- 打造自己的交易模型
 # 鸿观            .doc/hongguan.md
+# 牛猫            .doc/gushequ.md
 
 > 构建体系
 
@@ -61,14 +62,14 @@
 # 花家军          .doc/huajiajun.md
 # 瑞鹤仙          .doc/yxkrrhx.md         -- 桃谷
 # 逻辑            .doc/logic.md
-# 魔论            .doc/Molun.md           -- 大盘预测体系
 # 方法论          .doc/Methodology.md
+# 魔论            .doc/Molun.md           -- 大盘预测体系
 # 博弈论          .doc/gametheory.md
 # 物理            .doc/physics.md
 # 仓位管理        .doc/position.md        -- 核心理论: 价.量.macd.势.攻.防
 # I问财.关键字    .doc/iwencai.md
-# 个股日报        .doc/diary2.md
-# 打板门          .doc/daban.md
+# 个股日报        .doc/diary2.md .doc/checklist.md
+# 超短            .doc/daban.md
 # 龙虎榜          .doc/lhb.md
 # 股票们          .doc/codes.md
 # 公告            .doc/notice.md

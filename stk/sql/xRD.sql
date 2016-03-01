@@ -225,8 +225,8 @@ CREATE PROCEDURE sp_create_tbl_hilo() tag_tbl_hilo:BEGIN
         date2       date NOT NULL DEFAULT 0,
         off         INT  NOT NULL DEFAULT 0,
         close       DECIMAL(6,2) NOT NULL DEFAULT 0,    
-        turnov      DECIMAL(6,2) NOT NULL DEFAULT 0,    
-        tovpd         DECIMAL(6,2) NOT NULL DEFAULT 0,    
+        turnov      DECIMAL(6,2)          DEFAULT 0,    
+        tovpd       DECIMAL(6,2)          DEFAULT 0,    
         rat1        DECIMAL(6,2) NOT NULL DEFAULT 0,    
         rat2        DECIMAL(6,2) NOT NULL DEFAULT 0,    
 
@@ -995,7 +995,7 @@ CREATE PROCEDURE sp_hilo(a_code INT(6) ZEROFILL) tag_hilo:BEGIN
     DECLARE v_sumamount DECIMAL(12,2) DEFAULT 0;
 
     DECLARE v_turnov    DECIMAL(6,2) DEFAULT 0;    
-    DECLARE v_tovpd       DECIMAL(6,2) DEFAULT 0;    
+    DECLARE v_tovpd     DECIMAL(6,2) DEFAULT 0;    
     DECLARE v_rat1      DECIMAL(6,2) DEFAULT 0;    
     DECLARE v_rat2      DECIMAL(6,2) DEFAULT 0;    
     DECLARE v_close     DECIMAL(6,2) DEFAULT 0;
@@ -1016,39 +1016,18 @@ CREATE PROCEDURE sp_hilo(a_code INT(6) ZEROFILL) tag_hilo:BEGIN
 
     SELECT count(*) FROM tempday INTO @v_len;
 
-    -- 13日最低价(high & low 可能在同一天)
-    -- SET @left_cursor = IF(@v_len<25,@v_len,25);
-
-    SELECT id                       FROM tempday                   order by high desc LIMIT 1 INTO v_id_mx;
-    SELECT id, date, high           FROM tempday                   order by high desc LIMIT 1 INTO v_id_hi, v_date1, v_high;
-    SELECT id, date, low,(low+close)/2     
-                                    FROM tempday WHERE id<=v_id_hi order by (low+close) asc  LIMIT 1 INTO v_id_lo, v_date2, v_low, v_close;
+    SELECT id                   FROM tempday                   order by high desc LIMIT 1 INTO v_id_mx;
+    SELECT id, date, high       FROM tempday                   order by high desc LIMIT 1 INTO v_id_hi, v_date1, v_high;
+    SELECT id, date, low,close  FROM tempday WHERE id<=v_id_hi order by close asc LIMIT 1 INTO v_id_lo, v_date2, v_low, v_close;
 
     IF v_id_hi-v_id_lo<2 THEN
-        -- SELECT "lt 2 gap:", a_code, v_id_hi-v_id_lo+1, v_date1, v_date2;
         LEAVE tag_hilo;
     END IF;
 
-    SELECT sum(amount)/sum(volume)  FROM tempday WHERE id>=v_id_lo and id<v_id_lo+5  INTO v_avrg;
-    SELECT sum(amount),sum(volume)  FROM tempday                                     INTO v_sumamount, v_sumvolume; 
-    SELECT volume                   FROM tempday WHERE                 id =v_id_lo   INTO v_volume;
-    SELECT sum(volume)/2            FROM tempday WHERE id>=v_id_lo and id<v_id_lo+2  INTO v_volume2;
-
-    -- SELECT v_volume2, v_id_lo, v_id_hi;
-
-    --  v_avrg 5日加权均价
-    SET v_chng = 100*(v_low-v_high)/v_high;
     SET @len   = v_id_hi - v_id_lo + 1;
-    SET v_rat1 = v_volume / (v_sumvolume/@NUM);
-    SET v_rat2 = v_volume2/ (v_sumvolume/@NUM);
 
-    SET v_turnov  = 100*v_sumvolume/v_shares;
-    SET v_tovpd     = v_turnov/@NUM;
-
-    INSERT INTO tbl_hilo(code,date1,date2,high,low,close,
-                    avrg,chng,turnov,tovpd,rat1,rat2,off)
-             VALUES(a_code,v_date1,v_date2,v_high,v_low,v_close,
-                    v_avrg,v_chng,v_turnov,v_tovpd,v_rat1,v_rat2,@len);
+    INSERT INTO tbl_hilo(code,  date1,  date2,  high,  low,  close,  off)
+                VALUES(a_code,v_date1,v_date2,v_high,v_low,v_close, @len);
 END tag_hilo //
 
 DROP PROCEDURE IF EXISTS sp_6maishenjian//

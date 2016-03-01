@@ -499,6 +499,7 @@ function fn_get_date()
     # Usage: fn_get_date offset size
     local sta=${1:-1}
     local code=${CODE:-900001}
+    [ "${sta}" -eq 0 ] && fn_echo_fail "fn_get_date sta could not be 0" && exit
     let sta--           #sta=offset-1
     sqls="
         SELECT date from day 

@@ -662,16 +662,13 @@ function fn_hilo()
 
         local code=`sed 's/^0*//g' <<< $1 | xargs printf "%06d"`
         up file_to_table ${code}
-    else
-        if [ -z "${YIST}" ]; then
-            echo "Usage: YIST=xxx SCREENER hilo code..." 
-            exit
-        fi
+    elif [ -z "${YIST}" ]; then
+            fn_echo_succ "set YIST=.codelist" 
     fi
 
     echo "
     SET @END='$END';
-    SET @NUM=${NUM:-30};
+    SET @NUM=${NUM:-10};
     call sp_visit_tbl('${TBL:-zxg}', @fn_hilo);
     " | tee -a $mps_god
     mysql $mo -t kts <<< "source $mps_god"
@@ -687,15 +684,16 @@ function fn_lohi()
         mysql -N kts<<< "SELECT DISTINCT end FROM mat_lohi WHERE num=${iNUM} ORDER by end DESC LIMIT ${LIMIT:-10}" | cat -n
         top=`mysql -N kts<<< "SELECT DISTINCT end FROM mat_lohi WHERE num=${iNUM} ORDER by end DESC LIMIT 1"`
         fn_echo_succ "date-list:"
-        fn_lohi l | grep -B100 --color ${top}
+        fn_lohi l | grep ${OPT:-'-B100'} --color ${top}
         exit
         ;;
     d)
-        sta=${2:-0}
+        [ -z "${2}" ] && echo "Usage: d sta end" && OPT='-C10' fn_lohi e
+        sta=${2}
         end=${3:-$sta}
         local i=
         for i in `seq $sta $end`; do
-            END=`mysql -N kts <<< "SELECT date from day WHERE code=900001 ORDER by date DESC LIMIT ${i},1"`
+            END=`fn_get_date ${i}`
             mysql -N kts<<< "DELETE FROM mat_lohi WHERE end='${END}' and num=${iNUM}"
             fn_echo_succ "DELETE ${END}[${iNUM}] FROM mat_lohi succ!"
         done
