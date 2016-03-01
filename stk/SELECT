@@ -840,10 +840,9 @@ function fn_ma240()
 
 function fn_hilo()
 {
-    columns='code,date1,date2,off,turnov,tovpd,rat1,rat2,high,low,close,chng'
+    columns='code,date1,date2,off,high,low,close'
     columns=${columns:-'*'}
     columns=t.${columns//,/,t.}
-
 
     function fn_yi_dive()
     {
@@ -853,15 +852,15 @@ function fn_hilo()
         "
         # delete停牌个股
         tbl_super_dive="
-        -- rat1:最低日lo量比 rat2:lo+(lo+1)日量比
         SELECT ${columns}, 
         -- dive:当前跳水幅度 rebound:反弹幅度离(low+close)/2
-        round(100*(d.close-t.high)/t.high, 2) as dive, 
-        round(100*(d.close-t.close)/t.close, 2) as rebound, c.nmc, c.name   -- t.close=(low+close)/2
+        round(100*(LEAST(t.low,d.low)-t.high)/t.high) as hilo,
+        round(100*(d.close-t.high)/t.high, 1) as dive, 
+        round(100*(d.close-LEAST(t.low,d.low))/LEAST(t.low,d.low), 2) as rebound, c.nmc, c.name
         FROM tbl_hilo as t, tempday as d, cap as c
         WHERE t.code = d.code and t.code=c.code
         HAVING 1 ${COND}
-        ORDER by ${1:-chng} ${ASC:-ASC} LIMIT ${LIMIT:-36}
+        ORDER by ${FIELD:-dive} ${ASC:-ASC} LIMIT ${LIMIT:-36}
         "
         echo "${tbl_super_dive}"
     }
@@ -1719,6 +1718,8 @@ function fn_wolf()
             ORDER="ORDER by date DESC, time DESC"
         fi
 
+        xCOND="num=${NUM:-8}" xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
+        xt_ret $? "" || return $?
         xCol=code fn_xCol ${iTBL:-mat_dde} xdde ${2}
         xt_ret $? "" || return $?
 
