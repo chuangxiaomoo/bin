@@ -1,8 +1,8 @@
 # code  symbol    SB0:s.bm.b.sm 请把非SB排在第一行以实时更新macd(dif)
 # 使用Ma时即ma(F15)，默认使用ma(F5)
 
-# code  HS300CYB  OPER(>||<)
-3dcybz  HS.CYBZ   <
+# code  HS300CYB  OPER(> || < || 0)
+3dcybz  HS.CYBZ   >
 
 # dif+macd>0
 399300  HS300     close<1

@@ -17,7 +17,7 @@
 # 量子力学        .doc/quantum_meCHANics.md
 # 行为心理学      .doc/behaviorism.md
 # 想看的书        .doc/books.md
-# 本质论          .doc/essential.md            -- 我是谁？从哪来？到哪去？
+# 本质论          .doc/essential.md            -- 我是谁？从哪来？到哪去？ 曹山石
 # 决定论          .doc/model.md                -- 打造自己的交易模型
 # 鸿观            .doc/hongguan.md
 # 牛猫            .doc/gushequ.md

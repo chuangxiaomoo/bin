@@ -1653,14 +1653,15 @@ function fn_nDDE_sqls()
     echo "${sqls}"; exit
 }
 
+function fn_list_wolf_times()
+{
+    fn_echo_warn "time @${END}"
+    mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC" | cat -n
+    exit
+}
+
 function fn_wolf()
 {
-    function fn_list_times()
-    {
-        fn_echo_warn "time @${END}"
-        mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC" | cat -n
-        exit
-    }
 
     if [ -n "${CAUSE}" ]; then
         case ${CAUSE} in
@@ -1741,7 +1742,7 @@ function fn_wolf()
             FIELD=$2; sta=1; 
         fi
 
-        [ "${2}" = l ] && fn_list_times
+        [ "${2}" = l ] && fn_list_wolf_times
 
         # 非实时统计，重新组装wOLF
 
@@ -1765,7 +1766,7 @@ function fn_wolf()
     s|st|select)
         ABBR=w fn_yist
         if [ "$1" = st ]; then
-            fn_isdigit ${sta:=$2} || fn_list_times
+            fn_isdigit ${sta:=$2} || fn_list_wolf_times
             let sta--
             stime=`mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC LIMIT ${sta},1"`
             xCOND="time='${stime}'" xCol=date fn_xCol mat_dde xdde ${END}
@@ -1788,13 +1789,13 @@ function fn_wolf()
     a|e|E)
         HMS=${HMS:-`fn_get_time 1`}
         iSCALE=`SCALE=A fn_scale ${HMS}`
-        iNMC=150
+        iNMC=${nmc:-150}
         eYi=${eYi:-.5}  # 千万大单占20%
         #eYi=`CHAO=0 OPT='-N' LIMIT="800,1"  COND= YIST= FIELD= SELECT lsd amount 2>/dev/null | awk '{printf "%.2f", $6/10000}'`
         case $1 in
-        a) eCOND="eYi>${eYi}"                      ;;
-        e) eCOND="eYi>${eYi} && nmcYi<=${iNMC}"    ;;
-        E) eCOND="eYi>${eYi} && nmcYi >${iNMC}"    ;;
+        a) eCOND="eYi>${eYi}"                                   ;;
+        e) eCOND="eYi>${eYi} && nmcYi<=${iNMC}"                 ;;
+        E) eCOND="eYi>${eYi} && nmcYi >${iNMC} && nmcYi<300"    ;;
         esac
 
         FIELD=${FIELD:-eWolf} fn_wolf st ${2:-1}
@@ -2034,7 +2035,7 @@ function fn_stat()
 function fn_xtempfen()
 {
     fen=`fn_get_time $1`
-    fn_echo_succ "Peel off time@${fen}..."
+    fn_echo_succ "Peel off time[$1]@${fen}..."
 
     local table=${TBL:-xtempday}
     columns='code,date,yesc,open,high,low,close,volume,amount'
@@ -2237,6 +2238,61 @@ function fn_blk_delta()
     return $?
 }
 
+function fn_blk_wolf_blk()
+{
+    CHAO=1 PARTS=2 fn_blk u $1
+    YIST=${chao}.opt.union SELECT wolf e ${2}
+    exit
+    echo "
+    SELECT 
+        hex(n.blk) as blk, m.code,
+        -- count(m.code) as num, 
+        n.sym,
+        ${eWolf} as wolf
+    FROM blk_name as n, blk_memb as m, xdde as x
+    WHERE n.blk=m.blk and m.code=x.code && ${eWolf}>.3 && nmc<${nmc:-150} && m.blk not in ${EXCLUDE_BLK}
+--      ORDER by wolf DESC LIMIT ${LIMIT:-16}
+    " | mysql -t kts
+}
+
+function fn_blk_wolf_team()
+{
+    sta=${1}
+    let sta--
+    stime=`mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC LIMIT ${sta},1"`
+    xCOND="time='${stime}'" xCol=date fn_xCol mat_dde xdde ${END}
+    xt_ret $? "" || return $?
+    #
+    eWolf="ROUND(100*nmc*(pbuy+nbuy)/amount, 2)"
+    sql_blk="${sql_blk:-"hex(n.blk) as blk"}"
+    sqls="
+    SELECT ${sql_blk}, count(m.code) as num, n.sym,
+        round(sum(${eWolf})/count(m.code), 2) as wolf
+    FROM blk_name as n, blk_memb as m, xdde as x
+    WHERE n.blk=m.blk and m.code=x.code && ${eWolf}>${DOOR:-.4} && nmc<${nmc:-150} && m.blk not in ${EXCLUDE_BLK}
+    GROUP by blk 
+    ORDER by ${FIELD:-num} DESC LIMIT ${LIMIT:-16}
+    " 
+    [ "${PARTS:-3}" -eq 3 ] && mysql -t kts <<< "${sqls}"
+    return
+}
+
+function fn_blk_wolf_inter()
+{
+    PARTS=2 sql_blk=n.blk fn_blk_wolf_team ${1:-1}
+    eWolf="ROUND(100*x.nmc*(pbuy+nbuy)/amount, 2)"
+    echo "${sqls}" | mysql -t kts 
+    echo "
+    SELECT m.code, count(m.code) as num, ${eWolf} as eWolf, c.name
+        FROM cap as c, blk_memb as m, xdde as x, (${sqls}) as T
+        WHERE m.blk=T.blk && m.code=x.code && m.code=c.code && ${eWolf}>${DOOR:-.4} && x.nmc<${nmc:-150} && m.blk not in ${EXCLUDE_BLK}
+        GROUP by code
+        HAVING num>=3
+        ORDER by ${FIELD:-eWolf} DESC LIMIT ${LIMIT:-36}
+    " | mysql -t kts
+    return $?
+}
+
 function fn_blk()
 {
     EXCLUDE_BLK="(
@@ -2321,6 +2377,17 @@ function fn_blk()
         LIMIT=3000 fn_sqls
         fn_chao ${chao}.opt.66
         ;;
+    wolf) # blk.wolf
+        case $2 in
+        l|list)     fn_list_wolf_times                  ;;
+        40|[A-Z]*)  fn_blk_wolf_blk   ${@:2}            ;;
+        [0-9]*)     fn_blk_wolf_team  $2                ;;
+        *)          echo "Usage: wolf {list|iF5|BLK}"   ;;
+        esac
+        ;;
+    inter)     
+        fn_blk_wolf_inter $2
+        ;;
     123)
         size=${2:-3}
         xCOND="TRUNCATE(100*(close-yesc)/yesc, 2)>${DOOR:-9.93}"
@@ -2396,9 +2463,8 @@ function fn_blk()
         ;;
     u|union)
         fn_echo_succ ${notinBLK}
-        BLK=${@:2}
         ABBR=m fn_yist
-        ABBR=m fn_peeloff_blk
+        ABBR=m BLK=${@:2} fn_peeloff_blk
        #sql_exclude="&& blk NOT IN ${EXCLUDE_BLK}"
         sqls="
         SELECT m.code,count(m.code) as num, ${nmcYi}, c.name 
@@ -2408,7 +2474,7 @@ function fn_blk()
         ORDER by num ASC LIMIT ${LIMIT:-500}
         " 
         #echo "${sqls}">/dev/stderr; exit
-        mysql -t kts <<< "${sqls}"
+        [ ${PARTS:-3} -eq 3 ] && mysql -t kts <<< "${sqls}"
         fn_chao ${chao}.opt.union
         ;;
     *)
