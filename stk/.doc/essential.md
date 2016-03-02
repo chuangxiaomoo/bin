@@ -5,13 +5,11 @@
   个小时连续不间断的工作时光。工作中的乐趣使我们变得格外有耐心，人在放松惬意
   的情况下，更容易取得完美的结果。
 
-# 本与末                   .doc/stock.md 
-
-# 0和游戏-博弈论-琢磨对手  .doc/opponent.md
-
-# 为什么顺势交易也会死     .doc/shun.md
-
-# 杠杆决定趋势             .doc/leverage.md    杠杆乃交易本质
+# 0和博弈-琢磨对手          .doc/opponent.md
+# 曹山石                    .doc/cao.md
+# 本与末                    .doc/stock.md 
+# 为什么顺势交易也会死      .doc/shun.md
+# 杠杆决定趋势              .doc/leverage.md    杠杆乃交易本质
 
   [巴菲特的雪球是怎样滚成的？](http://blog.sina.com.cn/s/blog_59fbea0a01019ev7.html)
 

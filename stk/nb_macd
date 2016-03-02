@@ -216,13 +216,15 @@ function fn_get_yesc()
 
 function fn_dif_300_6()
 {
-
+    # 默认都写两位，前后补0
+    pcnt2thx=20
+    pcnt2thx=06
     if [ "${OPER:='>'}" = 0 ]; then
         return
     elif [ "${OPER}" = '>' ]; then
-        iSTEP=.0006
+        iSTEP=.00${pcnt2thx}
     else
-        iSTEP=-0.0006
+        iSTEP=-0.00${pcnt2thx}
     fi
 
     sqls="
@@ -235,7 +237,7 @@ function fn_dif_300_6()
     " 
     #mysql -N kts <<<"${sqls}"; exit
     RET=(`mysql -N kts <<<"${sqls}"`)
-    fn_echo_succ "    STAT: hs300: ${RET[1]}  cybz: ${RET[2]}"
+    fn_echo_succ "    STAT: hs300: ${RET[1]}  cybz: ${RET[2]} pcnt2thx: ${pcnt2thx}"
     if [ "${RET[0]}" = 1 ]; then
         fn_echo_warn "    STAT: 300 ${OPER} 006"
         { sleep 5; fn_bell "tweet.wav tweet.wav"; }&
