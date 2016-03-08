@@ -40,6 +40,7 @@
 # 筹码分析法      .doc/六道轮回.千古兴衰.md
 # 缺口理论        .doc/gap_theory.md
 # 涨停理论        .doc/swing10.md
+# 风险分层理论    .doc/risk_layers.md
 
 > 实践 -- 旧有的技术架构已经不足以支撑更大的梦想
 
@@ -64,7 +65,7 @@
 # 逻辑            .doc/logic.md
 # 方法论          .doc/Methodology.md
 # 魔论            .doc/Molun.md           -- 大盘预测体系
-# 博弈论          .doc/gametheory.md
+# 博弈论          .doc/gametheory.md .doc/strategies.md
 # 物理            .doc/physics.md
 # 仓位管理        .doc/position.md        -- 核心理论: 价.量.macd.势.攻.防
 # I问财.关键字    .doc/iwencai.md

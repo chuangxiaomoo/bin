@@ -1157,7 +1157,7 @@ function fn_lohi()
             HAVING 1 ${COND}
             ${notinBLK}
             ORDER by incr ${ASC:-DESC} ) as t
-          HAVING ${HAVING:-1} ORDER by ${FIELD:=incr} ${ASC:-DESC} LIMIT ${LIMIT:-60}
+          HAVING ${HAVING:-1} ORDER by ${FIELD:=incr} ${ASC:-DESC} LIMIT ${LIMIT:-36}
           "
           [ ${DEBUG:-0} -eq 1 ] && echo "${tempday}${tbl_super_dive}" && exit
         }
@@ -1555,8 +1555,11 @@ function fn_scale()
     if [ "${SCALE}" = A ]; then
         mysql -N kts <<<"SELECT ROUND( 1 / (${iRATIO[${index}]}*(1+${mod}/80) ), 3)"
     else
-        echo "带权  不带权"
-        mysql -N kts <<<"SELECT ROUND( 1 / (${iRATIO[${index}]}*(1+${mod}/80) ), 3), ROUND( (60*60*4)/${col_scale}, 3)"
+        echo "带权    不带权  prop"
+        mysql -N kts <<<"
+            SELECT ROUND( 1 / (${iRATIO[${index}]}*(1+${mod}/80) ), 3), 
+                    ROUND( (60*60*4)/${col_scale}, 3),
+                    ROUND( ${iRATIO[${index}]}*(1+${mod}/80),2 )"
     fi
 
     return $?
@@ -1566,10 +1569,11 @@ function fn_wolf_sqls()
 {
     col_tet="ROUND(net/(1-top10_ajst_aR), 2) as Tet,"
     FIELD=${FIELD:-net}
-    DOOR=${DOOR:--5}
+    DOOR=${DOOR:--tov/10}
     yesc='(trade/(1+rise/100))'
     sqls="
-        SELECT ${col_date} w.code, w.rise,
+    --  ALTER TABLE xdde CHANGE tov tov DECIMAL(8,1); -- chao ERROR
+        SELECT ${col_date} w.code, w.rise, ${col_trade}
         round(100*(trade-h.low)/h.low, 1) as incr,
         round(100*(high-LEAST(lohi,trade))/LEAST(lohi,trade), 1) as jump,
         ROUND( (100*(w.amount/shou-$yesc)/$yesc), 1) as avrg, tov,
@@ -1583,10 +1587,10 @@ function fn_wolf_sqls()
     --  ${col_tet}
     --  round((pbuy/nbuy), 2) as Go,
     --  round((nsell/psell), 2) as nGo,
-        round((pbuy+nbuy)/(psell+nsell), 1) as bsp,
-        round((w.shou/h.volume), 1) as prop, h.scale,
+        round((pbuy+nbuy)/(psell+nsell),1) as bsp,
+        round((w.shou/h.volume), 2) as prop, h.scale,
         round(w.amount/10000, 2) as eYi, 
-        ROUND(nmc, 2) as nmcYi 
+        ROUND(nmc, 1) as nmcYi 
         ${col_name}
         FROM xdde as w , curr_lohi as h
         ${WHERE} 
@@ -1636,7 +1640,7 @@ function fn_nDDE_sqls()
         round(net, 2) as net,
         round((pbuy/nbuy), 1) as Go,
         round((pbuy+nbuy)/(psell+nsell), 2) as bsp,
-        round((w.shou/h.volume), 1) as prop, h.scale,
+        round((w.shou/h.volume), 2) as prop, h.scale,
         round(w.amount/10000, 2) as eYi, 
         nmc as nmcYi, w.name 
         FROM ${WOLf} as w, curr_lohi as h
@@ -1651,6 +1655,13 @@ function fn_nDDE_sqls()
     #-- && net>${DOOR}     -- WHERE(net>0)加速3倍
     fn_echo_warn "wolf of ${END}.${stime:-latest} [NUM:${NUM}] [DOOR:${DOOR}] ${FIELD}"
     echo "${sqls}"; exit
+}
+
+function fn_list_wolf_dates()
+{
+    fn_echo_warn "date of wolfes"
+    mysql -N kts<<< "SELECT DISTINCT date FROM mat_dde ORDER by date DESC LIMIT ${LIMIT:-10}" | cat -n
+    exit
 }
 
 function fn_list_wolf_times()
@@ -1694,7 +1705,7 @@ function fn_wolf()
 
     case $1 in
     l|dates)
-        fn_list_date $2
+        fn_list_wolf_dates $2
         ;;
     b|BBD)
         param=${@:2}
@@ -1715,6 +1726,7 @@ function fn_wolf()
             iTBL=dde
         else
             #col_date="DATE_FORMAT(w.date,'%m-%d')as date,time,"
+            jCOND="and date='${END}'"
             col_date="w.date,time,"
             ORDER="ORDER by date DESC, time DESC"
         fi
@@ -1724,7 +1736,7 @@ function fn_wolf()
         xCol=code fn_xCol ${iTBL:-mat_dde} xdde ${2}
         xt_ret $? "" || return $?
 
-        iCOND="and w.code=${2}"
+        iCOND="and w.code=${2} ${jCOND}"
         LIMIT=${LIMIT:-12}
         col_name=
         fn_name ${2}
@@ -1783,10 +1795,11 @@ function fn_wolf()
 
         col_name=',w.name'
         fn_wolf_sqls
-        mysql -t kts <<<"${sqls}"
+        mysql ${OPT:-'-t'} kts <<<"${sqls}"
         fn_chao ${chao}.wolf
         ;;
     a|e|E)
+        col_trade='trade,'
         HMS=${HMS:-`fn_get_time 1`}
         iSCALE=`SCALE=A fn_scale ${HMS}`
         iNMC=${nmc:-150}
@@ -2240,24 +2253,13 @@ function fn_blk_delta()
 
 function fn_blk_wolf_blk()
 {
-    CHAO=1 PARTS=2 fn_blk u $1
-    YIST=${chao}.opt.union SELECT wolf e ${2}
-    exit
-    echo "
-    SELECT 
-        hex(n.blk) as blk, m.code,
-        -- count(m.code) as num, 
-        n.sym,
-        ${eWolf} as wolf
-    FROM blk_name as n, blk_memb as m, xdde as x
-    WHERE n.blk=m.blk and m.code=x.code && ${eWolf}>.3 && nmc<${nmc:-150} && m.blk not in ${EXCLUDE_BLK}
---      ORDER by wolf DESC LIMIT ${LIMIT:-16}
-    " | mysql -t kts
+    CHAO=1 PARTS=2 fn_blk u $1                          # output to ${chao}.opt.union
+    LIMIT=20 FIELD= YIST=${chao}.opt.union SELECT wolf e ${2}
 }
 
 function fn_blk_wolf_team()
 {
-    sta=${1}
+    sta=${1:-1}
     let sta--
     stime=`mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC LIMIT ${sta},1"`
     xCOND="time='${stime}'" xCol=date fn_xCol mat_dde xdde ${END}
@@ -2267,13 +2269,18 @@ function fn_blk_wolf_team()
     sql_blk="${sql_blk:-"hex(n.blk) as blk"}"
     sqls="
     SELECT ${sql_blk}, count(m.code) as num, n.sym,
-        round(sum(${eWolf})/count(m.code), 2) as wolf
+        round(sum(${eWolf})/count(m.code), 2) as wolf,
+        round(sum(rise    )/count(m.code), 2) as rise
     FROM blk_name as n, blk_memb as m, xdde as x
-    WHERE n.blk=m.blk and m.code=x.code && ${eWolf}>${DOOR:-.4} && nmc<${nmc:-150} && m.blk not in ${EXCLUDE_BLK}
+    WHERE n.blk=m.blk and m.code=x.code && m.blk not in ${EXCLUDE_BLK}
+    && ${eWolf}>${eDOOR:-.5} && rise>${rDOOR:-2} && nmc<${nmc:-150} 
     GROUP by blk 
-    ORDER by ${FIELD:-num} DESC LIMIT ${LIMIT:-16}
+    HAVING ${wCOND:-1}
+    ORDER by ${iFIELD:-num} DESC LIMIT ${LIMIT:-16}
     " 
-    [ "${PARTS:-3}" -eq 3 ] && mysql -t kts <<< "${sqls}"
+    #echo "${sqls}" ; exit
+    fn_echo_succ "eWolf layout of ${END} ${stime}"
+    [ "${PARTS:-3}" -eq 3 ] && mysql -t kts <<< "SELECT * FROM (${sqls}) as tbl ORDER by ${FIELD:-num} DESC"
     return
 }
 
@@ -2378,11 +2385,14 @@ function fn_blk()
         fn_chao ${chao}.opt.66
         ;;
     wolf) # blk.wolf
+        set -e
+        usage="Usage: eDOOR=.5 SELECT blk wolf {list|team iF5|iF5|BLK}"
         case $2 in
         l|list)     fn_list_wolf_times                  ;;
+        team)       FIELD=wolf fn_blk_wolf_team $3      ;; # 先匹配team，再匹配digit
         40|[A-Z]*)  fn_blk_wolf_blk   ${@:2}            ;;
         [0-9]*)     fn_blk_wolf_team  $2                ;;
-        *)          echo "Usage: wolf {list|iF5|BLK}"   ;;
+        *)          echo "${usage}"                     ;;
         esac
         ;;
     inter)     

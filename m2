@@ -448,6 +448,15 @@ function fn_puzzle()                    { cat logic_puzzle ;}
     )
     fn_print $@
 }
+function fn_xuexi() {
+function fn_ref()                       { cat ref ;}
+function fn_brain()                     { cat xuexi_brain ;}
+    local opts=(
+        ref
+        brain                           # 人脑与电脑的比对 xiaolei
+    )
+    fn_print $@
+}
 
 function fn_huawei()                    { 
 function fn_to_sort()                   { cat huawei_to_sort ;}
@@ -748,17 +757,6 @@ function fn_sport()                     { cat sport ;}
 function fn_guo()                       { cat guo ;}
 function fn_stupid_things()             { cat stupid_things ;}
 
-function fn_xuexi() {
-function fn_ref()                       { cat ref ;}
-function fn_brain()                     { cat xuexi_brain ;}
-    local opts=(
-        ref
-        brain                           # 人脑与电脑的比对 xiaolei
-    )
-    fn_print $@
-    
-    return $?
-}
 
 # 新教与天主教。信则得救，不信则下地狱 vs 助人行善
 # 一花一世界，一木一浮生，一草一天堂，一叶一如来，
@@ -775,6 +773,7 @@ function fn_main() {
         phi                             # philosophy
         cold                            # 感冒 牙痛 智齿
         logic
+        xuexi                           # 
         annual
         artical
         book
@@ -828,7 +827,6 @@ function fn_main() {
         game_theory
         redwine 
         stupid_things                   # 哪些年做过的蠢事 habit
-        xuexi
     )
     fn_print $@
 }

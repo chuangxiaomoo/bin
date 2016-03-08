@@ -1,6 +1,57 @@
 #! /bin/bash
+. `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
+. /etc/common.rc
 
-date=`date +%F`
-w3m -dump 'http://qt.gtimg.cn/?q=s_sz399300,s_sz399006,s_sz399005' | \
-    awk -v dt=$date -F'~' '{printf "%s\t%s\t%.2f\t%.2f\t%.2f\t%s\t%s\n", dt, $3,$4,$5,$6,$7,$8}'
+function fn_main()
+{
+    fn_set_END
 
+    case $1 in
+    up)
+        w3m -dump 'http://qt.gtimg.cn/?q=s_sz399300,s_sz399102,s_sz399006,s_sz399005,s_sh000001' | \
+            awk -v dt=$END -F'~' '{printf "%s\t%s\t%.2f\t%.2f\t%.2f\t%s\t%s\n", dt, $3,$4,$5,$6,$7,$8}' > ${file_index}
+        echo "
+        DELETE FROM sz_index WHERE date='${END}';
+        LOAD DATA LOCAL INFILE '${file_index}' INTO TABLE sz_index;
+        " | mysql -N kts
+        xt_ret $? "" || return $?
+        ;;
+    l|loop)
+        #while :; do
+        #done
+        shou_399006=`mysql -N kts <<< "SELECT shou FROM sz_index WHERE date='$PREV' && code=399006"`
+        shou_399300=`mysql -N kts <<< "SELECT shou FROM sz_index WHERE date='$PREV' && code=399300"`
+        # echo ${shou_399300} ${shou_399006}; exit
+        w3m -dump 'http://qt.gtimg.cn/?q=s_sz399300,s_sz399102,s_sz399006,s_sz399005,s_sh000001' | \
+            awk -v dt=$END -F'~' '{printf "%s\t%s\t%.2f\t%.2f\t%.2f\t%s\t%s\n", dt, $3,$4,$5,$6,$7,$8}' > ${file_index}
+        echo "
+        DROP   TEMPORARY TABLE IF EXISTS tmp_index;
+        CREATE TEMPORARY TABLE tmp_index LIKE sz_index;
+        LOAD DATA LOCAL INFILE '${file_index}' INTO TABLE tmp_index;
+        UPDATE tmp_index SET amount = ${shou_399006:-0} WHERE code=399006;
+        UPDATE tmp_index SET amount = ${shou_399300:-0} WHERE code=399300;
+        SELECT code,trade,risp,round(shou/amount,2) as prop FROM tmp_index WHERE code in (399006,399300) ORDER by code DESC;
+        " | mysql -t kts | tee ${file_intmp}
+        xt_ret $? "" || return $?
+
+        s_399300=(`awk '/399300/{print $4,$6,$8}' ${file_intmp}`) # trade rise prop
+        s_399006=(`awk '/399006/{print $4,$6,$8}' ${file_intmp}`) # trade rise prop
+        echo ${s_399300[@]}
+        echo ${s_399006[@]}
+        fn_isSqltrue " ${s_399300[1]} < ${s_399006[1]} " && echo yes || echo no
+        #echo -e "
+        #code\t399300\t399006
+        #rise\t${s_399300[1]}\t${s_399006[1]}
+        #prop\t${s_399300[2]}/${shou_399300}
+        #"
+        ;;
+    *)
+        echo "Usage: nb_index {up|loop}"
+        ;;
+    esac
+    
+    return $?
+}
+
+#fn_main l
+fn_main $@

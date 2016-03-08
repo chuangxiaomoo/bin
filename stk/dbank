@@ -146,6 +146,8 @@ file_ma240='/tmp/kts/ma240'
   date_wma='/tmp/kts/wma'
   wolf_raw='/tmp/kts/wolf.raw'
   wolf_rip='/tmp/kts/wolf.rip'
+file_index='/tmp/kts/index'
+file_intmp='/tmp/kts/intmp'
 
 mkdir -p /tmp/kts
 mkdir -p /dev/shm/fenbi
@@ -158,6 +160,15 @@ touch $exclude0
 touch $exclude1
 touch $file_ma120
 touch $file_ma240
+
+function fn_isSqltrue()
+{
+    sqls="SELECT IF($*, 1, 0)"
+    RET=`mysql -N kts <<<"${sqls}"` 
+    xt_ret $? "" || return $?
+    [ "${RET}" -eq 1 ]
+    return $?
+}
 
 function fn_isresting()
 {
@@ -612,7 +623,8 @@ function fn_create_tbl_codes()
 
 function fn_bell()
 {
-    timeout 2 nc 192.168.100.100 1234 <<<"$*"
+   #timeout 2 nc 192.168.100.100 1234 <<<"$*"
+    timeout 2 nc 192.168.0.101 1234 <<<"$*"
 }
 
 function fn_cp_tbl()
