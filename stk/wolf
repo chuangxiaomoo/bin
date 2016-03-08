@@ -92,7 +92,13 @@ function fn_up_dde()
     fn_up_rip
     xt_ret $? "" || return $?
 
-    fn_echo_succ "wolf up `wc -l<${wolf_rip}` raws succ @${YYMMDD} ${HHMMSS}"
+    nr=`wc -l<${wolf_rip}`
+
+    if [ "${nr}" -lt 2600 ]; then
+        fn_echo_fail "Error: nr[${nr}] so little"; exit
+    fi
+
+    fn_echo_succ "wolf up ${nr} raws succ @${YYMMDD} ${HHMMSS}"
 }
 
 function fn_bbd_database()

@@ -156,3 +156,15 @@ CREATE TABLE linqi (
     INDEX(date)
 );
 
+DROP TABLE IF EXISTS sz_index;
+CREATE TABLE sz_index(
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL, 
+    trade       DECIMAL(6,2) NOT NULL,
+    rise        DECIMAL(6,2) NOT NULL,
+    risp        DECIMAL(6,2) NOT NULL,
+    shou        bigint(14)   NOT NULL, 
+    amount      bigint(14)   NOT NULL,
+    INDEX(date)
+);
+
