@@ -1191,7 +1191,7 @@ function fn_lohi()
            YRISE: 昨日的涨幅门限<1.23>，大跌时降低，大涨时调高
       prop/scale: 今日/昨天 量比    强势股的概念及板块很重要，scale<2可以确保资金安全.
         "
-    fn_echo_succ "\
+    fn_echo_succ "
     1. 逐级放量，avri逐步抬高
     COND='vtov>.5 && (avri>bvri||(rise>3&&avri+1>bvri)) && scale>1.23&&prop>1.23 && scale<4&&prop<3' SELECT lohi bvri
     2. 1级放量小，avri逐步抬高
@@ -1203,7 +1203,7 @@ function fn_lohi()
     YIST=${chao}.prev COND='prop>1.4 && rise>0' SELECT lohi i       # 超跌至前低+连续两日DDE为正(中毅达.飞乐音响.当日冲涨停板)
     5. WEEK级别
     COND='w1>1.1&&w2>1' NUM=3 SELECT wee; COND='w1>1.1&&w2>1' NUM=4 SELECT wee
-    " 2>&1 # | sed 's/^  *//'
+    " 2>&1 # | sed 's/^  *//g'
         exit
         ;;
     esac
@@ -1332,8 +1332,7 @@ function fn_cap()
 function fn_lhb()
 {
     if [ -n "${CAUSE}" ]; then
-        CAUSE=`
-                sed -e "s/c3/cause='3up20'/"        \
+        CAUSE=` sed -e "s/c3/cause='3up20'/"        \
                     -e "s/c7/cause='up7'/"          \
                     -e "s/c8/chng>=9.832/"          \
                     -e "s/cs/cause='s3up12'/"       \
@@ -1342,8 +1341,8 @@ function fn_lhb()
                     -e "s/p>/${LOGIC}bsp>/"         \
                     -e 's/A/\&\&/g'                 \
                     -e 's/O/||/g' <<< "${CAUSE}"`
-        # echo ${CAUSE}; exit
         CAUSE="and (${CAUSE})"
+        # echo ${CAUSE}; exit
     fi
 
     sql_maxdate="SELECT max(date) FROM lhb"
@@ -1476,8 +1475,8 @@ function fn_lhb()
         g n     n日内因+3.82%上榜次数统计
         s [i]   SELECT日期，i不指定时为1，代表今天
         d [i]   指定dele日期，i不指定时为1，代表今天
-        a|AND   CAUSE='(8&&(b>15p>2))' COND=\$aCOND
-        o|OR    CAUSE='(8||(b>15p>2))' COND=\$aCOND
+        a|AND   CAUSE='(8&&(b>15p>2))' COND=\$COND
+        o|OR    CAUSE='(8||(b>15p>2))' COND=\$COND
         x|XOR   b>25
 
         CAUSE='3 7 8 s t'
@@ -1506,7 +1505,6 @@ function fn_BBD_wolf()
     y) [ -z "${YIST}" ] && fn_usage || iCOND= fn_yist ;;
     *) fn_usage ;;
     esac
-    #fn_echo_warn "SELECT sum(nmc*net)/sum(nmc) FROM dde $WHERE date='${END}' ${iCOND}"
 
     if [ "${once}" = '' ]; then
         fn_echo_warn "code\tnet\ttov @${END}"; once=1
@@ -1596,10 +1594,11 @@ function fn_wolf_sqls()
         ${WHERE} 
         w.code=h.code && 
         w.date<='${END}' ${iCOND} && net>${DOOR}     -- WHERE(net>0)加速3倍
-        HAVING 1 ${CAUSE} ${COND} && ${eCOND:-1}  ${ORDER:-ORDER by ${FIELD} ${ASC:-DESC}} LIMIT ${LIMIT:-36}
+        HAVING 1 ${COND} && ${eCOND:-1}  ${ORDER:-ORDER by ${FIELD} ${ASC:-DESC}} LIMIT ${LIMIT:-36}
     "
-    fn_echo_warn "wolf of ${date:-${END}}.${stime:-latest} [DOOR:${DOOR}] [COND: ${eCOND}${iCOND}${COND}${CAUSE}] ${FIELD}"
-    # echo "${sqls}"; exit
+    #echo "iCOND:${iCOND}"
+    #echo "${sqls}"; exit
+    fn_echo_warn "wolf of ${date:-${END}}.${stime:-latest} [DOOR:${DOOR} eYi:$eYi nmc:$nmc] [COND: ${COND}] ${FIELD}"
 }
 
 function fn_asm_nDDE()
@@ -1673,25 +1672,6 @@ function fn_list_wolf_times()
 
 function fn_wolf()
 {
-
-    if [ -n "${CAUSE}" ]; then
-        case ${CAUSE} in
-        ct) LIMIT=;;
-        esac
-
-        CAUSE=`
-                sed -e "s/c9/rise>9.93/"        \
-                    -e "s/c8/rise<9.93/"        \
-                    -e "s/c5/avrg>5/"           \
-                    -e "s/c1/Go>1 A bsp>=1.5/"  \
-                    -e "s/ct/net>0 A rise>0/"   \
-                    -e 's/A/\&\&/g'             \
-                    -e 's/O/||/g' <<< "${CAUSE}"`
-        # echo ${CAUSE}; exit
-        CAUSE="and (${CAUSE})"
-        fn_echo_warn "CAUSE: ${CAUSE}"
-    fi
-
     sql_maxdate="SELECT max(date) FROM dde"
     max_dt=`mysql -N kts <<< "${sql_maxdate}"`
     sql_mindate="SELECT min(date) FROM dde"
@@ -1731,7 +1711,7 @@ function fn_wolf()
             ORDER="ORDER by date DESC, time DESC"
         fi
 
-        xCOND="num=${NUM:-8}" xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
+        iCOND="num=${NUM:-8}" xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
         xt_ret $? "" || return $?
         xCol=code fn_xCol ${iTBL:-mat_dde} xdde ${2}
         xt_ret $? "" || return $?
@@ -1759,7 +1739,7 @@ function fn_wolf()
         # 非实时统计，重新组装wOLF
 
         PREV=`END=${date:-${END}} fn_get_prev`
-        xCOND="num=${NUM:-8}" xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
+        iCOND="num=${NUM:-8}" xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
 
         NUM=${NUM:-2}
         STA=`fn_get_date ${NUM}`
@@ -1781,7 +1761,7 @@ function fn_wolf()
             fn_isdigit ${sta:=$2} || fn_list_wolf_times
             let sta--
             stime=`mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC LIMIT ${sta},1"`
-            xCOND="time='${stime}'" xCol=date fn_xCol mat_dde xdde ${END}
+            iCOND="time='${stime}'" xCol=date fn_xCol mat_dde xdde ${END}
             xt_ret $? "" || return $?
         else
             stime=`mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC LIMIT 1"`
@@ -1790,7 +1770,7 @@ function fn_wolf()
         fi
 
         PREV=`END=${date:-${END}} fn_get_prev`
-        xCOND="num=${NUM:-8}" xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
+        iCOND="num=${NUM:-8}" xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
         xt_ret $? "" || return $?
 
         col_name=',w.name'
@@ -1802,13 +1782,12 @@ function fn_wolf()
         col_trade='trade,'
         HMS=${HMS:-`fn_get_time 1`}
         iSCALE=`SCALE=A fn_scale ${HMS}`
-        iNMC=${nmc:-150}
+        nmc=${nmc:-150}
         eYi=${eYi:-.5}  # 千万大单占20%
-        #eYi=`CHAO=0 OPT='-N' LIMIT="800,1"  COND= YIST= FIELD= SELECT lsd amount 2>/dev/null | awk '{printf "%.2f", $6/10000}'`
         case $1 in
         a) eCOND="eYi>${eYi}"                                   ;;
-        e) eCOND="eYi>${eYi} && nmcYi<=${iNMC}"                 ;;
-        E) eCOND="eYi>${eYi} && nmcYi >${iNMC} && nmcYi<300"    ;;
+        e) eCOND="eYi>${eYi} && nmcYi<=${nmc}"                 ;;
+        E) eCOND="eYi>${eYi} && nmcYi >${nmc} && nmcYi<300"    ;;
         esac
 
         FIELD=${FIELD:-eWolf} fn_wolf st ${2:-1}
@@ -1825,14 +1804,6 @@ function fn_wolf()
         cf      code    按15分钟统计
         c       code    按日统计\
         "
-        fn_echo_warn "\
-        CAUSE:
-        c1  攻击性  短期资金涌入，Go>1&&bsp>=1.5
-        ct  高换手  短线活跃资金，net>0Arise>0      -- 前两档和>1亿，并BSP>2
-        cT  博反弹  浙江永强
-        c5  >7保底  avrg>5
-        c8  非涨停  rise<9.93
-        c9  涨停    rise>9.93"
         fn_echo_succ "
         熵减表征eWolf=buy/tov
         COND='eWolf>.5&&Go>1 && nmcYi<100' iEND=2 SELECT wolf s
@@ -2262,7 +2233,7 @@ function fn_blk_wolf_team()
     sta=${1:-1}
     let sta--
     stime=`mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC LIMIT ${sta},1"`
-    xCOND="time='${stime}'" xCol=date fn_xCol mat_dde xdde ${END}
+    iCOND="time='${stime}'" xCol=date fn_xCol mat_dde xdde ${END}
     xt_ret $? "" || return $?
     #
     eWolf="ROUND(100*nmc*(pbuy+nbuy)/amount, 2)"
@@ -2275,7 +2246,7 @@ function fn_blk_wolf_team()
     WHERE n.blk=m.blk and m.code=x.code && m.blk not in ${EXCLUDE_BLK}
     && ${eWolf}>${eDOOR:-.5} && rise>${rDOOR:-2} && nmc<${nmc:-150} 
     GROUP by blk 
-    HAVING ${wCOND:-1}
+    HAVING ${hCOND:-1}
     ORDER by ${iFIELD:-num} DESC LIMIT ${LIMIT:-16}
     " 
     #echo "${sqls}" ; exit
@@ -2400,12 +2371,11 @@ function fn_blk()
         ;;
     123)
         size=${2:-3}
-        xCOND="TRUNCATE(100*(close-yesc)/yesc, 2)>${DOOR:-9.93}"
         dates=(`fn_get_date 1 ${size}`)
 
         for (( i=${size}-1; i>=0; i-- )); do
             date=${dates[$i]}
-            fn_xtempday ${date}
+            iCOND="TRUNCATE(100*(close-yesc)/yesc, 2)>${DOOR:-9.93}" fn_xtempday ${date}
             fn_echo_succ "DOOR date: ${date}"
             echo "
             SELECT hex(n.blk) as blk, count(m.code) as num, n.sym FROM blk_name as n, blk_memb as m, xtempday as d

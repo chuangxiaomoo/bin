@@ -3,7 +3,10 @@
 helpmsg="
     ------------------------------ 环境变量 -----------------------------
     ASC         排序方式，SELECT默认使用asc，SCREENER默认使用desc
-    COND        条件过滤表达式，SELECT时使用，默认为空
+    COND        条件过滤表达式，默认为空，常置于HAVING CLAUSE 中
+   iCOND        不对外开放条件，for子函数差异化，常置于WHERE CLAUSE 中
+   xCOND        作为一个临时变量，易于HAVING COND iCOND等的组装
+  HAVING        条件过滤表达式，常置于SELECT嵌套时的最后过滤 e.g. fn_yi_descend
     CHAO        1时在所有模型上叠加超跌模型
     END         时间范围的右值，默认使用900001的max(date)
     GEM         Growth Enterprise Market, 1 to filter
@@ -572,7 +575,7 @@ function fn_xtempday()
 
     echo "
     $DROP ${table}; CREATE TABLE ${table} LIKE day;
-    INSERT INTO ${table} SELECT * from day where ${sql_cond} HAVING ${xCOND:-1};
+    INSERT INTO ${table} SELECT * from day where ${sql_cond} HAVING ${iCOND:-1};
     " | mysql kts
     return $?
 }
@@ -597,7 +600,7 @@ function fn_xCol()
 
     echo "
     $DROP ${table:=$2}; CREATE TABLE ${table} LIKE ${1};
-    INSERT INTO ${table} SELECT * from ${1} where ${sql_cond} and ${xCOND:-1};
+    INSERT INTO ${table} SELECT * from ${1} where ${sql_cond} and ${iCOND:-1};
     " | mysql kts
     return $?
 }
