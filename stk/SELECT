@@ -58,13 +58,13 @@ function fn_lsd()
     loop)
         local i
         for (( i=1; i<=${NUM:-10}; i+=1 )); do
-            OPT=-N COND="rise>${DOOR:-9.93}" SELECT lsd ${i} | wc -l 2>&1
+            OPT=-N COND="rise>${rDOOR:-9.93}" SELECT lsd ${i} | wc -l 2>&1
         done 2>&1 | grep -v HAVING
         exit
         ;;
     t|top)
         LIMIT=${LIMIT:-200}
-        HAVING="rise>${DOOR:-9.93}"
+        HAVING="rise>${rDOOR:-9.93}"
         FIELD=${FIELD:-nmc}
         chao=${chao}.top
         ;;
@@ -983,7 +983,7 @@ function fn_lohi_wolf()
         echo "
         ${tempday}
         INSERT INTO wind(date,incr,rise,hico,red)
-        SELECT '${END}', sum(incr)/${LIMIT}, sum(rise)/${LIMIT}, sum(rise-hiri)/${LIMIT} as hico, sum(rise>${iDOOR:-0}) 
+        SELECT '${END}', sum(incr)/${LIMIT}, sum(rise)/${LIMIT}, sum(rise-hiri)/${LIMIT} as hico, sum(rise>${rDOOR:-0}) 
         FROM ( ${tbl_super_dive} ) as iwolf
         " | mysql -N  kts
         # echo "${tbl_super_dive}"; exit
@@ -1030,7 +1030,7 @@ function fn_lohi_mi5()
         echo "
         ${tempday}
         INSERT INTO f5rise(time,f5rise,hico,red)
-        SELECT '${HMS}', sum(rise)/${LIMIT} as wolf, sum(rise-hiri)/${LIMIT} as hico, sum(rise>${iDOOR:-0}) FROM (
+        SELECT '${HMS}', sum(rise)/${LIMIT} as wolf, sum(rise-hiri)/${LIMIT} as hico, sum(rise>${rDOOR:-0}) FROM (
         ${tbl_super_dive}
         ) as iwolf
         " | mysql -N  kts
@@ -1334,7 +1334,7 @@ function fn_lhb()
     if [ -n "${CAUSE}" ]; then
         CAUSE=` sed -e "s/c3/cause='3up20'/"        \
                     -e "s/c7/cause='up7'/"          \
-                    -e "s/c8/chng>=9.832/"          \
+                    -e "s/c8/rise>=9.832/"          \
                     -e "s/cs/cause='s3up12'/"       \
                     -e "s/ct/cause='tov20'/"        \
                     -e "s/b>/bloo>/"                \
@@ -1348,7 +1348,7 @@ function fn_lhb()
     sql_maxdate="SELECT max(date) FROM lhb"
     max_dt=`mysql -N kts <<< "${sql_maxdate}"`
     case $1 in
-    r|cause)
+    C|cause)
         mysql -t kts <<<"SELECT DISTINCT cause FROM lhb"
         ;;
     l|dates)
@@ -1432,7 +1432,7 @@ function fn_lhb()
         columns=l.${columns//,/,l.}
 
         sqls="
-            SELECT ${columns}, round(chng,1) as chng,
+            SELECT ${columns}, round(chng,1) as rise,
             ${sql_next}
             ${sql_tov}
             round((buy-sell)/10000, 2) as eLHB,
@@ -1451,41 +1451,27 @@ function fn_lhb()
         mysql -t kts <<<"${sqls}"
         fn_chao
         ;;
-    a|o)
-        LOGIC=${1/o/'||'}
-        LOGIC=${LOGIC/a/'\&\&'}
-        CAUSE="(c8&&(b>${BLOO:-13.8}p>1.38))||(chng<-4.9&&bsp>2)"
-        LOGIC=${LOGIC} CAUSE="${CAUSE}" COND="${COND#and}" SELECT lhb s ${2:-1} ${3:-avrg}
-        #echo $CAUSE
-        ;;
-    x)
-        BLOO=25;
-        LOGIC=${1/x/'\&\&'}
-        CAUSE="(c8&&(b>${BLOO}p>1.38))"
-        LOGIC=${LOGIC} CAUSE="${CAUSE}" COND="${COND#and}" SELECT lhb s ${2:-1} ${3:-bloo}
-        ;;
     *)
         fn_echo_succ "\tlhb max_date@${max_dt}"
         echo "
         SELECT lhb <param>
         +10 n   n日内涨停次数
         c code  指定代码
-        r       上榜原因list
+        C|cause 上榜原因list
         l       日期list
         g n     n日内因+3.82%上榜次数统计
         s [i]   SELECT日期，i不指定时为1，代表今天
         d [i]   指定dele日期，i不指定时为1，代表今天
-        a|AND   CAUSE='(8&&(b>15p>2))' COND=\$COND
-        o|OR    CAUSE='(8||(b>15p>2))' COND=\$COND
-        x|XOR   b>25
 
-        CAUSE='3 7 8 s t'
+        CAUSE='c3Oc7Oct'
         c3   3up20
         c7   up7
         c8   +5%         ----- 3+7=8
         cs   s3up12
         ct   tov20
         b>p> bloo.bsp    tov!>20 && avrg>7 && opri>3 (tov太大即3日内到头 && 和大猪在一起 && 起飞的欲望)
+
+        FIELD=eYi COND='eYi>.5' CAUSE='c3Oc7Oct' SELECT lhb s
         "
         ;;
     esac
@@ -1592,13 +1578,13 @@ function fn_wolf_sqls()
         ${col_name}
         FROM xdde as w , curr_lohi as h
         ${WHERE} 
-        w.code=h.code && 
-        w.date<='${END}' ${iCOND} && net>${DOOR}     -- WHERE(net>0)加速3倍
+        w.code=h.code ${iCOND} && w.date<='${END}' && net>${DOOR}     -- WHERE(net>0)加速3倍
         HAVING 1 ${COND} && ${eCOND:-1}  ${ORDER:-ORDER by ${FIELD} ${ASC:-DESC}} LIMIT ${LIMIT:-36}
     "
     #echo "iCOND:${iCOND}"
     #echo "${sqls}"; exit
-    fn_echo_warn "wolf of ${date:-${END}}.${stime:-latest} [DOOR:${DOOR} eYi:$eYi nmc:$nmc] [COND: ${COND}] ${FIELD}"
+    #eYi:$eYi nmc:$nmc
+    fn_echo_warn "wolf of ${date:-${END}}.${stime:-latest} [DOOR:${DOOR}] [COND: ${COND}${eCOND}] ${FIELD}"
 }
 
 function fn_asm_nDDE()
@@ -1706,7 +1692,7 @@ function fn_wolf()
             iTBL=dde
         else
             #col_date="DATE_FORMAT(w.date,'%m-%d')as date,time,"
-            jCOND="and date='${END}'"
+            jCOND="and w.date='${END}'"
             col_date="w.date,time,"
             ORDER="ORDER by date DESC, time DESC"
         fi
@@ -1769,6 +1755,8 @@ function fn_wolf()
             xt_ret $? "" || return $?
         fi
 
+        fn_issqltrue "'${stime}'<'12:00:00'" && eCOND=${eCOND//iSCALE/1} || eCOND=${eCOND//iSCALE/2}
+
         PREV=`END=${date:-${END}} fn_get_prev`
         iCOND="num=${NUM:-8}" xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
         xt_ret $? "" || return $?
@@ -1783,11 +1771,11 @@ function fn_wolf()
         HMS=${HMS:-`fn_get_time 1`}
         iSCALE=`SCALE=A fn_scale ${HMS}`
         nmc=${nmc:-150}
-        eYi=${eYi:-.5}  # 千万大单占20%
+        eYi=${eYi:-.3}  # 千万大单占20%
         case $1 in
-        a) eCOND="eYi>${eYi}"                                   ;;
-        e) eCOND="eYi>${eYi} && nmcYi<=${nmc}"                 ;;
-        E) eCOND="eYi>${eYi} && nmcYi >${nmc} && nmcYi<300"    ;;
+        a) eCOND="eYi>${eYi}"                                       ;;
+        e) eCOND="eYi>${eYi}*iSCALE && nmcYi<=${nmc}"               ;;
+        E) eCOND="eYi>${eYi}*iSCALE && nmcYi >${nmc} && nmcYi<300"  ;;
         esac
 
         FIELD=${FIELD:-eWolf} fn_wolf st ${2:-1}
@@ -2224,8 +2212,8 @@ function fn_blk_delta()
 
 function fn_blk_wolf_blk()
 {
-    CHAO=1 PARTS=2 fn_blk u $1                          # output to ${chao}.opt.union
-    LIMIT=20 FIELD= YIST=${chao}.opt.union SELECT wolf e ${2}
+    CHAO=1 PARTS=2 fn_blk u $1                          # output to ${chao}.blk
+    LIMIT=20 FIELD= YIST=${chao}.blk SELECT wolf e ${2}
 }
 
 function fn_blk_wolf_team()
@@ -2240,17 +2228,17 @@ function fn_blk_wolf_team()
     sql_blk="${sql_blk:-"hex(n.blk) as blk"}"
     sqls="
     SELECT ${sql_blk}, count(m.code) as num, n.sym,
-        round(sum(${eWolf})/count(m.code), 2) as wolf,
-        round(sum(rise    )/count(m.code), 2) as rise
+        round(sum(rise    )/count(m.code), 2) as rise,
+        round(sum(${eWolf})/count(m.code), 2) as wolf
     FROM blk_name as n, blk_memb as m, xdde as x
     WHERE n.blk=m.blk and m.code=x.code && m.blk not in ${EXCLUDE_BLK}
-    && ${eWolf}>${eDOOR:-.5} && rise>${rDOOR:-2} && nmc<${nmc:-150} 
+    && ${eWolf}>${iDOOR:=.5} && rise>${rDOOR:=2} && nmc<${nmc:-150} 
     GROUP by blk 
-    HAVING ${hCOND:-1}
+    HAVING num>${iNUM:-1} ${COND}
     ORDER by ${iFIELD:-num} DESC LIMIT ${LIMIT:-16}
     " 
     #echo "${sqls}" ; exit
-    fn_echo_succ "eWolf layout of ${END} ${stime}"
+    fn_echo_succ "eWolf layout of ${END} ${stime} [iDOOR:$iDOOR] [rDOOR:$rDOOR]"
     [ "${PARTS:-3}" -eq 3 ] && mysql -t kts <<< "SELECT * FROM (${sqls}) as tbl ORDER by ${FIELD:-num} DESC"
     return
 }
@@ -2302,15 +2290,15 @@ function fn_blk()
     10)
         fn_echo_succ "Classify @${END}"
         ABBR=m fn_yist
-        CHAO=1 LIMIT=3000 COND="rise>${DOOR:-9.93}" SELECT lsd ${2}> /dev/null
+        CHAO=1 LIMIT=3000 COND="rise>${rDOOR:-9.93}" SELECT lsd ${2}> /dev/null
         YIST='/tmp/kts/chao.lsd' fn_blk layout
         ;;
     ban)
         ABBR=m fn_notin_blk FFA1
         DZH=N CHAO=1 fn_blk u ${BLK} > /dev/null
         xt_ret $? "BLK:${BLK}" || return $?
-        YIST='/tmp/kts/chao.opt.union' \
-        COND="rise>${DOOR:-9.93}" SELECT lsd ${@:2}
+        YIST='/tmp/kts/chao.blk' \
+        COND="rise>${rDOOR:-9.93}" SELECT lsd ${@:2}
         xt_ret $? "" || return $?
         ;;
     delta)
@@ -2345,7 +2333,7 @@ function fn_blk()
         SELECT d.code,sum(${RISE}) as rise, ${nmcYi}, c.name FROM day as d, cap as c ${frBLK}
             ${WHERE} d.code=c.code and d.date>='${sta}' && d.date<='${END}' ${inBLK}
             GROUP by code 
-            HAVING ${HAVING:-1} ${COND} and rise>${DOOR:-'-100'}
+            HAVING ${HAVING:-1} ${COND} and rise>${rDOOR:-'-100'}
             ORDER BY ${FIELD:-rise} ${ASC:-desc} LIMIT ${LIMIT:-36}
         " 
         }
@@ -2357,11 +2345,11 @@ function fn_blk()
         ;;
     wolf) # blk.wolf
         set -e
-        usage="Usage: eDOOR=.5 SELECT blk wolf {list|team iF5|iF5|BLK}"
+        usage="Usage: iDOOR=.5 rDOOR=2 SELECT blk wolf {list|[team]iF5|BLK}"
         case $2 in
         l|list)     fn_list_wolf_times                  ;;
         team)       FIELD=wolf fn_blk_wolf_team $3      ;; # 先匹配team，再匹配digit
-        40|[A-Z]*)  fn_blk_wolf_blk   ${@:2}            ;;
+        40|[A-Z]*)  COND= fn_blk_wolf_blk   ${@:2}      ;;
         [0-9]*)     fn_blk_wolf_team  $2                ;;
         *)          echo "${usage}"                     ;;
         esac
@@ -2455,7 +2443,7 @@ function fn_blk()
         " 
         #echo "${sqls}">/dev/stderr; exit
         [ ${PARTS:-3} -eq 3 ] && mysql -t kts <<< "${sqls}"
-        fn_chao ${chao}.opt.union
+        fn_chao ${chao}.blk
         ;;
     *)
         echo "
