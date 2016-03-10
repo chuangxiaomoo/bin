@@ -7,6 +7,9 @@
   我唯一能让人喜欢我的方法就是变得富有，而且非常大方
 
 # books
+
+  澄衷蒙学堂字课图说  日本早稻田大學圖書館掃描民國時期出版本，可免費下載
+                      [](http://archive.wul.waseda.ac.jp/kosho/ho05/ho05_01134/)
   科学与逻辑方法论    [](http://wenku.baidu.com/view/b9a51a1aa8114431b90dd8af.html?re=view)
   美感奥妙和需求进化  [](http://survivor99.com/lcg/books/beauty/index.htm)
   未生                韩国围棋类比

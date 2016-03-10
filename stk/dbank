@@ -6,6 +6,9 @@ helpmsg="
     COND        条件过滤表达式，默认为空，常置于HAVING CLAUSE 中
    iCOND        不对外开放条件，for子函数差异化，常置于WHERE CLAUSE 中
    xCOND        作为一个临时变量，易于HAVING COND iCOND等的组装
+    DOOR        最通用的DOOR
+   iDOOR        交叉引用时使用，以免相互干扰
+   rDOOR        rise
   HAVING        条件过滤表达式，常置于SELECT嵌套时的最后过滤 e.g. fn_yi_descend
     CHAO        1时在所有模型上叠加超跌模型
     END         时间范围的右值，默认使用900001的max(date)
@@ -252,6 +255,7 @@ function fn_chao()
     PLAIN=${1:-$chao}
     sql_chao="${PREFIX}SELECT code FROM (${sqls//;/}) as t"
     # echo "${sql_chao}"; exit
+    # 最后因没有换行而有重复，uniq不能处理
     mysql -N kts <<<"${sql_chao}" |grep '^[036]'| uniq|tee ${TEE} ${PLAIN} > /dev/null 
 
     case ${DZH} in
@@ -626,8 +630,8 @@ function fn_create_tbl_codes()
 
 function fn_bell()
 {
-   #timeout 2 nc 192.168.100.100 1234 <<<"$*"
-    timeout 2 nc 192.168.0.101 1234 <<<"$*"
+    timeout 2 nc 192.168.100.100 1234 <<<"$*"
+   #timeout 2 nc 192.168.0.101 1234 <<<"$*"
 }
 
 function fn_cp_tbl()
