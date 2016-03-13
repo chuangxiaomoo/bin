@@ -2,6 +2,40 @@
 . `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
 . /etc/common.rc
 
+function fn_checking()
+{
+    shou_399006=`mysql -N kts <<< "SELECT shou FROM sz_index WHERE date='$PREV' && code=399006"`
+    shou_399300=`mysql -N kts <<< "SELECT shou FROM sz_index WHERE date='$PREV' && code=399300"`
+    # echo ${shou_399300} ${shou_399006}; exit
+    w3m -dump 'http://qt.gtimg.cn/?q=s_sz399300,s_sz399102,s_sz399006,s_sz399005,s_sh000001' | \
+        awk -v dt=$END -F'~' '{printf "%s\t%s\t%.2f\t%.2f\t%.2f\t%s\t%s\n", dt, $3,$4,$5,$6,$7,$8}' > ${file_index}
+    echo "
+    DROP   TEMPORARY TABLE IF EXISTS tmp_index;
+    CREATE TEMPORARY TABLE tmp_index LIKE sz_index;
+    LOAD DATA LOCAL INFILE '${file_index}' INTO TABLE tmp_index;
+    UPDATE tmp_index SET amount = ${shou_399006:-0} WHERE code=399006;
+    UPDATE tmp_index SET amount = ${shou_399300:-0} WHERE code=399300;
+    SELECT code,trade,risp,round(shou/amount,2) as prop FROM tmp_index WHERE code in (399006,399300) ORDER by code DESC;
+    " | mysql -t kts | tee ${file_intmp}
+    xt_ret $? "" || return $?
+
+    s_399300=(`awk '/399300/{print $4,$6,$8}' ${file_intmp}`) # trade rise prop
+    s_399006=(`awk '/399006/{print $4,$6,$8}' ${file_intmp}`) # trade rise prop
+    #echo ${s_399300[@]}
+    #echo ${s_399006[@]}
+    #
+    [ "${OPT}" = '>' ] && iSTEP=${pcnt2thx} || iSTEP="-${pcnt2thx}"
+
+    if fn_isSqltrue " ${s_399006[1]}+(${iSTEP}) ${OPT} ${s_399300[1]} "; then
+        fn_echo_succ "Bingo jump!"; fn_bell;
+    fi
+    if [ ${CHAO:-0} -eq 0 ] && fn_isSqltrue " ${s_399006[2]}>.45"; then
+        fn_echo_succ "Bingo prop!"; fn_bell;
+    fi
+    
+    return $?
+}
+
 function fn_main()
 {
     fn_set_END
@@ -17,36 +51,18 @@ function fn_main()
         xt_ret $? "" || return $?
         ;;
     l|loop)
-        #while :; do
-        #done
-        shou_399006=`mysql -N kts <<< "SELECT shou FROM sz_index WHERE date='$PREV' && code=399006"`
-        shou_399300=`mysql -N kts <<< "SELECT shou FROM sz_index WHERE date='$PREV' && code=399300"`
-        # echo ${shou_399300} ${shou_399006}; exit
-        w3m -dump 'http://qt.gtimg.cn/?q=s_sz399300,s_sz399102,s_sz399006,s_sz399005,s_sh000001' | \
-            awk -v dt=$END -F'~' '{printf "%s\t%s\t%.2f\t%.2f\t%.2f\t%s\t%s\n", dt, $3,$4,$5,$6,$7,$8}' > ${file_index}
-        echo "
-        DROP   TEMPORARY TABLE IF EXISTS tmp_index;
-        CREATE TEMPORARY TABLE tmp_index LIKE sz_index;
-        LOAD DATA LOCAL INFILE '${file_index}' INTO TABLE tmp_index;
-        UPDATE tmp_index SET amount = ${shou_399006:-0} WHERE code=399006;
-        UPDATE tmp_index SET amount = ${shou_399300:-0} WHERE code=399300;
-        SELECT code,trade,risp,round(shou/amount,2) as prop FROM tmp_index WHERE code in (399006,399300) ORDER by code DESC;
-        " | mysql -t kts | tee ${file_intmp}
-        xt_ret $? "" || return $?
-
-        s_399300=(`awk '/399300/{print $4,$6,$8}' ${file_intmp}`) # trade rise prop
-        s_399006=(`awk '/399006/{print $4,$6,$8}' ${file_intmp}`) # trade rise prop
-        echo ${s_399300[@]}
-        echo ${s_399006[@]}
-        fn_isSqltrue " ${s_399300[1]} < ${s_399006[1]} " && echo yes || echo no
-        #echo -e "
-        #code\t399300\t399006
-        #rise\t${s_399300[1]}\t${s_399006[1]}
-        #prop\t${s_399300[2]}/${shou_399300}
-        #"
+        OPT=${OPT:-'>'}
+        pcnt2thx=${STEP:-0.06}/100
+        pcnt2thx=${STEP:-0.10}/100
+        while :; do
+            fn_isresting && { sleep 150; continue; }
+            fn_checking
+            echo "sleeping ${SECs:=60}s for p006%+$iSTEP ${OPT} p300%..."
+            sleep ${SECs}
+        done
         ;;
     *)
-        echo "Usage: nb_index {up|loop}"
+        echo "Usage: OPT='>' STEP=.1 nb_index {up|loop}"
         ;;
     esac
     

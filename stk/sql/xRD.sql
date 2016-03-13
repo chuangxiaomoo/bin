@@ -352,7 +352,7 @@ CREATE PROCEDURE sp_create_tempday() tag_tempday:BEGIN
         close       DECIMAL(6,2) NOT NULL,
         volume      DECIMAL(12,2)NOT NULL,
         amount      DECIMAL(12,2)NOT NULL DEFAULT 0,
-        INDEX(date)
+        INDEX(date,close)
     );
    #)engine memory;
 END tag_tempday //
@@ -560,6 +560,9 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
 
         SET v_id = v_id + 1;
     END WHILE;
+
+    -- 善后
+    IF a_type = @fn_lohi            THEN call sp_cover_lohi();     END IF;
 END tag_visit //
 
 DROP PROCEDURE IF EXISTS sp_xRD//
@@ -1276,7 +1279,6 @@ DROP PROCEDURE IF EXISTS sp_create_tbl_lohi //
 CREATE PROCEDURE sp_create_tbl_lohi() tag_tbl_lohi:BEGIN 
     DROP   TABLE IF EXISTS tbl_lohi;
     CREATE TABLE tbl_lohi (
-        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
         date1       date NOT NULL DEFAULT 0,
         date2       date NOT NULL DEFAULT 0,
@@ -1289,6 +1291,7 @@ CREATE PROCEDURE sp_create_tbl_lohi() tag_tbl_lohi:BEGIN
         amount      DECIMAL(12,2) NOT NULL DEFAULT 0,
         mavol5      INT
     );
+    CREATE TEMPORARY TABLE tmp_lohi LIKE tbl_lohi;
 --  DROP   TABLE IF EXISTS mat_lohi;
     CREATE TABLE IF NOT EXISTS mat_lohi (
         id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
@@ -1308,6 +1311,11 @@ CREATE PROCEDURE sp_create_tbl_lohi() tag_tbl_lohi:BEGIN
         INDEX(end,num,code)
     );
 END tag_tbl_lohi //
+
+DROP PROCEDURE IF EXISTS sp_cover_lohi //
+CREATE PROCEDURE sp_cover_lohi() tag_cover_lohi:BEGIN 
+    INSERT INTO tbl_lohi SELECT * FROM tmp_lohi;
+END tag_cover_lohi //
 
 DROP PROCEDURE IF EXISTS sp_lohi//
 CREATE PROCEDURE sp_lohi(a_code INT(6) ZEROFILL) tag_lohi:BEGIN
@@ -1339,23 +1347,17 @@ CREATE PROCEDURE sp_lohi(a_code INT(6) ZEROFILL) tag_lohi:BEGIN
     SELECT v_volume/volume FROM tempday WHERE id =2         INTO v_scale;
     SELECT sum(volume)/5   FROM tempday WHERE id<=5         INTO v_mavol5;
     SELECT id,date,close   FROM tempday                     order by close asc  LIMIT 1 INTO v_id_lo, v_date1, v_low;
-    SELECT id,date,close   FROM tempday WHERE id<=v_id_lo   order by close DESC LIMIT 1 INTO v_id_hi, v_date2, v_high;
+    SELECT id,date,close   FROM tempday                     order by close DESC LIMIT 1 INTO v_id_hi, v_date2, v_high;
+--  SELECT id,date,close   FROM tempday WHERE id<=v_id_lo   order by close DESC LIMIT 1 INTO v_id_hi, v_date2, v_high;
     SELECT min(close)      FROM tempday WHERE date>=v_date2                             INTO v_lohi;
 
-    -- 我们只预测两天，因为有了volume，不再放大mavol5
-    -- SET v_mavol5 = IF(v_volume>v_mavol5, v_volume*.618+v_mavol5*.382, v_mavol5*.618+v_volume*.382);
-
-    -- high=low，创历史新低，如此可得出第一根阳线
-    -- IF v_id_hi = v_id_lo THEN
-    --     LEAVE tag_lohi;
-    -- END IF;
-
-    -- lohi被征用为高点下落幅度，只作主升浪
-    -- SET v_lohi = 100*(v_high-v_low)/v_low;
+    -- lohi被征用为高点下落后低点，只作主升浪
+    -- incr = low trade
+    -- jump = high lohi trade 
 
     SET @len   = v_id_lo-v_id_hi + 1;
 
-    INSERT INTO tbl_lohi(code,date1,date2,   high,low,    lohi,off, scale,  volume, amount, mavol5)
+    INSERT INTO tmp_lohi(code,date1,date2,   high,low,    lohi,off, scale,  volume, amount, mavol5)
              VALUES(a_code,v_date1,v_date2,v_high,v_low,v_lohi,@len, v_scale,v_volume,v_amount, v_mavol5);
 END tag_lohi //
 

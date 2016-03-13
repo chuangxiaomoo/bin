@@ -18,6 +18,11 @@
 
   apt-get source <你要下载的源代码包名>
 
+# remove
+
+  sudo apt-get install xxxx 安装软件后
+  sudo apt-get remove apache2
+  sudo apt-get autoremove
 
 # cache
 

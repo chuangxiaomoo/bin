@@ -1553,7 +1553,7 @@ function fn_wolf_sqls()
 {
     col_tet="ROUND(net/(1-top10_ajst_aR), 2) as Tet,"
     FIELD=${FIELD:-net}
-    DOOR=${DOOR:--tov/10}
+    DOOR=${DOOR:--.08*tov}
     yesc='(trade/(1+rise/100))'
     sqls="
     --  ALTER TABLE xdde CHANGE tov tov DECIMAL(8,1); -- chao ERROR
@@ -1576,13 +1576,13 @@ function fn_wolf_sqls()
         round(w.amount/10000, 2) as eYi, 
         ROUND(nmc, 1) as nmcYi 
         ${col_name}
-        FROM xdde as w , curr_lohi as h
+        FROM xdde as w, curr_lohi as h
         ${WHERE} 
         w.code=h.code ${iCOND} && w.date<='${END}' && net>${DOOR}     -- WHERE(net>0)加速3倍
         HAVING 1 ${COND} && ${eCOND:-1}  ${ORDER:-ORDER by ${FIELD} ${ASC:-DESC}} LIMIT ${LIMIT:-36}
     "
-    #echo "iCOND:${iCOND}"
     #echo "${sqls}"; exit
+    #echo "iCOND:${iCOND}"
     #eYi:$eYi nmc:$nmc
     fn_echo_warn "wolf of ${date:-${END}}.${stime:-latest} [DOOR:${DOOR}] [COND: ${COND}${eCOND}] ${FIELD}"
 }
@@ -1691,18 +1691,17 @@ function fn_wolf()
             ORDER="ORDER by ${FIELD:-date} DESC"
             iTBL=dde
         else
-            #col_date="DATE_FORMAT(w.date,'%m-%d')as date,time,"
-            jCOND="and w.date='${END}'"
+            jCOND="date='${END}'"
             col_date="w.date,time,"
             ORDER="ORDER by date DESC, time DESC"
         fi
 
-        iCOND="num=${NUM:-8}" xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
+        iCOND="num=${NUM:-8}"   xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
         xt_ret $? "" || return $?
-        xCol=code fn_xCol ${iTBL:-mat_dde} xdde ${2}
+        iCOND="${jCOND}"        xCol=code fn_xCol ${iTBL:-mat_dde} xdde ${2}
         xt_ret $? "" || return $?
 
-        iCOND="and w.code=${2} ${jCOND}"
+        iCOND="and w.code=${2}" # ${jCOND}"
         LIMIT=${LIMIT:-12}
         col_name=
         fn_name ${2}
@@ -1741,21 +1740,22 @@ function fn_wolf()
         mysql -t kts <<<"${sqls}"
         fn_chao
         ;;
-    s|st|select)
+    i)
         ABBR=w fn_yist
-        if [ "$1" = st ]; then
-            fn_isdigit ${sta:=$2} || fn_list_wolf_times
-            let sta--
-            stime=`mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC LIMIT ${sta},1"`
-            iCOND="time='${stime}'" xCol=date fn_xCol mat_dde xdde ${END}
-            xt_ret $? "" || return $?
-        else
-            stime=`mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC LIMIT 1"`
-            xCol=date fn_xCol dde xdde ${END}
-            xt_ret $? "" || return $?
-        fi
+        fn_isdigit ${sta:=${2:-1}} || fn_list_wolf_times
+        let sta--
+        stime=`mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC LIMIT ${sta},1"`
+        iCOND="time='${stime}'" xCol=date fn_xCol mat_dde xdde ${END}
+        xt_ret $? "" || return $?
 
-        fn_issqltrue "'${stime}'<'12:00:00'" && eCOND=${eCOND//iSCALE/1} || eCOND=${eCOND//iSCALE/2}
+        # tag_伸缩处理
+        if fn_issqltrue "'${stime}'>'12:00:00'"; then
+            eCOND=${eCOND//iSCALE/3}
+        elif fn_issqltrue "'${stime}'>'10:30:00'"; then
+            eCOND=${eCOND//iSCALE/2}
+        else
+            eCOND=${eCOND//iSCALE/1}
+        fi
 
         PREV=`END=${date:-${END}} fn_get_prev`
         iCOND="num=${NUM:-8}" xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
@@ -1771,14 +1771,14 @@ function fn_wolf()
         HMS=${HMS:-`fn_get_time 1`}
         iSCALE=`SCALE=A fn_scale ${HMS}`
         nmc=${nmc:-150}
-        eYi=${eYi:-.3}  # 千万大单占20%
+        eYi=${eYi:-.2}  # tag_伸缩处理
         case $1 in
         a) eCOND="eYi>${eYi}"                                       ;;
         e) eCOND="eYi>${eYi}*iSCALE && nmcYi<=${nmc}"               ;;
         E) eCOND="eYi>${eYi}*iSCALE && nmcYi >${nmc} && nmcYi<300"  ;;
         esac
 
-        FIELD=${FIELD:-eWolf} fn_wolf st ${2:-1}
+        FIELD=${FIELD:-eWolf} fn_wolf i ${2:-1}
         ;;
     *)
         fn_echo_succ "\twolf date ${min_dt}~${max_dt}"
@@ -1787,17 +1787,11 @@ function fn_wolf()
         l               date-list
         n|nDDE  idx     {NUM:-2}日DDE统计，变量代表日倒数索引
         b|BBD           沪深BBD统计
-        s|e             e mean FIELD=eWolf
-        st      idx|l   SELECT time or list-times
-        cf      code    按15分钟统计
-        c       code    按日统计\
-        "
-        fn_echo_succ "
-        熵减表征eWolf=buy/tov
-        COND='eWolf>.5&&Go>1 && nmcYi<100' iEND=2 SELECT wolf s
-        涨停潜力股
-        DOOR=-.6 LIMIT=300 COND='rise>2&&rise<9.93' SELECT wolf s rise
-        " 2>&1 | sed 's/^  *//g'
+        i       idx|l   SELECT time or list-times
+        e               e mean FIELD=eWolf=熵减表征eWolf=buy/tov
+        c       code    按日统计
+        cf      code    按15分钟统计\
+        " 2>&1 # | sed 's/^  *//g'
         ;;
     esac
     
@@ -2692,6 +2686,30 @@ function fn_notice()
     return $?
 }
 
+
+function fn_ddd()
+{
+    d4=`fn_get_date 4`
+    d3=`fn_get_date 3`
+    d2=`fn_get_date 2`
+
+    [ "${1}" = 4 ] && \
+    LIMIT=800 PARTS=2 CHAO=1 END=$d4 COND="prop<1 && scale<1" SELECT lohi i && \
+    iYIST=/tmp/kts/chao.lohi
+
+    # 2016-02-22 driver-test
+    YIST=$iYIST \
+    LIMIT=800 PARTS=2 CHAO=1 END=$d3 COND="prop<1 && scale<1" SELECT lohi i
+
+    YIST=/tmp/kts/chao.lohi \
+    LIMIT=800 PARTS=2 CHAO=1 END=$d2 COND="prop<1 && scale<1" SELECT lohi i
+
+    YIST=/tmp/kts/chao.lohi \
+    COND="eWolf>.3" SELECT wolf e
+
+    return $?
+}
+
 function fn_main()
 {
     cmdlist=(
@@ -2741,6 +2759,7 @@ function fn_main()
     "scale                                    # 成交量放大倍数"
     "ATR                                      # AverageTrueRangeOf阳线非一字板"
     "notice                                   # 公告"
+    "ddd                                      # 连续缩量后放量"
     )
 
     # `ASC=任意值`时使用'DESC'，弃用

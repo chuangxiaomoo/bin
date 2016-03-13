@@ -440,11 +440,14 @@ function fn_base()                      { cat logic_base ;}
 function fn_MECE()                      { cat logic_MECE ;}
 function fn_training500()               { cat logic_training500 ;}
 function fn_puzzle()                    { cat logic_puzzle ;}
+function fn_informal()                  { cat logic_informal ;}
     local opts=(
         base
         MECE                            # Mutually Exclusive Collectively Exhaustive
         training500
         puzzle                          # 我理解的一些谜
+        informal                        # 非形式逻辑
+
     )
     fn_print $@
 }
@@ -756,6 +759,7 @@ function fn_cold()                      { cat cold ;}
 function fn_sport()                     { cat sport ;}
 function fn_guo()                       { cat guo ;}
 function fn_stupid_things()             { cat stupid_things ;}
+function fn_subtitle()                  { cat subtitle ;}
 
 
 # 新教与天主教。信则得救，不信则下地狱 vs 助人行善
@@ -827,6 +831,7 @@ function fn_main() {
         game_theory
         redwine 
         stupid_things                   # 哪些年做过的蠢事 habit
+        subtitle
     )
     fn_print $@
 }
