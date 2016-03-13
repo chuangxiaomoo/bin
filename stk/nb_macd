@@ -217,21 +217,16 @@ function fn_get_yesc()
 function fn_dif_300_6()
 {
     # 默认都写两位，前后补0
-    pcnt2thx=20
-    pcnt2thx=06
-    if [ "${OPER:='>'}" = 0 ]; then
-        return
-    elif [ "${OPER}" = '>' ]; then
-        iSTEP=.00${pcnt2thx}
-    else
-        iSTEP=-0.00${pcnt2thx}
-    fi
+    pcnt2thx=0.10/100
+    pcnt2thx=0.06/100
+    [ "${OPER:='>'}" = 0 ] && return
+    [ "${OPER}" = '>' ] && iSTEP=${pcnt2thx} || iSTEP="-${pcnt2thx}"
 
     sqls="
     SELECT trade FROM fenbi WHERE code=399300 ORDER by datetime DESC LIMIT 1 INTO @c300;
     SELECT trade FROM fenbi WHERE code=399006 ORDER by datetime DESC LIMIT 1 INTO @c006;
 --  SELECT 99999, ROUND(100*(@c300-$y300)/$y300, 2), ROUND( 100*(@c006-$y006)/$y006, 2);
-    SELECT IF( ((@c300-$y300)/$y300+${iSTEP}) ${OPER} (@c006-$y006)/$y006, 1, 0 ), 
+    SELECT IF( ((@c300-$y300)/$y300+($iSTEP)) ${OPER} (@c006-$y006)/$y006, 1, 0 ), 
         ROUND(100* (@c300-$y300)/$y300, 2), 
         ROUND(100* (@c006-$y006)/$y006, 2), @c006,$y006;
     " 

@@ -180,11 +180,14 @@ function fn_isresting()
 {
     hhmmss=`date +%H%M%S`
     if ([ ${hhmmss} -gt 113059 ] && [ ${hhmmss} -lt 130059 ]) ||
-        [ ${hhmmss} -lt 093000 ] || [ ${hhmmss} -gt 145800 ]; then
+        [ ${hhmmss} -lt 093000 ] ; then
         echo "is resting @${hhmmss}..."; 
         return 0
+    elif [ ${hhmmss} -gt 145800 ]; then
+        echo "market closed, eixt!"
+        exit 0
     else
-        echo to checking @${hhmmss}...
+        echo tick @${hhmmss}...
         return 1
     fi
 }
@@ -630,7 +633,7 @@ function fn_create_tbl_codes()
 
 function fn_bell()
 {
-    timeout 2 nc 192.168.100.100 1234 <<<"$*"
+    timeout 2 nc 192.168.100.100 1234 <<<"${*:-msg.wav}"
    #timeout 2 nc 192.168.0.101 1234 <<<"$*"
 }
 

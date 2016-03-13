@@ -30,4 +30,5 @@
     alter table test add index (cn,id);
 
 . 删除索引
-    alter table test drop index cn
+    show INDEX from day;
+    alter table test drop index Key_name;   -- Key_name is index_name，复合索引也只对应一个Key_name
