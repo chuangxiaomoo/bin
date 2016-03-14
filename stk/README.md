@@ -32,7 +32,7 @@
 # 单理论之殇      .doc/hurt.md
 # 信息进化论      .doc/info_evolution.md
 
-# 程序员道德      .doc/virtue.md
+# 程序员道德      .doc/virtue.md .doc/ref.md
 
 > 杂论 -- 所有的竞局都不是单一能力的较量，而是综合实力的对抗。
 

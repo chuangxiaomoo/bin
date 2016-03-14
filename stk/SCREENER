@@ -653,9 +653,6 @@ function fn_ma240()
 
 function fn_hilo()
 {
-    fn_exclude ${exclude2}
-    fn_txttbl
-
     if [ -n "${1}" ]; then
         fn_iscode ${1}       
         xt_ret $? "invalid code[$1]" || return $?
@@ -663,13 +660,15 @@ function fn_hilo()
         local code=`sed 's/^0*//g' <<< $1 | xargs printf "%06d"`
         up file_to_table ${code}
     elif [ -z "${YIST}" ]; then
-            fn_echo_succ "set YIST=.codelist" 
+        fn_echo_succ "set YIST=.codelist" 
+        YIST=.codelist fn_txttbl
     fi
 
     echo "
+    -- 可以作为一周一次的功课
     SET @END='$END';
-    SET @NUM=${NUM:-10};
-    call sp_visit_tbl('${TBL:-zxg}', @fn_hilo);
+    SET @NUM=${NUM:-60};
+    call sp_visit_tbl('${TBL:-yist}', @fn_hilo);
     " | tee -a $mps_god
     mysql $mo -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
