@@ -108,7 +108,7 @@ function fn_yahoo()
     [ -z "${NOCLEAN}" ] && rm   -rf ${znzday}/*
 
     # 365 ~= 240 个交易日，考虑到8个月停牌情况，上调日数为600
-    start_600=`date +'%Y %m %d' --date="${NUM:-600} days ago"`
+    start_600=`date +'%Y %m %d' --date="${NUM:-365} days ago"`
     endin_sps=($(date +'%Y %m %d'))
 
     list=

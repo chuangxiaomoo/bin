@@ -854,13 +854,13 @@ function fn_hilo()
         tbl_super_dive="
         SELECT ${columns}, 
         -- dive:当前跳水幅度 rebound:反弹幅度离(low+close)/2
-        round(100*(LEAST(t.low,d.low)-t.high)/t.high) as hilo,
-        round(100*(d.close-t.high)/t.high, 1) as dive, 
-        round(100*(d.close-LEAST(t.low,d.low))/LEAST(t.low,d.low), 2) as rebound, c.nmc, c.name
+        round(100*(t.high -LEAST(t.low,d.low))/t.high,1) as jump,
+        round(100*(d.close-LEAST(t.low,d.low))/t.high,1) as rebound,
+        ${nmcYi0}, c.name
         FROM tbl_hilo as t, tempday as d, cap as c
         WHERE t.code = d.code and t.code=c.code
         HAVING 1 ${COND}
-        ORDER by ${FIELD:-dive} ${ASC:-ASC} LIMIT ${LIMIT:-36}
+        ORDER by ${FIELD:-jump} ${ASC:-DESC} LIMIT ${LIMIT:-36}
         "
         echo "${tbl_super_dive}"
     }
@@ -1334,11 +1334,8 @@ function fn_lhb()
     if [ -n "${CAUSE}" ]; then
         CAUSE=` sed -e "s/c3/cause='3up20'/"        \
                     -e "s/c7/cause='up7'/"          \
-                    -e "s/c8/rise>=9.832/"          \
                     -e "s/cs/cause='s3up12'/"       \
                     -e "s/ct/cause='tov20'/"        \
-                    -e "s/b>/bloo>/"                \
-                    -e "s/p>/${LOGIC}bsp>/"         \
                     -e 's/A/\&\&/g'                 \
                     -e 's/O/||/g' <<< "${CAUSE}"`
         CAUSE="and (${CAUSE})"
@@ -1360,30 +1357,25 @@ function fn_lhb()
         xt_ret $? "del fail" || return $?
         fn_echo_succ "del from lhb@${date}"
         ;;
-    +10)
+    +10|g)
         sta=`fn_get_date ${2:-1}`
         off=`mysql -N kts <<< "SELECT count(*) from day WHERE code=900001 and date>='${sta}' && date<='${END}'"`
-        tbl="SELECT * FROM day WHERE date>='${sta}' && date<='${END}' and (close-yesc)/yesc>.0993"
-        sql="SELECT code,count(code) as num FROM (${tbl}) as t GROUP by code ORDER by num DESC LIMIT ${LIMIT:-30}"
+
+        if [ "${1}" = '+10' ]; then
+            tbl="SELECT * FROM day WHERE date>='${sta}' && date<='${END}' and (close-yesc)/yesc>.0993"
+            sql="SELECT code,count(code) as num FROM (${tbl}) as t GROUP by code ORDER by num DESC LIMIT ${LIMIT:-30}"
+        else
+            wsql="WHERE date>='${sta}' && date<='${END}' && (chng>=3.82)"
+            sql="SELECT code,count(code) as num FROM lhb ${wsql} GROUP by code ORDER by num DESC LIMIT ${LIMIT:-30}"
+        fi
+
         sql="SELECT * FROM ($sql) as t HAVING 1 ${COND}"
         mysql -t kts <<<"${sql}"
         fn_echo_succ "${sta} wday:`date --date=${sta} +'%w'` off:${off}"
         sqls=${sql} fn_chao ${chao}
         ;;
-    g)
-        sta=`fn_get_date ${2:-1}`
-        off=`mysql -N kts <<< "SELECT count(*) from day WHERE code=900001 and date>='${sta}' && date<='${END}'"`
-        wsql="WHERE date>='${sta}' && date<='${END}' && (chng>=3.82)"
-        sql="SELECT code,count(code) as num FROM lhb ${wsql} GROUP by code ORDER by num DESC LIMIT ${LIMIT:-30}"
-        sql="SELECT * FROM ($sql) as t HAVING 1 ${COND}"
-        mysql -t kts <<<"${sql}"
-        fn_echo_succ "${sta} wday:`date --date=${sta} +'%w'` off:${off}"
-        sqls=${sql} fn_chao ${chao}
-        ;;
-    c|n|s|S)
-        if [ $1 = S ]; then
-            col_date='date,'
-        elif [ $1 = c ]; then
+    i|c)
+        if [ $1 = c ]; then
             fn_iscode $2
             xt_ret $? "code:${2}" || return $?
             fn_xtempday $2
@@ -1394,7 +1386,7 @@ function fn_lhb()
             sql_relate="&& l.date=d.date"
             sql_xtempday=", xtempday as d"
             LIMIT=${LIMIT:-8}
-        else # s
+        else
             fn_isdigit ${2:-1}
             xt_ret $? "\$2[$2] must be digit" || return $?
             date=`fn_get_date ${2:-1}`
@@ -1417,7 +1409,7 @@ function fn_lhb()
                 sql_xtempday="${sql_xtempday}, x"
                 sql_next="
                 ${APPLE} as apple,
-                ROUND(100*(x.open-x.yesc)/x.yesc, 1) as Xopri,
+                ROUND(100*(x.high-x.yesc)/x.yesc, 1) as hiri,
                 "
                 FIELD=${FIELD:-apple}
             fi
@@ -1435,11 +1427,12 @@ function fn_lhb()
             SELECT ${columns}, round(chng,1) as rise,
             ${sql_next}
             ${sql_tov}
-            round((buy-sell)/10000, 2) as eLHB,
-            round(l.buy/10000, 2) as buy,
-            round(l.sell/10000, 2) as sell,
-            bloo,sloo,
-            round((l.buy-l.sell)/${nmcYi0%as*}/100,2) as net,
+            round(buy/10000, 2) as eBuy,                        -- 额度(亿)
+            round(sell/10000, 2) as eSell,
+            round((buy-sell)/10000, 2) as eNet,
+            round(bloo/100, 2) as buy,                          -- 成交占比
+            round(sloo/100, 2) as sell,
+            round(bloo/100-sloo/100, 2) as net,                 -- 净买入占比
             round(bloo/sloo, 2) as bsp,
             ${sql_avrg}
             round(l.buy/bloo/100, 2) as eYi, ${nmcYi0},
@@ -1455,23 +1448,22 @@ function fn_lhb()
         fn_echo_succ "\tlhb max_date@${max_dt}"
         echo "
         SELECT lhb <param>
-        +10 n   n日内涨停次数
-        c code  指定代码
+        l       上榜日期list
+        d [i]   删除数据，i即iEND
         C|cause 上榜原因list
-        l       日期list
-        g n     n日内因+3.82%上榜次数统计
-        s [i]   SELECT日期，i不指定时为1，代表今天
-        d [i]   指定dele日期，i不指定时为1，代表今天
+        g|+10 n n日内{+3.82%|涨停}次数统计
+        c code  指定代码
+        i [i]   SELECT日期，i即iEND
 
         CAUSE='c3Oc7Oct'
         c3   3up20
         c7   up7
-        c8   +5%         ----- 3+7=8
         cs   s3up12
         ct   tov20
-        b>p> bloo.bsp    tov!>20 && avrg>7 && opri>3 (tov太大即3日内到头 && 和大猪在一起 && 起飞的欲望)
+             tov!>20 && avrg>7 && opri>3 (tov太大即3日内到头 && 和大猪在一起 && 起飞的欲望)
 
         FIELD=eYi COND='eYi>.5' CAUSE='c3Oc7Oct' SELECT lhb s
+        COND="rise>0&&eYi>.5&&buy>.18" FIELD=hiri SELECT lhb i  # 每日功课
         "
         ;;
     esac
@@ -1549,44 +1541,6 @@ function fn_scale()
     return $?
 }
 
-function fn_wolf_sqls()
-{
-    col_tet="ROUND(net/(1-top10_ajst_aR), 2) as Tet,"
-    FIELD=${FIELD:-net}
-    DOOR=${DOOR:--.08*tov}
-    yesc='(trade/(1+rise/100))'
-    sqls="
-    --  ALTER TABLE xdde CHANGE tov tov DECIMAL(8,1); -- chao ERROR
-        SELECT ${col_date} w.code, w.rise, ${col_trade}
-        round(100*(trade-h.low)/h.low, 1) as incr,
-        round(100*(high-LEAST(lohi,trade))/LEAST(lohi,trade), 1) as jump,
-        ROUND( (100*(w.amount/shou-$yesc)/$yesc), 1) as avrg, tov,
-        ROUND(100*nmc*(pbuy+nbuy)/w.amount, 2) as eWolf,
-        pbuy,nbuy, psell,nsell,
-    --  (pbuy+nbuy) as buy,
-    --  (psell+nsell) as sell,
-    --  round(100*(pbuy+nbuy)/tov, 1) as bloo,
-    --  round(100*(psell+nsell)/tov, 1) as sloo,
-        net,
-    --  ${col_tet}
-    --  round((pbuy/nbuy), 2) as Go,
-    --  round((nsell/psell), 2) as nGo,
-        round((pbuy+nbuy)/(psell+nsell),1) as bsp,
-        round((w.shou/h.volume), 2) as prop, h.scale,
-        round(w.amount/10000, 2) as eYi, 
-        ROUND(nmc, 1) as nmcYi 
-        ${col_name}
-        FROM xdde as w, curr_lohi as h
-        ${WHERE} 
-        w.code=h.code ${iCOND} && w.date<='${END}' && net>${DOOR}     -- WHERE(net>0)加速3倍
-        HAVING 1 ${COND} && ${eCOND:-1}  ${ORDER:-ORDER by ${FIELD} ${ASC:-DESC}} LIMIT ${LIMIT:-36}
-    "
-    #echo "${sqls}"; exit
-    #echo "iCOND:${iCOND}"
-    #eYi:$eYi nmc:$nmc
-    fn_echo_warn "wolf of ${date:-${END}}.${stime:-latest} [DOOR:${DOOR}] [COND: ${COND}${eCOND}] ${FIELD}"
-}
-
 function fn_asm_nDDE()
 {
     echo "
@@ -1656,6 +1610,47 @@ function fn_list_wolf_times()
     exit
 }
 
+function fn_proc_eCOND_scale()
+{
+    if fn_issqltrue "'${stime}'>'12:00:00'"; then
+        eCOND=${eCOND//iSCALE/3}
+    elif fn_issqltrue "'${stime}'>'10:30:00'"; then
+        eCOND=${eCOND//iSCALE/2}
+    else
+        eCOND=${eCOND//iSCALE/1}
+    fi
+}
+
+function fn_wolf_sqls()
+{
+    col_tet="ROUND(net/(1-top10_ajst_aR), 2) as Tet,"
+    FIELD=${FIELD:-net}
+    DOOR=${DOOR:--.08*tov}
+    yesc='(trade/(1+rise/100))'
+    sqls="
+        SELECT ${col_date} w.code, w.rise, ${sql_opri} ${col_trade}
+        round(100*(trade-h.low)/h.low, 1) as incr,
+        round(100*(h.high-LEAST(lohi,trade))/LEAST(lohi,trade)) as jump,
+        ROUND( (100*(w.amount/shou-$yesc)/$yesc), 1) as avrg, tov,
+        ROUND(100*nmc*(pbuy+nbuy)/w.amount, 2) as eWolf,
+        pbuy,nbuy, (psell+nsell) as sell,
+    --  (pbuy+nbuy) as buy, 
+    --  round(100*(pbuy+nbuy)/tov, 1) as bloo, round(100*(psell+nsell)/tov, 1) as sloo,
+        net,
+    --  round((pbuy/nbuy), 2) as Go,
+        round((pbuy+nbuy)/(psell+nsell),1) as bsp,
+        round((w.shou/h.volume), 2) as prop, h.scale,
+        round(w.amount/10000, 2) as eYi, 
+        ROUND(nmc, 1) as nmcYi
+        ${col_name}
+        FROM xdde as w, curr_lohi as h ${sql_from}
+        ${WHERE} w.code=h.code ${sql_cond} && net>${DOOR}       -- && w.date<='${END}'
+        HAVING 1 ${COND} ${ORDER:-ORDER by ${FIELD} ${ASC:-DESC}} LIMIT ${LIMIT:-36}
+    "
+    #echo "${sqls}"; exit
+    fn_echo_warn "wolf of ${date:-${END}}.${stime:-latest} [nmc:$nmc eYi:$eYi DOOR:${DOOR}] [COND: ${COND}] ${FIELD}"
+}
+
 function fn_wolf()
 {
     sql_maxdate="SELECT max(date) FROM dde"
@@ -1679,6 +1674,28 @@ function fn_wolf()
             fn_BBD_wolf $i
         done
         ;;
+    i)
+        col_name=',w.name'
+        ABBR=w fn_yist
+        fn_isdigit ${sta:=${2:-1}} || fn_list_wolf_times
+        let sta--
+        fn_proc_eCOND_scale
+        stime=`mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC LIMIT ${sta},1"`
+        iCOND="time='${stime}'${eCOND}" xCol=date fn_xCol mat_dde xdde ${END}
+        xt_ret $? "" || return $?
+
+        PREV=`END=${date:-${END}} fn_get_prev`
+        iCOND="num=${NUM:-8}" xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
+        xt_ret $? "" || return $?
+
+        fn_xtempday
+        sql_opri="$OPRI as opri, "
+        sql_from=", xtempday as d"
+        sql_cond="&& w.code=d.code"
+        fn_wolf_sqls
+        mysql ${OPT:-'-t'} kts <<<"${sqls}"
+        fn_chao ${chao}.wolf
+        ;;
     c|cf|code)
         fn_iscode $2
         xt_ret $? "Usage: SELECT wolf c code" || {
@@ -1701,8 +1718,8 @@ function fn_wolf()
         iCOND="${jCOND}"        xCol=code fn_xCol ${iTBL:-mat_dde} xdde ${2}
         xt_ret $? "" || return $?
 
-        iCOND="and w.code=${2}" # ${jCOND}"
         LIMIT=${LIMIT:-12}
+        sql_cond="&& w.code=${2}"
         col_name=
         fn_name ${2}
         DOOR=-50 fn_wolf_sqls
@@ -1740,42 +1757,18 @@ function fn_wolf()
         mysql -t kts <<<"${sqls}"
         fn_chao
         ;;
-    i)
-        ABBR=w fn_yist
-        fn_isdigit ${sta:=${2:-1}} || fn_list_wolf_times
-        let sta--
-        stime=`mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC LIMIT ${sta},1"`
-        iCOND="time='${stime}'" xCol=date fn_xCol mat_dde xdde ${END}
-        xt_ret $? "" || return $?
-
-        # tag_伸缩处理
-        if fn_issqltrue "'${stime}'>'12:00:00'"; then
-            eCOND=${eCOND//iSCALE/3}
-        elif fn_issqltrue "'${stime}'>'10:30:00'"; then
-            eCOND=${eCOND//iSCALE/2}
-        else
-            eCOND=${eCOND//iSCALE/1}
-        fi
-
-        PREV=`END=${date:-${END}} fn_get_prev`
-        iCOND="num=${NUM:-8}" xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
-        xt_ret $? "" || return $?
-
-        col_name=',w.name'
-        fn_wolf_sqls
-        mysql ${OPT:-'-t'} kts <<<"${sqls}"
-        fn_chao ${chao}.wolf
-        ;;
+    il|st) 
+        fn_list_wolf_times ;;
     a|e|E)
         col_trade='trade,'
         HMS=${HMS:-`fn_get_time 1`}
         iSCALE=`SCALE=A fn_scale ${HMS}`
-        nmc=${nmc:-150}
-        eYi=${eYi:-.2}  # tag_伸缩处理
+        nmc=${nmc:-120}
+        eYi=${eYi:-.25}  # tag_伸缩处理
         case $1 in
-        a) eCOND="eYi>${eYi}"                                       ;;
-        e) eCOND="eYi>${eYi}*iSCALE && nmcYi<=${nmc}"               ;;
-        E) eCOND="eYi>${eYi}*iSCALE && nmcYi >${nmc} && nmcYi<300"  ;;
+        a) eCOND="&&amount>${eYi}*10000"                                  ;;
+        e) eCOND="&&amount>${eYi}*10000*iSCALE && nmc<=${nmc}"            ;;
+        E) eCOND="&&amount>${eYi}*10000*iSCALE && nmc>${nmc} && nmc<300"  ;;
         esac
 
         FIELD=${FIELD:-eWolf} fn_wolf i ${2:-1}
@@ -2563,6 +2556,9 @@ function fn_dive()
 
 function fn_ATR()
 {
+    [ "${1}" = u ] && \
+    echo -e "\nCOND='ATV>5' CHAO=1 LIMIT=800 SELECT ATR\n" && exit
+
     NUM=${NUM:-40}
     STA=`fn_get_date ${NUM} 1` #echo ${STA}
     let half=${NUM}/${PARTS:-4}
@@ -2577,15 +2573,20 @@ function fn_ATR()
     fn_yist
 
     sqls="
-    SELECT * FROM (
+    SELECT t.date, num, t.code, ATR, 
+        ROUND( 100*atv/(c.nmc/c.close), 2) as ATV, c.name
+         FROM (
         SELECT date,code, 
             ROUND( sum( 100*GREATEST(high-low, high-yesc, yesc-low)/yesc )/count(code), 2 ) as ATR,
-            count(code) as num FROM
+            ROUND( sum( volume )/count(code), 2) as atv,
+            count(code) as num 
+            FROM
         ( SELECT d.* FROM day as d $WHERE date>='${STA}' && date<='${END}' && high!=low && close>yesc
           ORDER by date DESC ) as d2
         GROUP by code HAVING num>${half} ${CONDbig}
-    ) as t 
-    ORDER by ATR DESC LIMIT ${LIMIT:-200}
+    ) as t, cap as c WHERE t.code=c.code
+    HAVING 1 ${COND}
+    ORDER by ATR DESC LIMIT ${LIMIT:-40}
     "
 
     #echo "${sqls}"; exit

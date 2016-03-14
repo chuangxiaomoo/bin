@@ -575,14 +575,14 @@ function fn_xtempday()
     local table=${TBL:-xtempday}
 
     if fn_iscode $1; then
-        sql_cond="code=${1}"
+        sql_fork="code=${1}"
     else
-        sql_cond="date='${1:-$END}'"
+        sql_fork="date='${1:-$END}'"
     fi
 
     echo "
     $DROP ${table}; CREATE TABLE ${table} LIKE day;
-    INSERT INTO ${table} SELECT * from day where ${sql_cond} HAVING ${iCOND:-1};
+    INSERT INTO ${table} SELECT * from day where ${sql_fork} HAVING ${iCOND:-1};
     " | mysql kts
     return $?
 }
@@ -596,18 +596,18 @@ function fn_xCol()
     code)
         fn_iscode ${3}
         xt_ret $? "" || return $?
-        sql_cond="${xCol}='${3}'"
+        sql_fork="${xCol}='${3}'"
         ;;
     *)  # 默认date类型
         fn_isdate ${3}
         xt_ret $? "" || return $?
-        sql_cond="${xCol}='${3}'"
+        sql_fork="${xCol}='${3}'"
         ;;
     esac
 
     echo "
     $DROP ${table:=$2}; CREATE TABLE ${table} LIKE ${1};
-    INSERT INTO ${table} SELECT * from ${1} where ${sql_cond} and ${iCOND:-1};
+    INSERT INTO ${table} SELECT * from ${1} where ${sql_fork} and ${iCOND:-1};
     " | mysql kts
     return $?
 }
