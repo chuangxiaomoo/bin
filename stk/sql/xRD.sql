@@ -678,9 +678,15 @@ CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
         -- SELECT v_start;
 
         TRUNCATE TABLE tbl_change;
-        INSERT INTO tbl_change(code,date,chng,avrg,high,low,hit) SELECT 
-               code,date,100*(close-yesc)/yesc, 100*(amount/volume-yesc)/yesc,high,low,100*(high-yesc)/yesc FROM day 
-                WHERE date=v_start; # and code>300000 and code<400000;
+        IF @HMS = '00:00:00' THEN
+            INSERT INTO tbl_change(code,date,chng,avrg,high,low,hit) SELECT 
+                code,date,100*(close-yesc)/yesc, 100*(amount/volume-yesc)/yesc,high,low,100*(high-yesc)/yesc 
+                FROM day WHERE date=v_start;
+        ELSE
+            INSERT INTO tbl_change(code,date,chng,avrg,high,low,hit) SELECT 
+                code,date,100*(close-yesc)/yesc, 100*(amount/volume-yesc)/yesc,high,low,100*(high-yesc)/yesc 
+                FROM dorat WHERE date=v_start && time=@HMS;
+        END IF;
 
         SELECT count(code) FROM tbl_change WHERE date=v_start                          INTO @cnt;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng>0               INTO v_inc;
