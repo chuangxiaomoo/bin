@@ -117,7 +117,7 @@ function fn_lsd()
                 $RISE as rise, 
                 ${sql_dive}
                 $TURNOV as tov, ${nmcYi}, c.name
-                FROM ${TEMPDAY} as d, cap as c ${WHERE} d.code = c.code and d.date = '${END}' 
+                FROM ${TEMPDAY} as d, cap as c ${WHERE} d.code = c.code and d.date = '${END}' && ${iCOND:-1}
                 HAVING ${HAVING:-1} ${COND} ORDER BY ${FIELD} ${ASC:-desc} limit ${LIMIT:-36}
         "
         #echo "${sqls}"; exit
@@ -361,7 +361,7 @@ function fn_dirtio()
         exit 0
         ;;
     l|list)
-        SELECT dorat | cat -n; exit 0
+        fn_list_iF5_times
         ;;
     [0-9]*)
         let min=3*${STEP:-1}
@@ -442,12 +442,15 @@ function fn_wma()
 
 function fn_updown()
 {
+    case $1 in
+    +([0-9])) HMS=`fn_get_time ${1}`;NUM=1  ;;
+    l) fn_list_iF5_times                    ;;
+    esac
+
     let iNUM=${NUM:=5}+1
     START=`fn_get_date ${iNUM}`
 
-    echo "
-    From ${START} to ${END}...
-    "
+    fn_echo_succ "From ${START} to ${END}.${HMS}..."
 
     cd $workdir
     > $mps_god
@@ -457,13 +460,15 @@ function fn_updown()
     cols2=inc,dec0,eq0,inc8p,inc5p,inc2p,inc0p,dec0d,dec2d,dec5d,dec8d
 
     echo "
-    SET @START='$START';
-    SET @END='$END';
     SET @NUM=${NUM};
+    SET @END='${END}';
+    SET @START='$START';
+    SET @HMS='${HMS:-00:00:00}';
     call sp_stat_change();
     SELECT ${cols1} ROUND(100*inc10/hit10,2) as succ, ${cols2}
-        FROM tbl_stat_change ORDER by ${1:-date} ${ASC:-ASC};
-    " | tee /dev/stderr >> $mps_god
+        FROM tbl_stat_change ORDER by ${FIELD:-date} ${ASC:-ASC};
+    " >> $mps_god
+    # | tee /dev/stderr >> $mps_god
 
     mysql $mo -t kts <<< "source $mps_god"
 
@@ -1064,7 +1069,7 @@ function fn_lohi()
         fn_inout
         ;;
     l|list)
-        SELECT dorat | cat -n; exit 0
+        fn_list_iF5_times
         ;;
     d|date)
         SCREENER lohi l; exit 0
@@ -1608,6 +1613,11 @@ function fn_list_wolf_times()
     fn_echo_warn "time @${END}"
     mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC" | cat -n
     exit
+}
+
+function fn_list_iF5_times()
+{
+    SELECT dorat | cat -n; exit 0
 }
 
 function fn_proc_eCOND_scale()
