@@ -109,6 +109,7 @@ function fn_lsd()
     {
         [ "${FIELD}" = 'dive' ] && 
         sql_dive="round( (100*(d.amount/d.volume-d.close)/d.close), 1) as dive,"
+        [ -n "${PPLUS}" ] && iCOND='high!=low'
         sqls="
         SELECT ${CID}$columns, volume,amount, 
                 $OPRI as opri, 
@@ -1650,8 +1651,8 @@ function fn_wolf_sqls()
     --  (pbuy+nbuy) as buy, 
     --  round(100*(pbuy+nbuy)/tov, 1) as bloo, round(100*(psell+nsell)/tov, 1) as sloo,
         net,
-    --  round((pbuy/nbuy), 2) as Go,
-        round((pbuy+nbuy)/(psell+nsell),1) as bsp,
+    --  round((pbuy/nbuy), 2) as Go, round((pbuy+nbuy)/(psell+nsell),1) as bsp,
+        speed as xbb,
         round((w.shou/h.volume), 2) as prop, h.scale,
         round(w.amount/10000, 1) as eYi, 
         ROUND(nmc, 1) as nmcYi
@@ -1705,8 +1706,9 @@ function fn_wolf()
         sql_opri="$OPRI as opri, "
         sql_from=", xtempday as d"
         sql_cond="&& w.code=d.code"
+        sql_xbb="UPDATE xdde,xbb SET xdde.speed=xbb.xbb WHERE xdde.code=xbb.code;"
         fn_wolf_sqls
-        mysql ${OPT:-'-t'} kts <<<"${sqls}"
+        mysql ${OPT:-'-t'} kts <<<"${sql_xbb}${sqls}"
         fn_chao ${chao}.wolf
         ;;
     c|cf|code)
@@ -1733,10 +1735,12 @@ function fn_wolf()
 
         LIMIT=${LIMIT:-12}
         sql_cond="&& w.code=${2}"
+        sql_xbb="UPDATE xdde,xbb SET xdde.speed=xbb.xbb WHERE xdde.code=xbb.code;"
         col_name=
         fn_name ${2}
         DOOR=-50 fn_wolf_sqls
-        mysql -t kts <<<"${sqls}"
+        mysql ${OPT:-'-t'} kts <<<"${sql_xbb}${sqls}"
+        #mysql -t kts <<<"${sqls}"
         fn_chao
         ;;
     n|nDDE)
@@ -2703,28 +2707,92 @@ function fn_notice()
     return $?
 }
 
+function fn_xbb_sqls()
+{
+    if [ "${1}" = l ]; then
+        sqls="
+        SELECT x.*, ${nmcYi}, c.name FROM xbb as x, cap as c WHERE x.code=c.code
+        ORDER by ${FIELD:-xbb} ${ASC:-DESC} LIMIT ${LIMIT:-40}
+        "
+        return
+    fi
+
+    d30=`END=$PREV fn_get_date 30`
+    d37=`END=$PREV fn_get_date 37`
+    d44=`END=$PREV fn_get_date 44`
+    d50=`END=$PREV fn_get_date 50`
+    sqls="
+    TRUNCATE yist;
+    $DROP xbb; 
+    $CREATE xbb (
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    num         int,
+    xbb         DECIMAL(6,2) NOT NULL DEFAULT 0,
+    INDEX(code)
+    );
+
+    INSERT INTO yist(code) SELECT DISTINCT code FROM day WHERE date='${END}' && code<888888;
+
+    INSERT INTO xbb
+    SELECT code, count(code) as num, max(amount)/(sum(amount)/count(code)) as prop 
+    FROM day as d WHERE date>='${d30}' && date<='${PREV}' GROUP by code HAVING num>25;
+    DELETE FROM yist WHERE code in (SELECT code FROM xbb);
+
+    INSERT INTO xbb
+    SELECT d.code,count(d.code) as num, max(amount)/(sum(amount)/count(d.code)) as prop 
+    FROM day as d,yist as y 
+    WHERE d.code=y.code && date>='${d37}' && date<='${PREV}' GROUP by code HAVING num>25;
+    DELETE FROM yist WHERE code in (SELECT code FROM xbb);
+
+    INSERT INTO xbb
+    SELECT d.code,count(d.code) as num, max(amount)/(sum(amount)/count(d.code)) as prop 
+    FROM day as d,yist as y 
+    WHERE d.code=y.code && date>='${d44}' && date<='${PREV}' GROUP by code HAVING num>25;
+    DELETE FROM yist WHERE code in (SELECT code FROM xbb);
+
+    INSERT INTO xbb
+    SELECT d.code,count(d.code) as num, max(amount)/(sum(amount)/count(d.code)) as prop 
+    FROM day as d,yist as y 
+    WHERE d.code=y.code && date>='${d50}' && date<='${PREV}' GROUP by code HAVING num>20;
+    "
+    fn_echo_succ "Update xbb db @${END} succ!"
+}
 
 function fn_ddd()
 {
-    d4=`fn_get_date 4`
-    d3=`fn_get_date 3`
-    d2=`fn_get_date 2`
+    case $1 in
+    4|3)
+        d4=`fn_get_date 4`
+        d3=`fn_get_date 3`
+        d2=`fn_get_date 2`
 
-    [ "${1}" = 4 ] && \
-    LIMIT=800 PARTS=2 CHAO=1 END=$d4 COND="prop<1 && scale<1" SELECT lohi i && \
-    iYIST=/tmp/kts/chao.lohi
+        [ "${1}" = 4 ] && \
+        LIMIT=800 PARTS=2 CHAO=1 END=$d4 COND="prop<1 && scale<1" SELECT lohi i && \
+        iYIST=/tmp/kts/chao.lohi
 
-    # 2016-02-22 driver-test
-    YIST=$iYIST \
-    LIMIT=800 PARTS=2 CHAO=1 END=$d3 COND="prop<1 && scale<1" SELECT lohi i
+        # 2016-02-22 driver-test
+        YIST=$iYIST \
+        LIMIT=800 PARTS=2 CHAO=1 END=$d3 COND="prop<1 && scale<1" SELECT lohi i
 
-    YIST=/tmp/kts/chao.lohi \
-    LIMIT=800 PARTS=2 CHAO=1 END=$d2 COND="prop<1 && scale<1" SELECT lohi i
+        YIST=/tmp/kts/chao.lohi \
+        LIMIT=800 PARTS=2 CHAO=1 END=$d2 COND="prop<1 && scale<1" SELECT lohi i
 
-    YIST=/tmp/kts/chao.lohi \
-    COND="eWolf>.3" SELECT wolf e
-
-    return $?
+        YIST=/tmp/kts/chao.lohi \
+        COND="eWolf>.3" SELECT wolf e
+        ;;
+    amount)
+        fn_xbb_sqls $2
+        #echo "${sqls}"; exit
+        mysql ${OPT:--t} kts <<<"${sqls}"
+        ;;
+    *)
+        echo "
+        SELECT ddd <para>
+        3|4                 # 大跌抄底
+        amount              # ceiling理论
+        "
+        ;;
+    esac
 }
 
 function fn_main()
@@ -2736,8 +2804,7 @@ function fn_main()
     "list_date          num                   # num默认10"
     "wma                [sortfield:tov5]      # 均价+现成513.静态rat"
     "rat                [sortfield:-ratio]    # wma+day-->动态rat，实时速度快"
-    "dorat                                    # 时间为表名list"
-    "dirtio                                   # diff(dorat)"
+    "dorat                                    # 分时数据iF5"
     "ma240              [sortfield:-ratio]    # "
     "ma240_usage        {1~9}                 # 分析ma 5 13 34 55"
     "dif120             code...               # cost:(close-ma120) & sort by #{ASC:id}"
@@ -2748,7 +2815,10 @@ function fn_main()
     "cap                code                  # 查询nmc&cap"
     "name               code                  # 名"
     "pma                code                  # NUM=5日平均"
-    "fbi                                      # tbl_fbi"
+    #dirtio                                   # diff(dorat)"
+    #macd               [clean]               # macd-alarm-sys"
+    #fmacd                                    # 单个代码的macd"
+    #fbi                                      # tbl_fbi"
     #td_layout          code                  # 日内最高价时点分布.10:00am"
     #acc                                      # tbl_adiff"
     #acf                                      # tbl_acfdiff"
@@ -2768,9 +2838,7 @@ function fn_main()
     "g20                                      # 创20日新高"
     "lhb                excption              # 龙虎榜"
     "wolf                                     # DDE"
-    "dde                                      # DDE"
-    "macd               [clean]               # macd-alarm-sys"
-    "fmacd                                    # 单个代码的macd"
+    "dde                                      # dde(CURR)>dde(PREV)"
     "blk                                      # 板块信息"
     "yysj                                     # 预约时间"
     "scale                                    # 成交量放大倍数"
@@ -2779,9 +2847,6 @@ function fn_main()
     "ddd                                      # 连续缩量后放量"
     )
 
-    # `ASC=任意值`时使用'DESC'，弃用
-    # ASC=${ASC:+'DESC'}  # ASC=${ASC:-'ASC'}
-    # ASC=${ASC:-'ASC'}
     fn_set_END
     fn_execute "$@"
 }
