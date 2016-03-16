@@ -11,14 +11,14 @@
 # 王新平12建议    .doc/wang12.md
 # 王大爷的金融    .doc/wanghaibin.md
 # 橡胶的混沌时段  .doc/wang_oak.md
-# 交易的哲学体系  .doc/wang_trade.md           -- 价值观体系
+# 交易的哲学体系  .doc/wang_trade.md            -- 价值观体系
 # 交易的哲学2     .doc/wang_trade2.md
 
 # 量子力学        .doc/quantum_meCHANics.md
 # 行为心理学      .doc/behaviorism.md
-# 想看的书        .doc/books.md
-# 本质论          .doc/essential.md            -- 我是谁？从哪来？到哪去？ 曹山石
-# 决定论          .doc/model.md                -- 打造自己的交易模型
+# 想看的书        .doc/books.md                 -- 英文学习上日程
+# 本质论          .doc/essential.md             -- 我是谁？从哪来？到哪去？ 曹山石
+# 决定论          .doc/model.md                 -- 打造自己的交易模型
 # 鸿观            .doc/hongguan.md
 # 牛猫            .doc/gushequ.md
 
@@ -73,5 +73,5 @@
 # 超短            .doc/daban.md
 # 龙虎榜          .doc/lhb.md
 # 股票们          .doc/codes.md
-# 公告            .doc/notice.md
+# 公告概念        .doc/notice.md
 # ERRORs          .doc/error.md

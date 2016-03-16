@@ -1197,6 +1197,8 @@ function fn_lohi()
       prop/scale: 今日/昨天 量比    强势股的概念及板块很重要，scale<2可以确保资金安全.
         "
     fn_echo_succ "
+    0. 恒量
+    abs(prop-1)<.2 && abs(scale-1)<.2
     1. 逐级放量，avri逐步抬高
     COND='vtov>.5 && (avri>bvri||(rise>3&&avri+1>bvri)) && scale>1.23&&prop>1.23 && scale<4&&prop<3' SELECT lohi bvri
     2. 1级放量小，avri逐步抬高
@@ -1468,7 +1470,8 @@ function fn_lhb()
              tov!>20 && avrg>7 && opri>3 (tov太大即3日内到头 && 和大猪在一起 && 起飞的欲望)
 
         FIELD=eYi COND='eYi>.5' CAUSE='c3Oc7Oct' SELECT lhb s
-        COND="rise>0&&eYi>.5&&buy>.18" FIELD=hiri SELECT lhb i  # 每日功课
+        COND='rise>0&&eYi>.5&&buy>.18' FIELD=buy SELECT lhb i
+        iEND=2 COND='rise>0&&eYi>.5&&buy>.18' FIELD=hiri SELECT lhb i
         "
         ;;
     esac
@@ -1634,8 +1637,8 @@ function fn_proc_eCOND_scale()
 function fn_wolf_sqls()
 {
     col_tet="ROUND(net/(1-top10_ajst_aR), 2) as Tet,"
-    FIELD=${FIELD:-net}
-    DOOR=${DOOR:--.08*tov}
+    FIELD=${FIELD:-eWolf}
+    DOOR=${DOOR:--tov/8}
     yesc='(trade/(1+rise/100))'
     sqls="
         SELECT ${col_date} w.code, w.rise, ${sql_opri} ${col_trade}
@@ -1650,7 +1653,7 @@ function fn_wolf_sqls()
     --  round((pbuy/nbuy), 2) as Go,
         round((pbuy+nbuy)/(psell+nsell),1) as bsp,
         round((w.shou/h.volume), 2) as prop, h.scale,
-        round(w.amount/10000, 2) as eYi, 
+        round(w.amount/10000, 1) as eYi, 
         ROUND(nmc, 1) as nmcYi
         ${col_name}
         FROM xdde as w, curr_lohi as h ${sql_from}
@@ -1793,7 +1796,7 @@ function fn_wolf()
         i       idx|l   SELECT time or list-times
         e               e mean FIELD=eWolf=熵减表征eWolf=buy/tov
         c       code    按日统计
-        cf      code    按15分钟统计\
+        cf      code    按15分钟统计
         " 2>&1 # | sed 's/^  *//g'
         ;;
     esac
@@ -2566,8 +2569,11 @@ function fn_dive()
 
 function fn_ATR()
 {
-    [ "${1}" = u ] && \
-    echo -e "\nCOND='ATV>5' CHAO=1 LIMIT=800 SELECT ATR\n" && exit
+    [ -z "${1}" ] || [ "${1}" = u ] && \
+    echo "
+    SELECT ATR {u|r|a|code}
+    LIMIT=800 COND='ATV>5' CHAO=1 SELECT ATR a
+    " && exit
 
     NUM=${NUM:-40}
     STA=`fn_get_date ${NUM} 1` #echo ${STA}
@@ -2577,7 +2583,7 @@ function fn_ATR()
         echo ${*} | xargs -n1 > /tmp/kts/chao.ATR.in
         YIST='/tmp/kts/chao.ATR.in'
     else
-        CONDbig="and max(date)='${END}'"    # 当天阳线
+        [ "${1}" = a ] || CONDbig="and max(date)='${END}'"    # 当天阳线
     fi
 
     fn_yist
