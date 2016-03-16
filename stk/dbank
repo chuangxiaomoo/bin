@@ -284,8 +284,8 @@ function fn_yist()
         [ -z "${LIST[0]}" ] && return
         TBL=yist up file_to_table ${YIST}
 
-        # scene 1
-        inLIST="and code in (`tr ' ' ','<<<${LIST[@]}`)"
+        # scene 1 pause
+        # inLIST="and code in (`tr ' ' ','<<<${LIST[@]}`)"
 
         # scene 2
         CID="y.id,"
