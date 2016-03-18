@@ -457,8 +457,12 @@ function fn_updown()
     > $mps_god
     head -n -5 $mps_org >> $mps_god
 
-    cols1=id,date,cnt,yiz10,inc10,hit10,
-    cols2=inc,dec0,eq0,inc8p,inc5p,inc2p,inc0p,dec0d,dec2d,dec5d,dec8d
+    [ -n "${PPLUS}" ] && col_risp='s.risp,' && \
+        sql_where=', sz_index as s WHERE t.date=s.date && s.code=399006'
+
+    cols1=t.date,cnt,yiz10,inc10,hit10,
+    cols2=${col_risp}inc,dec0,eq0,inc8p,inc5p,inc2p,inc0p,dec0d,dec2d,dec5d,dec8d
+
 
     echo "
     SET @NUM=${NUM};
@@ -467,7 +471,9 @@ function fn_updown()
     SET @HMS='${HMS:-00:00:00}';
     call sp_stat_change();
     SELECT ${cols1} ROUND(100*inc10/hit10,2) as succ, ${cols2}
-        FROM tbl_stat_change ORDER by ${FIELD:-date} ${ASC:-ASC};
+        FROM tbl_stat_change as t
+        ${sql_where}
+        ORDER by ${FIELD:-date} ${ASC:-ASC};
     " >> $mps_god
     # | tee /dev/stderr >> $mps_god
 
@@ -1644,11 +1650,12 @@ function fn_wolf_sqls()
     sqls="
         SELECT ${col_date} w.code, w.rise, ${sql_opri} ${col_trade}
         round(100*(trade-h.low)/h.low, 1) as incr,
-        round(100*(h.high-LEAST(lohi,trade))/LEAST(lohi,trade)) as jump,
+        round(100*(h.high-LEAST(lohi,trade))/LEAST(lohi,trade),1) as jump,
         ROUND( (100*(w.amount/shou-$yesc)/$yesc), 1) as avrg, tov,
-        ROUND(100*nmc*(pbuy+nbuy)/w.amount, 2) as eWolf,
-        pbuy,nbuy, (psell+nsell) as sell,
-    --  (pbuy+nbuy) as buy, 
+        ROUND((pbuy+nbuy)/w.tov, 2) as eWolf,
+    --  ROUND(100*nmc*(pbuy+nbuy)/w.amount, 2) as eWolf,    -- 若使用(amount/nmc/100)代替tov,在价涨时结果偏大，价跌时偏小
+        (pbuy+nbuy) as buy, (psell+nsell) as sell,
+    --  pbuy,nbuy, 
     --  round(100*(pbuy+nbuy)/tov, 1) as bloo, round(100*(psell+nsell)/tov, 1) as sloo,
         net,
     --  round((pbuy/nbuy), 2) as Go, round((pbuy+nbuy)/(psell+nsell),1) as bsp,
@@ -1690,6 +1697,7 @@ function fn_wolf()
         ;;
     i)
         col_name=',w.name'
+        fn_bist
         ABBR=w fn_yist
         fn_isdigit ${sta:=${2:-1}} || fn_list_wolf_times
         let sta--
@@ -1780,12 +1788,11 @@ function fn_wolf()
         col_trade='trade,'
         HMS=${HMS:-`fn_get_time 1`}
         iSCALE=`SCALE=A fn_scale ${HMS}`
-        nmc=${nmc:-120}
         eYi=${eYi:-.25}  # tag_伸缩处理
         case $1 in
-        a) eCOND="&&amount>${eYi}*10000"                                  ;;
-        e) eCOND="&&amount>${eYi}*10000*iSCALE && nmc<=${nmc}"            ;;
-        E) eCOND="&&amount>${eYi}*10000*iSCALE && nmc>${nmc} && nmc<300"  ;;
+        a) eCOND="&&amount>${eYi}*10000"                                        ;;
+        e) eCOND="&&amount>${eYi}*10000*iSCALE && nmc<=${nmc_wolf}"             ;;
+        E) eCOND="&&amount>${eYi}*10000*iSCALE && nmc> ${nmc_wolf} && nmc<300"   ;;
         esac
 
         FIELD=${FIELD:-eWolf} fn_wolf i ${2:-1}
@@ -2233,10 +2240,11 @@ function fn_blk_wolf_team()
     sqls="
     SELECT ${sql_blk}, count(m.code) as num, n.sym,
         round(sum(rise    )/count(m.code), 2) as rise,
-        round(sum(${eWolf})/count(m.code), 2) as wolf
+        round(sum(${eWolf})/count(m.code), 2) as wolf,
+        sum(rise>9.93) as click
     FROM blk_name as n, blk_memb as m, xdde as x
-    WHERE n.blk=m.blk and m.code=x.code && m.blk not in ${EXCLUDE_BLK}
-    && ${eWolf}>${iDOOR:=.5} && rise>${rDOOR:=2} && nmc<${nmc:-150} 
+    WHERE n.blk=m.blk and m.code=x.code && m.blk not in ${EXCLUDE_BLK} ${iCOND}
+    && ${eWolf}>${iDOOR:=.5} && rise>${rDOOR:=2} && nmc<${nmc_wolf} 
     GROUP by blk 
     HAVING num>${iNUM:-1} ${COND}
     ORDER by ${iFIELD:-num} DESC LIMIT ${LIMIT:-16}
@@ -2357,6 +2365,31 @@ function fn_blk()
         [0-9]*)     fn_blk_wolf_team  $2                ;;
         *)          echo "${usage}"                     ;;
         esac
+        ;;
+    stat)     
+        case $2 in
+        l)  sqls=" SELECT date,hex(blk),num,sym,rise,wolf FROM blk_stat "
+            mysql -t kts <<<"${sqls}"; exit ;;
+        g)  sqls=" SELECT hex(blk),count(blk)as golds,sym, sum(num)as nums, sum(click)as tens,sum(rise)*num as rises " 
+            sqls=" ${sqls} FROM  blk_stat GROUP by blk ORDER by ${FIELD:=golds} DESC LIMIT ${LIMIT:-40}"
+            count=`mysql -N kts<<<"SELECT count(date) FROM (SELECT DISTINCT date FROM blk_stat) as t"`
+            fn_echo_succ "blk stat in ${count} days [FIELD:$FIELD]"
+            mysql -t kts <<<"${sqls}"; exit ;;
+        esac
+
+        NUM=${NUM:-10}
+        dates=(`fn_get_date 1 ${NUM}`)
+
+        mysql kts <<< "TRUNCATE blk_stat"
+        for (( i=${NUM}-1; i>=0; i-- )); do
+            date=${dates[$i]}
+            iCOND="&&x.amount>000" iNUM=2 PARTS=2 END=${date} fn_blk_wolf_team 1   # iNUM 3只才成组
+            sqls=${sqls//hex(/(}
+            echo "
+            INSERT INTO  blk_stat
+            SELECT '$date',t.* FROM ($sqls) as t
+            " | mysql kts
+        done
         ;;
     inter)     
         fn_blk_wolf_inter $2
@@ -2497,7 +2530,7 @@ function fn_yysj()
     esac
 }
 
-function fn_dde()
+function fn_dde_acc3()
 {
     NUM=${NUM:-4}
     dates=(`fn_get_date 1 ${NUM}`)
@@ -2527,6 +2560,47 @@ function fn_dde()
         fi
     done
     
+    return $?
+}
+
+function fn_dde_wolf()
+{
+    STA=`fn_get_date ${NUM:-10}`
+    fn_bist
+    fn_yist
+    columns="date,d.code,trade,rise"
+    sqls="
+    SELECT ${columns},ROUND((pbuy+nbuy)/tov, 2) as eWolf, 
+        round(amount/10000, 1) as eYi, nmc,name FROM dde as d
+    $WHERE 1 ${COND} and date>='${STA}' && date<='${END}' && rise>9.93 && nmc<=120
+    HAVING eWolf>.5
+    ORDER by ${FIELD:-code } ASC
+    "
+    mysql -t kts <<<"${sqls}"
+    CHAO=1 fn_chao ${chao}.${chao2:-dde}
+    
+    return $?
+}
+
+function fn_dde()
+{
+    USAGE="
+    SELECT dde <param>
+    3       dde-net 3连升
+    wolf    [SELECT blk stat g]的配套查询
+    "
+    case $1 in
+    3)
+        fn_dde_acc3
+        ;;
+    wolf)
+        fn_dde_wolf
+        ;;
+    *)
+        echo "${USAGE}"
+        ;;
+    esac
+
     return $?
 }
 
@@ -2761,6 +2835,10 @@ function fn_xbb_sqls()
 function fn_ddd()
 {
     case $1 in
+    2)
+        END=${PREV} PARTS=2 PPLUS=1 SELECT lsd top
+        YIST=/tmp/kts/chao.top.lsd SELECT lsd top
+        ;;
     4|3)
         d4=`fn_get_date 4`
         d3=`fn_get_date 3`
@@ -2788,6 +2866,7 @@ function fn_ddd()
     *)
         echo "
         SELECT ddd <para>
+        2                   # 自然2连板
         3|4                 # 大跌抄底
         amount              # ceiling理论
         "

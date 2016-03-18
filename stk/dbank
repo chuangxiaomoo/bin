@@ -55,6 +55,7 @@ sql_eTranz="ROUND(d.amount/10000, 1) as eTranz,"
 
 url_sh000001='http://hq.sinajs.cn/list=sh000001'
 
+nmc_wolf=120.1
 mod_fbi=100
 mod_mi5=100
 sql_temp='/dev/shm/sql.temp'
@@ -209,6 +210,8 @@ fn_gen_10jqka_sel()
     rows=`wc -l < ${PLAIN}`
     rowx1=`bc <<< "obase=16;${rows}%256"`
     rowx2=`bc <<< "obase=16;${rows}/256"`
+
+    [ "${rows}" -eq 0 ] && fn_echo_fail "BLK shouldn't be NULL" && exit
     xargs <${PLAIN} | sed 's/^/ /' | sed  \
         -e 's# 6#6#g' \
         -e 's# 0#!0#g' \
@@ -258,8 +261,9 @@ function fn_chao()
     PLAIN=${1:-$chao}
     sql_chao="${PREFIX}SELECT code FROM (${sqls//;/}) as t"
     # echo "${sql_chao}"; exit
-    # 最后因没有换行而有重复，uniq不能处理
-    mysql -N kts <<<"${sql_chao}" |grep '^[036]'| uniq|tee ${TEE} ${PLAIN} > /dev/null 
+    # 最后因没有换行而有重复，uniq -u 只处理连续出现的重复行
+    mysql -N kts <<<"${sql_chao}" |grep '^[036]'| tee ${TEE} ${PLAIN} > /dev/null 
+    #ysql -N kts <<<"${sql_chao}" > /tmp/kts/chao.abc
 
     case ${DZH} in
     N) return               ;;
@@ -270,6 +274,13 @@ function fn_chao()
     return $?
     # up file_to_table ${PLAIN}
     # xt_ret $? "${FUNCNAME}" || return $?
+}
+
+function fn_bist()
+{
+    [ -z "${BLK}" ] && return
+    COND= CHAO=1 PARTS=2 fn_blk u ${BLK}
+    YIST=${chao}.blk
 }
 
 function fn_yist()

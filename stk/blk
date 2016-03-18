@@ -83,7 +83,7 @@ function fn_10jqka()
     xt_ret $? "mysql" || return $?
 
     # blk
-    CHAO=1 SELECT blk u 40 >& /dev/null && cp ${chao}.opt.union .blk.cixin
+    CHAO=1 SELECT blk u 40 >& /dev/null && cp ${chao}.blk .blk.cixin
     
     fn_echo_succ "up blk succ!"
 }
