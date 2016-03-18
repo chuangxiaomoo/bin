@@ -1,0 +1,1 @@
+END=2016-03-17 LIMIT=60 COND="eWolf>.55" SELECT wolf e
