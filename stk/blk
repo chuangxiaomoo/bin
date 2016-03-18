@@ -55,11 +55,11 @@ function fn_10jqka()
 
     sed -i -e 's/[0-9][0-9]://g' -e 's/=/,/g' -e 's/,$//g' ${blk_list}
 
-    # 2个关键文件格式(.perference.blk.md 处理)
+    # 2个关键文件格式(.preference.blk.md 处理)
     # blk_name.raw  FFC1=板块名
     # blk_list      FFC1,000004,000403
-    grep '^#.*=' .perference.blk.md | sed 's/^# *//g' >> ${blk_name}.raw
-    grep '^FF' .perference.blk.md | awk '{print $1}' >> ${blk_list}
+    grep '^#.*=' .preference.blk.md | sed 's/^# *//g' >> ${blk_name}.raw
+    grep '^FF' .preference.blk.md | awk '{print $1}' >> ${blk_list}
 
     sed -i -e 's/^/0x/g' -e 's/=/\t/g' ${blk_name}.raw
     sed -i -e 's/^/0x/g' ${blk_list}
