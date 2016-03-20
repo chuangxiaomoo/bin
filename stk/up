@@ -1281,6 +1281,114 @@ function fn_notice()
     done
 }
 
+function fn_seat_rank0()
+{
+#  1       2   3   4                          5             6    7        8<不是每个营业部都有此证券公司代号>
+# 80154611,1,321,222,财信发展|劲胜精密|万润科技,4444003271.91,广东,80000073,
+#  9      10              11            12, 13
+# 440000,148,9472124712.645,5028121440.735,华泰证券股份有限公司深圳益田路荣超商务中心证券营业部,000838.SZ|300083.SZ|002654.SZ
+    cat ${1} | tr -d '\n' | sed -e 's/^(\["//' -e 's/"\])$//' | sed -e 's/","/\n/g' -e 's/分公司/分部/g' | \
+        awk -v mon=${i:-6} -F',' '{printf "%s\t%.2f\t%s\t%s\t%s\t%s\n", $1,$11/mon,$3,$4,$10,$13}'   |\
+        sed -e 's/证券.*公司//g' -e 's/中国//g' -e 's/国泰君安/国君/g' -e 's/申万宏源/申万/g' | \
+        sed "s/^/$i\t/"
+
+    return $?
+}
+
+#fn_seat_rank0 ${chao}.seat.raw;exit
+
+function fn_seat_rank()
+{
+    function fn_url()
+    {
+        case $1 in
+        1|3|6)
+            echo "http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx?type=LHB&sty=YYTJ&stat=${1}&sr=0&st=1&p=1&ps=30" ;;
+        *)
+            fn_echo_fail "stat should be 1|3|6"; exit ;;
+        esac
+    }
+
+    > ${chao}.seat.rip
+
+    local i=
+    for i in 1 3 6; do
+        url=`fn_url $i`
+        > ${chao}.seat.raw
+        w3m -cols 1000 -dump "${url}" > ${chao}.seat.raw
+        fn_seat_rank0 ${chao}.seat.raw >> ${chao}.seat.rip
+    done
+
+    echo "
+    TRUNCATE seat_rank;
+    LOAD DATA LOCAL INFILE '$chao.seat.rip' INTO TABLE seat_rank;
+    " | mysql -u root kts
+    
+    return $?
+}
+
+function fn_seat_detail0()
+{
+    function fn_url() {
+        url="http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx?type=LHB&sty=YYHSIU&code=${seat}&p=${page}&ps=50"
+    }
+
+    #                    $1            $2       $3      $4       $5        $6
+    # 当日涨幅偏离值达7%的证券,2831186.41,002088.SZ,27029003.02,鲁阳节能,2016-02-29
+
+    > ${chao}.seat.rip
+    local i
+    for (( i=1; i<12; i+=1 )); do
+        fn_echo_succ "do page=$i of seat:$1"
+        seat=$1 page=$i fn_url
+        w3m -dump "${url}" > ${chao}.seat.raw
+        xt_ret $? "" || return $?
+        cat ${chao}.seat.raw | tr -d '\n' | sed -e 's/^(\["//' -e 's/"\])$//' | sed -e 's/","/\n/g' -e 's/\.S.//g' | \
+            awk -v seat=$1 -F',' '{printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\n", seat,$6,$3,$4,$2,$5,$1}' | \
+            sed 's/，.*$//g' >> ${chao}.seat.rip
+
+        min_date=`tail -1 ${chao}.seat.rip | awk '{print $2}'`
+        fn_isSqltrue "'$min_date'<='${sta_date}'" && break
+    done
+
+    fn_echo_succ "done of seat:$1"
+
+    echo "
+    CREATE TEMPORARY TABLE seat_detail0 LIKE seat_detail;
+    LOAD DATA LOCAL INFILE '${chao}.seat.rip' INTO TABLE seat_detail0;
+    DELETE FROM seat_detail0 WHERE date<='${sta_date}';
+    INSERT INTO seat_detail SELECT * FROM seat_detail0;
+    " | mysql kts
+    xt_ret $? "" || return $?
+}
+
+function fn_seat_detail()
+{
+    sqls="
+    SELECT code FROM (SELECT code, name, count(code) as num, sum(month) as mon, sum(amount) as eWan 
+        FROM seat_rank GROUP by code HAVING num>1 ORDER by eWan DESC ) as t
+    "
+
+    seats=(`mysql -N kts <<<"${sqls}"`)
+
+    #echo ${codes}
+    d80=`fn_get_date 80` 
+    
+    local i=
+    for (( i=0; i<${#seats[@]}; i++ )); do
+        seat=${seats[$i]}
+        sql_date="SELECT max(date) FROM seat_detail WHERE seat=${seat}"
+        sta_date=`mysql -N kts <<<"${sql_date}"`
+        if [ -z "${sta_date/NULL/}" ]; then
+            fn_echo_warn "replace null-date of seat[${i}]:$seat with d80:${d80}"
+            sta_date=$d80
+        fi
+        fn_echo_warn "start seat[${i}]:$seat"
+        fn_seat_detail0 ${seat}
+    done
+    return $?
+}
+
 function fn_main()
 {
     cmdlist=(
@@ -1292,11 +1400,11 @@ function fn_main()
     "redo_hexun_day                     # 重做大盘日线数据"
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
     "up_tbl_xRD [--keep.PWR -k]         # --- 使用当前除权数据 --keep.PWR"
-    "file_to_table {code...|file}       # 写file到表{TBL:-zxg}，并........ZXG.BLK........"
+    "file_to_table {code...|file}       # 写file到表{TBL:-zxg}，并......ZXG.BLK...."
     "table_to_file {table:-chao}        # 添加表{table:-chao}到/tmp/zxg"
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
     "checkcode file                     # "
-    "html                               # flush YIST=.soptter.xxx soptter result into html"
+    "html                               # flush YIST=.soptter.xxx soptter output into html"
     "copy_table_2_table src dst         # --- 使用 1 1 做为代号"
     "add_yesclose                       # 为yahoo.指南针数据添加yesclose"
     "load_directory                     # load文件夹${znzday}到表day"
@@ -1316,6 +1424,8 @@ function fn_main()
     "merge  file...                     # 合并多个文件到chao.merge"
     "dig                                # 从<chao.dig>输入，并输出到<dig.txt>"
     "notice NUM                         # 至多NUM天，更新公告 /opt/notice/"
+    "seat_rank                          # 总排名"
+    "seat_detail                        # 细节"
     )
 
     # 存储过程函数文件的最后5行都是注释

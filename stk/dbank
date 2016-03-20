@@ -211,7 +211,7 @@ fn_gen_10jqka_sel()
     rowx1=`bc <<< "obase=16;${rows}%256"`
     rowx2=`bc <<< "obase=16;${rows}/256"`
 
-    [ "${rows}" -eq 0 ] && fn_echo_fail "BLK shouldn't be NULL" && exit
+    [ "${rows}" -eq 0 ] && fn_echo_fail "BLK shouldn't be NULL" && exit 1
     xargs <${PLAIN} | sed 's/^/ /' | sed  \
         -e 's# 6#6#g' \
         -e 's# 0#!0#g' \
