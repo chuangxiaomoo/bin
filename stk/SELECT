@@ -53,6 +53,7 @@ function fn_lsd()
           columns=d.${columns//,/,d.}
     local TEMPDAY='day'
 
+    fn_bist
     fn_yist
     case $1 in
     loop)
@@ -1606,9 +1607,7 @@ function fn_nDDE_sqls()
     GROUP by code 
     HAVING 1 ${CAUSE} ${COND} ORDER by ${FIELD} ${ASC:-DESC} LIMIT ${LIMIT:-24}
     "
-    #-- && net>${DOOR}     -- WHERE(net>0)加速3倍
     fn_echo_warn "wolf of ${END}.${stime:-latest} [NUM:${NUM}] [DOOR:${DOOR}] ${FIELD}"
-    echo "${sqls}"; exit
 }
 
 function fn_list_wolf_dates()
@@ -1645,7 +1644,7 @@ function fn_wolf_sqls()
 {
     col_tet="ROUND(net/(1-top10_ajst_aR), 2) as Tet,"
     FIELD=${FIELD:-eWolf}
-    DOOR=${DOOR:--tov/8}
+    DOOR=${DOOR:--tov/6.6}
     yesc='(trade/(1+rise/100))'
     sqls="
         SELECT ${col_date} w.code, w.rise, ${sql_opri} ${col_trade}
@@ -1716,8 +1715,8 @@ function fn_wolf()
         sql_cond="&& w.code=d.code"
         sql_xbb="UPDATE xdde,xbb SET xdde.speed=xbb.xbb WHERE xdde.code=xbb.code;"
         fn_wolf_sqls
-        mysql ${OPT:-'-t'} kts <<<"${sql_xbb}${sqls}"
-        fn_chao ${chao}.wolf
+        [ "${PARTS:-3}" -eq 3 ] && mysql ${OPT:-'-t'} kts <<<"${sql_xbb}${sqls}"
+        fn_chao ${chao}.${chao2:-wolf}
         ;;
     c|cf|code)
         fn_iscode $2
@@ -1727,6 +1726,7 @@ function fn_wolf()
         }
 
         if [ "${1}" = c ]; then
+            jCOND="date<='${END}'"
             col_date="w.date,"
             ORDER="ORDER by ${FIELD:-date} DESC"
             iTBL=dde
@@ -1752,28 +1752,20 @@ function fn_wolf()
         fn_chao
         ;;
     n|nDDE)
+        NUM=${NUM:-2}
+        [ "${sta:=${2:-1}}" = l ] && fn_list_wolf_times
         fn_yist
-        sta=${2:-1}
-        fn_isdigit ${sta}
-        if [ "${?}" -eq 0 ]; then
-            FIELD=${3:-wet}
-        else
-            FIELD=$2; sta=1; 
-        fi
+        fn_isdigit ${sta} && FIELD=${3:-wet} || { FIELD=$2;sta=1 ;}
 
-        [ "${2}" = l ] && fn_list_wolf_times
-
-        # 非实时统计，重新组装wOLF
-
-        PREV=`END=${date:-${END}} fn_get_prev`
+        # 非实时统计，重新组装wolf
         iCOND="num=${NUM:-8}" xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
 
-        NUM=${NUM:-2}
         STA=`fn_get_date ${NUM}`
 
         if [ ${sta} -ne 1 ]; then
             let sta--
-            stime=`mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC LIMIT ${sta},1"`
+            sql_stime="SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC LIMIT ${sta},1"
+            stime=`mysql -N kts<<< "${sql_stime}"`
             WOLF=nDDE
             fn_asm_nDDE
             xt_ret $? "" || return $?
@@ -2835,6 +2827,19 @@ function fn_xbb_sqls()
 function fn_ddd()
 {
     case $1 in
+    110)
+        fn_echo_succ "___________line_for_boundary_110.2_______________"
+
+        CHAO=1 PARTS=2 COND="rise>avrg-1 && eWolf>=.5&&prop>${iDOOR:-2}" END=${PREV} SELECT wolf e
+        CHAO=1 chao2=110.2 YIST=${chao}.wolf COND="eWolf>=.3&&prop<1" SELECT wolf e
+
+        fn_echo_succ "___________line_for_boundary_110.3_______________"
+
+        PREV2=`fn_get_date 3`
+        CHAO=1 PARTS=2 chao2=110.3 COND="rise>avrg-1 && eWolf>=.5&&prop>${iDOOR:-2}" END=${PREV2} SELECT wolf e
+        CHAO=1 PARTS=2 chao2=110.2 YIST=${chao}.110.3 COND="eWolf>=.3&&prop<1" END=${PREV} SELECT wolf e || exit
+        CHAO=1         chao2=110.1 YIST=${chao}.110.2 COND="           prop<1" SELECT wolf e                # 无eWolf要求
+        ;;
     2)
         END=${PREV} PARTS=2 PPLUS=1 SELECT lsd top
         YIST=/tmp/kts/chao.top.lsd SELECT lsd top
@@ -2872,6 +2877,35 @@ function fn_ddd()
         "
         ;;
     esac
+}
+
+function fn_seat_rank()
+{
+    sqls="
+    SELECT code, name, count(code) as num, sum(month) as mon, sum(amount) as eWan 
+        FROM seat_rank GROUP by code HAVING num>1 ORDER by eWan DESC
+    "
+    mysql -t kts <<< "${sqls}"
+}
+
+function fn_seat_detail()
+{
+    sql_door=1
+    sql_seat="
+    SELECT code FROM (SELECT code, name, count(code) as num, sum(month) as mon, sum(amount) as eWan 
+        FROM seat_rank GROUP by code HAVING num>${sql_door} ORDER by eWan DESC ) as t
+    "
+
+    d60=`fn_get_date 40` 
+
+
+    sqls="
+    SELECT code FROM seat_detail WHERE seat in (${sql_seat}) and date>='${d60}' && date<='${END}'
+    "
+
+    CHAO=1 fn_chao ${chao}.${chao2:-seat}
+    
+    return $?
 }
 
 function fn_main()
@@ -2924,6 +2958,8 @@ function fn_main()
     "ATR                                      # AverageTrueRangeOf阳线非一字板"
     "notice                                   # 公告"
     "ddd                                      # 连续缩量后放量"
+    "seat_rank                                # 总排名"
+    "seat_detail                              # seat-blk"
     )
 
     fn_set_END
