@@ -1782,9 +1782,9 @@ function fn_wolf()
         iSCALE=`SCALE=A fn_scale ${HMS}`
         eYi=${eYi:-.25}  # tag_伸缩处理
         case $1 in
-        a) eCOND="&&amount>${eYi}*10000"                                        ;;
-        e) eCOND="&&amount>${eYi}*10000*iSCALE && nmc<=${nmc_wolf}"             ;;
-        E) eCOND="&&amount>${eYi}*10000*iSCALE && nmc> ${nmc_wolf} && nmc<300"   ;;
+        a) eCOND="&&amount>${eYi}*10000"                                                ;;
+        e) eCOND="&&amount>${eYi}*10000*iSCALE && nmc<=${nmc_wolf}"                     ;;
+        E) eCOND="&&amount>${eYi}*10000*iSCALE && nmc> ${nmc_wolf} && nmc<${nmc_lion}"  ;;
         esac
 
         FIELD=${FIELD:-eWolf} fn_wolf i ${2:-1}
@@ -2233,16 +2233,16 @@ function fn_blk_wolf_team()
     SELECT ${sql_blk}, count(m.code) as num, n.sym,
         round(sum(rise    )/count(m.code), 2) as rise,
         round(sum(${eWolf})/count(m.code), 2) as wolf,
-        sum(rise>9.93) as click
+        sum(rise>${TEN:=9.93}) as click
     FROM blk_name as n, blk_memb as m, xdde as x
     WHERE n.blk=m.blk and m.code=x.code && m.blk not in ${EXCLUDE_BLK} ${iCOND}
-    && ${eWolf}>${iDOOR:=.5} && rise>${rDOOR:=2} && nmc<${nmc_wolf} 
+    && ${eWolf}>${iDOOR:=.5} && rise>${rDOOR:=2} && ${sql_nmc:-"nmc<${nmc_wolf}"}
     GROUP by blk 
     HAVING num>${iNUM:-1} ${COND}
-    ORDER by ${iFIELD:-num} DESC LIMIT ${LIMIT:-16}
+    ORDER by ${FIELD:=num} DESC LIMIT ${LIMIT:-16}
     " 
     #echo "${sqls}" ; exit
-    fn_echo_succ "eWolf layout of ${END} ${stime} [iDOOR:$iDOOR] [rDOOR:$rDOOR]"
+    fn_echo_succ "eWolf layout of ${END} ${stime} [iDOOR:$iDOOR] [rDOOR:$rDOOR] [FIELD:$FIELD] [TEN:$TEN]"
     [ "${PARTS:-3}" -eq 3 ] && mysql -t kts <<< "SELECT * FROM (${sqls}) as tbl ORDER by ${FIELD:-num} DESC"
     return
 }
@@ -2349,13 +2349,15 @@ function fn_blk()
         ;;
     wolf) # blk.wolf
         set -e
-        usage="Usage: iDOOR=.5 rDOOR=2 SELECT blk wolf {list|[team]iF5|BLK}"
+        usage="Usage: iDOOR=.5 rDOOR=2 SELECT blk wolf {list|[E.a]iF5|BLK}"
         case $2 in
-        l|list)     fn_list_wolf_times                  ;;
-        team)       FIELD=wolf fn_blk_wolf_team $3      ;; # 先匹配team，再匹配digit
-        40|[A-Z]*)  COND= fn_blk_wolf_blk   ${@:2}      ;;
-        [0-9]*)     fn_blk_wolf_team  $2                ;;
-        *)          echo "${usage}"                     ;;
+        l|list)     fn_list_wolf_times                              ;;
+        a)          sql_nmc="1" fn_blk_wolf_team $3                 ;;
+        E)          sql_nmc="nmc>${nmc_wolf}&&nmc<=${nmc_lion}"
+                    fn_blk_wolf_team $3                             ;;
+        [0-9]*)     fn_blk_wolf_team $2                             ;;
+        40|[A-Z]*)  COND= fn_blk_wolf_blk   ${@:2}                  ;;
+        *)          echo "${usage}"                                 ;;
         esac
         ;;
     stat)     
@@ -2898,12 +2900,16 @@ function fn_seat_detail()
 
     d60=`fn_get_date 40` 
 
+    # try comment
+    DISTINCT=DISTINCT
 
     sqls="
-    SELECT code FROM seat_detail WHERE seat in (${sql_seat}) and date>='${d60}' && date<='${END}'
+    SELECT $DISTINCT code FROM seat_detail WHERE seat in (${sql_seat}) and date>='${d60}' && date<='${END}'
     "
 
     CHAO=1 fn_chao ${chao}.${chao2:-seat}
+
+    YIST=${chao}.seat SELECT blk l
     
     return $?
 }

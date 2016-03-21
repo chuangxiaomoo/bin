@@ -12,7 +12,6 @@ helpmsg="
   HAVING        条件过滤表达式，常置于SELECT嵌套时的最后过滤 e.g. fn_yi_descend
     CHAO        1时在所有模型上叠加超跌模型
     END         时间范围的右值，默认使用900001的max(date)
-    GEM         Growth Enterprise Market, 1 to filter
     LIMIT       limit子句输出记录限制，默认48
     YIST        code列表文件，优先于变量TBL
     START       时间范围的左值
@@ -21,7 +20,9 @@ helpmsg="
     XTBL        EXCLEDE表，SELECT时使用，默认为空
     NMC_RATIO   NMC_RATIO*100%成本分析空间
 "
-
+nmc_wolf=130.1
+nmc_lion=300.1
+# _____________________________boundary_of_wolf______________________________
 cd ~/bin/stk
 export PATH=.:~/bin:$PATH
 
@@ -55,7 +56,6 @@ sql_eTranz="ROUND(d.amount/10000, 1) as eTranz,"
 
 url_sh000001='http://hq.sinajs.cn/list=sh000001'
 
-nmc_wolf=120.1
 mod_fbi=100
 mod_mi5=100
 sql_temp='/dev/shm/sql.temp'
