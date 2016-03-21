@@ -37,6 +37,17 @@ CREATE TABLE blk_memb (
     INDEX(blk,code)
 );
 
+CREATE TABLE blk_stat (
+    date    DATE NOT NULL,
+    blk     INT,
+    num     INT,
+    sym     CHAR(64),
+    rise    DECIMAL(6,2) NOT NULL,
+    wolf    DECIMAL(6,2) NOT NULL,
+    click   INT,
+    INDEX(blk,date)
+);
+
 -- 对于AUTO_INCREMENT，可以用DEFAULT
 --  INSERT INTO stamp_min values(DEFAULT, '2008-08-08', '08:08:08')
 
@@ -168,3 +179,28 @@ CREATE TABLE sz_index(
     INDEX(date)
 );
 
+# 80154611     9472124712.645  321     222     148     华泰深圳益田路荣超商务中心证券营业部
+DROP TABLE IF EXISTS seat_rank;
+CREATE TABLE seat_rank(
+    month       int,
+    code        bigint(12)   NOT NULL, 
+    amount      bigint(16)   NOT NULL, 
+    golds       int,
+    buy         int,
+    sell        int,
+    name        CHAR(128),
+    INDEX(code)
+);
+
+# 当日价格振幅达到15%的证券,4974842.8,300008.SZ,5134079.36,上海佳豪,2016-02-26
+DROP TABLE IF EXISTS seat_detail;
+CREATE TABLE seat_detail(
+    seat        bigint(12) NOT NULL,
+    date        date NOT NULL,
+    code        INT(6) ZEROFILL NOT NULL,
+    buy         DECIMAL(12,2) NOT NULL,
+    sell        DECIMAL(12,2) NOT NULL,
+    name        CHAR(16),
+    cause       CHAR(64),
+    INDEX(seat,date)
+);
