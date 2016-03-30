@@ -787,6 +787,7 @@ function fn_beyondcompare3()            { cat windows_beyondcompare3 ;}
 function fn_rightclick()                { cat windows_rightclick ;}
 function fn_U盘DOS启动盘制作工具()      { cat windows_U盘DOS启动盘制作工具 ;}
 function fn_regedit()                   { cat win_regedit ;}
+function fn_qmacro()                    { cat win_qmacro ;}
     local opts=(
         syscmd                  # usb systeminfo printer viso
         02_清晰显示
@@ -799,6 +800,7 @@ function fn_regedit()                   { cat win_regedit ;}
         mpp                     # msproject task
         beyondcompare3          # BC3 bc3
         大拿万能老板键          # 大拿软件系列 boss
+        qmacro                  # 按键精灵 
         Mobi阅读器              # mobipocket_reader
         修复网络链接无法关闭    # 在任务管理器中关闭及重新开启 explorer.exe
         U盘DOS启动盘制作工具    # MS-DOS DOS 

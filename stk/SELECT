@@ -98,6 +98,10 @@ function fn_lsd()
         top     10%
         floor   -10%
         ''      top default
+
+        PPLUS=<val>
+        1 high!=low
+        2 open =low
         "
         exit
         ;;
@@ -110,7 +114,12 @@ function fn_lsd()
     {
         [ "${FIELD}" = 'dive' ] && 
         sql_dive="round( (100*(d.amount/d.volume-d.close)/d.close), 1) as dive,"
-        [ -n "${PPLUS}" ] && iCOND='high!=low'
+        [ -n "${PPLUS}" ] && 
+        case ${PPLUS} in
+        1) CHAO=1;iCOND='high!=low' ;;
+        2) CHAO=1;iCOND='open =low' ;;
+        esac
+
         sqls="
         SELECT ${CID}$columns, volume,amount, 
                 $OPRI as opri, 
@@ -445,8 +454,8 @@ function fn_wma()
 function fn_updown()
 {
     case $1 in
-    +([0-9])) HMS=`fn_get_time ${1}`;NUM=1  ;;
-    l) fn_list_iF5_times                    ;;
+    +([0-9])) HMS=`fn_get_time ${1}` || exit; NUM=1 ;;
+    l) fn_list_iF5_times                            ;;
     esac
 
     let iNUM=${NUM:=5}+1
@@ -1647,7 +1656,7 @@ function fn_wolf_sqls()
     DOOR=${DOOR:--tov/6.6}
     yesc='(trade/(1+rise/100))'
     sqls="
-        SELECT ${col_date} w.code, w.rise, ${sql_opri} ${col_trade}
+        SELECT ${col_date} w.code, w.rise, ${sql_opri} ${sql_hiri} ${col_trade}
         round(100*(trade-h.low)/h.low, 1) as incr,
         round(100*(h.high-LEAST(lohi,trade))/LEAST(lohi,trade),1) as jump,
         ROUND( (100*(w.amount/shou-$yesc)/$yesc), 1) as avrg, tov,
@@ -2830,13 +2839,16 @@ function fn_ddd()
 {
     case $1 in
     110)
-        fn_echo_succ "___________line_for_boundary_110.2_______________"
+        fn_echo_succ "___________line_for_boundary_110.1_______________"
+        sql_hiri="$HIRI as hiri," \
+        CHAO=1 PARTS=2 COND="hiri>9.9 && eWolf>=.5" END=${PREV} SELECT wolf e
+        CHAO=1 chao2=110.1 YIST=${chao}.wolf COND="eWolf>=.3&&prop<.8" SELECT wolf e
 
+        fn_echo_succ "___________line_for_boundary_110.2_______________"
         CHAO=1 PARTS=2 COND="rise>avrg-1 && eWolf>=.5&&prop>${iDOOR:-2}" END=${PREV} SELECT wolf e
         CHAO=1 chao2=110.2 YIST=${chao}.wolf COND="eWolf>=.3&&prop<1" SELECT wolf e
 
         fn_echo_succ "___________line_for_boundary_110.3_______________"
-
         PREV2=`fn_get_date 3`
         CHAO=1 PARTS=2 chao2=110.3 COND="rise>avrg-1 && eWolf>=.5&&prop>${iDOOR:-2}" END=${PREV2} SELECT wolf e
         CHAO=1 PARTS=2 chao2=110.2 YIST=${chao}.110.3 COND="eWolf>=.3&&prop<1" END=${PREV} SELECT wolf e || exit
@@ -2865,6 +2877,11 @@ function fn_ddd()
         YIST=/tmp/kts/chao.lohi \
         COND="eWolf>.3" SELECT wolf e
         ;;
+    yiz)
+        PARTS=2 CHAO=1 END=$PREV COND="rise>9.93" PPLUS=2 SELECT lsd
+        YIST=/tmp/kts/chao.lsd \
+        COND="eWolf>.3" SELECT wolf e $2
+        ;;
     amount)
         fn_xbb_sqls $2
         #echo "${sqls}"; exit
@@ -2873,9 +2890,11 @@ function fn_ddd()
     *)
         echo "
         SELECT ddd <para>
+        110                 # 缩量低吸
         2                   # 自然2连板
         3|4                 # 大跌抄底
-        amount              # ceiling理论
+        yiz                 # iEND=3 更新xbb数据库.ceiling理论
+        amount              # iEND=3 更新xbb数据库.ceiling理论
         "
         ;;
     esac
