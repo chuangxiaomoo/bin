@@ -144,6 +144,7 @@ function fn_102_谈我对在校学习的看法()  { cat book_102_谈我对在校
 function fn_103_雷军的第二个四年()      { cat book_103_雷军的第二个四年 ;}
 function fn_104_罗永浩天生骄傲()        { cat book_104_罗永浩天生骄傲 ;}
 function fn_200_逃不开的经济周期()      { cat book_200_逃不开的经济周期 ;}
+function fn_201_经济学通识()            { cat book_201_经济学通识 ;}
 function fn_900_平凡的世界()            { cat book_900_平凡的世界 ;}
 function fn_tiandao()                   { cat book_tiandao book_遥远的救世主;}
     local opts=(
@@ -182,6 +183,7 @@ function fn_tiandao()                   { cat book_tiandao book_遥远的救世�
         104_罗永浩天生骄傲          # kaiwu
 
         200_逃不开的经济周期
+        201_经济学通识              # xuezhaofeng
         900_平凡的世界
     )
     fn_print $@
@@ -390,14 +392,17 @@ function fn_wdf_25_上手之于概念()       { cat phi_wdf_25_上手之于概�
 function fn_wdf_26_未言语前已心领神会() { cat phi_wdf_26_未言语前已心领神会 ;}
 function fn_wdf_27_人必有一死()         { cat phi_wdf_27_人必有一死 ;}
 function fn_wdf_28_终极关怀()           { cat phi_wdf_28_终极关怀 ;}
+function fn_wdf_00()                    { cat phi_wdf_00 ;}
 function fn_epistemology()              { cat phi_epistemology ;}
+function fn_fallacy()                   { cat phi_fallacy ;}
     local opts=(
-        01_马克思
+        01_马克思                       # pelple's essence
         02_康德
         03_波普尔                       # 证伪主义
         freudian                        # 自我 本我 超我
         emotion                         # Anger 七情六欲
 
+        fallacy
         epistemology                    # 知识论
 
         flowers12                       # 哲学12钗

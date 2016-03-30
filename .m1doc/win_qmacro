@@ -1,0 +1,53 @@
+# qmacro
+
+KeyDown "Win", 1
+KeyPress "1", 1
+KeyUp "Win", 1
+KeyDown "Win", 1
+KeyPress "9", 1
+KeyUp "Win", 1
+Delay 100
+KeyPress "2", 1
+KeyPress "0", 1
+KeyPress "1", 1
+KeyPress "Enter", 1
+MoveTo 771, 194
+LeftClick 1
+RightClick 1
+Delay 200
+KeyPress "Up", 3
+Delay 150
+KeyPress "Up", 2
+KeyPress "Right", 1
+KeyPress "Enter", 1
+KeyDown 18, 1
+KeyPress 78, 1
+KeyUp 18, 1
+Delay 300
+KeyDown 18, 1
+KeyPress 78, 1
+KeyUp 18, 1
+Delay 3000
+Rem red
+Delay 500
+IfColor 921,580,"0",0 Then
+Goto green
+Else
+Goto red
+End If
+Rem green
+LeftClick 1
+KeyDown "Win", 1
+KeyPress "3", 1
+KeyUp "Win", 1
+KeyPress ".", 1
+KeyPress "s", 1
+KeyPress ";", 1
+KeyPress "w", 1
+KeyPress "o", 1
+KeyPress "l", 1
+KeyPress "f", 1
+KeyPress "Space", 1
+KeyPress "u", 1
+KeyPress "p", 1
+KeyPress "Enter", 1

@@ -517,7 +517,7 @@ function fn_get_prev()
 {
     # 当END不存在时，亦正确
     sqls="SELECT date FROM day WHERE code=${CODE:-900001} and date<'$END'"
-    mysql -N kts<<<"${sqls} ORDER by date DESC LIMIT ${STEP:-0},1"
+    mysql -N kts<<<"${sqls} ORDER by date DESC LIMIT 0,1"
 }
 
 function fn_get_next()
