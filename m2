@@ -7,7 +7,9 @@ cd ${ARCHIVE}
 
 function fn_herb()                      {
 function fn_5邪()                       { cat herb_5邪 ;}
+function fn_中医学理论体系()            { cat herb_中医学理论体系 ;}
     local opts=(
+        中医学理论体系
         5邪
         case                            # 叶天士 临症指南
     )
@@ -358,6 +360,26 @@ function fn_01_Akkila与拼字大赛()       { cat movie_01_Akkila与拼字大�
     fn_print $@
 }
 
+function fn_logic()                     {
+function fn_base()                      { cat logic_base ;}
+function fn_MECE()                      { cat logic_MECE ;}
+function fn_training500()               { cat logic_training500 ;}
+function fn_puzzle()                    { cat logic_puzzle ;}
+function fn_formal()                    { cat logic_formal ;}
+function fn_informal()                  { cat logic_informal ;}
+function fn_fallacy()                   { cat logic_fallacy ;}
+    local opts=(
+        base
+        MECE                            # Mutually Exclusive Collectively Exhaustive
+        training500
+        puzzle                          # 我理解的一些谜
+        formal                          #   形式逻辑(普通逻辑)
+        informal                        # 非形式逻辑
+        fallacy
+    )
+    fn_print $@
+}
+
 function fn_phi()                       { 
 function fn_flowers12()                 { cat phi_flowers12 ;}
 function fn_01_马克思()                 { cat phi_01_马克思 ;}
@@ -394,7 +416,6 @@ function fn_wdf_27_人必有一死()         { cat phi_wdf_27_人必有一死 ;}
 function fn_wdf_28_终极关怀()           { cat phi_wdf_28_终极关怀 ;}
 function fn_wdf_00()                    { cat phi_wdf_00 ;}
 function fn_epistemology()              { cat phi_epistemology ;}
-function fn_fallacy()                   { cat phi_fallacy ;}
     local opts=(
         01_马克思                       # pelple's essence
         02_康德
@@ -402,7 +423,6 @@ function fn_fallacy()                   { cat phi_fallacy ;}
         freudian                        # 自我 本我 超我
         emotion                         # Anger 七情六欲
 
-        fallacy
         epistemology                    # 知识论
 
         flowers12                       # 哲学12钗
@@ -440,22 +460,6 @@ function fn_fallacy()                   { cat phi_fallacy ;}
     fn_print $@
 }
 
-function fn_logic()                     {
-function fn_base()                      { cat logic_base ;}
-function fn_MECE()                      { cat logic_MECE ;}
-function fn_training500()               { cat logic_training500 ;}
-function fn_puzzle()                    { cat logic_puzzle ;}
-function fn_informal()                  { cat logic_informal ;}
-    local opts=(
-        base
-        MECE                            # Mutually Exclusive Collectively Exhaustive
-        training500
-        puzzle                          # 我理解的一些谜
-        informal                        # 非形式逻辑
-
-    )
-    fn_print $@
-}
 function fn_xuexi() {
 function fn_ref()                       { cat ref ;}
 function fn_brain()                     { cat xuexi_brain ;}

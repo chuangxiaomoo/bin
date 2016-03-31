@@ -1425,7 +1425,7 @@ function fn_main()
     "dig                                # 从<chao.dig>输入，并输出到<dig.txt>"
     "notice NUM                         # 至多NUM天，更新公告 /opt/notice/"
     "seat_rank                          # 总排名"
-    "seat_detail                        # 细节"
+    "seat_detail                        # top-30-seat所操作的股票"
     )
 
     # 存储过程函数文件的最后5行都是注释
