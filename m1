@@ -5,9 +5,11 @@ cd ${ARCHIVE}
  . ${ARCHIVE}.pri.bashrc
 
 function fn_agile()                     { 
+function fn_manifesto()                 { cat agile_manifesto ;}
 function fn_base()                      { cat agile_base ;}
 function fn_26_hints()                  { cat agile_26_hints ;}
     local opts=(
+        manifesto           # 应运而生
         base
         26_hints
     )
