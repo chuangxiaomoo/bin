@@ -196,7 +196,6 @@ function fn_guang()    	                { cat guang ;}
 function fn_words()    	                { cat words ;}      # juzi
 function fn_music()    	                { cat music ;}
 function fn_poet()    	                { cat poet ;}
-function fn_english()                   { cat english ;}
 function fn_personage()                 { cat personage ;}
 function fn_meeting()                   { cat meeting ;}
 function fn_01_囧_jiong()               { cat 01_囧_jiong ;}
@@ -207,7 +206,6 @@ function fn_01_提高逻辑思维能力()       { cat howto_01_提高逻辑思�
 function fn_02_训练思维的深度和缜密度() { cat howto_02_训练思维的深度和缜密度 ;}
 function fn_03_沟通_communication()     { cat howto_03_沟通_communication ;}
 function fn_04_屌丝如何逆袭()           { cat howto_04_屌丝如何逆袭 ;}
-
     local opts=(
         01_提高逻辑思维能力
         02_训练思维的深度和缜密度
@@ -215,7 +213,25 @@ function fn_04_屌丝如何逆袭()           { cat howto_04_屌丝如何逆袭 
         04_屌丝如何逆袭
     )
     fn_print $@
+}
 
+function fn_english()                   {
+function fn_US_TV_series()              { cat english_US_TV_series ;}
+function fn_vocabulary()                { cat english_vocabulary ;}
+function fn_speaking()                  { cat english_speaking ;}
+function fn_listening_layers()          { cat english_listening_layers ;}
+function fn_reading()                   { cat english_reading ;}
+function fn_interprete()                { cat english_interprete ;}
+function fn_interpreting()              { cat english_interpreting ;}
+    local opts=(
+        US_TV_series                    # 美剧
+        vocabulary
+        speaking
+        listening_layers                # 语言的层次 
+        reading
+        interpreting                    # 在电脑上用vi补全对照听写
+    )
+    fn_print $@
 }
 
 function fn_zhihu()                     { 
@@ -368,6 +384,7 @@ function fn_puzzle()                    { cat logic_puzzle ;}
 function fn_formal()                    { cat logic_formal ;}
 function fn_informal()                  { cat logic_informal ;}
 function fn_fallacy()                   { cat logic_fallacy ;}
+function fn_language()                  { cat logic_language ;}
     local opts=(
         base
         MECE                            # Mutually Exclusive Collectively Exhaustive
@@ -376,6 +393,7 @@ function fn_fallacy()                   { cat logic_fallacy ;}
         formal                          #   形式逻辑(普通逻辑)
         informal                        # 非形式逻辑
         fallacy
+        language                        # 英语逻辑实现
     )
     fn_print $@
 }
@@ -757,6 +775,18 @@ function fn_Small_Stakes_Hold_em()      { cat texaspoker_Small_Stakes_Hold_em ;}
     fn_print $@
 }
 
+function fn_psychology() {
+function fn_misc()                      { cat psychology_misc ;}
+function fn_xiaoxiaoxinxin()            { cat psychology_xiaoxiaoxinxin ;}
+function fn_sxmm()                      { cat psychology_sxmm ;}
+    local opts=(
+        misc
+        xiaoxiaoxinxin                  # 小小歆歆 断舍离 悟破习
+        sxmm
+    )
+    fn_print $@
+}
+
 function fn_game_theory()               { cat game_theory ;}
 function fn_debate_competition()        { cat debate_competition ;}
 function fn_super_speech()              { cat super_speech ;}
@@ -841,6 +871,7 @@ function fn_main() {
         redwine 
         stupid_things                   # 哪些年做过的蠢事 habit
         subtitle
+        psychology                      # 心理学
     )
     fn_print $@
 }

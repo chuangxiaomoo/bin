@@ -140,7 +140,9 @@ function fn_mtd()                       { cat linux_mtd ;}
 function fn_ubifs()                     { cat linux_ubifs ;}
 function fn_lockfile()                  { cat linux_lockfile ;}
 function fn_memory()                    { cat linux_memory ;}
+function fn_aout()                      { cat linux_aout ;}
     local opts=(
+        aout                            # a.out目标文件格式 & 程序员自我修养
         fundamental
         kernel
         memory                          # 减少内存使用
