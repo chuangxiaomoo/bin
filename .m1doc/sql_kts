@@ -37,12 +37,14 @@ CREATE TABLE blk_memb (
     INDEX(blk,code)
 );
 
+DROP TABLE blk_stat;
 CREATE TABLE blk_stat (
     date    DATE NOT NULL,
     blk     INT,
     num     INT,
     sym     CHAR(64),
     rise    DECIMAL(6,2) NOT NULL,
+    earn    DECIMAL(6,2) NOT NULL,
     wolf    DECIMAL(6,2) NOT NULL,
     click   INT,
     INDEX(blk,date)
