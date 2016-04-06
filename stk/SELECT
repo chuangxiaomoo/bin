@@ -1641,9 +1641,13 @@ function fn_list_iF5_times()
 function fn_proc_eCOND_scale()
 {
     if fn_issqltrue "'${stime}'>'12:00:00'"; then
-        eCOND=${eCOND//iSCALE/3}
+        eCOND=${eCOND//iSCALE/13}
     elif fn_issqltrue "'${stime}'>'10:30:00'"; then
-        eCOND=${eCOND//iSCALE/2}
+        eCOND=${eCOND//iSCALE/8}
+    elif fn_issqltrue "'${stime}'>'10:00:00'"; then
+        eCOND=${eCOND//iSCALE/5}
+    elif fn_issqltrue "'${stime}'>'09:47:00'"; then
+        eCOND=${eCOND//iSCALE/3}
     else
         eCOND=${eCOND//iSCALE/1}
     fi
@@ -1788,8 +1792,7 @@ function fn_wolf()
     a|e|E)
         col_trade='trade,'
         HMS=${HMS:-`fn_get_time 1`}
-        iSCALE=`SCALE=A fn_scale ${HMS}`
-        eYi=${eYi:-.25}  # tag_伸缩处理
+        eYi=${eYi:-.1}  # tag_伸缩处理
         case $1 in
         a) eCOND="&&amount>${eYi}*10000"                                                ;;
         e) eCOND="&&amount>${eYi}*10000*iSCALE && nmc<=${nmc_wolf}"                     ;;
@@ -2224,7 +2227,7 @@ function fn_blk_delta()
 
 function fn_blk_wolf_blk()
 {
-    CHAO=1 PARTS=2 fn_blk u $1                          # output to ${chao}.blk
+    CHAO=1 PARTS=2 FIELD= fn_blk u $1                          # output to ${chao}.blk
     LIMIT=20 FIELD= YIST=${chao}.blk SELECT wolf e ${2}
 }
 
@@ -2241,11 +2244,12 @@ function fn_blk_wolf_team()
     sqls="
     SELECT ${sql_blk}, count(m.code) as num, n.sym,
         round(sum(rise    )/count(m.code), 2) as rise,
+        round(sum(100*(trade-amount/shou)/(trade/(1+.01*rise)))/count(m.code), 2) as earn,
         round(sum(${eWolf})/count(m.code), 2) as wolf,
         sum(rise>${TEN:=9.93}) as click
     FROM blk_name as n, blk_memb as m, xdde as x
     WHERE n.blk=m.blk and m.code=x.code && m.blk not in ${EXCLUDE_BLK} ${iCOND}
-    && ${eWolf}>${iDOOR:=.5} && rise>${rDOOR:=2} && ${sql_nmc:-"nmc<${nmc_wolf}"}
+    && ${eWolf}>${iDOOR:=.4} && rise>${rDOOR:=2} && ${sql_nmc:-"nmc<${nmc_wolf}"}
     GROUP by blk 
     HAVING num>${iNUM:-1} ${COND}
     ORDER by ${FIELD:=num} DESC LIMIT ${LIMIT:-16}
@@ -2358,7 +2362,10 @@ function fn_blk()
         ;;
     wolf) # blk.wolf
         set -e
-        usage="Usage: iDOOR=.5 rDOOR=2 SELECT blk wolf {list|[E.a]iF5|BLK}"
+        usage="Usage: 
+        iDOOR=.40 COND='click>0&&earn>.3'
+        iDOOR=.50 rDOOR=2 SELECT blk wolf {list|[E.a.BLK]iF5}
+        "
         case $2 in
         l|list)     fn_list_wolf_times                              ;;
         a)          sql_nmc="1" fn_blk_wolf_team $3                 ;;
@@ -2371,7 +2378,7 @@ function fn_blk()
         ;;
     stat)     
         case $2 in
-        l)  sqls=" SELECT date,hex(blk),num,sym,rise,wolf FROM blk_stat "
+        l)  sqls=" SELECT date,hex(blk),num,sym,rise,earn,wolf FROM blk_stat "
             mysql -t kts <<<"${sqls}"; exit ;;
         g)  sqls=" SELECT hex(blk),count(blk)as golds,sym, sum(num)as nums, sum(click)as tens,sum(rise)*num as rises " 
             sqls=" ${sqls} FROM  blk_stat GROUP by blk ORDER by ${FIELD:=golds} DESC LIMIT ${LIMIT:-40}"
@@ -2479,7 +2486,7 @@ function fn_blk()
                FROM blk_memb as m, cap as c ${frBLK}
         ${WHERE} m.code=c.code ${inBLK} ${sql_exclude}
         GROUP by code HAVING 1 ${COND} ${notinBLK}
-        ORDER by num ASC LIMIT ${LIMIT:-500}
+        ORDER by ${FIELD:-num} ASC LIMIT ${LIMIT:-500}
         " 
         #echo "${sqls}">/dev/stderr; exit
         [ ${PARTS:-3} -eq 3 ] && mysql -t kts <<< "${sqls}"
@@ -2501,6 +2508,7 @@ function fn_blk()
         u       blk [...]   # 求几个blk的并集(.c时可作为输出)
                             # blk中code关联的blk数目排名，越小，概念越纯正。
         top     arg...      # [热点]分析
+        stat    [l|g]       # 多日stat
         "
         ;;
     esac
@@ -2746,6 +2754,7 @@ function fn_notice()
 {
   helpmsg="
   c     clean空文件
+  g     grep '$×'
   消息  高开低走有惊喜: 2015-12-11.亿帆鑫富
   获+   是重要的关键字
   "
@@ -2774,6 +2783,9 @@ function fn_notice()
         ;;
     c|clean)
         wc -l * | grep -w 0 | awk '{print $2}' | xargs rm -f
+        ;;
+    g|grep)
+        grep "$*" *
         ;;
     *|l|--list)
         fn_execute
@@ -2891,9 +2903,9 @@ function fn_ddd()
         echo "
         SELECT ddd <para>
         110                 # 缩量低吸
-        2                   # 自然2连板
+        2                   # 自然2连板:反映当天人气
         3|4                 # 大跌抄底
-        yiz                 # iEND=3 更新xbb数据库.ceiling理论
+        yiz [iF5]           #
         amount              # iEND=3 更新xbb数据库.ceiling理论
         "
         ;;

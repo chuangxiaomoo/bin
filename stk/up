@@ -1270,6 +1270,7 @@ function fn_notice()
     newest=`date --date="${news} days" +'%F'`
 
     NUM=${NUM:-${1:-7}}
+    fn_echo_succ "NUM=${NUM} will be updated!"
 
     local i
     for (( i=0; i<${NUM}; i+=1 )); do

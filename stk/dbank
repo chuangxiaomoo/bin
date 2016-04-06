@@ -279,7 +279,7 @@ function fn_chao()
 function fn_bist()
 {
     [ -z "${BLK}" ] && return
-    COND= CHAO=1 PARTS=2 fn_blk u ${BLK}
+    FIELD= COND= CHAO=1 PARTS=2 fn_blk u ${BLK}
     YIST=${chao}.blk
 }
 
