@@ -1681,7 +1681,7 @@ function fn_wolf_sqls()
         HAVING 1 ${COND} ${ORDER:-ORDER by ${FIELD} ${ASC:-DESC}} LIMIT ${LIMIT:-36}
     "
     #echo "${sqls}"; exit
-    fn_echo_warn "wolf of ${date:-${END}}.${stime:-latest} [nmc:$nmc eYi:$eYi DOOR:${DOOR}] [COND: ${COND}] ${FIELD}"
+    fn_echo_warn "wolf of ${date:-${END}}.${stime:-latest} [nmc:$nmc_wolf eYi:$eYi DOOR:${DOOR}] [COND: ${COND}] ${FIELD}"
 }
 
 function fn_wolf()
