@@ -69,7 +69,7 @@
 # 方程式          .doc/Methodology.md     -- 方程式般解题
 # 仓位管理        .doc/position.md        -- 核心理论: 价.量.macd.势.攻.防
 # I问财.关键字    .doc/iwencai.md
-# 个股日报        .doc/diary2.md .doc/checklist.md
+# 个股日报        .doc/diary2.md
 # 超短            .doc/daban.md
 # 龙虎榜          .doc/lhb.md
 # 股票们          .doc/codes.md
