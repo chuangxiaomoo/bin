@@ -400,7 +400,7 @@ function fn_language()                  { cat logic_language ;}
 
 function fn_phi()                       { 
 function fn_flowers12()                 { cat phi_flowers12 ;}
-function fn_01_马克思()                 { cat phi_01_马克思 ;}
+function fn_01_Karlmarx()               { cat phi_01_Karlmarx ;}
 function fn_02_康德()                   { cat phi_02_康德 ;}
 function fn_03_波普尔()                 { cat phi_03_波普尔 ;}
 function fn_freudian()                  { cat phi_freudian ;}
@@ -435,7 +435,7 @@ function fn_wdf_28_终极关怀()           { cat phi_wdf_28_终极关怀 ;}
 function fn_wdf_00()                    { cat phi_wdf_00 ;}
 function fn_epistemology()              { cat phi_epistemology ;}
     local opts=(
-        01_马克思                       # pelple's essence
+        01_Karlmarx                     # pelple's essence
         02_康德
         03_波普尔                       # 证伪主义
         freudian                        # 自我 本我 超我
