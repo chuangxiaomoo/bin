@@ -66,7 +66,7 @@
 # 魔论            .doc/Molun.md           -- 大盘预测体系
 # 博弈论          .doc/gametheory.md
 # 物理            .doc/physics.md
-# 方程式          .doc/Methodology.md     -- 方程式般解题
+# Equation        .doc/Methodology.md     -- 方程式般解题
 # 仓位管理        .doc/position.md        -- 核心理论: 价.量.macd.势.攻.防
 # I问财.关键字    .doc/iwencai.md
 # 个股日报        .doc/diary2.md
