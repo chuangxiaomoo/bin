@@ -218,6 +218,7 @@ function fn_04_屌丝如何逆袭()           { cat howto_04_屌丝如何逆袭 
 function fn_english()                   {
 function fn_US_TV_series()              { cat english_US_TV_series ;}
 function fn_vocabulary()                { cat english_vocabulary ;}
+function fn_sentence()                  { cat english_sentence ;}
 function fn_speaking()                  { cat english_speaking ;}
 function fn_listening_layers()          { cat english_listening_layers ;}
 function fn_reading()                   { cat english_reading ;}
@@ -226,6 +227,7 @@ function fn_interpreting()              { cat english_interpreting ;}
     local opts=(
         US_TV_series                    # 美剧
         vocabulary
+        sentence
         speaking
         listening_layers                # 语言的层次 
         reading
@@ -403,6 +405,9 @@ function fn_flowers12()                 { cat phi_flowers12 ;}
 function fn_01_Karlmarx()               { cat phi_01_Karlmarx ;}
 function fn_02_康德()                   { cat phi_02_康德 ;}
 function fn_03_波普尔()                 { cat phi_03_波普尔 ;}
+function fn_04_Hume()                   { cat phi_04_Hume ;}
+function fn_05_Mill()                   { cat phi_05_Mill ;}
+function fn_0a_Miltonfriedman()         { cat phi_0a_Miltonfriedman ;}
 function fn_freudian()                  { cat phi_freudian ;}
 function fn_emotion()                   { cat phi_emotion ;}
 function fn_wdf_01_心安之窄门()         { cat phi_wdf_01_心安之窄门 ;}
@@ -434,12 +439,19 @@ function fn_wdf_27_人必有一死()         { cat phi_wdf_27_人必有一死 ;}
 function fn_wdf_28_终极关怀()           { cat phi_wdf_28_终极关怀 ;}
 function fn_wdf_00()                    { cat phi_wdf_00 ;}
 function fn_epistemology()              { cat phi_epistemology ;}
+function fn_sicence()                   { cat phi_sicence ;}
     local opts=(
         01_Karlmarx                     # pelple's essence
         02_康德
-        03_波普尔                       # 证伪主义
-        freudian                        # 自我 本我 超我
+        03_波普尔                       # 证伪主义 Karl.Popper
+        04_Hume                         # 大卫.休谟
+        05_Mill                         # 约翰·斯图亚特·穆勒(也译作·密尔)
+        0a_Miltonfriedman               # 米尔顿·弗里德曼
+
+        freudian                        # 佛洛伊德.自我.本我.超我
         emotion                         # Anger 七情六欲
+
+        sicence                         # 科学之哲学
 
         epistemology                    # 知识论
 
@@ -565,9 +577,11 @@ function fn_Qi_疾病()                   { cat huawei_Qi_疾病 ;}
 function fn_humor()                     { 
 function fn_misc()                      { cat humor_misc ;}
 function fn_animals()                   { cat humor_animals ;}
+function fn_duanzi()                    { cat humor_duanzi ;}
     local opts=(
         misc
         animals
+        duanzi
     )
     fn_print $@
 }
@@ -808,13 +822,13 @@ function fn_main() {
     local opts=(
         50_interview_faq                # 想想自己的价值？
         01_囧_jiong
+        cold                            # 感冒 牙痛 智齿
         architecture                    # 建筑
         02_如何解题                     # how to solve it, problem_solving
         advertisement
         aesthetics                      # i:s`θetic 美学
         estate                          # 房地产
         phi                             # philosophy
-        cold                            # 感冒 牙痛 智齿
         logic
         xuexi                           # 
         annual

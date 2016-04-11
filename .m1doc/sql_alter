@@ -21,6 +21,7 @@
 
 . 改变列的数据类型
     alter table tbl_name change id id1 varchar(10) not null;
+    alter table mat_dde change speed speed DECIMAL(8,2) NOT NULL;
 
 . 改变列属性    
     ALTER TABLE min2 MODIFY code INT(6) ZEROFILL;
