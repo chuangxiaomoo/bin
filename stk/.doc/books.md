@@ -10,11 +10,13 @@
 
   澄衷蒙学堂字课图说  日本早稻田大學圖書館掃描民國時期出版本，可免費下載
                       [](http://archive.wul.waseda.ac.jp/kosho/ho05/ho05_01134/)
+  科学发现的逻辑      [波普尔.强烈推荐](https://book.douban.com/subject/3349509/)
   科学与逻辑方法论    [](http://wenku.baidu.com/view/b9a51a1aa8114431b90dd8af.html?re=view)
   美感奥妙和需求进化  [](http://survivor99.com/lcg/books/beauty/index.htm)
   未生                韩国围棋类比
  《请回答1988》       2015年最佳韩剧
   科学与方法          (昂利·彭加勒)
+  科学之哲学          [](https://book.douban.com/review/5027580/)
   写作这回事
   打破自我的标签      压力，是一个中性词。可以被视为威胁，也可以被视为挑战。
   金融炼金术          哲学家应该看的金融书籍

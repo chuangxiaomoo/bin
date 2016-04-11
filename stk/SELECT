@@ -2231,12 +2231,29 @@ function fn_blk_wolf_blk()
     LIMIT=20 FIELD= YIST=${chao}.blk SELECT wolf e ${2}
 }
 
+
+function fn_blk_wolf_scale()
+{
+    columns='id,date,time,code,net,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name'
+    col_pre=x1.${columns//,/,x1.}
+    col_pre=${col_pre//x1.speed/x2.shou}
+    echo "
+    CREATE TEMPORARY TABLE xdde2 LIKE dde;
+    INSERT INTO xdde2(code,shou) SELECT code,shou FROM dde WHERE date='${PREV}';
+    REPLACE INTO xdde(${columns})
+    SELECT ${col_pre} FROM xdde as x1, xdde2 as x2 WHERE x1.code=x2.code
+    " | mysql -N kts
+    xt_ret $? "" || return $?
+}
+
 function fn_blk_wolf_team()
 {
     sta=${1:-1}
     let sta--
     stime=`mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC LIMIT ${sta},1"`
     iCOND="time='${stime}'" xCol=date fn_xCol mat_dde xdde ${END}
+    xt_ret $? "" || return $?
+    fn_blk_wolf_scale
     xt_ret $? "" || return $?
     #
     eWolf="ROUND(100*nmc*(pbuy+nbuy)/amount, 2)"
@@ -2245,6 +2262,7 @@ function fn_blk_wolf_team()
     SELECT ${sql_blk}, count(m.code) as num, n.sym,
         round(sum(rise    )/count(m.code), 2) as rise,
         round(sum(100*(trade-amount/shou)/(trade/(1+.01*rise)))/count(m.code), 2) as earn,
+        round(sum((shou/speed))/count(m.code), 2) as scale,
         round(sum(${eWolf})/count(m.code), 2) as wolf,
         sum(rise>${TEN:=9.93}) as click
     FROM blk_name as n, blk_memb as m, xdde as x
@@ -2252,7 +2270,7 @@ function fn_blk_wolf_team()
     && ${eWolf}>${iDOOR:=.4} && rise>${rDOOR:=2} && ${sql_nmc:-"nmc<${nmc_wolf}"}
     GROUP by blk 
     HAVING num>${iNUM:-1} ${COND}
-    ORDER by ${FIELD:=num} DESC LIMIT ${LIMIT:-16}
+    ORDER by num DESC LIMIT ${LIMIT:-16}
     " 
     #echo "${sqls}" ; exit
     fn_echo_succ "eWolf layout of ${END} ${stime} [iDOOR:$iDOOR] [rDOOR:$rDOOR] [FIELD:$FIELD] [TEN:$TEN]"
@@ -2397,7 +2415,7 @@ function fn_blk()
             sqls=${sqls//hex(/(}
             echo "
             INSERT INTO  blk_stat
-            SELECT '$date',t.* FROM ($sqls) as t
+            SELECT '$date', blk,num,sym,rise,earn,wolf,click FROM ($sqls) as t
             " | mysql kts
         done
         ;;
@@ -2753,6 +2771,7 @@ function fn_wee()
 function fn_notice()
 {
   helpmsg="
+  NUM=  搜索范围，默认7
   c     clean空文件
   g     grep '$×'
   消息  高开低走有惊喜: 2015-12-11.亿帆鑫富

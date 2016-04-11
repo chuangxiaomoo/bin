@@ -31,11 +31,13 @@ function fn_up_raw()
         }' \
         | sed "s/^/${CURR}\t${HHMMSS}\t/g" > ${wolf_rip}
     else
+        # tag_blank='00.--.--'
+        # -e "/${tag_blank}/d" 
         awk '{
             printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%.2f\t%.2f\t%s\n", 
             $1,$3, $4,$5,$6,$7,  $8,$9,$10, $11/10000,  $12,$13/10000, $14/100000000,$2
         }' ${wolf_raw}.mid \
-        | sed "s/^/${CURR}\t${HHMMSS}\t/g" > ${wolf_rip}
+        | sed -e "s/^/${CURR}\t${HHMMSS}\t/g" > ${wolf_rip}
     fi
 
     # echo ${efile} ${ctime} ${epoch} $HHMMSS
@@ -58,7 +60,7 @@ function fn_up_rip()
         nsell       DECIMAL(6,2) NOT NULL DEFAULT 0,
         rise        DECIMAL(6,2) NOT NULL DEFAULT 0,
         trade       DECIMAL(6,2) NOT NULL DEFAULT 0,
-        speed       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        speed       DECIMAL(8,2) NOT NULL DEFAULT 0,
         shou        DECIMAL(8,2) NOT NULL DEFAULT 0,
         tov         DECIMAL(8,2) NOT NULL DEFAULT 0,
         amount      DECIMAL(8,2) NOT NULL DEFAULT 0,

@@ -56,17 +56,13 @@
 # 空间域          .doc/space.md
 # 交易系统        .doc/tradesys.md
 # 独孤九剑        .doc/dugu9jian.md       -- 成本.信息进化论.解N变量方程组
-# 事件冲击        .doc/event.md           -- 高管增持 定增 加息 gushequ大数据
+# 事件冲击        .doc/event.md           -- 高管增持 定增 加息 股社区大数据
 # 缠中说禅        .chan/chan.md
 # 莫大仙岳居      .doc/sulon.md
 # 洪粉家人        .doc/hongrong.md
 # 花家军          .doc/huajiajun.md
 # 瑞鹤仙          .doc/yxkrrhx.md         -- 桃谷
 # 逻辑            .doc/logic.md
-# 魔论            .doc/Molun.md           -- 大盘预测体系
-# 博弈论          .doc/gametheory.md
-# 物理            .doc/physics.md
-# Equation        .doc/Methodology.md     -- 方程式般解题
 # 仓位管理        .doc/position.md        -- 核心理论: 价.量.macd.势.攻.防
 # I问财.关键字    .doc/iwencai.md
 # 个股日报        .doc/diary2.md
@@ -74,4 +70,9 @@
 # 龙虎榜          .doc/lhb.md
 # 股票们          .doc/codes.md
 # 公告概念        .doc/notice.md
+# -----------------------------
+# 魔论            .doc/Molun.md           -- 大盘预测体系
+# 博弈论          .doc/gametheory.md
+# 物理            .doc/physics.md
+# Equation        .doc/Methodology.md     -- 方程式般解题
 # ERRORs          .doc/error.md

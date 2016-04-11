@@ -20,7 +20,7 @@ helpmsg="
     XTBL        EXCLEDE表，SELECT时使用，默认为空
     NMC_RATIO   NMC_RATIO*100%成本分析空间
 "
-nmc_wolf=140.1
+nmc_wolf=150.1
 nmc_lion=300.1
 # _____________________________boundary_of_wolf______________________________
 cd ~/bin/stk
