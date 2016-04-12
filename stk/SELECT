@@ -1633,6 +1633,11 @@ function fn_list_wolf_times()
     exit
 }
 
+function fn_enum_wolf_times()
+{
+    mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC" | wc -l
+}
+
 function fn_list_iF5_times()
 {
     SELECT dorat | cat -n; exit 0
@@ -1651,6 +1656,49 @@ function fn_proc_eCOND_scale()
     else
         eCOND=${eCOND//iSCALE/1}
     fi
+}
+
+function fn_wolf_turnov()
+{
+    sql_stime="SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC LIMIT ${sta:-0},1"
+    stime=`mysql -N kts<<< "${sql_stime}"`
+    iCOND="time='${stime}'" xCol=date fn_xCol mat_dde xdde ${END}
+    sqls="
+    SELECT 
+        date,
+        ROUND(sum(rise>0)/count(code), 2) as rise,
+        ROUND(sum((pbuy+nbuy)/tov)/count(code), 2) as wolf,
+        ROUND(sum((psell+nsell)/tov)/count(code), 2) as nolf,
+        ROUND(sum((pbuy+nbuy-psell-nsell)/tov)/count(code), 2) as net,
+        ROUND(sum(amount*(pbuy+nbuy)/tov/10000), 2) as eWolf,
+        ROUND(sum(amount)/10000,2) as eYi
+    FROM (SELECT * FROM xdde ORDER by tov DESC LIMIT 50) as tbl
+    "
+}
+
+function fn_wolf_tof()
+{
+    echo
+}
+
+function fn_wolf_tov()
+{
+    columns="date,rise,wolf,nolf,net,eWolf,eYi"
+    sqls="$DROP wolf_tov; $CREATE wolf_tov LIKE wolf_turnover;"
+    mysql -N kts <<< "${sqls}"
+
+    dates=(`fn_get_date 1 ${NUM:-10}`)
+    local i
+    for (( i=0,j=1; i<${#dates[@]}; i++,j++ )); do
+        END=${dates[$i]} fn_wolf_turnov
+        # no time,
+        sqls="INSERT INTO wolf_tov(${columns}) ${sqls} "
+        # echo "${sqls}"
+        mysql -t kts <<< "${sqls}"
+    done
+
+    sqls="SELECT ${columns} FROM wolf_tov"
+    mysql -t kts <<< "${sqls}"
 }
 
 function fn_wolf_sqls()
@@ -1789,6 +1837,8 @@ function fn_wolf()
         ;;
     il|st) 
         fn_list_wolf_times ;;
+    tov) 
+        fn_wolf_tov;;
     a|e|E)
         col_trade='trade,'
         HMS=${HMS:-`fn_get_time 1`}
@@ -1812,6 +1862,8 @@ function fn_wolf()
         e               e mean FIELD=eWolf=熵减表征eWolf=buy/tov
         c       code    按日统计
         cf      code    按15分钟统计
+        tov             top50 tov
+        tof             top50 tov iF5
         " 2>&1 # | sed 's/^  *//g'
         ;;
     esac
@@ -2238,10 +2290,10 @@ function fn_blk_wolf_scale()
     col_pre=x1.${columns//,/,x1.}
     col_pre=${col_pre//x1.speed/x2.shou}
     echo "
-    CREATE TEMPORARY TABLE xdde2 LIKE dde;
-    INSERT INTO xdde2(code,shou) SELECT code,shou FROM dde WHERE date='${PREV}';
+    CREATE TEMPORARY TABLE xdd2 LIKE dde;
+    INSERT INTO xdd2(code,shou) SELECT code,shou FROM dde WHERE date='${PREV}';
     REPLACE INTO xdde(${columns})
-    SELECT ${col_pre} FROM xdde as x1, xdde2 as x2 WHERE x1.code=x2.code
+    SELECT ${col_pre} FROM xdde as x1, xdd2 as x2 WHERE x1.code=x2.code
     " | mysql -N kts
     xt_ret $? "" || return $?
 }
