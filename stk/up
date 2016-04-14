@@ -1394,6 +1394,39 @@ function fn_seat_detail()
     return $?
 }
 
+function fn_bigbid()
+{
+    # keywords：3月 大宗交易
+    # link获取：点下一页，从firebug获取
+
+    token=fdaa290de2b177707b302dddd506b40d  # 3月
+   #token=da436eaacb2bb82a9c200831f7a6b09f  # 4月
+    url="http://www.iwencai.com/stockpick/cache?token=${token}&p=1&perpage=1000&showType=[%22%22,%22%22,"
+    url="${url}%22onTable%22,%22onTable%22,%22onTable%22,%22onTable%22,"
+    url="${url}%22onTable%22,%22onTable%22,%22onTable%22,%22onTable%22]"
+    echo ${url}
+    w3m -dump "${url}" | \
+        grep -A10000 'result' | \
+        grep -B10000 'oriIndexID' | \
+        sed -e '1s/^.*result...//g' -e '$s/...oriIndexID.*$//g' | tr -d '\n' | \
+        sed -e 's/\],/&\n/g' -e 's/.S[HZ]//g' | \
+        tr  -d '[\[\]"]'  > ${bigbid_raw}
+    awk -F',' '{printf "%s\t%s\t%.2f\t%s\t%.2f\t%.2f\n", $6,$1,$5/10000,$7,$8,$9/10000}' ${bigbid_raw} | \
+        sed -e 's/^201[56]/&-/g'  | \
+        sed -e 's/^201..../&-/g' > ${bigbid_rip}
+
+    return 
+
+    echo "
+    CREATE TEMPORARY TABLE tmp_bigbid LIKE bigbid;
+    LOAD DATA LOCAL INFILE '$bigbid_rip' INTO TABLE tmp_bigbid;
+    SELECT max(date),min(date) FROM tmp_bigbid INTO @max_d,@min_d;
+    DELETE FROM bigbid WHERE date>=@min_d && date<=@max_d;
+    INSERT INTO bigbid SELECT * FROM tmp_bigbid;
+    " | mysql -N kts
+    return $?
+}
+
 function fn_main()
 {
     cmdlist=(
@@ -1431,6 +1464,7 @@ function fn_main()
     "notice NUM                         # 至多NUM天，更新公告 /opt/notice/"
     "seat_rank                          # 总排名"
     "seat_detail                        # top-30-seat所操作的股票"
+    "bigbid                             # 大宗交易"
     )
 
     # 存储过程函数文件的最后5行都是注释

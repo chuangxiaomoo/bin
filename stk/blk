@@ -96,7 +96,9 @@ function fn_10jqka()
     xt_ret $? "mysql" || return $?
 
     # blk
-    CHAO=1 SELECT blk u 40 >& /dev/null && cp ${chao}.blk .blk.cixin
+    chao2=cixin   PARTS=2 CHAO=1 SELECT blk u 40      >& /dev/null && cp ${chao}.cixin   .blk.cixin
+    block='DFC1 DACB DFC9 DFC2' # 有色、小金属、煤炭、钢铁  exclude(黄金CE9C)
+    chao2=futures PARTS=2 CHAO=1 SELECT blk u ${block}>& /dev/null && cp ${chao}.futures .blk.futures
     
     fn_echo_succ "up blk 10jqka succ!"
 }
