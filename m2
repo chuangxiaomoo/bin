@@ -737,7 +737,7 @@ function fn_交易与合约()                { cat economic_交易与合约 ;}
         currency                        # 货币经济学
         keynesian                       # 凯恩斯主义经济学
         fortune                         # 古典自由主义 国富论
-        交易与合约
+        交易与合约                      #
     )
     fn_print $@
 }
@@ -821,7 +821,7 @@ function fn_subtitle()                  { cat subtitle ;}
 function fn_main() {
     local opts=(
         50_interview_faq                # 想想自己的价值？
-        01_囧_jiong
+        01_囧_jiong                     # sleep
         cold                            # 感冒 牙痛 智齿
         architecture                    # 建筑
         02_如何解题                     # how to solve it, problem_solving

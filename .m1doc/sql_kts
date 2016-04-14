@@ -206,3 +206,28 @@ CREATE TABLE seat_detail(
     cause       CHAR(64),
     INDEX(seat,date)
 );
+
+DROP TABLE IF EXISTS wolf_turnover;
+CREATE TABLE wolf_turnover(
+    date        date NOT NULL,
+    time        time NOT NULL,
+    rise        DECIMAL(6,2) NOT NULL,
+    wolf        DECIMAL(6,2) NOT NULL,
+    nolf        DECIMAL(6,2) NOT NULL,
+    net         DECIMAL(6,2) NOT NULL,
+    eWolf       DECIMAL(6,2) NOT NULL,
+    eYi         DECIMAL(6,2) NOT NULL,
+    INDEX(date,time)
+);
+
+DROP TABLE IF EXISTS bigbid;
+CREATE TABLE bigbid(
+    date        date NOT NULL,
+    code INT(6) ZEROFILL NOT NULL, 
+    amount      DECIMAL(12,2) NOT NULL,
+    bids        DECIMAL(12,2) NOT NULL,
+    trade       DECIMAL(12,2) NOT NULL,
+    shou        DECIMAL(12,2) NOT NULL,
+    INDEX(date,code)
+);
+
