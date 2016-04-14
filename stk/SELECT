@@ -471,7 +471,7 @@ function fn_updown()
         sql_where=', sz_index as s WHERE t.date=s.date && s.code=399006'
 
     cols1=t.date,cnt,yiz10,inc10,hit10,
-    cols2=${col_risp}inc,dec0,eq0,inc8p,inc5p,inc2p,inc0p,dec0d,dec2d,dec5d,dec8d
+    cols2=${col_risp}inc,dec0,eq0,inc8p,inc5p,inc2p,inc0p,dec0d,dec2d,dec5d,dec8d,hit00,dec10
 
 
     echo "
@@ -1699,6 +1699,8 @@ function fn_wolf_tov()
 
     sqls="SELECT ${columns} FROM wolf_tov"
     mysql -t kts <<< "${sqls}"
+    mysql -N kts <<< "${sqls}" | \
+        awk 'BEGIN {sum=0} {sum=sum+$6;} END {printf "avrg: %.2f, avrg.8: %.2f\n", sum/FNR, .8*sum/FNR}'
 }
 
 function fn_wolf_sqls()
@@ -2290,6 +2292,7 @@ function fn_blk_wolf_scale()
     col_pre=x1.${columns//,/,x1.}
     col_pre=${col_pre//x1.speed/x2.shou}
     echo "
+    UPDATE xdde SET speed=shou;
     CREATE TEMPORARY TABLE xdd2 LIKE dde;
     INSERT INTO xdd2(code,shou) SELECT code,shou FROM dde WHERE date='${PREV}';
     REPLACE INTO xdde(${columns})
@@ -2318,15 +2321,16 @@ function fn_blk_wolf_team()
         round(sum(${eWolf})/count(m.code), 2) as wolf,
         sum(rise>${TEN:=9.93}) as click
     FROM blk_name as n, blk_memb as m, xdde as x
-    WHERE n.blk=m.blk and m.code=x.code && m.blk not in ${EXCLUDE_BLK} ${iCOND}
+    $WHERE n.blk=m.blk and m.code=x.code && m.blk not in ${EXCLUDE_BLK} ${iCOND}
     && ${eWolf}>${iDOOR:=.4} && rise>${rDOOR:=2} && ${sql_nmc:-"nmc<${nmc_wolf}"}
     GROUP by blk 
     HAVING num>${iNUM:-1} ${COND}
     ORDER by num DESC LIMIT ${LIMIT:-16}
     " 
     #echo "${sqls}" ; exit
+    FIELD=${FIELD:-num}
     fn_echo_succ "eWolf layout of ${END} ${stime} [iDOOR:$iDOOR] [rDOOR:$rDOOR] [FIELD:$FIELD] [TEN:$TEN]"
-    [ "${PARTS:-3}" -eq 3 ] && mysql -t kts <<< "SELECT * FROM (${sqls}) as tbl ORDER by ${FIELD:-num} DESC"
+    [ "${PARTS:-3}" -eq 3 ] && mysql -t kts <<< "SELECT * FROM (${sqls}) as tbl ORDER by ${FIELD} DESC"
     return
 }
 
@@ -2436,6 +2440,7 @@ function fn_blk()
         iDOOR=.40 COND='click>0&&earn>.3'
         iDOOR=.50 rDOOR=2 SELECT blk wolf {list|[E.a.BLK]iF5}
         "
+        ABBR=m fn_yist
         case $2 in
         l|list)     fn_list_wolf_times                              ;;
         a)          sql_nmc="1" fn_blk_wolf_team $3                 ;;
@@ -2560,7 +2565,7 @@ function fn_blk()
         " 
         #echo "${sqls}">/dev/stderr; exit
         [ ${PARTS:-3} -eq 3 ] && mysql -t kts <<< "${sqls}"
-        fn_chao ${chao}.blk
+        fn_chao ${chao}.${chao2:-blk}
         ;;
     *)
         echo "
@@ -2921,22 +2926,6 @@ function fn_xbb_sqls()
 function fn_ddd()
 {
     case $1 in
-    110)
-        fn_echo_succ "___________line_for_boundary_110.1_______________"
-        sql_hiri="$HIRI as hiri," \
-        CHAO=1 PARTS=2 COND="hiri>9.9 && eWolf>=.5" END=${PREV} SELECT wolf e
-        CHAO=1 chao2=110.1 YIST=${chao}.wolf COND="eWolf>=.3&&prop<.8" SELECT wolf e
-
-        fn_echo_succ "___________line_for_boundary_110.2_______________"
-        CHAO=1 PARTS=2 COND="rise>avrg-1 && eWolf>=.5&&prop>${iDOOR:-2}" END=${PREV} SELECT wolf e
-        CHAO=1 chao2=110.2 YIST=${chao}.wolf COND="eWolf>=.3&&prop<1" SELECT wolf e
-
-        fn_echo_succ "___________line_for_boundary_110.3_______________"
-        PREV2=`fn_get_date 3`
-        CHAO=1 PARTS=2 chao2=110.3 COND="rise>avrg-1 && eWolf>=.5&&prop>${iDOOR:-2}" END=${PREV2} SELECT wolf e
-        CHAO=1 PARTS=2 chao2=110.2 YIST=${chao}.110.3 COND="eWolf>=.3&&prop<1" END=${PREV} SELECT wolf e || exit
-        CHAO=1         chao2=110.1 YIST=${chao}.110.2 COND="           prop<1" SELECT wolf e                # 无eWolf要求
-        ;;
     2)
         END=${PREV} PARTS=2 PPLUS=1 SELECT lsd top
         YIST=/tmp/kts/chao.top.lsd SELECT lsd top
@@ -2965,10 +2954,27 @@ function fn_ddd()
         YIST=/tmp/kts/chao.lsd \
         COND="eWolf>.3" SELECT wolf e $2
         ;;
-    amount)
+    xbb)
         fn_xbb_sqls $2
         #echo "${sqls}"; exit
         mysql ${OPT:--t} kts <<<"${sqls}"
+        ;;
+    110)
+        # COND="hiri>9.93" sql_hiri="$HIRI as hiri,"  # 只做涨停&大成交+大涨
+        COND="(rise>9.93&&eWolf>.49)||(rise>8&&eWolf>.40&&eYi>5)" \
+        PARTS=2 CHAO=1 LIMIT=100 END=${PREV} SELECT wolf e
+        COND="(rise<opri||(opri<0&&rise<opri+2))&&prop<${DOOR:-.81}" \
+        YIST=/tmp/kts/chao.wolf LIMIT=100 DOOR= SELECT wolf e
+        fn_echo_succ "前两日总涨幅在12%以上为佳，且突破ma20为佳"
+        ;;
+    100)
+        PREV2=`fn_get_date 3`
+        COND="(rise>9.93&&eWolf>.49)||(rise>8&&eWolf>.40&&eYi>5)" \
+        CHAO=1 PARTS=2 chao2=100.3 END=${PREV2} SELECT wolf e
+        COND="(rise<opri||(opri<0&&rise<opri+2))&&eWolf>=.25&&prop<1" \
+        CHAO=1 PARTS=2 chao2=100.2 YIST=${chao}.100.3 END=${PREV} DOOR= SELECT wolf e || exit
+        CHAO=1         chao2=100.1 YIST=${chao}.100.2 COND="prop<${DOOR:-.91}" DOOR= SELECT wolf e
+        fn_echo_succ "两日内价格在PREV2涨停下交易"
         ;;
     *)
         echo "
@@ -2977,7 +2983,9 @@ function fn_ddd()
         2                   # 自然2连板:反映当天人气
         3|4                 # 大跌抄底
         yiz [iF5]           #
-        amount              # iEND=3 更新xbb数据库.ceiling理论
+        xbb                 # iEND=3 更新xbb数据库.ceiling理论
+        110                 # 2阳1阴--打板小白收割机.rise前30分坚决下跌无诱多.high不创新高
+        100                 # 1阳2阴--
         "
         ;;
     esac

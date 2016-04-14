@@ -106,7 +106,11 @@
   不再使用sina-cpb此种影响现金流的金融产品。
   挖掘那些真正现金流丰富的人：伟国、东哥、赵明哥、姑姑。
 
-# [微操盘](sina.wcp) vs [yztz](赢在投资)
+# [微操盘](sina.wcp) vs [yztz](赢在投资) vs WEIXIN
+
+         interest brokerage tax all
+  weixin .05% x2  .03% x2   .1% .26%  连续多日可节约interest
+ dianmai                        .49%  连续多日会增多interest
 
   1. 规则
 

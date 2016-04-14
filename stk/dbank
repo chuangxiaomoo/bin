@@ -153,6 +153,8 @@ file_ma240='/tmp/kts/ma240'
   date_wma='/tmp/kts/wma'
   wolf_raw='/tmp/kts/wolf.raw'
   wolf_rip='/tmp/kts/wolf.rip'
+bigbid_raw='/tmp/kts/bigbid.raw'
+bigbid_rip='/tmp/kts/bigbid.rip'
 file_index='/tmp/kts/index'
 file_intmp='/tmp/kts/intmp'
 

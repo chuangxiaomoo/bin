@@ -632,6 +632,8 @@ CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
     DECLARE v_dec5d      INT DEFAULT 0; 
     DECLARE v_dec8d      INT DEFAULT 0; 
     DECLARE v_dec0d      INT DEFAULT 0; 
+    DECLARE v_hit00      INT DEFAULT 0; 
+    DECLARE v_dec10      INT DEFAULT 0; 
 
     DROP TABLE IF EXISTS tbl_change;
     CREATE TEMPORARY TABLE IF NOT EXISTS tbl_change (
@@ -642,7 +644,8 @@ CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
         avrg        DECIMAL(6,2) NOT NULL DEFAULT 0,
         high        DECIMAL(6,2) NOT NULL DEFAULT 0,
         low         DECIMAL(6,2) NOT NULL DEFAULT 0,
-        hit         DECIMAL(6,2) NOT NULL DEFAULT 0
+        hit         DECIMAL(6,2) NOT NULL DEFAULT 0,
+        hit00       DECIMAL(6,2) NOT NULL DEFAULT 0
     );
 
     DROP TABLE IF EXISTS tbl_stat_change;
@@ -667,7 +670,9 @@ CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
         dec0d        INT(6) NOT NULL DEFAULT 0,
         dec2d        INT(6) NOT NULL DEFAULT 0,
         dec5d        INT(6) NOT NULL DEFAULT 0,
-        dec8d        INT(6) NOT NULL DEFAULT 0
+        dec8d        INT(6) NOT NULL DEFAULT 0,
+        hit00        INT(6) NOT NULL DEFAULT 0,
+        dec10        INT(6) NOT NULL DEFAULT 0
     );
 
     SET v_start=@START;
@@ -679,12 +684,12 @@ CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
 
         TRUNCATE TABLE tbl_change;
         IF @HMS = '00:00:00' THEN
-            INSERT INTO tbl_change(code,date,chng,avrg,high,low,hit) SELECT 
-                code,date,100*(close-yesc)/yesc, 100*(amount/volume-yesc)/yesc,high,low,100*(high-yesc)/yesc 
+            INSERT INTO tbl_change(code,date,chng,avrg,high,low,hit,hit00) SELECT 
+                code,date,100*(close-yesc)/yesc, 100*(amount/volume-yesc)/yesc,high,low,100*(high-yesc)/yesc,100*(low-yesc)/yesc
                 FROM day WHERE date=v_start;
         ELSE
-            INSERT INTO tbl_change(code,date,chng,avrg,high,low,hit) SELECT 
-                code,date,100*(close-yesc)/yesc, 100*(amount/volume-yesc)/yesc,high,low,100*(high-yesc)/yesc 
+            INSERT INTO tbl_change(code,date,chng,avrg,high,low,hit,hit00) SELECT 
+                code,date,100*(close-yesc)/yesc, 100*(amount/volume-yesc)/yesc,high,low,100*(high-yesc)/yesc,100*(low-yesc)/yesc
                 FROM dorat WHERE date=v_start && time=@HMS;
         END IF;
 
@@ -703,11 +708,13 @@ CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<=-2 and chng>-5 INTO v_dec2d;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<=-5 and chng>-8 INTO v_dec5d;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<=-8             INTO v_dec8d;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<-9.93           INTO v_dec10;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and hit00<-9.93          INTO v_hit00;
 
         INSERT INTO tbl_stat_change(date, cnt, inc, eq0, dec0, 
-                inc10, hit10, yiz10, inc8p ,inc5p ,inc2p ,inc0p ,dec0d ,dec2d ,dec5d ,dec8d )
+                inc10, hit10, yiz10, inc8p ,inc5p ,inc2p ,inc0p ,dec0d ,dec2d ,dec5d ,dec8d,hit00,dec10 )
         VALUES(v_start, @cnt, v_inc, v_eq0, v_dec0, 
-                v_inc10, v_hit10, v_yiz10, v_inc8p ,v_inc5p ,v_inc2p ,v_inc0p ,v_dec0d ,v_dec2d ,v_dec5d ,v_dec8d );
+                v_inc10, v_hit10, v_yiz10, v_inc8p ,v_inc5p ,v_inc2p ,v_inc0p ,v_dec0d ,v_dec2d ,v_dec5d ,v_dec8d,v_hit00,v_dec10 );
         -- LEAVE tag_stat_change;
     END WHILE;
 
