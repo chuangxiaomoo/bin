@@ -1731,7 +1731,7 @@ function fn_wolf_sqls()
         HAVING 1 ${COND} ${ORDER:-ORDER by ${FIELD} ${ASC:-DESC}} LIMIT ${LIMIT:-36}
     "
     #echo "${sqls}"; exit
-    fn_echo_warn "wolf of ${date:-${END}}.${stime:-latest} [nmc:$nmc_wolf eYi:$eYi DOOR:${DOOR}] [COND: ${COND}] ${FIELD}"
+    fn_echo_warn "wolf of ${date:-${END}}.${stime:-latest} [nmc:$nmc_lion eYi:$eYi DOOR:${DOOR}] [COND: ${COND}] ${FIELD}"
 }
 
 function fn_wolf()
@@ -1847,7 +1847,7 @@ function fn_wolf()
         eYi=${eYi:-.1}  # tag_伸缩处理
         case $1 in
         a) eCOND="&&amount>${eYi}*10000"                                                ;;
-        e) eCOND="&&amount>${eYi}*10000*iSCALE && nmc<=${nmc_wolf}"                     ;;
+        e) eCOND="&&amount>${eYi}*10000*iSCALE && nmc<=${nmc_wolf}"; nmc_lion=$nmc_wolf ;;
         E) eCOND="&&amount>${eYi}*10000*iSCALE && nmc> ${nmc_wolf} && nmc<${nmc_lion}"  ;;
         esac
 
@@ -2961,19 +2961,21 @@ function fn_ddd()
         ;;
     110)
         # COND="hiri>9.93" sql_hiri="$HIRI as hiri,"  # 只做涨停&大成交+大涨
+        TYPE=${2:-e}
         COND="(rise>9.93&&eWolf>.49)||(rise>8&&eWolf>.40&&eYi>5)" \
-        PARTS=2 CHAO=1 LIMIT=100 END=${PREV} SELECT wolf e
+        PARTS=2 CHAO=1 LIMIT=100 END=${PREV} SELECT wolf ${TYPE}
         COND="(rise<opri||(opri<0&&rise<opri+2))&&prop<${DOOR:-.81}" \
-        YIST=/tmp/kts/chao.wolf LIMIT=100 DOOR= SELECT wolf e
+        YIST=/tmp/kts/chao.wolf LIMIT=100 DOOR= SELECT wolf ${TYPE} 
         fn_echo_succ "前两日总涨幅在12%以上为佳，且突破ma20为佳"
         ;;
     100)
+        TYPE=${2:-e}
         PREV2=`fn_get_date 3`
         COND="(rise>9.93&&eWolf>.49)||(rise>8&&eWolf>.40&&eYi>5)" \
-        CHAO=1 PARTS=2 chao2=100.3 END=${PREV2} SELECT wolf e
+        CHAO=1 PARTS=2 chao2=100.3 END=${PREV2} SELECT wolf ${TYPE}
         COND="(rise<opri||(opri<0&&rise<opri+2))&&eWolf>=.25&&prop<1" \
-        CHAO=1 PARTS=2 chao2=100.2 YIST=${chao}.100.3 END=${PREV} DOOR= SELECT wolf e || exit
-        CHAO=1         chao2=100.1 YIST=${chao}.100.2 COND="prop<${DOOR:-.91}" DOOR= SELECT wolf e
+        CHAO=1 PARTS=2 chao2=100.2 YIST=${chao}.100.3 END=${PREV} DOOR= SELECT wolf ${TYPE} || exit
+        CHAO=1         chao2=100.1 YIST=${chao}.100.2 COND="prop<${DOOR:-.91}" DOOR= SELECT wolf ${TYPE}
         fn_echo_succ "两日内价格在PREV2涨停下交易"
         ;;
     *)
