@@ -442,7 +442,7 @@ function fn_epistemology()              { cat phi_epistemology ;}
 function fn_sicence()                   { cat phi_sicence ;}
     local opts=(
         01_Karlmarx                     # pelple's essence
-        02_康德
+        02_康德                         # Immanuel Kant
         03_波普尔                       # 证伪主义 Karl.Popper
         04_Hume                         # 大卫.休谟
         05_Mill                         # 约翰·斯图亚特·穆勒(也译作·密尔)

@@ -96,9 +96,16 @@ function fn_10jqka()
     xt_ret $? "mysql" || return $?
 
     # blk
-    chao2=cixin   PARTS=2 CHAO=1 SELECT blk u 40      >& /dev/null && cp ${chao}.cixin   .blk.cixin
-    block='DFC1 DACB DFC9 DFC2' # 有色、小金属、煤炭、钢铁  exclude(黄金CE9C)
-    chao2=futures PARTS=2 CHAO=1 SELECT blk u ${block}>& /dev/null && cp ${chao}.futures .blk.futures
+    maps=(
+        '40'                        cixin
+        'DFC1 DACB DFC9 DFC2'       futures # 有色、小金属、煤炭、钢铁  exclude(黄金CE9C)
+        'DB8A'                      hljr
+    )
+    local i j
+    for (( i=0,j=1; i<${#maps[@]}; i+=2,j+=2 )); do
+        chao2=${maps[${j}]}
+        chao2=${chao2} PARTS=2 CHAO=1 SELECT blk u ${maps[${i}]} >& /dev/null && cp ${chao}.${chao2} .blk.${chao2}
+    done
     
     fn_echo_succ "up blk 10jqka succ!"
 }

@@ -8,8 +8,10 @@
 
 # books
 
+  精英特速读训练      [从scale的双线程开始](https://www.zhihu.com/question/23085383)
   澄衷蒙学堂字课图说  日本早稻田大學圖書館掃描民國時期出版本，可免費下載
                       [](http://archive.wul.waseda.ac.jp/kosho/ho05/ho05_01134/)
+  逻辑学导论          [](https://book.douban.com/subject/2060491/) 
   科学发现的逻辑      [波普尔.强烈推荐](https://book.douban.com/subject/3349509/)
   科学与逻辑方法论    [](http://wenku.baidu.com/view/b9a51a1aa8114431b90dd8af.html?re=view)
   美感奥妙和需求进化  [](http://survivor99.com/lcg/books/beauty/index.htm)
