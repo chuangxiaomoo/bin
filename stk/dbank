@@ -617,12 +617,14 @@ function fn_xCol()
         sql_fork="${xCol}='${3}'"
         ;;
     esac
-
-    echo "
-    $DROP ${table:=$2}; CREATE TABLE ${table} LIKE ${1};
+    table=$2
+    isqls="
+    $DROP ${table}; CREATE TABLE ${table} LIKE ${1};
     INSERT INTO ${table} SELECT * from ${1} where ${sql_fork} and ${iCOND:-1};
-    " | mysql kts
-    return $?
+    SELECT count(*) FROM ${table};
+    "
+    icount=`mysql -N kts <<< "${isqls}"`
+    [ ${icount:-0} -ne 0 ]
 }
 
 function fn_create_tbl_codes()

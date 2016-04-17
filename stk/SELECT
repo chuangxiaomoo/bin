@@ -1627,6 +1627,13 @@ function fn_wolf_tov()
         awk 'BEGIN {sum=0} {sum=sum+$6;} END {printf "avrg: %.2f, avrg.8: %.2f\n", sum/FNR, .8*sum/FNR}'
 }
 
+function fn_enable_xbb() 
+{
+    [ "${XBB:-0}" = 0 ] && return
+    xbb_col="speed as xbb,"
+    xbb_update="UPDATE xdde,xbb SET xdde.speed=xbb.xbb WHERE xdde.code=xbb.code;"
+}
+
 function fn_wolf_code()
 {
     fn_iscode $2
@@ -1653,11 +1660,10 @@ function fn_wolf_code()
 
     LIMIT=${LIMIT:-12}
     sql_cond="&& w.code=${2}"
-    sql_xbb="UPDATE xdde,xbb SET xdde.speed=xbb.xbb WHERE xdde.code=xbb.code;"
     col_name=
     fn_name ${2}
     DOOR=-50 fn_wolf_sqls
-    mysql ${OPT:-'-t'} kts <<<"${sql_xbb}${sqls}"
+    mysql ${OPT:-'-t'} kts <<<"${xbb_update}${sqls}"
     #mysql -t kts <<<"${sqls}"
     fn_chao
     return $?
@@ -1681,12 +1687,12 @@ function fn_wolf_sqls()
     --  round(100*(pbuy+nbuy)/tov, 1) as bloo, round(100*(psell+nsell)/tov, 1) as sloo,
         net,
     --  round((pbuy/nbuy), 2) as Go, round((pbuy+nbuy)/(psell+nsell),1) as bsp,
-        speed as xbb,
+        ${xbb_col}
         round((w.shou/h.volume), 2) as prop, h.scale,
         round(w.amount/10000, 1) as eYi, 
         ROUND(nmc, 1) as nmcYi
         ${col_name}
-        FROM xdde as w, curr_lohi as h ${sql_from}
+        FROM xdde as w, curr_lohi as h ${tbl_temp}
         ${WHERE} w.code=h.code ${sql_cond} && net>${DOOR}       -- && w.date<='${END}'
         HAVING 1 ${COND} ${ORDER:-ORDER by ${FIELD} ${ASC:-DESC}} LIMIT ${LIMIT:-36}
     "
@@ -1705,6 +1711,7 @@ function fn_wolf()
     max_end=`mysql -N kts <<< "${sql_maxend}"`
     fn_issqltrue "'${max_end}' >= '${PREV}'"
     [ "${?}" -ne 0 ] && { fn_echo_fail "lohi is lagged, updating..."; SCREENER lohi 1; return 1; }
+    fn_enable_xbb
 
     case $1 in
     l)  fn_list_wolf_dates $2   ;;
@@ -1725,15 +1732,14 @@ function fn_wolf()
 
         PREV=`END=${date:-${END}} fn_get_prev`
         iCOND="num=${NUM:-8}" xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
-        xt_ret $? "" || return $?
+        xt_ret $? "To avoid this WARNING: END=${PREV} SCREENER lohi 1" || exit $?
 
         fn_xtempday
+        tbl_temp=", xtempday as d"
         sql_opri="$OPRI as opri, "
-        sql_from=", xtempday as d"
         sql_cond="&& w.code=d.code"
-        sql_xbb="UPDATE xdde,xbb SET xdde.speed=xbb.xbb WHERE xdde.code=xbb.code;"
         fn_wolf_sqls
-        [ "${PARTS:-3}" -eq 3 ] && mysql ${OPT:-'-t'} kts <<<"${sql_xbb}${sqls}"
+        [ "${PARTS:-3}" -eq 3 ] && mysql ${OPT:-'-t'} kts <<<"${xbb_update}${sqls}"
         fn_chao ${chao}.${chao2:-wolf}
         ;;
     a|e|E)
@@ -2765,64 +2771,9 @@ function fn_notice()
     return $?
 }
 
-function fn_xbb_sqls()
-{
-    if [ "${1}" = l ]; then
-        sqls="
-        SELECT x.*, ${nmcYi}, c.name FROM xbb as x, cap as c WHERE x.code=c.code
-        ORDER by ${FIELD:-xbb} ${ASC:-DESC} LIMIT ${LIMIT:-40}
-        "
-        return
-    fi
-
-    d30=`END=$PREV fn_get_date 30`
-    d37=`END=$PREV fn_get_date 37`
-    d44=`END=$PREV fn_get_date 44`
-    d50=`END=$PREV fn_get_date 50`
-    sqls="
-    TRUNCATE yist;
-    $DROP xbb; 
-    $CREATE xbb (
-    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
-    num         int,
-    xbb         DECIMAL(6,2) NOT NULL DEFAULT 0,
-    INDEX(code)
-    );
-
-    INSERT INTO yist(code) SELECT DISTINCT code FROM day WHERE date='${END}' && code<888888;
-
-    INSERT INTO xbb
-    SELECT code, count(code) as num, max(amount)/(sum(amount)/count(code)) as prop 
-    FROM day as d WHERE date>='${d30}' && date<='${PREV}' GROUP by code HAVING num>25;
-    DELETE FROM yist WHERE code in (SELECT code FROM xbb);
-
-    INSERT INTO xbb
-    SELECT d.code,count(d.code) as num, max(amount)/(sum(amount)/count(d.code)) as prop 
-    FROM day as d,yist as y 
-    WHERE d.code=y.code && date>='${d37}' && date<='${PREV}' GROUP by code HAVING num>25;
-    DELETE FROM yist WHERE code in (SELECT code FROM xbb);
-
-    INSERT INTO xbb
-    SELECT d.code,count(d.code) as num, max(amount)/(sum(amount)/count(d.code)) as prop 
-    FROM day as d,yist as y 
-    WHERE d.code=y.code && date>='${d44}' && date<='${PREV}' GROUP by code HAVING num>25;
-    DELETE FROM yist WHERE code in (SELECT code FROM xbb);
-
-    INSERT INTO xbb
-    SELECT d.code,count(d.code) as num, max(amount)/(sum(amount)/count(d.code)) as prop 
-    FROM day as d,yist as y 
-    WHERE d.code=y.code && date>='${d50}' && date<='${PREV}' GROUP by code HAVING num>20;
-    "
-    fn_echo_succ "Update xbb db @${END} succ!"
-}
-
 function fn_ddd()
 {
     case $1 in
-    2)
-        END=${PREV} PARTS=2 PPLUS=1 SELECT lsd top
-        YIST=/tmp/kts/chao.top.lsd SELECT lsd top
-        ;;
     4|3)
         d4=`fn_get_date 4`
         d3=`fn_get_date 3`
@@ -2844,13 +2795,8 @@ function fn_ddd()
         ;;
     yiz)
         PARTS=2 CHAO=1 END=$PREV COND="rise>9.93" PPLUS=2 SELECT lsd
-        YIST=/tmp/kts/chao.lsd \
-        COND="eWolf>.3" SELECT wolf e $2
-        ;;
-    xbb)
-        fn_xbb_sqls $2
-        #echo "${sqls}"; exit
-        mysql ${OPT:--t} kts <<<"${sqls}"
+        YIST=/tmp/kts/chao.lsd   COND="eWolf>.2 && opri> 9.93" SELECT wolf i $2
+        YIST=/tmp/kts/chao.lsd   COND="eWolf>.2 && opri<=9.93" FIELD=rise SELECT wolf i $2
         ;;
     110)
         # COND="hiri>9.93" sql_hiri="$HIRI as hiri,"  # 只做涨停&大成交+大涨
@@ -2873,14 +2819,11 @@ function fn_ddd()
         ;;
     *)
         echo "
-        SELECT ddd <para>
-        110                 # 缩量低吸
-        2                   # 自然2连板:反映当天人气
-        3|4                 # 大跌抄底
-        yiz [iF5]           #
-        xbb                 # iEND=3 更新xbb数据库.ceiling理论
-        110                 # 2阳1阴--打板小白收割机.rise前30分坚决下跌无诱多.high不创新高
-        100                 # 1阳2阴--
+        XBB=1 SELECT ddd <para> # XBB=1使能xbb列
+        3|4                     # 连续3|4日缩量
+        110                     # 2阳1阴--打板小白收割机.rise前30分坚决下跌无诱多.high不创新高
+        100                     # 1阳2阴--
+        yiz [iF5]               # 昨日涨停表现，弱势出连板，即是龙头
         "
         ;;
     esac

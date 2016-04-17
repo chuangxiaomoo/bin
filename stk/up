@@ -1427,6 +1427,59 @@ function fn_bigbid()
     return $?
 }
 
+function fn_xbb()
+{
+    if [ "${1}" = l ]; then
+        sqls="
+        SELECT x.*, ${nmcYi}, c.name FROM xbb as x, cap as c WHERE x.code=c.code
+        ORDER by ${FIELD:-xbb} ${ASC:-DESC} LIMIT ${LIMIT:-40}
+        "
+        mysql ${OPT:--t} kts <<<"${sqls}"; exit
+    fi
+
+    d30=`END=$PREV fn_get_date 30`
+    d37=`END=$PREV fn_get_date 37`
+    d44=`END=$PREV fn_get_date 44`
+    d50=`END=$PREV fn_get_date 50`
+    sqls="
+    TRUNCATE yist;
+    $DROP xbb; 
+    $CREATE xbb (
+    date        date,
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    num         int,
+    xbb         DECIMAL(6,2) NOT NULL DEFAULT 0,
+    INDEX(code)
+    );
+
+    INSERT INTO yist(code) SELECT DISTINCT code FROM day WHERE date='${END}' && code<888888;
+
+    INSERT INTO xbb
+    SELECT '${PREV}', code, count(code) as num, max(amount)/(sum(amount)/count(code)) as prop 
+    FROM day as d WHERE date>='${d30}' && date<='${PREV}' GROUP by code HAVING num>25;
+    DELETE FROM yist WHERE code in (SELECT code FROM xbb);
+
+    INSERT INTO xbb
+    SELECT '${PREV}', d.code,count(d.code) as num, max(amount)/(sum(amount)/count(d.code)) as prop 
+    FROM day as d,yist as y 
+    WHERE d.code=y.code && date>='${d37}' && date<='${PREV}' GROUP by code HAVING num>25;
+    DELETE FROM yist WHERE code in (SELECT code FROM xbb);
+
+    INSERT INTO xbb
+    SELECT '${PREV}', d.code,count(d.code) as num, max(amount)/(sum(amount)/count(d.code)) as prop 
+    FROM day as d,yist as y 
+    WHERE d.code=y.code && date>='${d44}' && date<='${PREV}' GROUP by code HAVING num>25;
+    DELETE FROM yist WHERE code in (SELECT code FROM xbb);
+
+    INSERT INTO xbb
+    SELECT '${PREV}', d.code,count(d.code) as num, max(amount)/(sum(amount)/count(d.code)) as prop 
+    FROM day as d,yist as y 
+    WHERE d.code=y.code && date>='${d50}' && date<='${PREV}' GROUP by code HAVING num>20;
+    "
+    mysql ${OPT:--t} kts <<<"${sqls}"
+    fn_echo_succ "Update xbb db @${END} succ!"
+}
+
 function fn_main()
 {
     cmdlist=(
@@ -1465,6 +1518,7 @@ function fn_main()
     "seat_rank                          # 总排名"
     "seat_detail                        # top-30-seat所操作的股票"
     "bigbid                             # 大宗交易"
+    "xbb [l]                            # 生成PREV30成交额峰值测算，加参数l时list数据日期"
     )
 
     # 存储过程函数文件的最后5行都是注释
