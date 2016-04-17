@@ -51,7 +51,7 @@ function fn_lsd()
     local columns="code,yesc,open,close"
           columns=${columns:-'*'}
           columns=d.${columns//,/,d.}
-    local TEMPDAY='day'
+    local TEMPDAY=${TBL:-day}   # use day2:2014 day3:2013 when needed
 
     fn_bist
     fn_yist
@@ -1496,29 +1496,6 @@ function fn_lhb()
     return $?
 }
 
-function fn_BBD_wolf() 
-{
-    fn_usage() { echo "SELECT wolf real 0|3|6|03|a|y";exit; }
-    case $i in
-    0) YIST= fn_yist;iCOND='and d.code<100000' ;;
-    3) YIST= fn_yist;iCOND='and d.code>=300000 and d.code<400000' ;;
-    6) YIST= fn_yist;iCOND='and d.code>=600000 and d.code<700000' ;;
-    03)YIST= fn_yist;iCOND='and d.code<400000' ;;
-    a) YIST= fn_yist;iCOND='and d.code<700000' ;;
-    y) [ -z "${YIST}" ] && fn_usage || iCOND= fn_yist ;;
-    *) fn_usage ;;
-    esac
-
-    if [ "${once}" = '' ]; then
-        fn_echo_warn "code\tnet\ttov @${END}"; once=1
-    fi
-    echo "
-    SELECT '$i', round(sum(nmc*net)/sum(nmc), 2), round(sum(amount)/100/sum(nmc), 2) 
-    FROM dde as d $WHERE date='${END}' ${iCOND};
-    " | mysql -N kts
-}
-
-
 function fn_scale()
 {
     if [ -z "${1}" ]; then
@@ -1564,59 +1541,6 @@ function fn_scale()
     fi
 
     return $?
-}
-
-function fn_asm_nDDE()
-{
-    echo "
-    DROP   TABLE IF EXISTS nDDE;
-    CREATE TABLE nDDE LIKE mat_dde;
-    INSERT INTO nDDE(date,time,code,net,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name) 
-        SELECT date,time,code,net,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name FROM dde
-        WHERE date>='${STA}' && date<'${END}';
-    INSERT INTO nDDE(date,time,code,net,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name) 
-        SELECT date,time,code,net,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name FROM mat_dde
-        WHERE date='${END}' && time='${stime}';
-    " | mysql kts
-    xt_ret $? "" || return $?
-}
-
-function fn_nDDE_sqls()
-{
-    DOOR=${DOOR:--.6}
-    yesc='(trade/(1+rise/100))'
-    sqls="
-    SELECT t.code,
-        sum(net>=${DOOR}) as red,
-        sum(rise) as wise, 
-        sum(net) as wet,
-        ROUND(sum(tov/(1-top10_ajst_aR)), 2) as vtov,
-        rise,avrg,
-        sum(eWolf) as eWolfs,
-        buy,sell,net,Go,bsp,prop,scale,eYi,nmcYi, t.name
-        FROM (
-        SELECT w.date,w.code, w.rise,
-        round( (100*(w.amount/shou-$yesc)/$yesc), 1) as avrg,
-        tov,
-        round(nmc*net/100, 2) as eWolf,
-        (pbuy+nbuy) as buy,
-        (psell+nsell) as sell,
-        round(net, 2) as net,
-        round((pbuy/nbuy), 1) as Go,
-        round((pbuy+nbuy)/(psell+nsell), 2) as bsp,
-        round((w.shou/h.volume), 2) as prop, h.scale,
-        round(w.amount/10000, 2) as eYi, 
-        nmc as nmcYi, w.name 
-        FROM ${WOLf} as w, curr_lohi as h
-        ${WHERE} 
-        w.code=h.code && 
-        w.date>='${STA}' && w.date<='${END}' 
-        ORDER by code ASC, date DESC
-    ) as t, top10 WHERE t.code=top10.code
-    GROUP by code 
-    HAVING 1 ${CAUSE} ${COND} ORDER by ${FIELD} ${ASC:-DESC} LIMIT ${LIMIT:-24}
-    "
-    fn_echo_warn "wolf of ${END}.${stime:-latest} [NUM:${NUM}] [DOOR:${DOOR}] ${FIELD}"
 }
 
 function fn_list_wolf_dates()
@@ -1703,6 +1627,42 @@ function fn_wolf_tov()
         awk 'BEGIN {sum=0} {sum=sum+$6;} END {printf "avrg: %.2f, avrg.8: %.2f\n", sum/FNR, .8*sum/FNR}'
 }
 
+function fn_wolf_code()
+{
+    fn_iscode $2
+    xt_ret $? "Usage: SELECT wolf c code" || {
+    mysql -N kts<<< "SELECT DISTINCT date,time FROM dde ORDER by date DESC LIMIT ${LIMIT:-10}" | cat -n
+    return 1
+    }
+
+    if [ "${1}" = c ]; then
+        jCOND="date<='${END}'"
+        col_date="w.date,"
+        ORDER="ORDER by ${FIELD:-date} DESC"
+        iTBL=dde
+    else
+        jCOND="date='${END}'"
+        col_date="w.date,time,"
+        ORDER="ORDER by date DESC, time DESC"
+    fi
+
+    iCOND="num=${NUM:-8}"   xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
+    xt_ret $? "" || return $?
+    iCOND="${jCOND}"        xCol=code fn_xCol ${iTBL:-mat_dde} xdde ${2}
+    xt_ret $? "" || return $?
+
+    LIMIT=${LIMIT:-12}
+    sql_cond="&& w.code=${2}"
+    sql_xbb="UPDATE xdde,xbb SET xdde.speed=xbb.xbb WHERE xdde.code=xbb.code;"
+    col_name=
+    fn_name ${2}
+    DOOR=-50 fn_wolf_sqls
+    mysql ${OPT:-'-t'} kts <<<"${sql_xbb}${sqls}"
+    #mysql -t kts <<<"${sqls}"
+    fn_chao
+    return $?
+}
+
 function fn_wolf_sqls()
 {
     col_tet="ROUND(net/(1-top10_ajst_aR), 2) as Tet,"
@@ -1745,18 +1705,13 @@ function fn_wolf()
     max_end=`mysql -N kts <<< "${sql_maxend}"`
     fn_issqltrue "'${max_end}' >= '${PREV}'"
     [ "${?}" -ne 0 ] && { fn_echo_fail "lohi is lagged, updating..."; SCREENER lohi 1; return 1; }
-   #hilo_curr="( SELECT * FROM mat_lohi WHERE end='${PREV}' and num=${iNUM:-8} )"
 
     case $1 in
-    l|dates)
-        fn_list_wolf_dates $2
-        ;;
-    b|BBD)
-        param=${@:2}
-        for i in ${param:-NULL}; do
-            fn_BBD_wolf $i
-        done
-        ;;
+    l)  fn_list_wolf_dates $2   ;;
+    st) fn_list_wolf_times      ;;
+    tov)fn_wolf_tov             ;;
+    c)  fn_wolf_code $1 $2      ;;
+    cf) fn_wolf_code $1 $2      ;;
     i)
         col_name=',w.name'
         fn_bist
@@ -1781,70 +1736,10 @@ function fn_wolf()
         [ "${PARTS:-3}" -eq 3 ] && mysql ${OPT:-'-t'} kts <<<"${sql_xbb}${sqls}"
         fn_chao ${chao}.${chao2:-wolf}
         ;;
-    c|cf|code)
-        fn_iscode $2
-        xt_ret $? "Usage: SELECT wolf c code" || {
-        mysql -N kts<<< "SELECT DISTINCT date,time FROM dde ORDER by date DESC LIMIT ${LIMIT:-10}" | cat -n
-        return 1
-        }
-
-        if [ "${1}" = c ]; then
-            jCOND="date<='${END}'"
-            col_date="w.date,"
-            ORDER="ORDER by ${FIELD:-date} DESC"
-            iTBL=dde
-        else
-            jCOND="date='${END}'"
-            col_date="w.date,time,"
-            ORDER="ORDER by date DESC, time DESC"
-        fi
-
-        iCOND="num=${NUM:-8}"   xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
-        xt_ret $? "" || return $?
-        iCOND="${jCOND}"        xCol=code fn_xCol ${iTBL:-mat_dde} xdde ${2}
-        xt_ret $? "" || return $?
-
-        LIMIT=${LIMIT:-12}
-        sql_cond="&& w.code=${2}"
-        sql_xbb="UPDATE xdde,xbb SET xdde.speed=xbb.xbb WHERE xdde.code=xbb.code;"
-        col_name=
-        fn_name ${2}
-        DOOR=-50 fn_wolf_sqls
-        mysql ${OPT:-'-t'} kts <<<"${sql_xbb}${sqls}"
-        #mysql -t kts <<<"${sqls}"
-        fn_chao
-        ;;
-    n|nDDE)
-        NUM=${NUM:-2}
-        [ "${sta:=${2:-1}}" = l ] && fn_list_wolf_times
-        fn_yist
-        fn_isdigit ${sta} && FIELD=${3:-wet} || { FIELD=$2;sta=1 ;}
-
-        # 非实时统计，重新组装wolf
-        iCOND="num=${NUM:-8}" xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
-
-        STA=`fn_get_date ${NUM}`
-
-        if [ ${sta} -ne 1 ]; then
-            let sta--
-            sql_stime="SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC LIMIT ${sta},1"
-            stime=`mysql -N kts<<< "${sql_stime}"`
-            WOLF=nDDE
-            fn_asm_nDDE
-            xt_ret $? "" || return $?
-        fi
-        WOLf=${WOLF:-dde} fn_nDDE_sqls
-        mysql -t kts <<<"${sqls}"
-        fn_chao
-        ;;
-    il|st) 
-        fn_list_wolf_times ;;
-    tov) 
-        fn_wolf_tov;;
     a|e|E)
         col_trade='trade,'
         HMS=${HMS:-`fn_get_time 1`}
-        eYi=${eYi:-.1}  # tag_伸缩处理
+        eYi=${eYi:-.1}                  # tag_伸缩处理
         case $1 in
         a) eCOND="&&amount>${eYi}*10000"                                                ;;
         e) eCOND="&&amount>${eYi}*10000*iSCALE && nmc<=${nmc_wolf}"; nmc_lion=$nmc_wolf ;;
@@ -1858,10 +1753,8 @@ function fn_wolf()
         echo "
         SELECT wolf <param>
         l               date-list
-        n|nDDE  idx     {NUM:-2}日DDE统计，变量代表日倒数索引
-        b|BBD           沪深BBD统计
-        i       idx|l   SELECT time or list-times
-        e               e mean FIELD=eWolf=熵减表征eWolf=buy/tov
+        st              time-list
+        i|a|e|E [iF5]   SELECT time or list-times
         c       code    按日统计
         cf      code    按15分钟统计
         tov             top50 tov
