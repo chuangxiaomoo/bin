@@ -403,8 +403,8 @@ function fn_language()                  { cat logic_language ;}
 function fn_phi()                       { 
 function fn_flowers12()                 { cat phi_flowers12 ;}
 function fn_01_Karlmarx()               { cat phi_01_Karlmarx ;}
-function fn_02_康德()                   { cat phi_02_康德 ;}
-function fn_03_波普尔()                 { cat phi_03_波普尔 ;}
+function fn_02_Kant()                   { cat phi_02_Kant ;}
+function fn_03_Popper()                 { cat phi_03_Popper ;}
 function fn_04_Hume()                   { cat phi_04_Hume ;}
 function fn_05_Mill()                   { cat phi_05_Mill ;}
 function fn_0a_Miltonfriedman()         { cat phi_0a_Miltonfriedman ;}
@@ -442,8 +442,8 @@ function fn_epistemology()              { cat phi_epistemology ;}
 function fn_sicence()                   { cat phi_sicence ;}
     local opts=(
         01_Karlmarx                     # pelple's essence
-        02_康德                         # Immanuel Kant
-        03_波普尔                       # 证伪主义 Karl.Popper
+        02_Kant                         # Immanuel 康德
+        03_Popper                       # 证伪主义 Karl.波普尔
         04_Hume                         # 大卫.休谟
         05_Mill                         # 约翰·斯图亚特·穆勒(也译作·密尔)
         0a_Miltonfriedman               # 米尔顿·弗里德曼
