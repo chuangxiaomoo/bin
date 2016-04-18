@@ -708,7 +708,7 @@ function fn_lohi()
         mysql -N kts<<< "SELECT DISTINCT end FROM mat_lohi WHERE num=${iNUM} ORDER by end DESC LIMIT ${LIMIT:-10}" | cat -n
         top=`mysql -N kts<<< "SELECT DISTINCT end FROM mat_lohi WHERE num=${iNUM} ORDER by end DESC LIMIT 1"`
         fn_echo_succ "date-list:"
-        fn_lohi l | grep "${OPT:-'-B100'}" --color ${top}
+        fn_lohi l | grep ${OPT:-'-B100'} --color "${top}"
         exit
         ;;
     d)
