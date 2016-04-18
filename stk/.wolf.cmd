@@ -1,4 +1,0 @@
-CHAO=1 END=2016-03-17 LIMIT=60 COND="eWolf>.55" SELECT wolf e
-CHAO=1 END=2016-03-18 LIMIT=60 COND="eWolf>=.5&&code>600000" SELECT wolf e
-CHAO=1 END=2016-03-21 LIMIT=200 COND="rise>5&&(eWolf>.50||(eWolf>.45&&prop>2))" SELECT wolf e
-CHAO=1 END=2016-03-22 LIMIT=200 COND="incr<30 && (eWolf>.50||(eWolf>.45&&prop>2))" SELECT wolf e

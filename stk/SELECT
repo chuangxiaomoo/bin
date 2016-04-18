@@ -1636,14 +1636,15 @@ function fn_enable_xbb()
 
 function fn_lohi_shift()
 {
-    let NUM=LIMIT+1
+    let NUM=LIMIT+2     # echo $NUM $LIMIT
     sql_shift="DELETE FROM curr_lohi WHERE end='${END}'\n"
     dates=(`fn_get_date 1 ${NUM}`)
-    for (( i=0,j=1; i<${#dates}; i++,j++ )); do
+
+    for (( i=0,j=1; i<${#dates[@]}-1; i++,j++ )); do
         iFrom=${dates[$j]};  
         iTo=${dates[$i]};  
         sql_shift="${sql_shift}; UPDATE curr_lohi SET end='${iTo}' WHERE end='${iFrom}';\n" 
-        # echo From ${iFrom} to ${iTo} 
+        # echo $i From ${iFrom} to ${iTo} 
     done
     echo -e "${sql_shift}" | mysql -N kts
 }
@@ -1680,7 +1681,7 @@ function fn_wolf_code()
     sql_cond="&& w.code=${2} && w.date=h.end"
     col_name=
     fn_name ${2}
-    DOOR=-50 fn_wolf_sqls
+    DOOR=-.5 fn_wolf_sqls
     mysql ${OPT:-'-t'} kts <<<"${xbb_update}${sqls}"
     #mysql -t kts <<<"${sqls}"
     fn_chao
@@ -1691,7 +1692,7 @@ function fn_wolf_sqls()
 {
     col_tet="ROUND(net/(1-top10_ajst_aR), 2) as Tet,"
     FIELD=${FIELD:-eWolf}
-    DOOR=${DOOR:--tov/6}
+    DOOR=${DOOR:--1/5}
     yesc='(trade/(1+rise/100))'
     sqls="
         SELECT ${col_date} w.code, w.rise, 
@@ -1704,7 +1705,7 @@ function fn_wolf_sqls()
         (pbuy+nbuy) as buy, (psell+nsell) as sell,
     --  pbuy,nbuy, 
     --  round(100*(pbuy+nbuy)/tov, 1) as bloo, round(100*(psell+nsell)/tov, 1) as sloo,
-        net,
+        round(net/tov, 2) as pet,
     --  round((pbuy/nbuy), 2) as Go, round((pbuy+nbuy)/(psell+nsell),1) as bsp,
         ${xbb_col}
         round((w.shou/h.volume), 2) as prop, h.scale,
@@ -1712,7 +1713,7 @@ function fn_wolf_sqls()
         ROUND(nmc, 1) as nmcYi
         ${col_name}
         FROM xdde as w, curr_lohi as h ${tbl_temp}
-        ${WHERE} w.code=h.code ${sql_cond} && net>${DOOR}       -- && w.date<='${END}'
+        ${WHERE} w.code=h.code ${sql_cond} && net/tov>${DOOR}       -- && w.date<='${END}'
         HAVING 1 ${COND} ${ORDER:-ORDER by ${FIELD} ${ASC:-DESC}} LIMIT ${LIMIT:-36}
     "
     #echo "${sqls}"; exit
@@ -2825,9 +2826,8 @@ function fn_ddd()
         PARTS=2 CHAO=1 LIMIT=200 chao2=curr END=${PREV2} SELECT wolf ${TYPE}
         # prop<.6
         COND="(rise<opri||(opri<0&&rise<opri+2))&&eWolf>=.25&&prop<.81" \
-        PARTS=3 CHAO=1 chao2=next YIST=${chao}.curr END=${PREV} DOOR= SELECT wolf ${TYPE} || exit
-        exit
-                CHAO=1 chao2=100  YIST=${chao}.next COND="scale+prop<1.6" DOOR= SELECT wolf ${TYPE}
+        PARTS=2 CHAO=1 LIMIT=200 chao2=next YIST=${chao}.curr END=${PREV} DOOR= SELECT wolf ${TYPE} || exit
+                CHAO=1 LIMIT=200 chao2=100  YIST=${chao}.next COND="scale+prop<1.7" DOOR= SELECT wolf ${TYPE}
         fn_echo_succ "两日内价格在PREV2涨停下交易"
         ;;
     rhx)
