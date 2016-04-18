@@ -674,6 +674,31 @@ function fn_hilo()
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
+function fn_lohi_repair()
+{
+    iPREV=`END=${1} fn_get_prev`
+    echo "
+    CREATE TEMPORARY TABLE lohi_prev LIKE mat_lohi;
+    CREATE TEMPORARY TABLE lohi_curr LIKE mat_lohi;
+    INSERT INTO lohi_prev(end,num,code,date1,date2,off,high,low,lohi,scale,volume,amount,mavol5)
+        SELECT end,num,code,date1,date2,off,high,low,lohi,scale,volume,amount,mavol5 FROM mat_lohi WHERE end='${iPREV}';
+    INSERT INTO lohi_curr(end,num,code,date1,date2,off,high,low,lohi,scale,volume,amount,mavol5)
+        SELECT end,num,code,date1,date2,off,high,low,lohi,scale,volume,amount,mavol5 FROM mat_lohi WHERE end='${1}';
+    INSERT INTO mat_lohi(end,num,code,date1,date2,off,high,low,lohi,scale,volume,amount,mavol5)
+        SELECT '$1',num,code,date1,date2,off,high,low,lohi,scale,volume,amount,mavol5
+            FROM lohi_prev WHERE code NOT IN (SELECT code FROM lohi_curr);
+    " | mysql -N kts
+    return $?
+}
+
+# NUM=30
+# dates=(`END=2016-04-15 fn_get_date 1 ${NUM}`)
+# for (( i=${NUM}-1; i>=0; i-- )); do
+#     date=${dates[$i]};  
+#     fn_echo_succ ${date}
+#     fn_lohi_repair $date
+# done
+
 function fn_lohi()
 {
     iNUM=${NUM:-8}
@@ -762,6 +787,7 @@ function fn_lohi()
     " | tee -a $mps_god
     mysql $mo -t kts < $mps_god
     xt_ret $? "${FUNCNAME}" || return $?
+    fn_lohi_repair ${iEND}
 }
 
 function fn_main()

@@ -1521,7 +1521,7 @@ function fn_scale()
 
     iRATIO=(
         .051 .092 .130 .166 .198 .230 .258 .284 .308 .331 # 10  .331  -- 1.64 
-        .353 .375 .395 .415 .433 .451 .474 .498 .517 .534 # 20  .203            -- 成交呈月牙状，中间两中时较稳定
+        .353 .375 .395 .415 .433 .451 .474 .498 .517 .534 # 20  .203            -- 成交呈3223月牙状，中间两中时较稳定
         .553 .569 .590 .611 .629 .654 .673 .692 .709 .733 # 30  .201            -- 如果1st+，且调低预期，3rd+，则要调高最后预期
         .756 .775 .796 .816 .834 .856 .884 .913 .950 1.00 # 40  .267  -- 1.34
     )
@@ -1605,7 +1605,7 @@ function fn_wolf_tof()
     echo
 }
 
-function fn_wolf_tov()
+function fn_wolf_top50()
 {
     columns="date,rise,wolf,nolf,net,eWolf,eYi"
     sqls="$DROP wolf_tov; $CREATE wolf_tov LIKE wolf_turnover;"
@@ -1634,6 +1634,20 @@ function fn_enable_xbb()
     xbb_update="UPDATE xdde,xbb SET xdde.speed=xbb.xbb WHERE xdde.code=xbb.code;"
 }
 
+function fn_lohi_shift()
+{
+    let NUM=LIMIT+1
+    sql_shift="DELETE FROM curr_lohi WHERE end='${END}'\n"
+    dates=(`fn_get_date 1 ${NUM}`)
+    for (( i=0,j=1; i<${#dates}; i++,j++ )); do
+        iFrom=${dates[$j]};  
+        iTo=${dates[$i]};  
+        sql_shift="${sql_shift}; UPDATE curr_lohi SET end='${iTo}' WHERE end='${iFrom}';\n" 
+        # echo From ${iFrom} to ${iTo} 
+    done
+    echo -e "${sql_shift}" | mysql -N kts
+}
+
 function fn_wolf_code()
 {
     fn_iscode $2
@@ -1653,13 +1667,17 @@ function fn_wolf_code()
         ORDER="ORDER by date DESC, time DESC"
     fi
 
-    iCOND="num=${NUM:-8}"   xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
+   #iCOND="num=${NUM:-8}"   xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
+    iCOND="num=${NUM:-8}"   xCol=code fn_xCol mat_lohi curr_lohi ${2}
     xt_ret $? "" || return $?
+
     iCOND="${jCOND}"        xCol=code fn_xCol ${iTBL:-mat_dde} xdde ${2}
     xt_ret $? "" || return $?
 
     LIMIT=${LIMIT:-12}
-    sql_cond="&& w.code=${2}"
+    fn_lohi_shift; # exit
+
+    sql_cond="&& w.code=${2} && w.date=h.end"
     col_name=
     fn_name ${2}
     DOOR=-50 fn_wolf_sqls
@@ -1673,13 +1691,14 @@ function fn_wolf_sqls()
 {
     col_tet="ROUND(net/(1-top10_ajst_aR), 2) as Tet,"
     FIELD=${FIELD:-eWolf}
-    DOOR=${DOOR:--tov/6.6}
+    DOOR=${DOOR:--tov/6}
     yesc='(trade/(1+rise/100))'
     sqls="
-        SELECT ${col_date} w.code, w.rise, ${sql_opri} ${sql_hiri} ${col_trade}
+        SELECT ${col_date} w.code, w.rise, 
+        ROUND( (100*(w.amount/shou-$yesc)/$yesc), 1) as avrg, 
+        ${sql_opri} ${sql_hiri} ${col_trade}
         round(100*(trade-h.low)/h.low, 1) as incr,
-        round(100*(h.high-LEAST(lohi,trade))/LEAST(lohi,trade),1) as jump,
-        ROUND( (100*(w.amount/shou-$yesc)/$yesc), 1) as avrg, tov,
+        round(100*(h.high-LEAST(lohi,trade))/LEAST(lohi,trade),1) as jump, tov,
         ROUND((pbuy+nbuy)/w.tov, 2) as eWolf,
     --  ROUND(100*nmc*(pbuy+nbuy)/w.amount, 2) as eWolf,    -- 若使用(amount/nmc/100)代替tov,在价涨时结果偏大，价跌时偏小
         (pbuy+nbuy) as buy, (psell+nsell) as sell,
@@ -1716,7 +1735,7 @@ function fn_wolf()
     case $1 in
     l)  fn_list_wolf_dates $2   ;;
     st) fn_list_wolf_times      ;;
-    tov)fn_wolf_tov             ;;
+    top)fn_wolf_top50           ;;
     c)  fn_wolf_code $1 $2      ;;
     cf) fn_wolf_code $1 $2      ;;
     i)
@@ -1763,8 +1782,7 @@ function fn_wolf()
         i|a|e|E [iF5]   SELECT time or list-times
         c       code    按日统计
         cf      code    按15分钟统计
-        tov             top50 tov
-        tof             top50 tov iF5
+        top             top50 tov
         " 2>&1 # | sed 's/^  *//g'
         ;;
     esac
@@ -2774,56 +2792,54 @@ function fn_notice()
 function fn_ddd()
 {
     case $1 in
-    4|3)
-        d4=`fn_get_date 4`
-        d3=`fn_get_date 3`
-        d2=`fn_get_date 2`
-
-        [ "${1}" = 4 ] && \
-        LIMIT=800 PARTS=2 CHAO=1 END=$d4 COND="prop<1 && scale<1" SELECT lohi i && \
-        iYIST=/tmp/kts/chao.lohi
-
-        # 2016-02-22 driver-test
-        YIST=$iYIST \
-        LIMIT=800 PARTS=2 CHAO=1 END=$d3 COND="prop<1 && scale<1" SELECT lohi i
-
-        YIST=/tmp/kts/chao.lohi \
-        LIMIT=800 PARTS=2 CHAO=1 END=$d2 COND="prop<1 && scale<1" SELECT lohi i
-
-        YIST=/tmp/kts/chao.lohi \
-        COND="eWolf>.3" SELECT wolf e
-        ;;
     yiz)
-        PARTS=2 CHAO=1 END=$PREV COND="rise>9.93" PPLUS=2 SELECT lsd
-        YIST=/tmp/kts/chao.lsd   COND="eWolf>.2 && opri> 9.93" SELECT wolf i $2
-        YIST=/tmp/kts/chao.lsd   COND="eWolf>.2 && opri<=9.93" FIELD=rise SELECT wolf i $2
+        fn_echo_succ "PARTS=2@一字开板"
+        PARTS=2 CHAO=1 END=$PREV COND="rise>9.93" PPLUS=2 FIELD=rise LIMIT=400 SELECT lsd
+        YIST=/tmp/kts/chao.lsd   COND="eWolf>.2 && opri> 9.93" DOOR=-tov/3 SELECT wolf i $2
+        YIST=/tmp/kts/chao.lsd   COND="eWolf>.2 && opri<=9.93" DOOR=-tov/3 FIELD=rise SELECT wolf i $2
+        fn_echo_succ "PARTS=2@非一字板连板"
+        PARTS=2 CHAO=1 END=$PREV COND="rise>9.93" PPLUS=1 FIELD=rise LIMIT=400 SELECT lsd
+        YIST=/tmp/kts/chao.lsd   COND="eWolf>.2 && opri> 9.93" DOOR=-tov/3 SELECT wolf i $2
+        YIST=/tmp/kts/chao.lsd   COND="eWolf>.2 && opri<=9.93" DOOR=-tov/3 FIELD=rise SELECT wolf i $2
         ;;
     110)
         # COND="hiri>9.93" sql_hiri="$HIRI as hiri,"  # 只做涨停&大成交+大涨
         TYPE=${2:-e}
-        COND="(rise>9.93&&eWolf>.49)||(avrg>6&&eWolf>.40&&eYi>5)" \
-        PARTS=2 CHAO=1 LIMIT=100 END=${PREV} SELECT wolf ${TYPE}
+        COND="(rise>9.93&&eWolf>.49)" \
+        PARTS=2 CHAO=1 LIMIT=200 END=${PREV} SELECT wolf ${TYPE}
         COND="(rise<opri||(opri<0&&rise<opri+2))&&prop<${DOOR:-.81}" \
         YIST=/tmp/kts/chao.wolf LIMIT=100 DOOR= SELECT wolf ${TYPE} 
-        fn_echo_succ "前两日总涨幅在12%以上为佳，且突破ma20为佳"
+        fn_echo_succ "ma20&特别关注标的：eYi＞5亿"
+
+        COND="(rise<9.94&&avrg>5&&eWolf>.43&&eYi>5)" \
+        PARTS=2 CHAO=1 LIMIT=200 END=${PREV} SELECT wolf ${TYPE}
+        COND="(rise<opri||(opri<0&&rise<opri+2))&&prop<${DOOR:-.81}" \
+        YIST=/tmp/kts/chao.wolf LIMIT=100 DOOR= SELECT wolf ${TYPE} 
+
+        fn_echo_succ "ma20&+12%&特别关注：剔除大宗交易"
         ;;
     100)
         TYPE=${2:-e}
         PREV2=`fn_get_date 3`
-        COND="(rise>9.93&&eWolf>.49)||(avrg>6&&eWolf>.40&&eYi>5)" \
-        CHAO=1 PARTS=2 chao2=100.3 END=${PREV2} SELECT wolf ${TYPE}
-        COND="(rise<opri||(opri<0&&rise<opri+2))&&eWolf>=.25&&prop<1" \
-        CHAO=1 PARTS=2 chao2=100.2 YIST=${chao}.100.3 END=${PREV} DOOR= SELECT wolf ${TYPE} || exit
-        CHAO=1         chao2=100.1 YIST=${chao}.100.2 COND="prop<${DOOR:-.91}" DOOR= SELECT wolf ${TYPE}
+        COND="(rise>9.93&&eWolf>.49)||(avrg>5&&eWolf>.43&&eYi>5)" \
+        PARTS=2 CHAO=1 LIMIT=200 chao2=curr END=${PREV2} SELECT wolf ${TYPE}
+        # prop<.6
+        COND="(rise<opri||(opri<0&&rise<opri+2))&&eWolf>=.25&&prop<.81" \
+        PARTS=3 CHAO=1 chao2=next YIST=${chao}.curr END=${PREV} DOOR= SELECT wolf ${TYPE} || exit
+        exit
+                CHAO=1 chao2=100  YIST=${chao}.next COND="scale+prop<1.6" DOOR= SELECT wolf ${TYPE}
         fn_echo_succ "两日内价格在PREV2涨停下交易"
+        ;;
+    rhx)
+        echo
         ;;
     *)
         echo "
         XBB=1 SELECT ddd <para> # XBB=1使能xbb列
-        3|4                     # 连续3|4日缩量
         110                     # 2阳1阴--打板小白收割机.rise前30分坚决下跌无诱多.high不创新高
-        100                     # 1阳2阴--
+        100                     # 1阳2阴--＞5亿
         yiz [iF5]               # 昨日涨停表现，弱势出连板，即是龙头
+        rhx                     # 请允次日微放量
         "
         ;;
     esac
