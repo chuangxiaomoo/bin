@@ -5,6 +5,7 @@
 alias       ASC=''
 alias       BLK=''
 alias      COND=''
+alias      iASC=''
 alias     iCOND=''
 alias      CHAO=''
 alias     CAUSE=''

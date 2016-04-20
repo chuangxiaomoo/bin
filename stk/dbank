@@ -39,6 +39,7 @@ WGET='timeout 34 /usr/bin/wget'
 W3M='timeout  60 /usr/bin/w3m'
 
 # FLOOR() and ROUND()
+LORI='TRUNCATE(100*(d.low-d.yesc)/d.yesc, 1)'
 HIRI='TRUNCATE(100*(d.high-d.yesc)/d.yesc, 2)'
 OPRI='TRUNCATE(100*(d.open-d.yesc)/d.yesc, 2)'
 RISE='TRUNCATE(100*(d.close-d.yesc)/d.yesc, 2)'
@@ -569,7 +570,7 @@ function fn_get_time()
     # arg2 LIMIT, 默认1
     NR=${1:-1}
     let sta=${NR}-1
-    odrLimit="ORDER by time DESC LIMIT ${sta},${2:-1}"
+    odrLimit="ORDER by time ${iASC:-DESC} LIMIT ${sta},${2:-1}"
     iHMS=`mysql -N kts<<<"SELECT DISTINCT time FROM dorat WHERE date='${END}' && time<='${HMS:-15:05:00}' ${odrLimit}"`
     if [ -z "${iHMS}" ]; then
         fn_echo_fail "No.${NR} is EMPTY"

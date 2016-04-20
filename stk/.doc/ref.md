@@ -156,3 +156,12 @@ http://www.randomhouse.com/kvpa/gilbert/blog/200905what_you_dont_know_makes_you_
 
 一年的时间能够坚持下来的最大原因：我相信我一定能够在股市数据中找到规律。
 
+# 大跌选股.2016-04-20
+
+1 指数节奏：13:10 日内最低 13:50 再回探 14:20 再回探 14:40 低点真正抬高<间隔时间50min 40min 30min 20min>
+2 <advantage 绝对幅度高、价格背驰向上、委比背驰向上>
+  得润电子      yes       yes 1&2 2&3   yes 1&2 2&3
+  法尔胜        no        yes 2&3       yes 2&3 
+  坚瑞消防      no        yes 1&2       yes 1&2
+  富祥股份      no        no            no
+
