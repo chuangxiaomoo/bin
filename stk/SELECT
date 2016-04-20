@@ -281,16 +281,11 @@ function fn_tri()
 
 function fn_dif3()
 {
-    HMS3=`fn_get_time 1`
+    HMS0=`HMS=${HMS} iASC=DESC fn_get_time 1`   # 最新，亦可由HMS指定
+    HMS1=`fn_get_time $1`                       # 第1张
+    HMS2=`fn_get_time $2`                       # 第2张
 
-    DT="${END} ${HMS3}" ./up ma2015
-    xt_ret $? "ma2015" || return $?
-
-    dts="SELECT DISTINCT date,time FROM dorat"
-    odr="ORDER by date DESC, time DESC"
-    HMS2=`HMS=${HMS3} fn_get_time 1`
-    HMS1=`HMS=${HMS2} fn_get_time 1`
-    HMS0=`HMS=${HMS0:-09:47:00} fn_get_time 1`
+    # echo $HMS0 $HMS1 $HMS2; exit
 
     TEMPORARY=TEMPORARY
 
@@ -302,21 +297,22 @@ function fn_dif3()
         open        DECIMAL(6,2) NOT NULL DEFAULT 0,
         high        DECIMAL(6,2) NOT NULL DEFAULT 0,
         low         DECIMAL(6,2) NOT NULL DEFAULT 0,
+
         close       DECIMAL(6,2) NOT NULL DEFAULT 0,
-        avrg        DECIMAL(6,2) NOT NULL DEFAULT 0,
-        ma20        DECIMAL(6,2) NOT NULL DEFAULT 0,
-        close2      DECIMAL(6,2) NOT NULL DEFAULT 0,
+        avri        DECIMAL(6,2) NOT NULL DEFAULT 0,
         close1      DECIMAL(6,2) NOT NULL DEFAULT 0,
+        close2      DECIMAL(6,2) NOT NULL DEFAULT 0,
         volume      DECIMAL(12,2) NOT NULL DEFAULT 0,
         amount      DECIMAL(12,2) NOT NULL DEFAULT 0,
-        -- dif
-        av_op       DECIMAL(6,2) NOT NULL DEFAULT 0,
+
         rise        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        hiri        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        lori        DECIMAL(6,2) NOT NULL DEFAULT 0,
+
         dirtio      DECIMAL(6,2) NOT NULL DEFAULT 0,            -- 增量量比 dif-vol-ratio
-        pie         DECIMAL(8,1) NOT NULL DEFAULT 0,            -- 增量额度，以万为单位
         INDEX(code)
     );
-    DROP   $TEMPORARY TABLE IF EXISTS t2,t1,t0;
+    DROP   $TEMPORARY TABLE IF EXISTS t2,t1;
     CREATE $TEMPORARY TABLE IF NOT EXISTS t2 (
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
         close       DECIMAL(6,2) NOT NULL,
@@ -325,102 +321,69 @@ function fn_dif3()
         INDEX(code)
     );
     CREATE $TEMPORARY TABLE t1 LIKE t2;
-    CREATE $TEMPORARY TABLE t0 LIKE t2;
     INSERT INTO dif3(code,yesc,open,high,low,close,volume,amount) SELECT code,yesc,open,high,low,
-                               close,volume,amount FROM dorat WHERE date='${END}' and time='${HMS3}' and code<698765;
-    INSERT INTO t2 SELECT code,close,volume,amount FROM dorat WHERE date='${END}' and time='${HMS2}';
+                               close,volume,amount FROM dorat WHERE date='${END}' and time='${HMS0}';
     INSERT INTO t1 SELECT code,close,volume,amount FROM dorat WHERE date='${END}' and time='${HMS1}';
-    INSERT INTO t0 SELECT code,close,volume,amount FROM dorat WHERE date='${END}' and time='${HMS0}';
+    INSERT INTO t2 SELECT code,close,volume,amount FROM dorat WHERE date='${END}' and time='${HMS2}';
 
-    UPDATE dif3    SET avrg=(amount/volume), rise=100*(close-yesc)/yesc;
-    UPDATE dif3,t0 SET av_op=100*((t0.amount/t0.volume)-dif3.yesc)/dif3.yesc WHERE dif3.code=t0.code;
-    UPDATE dif3 INNER JOIN ma2015 on dif3.code=ma2015.code SET dif3.ma20=ma2015.ma2015;
-    DELETE FROM dif3 WHERE ma20=0;
-
+    UPDATE dif3 SET avri=100*((amount/volume)-yesc)/yesc, rise=100*(close-yesc)/yesc,
+                                         hiri=100*(high-yesc)/yesc, lori=100*(low-yesc)/yesc;
     UPDATE dif3 INNER JOIN t2 on dif3.code=t2.code 
                 INNER JOIN t1 on t2.code=t1.code
                       SET close2=t2.close,
                           close1=t1.close,
-                          dirtio=(dif3.volume-t2.volume)/(t2.volume-t1.volume),
-                          pie=(dif3.amount-t2.amount);                              -- 以万为单位
-
+                          dirtio=(dif3.volume-t2.volume)/(t2.volume-t1.volume)
     " | mysql kts
     xt_ret $? "fail: mysql" || return $?
-
-    fn_echo_succ "    succ: up dif3!"
 }
 
 function fn_dirtio()
 {
+    export iASC=ASC
     case $1 in
-    u|usage)
-        echo "
-        SELECT dirtio <param>
-        usage: print usage
-        list : print list of Date Time
-        i25  : insert 2.5min data
-        d25  : delete 2.5min data
-        c1   : cond1: rise>0&& av_op>2&&av_op<5 && close2<close1 && close2<close && pie>1000 && av_ri<2 
-                      0轴上    高开2~5%            低走             再上行          1000万      不涨太快
-                      1. 一直运行在ma20(F1)上方
-                      2. 先破ma20(F1)，在10:00前后突破之
-        c2   : cond2: 
-        c3   : cond3: 
-        c4   : cond4: 
-        1~80 : DateHMS list
-        "
-        exit 0
-        ;;
     l|list)
         fn_list_iF5_times
         ;;
     [0-9]*)
-        let min=3*${STEP:-1}
-        [ ${1} -ge ${min} ] && [ "${1}" -le 48 ] || { 
-            fn_echo_fail "fail: $1 -ge ${min} && $1 -le 48"; exit 1; 
+        [ "${1}" -gt 1 ]
+        xt_ret $? "[$1] must be a iF5 -gt 1" || return $?
+        fn_isdigit $2
+        xt_ret $? "[$2] must be a iF5 num" || return $?
+
+        fn_dif3 ${@}
+        fn_yist
+
+        columns='close1,close2,close,avri,rise,hiri,lori,dirtio'
+        columns=d.${columns//,/,d.}
+
+        function fn_build_sqls() {
+        sqls="
+        SELECT d.code, ${columns},
+            ${sql_tov}
+            ${nmcYi}, c.name 
+            FROM dif3 as d, cap as c           -- USE INDEX(code)
+            $WHERE d.code=c.code && nmc/10000<${nmc_wolf}
+            HAVING 1 ${COND}
+            ORDER by ${FIELD:-rise} ${ASC:-DESC} limit ${LIMIT:-32}" 
         }
+        fn_build_sqls
+
+        echo "$sqls">/dev/stderr 
+        mysql -t kts<<<"$sqls" | sed -e 's/    |$/|/g' -e 's/----+$/+/g'
+        xt_ret $? "" || return $?
+
+        fn_chao ${chao}.dir
         ;;
-    *)
-        FIELD=$1
+    *|u|usage)
+        echo "
+        SELECT dirtio <param>
+            u           print usage
+            l           print list of Date Time
+            HMS1 HMS2   show close to diff
+        "
+        exit 0
         ;;
     esac
-    FIELD=${FIELD:-$2}
-
-    fn_dif3 ${@} # 'up ma2015', update dif3
-    fn_yist
-
-    SCALE=`fn_get_ratio_close2open`
-    xt_ret $? "" || return $?
-
-    v1x1="round(48*(d.volume-t2.volume)/d.volume*${SCALE},2)"       
-    tov5="round(100*(ma.vol5)/(c.nmc/c.close),2)"
-    tov1="round(100*(d.volume)/(c.nmc/c.close),2)"
-    tovt="round((ma.vol20)/(c.nmc/c.close),1)"
-    columns='ma20,avrg,close,close2,close1,av_op,rise'
-    columns=d.${columns//,/,d.}
-
-    function fn_build_sqls() {
-    sqls="
-    SELECT d.code, ${columns},
-        ${tovt} as tovt,
-        ${tov5} as tov5,
-        ${tov1} as tov1,                                        -- 有tov，不必volume
-        round(d.amount/10000,2) as pie_Yi,
-        round(5*d.volume*$SCALE/(ma.vol5),2) as v1x5,           -- 普通量比
-        dirtio,pie,
-        round(c.nmc/10000, 1) as nmc_Yi, c.name 
-        FROM dif3 as d, tbl_mavol520s as ma, cap as c           -- USE INDEX(code)
-        WHERE d.code=ma.code && d.code=c.code                   -- av_ri = rise-av_op
-        HAVING 1 ${COND} ${inLIST} 
-        ORDER by ${FIELD:-dirtio} ${ASC:-DESC} limit ${LIMIT:-32}" 
-    }
-    fn_build_sqls
-
-    echo "$sqls">/dev/stderr 
-    mysql -t kts<<<"$sqls" | sed -e 's/    |$/|/g' -e 's/----+$/+/g'
-    xt_ret $? "" || return $?
-
-    fn_chao ${chao}.dir
 }
 
 function fn_wma()
@@ -739,7 +702,7 @@ function fn_dorat()
             END=${DT[0]}
             HMS=${DT[1]}
         fi
-        odrLimit="ORDER by time DESC LIMIT ${LIMIT:-81}"
+        odrLimit="ORDER by time ${iASC:-DESC} LIMIT ${LIMIT:-82}"
         mysql -N kts<<< "SELECT DISTINCT date,time FROM dorat WHERE date='${END}' && time<='${HMS:-15:05:00}' ${odrLimit}"
         ;;
     esac
@@ -1695,7 +1658,7 @@ function fn_wolf_sqls()
     DOOR=${DOOR:--1/5}
     yesc='(trade/(1+rise/100))'
     sqls="
-        SELECT ${col_date} w.code, w.rise, 
+        SELECT ${col_date} w.code, w.rise,
         ROUND( (100*(w.amount/shou-$yesc)/$yesc), 1) as avrg, 
         ${sql_opri} ${sql_hiri} ${col_trade}
         round(100*(trade-h.low)/h.low, 1) as incr,
@@ -1706,6 +1669,7 @@ function fn_wolf_sqls()
     --  pbuy,nbuy, 
     --  round(100*(pbuy+nbuy)/tov, 1) as bloo, round(100*(psell+nsell)/tov, 1) as sloo,
         round(net/tov, 2) as pet,
+        ROUND(100*( w.amount/shou - (h.amount/h.volume) )/(h.amount/h.volume), 1) as cise, -- COSE-RISE
     --  round((pbuy/nbuy), 2) as Go, round((pbuy+nbuy)/(psell+nsell),1) as bsp,
         ${xbb_col}
         round((w.shou/h.volume), 2) as prop, h.scale,
@@ -1740,6 +1704,9 @@ function fn_wolf()
     c)  fn_wolf_code $1 $2      ;;
     cf) fn_wolf_code $1 $2      ;;
     i)
+        sql_hiri="$LORI as hiri,"
+    #   sql_hiri="$HIRI as hiri,"
+    #   sql_opri="$OPRI as opri,"
         col_name=',w.name'
         fn_bist
         ABBR=w fn_yist
@@ -1756,7 +1723,6 @@ function fn_wolf()
 
         fn_xtempday
         tbl_temp=", xtempday as d"
-        sql_opri="$OPRI as opri, "
         sql_cond="&& w.code=d.code"
         fn_wolf_sqls
         [ "${PARTS:-3}" -eq 3 ] && mysql ${OPT:-'-t'} kts <<<"${xbb_update}${sqls}"
@@ -1783,7 +1749,7 @@ function fn_wolf()
         i|a|e|E [iF5]   SELECT time or list-times
         c       code    按日统计
         cf      code    按15分钟统计
-        top             top50 tov
+        top             NUM日统计top50 tov 
         " 2>&1 # | sed 's/^  *//g'
         ;;
     esac
@@ -2792,32 +2758,32 @@ function fn_notice()
 
 function fn_ddd()
 {
+    iPROP=${DOOR:-.81}; DOOR=
     case $1 in
     yiz)
         fn_echo_succ "PARTS=2@一字开板"
         PARTS=2 CHAO=1 END=$PREV COND="rise>9.93" PPLUS=2 FIELD=rise LIMIT=400 SELECT lsd
-        YIST=/tmp/kts/chao.lsd   COND="eWolf>.2 && opri> 9.93" DOOR=-tov/3 SELECT wolf i $2
+        YIST=/tmp/kts/chao.lsd   COND="eWolf>.2 && opri> 9.93" DOOR=-1/3 SELECT wolf i $2
         YIST=/tmp/kts/chao.lsd   COND="eWolf>.2 && opri<=9.93" DOOR=-tov/3 FIELD=rise SELECT wolf i $2
         fn_echo_succ "PARTS=2@非一字板连板"
         PARTS=2 CHAO=1 END=$PREV COND="rise>9.93" PPLUS=1 FIELD=rise LIMIT=400 SELECT lsd
-        YIST=/tmp/kts/chao.lsd   COND="eWolf>.2 && opri> 9.93" DOOR=-tov/3 SELECT wolf i $2
-        YIST=/tmp/kts/chao.lsd   COND="eWolf>.2 && opri<=9.93" DOOR=-tov/3 FIELD=rise SELECT wolf i $2
+        YIST=/tmp/kts/chao.lsd   COND="eWolf>.2 && opri> 9.93" DOOR=-1/3 SELECT wolf i $2
+        YIST=/tmp/kts/chao.lsd   COND="eWolf>.2 && opri<=9.93" DOOR=-1/3 FIELD=rise SELECT wolf i $2
         ;;
     110)
-        # COND="hiri>9.93" sql_hiri="$HIRI as hiri,"  # 只做涨停&大成交+大涨
         TYPE=${2:-e}
         COND="(rise>9.93&&eWolf>.49)" \
         PARTS=2 CHAO=1 LIMIT=200 END=${PREV} SELECT wolf ${TYPE}
-        COND="(rise<opri||(opri<0&&rise<opri+2))&&prop<${DOOR:-.81}" \
-        YIST=/tmp/kts/chao.wolf LIMIT=100 DOOR= SELECT wolf ${TYPE} 
-        fn_echo_succ "ma20&特别关注标的：eYi＞5亿"
+        COND="(rise<opri||(opri<0&&rise<opri+2))&&prop<${iPROP:-.81}" \
+        YIST=/tmp/kts/chao.wolf LIMIT=100 SELECT wolf ${TYPE} 
+        fn_echo_succ "昨日涨停 -- ma20&特别关注标的：eYi＞5亿"
 
         COND="(rise<9.94&&avrg>5&&eWolf>.43&&eYi>5)" \
         PARTS=2 CHAO=1 LIMIT=200 END=${PREV} SELECT wolf ${TYPE}
-        COND="(rise<opri||(opri<0&&rise<opri+2))&&prop<${DOOR:-.81}" \
-        YIST=/tmp/kts/chao.wolf LIMIT=100 DOOR= SELECT wolf ${TYPE} 
+        COND="(rise<opri||(opri<0&&rise<opri+2))&&prop<${iPROP:-.81}" \
+        YIST=/tmp/kts/chao.wolf LIMIT=100 SELECT wolf ${TYPE} 
 
-        fn_echo_succ "ma20&+12%&特别关注：剔除大宗交易"
+        fn_echo_succ "昨日大额 -- ma20&+12%&特别关注：剔除大宗交易"
         ;;
     100)
         TYPE=${2:-e}
@@ -2825,9 +2791,9 @@ function fn_ddd()
         COND="(rise>9.93&&eWolf>.49)||(avrg>5&&eWolf>.43&&eYi>5)" \
         PARTS=2 CHAO=1 LIMIT=200 chao2=curr END=${PREV2} SELECT wolf ${TYPE}
         # prop<.6
-        COND="(rise<opri||(opri<0&&rise<opri+2))&&eWolf>=.25&&prop<.81" \
-        PARTS=2 CHAO=1 LIMIT=200 chao2=next YIST=${chao}.curr END=${PREV} DOOR= SELECT wolf ${TYPE} || exit
-                CHAO=1 LIMIT=200 chao2=100  YIST=${chao}.next COND="scale+prop<1.7" DOOR= SELECT wolf ${TYPE}
+        COND="(rise<opri||(opri<0&&rise<opri+2))&&eWolf>=.25&&prop<${iPROP:-.81}" \
+        PARTS=2 CHAO=1 LIMIT=200 chao2=next YIST=${chao}.curr END=${PREV} SELECT wolf ${TYPE} || exit
+                CHAO=1 LIMIT=200 chao2=100  YIST=${chao}.next COND="scale+prop<1.7" SELECT wolf ${TYPE}
         fn_echo_succ "两日内价格在PREV2涨停下交易"
         ;;
     rhx)
@@ -2898,7 +2864,7 @@ function fn_main()
     "cap                code                  # 查询nmc&cap"
     "name               code                  # 名"
     "pma                code                  # NUM=5日平均"
-    #dirtio                                   # diff(dorat)"
+    "dirtio                                   # diff(dorat)"
     #macd               [clean]               # macd-alarm-sys"
     #fmacd                                    # 单个代码的macd"
     #fbi                                      # tbl_fbi"

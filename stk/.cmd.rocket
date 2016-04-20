@@ -1,0 +1,4 @@
+LIMIT=300 COND="hiri<9.93 && lori>-6.8 && close/close2>.99" HMS=14:24:01 SELECT dirtio 45 60
+                                                1 不低于1%以免错过
+                                 2 强于平均
+                    3 自然涨停
