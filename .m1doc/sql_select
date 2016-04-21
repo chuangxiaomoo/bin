@@ -73,3 +73,12 @@
 
     要求目标表Table2不存在，需要结合 CREATE，具体参见 m1 sql cp
 
+. 自动添加序号
+
+    第一种方法：
+    select (@i:=@i+1) as i, table_name.* from (select @i:=0) as it, table_name;
+
+    第二种方法：
+    set @rownum=0;
+    select @rownum:=@rownum+1 as rownum, t.username from auth_user t limit 1,5;
+
