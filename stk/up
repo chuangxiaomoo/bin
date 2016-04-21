@@ -618,52 +618,63 @@ function fn_lhb()
     local i=
     for i in ${dates[@]}; do
         echo to up ${i}...
-        fn_lhb0 ${i}
+        fn_lhb0 ${i} || exit
+        # exit  # debug
     done
     return $?
 }
 
 function fn_lhb0()
 {
-    url="http://data.eastmoney.com/stock/lhb/$1.html"
+    url="http://datainterface3.eastmoney.com//EM_DataCenter_V3/api/LHBGGDRTJ/GetLHBGGDRTJ?tkn=eastmoney&mkt=0&dateNum=&"
+    url="${url}startDateTime=${1}&endDateTime=${1}&sortRule=1&sortColumn=&pageNum=1&pageSize=200&cfg=lhbggdrtj"
+  # url="http://data.eastmoney.com/stock/lhb/$1.html"
     w3m -cols 999 -dump "${url}" > ${lhb_raw}
+    cat ${lhb_raw} | \
+        sed -e 's/.*:\["//' -e 's/"\]\}\]\}//g' | \
+        sed -e 's/","/\n/g' | tr '|' ' ' | sed 's/    .*$//g' > ${lhb_raw}.2
 
+    cat ${lhb_raw}.2 | awk '{printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", 
     # $1      $2      $3      $4              $5   $6         $7          $8      $9          $10      $11
     # 序号  代码    名称      相关链接    涨跌幅  龙虎榜成  买入额(万)  占总成交  卖出额(万)  占总成交 上榜原因
-
-    # ' N' 恒顺众日升 乱码
-    cat ${lhb_raw} | grep -A1000 '^1\>' |
-        sed -e 's/^           /999 1 2 3 4/' -e 's/ N\>//g' |
-        grep '^[0-9]' > ${lhb_rip}
-    #           12345678901
-    awk -v v_date=$1 '
-    BEGIN{ nr=0 } {
-        if ($1==999) {
-            printf "%s\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%s\t\n", \
-                    v_date, code,chng,$6,$7,$8,$9,$10,$11;
-        } else if ($1<nr) {
-            exit
-        } else if ($2<700000) {
-            printf "%s\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%s\t\n", \
-                    v_date, $2,$5,$6,$7,$8,$9,$10,$11;
-            nr=$1;  
-            code=$2;
-            chng=$5;
-        }
-    }' ${lhb_rip} | 
-    sed \
-    -e 's/退市整理的证券/fired/g'                                       \
-    -e 's/无价格涨跌幅限制的证券/unlimited/g'                           \
-    -e 's/当日融资买入数量占该证券总交易量50%以上/rzrq50/g'             \
-    -e 's/日均换手率与前五个交易日的.*/ratio30/g'                       \
-    -e 's/当日价格振幅达到15%的证券/hilo15/g'                           \
-    -e 's/当日换手率达到20%的证券/tov20/g'                              \
-    -e 's/当日涨幅偏离值达7%的证券/up7/g'                               \
-    -e 's/当日跌幅偏离值达7%的证券/dn7/g'                               \
-    -e 's/S、ST、.ST连续三个交易日.*跌幅.*/s3dn12/g'                    \
-    -e 's/S、ST、.ST连续三个交易日.*涨幅.*/s3up12/g'                    \
-    -e 's/连续三个交易日.*涨幅偏离值累计20%/3up20/g'                    \
-    -e 's/连续三个交易日.*跌幅偏离值累计20%/3dn20/g'  > ${lhb_pro}
+      NR,     $1,      $2,     NR,           $4,   $13,    $12/10000, 100*$12/$7, $11/10000, 100*$11/$7,  NR }' | \
+    awk -v v_date=$1 '{
+        printf "%s\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%s\n", \
+                v_date, $2,$5,$6,$7,$8,$9,$10,$11;
+    }' > ${lhb_pro}
+#   # ' N' 恒顺众日升 乱码
+#   cat ${lhb_raw} | grep -A1000 '^1\>' |
+#       sed -e 's/^           /999 1 2 3 4/' -e 's/ N\>//g' |
+#       grep '^[0-9]' > ${lhb_rip}
+#   #           12345678901
+#   awk -v v_date=$1 '
+#   BEGIN{ nr=0 } {
+#       if ($1==999) {
+#           printf "%s\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%s\t\n", \
+#                   v_date, code,chng,$6,$7,$8,$9,$10,$11;
+#       } else if ($1<nr) {
+#           exit
+#       } else if ($2<700000) {
+#           printf "%s\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%s\t\n", \
+#                   v_date, $2,$5,$6,$7,$8,$9,$10,$11;
+#           nr=$1;  
+#           code=$2;
+#           chng=$5;
+#       }
+#   }' ${lhb_rip} |
+#   sed \
+#   -e 's/退市整理的证券/fired/g'                                       \
+#   -e 's/无价格涨跌幅限制的证券/unlimited/g'                           \
+#   -e 's/当日融资买入数量占该证券总交易量50%以上/rzrq50/g'             \
+#   -e 's/日均换手率与前五个交易日的.*/ratio30/g'                       \
+#   -e 's/当日价格振幅达到15%的证券/hilo15/g'                           \
+#   -e 's/当日换手率达到20%的证券/tov20/g'                              \
+#   -e 's/当日涨幅偏离值达7%的证券/up7/g'                               \
+#   -e 's/当日跌幅偏离值达7%的证券/dn7/g'                               \
+#   -e 's/S、ST、.ST连续三个交易日.*跌幅.*/s3dn12/g'                    \
+#   -e 's/S、ST、.ST连续三个交易日.*涨幅.*/s3up12/g'                    \
+#   -e 's/连续三个交易日.*涨幅偏离值累计20%/3up20/g'                    \
+#   -e 's/连续三个交易日.*跌幅偏离值累计20%/3dn20/g'  > ${lhb_pro}
 
     awk '{print $2}' ${lhb_pro} | grep -q '^6'
     xt_ret $? "Error: sh_sec lhb is not released" || return $?
