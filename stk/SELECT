@@ -281,11 +281,9 @@ function fn_tri()
 
 function fn_dif3()
 {
-    HMS0=`HMS=${HMS} iASC=DESC fn_get_time 1`   # 最新，亦可由HMS指定
     HMS1=`fn_get_time $1`                       # 第1张
     HMS2=`fn_get_time $2`                       # 第2张
-
-    # echo $HMS0 $HMS1 $HMS2; exit
+    HMS3=`HMS=${HMS} iASC=DESC fn_get_time 1`   # 最新，亦可由HMS指定
 
     TEMPORARY=TEMPORARY
 
@@ -300,8 +298,8 @@ function fn_dif3()
 
         close       DECIMAL(6,2) NOT NULL DEFAULT 0,
         avri        DECIMAL(6,2) NOT NULL DEFAULT 0,
-        close1      DECIMAL(6,2) NOT NULL DEFAULT 0,
-        close2      DECIMAL(6,2) NOT NULL DEFAULT 0,
+        rise1       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        rise2       DECIMAL(6,2) NOT NULL DEFAULT 0,
         volume      DECIMAL(12,2) NOT NULL DEFAULT 0,
         amount      DECIMAL(12,2) NOT NULL DEFAULT 0,
 
@@ -309,7 +307,7 @@ function fn_dif3()
         hiri        DECIMAL(6,2) NOT NULL DEFAULT 0,
         lori        DECIMAL(6,2) NOT NULL DEFAULT 0,
 
-        dirtio      DECIMAL(6,2) NOT NULL DEFAULT 0,            -- 增量量比 dif-vol-ratio
+        dirt        DECIMAL(6,2) NOT NULL DEFAULT 0,            -- 增量量比 dif-vol-ratio
         INDEX(code)
     );
     DROP   $TEMPORARY TABLE IF EXISTS t2,t1;
@@ -322,17 +320,17 @@ function fn_dif3()
     );
     CREATE $TEMPORARY TABLE t1 LIKE t2;
     INSERT INTO dif3(code,yesc,open,high,low,close,volume,amount) SELECT code,yesc,open,high,low,
-                               close,volume,amount FROM dorat WHERE date='${END}' and time='${HMS0}';
-    INSERT INTO t1 SELECT code,close,volume,amount FROM dorat WHERE date='${END}' and time='${HMS1}';
+                               close,volume,amount FROM dorat WHERE date='${END}' and time='${HMS3}';
     INSERT INTO t2 SELECT code,close,volume,amount FROM dorat WHERE date='${END}' and time='${HMS2}';
+    INSERT INTO t1 SELECT code,close,volume,amount FROM dorat WHERE date='${END}' and time='${HMS1}';
 
     UPDATE dif3 SET avri=100*((amount/volume)-yesc)/yesc, rise=100*(close-yesc)/yesc,
                                          hiri=100*(high-yesc)/yesc, lori=100*(low-yesc)/yesc;
     UPDATE dif3 INNER JOIN t2 on dif3.code=t2.code 
                 INNER JOIN t1 on t2.code=t1.code
-                      SET close2=t2.close,
-                          close1=t1.close,
-                          dirtio=(dif3.volume-t2.volume)/(t2.volume-t1.volume)
+                      SET rise2=100*(t2.close-yesc)/yesc,
+                          rise1=100*(t1.close-yesc)/yesc,
+                          dirt=100*(high-low)/yesc
     " | mysql kts
     xt_ret $? "fail: mysql" || return $?
 }
@@ -341,47 +339,57 @@ function fn_dirtio()
 {
     export iASC=ASC
     case $1 in
-    l|list)
-        fn_list_iF5_times
-        ;;
-    [0-9]*)
+    l)  fn_list_iF5_times   ;;
+    st) fn_list_wolf_times  ;;
+    +([0-9]))
         [ "${1}" -gt 1 ]
         xt_ret $? "[$1] must be a iF5 -gt 1" || return $?
         fn_isdigit $2
         xt_ret $? "[$2] must be a iF5 num" || return $?
 
+        # wolf
+        fn_isdigit ${sta:=${3:-1}} || fn_list_wolf_times
+        let sta--
+        stime=`mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC LIMIT ${sta},1"`
+        iCOND="time='${stime}'${eCOND}" xCol=date fn_xCol mat_dde xdde ${END}
+        xt_ret $? "" || return $?
+
+        # dif
         fn_dif3 ${@}
         fn_yist
-
-        columns='close1,close2,close,avri,rise,hiri,lori,dirtio'
+        columns='rise1,rise2,close,avri,hiri,lori,dirt'
         columns=d.${columns//,/,d.}
 
         function fn_build_sqls() {
         sqls="
-        SELECT d.code, ${columns},
-            ${sql_tov}
-            ${nmcYi}, c.name 
-            FROM dif3 as d, cap as c           -- USE INDEX(code)
-            $WHERE d.code=c.code && nmc/10000<${nmc_wolf}
+          SELECT d.code, ${columns},d.rise,
+            ROUND((pbuy+nbuy)/w.tov, 2) as wolf,
+            round(net/tov, 2) as pet,
+            ROUND(tov, 1) as tov,
+            round(w.amount/10000, 1) as eYi, 
+            ROUND(nmc, 1) as nmc,
+            w.name 
+            FROM dif3 as d, xdde as w
+            $WHERE d.code=w.code && nmc<${nmc_lion}
             HAVING 1 ${COND}
-            ORDER by ${FIELD:-rise} ${ASC:-DESC} limit ${LIMIT:-32}" 
+            ORDER by ${FIELD:-wolf} ${ASC:-DESC} limit ${LIMIT:-60}" 
+        # echo "$sqls">/dev/stderr; exit
         }
         fn_build_sqls
-
-        echo "$sqls">/dev/stderr 
-        mysql -t kts<<<"$sqls" | sed -e 's/    |$/|/g' -e 's/----+$/+/g'
+        fn_imysql_sqls | fn_hew_tail
         xt_ret $? "" || return $?
+        fn_echo_succ "dif3.[$HMS1 $HMS2 $HMS3] wolf.[${stime}]"
 
         fn_chao ${chao}.dir
         ;;
     *|u|usage)
         echo "
         SELECT dirtio <param>
-            u           print usage
-            l           print list of Date Time
-            HMS1 HMS2   show close to diff
+            u                   print usage
+            l                   print iF5-list
+            st                  print wolf-time-list
+            HMS1 HMS2 [wolf]    show close to diff
         "
-        exit 0
         ;;
     esac
 }
@@ -1377,7 +1385,6 @@ function fn_lhb()
             fn_isdigit ${2:-1}
             xt_ret $? "\$2[$2] must be digit" || return $?
             date=`fn_get_date ${2:-1}`
-            fn_echo_warn "lhb of ${date} by ${FIELD}"
 
             fn_xtempday ${date}
             xt_ret $? "xtempday error" || return $?
@@ -1402,8 +1409,6 @@ function fn_lhb()
             fi
         fi
 
-        fn_echo_warn "CAUSE: ${CAUSE}"
-
         ABBR=l fn_yist
         xt_ret $? "" || return $?
 
@@ -1417,18 +1422,19 @@ function fn_lhb()
             round(buy/10000, 2) as eBuy,                        -- 额度(亿)
             round(sell/10000, 2) as eSell,
             round((buy-sell)/10000, 2) as eNet,
-            round(bloo/100, 2) as buy,                          -- 成交占比
             round(sloo/100, 2) as sell,
-            round(bloo/100-sloo/100, 2) as net,                 -- 净买入占比
             round(bloo/sloo, 2) as bsp,
+            round(bloo/100-sloo/100, 2) as pet,                 -- 净买入占比
+            round(bloo/100, 2) as buy,                          -- 成交占比
             ${sql_avrg}
             round(l.buy/bloo/100, 2) as eYi, ${nmcYi0},
             c.name FROM lhb as l,cap as c ${sql_xtempday}
             $WHERE l.code=c.code ${sql_relate} 
-            HAVING 1 ${CAUSE} ${COND} ORDER by ${FIELD:-bsp} DESC LIMIT ${LIMIT:-36}
+            HAVING 1 ${CAUSE} ${COND} ORDER by ${FIELD:=buy} DESC LIMIT ${LIMIT:-36}
         "
         #echo "${sqls}"; exit
         mysql -t kts <<<"${sqls}"
+        fn_echo_warn "lhb of ${date} by [ ${FIELD} ] suggest[ eYi>.5&&buy>.1 ]"
         fn_chao
         ;;
     *)
@@ -1527,7 +1533,22 @@ function fn_enum_wolf_times()
 
 function fn_list_iF5_times()
 {
-    SELECT dorat | cat -n; exit 0
+   #SELECT dorat | cat -n; exit 0
+#  SELECT dorat | awk '{
+#      if (NR%2==1) 
+#          fmt="%02d  %s    "; 
+#      else 
+#          fmt="%02d  %s\n"; 
+#      printf fmt, NR,$2; }
+#      END{ if(NR%2==1) printf "\n"; }
+#  '; 
+
+    sqls="SELECT DISTINCT time FROM dorat WHERE date='${END}' ORDER by time ASC"
+    OPT='-N' fn_imysql_sqls > ${chao}.iF5
+    sed -n '1,41p' ${chao}.iF5 | cat -n > ${chao}.41
+    sed -n '42,$p' ${chao}.iF5 | cat -n > ${chao}.80
+    join -t $'\t' -a1 -o  1.2 1.3 2.2 2.3 ${chao}.41 ${chao}.80
+    exit 0
 }
 
 function fn_proc_eCOND_scale()
@@ -1706,7 +1727,7 @@ function fn_wolf()
     i)
         sql_hiri="$LORI as hiri,"
     #   sql_hiri="$HIRI as hiri,"
-    #   sql_opri="$OPRI as opri,"
+        sql_opri="$OPRI as opri,"
         col_name=',w.name'
         fn_bist
         ABBR=w fn_yist
@@ -2266,13 +2287,13 @@ function fn_blk()
         fn_echo_succ "Classify @${END}"
         ABBR=m fn_yist
         CHAO=1 LIMIT=3000 COND="rise>${rDOOR:-9.93}" SELECT lsd ${2}> /dev/null
-        YIST='/tmp/kts/chao.lsd' fn_blk layout
+        YIST="${chao}.lsd" fn_blk layout
         ;;
     ban)
         ABBR=m fn_notin_blk FFA1
         DZH=N CHAO=1 fn_blk u ${BLK} > /dev/null
         xt_ret $? "BLK:${BLK}" || return $?
-        YIST='/tmp/kts/chao.blk' \
+        YIST="${chao}.blk" \
         COND="rise>${rDOOR:-9.93}" SELECT lsd ${@:2}
         xt_ret $? "" || return $?
         ;;
@@ -2628,8 +2649,8 @@ function fn_ATR()
     let half=${NUM}/${PARTS:-4}
 
     if [ -n "${*}" ]; then
-        echo ${*} | xargs -n1 > /tmp/kts/chao.ATR.in
-        YIST='/tmp/kts/chao.ATR.in'
+        echo ${*} | xargs -n1 > ${chao}.ATR.in
+        YIST="${chao}.ATR.in"
     else
         [ "${1}" = a ] || CONDbig="and max(date)='${END}'"    # 当天阳线
     fi
@@ -2763,25 +2784,25 @@ function fn_ddd()
     yiz)
         fn_echo_succ "PARTS=2@一字开板"
         PARTS=2 CHAO=1 END=$PREV COND="rise>9.93" PPLUS=2 FIELD=rise LIMIT=400 SELECT lsd
-        YIST=/tmp/kts/chao.lsd   COND="eWolf>.2 && opri> 9.93" DOOR=-1/3 SELECT wolf i $2
-        YIST=/tmp/kts/chao.lsd   COND="eWolf>.2 && opri<=9.93" DOOR=-tov/3 FIELD=rise SELECT wolf i $2
+        YIST=${chao}.lsd   COND="eWolf>.2 && opri> 9.93" DOOR=-1/3 SELECT wolf i $2
+        YIST=${chao}.lsd   COND="eWolf>.2 && opri<=9.93" DOOR=-tov/3 FIELD=rise SELECT wolf i $2
         fn_echo_succ "PARTS=2@非一字板连板"
         PARTS=2 CHAO=1 END=$PREV COND="rise>9.93" PPLUS=1 FIELD=rise LIMIT=400 SELECT lsd
-        YIST=/tmp/kts/chao.lsd   COND="eWolf>.2 && opri> 9.93" DOOR=-1/3 SELECT wolf i $2
-        YIST=/tmp/kts/chao.lsd   COND="eWolf>.2 && opri<=9.93" DOOR=-1/3 FIELD=rise SELECT wolf i $2
+        YIST=${chao}.lsd   COND="eWolf>.2 && opri> 9.93" DOOR=-1/3 SELECT wolf i $2
+        YIST=${chao}.lsd   COND="eWolf>.2 && opri<=9.93" DOOR=-1/3 FIELD=rise SELECT wolf i $2
         ;;
     110)
         TYPE=${2:-e}
         COND="(rise>9.93&&eWolf>.49)" \
         PARTS=2 CHAO=1 LIMIT=200 END=${PREV} SELECT wolf ${TYPE}
         COND="(rise<opri||(opri<0&&rise<opri+2))&&prop<${iPROP:-.81}" \
-        YIST=/tmp/kts/chao.wolf LIMIT=100 SELECT wolf ${TYPE} 
+        YIST=${chao}.wolf LIMIT=100 SELECT wolf ${TYPE} 
         fn_echo_succ "昨日涨停 -- ma20&特别关注标的：eYi＞5亿"
 
         COND="(rise<9.94&&avrg>5&&eWolf>.43&&eYi>5)" \
         PARTS=2 CHAO=1 LIMIT=200 END=${PREV} SELECT wolf ${TYPE}
         COND="(rise<opri||(opri<0&&rise<opri+2))&&prop<${iPROP:-.81}" \
-        YIST=/tmp/kts/chao.wolf LIMIT=100 SELECT wolf ${TYPE} 
+        YIST=${chao}.wolf LIMIT=100 SELECT wolf ${TYPE} 
 
         fn_echo_succ "昨日大额 -- ma20&+12%&特别关注：剔除大宗交易"
         ;;

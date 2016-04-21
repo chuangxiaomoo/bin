@@ -8,20 +8,25 @@
 
 # books
 
-  精英特速读训练      [从scale的双线程开始](https://www.zhihu.com/question/23085383)
-  澄衷蒙学堂字课图说  日本早稻田大學圖書館掃描民國時期出版本，可免費下載
-                      [](http://archive.wul.waseda.ac.jp/kosho/ho05/ho05_01134/)
-  逻辑学导论          [](https://book.douban.com/subject/2060491/) 
-  科学发现的逻辑      [波普尔.强烈推荐](https://book.douban.com/subject/3349509/)
-  科学与逻辑方法论    [](http://wenku.baidu.com/view/b9a51a1aa8114431b90dd8af.html?re=view)
-  美感奥妙和需求进化  [](http://survivor99.com/lcg/books/beauty/index.htm)
-  科学与方法          (昂利·彭加勒)
-  科学之哲学          [](https://book.douban.com/review/5027580/)
+
+《领导梯队》                  The Leadership Pipeline.是三本社群成员必读书籍之一
+《新生 —— 七年就是一辈子》    在新生大学里
+《原则 —— Principles》        Ray Dalio
+
+  精英特速读训练              [从scale的双线程开始](https://www.zhihu.com/question/23085383)
+  澄衷蒙学堂字课图说          日本早稻田大學圖書館掃描民國時期出版本，可免費下載
+                              [](http://archive.wul.waseda.ac.jp/kosho/ho05/ho05_01134/)
+  逻辑学导论                  [](https://book.douban.com/subject/2060491/) 
+  科学发现的逻辑              [波普尔.强烈推荐](https://book.douban.com/subject/3349509/)
+  科学与逻辑方法论            [](http://wenku.baidu.com/view/b9a51a1aa8114431b90dd8af.html?re=view)
+  美感奥妙和需求进化          [](http://survivor99.com/lcg/books/beauty/index.htm)
+  科学与方法                  (昂利·彭加勒)
+  科学之哲学                  [](https://book.douban.com/review/5027580/)
   写作这回事
-  打破自我的标签      压力，是一个中性词。可以被视为威胁，也可以被视为挑战。
-  金融炼金术          哲学家应该看的金融书籍
-  我们到底知道多少    推荐大家看个BBC记录片
-  全球化掠夺          市场板块：医疗业、殡葬业、互联网支付、环保产业、屠宰业
+  打破自我的标签              压力，是一个中性词。可以被视为威胁，也可以被视为挑战。
+  金融炼金术                  哲学家应该看的金融书籍
+  我们到底知道多少            推荐大家看个BBC记录片
+  全球化掠夺                  市场板块：医疗业、殡葬业、互联网支付、环保产业、屠宰业
   华杉讲透孙子兵法
   宋鸿兵7书
   费马大定理

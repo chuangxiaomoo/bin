@@ -29,12 +29,16 @@ export PATH=.:~/bin:$PATH
 [ "${DEBUG:-0}" = 1 ] && 
 SUBOUT='/dev/stdout' || SUBOUT='/dev/null'
 
+# mySql
 XTBL="${XTBL:+and code not in (SELECT code FROM $XTBL)}"
 COND="${COND:+and $COND }${XTBL}"
 DROP="DROP TABLE IF EXISTS "
 WHERE="WHERE"
 CREATE="CREATE TABLE IF NOT EXISTS "
+IDX='(@idx:=@idx+1) as idx,'
+ITB='(select @idx:=0) as itb,'                      # 置于FROM之后
 
+# DL tool
 WGET='timeout 34 /usr/bin/wget'
 W3M='timeout  60 /usr/bin/w3m'
 
@@ -254,6 +258,16 @@ fn_gen_dzh_blk()
     } > ${DZH_ZXG}
     fn_echo_warn "$index rows to ${PLAIN}"
     fn_echo_warn "$index rows to ${DZH_ZXG}"
+}
+
+function fn_hew_tail()
+{
+    sed -e 's/    |$/|/g' -e 's/----+$/+/g'   
+}
+
+function fn_imysql_sqls()
+{
+     mysql ${OPT:--t} kts<<<"SELECT $IDX t.* FROM ${ITB} ($sqls) as t"   
 }
 
 function fn_chao()
