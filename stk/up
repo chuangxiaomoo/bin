@@ -726,14 +726,13 @@ function fn_dorat()
     let got30=hhmm%100%30   # 半小时响铃一次
     let got10=hhmm%100%10   # 9min响铃一次
 
-    if [ "${got30}" -le 1 ] || 
-       [ "${hhmm}" = 933 ] || 
-       [ "${hhmm}" = 936 ] || 
-       [ "${hhmm}" = 945 ] || 
-       ([ $hhmm -le 1045 ] && [ ${got10} -le 2 ]); then
-        
-        fn_bell "online.wav"
-    fi
+#   if [ "${got30}" -le 1 ] || 
+#      [ "${hhmm}" = 933 ] || 
+#      [ "${hhmm}" = 936 ] || 
+#      [ "${hhmm}" = 945 ] || 
+#      ([ $hhmm -le 1045 ] && [ ${got10} -le 2 ]); then
+#       fn_bell "online.wav"
+#   fi
 
     if [ -z "${TBL}" ]; then
         fn_redo_hexun_day || FINA=1 up 4
