@@ -1417,16 +1417,16 @@ function fn_lhb()
 
         sqls="
             SELECT ${columns}, round(chng,1) as rise,
+            ${sql_avrg}
             ${sql_next}
             ${sql_tov}
-            round(buy/10000, 2) as eBuy,                        -- 额度(亿)
             round(sell/10000, 2) as eSell,
             round((buy-sell)/10000, 2) as eNet,
             round(sloo/100, 2) as sell,
             round(bloo/sloo, 2) as bsp,
             round(bloo/100-sloo/100, 2) as pet,                 -- 净买入占比
             round(bloo/100, 2) as buy,                          -- 成交占比
-            ${sql_avrg}
+            round(buy/10000, 2) as eBuy,                        -- 额度(亿)
             round(l.buy/bloo/100, 2) as eYi, ${nmcYi0},
             c.name FROM lhb as l,cap as c ${sql_xtempday}
             $WHERE l.code=c.code ${sql_relate} 
@@ -1434,7 +1434,7 @@ function fn_lhb()
         "
         #echo "${sqls}"; exit
         mysql -t kts <<<"${sqls}"
-        fn_echo_warn "lhb of ${date} by [ ${FIELD} ] suggest[ eYi>.5&&buy>.1 ]"
+        fn_echo_warn "lhb of ${date} by [ ${FIELD} ] suggest[ buy>.15&&eBuy>.5 ]"
         fn_chao
         ;;
     *)
@@ -2638,25 +2638,28 @@ function fn_dive()
 
 function fn_ATR()
 {
+    # usage
     [ -z "${1}" ] || [ "${1}" = u ] && \
     echo "
-    SELECT ATR {u|r|a|code}
-    LIMIT=800 COND='ATV>5' CHAO=1 SELECT ATR a
+    SELECT ATR {u|a|code}
+    e.g. LIMIT=800 COND='ATV>5' CHAO=1 SELECT ATR a
     " && exit
+
+    if fn_iscode $1; then
+        STA=`fn_get_date ${NUM:-10} 1`
+        fn_name $1
+        echo "
+        SELECT *, ROUND(100*GREATEST(high-low, high-yesc, yesc-low)/yesc, 2) as ATR  
+            FROM day WHERE code=$1 and date>='${STA}' and date<='${END}' ORDER by date DESC;
+        " | mysql -t kts; exit
+    fi
 
     NUM=${NUM:-40}
     STA=`fn_get_date ${NUM} 1` #echo ${STA}
     let half=${NUM}/${PARTS:-4}
-
-    if [ -n "${*}" ]; then
-        echo ${*} | xargs -n1 > ${chao}.ATR.in
-        YIST="${chao}.ATR.in"
-    else
-        [ "${1}" = a ] || CONDbig="and max(date)='${END}'"    # 当天阳线
-    fi
+    [ "${1}" = a ] || CONDbig="and max(date)='${END}'"    # a 所有， r 当天阳线
 
     fn_yist
-
     sqls="
     SELECT t.date, num, t.code, ATR, 
         ROUND( 100*atv/(c.nmc/c.close), 2) as ATV, c.name
@@ -2912,7 +2915,7 @@ function fn_main()
     "blk                                      # 板块信息"
     "yysj                                     # 预约时间"
     "scale                                    # 成交量放大倍数"
-    "ATR                                      # AverageTrueRangeOf阳线非一字板"
+    "ATR                all|redOnly|code      # AverageTrueRangeOf阳线非一字板"
     "notice                                   # 公告"
     "ddd                                      # 连续缩量后放量"
     "seat_rank                                # 总排名"

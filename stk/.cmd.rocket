@@ -1,9 +1,12 @@
 
+测两点
 COND="lori>-6.8 &&hiri<9.93 &&rise2>rise1-1                &&dirt<10" SELECT dirtio 
 
+测三点
 COND="lori>-6.8 &&hiri<9.93 &&rise2>rise1-1 &&rise>rise2-1 &&dirt<10" SELECT dirtio 
                                                               1.强势控盘者低波动
                                                    2.低点再抬高
                                      3.低点抬高
                     4.选出自然涨停
       5.强于2倍大盘低点
+
