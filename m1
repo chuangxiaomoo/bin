@@ -229,7 +229,7 @@ function fn_export()                    { cat bash_export ;}
         tmo_trap
         dialog                          # whiptail
         PIPESTATUS                      # 只可以被提取一次
-        export                          # 
+        export                          # env环境变量
     )
     fn_print $@
 }
@@ -750,6 +750,7 @@ function fn_install()                   { cat cmd_install ;}
         sort
         strace
         head                    # 
+        sleep                   # sleep 1.5h # 1.5 is ok, and m for min, and h for hour
         tail
         tee
         tr

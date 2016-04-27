@@ -1,25 +1,56 @@
-# export
+#! /bin/bash export
 
-# set -a 
+# 1. set -a export all variables & functions
 
-  Automatically mark variables and functions which are modified or created 
-  for export to the environment of subsequent commands
+function fn_set()
+{
+  echo "
+     Automatically mark variables and functions which are modified or created 
+     for export to the environment of subsequent commands
+  "
+  
+  return $?
+}
 
-# 设定共用变量，每设置一次，多次访问有效
+# 2. source批量导入变量
 
-    function fn_set()
-    {
-        if [ "${#}" -ne 2 ]; then
-            echo "Usage: set key value" ; exit
-        fi
-        echo "export $1=${2}" > .myexport
-    }
+function fn_set()
+{
+  if [ "${#}" -ne 2 ]; then
+    echo "Usage: set key value" ; exit
+  fi
+  echo "export $1=${2}" > .myexport
+}
 
 
-    function fn_main()
-    {
-        touch .myexport
-        . .myexport
-    }
+# 3. 内部变量只有用export才能导出
+# 4. export后，subsequent-routine会共享该变量
 
-    fn_main
+# file: b.sh
+
+function fn_main()
+{
+    echo YIST is  $YIST
+}
+
+fn_main $@
+
+# file: a.sh
+
+function fn_chop_blank()
+{
+    YIST=a
+    bash b.sh
+    export YIST=a
+    bash b.sh
+    YIST=c
+    bash b.sh
+}
+
+fn_chop_blank
+
+# result: bash a.sh
+
+|| YIST is
+|| YIST is a
+|| YIST is c

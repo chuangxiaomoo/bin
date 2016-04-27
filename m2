@@ -164,7 +164,7 @@ function fn_tiandao()                   { cat book_tiandao book_遥远的救世�
         aq_如何提问             # reading
         dt_暗时间               # darktime
         lf_雷锋日记
-        tf_把时间当作朋友       # make time a friend
+        tf_把时间当作朋友       # make time a FRIEND
         yl_你的灯亮着吗         # light question
         py_金字塔原理           # reading
         PPT演示之道             # to read
@@ -224,7 +224,11 @@ function fn_listening_layers()          { cat english_listening_layers ;}
 function fn_reading()                   { cat english_reading ;}
 function fn_interprete()                { cat english_interprete ;}
 function fn_interpreting()              { cat english_interpreting ;}
+function fn_friends()                   { cat english_friends ;}
+function fn_clips()                     { cat english_clips ;}
     local opts=(
+        clips                           #
+        friends                         # 老友记
         US_TV_series                    # 美剧
         vocabulary
         sentence
@@ -288,7 +292,7 @@ function fn_tougu()                     { cat stk_tougu ;}
 function fn_urls()                      { cat stk_urls ;}
 function fn_caorenchao()                { cat stk_caorenchao ;}
 
-function fn_00_战略()                   { cat stk_00_战略 ;}
+function fn_00_技术分析()               { cat stk_00_技术分析 ;}
 function fn_01_战术()                   { cat stk_01_战术 ;}
 function fn_02_小数据()                 { cat stk_02_小数据 ;}
 function fn_03_大数据()                 { cat stk_03_大数据 ;}
@@ -315,7 +319,7 @@ function fn_jc_Golf智慧_快就是慢()      { cat stk_jc_Golf智慧_快就是�
         tougu                           # 投顾大赛
         caorenchao                      # 曹仁超
 
-        00_战略                         # strategy
+        00_技术分析                         # strategy
         01_战术                         # tactics
         02_小数据                       # 个股 data 
         03_大数据                       # macro data
@@ -402,11 +406,13 @@ function fn_language()                  { cat logic_language ;}
 
 function fn_phi()                       { 
 function fn_flowers12()                 { cat phi_flowers12 ;}
+function fn_00_Plato()                  { cat phi_00_Plato ;}
 function fn_01_Karlmarx()               { cat phi_01_Karlmarx ;}
 function fn_02_Kant()                   { cat phi_02_Kant ;}
 function fn_03_Popper()                 { cat phi_03_Popper ;}
 function fn_04_Hume()                   { cat phi_04_Hume ;}
 function fn_05_Mill()                   { cat phi_05_Mill ;}
+function fn_06_Russell()                { cat phi_06_Russell ;}
 function fn_0a_Miltonfriedman()         { cat phi_0a_Miltonfriedman ;}
 function fn_freudian()                  { cat phi_freudian ;}
 function fn_emotion()                   { cat phi_emotion ;}
@@ -441,11 +447,14 @@ function fn_wdf_00()                    { cat phi_wdf_00 ;}
 function fn_epistemology()              { cat phi_epistemology ;}
 function fn_sicence()                   { cat phi_sicence ;}
     local opts=(
+        00_Plato                        # 柏拉图
         01_Karlmarx                     # pelple's essence
         02_Kant                         # Immanuel 康德
         03_Popper                       # 证伪主义 Karl.波普尔
         04_Hume                         # 大卫.休谟
         05_Mill                         # 约翰·斯图亚特·穆勒(也译作·密尔)
+        06_Russell                      # Bertrand.罗素
+
         0a_Miltonfriedman               # 米尔顿·弗里德曼
 
         freudian                        # 佛洛伊德.自我.本我.超我
@@ -816,6 +825,8 @@ function fn_sport()                     { cat sport ;}
 function fn_guo()                       { cat guo ;}
 function fn_stupid_things()             { cat stupid_things ;}
 function fn_subtitle()                  { cat subtitle ;}
+function fn_kindle()                    { cat kindle ;}
+function fn_meditation()                { cat meditation ;}
 
 
 # 新教与天主教。信则得救，不信则下地狱 vs 助人行善
@@ -889,6 +900,8 @@ function fn_main() {
         stupid_things                   # 哪些年做过的蠢事 habit
         subtitle
         psychology                      # 心理学
+        kindle
+        meditation
     )
     fn_print $@
 }
