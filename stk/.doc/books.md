@@ -9,6 +9,7 @@
 # books
 
 
+  致命的自负                  哈耶克
 《领导梯队》                  The Leadership Pipeline.是三本社群成员必读书籍之一
 《新生 —— 七年就是一辈子》    在新生大学里
 《原则 —— Principles》        Ray Dalio

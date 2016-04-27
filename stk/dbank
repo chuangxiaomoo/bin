@@ -186,12 +186,13 @@ function fn_isSqltrue()
 
 function fn_isresting()
 {
+    # 只测双数
     hhmmss=`date +%H%M%S`
-    if ([ ${hhmmss} -gt 113059 ] && [ ${hhmmss} -lt 130059 ]) ||
-        [ ${hhmmss} -lt 093000 ] ; then
+    if ([ ${hhmmss} -gt 113100 ] && [ ${hhmmss} -lt 130100 ]) ||
+        [ ${hhmmss} -lt 093100 ] ; then
         echo "is resting @${hhmmss}..."; 
         return 0
-    elif [ ${hhmmss} -gt 145800 ]; then
+    elif [ ${hhmmss} -gt 145900 ]; then
         echo "market closed, eixt!"
         exit 0
     else
