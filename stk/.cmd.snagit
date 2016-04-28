@@ -5,3 +5,6 @@ CHAO=1 LIMIT=200 COND="(rise>9.93&&eWolf>.49&&eYi>1)||(avrg>5&&eWolf>.43&&eYi>5)
 暴跌
 CHAO=1 LIMIT=200 COND="(rise>9.93&&eWolf>.30&&eYi>1)||(avrg>5&&eWolf>.33&&eYi>4)" SELECT wolf e
 
+错杀+高送转+次新
+CHAO=1 LIMIT=200 COND="(rise<9.93&&avri>4.5&&eWolf>.43&&eYi>5)" SELECT wolf e
+

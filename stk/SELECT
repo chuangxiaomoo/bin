@@ -308,6 +308,7 @@ function fn_dif3()
         amount      DECIMAL(12,2) NOT NULL DEFAULT 0,
 
         rise        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        opri        DECIMAL(6,2) NOT NULL DEFAULT 0,
         hiri        DECIMAL(6,2) NOT NULL DEFAULT 0,
         lori        DECIMAL(6,2) NOT NULL DEFAULT 0,
 
@@ -328,11 +329,14 @@ function fn_dif3()
     INSERT INTO t2 SELECT code,close,volume,amount FROM dorat WHERE date='${END}' and time='${HMS2}';
     INSERT INTO t1 SELECT code,close,volume,amount FROM dorat WHERE date='${END}' and time='${HMS1}';
 
-    UPDATE dif3 SET avri=100*((amount/volume)-yesc)/yesc, rise=100*(close-yesc)/yesc,
-                                         hiri=100*(high-yesc)/yesc, lori=100*(low-yesc)/yesc;
-    UPDATE dif3 INNER JOIN t2 on dif3.code=t2.code 
-                INNER JOIN t1 on t2.code=t1.code
-                      SET rise2=100*(t2.close-yesc)/yesc,
+    UPDATE dif3 SET rise=100*(close-yesc)/yesc,
+                    opri=100*(open-yesc)/yesc, 
+                    hiri=100*(high-yesc)/yesc, 
+                    lori=100*(low-yesc)/yesc;
+    UPDATE dif3 t3 INNER JOIN t2 on t3.code=t2.code 
+                   INNER JOIN t1 on t2.code=t1.code
+                      SET avri=100*((${TT:-t1}.amount/${TT:-t1}.volume)-yesc)/yesc, 
+                          rise2=100*(t2.close-yesc)/yesc,
                           rise1=100*(t1.close-yesc)/yesc,
                           dirt=100*(high-low)/yesc
     " | mysql kts
@@ -342,11 +346,11 @@ function fn_dif3()
 function fn_dirtio()
 {
     usage="
-    SELECT dirtio <param>
-    u                   print usage
-    l                   print iF5-list
-    st                  print wolf-time-list
-    HMS1 HMS2 [wolf]    show close to diff
+    SELECT dirtio           TT=t1 avri默认属表
+    u                       print usage
+    l                       print iF5-list
+    st                      print wolf-time-list
+    HMS1 HMS2 [wolf]        show close to diff
     COND='rise2>rise1 && hiri<9.93&&dirt<10'
     "
     export iASC=ASC
@@ -355,9 +359,9 @@ function fn_dirtio()
     st) fn_list_wolf_times  ;;
     +([0-9]))
         fn_isdigit $1
-        xt_ret $? "[$1] must be a iF5 num" || return $?
+        xt_ret $? "argv.1[$1] must be a iF5 num" || return $?
         fn_isdigit $2
-        xt_ret $? "[$2] must be a iF5 num" || return $?
+        xt_ret $? "argv.2[$2] must be a iF5 num" || return $?
 
         # wolf
         fn_isdigit ${sta:=${3:-1}} || fn_list_wolf_times
@@ -369,7 +373,7 @@ function fn_dirtio()
         # dif
         fn_dif3 ${@}
         fn_yist
-        columns='close,avri,hiri,lori,rise1,rise2'
+        columns='close,avri,opri,hiri,lori,rise1,rise2'
         columns=d.${columns//,/,d.}
 
         function fn_build_sqls() {
@@ -390,7 +394,7 @@ function fn_dirtio()
         fn_build_sqls
         fn_imysql_sqls | fn_hew_tail
         xt_ret $? "" || return $?
-        fn_echo_succ "nmc.[${nmc}] time.[$HMS1 $HMS2 $HMS3] wolf.[${stime}] by [${FIELD}]"
+        fn_echo_succ "nmc.[${nmc}] ${END}.[$HMS1 $HMS2 $HMS3] wolf.[${stime}] by [${FIELD}]"
 
         fn_chao ${chao}.dir
         ;;
@@ -1688,7 +1692,7 @@ function fn_wolf_sqls()
     yesc='(trade/(1+rise/100))'
     sqls="
         SELECT ${col_date} w.code, w.rise,
-        ROUND( (100*(w.amount/shou-$yesc)/$yesc), 1) as avrg, 
+        ROUND( (100*(w.amount/shou-$yesc)/$yesc), 1) as avri, 
         ${sql_opri} ${sql_hiri} ${col_trade}
         round(100*(trade-h.low)/h.low, 1) as incr,
         round(100*(h.high-LEAST(lohi,trade))/LEAST(lohi,trade),1) as jump, tov,
@@ -1698,7 +1702,7 @@ function fn_wolf_sqls()
     --  pbuy,nbuy, 
     --  round(100*(pbuy+nbuy)/tov, 1) as bloo, round(100*(psell+nsell)/tov, 1) as sloo,
         round(net/tov, 2) as pet,
-        ROUND(100*( w.amount/shou - (h.amount/h.volume) )/(h.amount/h.volume), 1) as cise, -- COSE-RISE
+        ROUND(100*( LEAST(w.amount/shou,trade) - (h.amount/h.volume) )/(h.amount/h.volume), 1) as cise, -- COSE-RISE
     --  round((pbuy/nbuy), 2) as Go, round((pbuy+nbuy)/(psell+nsell),1) as bsp,
         ${xbb_col}
         round((w.shou/h.volume), 2) as prop, h.scale,
@@ -2762,6 +2766,7 @@ function fn_notice()
     "股东权益变动               举牌"
     "回购.*股份                 国内回购只能注销，是真自救"
     "挂牌转让"
+    "实际控制人变更             重组预期"
     )
     cd /opt/notice/
     case $1 in
@@ -2824,7 +2829,7 @@ function fn_ddd()
         fn_echo_succ "昨日大额 -- ma20&+12%&特别关注：剔除大宗交易"
         ;;
     000)
-        CHAO=1 LIMIT=200 COND="(rise>9.93&&eWolf>.49&&eYi>1)||(avrg>5&&eWolf>.43&&eYi>5)" SELECT wolf e
+        CHAO=1 LIMIT=200 COND="(rise>9.93&&eWolf>.49&&eYi>1)||(avri>5&&eWolf>.43&&eYi>5)" SELECT wolf e
         export YIST=${chao}.wolf
         local i
         for (( i=0; i<${STEP:-2}; i+=1 )); do
@@ -2847,7 +2852,7 @@ function fn_ddd()
         fn_echo_succ "两日内价格在PREV2涨停下交易"
         ;;
     rhx)
-        CHAO=1 LIMIT=200 COND="(rise>9.93&&eWolf>.49&&eYi>1)||(avrg>5&&eWolf>.43&&eYi>5)" SELECT wolf e
+        CHAO=1 LIMIT=200 COND="(rise>9.93&&eWolf>.49&&eYi>1)||(avri>5&&eWolf>.43&&eYi>5)" SELECT wolf e
         export YIST=${chao}.wolf
         COND="prop>.99&&prop<=1.2"
         local i
