@@ -1019,20 +1019,21 @@ function fn_base()                      { cat codingstyle_base ;}
 function fn_kernel()                    { cat codingstyle_kernel ;}
 function fn_qt()                        { cat codingstyle_qt ;}
 function fn_rule()                      { cat codingstyle_rule ;}
+function fn_cxx()                       { cat codingstyle_cxx ;}
     local opts=(
         base
         kernel                          # 内核风格
         qt
         rule                            # 关键在映射规则
+        cxx
     )
     fn_print $@
 }
-function fn_google_cxx_style()          { cat google_cxx_style ;}
-function fn_question()                  { cat question ;}
 
+function fn_question()                  { cat question ;}
 function fn_tips_4_reading_code()       { cat tips_4_reading_code ;}
 
-function fn_codetool()                  { 
+function fn_codetool()                  {
 function fn_splint()                    { cat codetool_splint ;}
 function fn_cppcheck()                  { cat codetool_cppcheck ;}
 function fn_calltree()                  { cat codetool_calltree ;}
@@ -1337,6 +1338,7 @@ function fn_svc()                       { cat nxp_svc ;}
 function fn_hotspot()                   { cat hotspot ;}
 
 function fn_hisi()                      { cat hisi ;}
+function fn_cloud()                     { cat cloud ;}
 
 function fn_web()                       {
 function fn_quick_start_guide()         { cat web_quick_start_guide ;}
@@ -1378,7 +1380,6 @@ function fn_main() {
         CC
         tips_4_reading_code     # how to read code
         codingstyle
-        google_cxx_style
         google
         chrome                  # vpn
         coreutils
@@ -1474,6 +1475,7 @@ function fn_main() {
         wbs                     # WBS任务分解，与 RDM 协同办公
         rdm                     # 技术管理
         team                    # 团队 老板 同事 下属
+        cloud
     )
     fn_print $@
 }

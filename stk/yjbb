@@ -72,8 +72,8 @@ function fn_bb_dl_all()
 function fn_bb_select()
 {
     #olumns='code,EPS,revenue,r_grw_y,r_grw_q,profit,p_grw_y,p_grw_q,netassets,RoE,cashflow'
-    columns='z.date,public,z.code,round(c.close/EPS,2) as PE'
-    columns=${columns}',round(c.close/EPS/p_grw_y,2) as PEG'
+    columns="z.date,public,z.code,round(c.close/EPS/${MULT},2) as PE"
+    columns=${columns}",round(100*c.close/EPS/${MULT}/p_grw_y) as PEG"
     columns=${columns}',revenue,r_grw_y,profit,p_grw_y,netassets,RoE'
     CURR=`fn_maxdate`
 
@@ -84,7 +84,7 @@ function fn_bb_select()
     SELECT $columns, ${nmcYi}, c.name 
         FROM tbl_yjbb as z, cap as c
         $WHERE z.code=c.code ${sql_cond}
-        HAVING 1 ${COND} ${inLIST} 
+        HAVING 1 ${COND}
         ORDER by ${FIELD:-public} ${ASC:-DESC} limit ${LIMIT:-36}
     "
     mysql -t kts <<<"${sqls}"
@@ -163,8 +163,8 @@ function fn_kb_dl_all()
 function fn_kb_select()
 {
     #olumns='code,EPS,revenue,r_grw_y,r_grw_q,profit,p_grw_y,p_grw_q,netassets,RoE,cashflow'
-    columns='z.date,public,z.code,round(c.close/EPS,2) as PE'
-    columns=${columns}',round(c.close/EPS/p_grw_y,2) as PEG'
+    columns="z.date,public,z.code,round(c.close/EPS/${MULT},2) as PE"
+    columns=${columns}",round(100*c.close/EPS/${MULT}/p_grw_y) as PEG"
     columns=${columns}',revenue,r_grw_y,profit,p_grw_y,netassets,RoE'
     CURR=`fn_maxdate`
     
@@ -174,8 +174,8 @@ function fn_kb_select()
     sqls="
     SELECT $columns, ${nmcYi}, c.name 
         FROM tbl_yjkb as z, cap as c
-        $WHERE z.code=c.code and z.date>'${stamp}'
-        HAVING 1 ${COND} ${inLIST} 
+        $WHERE z.code=c.code ${sql_cond}
+        HAVING 1 ${COND}
         ORDER by ${FIELD:-public} ${ASC:-DESC} limit ${LIMIT:-36}
     "
     mysql -t kts <<<"${sqls}"
@@ -249,11 +249,11 @@ function fn_yb_dl_all()
 
 function fn_yb_select()
 {
-    ABBR=p fn_yist 
+    ABBR=z fn_yist 
     echo ----- LIST:${#LIST[@]} COND@${END}: $COND -----
 
     columns="date,public,code,pcnt,type"
-    columns=p.${columns//,/,p.}
+    columns=z.${columns//,/,z.}
 
     sqls="
     SELECT ${columns}, 
@@ -262,8 +262,8 @@ function fn_yb_select()
         round(profit/(c.cap/c.close)/10000,2) as Eps,
         round(10000*c.close/(profit/c.shares), 2) as PE, 
         round(c.nmc/10000,1) as nmc, c.name
-        FROM tbl_yjyg as p, cap as c 
-        $WHERE p.code=c.code
+        FROM tbl_yjyg as z, cap as c 
+        $WHERE z.code=c.code ${sql_cond}
         HAVING 1 ${COND}
         ORDER by ${FIELD:-public} DESC LIMIT ${LIMIT:-50}
     " 
@@ -358,6 +358,12 @@ function fn_yy_select()
     esac
 }
 
+function fn_get_multiplier()
+{
+    MULT=`echo ${stamp} | awk -F'-' '{print 12/$2}'`
+    #echo ${MULT} is ; exit
+}
+
 function fn_manual()
 {
     echo "
@@ -366,7 +372,8 @@ function fn_manual()
     季度报表的所有项目分两个：环比数据，
                               同比数据，年初至报告期(所以EPS计算应该进行时间校正)
 
-    EPS    每股收益，PE=(close/EPS)
+    PE     市盈率=(close/每股收益EPS)。动态PE=据季度业绩的年度推测值/市值
+    PEG    PE/企业年盈利增长率，估值修复能力
     revenue营业额，必须配合ROE增长，如此才是可持续的。因缩减成本之节流不如开源。
     r_grw_y营收增长
     profit 直接反映企业的“赚钱能力”，1个亿起步，若1年只几百万，还不如一个个体户赚得多呢。
@@ -396,30 +403,32 @@ function fn_manual()
 
     echo "
     Usage: yjbb yb|kb|bb|yy <param>
-        s|select      code|date         # 默认全部code，可选YIST= or code...
-        d|dl_all      20yy-mm-dd        # 更新数据
-        l|ls_date                       # 列出数据日期，yysj没有此项
-        D|dele        20yy-mm-dd        # 
-        m|manual                        # 指标说明
+        s|select      code|date                     # 默认全部code，可选YIST= or code...
+        d|dl_all      20yy-mm-dd                    # 更新数据
+        l|ls_date                                   # 列出数据日期，yysj没有此项
+        D|dele        20yy-mm-dd                    # 
+        m|manual                                    # 指标说明
     COND:
-    nmcYi<200 && r_grw_y>0              # 营业额增长，医药在此表现突出
+    COND='PEG>0&&PEG<50&&profit>1000 &&nmcYi<80'    # 估值修复
     "
 }
 
 function fn_main()
 {
     case $1 in
-    yb|kb|bb|yy)  br=$1                                                 ;;
-    *)            fn_echo_fail "name:[$br] must among yb|kb|bb|yy"; exit;;
+    yb|kb|bb|yy)  br=$1                                                     ;;
+    *)            fn_echo_fail "[argv1:$br] must among yb|kb|bb|yy"; exit   ;;
     esac
 
-    stamp=${stamp:-'2015-12-31'}
+    stamp=${stamp:-'2016-03-31'}
     if fn_isdate "${3}"; then
         stamp=$3
         sql_cond="and z.date>'${stamp}'"
     elif fn_iscode "${3}"; then
         sql_cond="and z.code=${3}"
     fi
+
+    fn_get_multiplier
 
     case $2 in
     s|select)   fn_${br}_select "${@:3}" ;;
