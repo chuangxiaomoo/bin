@@ -352,6 +352,20 @@ function fn_dif3()
     xt_ret $? "fail: mysql" || return $?
 }
 
+function fn_dirt_interval()
+{
+    step=${1:-10}
+    [ -z "${iHMS}" ] && \
+    iHMS=`mysql -N kts <<<"SELECT count(DISTINCT time) FROM dorat WHERE date='${END}'"`
+    let it2=iHMS-step
+    let it1=it2-step
+
+    [ "${it1}" -gt 0 ]
+    xt_ret $? "[iHMS:${iHMS}] must_gt 2*[step:${step}]" || return $?
+
+    fn_dirtio ${it1} ${it2}
+}
+
 function fn_dirtio()
 {
     usage="
@@ -359,6 +373,7 @@ function fn_dirtio()
     u                       print usage
     l                       print iF5-list
     st                      print wolf-time-list
+    i step                  start-offset mode
     HMS1 HMS2 [wolf]        show close to diff
     COND='ri2>ri1 && hiri<9.93&&dirt<10'
     "
@@ -366,6 +381,7 @@ function fn_dirtio()
     case $1 in
     l) fn_list_iF5_times   ;;
     w) fn_list_wolf_times  ;;
+    i) fn_dirt_interval $2 ;;
     +([0-9]))
         fn_isdigit $1
         xt_ret $? "argv.1[$1] must be a iF5 num" || return $?
@@ -1554,16 +1570,6 @@ function fn_enum_wolf_times()
 
 function fn_list_iF5_times()
 {
-   #SELECT dorat | cat -n; exit 0
-#  SELECT dorat | awk '{
-#      if (NR%2==1) 
-#          fmt="%02d  %s    "; 
-#      else 
-#          fmt="%02d  %s\n"; 
-#      printf fmt, NR,$2; }
-#      END{ if(NR%2==1) printf "\n"; }
-#  '; 
-
     sqls="SELECT DISTINCT time FROM dorat WHERE date='${END}' ORDER by time ASC"
     OPT='-N' fn_imysql_sqls > ${chao}.iF5
     sed -n  '1,40p' ${chao}.iF5 | cat -n > ${chao}.p1
