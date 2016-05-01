@@ -1105,58 +1105,6 @@ function fn_fenbi()
     " | mysql kts
 }
 
-function fn_yysj()
-{
-    pages=100       # assign to 0 to SKIP download, 100 to normal DL
-
-    [ ${pages} != 0 ] && >${buffer}
-
-    # 通过F12查看时间 http://data.eastmoney.com/bbsj/201512/yysj.html
-    date=2015-12-31
-    suffix='&js=var%20aisNXBuK={pages:(pc),data:[(x)]}&stat=0'
-    url0="http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx?type=SR&sty=YYSJ&"
-
-    local i
-    for (( i=1; i<=${pages}; i+=1 )); do
-        fn_echo_succ "downlode ${i}..."
-        url="${url0}fd=${date}&st=2&sr=1&p=${i}&ps=400${suffix}"
-        # echo ${url}; exit
-        w3m -cols 84 -dump "${url}" > ${cache}
-        #
-        [ "${pages}" -gt 10 ] && pages=`awk -F '[:,]' '/aisNXBuK/{print $2}' ${cache}`
-        cat ${cache}  | tr -d '\n' |
-            sed -e '1s/^.*data:.//' -e '$s/]}/\n/' |
-            sed 's/","/\n/g'  | tr -d '"' >> ${buffer}
-    done
-
-    awk -F',' '{
-        if ($5!="") {
-            yysj=$5
-        } else if ($4!="") { 
-            yysj=$4
-        } else {
-            yysj=$3;
-        }
-        printf "%s\t%s\t%s\n", $1,yysj,$2
-    }' ${buffer} > ${buffer}.rip
-
-    echo "
-    DROP TABLE IF EXISTS yysj;
-    CREATE TABLE yysj (
-        id      int(4) ZEROFILL PRIMARY key AUTO_INCREMENT NOT NULL,
-        code    INT(6)  ZEROFILL,
-        date    DATE NOT NULL,
-        name    CHAR(16),
-        INDEX(code,date)
-    );
-
-    LOAD DATA LOCAL INFILE '${buffer}.rip' INTO 
-    TABLE yysj(code, date, name);
-    " | mysql kts
-
-    return $?
-}
-
 function fn_merge()
 {
     [ -f "${1}" ]
@@ -1516,7 +1464,6 @@ function fn_main()
     "lhb                                # 龙虎榜"
     "dorat  [loop]                      # 量比数据，loop when run@crontab"
     "ma2015                             # "
-    "yysj                               # 预约时间"
     "trace                              # "
     "fenbi  code 2015mmdd               # "
     "money                              # ---------资金分析---------"

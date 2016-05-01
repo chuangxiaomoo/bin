@@ -2519,31 +2519,6 @@ function fn_blk()
     return $?
 }
 
-function fn_yysj()
-{
-
-    case $1 in
-    d|date)
-        echo "
-        SELECT DISTINCT date FROM yysj ORDER by date ASC;
-        " | mysql -t kts
-        fn_echo_warn "Usage: SELECT yysj d <date>"
-        exit
-        ;;
-    s|select)
-        sqls="
-        SELECT * FROM yysj 
-        HAVING ${HAVING:-1} ${COND} ${sql_date} ORDER BY ${FIELD:-date} ${ASC:-asc} LIMIT ${LIMIT:-36}
-        "    
-        mysql ${OPT:--t} kts <<<"${sqls}"
-        fn_chao ${chao}.yysj
-        ;;
-    *|u|h)
-        echo "Usage: SELECT yysj {date|select}"
-        ;;
-    esac
-}
-
 function fn_dde_acc3()
 {
     NUM=${NUM:-4}
@@ -2618,7 +2593,6 @@ function fn_dde()
     return $?
 }
 
-
 function fn_max()
 {
     STA=`fn_get_date ${1:-5} 1` #echo ${STA}
@@ -2638,7 +2612,6 @@ function fn_max()
 
     return $?
 }
-
 
 function fn_g20()
 {
