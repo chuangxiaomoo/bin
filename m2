@@ -108,7 +108,7 @@ function fn_2016_event()                { cat annual_2016_event ;}
 # a BOOK can append with a reflect
 #
 function fn_book()                      {
-function fn_base()                      { cat book_base ;}
+function fn_cept()                      { cat book_cept ;}
 function fn_laozi()                     { cat book_laozi ;}
 function fn_sunzi()                     { cat book_sunzi; 
                                           cat arch_sunzi ;}
@@ -150,7 +150,7 @@ function fn_201_经济学通识()            { cat book_201_经济学通识 ;}
 function fn_900_平凡的世界()            { cat book_900_平凡的世界 ;}
 function fn_tiandao()                   { cat book_tiandao book_遥远的救世主;}
     local opts=(
-        base       
+        cept       
         wanna                   # 想读的书
         sunzi                   # 孙子兵法
         laozi                   # 道德经 daodejing 
@@ -283,11 +283,11 @@ function fn_aesthetics()                { cat aesthetics ;}
 function fn_tick()                      { cat tick.md ;}
 
 function fn_stk()                       { 
-function fn_ipo_base()                  { cat stk_ipo_base ;}
+function fn_cept()                      { cat stk_cept ;}
+function fn_ipo_ops()                   { cat stk_ipo_ops ;}
 function fn_ipo_rules()                 { cat stk_ipo_rules ;}
 function fn_cost()                      { cat stk_cost ;}
 function fn_rzrq()                      { cat stk_rzrq ;}
-function fn_base()                      { cat stk_base ;}
 function fn_tougu()                     { cat stk_tougu ;}
 function fn_urls()                      { cat stk_urls ;}
 function fn_caorenchao()                { cat stk_caorenchao ;}
@@ -310,10 +310,10 @@ function fn_jc_Golf智慧_快就是慢()      { cat stk_jc_Golf智慧_快就是�
 
 
     local opts=(
-        ipo_base                        # 新股
+        cept                            # 交易规则
         ipo_rules
+        ipo_ops                         # 新股
         urls
-        base                            # 交易规则
         cost                            # 手续费 佣金
         rzrq                            # 融资融券
         tougu                           # 投顾大赛
@@ -339,10 +339,10 @@ function fn_jc_Golf智慧_快就是慢()      { cat stk_jc_Golf智慧_快就是�
 }
 
 function fn_futures()                   {  
-function fn_base()                      { cat futures_base ;}
+function fn_cept()                      { cat futures_cept ;}
 
     local opts=(
-        base
+        cept
     )
     fn_print $@
 }
@@ -352,7 +352,6 @@ function fn_e_n_log()                   { cat math_e_n_log ;}
 function fn_11_magical_70()             { cat math_11_magical_70 ;}
 function fn_12_fibonacci_sequence()     { cat math_12_fibonacci_sequence ;}
     local opts=(
-        base       
         e_n_log                         # 数学常数 对数 指数
         11_magical_70
         12_fibonacci_sequence           # 斐波那契数列
@@ -383,7 +382,7 @@ function fn_01_Akkila与拼字大赛()       { cat movie_01_Akkila与拼字大�
 }
 
 function fn_logic()                     {
-function fn_base()                      { cat logic_base ;}
+function fn_cept()                      { cat logic_cept ;}
 function fn_MECE()                      { cat logic_MECE ;}
 function fn_training500()               { cat logic_training500 ;}
 function fn_puzzle()                    { cat logic_puzzle ;}
@@ -392,7 +391,7 @@ function fn_informal()                  { cat logic_informal ;}
 function fn_fallacy()                   { cat logic_fallacy ;}
 function fn_language()                  { cat logic_language ;}
     local opts=(
-        base
+        cept
         MECE                            # Mutually Exclusive Collectively Exhaustive
         training500
         puzzle                          # 我理解的一些谜
@@ -599,14 +598,14 @@ function fn_duanzi()                    { cat humor_duanzi ;}
 }
 
 function fn_girl()                      {
-function fn_base()                      { cat girl_base ;}
+function fn_misc()                      { cat girl_misc ;}
 function fn_loveletter()                { cat girl_loveletter ;}
 function fn_00_jiebao()                 { cat girl_00_jiebao ;}
 function fn_01_tingbao()                { cat girl_01_tingbao ;}
 function fn_11_2013相亲记()             { cat girl_11_2013相亲记 ;}
 function fn_12_wife()                   { cat girl_12_wife ;}
     local opts=(
-        base       
+        misc       
         loveletter
         11_2013相亲记                   # xiangqin 爱情观
         00_jiebao
@@ -725,12 +724,12 @@ function fn_50_interview_faq()          { cat 50_interview_faq ;}
 function fn_traffic()                   { cat traffic ;}
 
 function fn_influence()                 {
-function fn_base()                      { cat influence_base ;}
+function fn_cept()                      { cat influence_cept ;}
 function fn_agile()                     { cat influence_agile ;}
 function fn_sxmm()                      { cat influence_sxmm ;}
 function fn_stock()                     { cat influence_stock ;}
     local opts=(
-        base
+        cept
         agile
         sxmm
         stock                           # 
@@ -739,13 +738,13 @@ function fn_stock()                     { cat influence_stock ;}
 }
 
 function fn_economic()                  {
-function fn_base()                      { cat economic_base ;}
+function fn_cept()                      { cat economic_cept ;}
 function fn_currency()                  { cat economic_currency ;}
 function fn_keynesian()                 { cat economic_keynesian ;}
 function fn_fortune()                   { cat economic_fortune ;}
 function fn_交易与合约()                { cat economic_交易与合约 ;}
     local opts=(
-        base                            # 利率 汇率 基础概念
+        cept                            # 利率 汇率 基础概念
         currency                        # 货币经济学
         keynesian                       # 凯恩斯主义经济学
         fortune                         # 古典自由主义 国富论
@@ -757,12 +756,12 @@ function fn_交易与合约()                { cat economic_交易与合约 ;}
 function fn_dream()                     { cat dream ;}
 
 function fn_finance()                   {
-function fn_base()                      { cat finance_base ;}
+function fn_cept()                      { cat finance_cept ;}
 function fn_leverage()                  { cat finance_leverage ;}
 function fn_fortune()                   { cat finance_fortune ;}
 function fn_behavioral()                { cat finance_behavioral ;}
     local opts=(
-        base                            # 利率 汇率 基础概念
+        cept                            # 
         leverage                        # 杠杆
         behavioral                      # 行为金融学 behavioral finance
     )
