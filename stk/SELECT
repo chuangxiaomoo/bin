@@ -74,9 +74,8 @@ function fn_lsd()
         HAVING="rise<-9.93"
         FIELD=${FIELD:-nmc}
         ;;
-    l|list)
-        SELECT lohi l; exit 0;
-        ;;
+    l|list) 
+        iASC=DESC fn_list_iF5_times ;;
     [0-9]*)
         if [ "${1}" = 0 ]; then
             fn_echo_warn "NR is 0"
@@ -96,6 +95,7 @@ function fn_lsd()
         list    list 5min table
         {0-9}*  index from 5min table
         top     10%
+        loop    count(rise>rDOOR)统计
         floor   -10%
         ''      top default
 
@@ -123,7 +123,7 @@ function fn_lsd()
         esac
 
         sqls="
-        SELECT ${CID}$columns, volume,amount, 
+        SELECT  $columns, volume,amount, 
                 $OPRI as opri, 
                 $HIRI as hiri, 
                 ${sql_avrg}
@@ -141,12 +141,11 @@ function fn_lsd()
     case ${PARTS:-4} in
     1) return                               ;; # 不输出chao，不输出mysql结果
     2) CHAO=1 fn_chao ${chao}.${chao2:-lsd} ;; # 只输出chao
-    3) mysql ${OPT:--t} kts <<<"${sqls}"
+    3) fn_imysql_sqls
        CHAO=1 fn_chao ${chao}.${chao2:-lsd} ;; # 既输出chao，又输出mysql
-    *) mysql ${OPT:--t} kts <<<"${sqls}"
+    *) fn_imysql_sqls
        fn_chao ${chao}.${chao2:-lsd}        ;; # 响应CHAO
     esac
-
 }
 
 function fn_ace()
@@ -363,7 +362,7 @@ function fn_dirt_interval()
     [ "${it1}" -gt 0 ]
     xt_ret $? "[iHMS:${iHMS}] must_gt 2*[step:${step}]" || return $?
 
-    fn_dirtio ${it1} ${it2}
+    fn_dirtio ${it1} ${it2} $2
 }
 
 function fn_dirtio()
@@ -379,9 +378,9 @@ function fn_dirtio()
     "
     export iASC=ASC
     case $1 in
-    l) fn_list_iF5_times   ;;
-    w) fn_list_wolf_times  ;;
-    i) fn_dirt_interval $2 ;;
+    l) fn_list_iF5_times        ;;
+    w) fn_list_wolf_times       ;;
+    i) fn_dirt_interval ${@:2}  ;;
     +([0-9]))
         fn_isdigit $1
         xt_ret $? "argv.1[$1] must be a iF5 num" || return $?
@@ -399,7 +398,7 @@ function fn_dirtio()
         # dif
         fn_dif3 ${@}
         fn_yist
-        columns="close,av1,av2,av3,ri1,ri2,ri3,opri,${hiri:=hiri},dirt"
+        columns="close,av1,av2,av3,ri1,ri2,ri3,${opri:=opri},${hiri:=hiri},dirt"
         columns=d.${columns//,/,d.}
 
         function fn_build_sqls() {
@@ -421,7 +420,7 @@ function fn_dirtio()
         fn_build_sqls
         fn_imysql_sqls | fn_hew_tail
         xt_ret $? "" || return $?
-        fn_echo_succ "nmc.[${nmc}] ${END}.[$HMS1 $HMS2 $HMS3] wolf.[${stime}] hiri.[${hiri}] by [${FIELD}]"
+        fn_echo_succ "nmc.[${nmc}] ${END}.[$HMS1 $HMS2 $HMS3] wolf.[${stime}] [opri.$opri hiri.$hiri] by [${FIELD}]"
 
         fn_chao ${chao}.dir
         ;;
@@ -1166,7 +1165,7 @@ function fn_lohi()
 
           tbl_super_dive="
           SELECT * FROM (
-            SELECT ${CID}${columns},
+            SELECT ${columns},
             round(100*(d.close-t.low)/t.low, 2) as incr,
          -- round(100*(GREATEST(t.high,d.close)-d.close)/GREATEST(t.high,d.close), 2) as decn,
             round(100*(t.amount/t.volume-d.yesc)/d.yesc, 1) as bvri, 
@@ -1570,7 +1569,7 @@ function fn_enum_wolf_times()
 
 function fn_list_iF5_times()
 {
-    sqls="SELECT DISTINCT time FROM dorat WHERE date='${END}' ORDER by time ASC"
+    sqls="SELECT DISTINCT time FROM dorat WHERE date='${END}' ORDER by time ${iASC:-ASC}"
     OPT='-N' fn_imysql_sqls > ${chao}.iF5
     sed -n  '1,40p' ${chao}.iF5 | cat -n > ${chao}.p1
     sed -n '41,80p' ${chao}.iF5 | cat -n > ${chao}.p2
@@ -2033,14 +2032,8 @@ function fn_topX()
 
     blks=`mysql -N kts<<<"${sqls}"`
 
-    if [ -z "${STEP}" ]; then
-        fn_xtempday
-        xt_ret $? "xtempday error" || return $?
-    else
-        let NR=STEP++
-        fn_xtempfen ${NR}
-        xt_ret $? "xtempfen error" || return $?
-    fi
+    fn_xtempfen $1
+    xt_ret $? "xtempfen error" || return $?
 
     echo "
     $DROP topN;
@@ -2083,60 +2076,17 @@ function fn_topX()
 
 function fn_top()
 {
-    case $1 in
-    l)
-        echo "
-            SELECT DISTINCT date FROM topN ORDER by date DESC LIMIT ${LIMIT:-15};
-        " | mysql -t kts
-        ;;
-    d)
-        sta=$2
-        seq=`seq ${sta:-1} ${3}`
-        for i in ${seq}; do
-            date=`fn_get_date ${i} 1`
-            echo "
-                DELETE FROM topN WHERE date='${date}'
-            " | mysql -t kts
-            fn_echo_succ "DELETE ${date} FROM topN done..."
-        done
-        ;;
-    s)
-        sta=$2
-        for i in `seq ${sta:-1} ${3}`; do
-            date=`fn_get_date ${i} 1`
-            idate=`mysql -N kts<<<"SELECT DISTINCT date FROM topN WHERE date='${date}'"`
-            echo ${date} + ${idate}
-            if [ -z "${idate}" ]; then
-                fn_echo_succ "CREATE ${date} INTO topN..."
-                END=${date} fn_topX
-            fi
-            echo "
-            SELECT date,hex(blk),sym,SAMPLES,rise FROM topN 
-                WHERE date='${date}' ORDER by ${FIELD:-rise} DESC LIMIT ${LIMIT:-20};
-            " | mysql -t kts
-        done
-        ;;
-    i)
-        fn_top d
-        STEP=${2:-1} END=${date} fn_topX
-        echo "
-        SELECT date,hex(blk),sym,SAMPLES,rise FROM topN 
-            WHERE date='${date}' ORDER by ${FIELD:-rise} DESC LIMIT ${LIMIT:-20};
-        " | mysql -t kts
-        ;;
-    *)
-        echo "
-        SELECT blk top 
-        l           # list DATE
-        d sta end   # 删除 seq(sta,{step,}end)
-        s sta end   # 生成&查询
-        i [iF5]     # 查询iF5
-        u           # USAGE
-        "
-        ;;
-    esac
-    
-    return $?
+    echo "
+        DELETE FROM topN WHERE date='${END}'
+    " | mysql -t kts
+    fn_echo_succ "DELETE ${date} FROM topN done..."
+
+    fn_topX $1
+    echo "
+    SELECT date,hex(blk),sym,SAMPLES,rise FROM topN 
+        WHERE date='${END}' ORDER by ${FIELD:-rise} DESC LIMIT ${LIMIT:-20};
+    " | mysql -t kts
+    xt_ret $? "" || return $?
 }
 
 function fn_blk_delta_codes()
@@ -2165,25 +2115,23 @@ function fn_blk_delta_layout()
 {
     sqls="
     SELECT hex(n.blk) as blk,count(m.code) as num, n.sym, 
-        max(drise) as maxDri,
-        ROUND( sum(drise)/count(m.code), 2 ) as avDri,
+        max(drise) as max_dif_ri,
+        ROUND( sum(drise)/count(m.code), 2 ) as av_dif_ri,
         ROUND( sum( rise)/count(m.code), 2 ) as avri
         FROM blk_name as n, blk_memb as m,
         (
         SELECT code, ROUND(100*(close-yesc)/yesc,2) as rise, 
             ROUND(100*high/yesc,2) as drise FROM delta 
-            HAVING drise>${DOOR} ORDER by drise DESC
+            HAVING drise>${rDOOR} ORDER by drise DESC
         ) as dlt
         $WHERE m.blk=n.blk && m.code=dlt.code AND m.blk not in ${EXCLUDE_BLK}
         GROUP by blk 
         HAVING 1 ${COND}
-        ORDER by num ${ASC:-DESC}, ${1:-avDri} DESC LIMIT ${LIMIT:-20};
+        ORDER by ${FIELD} ${ASC:-DESC}, ${1:-av_dif_ri} DESC LIMIT ${LIMIT:-20};
     "
-
     #echo "${sqls}"; exit
     mysql -t kts <<< "${sqls}"
-    return $?
-
+    fn_echo_warn "rDOOR:${rDOOR:=0.5} `cat ${info}.delta |xargs` FIELD:${FIELD:=num} "
 }
 
 function fn_blk_delta()
@@ -2263,7 +2211,7 @@ function fn_blk_wolf_team()
     " 
     #echo "${sqls}" ; exit
     FIELD=${FIELD:-num}
-    fn_echo_succ "${END} ${stime} [iDOOR:$iDOOR] [rDOOR:$rDOOR] [FIELD:$FIELD] [TEN:$TEN] [click:${click}]"
+    fn_echo_succ "${END} ${stime} [iDOOR:$iDOOR] [rDOOR:$rDOOR] [TEN:$TEN] [click:${click}] [FIELD:$FIELD]"
     [ "${PARTS:-3}" -eq 3 ] && mysql -t kts <<< "SELECT * FROM (${sqls}) as tbl ORDER by ${FIELD} DESC"
     return
 }
@@ -2299,9 +2247,6 @@ function fn_blk()
 #   EXCLUDE_BLK="(0x1234)"
 
     case $1 in
-    top)
-        fn_top ${@:2}
-        ;;
     l|layout)
        #ABBR=m fn_notin_blk FFA1
         ABBR=m fn_yist
@@ -2312,63 +2257,28 @@ function fn_blk()
          GROUP by blk ORDER by ${FIELD:-num} ${ASC:-DESC} LIMIT ${LIMIT:-20};
         " | mysql -t kts
         ;;
+    sample) 
+        [ "${2}" = l ] && iASC=DESC fn_list_iF5_times
+        fn_top ${@:2} 
+        ;;
     10)
-        fn_echo_succ "Classify @${END}"
         ABBR=m fn_yist
-        CHAO=1 LIMIT=3000 COND="rise>${rDOOR:-9.93}" SELECT lsd ${2}> /dev/null
-        YIST="${chao}.lsd" fn_blk layout
+        [ "${2}" = l ] && iASC=DESC fn_list_iF5_times
+        iTime=`fn_get_time ${2}`
+        TEMPDAY="(SELECT * FROM dorat WHERE date='${END}' && time='${iTime}')"
+        fn_echo_succ "Classify @${END}:${iTime} [rDOOR:${rDOOR:=2}] [TEN:${TEN:=9.93}] [FIELD:${FIELD:-num}]"
+        echo "
+        SELECT hex(n.blk) as blk,
+            sum(${RISE}>${TEN}) as click,
+            count(m.code) as num,
+            ROUND(sum(${RISE})/count(m.code), 2) as rise,
+            n.sym FROM blk_name as n, blk_memb as m, ${TEMPDAY} as d
+         $WHERE m.code=d.code && n.blk=m.blk AND n.blk not in ${EXCLUDE_BLK} ${notinBLK}
+                AND ${RISE}>${rDOOR}
+         GROUP by blk ORDER by ${FIELD:-num} ${ASC:-DESC} LIMIT ${LIMIT:-20};
+        " | mysql -t kts
         ;;
-    ban)
-        ABBR=m fn_notin_blk FFA1
-        DZH=N CHAO=1 fn_blk u ${BLK} > /dev/null
-        xt_ret $? "BLK:${BLK}" || return $?
-        YIST="${chao}.blk" \
-        COND="rise>${rDOOR:-9.93}" SELECT lsd ${@:2}
-        xt_ret $? "" || return $?
-        ;;
-    delta)
-        case $2 in
-        s|step)
-            fn_blk_delta ${3:-1}
-            ;;
-        l|layout)
-            # 从3个维度考量：数量、delta涨幅、最高涨幅
-            fn_echo_warn "DOOR:${DOOR:=0.5}"
-            cat ${info}.delta
-            fn_blk_delta_layout ${@:3}
-            ;;
-        b|blk)
-            fn_blk_delta_codes ${3}
-            ;;
-        *)
-            echo "SELECT blk delta
-            s       STEP    # \$HMS不指定时，默认15:05:00
-            l       FIELD   # layout {DOOR:-0.5}
-            b       BLK     # 单独展示一个BLK的细节
-            "
-            ;;
-        esac
-        ;;
-    66)
-        fn_peeloff_blk
-        off=${2:-1}
-        sta=`fn_get_date ${off}`
-        fn_sqls() {
-        sqls="
-        SELECT d.code,sum(${RISE}) as rise, ${nmcYi}, c.name FROM day as d, cap as c ${frBLK}
-            ${WHERE} d.code=c.code and d.date>='${sta}' && d.date<='${END}' ${inBLK}
-            GROUP by code 
-            HAVING ${HAVING:-1} ${COND} and rise>${rDOOR:-'-100'}
-            ORDER BY ${FIELD:-rise} ${ASC:-desc} LIMIT ${LIMIT:-36}
-        " 
-        }
-        fn_sqls
-        #echo "${sqls}" ; exit
-        mysql -t kts <<< "${sqls}"
-        LIMIT=3000 fn_sqls
-        fn_chao ${chao}.opt.66
-        ;;
-    wolf) # blk.wolf
+    wolf)
         set -e
         usage="Usage: 
         iDOOR=.40 COND='click>0&&earn>.3'
@@ -2385,49 +2295,64 @@ function fn_blk()
         *)          echo "${usage}"                                 ;;
         esac
         ;;
-    stat)     
+    delta)
         case $2 in
-        l)  sqls=" SELECT date,hex(blk),num,sym,rise,earn,wolf FROM blk_stat "
-            mysql -t kts <<<"${sqls}"; exit ;;
-        g)  sqls=" SELECT hex(blk),count(blk)as golds,sym, sum(num)as nums, sum(click)as tens,sum(rise)*num as rises " 
-            sqls=" ${sqls} FROM  blk_stat GROUP by blk ORDER by ${FIELD:=golds} DESC LIMIT ${LIMIT:-40}"
-            count=`mysql -N kts<<<"SELECT count(date) FROM (SELECT DISTINCT date FROM blk_stat) as t"`
-            fn_echo_succ "blk stat in ${count} days [FIELD:$FIELD]"
-            mysql -t kts <<<"${sqls}"; exit ;;
+        s|step)     fn_blk_delta ${3:-1} ;;
+        b|blk)      fn_blk_delta_codes ${3} ;;
+        l|layout)   fn_blk_delta_layout ${@:3} ;;
+        *)
+            echo "SELECT blk delta
+            s       STEP    # \$HMS不指定时，默认15:05:00
+            l               # 从3个维度考量：数量、delta涨幅、最高涨幅
+            b       BLK     # 单独展示一个BLK的细节
+            "
+            ;;
         esac
-
-        NUM=${NUM:-10}
+        ;;
+    acc)
+        fn_peeloff_blk
+        off=${2:-1}
+        sta=`fn_get_date ${off}`
+        fn_sqls() {
+        sqls="
+        SELECT d.code,sum(${RISE}) as rise, ${nmcYi}, c.name FROM day as d, cap as c ${frBLK}
+            ${WHERE} d.code=c.code and d.date>='${sta}' && d.date<='${END}' ${inBLK}
+            and low!=high
+            GROUP by code 
+            HAVING ${HAVING:-1} ${COND} and rise>${rDOOR:-'-100'}
+            ORDER BY ${FIELD:-rise} ${ASC:-desc} LIMIT ${LIMIT:-36}
+        " 
+        }
+        fn_sqls
+        #echo "${sqls}" ; exit
+        mysql -t kts <<< "${sqls}"
+        LIMIT=3000 fn_sqls
+        fn_chao ${chao}.opt.acc
+        ;;
+    stat)     
+        NUM=${NUM:-3}
         dates=(`fn_get_date 1 ${NUM}`)
-
         mysql kts <<< "TRUNCATE blk_stat"
         for (( i=${NUM}-1; i>=0; i-- )); do
             date=${dates[$i]}
-            iCOND="&&x.amount>000" iNUM=2 PARTS=2 END=${date} fn_blk_wolf_team 1   # iNUM 3只才成组
+            FIELD= rDOOR=5 iCOND="&&x.amount>000" iNUM=2 PARTS=2 END=${date} fn_blk_wolf_team 1   # iNUM 3只才成组
             sqls=${sqls//hex(/(}
             echo "
             INSERT INTO  blk_stat
             SELECT '$date', blk,num,sym,rise,earn,wolf,click FROM ($sqls) as t
             " | mysql kts
         done
-        ;;
+        sqls=" SELECT hex(blk),count(blk)as top16s, sym, 
+                    sum(num)as nums, sum(click)as tens,sum(rise)*num as rises
+                    FROM  blk_stat 
+                    GROUP by blk 
+                    ORDER by ${FIELD:=top16s} DESC LIMIT ${LIMIT:-40}"
+        count=`mysql -N kts<<<"SELECT count(date) FROM (SELECT DISTINCT date FROM blk_stat) as t"`
+        fn_echo_succ "blk stat in ${count} days [FIELD:$FIELD]"
+        mysql -t kts <<<"${sqls}"; 
+        exit ;;
     inter)     
         fn_blk_wolf_inter $2
-        ;;
-    123)
-        size=${2:-3}
-        dates=(`fn_get_date 1 ${size}`)
-
-        for (( i=${size}-1; i>=0; i-- )); do
-            date=${dates[$i]}
-            iCOND="TRUNCATE(100*(close-yesc)/yesc, 2)>${DOOR:-9.93}" fn_xtempday ${date}
-            fn_echo_succ "DOOR date: ${date}"
-            echo "
-            SELECT hex(n.blk) as blk, count(m.code) as num, n.sym FROM blk_name as n, blk_memb as m, xtempday as d
-            WHERE n.blk=m.blk and m.code=d.code && m.blk not in ${EXCLUDE_BLK}
-             GROUP by blk 
-             ORDER by num DESC LIMIT ${LIMIT:-16};
-            " | mysql -t kts
-        done
         ;;
     c|code)
         for code in ${@:2}; do
@@ -2505,19 +2430,18 @@ function fn_blk()
         echo "
         SELECT blk <param>  # 注：使用HAVING向<SELECT lsd>传递条件
         l                   # layout
-        10      iF5         # 涨停板概念分类 {DOOR:-10}，查讯iF5: SELECT lohi l
-        ban     iF5         # 列出变量BLK关联的code涨幅，iF5为5分钟数据索引
-        delta   {s|l|b}     # 做差、显示layout、显示layout中一个BLK的细节
-        66      off         # off日内代码累计涨幅
-        123     size        # for(i<size)循环_10_的内容，但这是平均值
+        sample  iF5         # 价角度：只统计前10涨幅
+        10      iF5         # 价角度：涨停板概念分类 {DOOR:-10}，查讯iF5: SELECT lsd l
+        wolf  [E|a|BLK] iF5 # 能角度：
+        delta   {s|l|b}     # 指数涨幅贡献：做差、显示layout、显示layout中一个BLK的细节
+        stat                # 3日热点统计
+        acc     off         # off日内代码累计涨幅
         c       code        # 显示code关联的所有板块
         !       blk [...]   # FROM YIST not in (blk...)
         d       big small   # 求两个blk的差集 big-small 
         A       blk blk2    # 求两个blk的交集
         u       blk [...]   # 求几个blk的并集(.c时可作为输出)
-                            # blk中code关联的blk数目排名，越小，概念越纯正。
-        top     arg...      # [热点]分析
-        stat    [l|g]       # 多日stat
+                            # blk中code关联的blk数目排名，越小，概念越纯正
         "
         ;;
     esac
@@ -2942,10 +2866,9 @@ function fn_main()
     "wee                                      # NUM日成交量放大倍数"
     "g20                                      # 创20日新高"
     "lhb                excption              # 龙虎榜"
-    "wolf                                     # DDE"
     "dde                                      # dde(CURR)>dde(PREV)"
-    "blk                                      # 板块信息"
-    "yysj                                     # 预约时间"
+    "wolf                                     # DDE"
+    "blk                                      # 板块信息+涨幅统计"
     "scale                                    # 成交量放大倍数"
     "ATR                all|redOnly|code      # AverageTrueRangeOf阳线非一字板"
     "notice                                   # 公告"
