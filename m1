@@ -1257,8 +1257,6 @@ function fn_goyo()                      { cat jimxl_goyo;}
 }
 
 function fn_alibaba()                   { cat alibaba ;}
-function fn_kitas()                     { cat kitas ;}
-
 function fn_begin()                     { 
 function fn_language()                  { cat begin_language ;}
 function fn_melody()                    { cat begin_melody ;}
@@ -1414,7 +1412,6 @@ function fn_main() {
         java
         jco
         jimxl
-        kitas                   # 产品经理总结
         kernel
         lcov
         libevent
