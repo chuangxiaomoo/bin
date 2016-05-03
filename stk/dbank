@@ -297,13 +297,14 @@ function fn_chao()
 function fn_bist()
 {
     [ -z "${BLK}" ] && return
-    FIELD= COND= CHAO=1 PARTS=2 fn_blk u ${BLK}
+    LIMIT= FIELD= COND= CHAO=1 PARTS=2 fn_blk u ${BLK}
     YIST=${chao}.blk
 }
 
 function fn_yist()
 {
     # WHERE 在最前可备为 reentry-function
+    # CID is replaced with fn_imysql_sqls
     CID=
     LIST=
     inLIST=

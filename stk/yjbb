@@ -87,7 +87,7 @@ function fn_bb_select()
         HAVING 1 ${COND}
         ORDER by ${FIELD:-public} ${ASC:-DESC} limit ${LIMIT:-36}
     "
-    mysql -t kts <<<"${sqls}"
+    fn_imysql_sqls
     fn_chao
     return $?
 }
@@ -178,7 +178,7 @@ function fn_kb_select()
         HAVING 1 ${COND}
         ORDER by ${FIELD:-public} ${ASC:-DESC} limit ${LIMIT:-36}
     "
-    mysql -t kts <<<"${sqls}"
+    fn_imysql_sqls
     fn_chao
     return $?
 }
@@ -267,7 +267,7 @@ function fn_yb_select()
         HAVING 1 ${COND}
         ORDER by ${FIELD:-public} DESC LIMIT ${LIMIT:-50}
     " 
-    mysql -t kts <<< "${sqls}"
+    fn_imysql_sqls
     fn_chao ${chao}.Yjyb
     
     return $?
@@ -349,7 +349,7 @@ function fn_yy_select()
         SELECT * FROM yysj 
         HAVING ${HAVING:-1} ${COND} ${sql_date} ORDER BY ${FIELD:-date} ${ASC:-asc} LIMIT ${LIMIT:-36}
         "    
-        mysql ${OPT:--t} kts <<<"${sqls}"
+        fn_imysql_sqls
         fn_chao ${chao}.yysj
         ;;
     *|u|h)
