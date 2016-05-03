@@ -116,7 +116,6 @@ function fn_liutao()                    { cat book_liutao ;}
 function fn_lunyu()                     { cat book_lunyu ;}
 function fn_36ji()                      { cat book_36ji ;}
 
-function fn_wanna()                     { cat book_wanna ;}
 function fn_shenglvqimeng()             { cat book_shenglvqimeng ;}
 function fn_think_fast_n_slow()         { cat book_think_fast_n_slow ;}
 
@@ -307,10 +306,7 @@ function fn_tdx()                       { cat stk_tdx ;}
 
 function fn_jc_这不是独家买卖()         { cat stk_jc_这不是独家买卖 ;}
 function fn_jc_Golf智慧_快就是慢()      { cat stk_jc_Golf智慧_快就是慢 ;}
-
-
     local opts=(
-        cept                            # 交易规则
         ipo_rules
         ipo_ops                         # 新股
         urls
@@ -340,7 +336,6 @@ function fn_jc_Golf智慧_快就是慢()      { cat stk_jc_Golf智慧_快就是�
 
 function fn_futures()                   {  
 function fn_cept()                      { cat futures_cept ;}
-
     local opts=(
         cept
     )
@@ -826,6 +821,7 @@ function fn_stupid_things()             { cat stupid_things ;}
 function fn_subtitle()                  { cat subtitle ;}
 function fn_kindle()                    { cat kindle ;}
 function fn_meditation()                { cat meditation ;}
+function fn_practice_cept()             { cat practice_cept ;}
 
 
 # 新教与天主教。信则得救，不信则下地狱 vs 助人行善
@@ -901,6 +897,9 @@ function fn_main() {
         psychology                      # 心理学
         kindle
         meditation
+        practice_cept                   # 直接成一个文本
+        science_cept
+        xiaolai_cept
     )
     fn_print $@
 }
