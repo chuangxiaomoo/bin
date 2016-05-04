@@ -227,7 +227,6 @@ fn_gen_10jqka_sel()
     echo -ne "\x${rowx1}\x${rowx2}`cat ${buffer}`" > /winc/zxg/自选股.sel
     cp ${PLAIN} /winc/zxg/chao.txt
     fn_echo_warn "$rows rows to ${PLAIN}"
-   #fn_echo_warn "$rows rows to /winc/zxg/自选股.sel"
 }
 
 fn_gen_dzh_blk()
@@ -237,7 +236,7 @@ fn_gen_dzh_blk()
     HEAD="\xa6\x00\x51\xff\x01"     # 带时间排序功能，不带时间: HEAD="\xa5\x00Q\xff"
     DELI="\x00\x20\x66\x01"         # 不带时间: DELI="\x00\x00\x00\x00"
 
-    touch "${DZH_ZXG:=/dzh2/USERDATA/block/${ZXG:-自选股${DZH/1/}}.BLK}"
+    touch "${ZXGCFG:=/dzh2/USERDATA/block/自选股${WIT/1/}.BLK}"
 
     {
     echo -n -e $HEAD
@@ -256,9 +255,9 @@ fn_gen_dzh_blk()
         let index++
     done<<<"`grep ${PATTERN:-'^[/036]'} ${PLAIN}`"
     echo
-    } > ${DZH_ZXG}
+    } > ${ZXGCFG}
     fn_echo_warn "$index rows to ${PLAIN}"
-    fn_echo_warn "$index rows to ${DZH_ZXG}"
+    fn_echo_warn "$index rows to ${ZXGCFG}"
 }
 
 function fn_hew_tail()
@@ -273,7 +272,7 @@ function fn_imysql_sqls()
 
 function fn_chao()
 {
-    [ "${CHAO:=0}" -eq 0 ] && return
+    [ "${CHAO:=0}" -eq 0 ] && [ -z "${WIT}" ] && return
 
     [ -z "${sqls}" ] && fn_echo_warn "sqls is empty" && exit
     PLAIN=${1:-$chao}
@@ -281,12 +280,14 @@ function fn_chao()
     # echo "${sql_chao}"; exit
     # 最后因没有换行而有重复，uniq -u 只处理连续出现的重复行
     mysql -N kts <<<"${sql_chao}" |grep '^[036]'| tee ${TEE} ${PLAIN} > /dev/null 
-    #ysql -N kts <<<"${sql_chao}" > /tmp/kts/chao.abc
 
-    case ${DZH} in
-    N)      return               ;;
-    [1-9])  fn_gen_dzh_blk       ;;
-    *)      fn_gen_10jqka_sel    ;;
+    # echo WIT is ${WIT} FROM 
+    # printf "${BASH_SOURCE[1]##*/}%-6s %s\n" "|${BASH_LINENO[0]}|" 
+
+    case ${WIT} in
+    0)          return               ;;
+    [1-9A-Z])   fn_gen_dzh_blk       ;;
+    *)          fn_gen_10jqka_sel    ;;
     esac
 
     return $?
@@ -588,7 +589,7 @@ function fn_get_time()
     let sta=${NR}-1
     [ -z "${1}" ] && iASC=DESC
     odrLimit="ORDER by time ${iASC:-ASC} LIMIT ${sta},${2:-1}"
-    iHMS=`mysql -N kts<<<"SELECT DISTINCT time FROM dorat WHERE date='${END}' && time<='${HMS:-15:05:00}' ${odrLimit}"`
+    iHMS=`mysql -N kts<<<"SELECT DISTINCT time FROM dorat WHERE date='${END}' && time<='${HMS:-15:30:00}' ${odrLimit}"`
     if [ -z "${iHMS}" ]; then
         fn_echo_fail "No.${NR} is EMPTY"
         exit 1
