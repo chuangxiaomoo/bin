@@ -1173,7 +1173,7 @@ function fn_dig()
         exit
     fi
 
-    sed 's/[036][0-9][0-9][0-9][0-9][0-9]/\n&\n/g' ${chao}.dig | grep '^[036]' | \
+    sed 's/[036][0-9][0-9][0-9][0-9][0-9]/\n&\n/g' ${chao}.dig | grep '^[036][0-9][0-9][0-9][0-9][0-9]' | \
         grep .codelist -f - | \
         tee ${chao}.drip
     sed -i 's/$/\r/' ${chao}.drip

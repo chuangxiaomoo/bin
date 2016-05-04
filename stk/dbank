@@ -43,7 +43,7 @@ WGET='timeout 34 /usr/bin/wget'
 W3M='timeout  60 /usr/bin/w3m'
 
 # FLOOR() and ROUND()
-LORI='TRUNCATE(100*(d.low-d.yesc)/d.yesc, 1)'
+LORI='TRUNCATE(100*(d.low-d.yesc)/d.yesc, 2)'
 HIRI='TRUNCATE(100*(d.high-d.yesc)/d.yesc, 2)'
 OPRI='TRUNCATE(100*(d.open-d.yesc)/d.yesc, 2)'
 RISE='TRUNCATE(100*(d.close-d.yesc)/d.yesc, 2)'
@@ -237,7 +237,7 @@ fn_gen_dzh_blk()
     HEAD="\xa6\x00\x51\xff\x01"     # 带时间排序功能，不带时间: HEAD="\xa5\x00Q\xff"
     DELI="\x00\x20\x66\x01"         # 不带时间: DELI="\x00\x00\x00\x00"
 
-    touch "${DZH_ZXG:=/dzh2/USERDATA/block/${ZXG:-自选股${NUM}}.BLK}"
+    touch "${DZH_ZXG:=/dzh2/USERDATA/block/${ZXG:-自选股${DZH/1/}}.BLK}"
 
     {
     echo -n -e $HEAD
@@ -284,9 +284,9 @@ function fn_chao()
     #ysql -N kts <<<"${sql_chao}" > /tmp/kts/chao.abc
 
     case ${DZH} in
-    N) return               ;;
-    1) fn_gen_dzh_blk       ;;
-    *) fn_gen_10jqka_sel    ;;
+    N)      return               ;;
+    [1-9])  fn_gen_dzh_blk       ;;
+    *)      fn_gen_10jqka_sel    ;;
     esac
 
     return $?
@@ -586,7 +586,8 @@ function fn_get_time()
     # arg2 LIMIT, 默认1
     NR=${1:-1}
     let sta=${NR}-1
-    odrLimit="ORDER by time ${iASC:-DESC} LIMIT ${sta},${2:-1}"
+    [ -z "${1}" ] && iASC=DESC
+    odrLimit="ORDER by time ${iASC:-ASC} LIMIT ${sta},${2:-1}"
     iHMS=`mysql -N kts<<<"SELECT DISTINCT time FROM dorat WHERE date='${END}' && time<='${HMS:-15:05:00}' ${odrLimit}"`
     if [ -z "${iHMS}" ]; then
         fn_echo_fail "No.${NR} is EMPTY"
@@ -600,19 +601,24 @@ function fn_list_date()
     fn_get_date 1 ${1:-10} | cat -n
 }
 
+# FEN=${HMS} DAY=dorat
 function fn_xtempday()
 {
     local table=${TBL:-xtempday}
+    local columns='*'
 
     if fn_iscode $1; then
         sql_fork="code=${1}"
-    else
+    elif [ -z "$FEN" ]; then
         sql_fork="date='${1:-$END}'"
+    elif [ -n "$FEN" ]; then
+        columns='code,date,yesc,open,high,low,close,volume,amount'
+        sql_fork="date='${1:-$END}' and time='${FEN}'"
     fi
 
     echo "
     $DROP ${table}; CREATE TABLE ${table} LIKE day;
-    INSERT INTO ${table} SELECT * from day where ${sql_fork} HAVING ${iCOND:-1};
+    INSERT INTO ${table} SELECT ${columns} from ${DAY:-day} where ${sql_fork} && ${iCOND:-1};
     " | mysql kts
     return $?
 }
