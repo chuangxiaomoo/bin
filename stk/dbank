@@ -215,7 +215,6 @@ function fn_txttbl()
 
 fn_gen_10jqka_sel() 
 {
-    rows=`wc -l < ${PLAIN}`
     rowx1=`bc <<< "obase=16;${rows}%256"`
     rowx2=`bc <<< "obase=16;${rows}/256"`
 
@@ -226,7 +225,7 @@ fn_gen_10jqka_sel()
         -e 's# 3#!3#g' > ${buffer}
     echo -ne "\x${rowx1}\x${rowx2}`cat ${buffer}`" > /winc/zxg/自选股.sel
     cp ${PLAIN} /winc/zxg/chao.txt
-    fn_echo_warn "$rows rows to ${PLAIN}"
+    fn_echo_warn "$rows rows to /winc/zxg/自选股.sel"
 }
 
 fn_gen_dzh_blk()
@@ -256,7 +255,6 @@ fn_gen_dzh_blk()
     done<<<"`grep ${PATTERN:-'^[/036]'} ${PLAIN}`"
     echo
     } > ${ZXGCFG}
-    fn_echo_warn "$index rows to ${PLAIN}"
     fn_echo_warn "$index rows to ${ZXGCFG}"
 }
 
@@ -281,16 +279,18 @@ function fn_chao()
     # 最后因没有换行而有重复，uniq -u 只处理连续出现的重复行
     mysql -N kts <<<"${sql_chao}" |grep '^[036]'| tee ${TEE} ${PLAIN} > /dev/null 
 
+    rows=`wc -l < ${PLAIN}`
+
     # echo WIT is ${WIT} FROM 
     # printf "${BASH_SOURCE[1]##*/}%-6s %s\n" "|${BASH_LINENO[0]}|" 
 
     case ${WIT} in
-    0)          return               ;;
+    0)          do_nothing=1         ;;
     [1-9A-Z])   fn_gen_dzh_blk       ;;
     *)          fn_gen_10jqka_sel    ;;
     esac
 
-    return $?
+    fn_echo_warn "${rows} rows to ${PLAIN}"
     # up file_to_table ${PLAIN}
     # xt_ret $? "${FUNCNAME}" || return $?
 }
@@ -298,7 +298,7 @@ function fn_chao()
 function fn_bist()
 {
     [ -z "${BLK}" ] && return
-    LIMIT= FIELD= COND= CHAO=1 PARTS=2 fn_blk u ${BLK}
+    WIT=0 LIMIT= FIELD= COND= CHAO=1 PARTS=2 fn_blk u ${BLK}
     YIST=${chao}.blk
 }
 
