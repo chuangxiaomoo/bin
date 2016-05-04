@@ -28,7 +28,7 @@ alias      YIST=''
 alias     YRISE=''
 alias      STEP=''
 alias     SCALE=''      # 通放大倍数 
-alias       ZXG=''      # ZIZE 用 NUM STEP 替换
+alias       WIT=''      # 大智慧
 alias     LIMIT=''
 alias      iEND=''
 alias    iLIMIT=''
@@ -47,7 +47,7 @@ alias     ..='cd ..'
 alias    ...='cd ../..'
 alias     .b='cd ~/bin'
 alias     .c="let 'CHAO=!CHAO'; echo \$CHAO; export CHAO"
-alias     .d="let 'DZH=!DZH'; echo \$DZH; export DZH"
+alias     .d="let 'WIT=!WIT'; echo \$WIT; export WIT"
 alias     .5="let 'TOV5=++TOV5%3'; echo \$TOV5; export TOV5"
 alias  .SINA="let 'SINA=!SINA'; echo \$SINA; export SINA"
 alias .DEBUG="let 'DEBUG=!DEBUG'; echo \$DEBUG; export DEBUG"
