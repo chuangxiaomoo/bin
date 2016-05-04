@@ -900,6 +900,7 @@ function fn_main() {
         practice_cept                   # 直接成一个文本
         science_cept
         xiaolai_cept
+        misc_cept
     )
     fn_print $@
 }

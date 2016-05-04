@@ -75,17 +75,17 @@ function fn_lsd()
         FIELD=${FIELD:-nmc}
         ;;
     l|list) 
-        iASC=DESC fn_list_iF5_times ;;
+        fn_list_iF5_times ;;
     [0-9]*)
         if [ "${1}" = 0 ]; then
             fn_echo_warn "NR is 0"
-            LIMIT=${LIMIT:-200} HAVING='rise>0' SELECT lsd; exit 0;
+            LIMIT=${LIMIT:-200} HAVING="rise>${rDOOR:-0}" SELECT lsd; exit 0;
         fi
-        LIMIT=${LIMIT:-400}
+        LIMIT=${LIMIT:-40}     # 如此大400？
         FIELD=${FIELD:-rise}
         iTime=`fn_get_time ${1}`
         TEMPDAY="(SELECT * FROM dorat WHERE date='${END}' && time='${iTime}')"
-        HAVING="${HAVING:-rise>0}"
+        HAVING="${HAVING:-rise>${rDOOR:-0}}"
         fn_echo_warn ${iTime}
         ;;
     u|h|usage)
@@ -376,7 +376,6 @@ function fn_dirtio()
     HMS1 HMS2 [wolf]        show close to diff
     COND='ri2>ri1 && hiri<9.93&&dirt<10'
     "
-    export iASC=ASC
     case $1 in
     l) fn_list_iF5_times        ;;
     w) fn_list_wolf_times       ;;
@@ -2006,33 +2005,17 @@ function fn_stat()
     return $?
 }
 
-function fn_xtempfen()
-{
-    fen=`fn_get_time $1`
-    fn_echo_succ "Peel off time[$1]@${fen}..."
-
-    local table=${TBL:-xtempday}
-    columns='code,date,yesc,open,high,low,close,volume,amount'
-
-    echo "
-    $DROP ${table}; CREATE TABLE ${table} LIKE day;
-    INSERT INTO ${table} 
-    SELECT ${columns} from dorat WHERE date='${END}' and time='${fen}';
-    " | mysql kts
-    return $?
-}
-
-function fn_topX()
+function fn_sampleX()
 {
     sqls="
     SELECT n.blk FROM blk_name as n, blk_memb as m
      WHERE n.blk=m.blk AND n.blk NOT in ${EXCLUDE_BLK//,0x40/} 
      GROUP by blk
     " 
-
     blks=`mysql -N kts<<<"${sqls}"`
 
-    fn_xtempfen $1
+    HMS=`fn_get_time $1`
+    FEN=${HMS} DAY=dorat iCOND="high!=low && close/yesc<1.0993 && close/yesc>=1" fn_xtempday
     xt_ret $? "xtempfen error" || return $?
 
     echo "
@@ -2043,48 +2026,45 @@ function fn_topX()
         sym     CHAR(64),
         SAMPLES INT, 
         rise    DECIMAL(6,2) NOT NULL DEFAULT 0,
+        earn    DECIMAL(6,2) NOT NULL DEFAULT 0,
+        click   INT,
         INDEX(date,blk)
     );
-    $DROP topX;
-    $CREATE topX LIKE topN;
     " | mysql kts
 
     for i in ${blks}; do
         # mysql -t kts <<< "SELECT code FROM blk_memb WHERE blk=${i}"
-        SAMPLES=`mysql -N kts <<< "SELECT IF(count(code)>10, 10, count(code)) FROM blk_memb WHERE blk=${i}"`
+        SAMPLES=`mysql -N kts <<< "SELECT IF(count(code)>${NUM}, ${NUM}, count(code)) FROM blk_memb WHERE blk=${i}"`
+        xt_ret $? "" || return $?
         # echo ${SAMPLES}; exit
         echo "
-        INSERT INTO topX (date,blk,sym,SAMPLES,rise)
-        SELECT '${END}', blk, sym, ${SAMPLES}, sum(rise)/${SAMPLES} FROM
+        INSERT INTO topN (date,blk,sym,SAMPLES,rise,earn,click)
+        SELECT '${END}', blk, sym, ${SAMPLES}, 
+            sum(rise)/${SAMPLES},
+            sum(earn)/${SAMPLES},
+            sum(rise>${TEN:=9.93}) FROM
         (
-        SELECT d.code, round(100*(close-yesc)/yesc, 2) as rise 
-        FROM
-        xtempday as d,
-        (SELECT code FROM blk_memb WHERE blk=${i}) as b
-        WHERE d.code=b.code ORDER by rise DESC LIMIT ${SAMPLES}
+            SELECT d.code, ROUND(100*(close-yesc)/yesc, 2) as rise, 
+                ROUND(100*(close-amount/volume)/yesc, 2) as earn FROM
+                xtempday as d,
+                (SELECT code FROM blk_memb WHERE blk=${i}) as b
+            WHERE d.code=b.code ORDER by rise DESC LIMIT ${SAMPLES}
         ) as top13, blk_name WHERE blk=${i}
         " | mysql -t kts
+        xt_ret $? "" || return $?
     done
-
-    echo "
-        DELETE FROM topN WHERE date='${END}';
-        INSERT INTO topN SELECT * FROM topX ORDER by rise DESC;
-    " | mysql -t kts
-
-    return $?
 }
 
-function fn_top()
+function fn_sample()
 {
-    echo "
-        DELETE FROM topN WHERE date='${END}'
-    " | mysql -t kts
-    fn_echo_succ "DELETE ${date} FROM topN done..."
+    NUM=${NUM:=8} fn_sampleX $1
+    xt_ret $? "" || return $?
 
-    fn_topX $1
+    fn_echo_succ "END:${END}.${FEN} NUM:${NUM} TEN:${TEN:=9.93}"
+
     echo "
-    SELECT date,hex(blk),sym,SAMPLES,rise FROM topN 
-        WHERE date='${END}' ORDER by ${FIELD:-rise} DESC LIMIT ${LIMIT:-20};
+    SELECT date,hex(blk),sym,SAMPLES,rise,earn,click FROM topN
+        WHERE date='${END}' HAVING 1 ${COND} ORDER by ${FIELD:-rise} DESC LIMIT ${LIMIT:-20};
     " | mysql -t kts
     xt_ret $? "" || return $?
 }
@@ -2190,6 +2170,7 @@ function fn_blk_wolf_team()
     stime=`mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC LIMIT ${sta},1"`
     iCOND="time='${stime}'" xCol=date fn_xCol mat_dde xdde ${END}
     xt_ret $? "" || return $?
+    yizis="SELECT code FROM day WHERE date='${END}' && high=low and high>yesc"  # 剔除一字板
     fn_blk_wolf_scale
     xt_ret $? "" || return $?
     #
@@ -2203,10 +2184,12 @@ function fn_blk_wolf_team()
         round(sum(${eWolf})/count(m.code), 2) as wolf,
         sum(rise>${TEN:=9.93}) as click
     FROM blk_name as n, blk_memb as m, xdde as x
-    $WHERE n.blk=m.blk and m.code=x.code && m.blk not in ${EXCLUDE_BLK} ${iCOND}
-    && ${eWolf}>${iDOOR:=.4} && rise>${rDOOR:=2} && ${sql_nmc:-"nmc<${nmc_wolf}"}
+    $WHERE n.blk=m.blk and m.code=x.code 
+        && x.rise<10.1 && m.code NOT IN (${yizis:-888888})
+        && m.blk not in ${EXCLUDE_BLK} ${iCOND}
+        && ${eWolf}>${iDOOR:=.4} && rise>${rDOOR:=2} && ${sql_nmc:-"nmc<${nmc_wolf}"}
     GROUP by blk 
-    HAVING num>${iNUM:-1} && click>${click:=0} ${COND}
+    HAVING num>${iNUM:-1} && click>${click:=-1} ${COND}
     ORDER by num DESC LIMIT ${LIMIT:-16}
     " 
     #echo "${sqls}" ; exit
@@ -2251,19 +2234,19 @@ function fn_blk()
        #ABBR=m fn_notin_blk FFA1
         ABBR=m fn_yist
         FIELD=${2}
-        echo "
+        sqls="
         SELECT hex(n.blk) as blk,count(m.code) as num,n.sym FROM blk_name as n, blk_memb as m
-         $WHERE n.blk=m.blk AND n.blk not in ${EXCLUDE_BLK} ${notinBLK}
-         GROUP by blk ORDER by ${FIELD:-num} ${ASC:-DESC} LIMIT ${LIMIT:-20};
-        " | mysql -t kts
+        $WHERE n.blk=m.blk AND n.blk not in ${EXCLUDE_BLK} ${notinBLK}
+        GROUP by blk ORDER by ${FIELD:-num} ${ASC:-DESC} LIMIT ${LIMIT:-20}" 
+        fn_imysql_sqls
         ;;
     sample) 
-        [ "${2}" = l ] && iASC=DESC fn_list_iF5_times
-        fn_top ${@:2} 
+        [ "${2}" = l ] && fn_list_iF5_times
+        fn_sample ${@:2} 
         ;;
     10)
         ABBR=m fn_yist
-        [ "${2}" = l ] && iASC=DESC fn_list_iF5_times
+        [ "${2}" = l ] && fn_list_iF5_times
         iTime=`fn_get_time ${2}`
         TEMPDAY="(SELECT * FROM dorat WHERE date='${END}' && time='${iTime}')"
         fn_echo_succ "Classify @${END}:${iTime} [rDOOR:${rDOOR:=2}] [TEN:${TEN:=9.93}] [FIELD:${FIELD:-num}]"

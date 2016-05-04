@@ -32,10 +32,10 @@
       └────────────────────────────────────────────────────────────────────────┘
 
   VI MODE-KEYS
-      Clear   selection              Escape   
-      Copy    selection              Enter    
-      Start   selection              Space    
-      Verti   selection              Space-v  
+      Clear   selection              Escape
+      Copy    selection              Enter
+      Start   selection              Space
+      Verti   selection              Space-v
 
   CONFIG
       alias tmux='TERM=xterm tmux'    # pane separator is line
@@ -43,8 +43,9 @@
       ~/.tmux.conf
           http://linuxtoy.org/archives/from-screen-to-tmux.html
           set-window-option -g mode-keys vi
-          set-window-option -g utf8 on     
-          set -g history-limit 5000        
+          set-window-option -g utf8 on
+          set -g history-limit 5000
+          bind -n C-k clear-history
 
       COMMAND
           set-option -g -w mode-mouse off
