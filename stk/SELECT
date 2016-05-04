@@ -100,8 +100,8 @@ function fn_lsd()
         ''      top default
 
         PPLUS=<val>
-        1 high!=low
-        2 high!=low && high!=open
+        N high!=low && close/yesc<1.15                  # 有价格变动
+        G high!=low && close/yesc<1.15 && high!=open    # 地板上跃起
         3 open =low
         "
         exit
@@ -117,9 +117,9 @@ function fn_lsd()
         sql_dive="round( (100*(d.amount/d.volume-d.close)/d.close), 1) as dive,"
         [ -n "${PPLUS}" ] && 
         case ${PPLUS} in
-        1) CHAO=1;iCOND='high!=low'                 ;;
-        2) CHAO=1;iCOND='high!=low && high!=open'   ;;
-        3) CHAO=1;iCOND='open =low'                 ;;
+        N) CHAO=1;iCOND='high!=low&&d.close/yesc<1.15'                  ;;
+        G) CHAO=1;iCOND='high!=low&&d.close/yesc<1.15 && high!=open'    ;;
+        E) CHAO=1;iCOND='open =low'                                     ;;
         esac
 
         sqls="
@@ -136,7 +136,6 @@ function fn_lsd()
         #echo "${sqls}"; exit
     }
 
-    fn_echo_warn "----- LIST:${#LIST[@]} HAVING:${HAVING//SEL*=/} COND@${END}: $COND -----"
     fn_sql $@
     case ${PARTS:-4} in
     1) return                               ;; # 不输出chao，不输出mysql结果
@@ -146,6 +145,7 @@ function fn_lsd()
     *) fn_imysql_sqls
        fn_chao ${chao}.${chao2:-lsd}        ;; # 响应CHAO
     esac
+    fn_echo_warn "${END}.${iTime:-latest} LIST:${#LIST[@]} HAVING:${HAVING//SEL*=/} COND@:$COND + iCOND:${iCOND}"
 }
 
 function fn_ace()
@@ -160,17 +160,18 @@ function fn_ace()
     }
 
     local i=
-    printf "%-12s%6s\t%6s\t%6s\t%6s\t%6s\n" date rows nmc20 nmc75 amt20 amt75
+    echo "100为基数，第20/80名的情况看出标的的nmc,amount的大小，从而得游资投入资金"
+    printf "%-12s%6s\t%6s\t%6s\t%6s\t%6s\n" date rows nmc20 nmc80 amt20 amt80
     for i in ${dates[@]}; do
         rows=`fn_sql $i "count(d.code)"`
         pct20=`bc <<< "${rows}*20/100"`
-        pct75=`bc <<< "${rows}*75/100"`
+        pct80=`bc <<< "${rows}*80/100"`
         nmc20=`fn_sql $i nmc ORDER    by nmc    ASC LIMIT ${pct20},1`
-        nmc75=`fn_sql $i nmc ORDER    by nmc    ASC LIMIT ${pct75},1`
+        nmc80=`fn_sql $i nmc ORDER    by nmc    ASC LIMIT ${pct80},1`
         amt20=`fn_sql $i amount ORDER by amount ASC LIMIT ${pct20},1`
-        amt75=`fn_sql $i amount ORDER by amount ASC LIMIT ${pct75},1`
+        amt80=`fn_sql $i amount ORDER by amount ASC LIMIT ${pct80},1`
          
-        echo ${i} ${rows} ${nmc20} ${nmc75} ${amt20} ${amt75} |
+        echo ${i} ${rows} ${nmc20} ${nmc80} ${amt20} ${amt80} |
         awk '{printf "%s  %6d\t%6.2f\t%6.2f\t%6.2f\t%6.2f\n", $1, $2, $3/10000,$4/10000,$5/10000,$6/10000 }'
     done
 
@@ -460,7 +461,7 @@ function fn_wma()
 function fn_updown()
 {
     case $1 in
-    +([0-9])) HMS=`fn_get_time ${1}` || exit; NUM=1 ;;
+    +([0-9])) HMS=`iASC=DESC fn_get_time ${1}` || exit; NUM=1 ;;
     l) fn_list_iF5_times                            ;;
     esac
 
@@ -472,9 +473,6 @@ function fn_updown()
     cd $workdir
     > $mps_god
     head -n -5 $mps_org >> $mps_god
-
-    [ -n "${PPLUS}" ] && col_risp='s.risp,' && \
-        sql_where=', sz_index as s WHERE t.date=s.date && s.code=399006'
 
     cols1=t.date,cnt,yiz10,inc10,hit10,
     cols2=${col_risp}inc,dec0,eq0,inc8p,inc5p,inc2p,inc0p,dec0d,dec2d,dec5d,dec8d,hit00,dec10
@@ -2015,8 +2013,8 @@ function fn_sampleX()
     blks=`mysql -N kts<<<"${sqls}"`
 
     HMS=`fn_get_time $1`
-    FEN=${HMS} DAY=dorat iCOND="high!=low && close/yesc<1.0993 && close/yesc>=1" fn_xtempday
-    xt_ret $? "xtempfen error" || return $?
+    FEN=${HMS} DAY=dorat iCOND="high!=low && close/yesc<1.15 && close/yesc>=1" fn_xtempday
+    xt_ret $? "xtempday error" || return $?
 
     echo "
     $DROP topN;
@@ -2055,7 +2053,7 @@ function fn_sampleX()
     done
 }
 
-function fn_sample()
+function fn_sample2()
 {
     NUM=${NUM:=8} fn_sampleX $1
     xt_ret $? "" || return $?
@@ -2067,6 +2065,58 @@ function fn_sample()
         WHERE date='${END}' HAVING 1 ${COND} ORDER by ${FIELD:-rise} DESC LIMIT ${LIMIT:-20};
     " | mysql -t kts
     xt_ret $? "" || return $?
+}
+
+function fn_sample()
+{
+    HMS=`fn_get_time $1`
+    FEN=${HMS} DAY=dorat iCOND="high!=low && close/yesc<1.15 && close/yesc>=1" fn_xtempday
+    xt_ret $? "xtempday error" || return $?
+
+    echo "
+    $DROP topN;
+    $CREATE topN (
+        blk     INT,
+        sym     CHAR(64),
+        code    INT(6) ZEROFILL NOT NULL, 
+        close   DECIMAL(6,2) NOT NULL DEFAULT 0,
+        yesc    DECIMAL(6,2) NOT NULL DEFAULT 0,
+        rise    DECIMAL(6,2) NOT NULL DEFAULT 0,
+        earn    DECIMAL(6,2) NOT NULL DEFAULT 0,
+        INDEX(blk,code)
+    );
+    $DROP top8;
+    $CREATE top8 LIKE topN;
+    " | mysql kts
+
+    SAMPLES=${SAMPLES:-8}
+
+    sqls="
+    INSERT INTO topN
+    SELECT n.blk, sym, x.code,close,yesc,
+        ROUND(100*(close-yesc)/yesc, 2) as rise, 
+        ROUND(100*(close-amount/volume)/yesc, 2) as earn
+        FROM blk_name as n, blk_memb as m, xtempday as x
+        WHERE n.blk=m.blk AND n.blk NOT in ${EXCLUDE_BLK//,0x40/} AND m.code=x.code;
+
+    INSERT INTO top8
+    SELECT * from topN a where ${SAMPLES}>(select count(*) from topN where blk=a.blk and rise>a.rise) order by a.blk,a.rise desc;
+
+    SELECT hex(blk),sym, ${SAMPLES} as SAMPLES,
+        ROUND(sum(rise)/${SAMPLES}, 2) as rise,
+        ROUND(sum(earn)/${SAMPLES}, 2) as earn,
+        sum(rise>${TEN:=9.93}) as click FROM top8
+    GROUP by blk
+    HAVING 1 ${COND} ORDER by ${FIELD:-rise} DESC LIMIT ${LIMIT:-20};
+    " 
+    mysql -t kts <<< "${sqls}"
+
+    fn_echo_succ "END:${END}.${HMS} SAMPLES:${SAMPLES} TEN:${TEN:=9.93}"
+
+    [ -n "${BLK}" ] && \
+    WIT=0 CHAO=1 PARTS=2 FIELD= fn_blk u $BLK && \
+    WIT=${WIT:-1} YIST=${chao}.blk LIMIT=12 PPLUS=N BLK= SELECT lsd ${1}
+
 }
 
 function fn_blk_delta_codes()
@@ -2230,10 +2280,9 @@ function fn_blk()
 #   EXCLUDE_BLK="(0x1234)"
 
     case $1 in
+    g|grep)    LIMIT=500 fn_blk l | grep ${2:-'\<FF'} ;;
     l|layout)
-       #ABBR=m fn_notin_blk FFA1
         ABBR=m fn_yist
-        FIELD=${2}
         sqls="
         SELECT hex(n.blk) as blk,count(m.code) as num,n.sym FROM blk_name as n, blk_memb as m
         $WHERE n.blk=m.blk AND n.blk not in ${EXCLUDE_BLK} ${notinBLK}
@@ -2242,7 +2291,7 @@ function fn_blk()
         ;;
     sample) 
         [ "${2}" = l ] && fn_list_iF5_times
-        fn_sample ${@:2} 
+        fn_sample ${2}
         ;;
     10)
         ABBR=m fn_yist
@@ -2701,11 +2750,11 @@ function fn_ddd()
     case $1 in
     yiz)
         fn_echo_succ "PARTS=2@一字开板"
-        PARTS=2 CHAO=1 END=$PREV COND="rise>9.93" PPLUS=2 FIELD=rise LIMIT=400 SELECT lsd
+        PARTS=2 CHAO=1 END=$PREV COND="rise>9.93" PPLUS=G FIELD=rise LIMIT=400 SELECT lsd
         YIST=${chao}.lsd   COND="eWolf>.2 && opri> 9.93" DOOR=-1/3 SELECT wolf i $2
         YIST=${chao}.lsd   COND="eWolf>.2 && opri<=9.93" DOOR=-tov/3 FIELD=rise SELECT wolf i $2
         fn_echo_succ "PARTS=2@非一字板连板"
-        PARTS=2 CHAO=1 END=$PREV COND="rise>9.93" PPLUS=1 FIELD=rise LIMIT=400 SELECT lsd
+        PARTS=2 CHAO=1 END=$PREV COND="rise>9.93" PPLUS=N FIELD=rise LIMIT=400 SELECT lsd
         YIST=${chao}.lsd   COND="eWolf>.2 && opri> 9.93" DOOR=-1/3 SELECT wolf i $2
         YIST=${chao}.lsd   COND="eWolf>.2 && opri<=9.93" DOOR=-1/3 FIELD=rise SELECT wolf i $2
         ;;
@@ -2823,7 +2872,7 @@ function fn_main()
     "stat                                     # 大盘统计"
     # ----------------  ABOVE IS FIXED SEQUENCE --------------------
     "xrd                FIELD                 # #{OP:->}"
-    "ace                sta num               # 10日内所有+10% amount nmc 统计"
+    "ace                sta num               # 10日内所有+10% amount nmc 统计 [SELECT wolf top]"
     "cap                code                  # 查询nmc&cap"
     "name               code                  # 名"
     "pma                code                  # NUM=5日平均"
@@ -2846,7 +2895,7 @@ function fn_main()
     "updown                                   # 近期{NUM=5}涨跌家数统计"
     "hilo               FIELD                 # 跌幅统计"
     "lohi               FIELD                 # 涨幅统计"
-    "wee                                      # NUM日成交量放大倍数"
+    "wee                                      # NUM日为1个单位，3个周期环比[成交量放大倍数]"
     "g20                                      # 创20日新高"
     "lhb                excption              # 龙虎榜"
     "dde                                      # dde(CURR)>dde(PREV)"

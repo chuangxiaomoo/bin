@@ -410,6 +410,7 @@ function fn_manual()
         m|manual                                    # 指标说明
     COND:
     COND='PEG>0&&PEG<50&&profit>1000 &&nmcYi<80'    # 估值修复
+    COND='profit>1000 && p_grw_y>20 && nmcYi<150' 
     "
 }
 
@@ -428,6 +429,7 @@ function fn_main()
         sql_cond="and z.code=${3}"
     fi
 
+    export chao=${chao}.yjbb
     fn_get_multiplier
 
     case $2 in
