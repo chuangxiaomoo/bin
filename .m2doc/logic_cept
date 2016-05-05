@@ -46,3 +46,23 @@
 [东坡夜奔](https://www.zhihu.com/question/34595107/answer/59319639)
 参考：[科学与逻辑方法论](http://wenku.baidu.com/view/b9a51a1aa8114431b90dd8af.html?re=view)
 
+# MECE.互斥穷尽
+
+  [](http://wiki.mbalib.com/wiki/MECE分析法)
+
+  MECE，是Mutually Exclusive Collectively Exhaustive，中文意思是“相互独立（排斥），
+  完全穷尽”。 也就是对于一个重大的议题，能够做到不重叠、不遗漏的分类，而且能够藉
+  此有效把握问题的核心，并解决问题的方法。
+
+  它是麦肯锡的第一个女咨询顾问巴巴拉·明托（Barbara Minto）在金字塔原理（The 
+  Minto Pyramid Principle）中提出的一个很重要的原则。
+
+                    外部
+             生理   
+                    内部
+
+    头痛
+
+                    压力和紧张
+             心理
+                    忧郁

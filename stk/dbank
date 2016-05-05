@@ -295,9 +295,44 @@ function fn_chao()
     # xt_ret $? "${FUNCNAME}" || return $?
 }
 
+function fn_check_blk_abbr()
+{
+    [ ${#BLK} -gt 4 ] && return
+
+    maps=(
+     G  CFF9       高送转        
+     X  40         新股与次新股  
+    GX  FFC8       高+新
+     A  FFCD       ADAS+         
+     V  D77B       虚拟现实      
+     L  FFCC       锂电+         
+    HP  D527       互联网+       
+     H  DB8A       互联网金融    
+     M  DADA       新材料概念    
+    I4  D957       工业4.0       
+    )
+
+    MATCH=
+    for (( i=0,j=1,k=2; i<${#maps[@]}; i+=3,j+=3,k+=3 )); do
+        [ "${BLK}" = "${maps[$i]}" ] && MATCH=${maps[$j]} && break
+    done
+
+    if [ -n "${MATCH}" ]; then
+       iWIT=${BLK}
+        BLK=${MATCH}
+        return
+    elif ([ ${BLK} != 40 ] && [ ${#BLK} != 4 ]); then
+        for (( i=0,j=1,k=2; i<${#maps[@]}; i+=3,j+=3,k+=3 )); do
+            echo -e  "${maps[$i]}\t ${maps[$j]} \t${maps[$k]}"
+        done
+        exit 1
+    fi
+}
+
 function fn_bist()
 {
     [ -z "${BLK}" ] && return
+    fn_check_blk_abbr
     WIT=0 LIMIT= FIELD= COND= CHAO=1 PARTS=2 fn_blk u ${BLK}
     YIST=${chao}.blk
 }
@@ -672,8 +707,8 @@ function fn_create_tbl_codes()
 
 function fn_bell()
 {
-    timeout 2 nc 192.168.100.100 1234 <<<"${*:-msg.wav}"
-   #timeout 2 nc 192.168.0.101 1234 <<<"$*"
+    # route -p GW 即是host的IP
+    timeout 2 nc 10.0.2.2 1234 <<<"${*:-msg.wav}"
 }
 
 function fn_cp_tbl()

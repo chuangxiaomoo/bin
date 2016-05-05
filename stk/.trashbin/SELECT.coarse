@@ -1,0 +1,69 @@
+#! /ban/bash
+
+# 需要4分钟，太慢被淘汰
+
+function fn_sample2()
+{
+    NUM=${NUM:=8} fn_sampleX $1
+    xt_ret $? "" || return $?
+
+    fn_echo_succ "END:${END}.${FEN} NUM:${NUM} TEN:${TEN:=9.93}"
+
+    echo "
+    SELECT date,hex(blk),sym,SAMPLES,rise,earn,click FROM topN
+        WHERE date='${END}' HAVING 1 ${COND} ORDER by ${FIELD:-rise} DESC LIMIT ${LIMIT:-20};
+    " | mysql -t kts
+    xt_ret $? "" || return $?
+}
+
+function fn_sampleX()
+{
+    sqls="
+    SELECT n.blk FROM blk_name as n, blk_memb as m
+     WHERE n.blk=m.blk AND n.blk NOT in ${EXCLUDE_BLK//,0x40/} 
+     GROUP by blk
+    " 
+    blks=`mysql -N kts<<<"${sqls}"`
+
+    HMS=`fn_get_time $1`
+    FEN=${HMS} DAY=dorat iCOND="high!=low && close/yesc<1.15 && close/yesc>=1" fn_xtempday
+    xt_ret $? "xtempday error" || return $?
+
+    echo "
+    $DROP topN;
+    $CREATE topN (
+        date    date,
+        blk     INT,
+        sym     CHAR(64),
+        SAMPLES INT, 
+        rise    DECIMAL(6,2) NOT NULL DEFAULT 0,
+        earn    DECIMAL(6,2) NOT NULL DEFAULT 0,
+        click   INT,
+        INDEX(date,blk)
+    );
+    " | mysql kts
+
+    for i in ${blks}; do
+        # mysql -t kts <<< "SELECT code FROM blk_memb WHERE blk=${i}"
+        SAMPLES=`mysql -N kts <<< "SELECT IF(count(code)>${NUM}, ${NUM}, count(code)) FROM blk_memb WHERE blk=${i}"`
+        xt_ret $? "" || return $?
+        # echo ${SAMPLES}; exit
+        echo "
+        INSERT INTO topN (date,blk,sym,SAMPLES,rise,earn,click)
+        SELECT '${END}', blk, sym, ${SAMPLES}, 
+            sum(rise)/${SAMPLES},
+            sum(earn)/${SAMPLES},
+            sum(rise>${TEN:=9.93}) FROM
+        (
+            SELECT d.code, ROUND(100*(close-yesc)/yesc, 2) as rise, 
+                ROUND(100*(close-amount/volume)/yesc, 2) as earn FROM
+                xtempday as d,
+                (SELECT code FROM blk_memb WHERE blk=${i}) as b
+            WHERE d.code=b.code ORDER by rise DESC LIMIT ${SAMPLES}
+        ) as top13, blk_name WHERE blk=${i}
+        " | mysql -t kts
+        xt_ret $? "" || return $?
+    done
+}
+
+
