@@ -378,7 +378,6 @@ function fn_01_Akkila与拼字大赛()       { cat movie_01_Akkila与拼字大�
 
 function fn_logic()                     {
 function fn_cept()                      { cat logic_cept ;}
-function fn_MECE()                      { cat logic_MECE ;}
 function fn_training500()               { cat logic_training500 ;}
 function fn_puzzle()                    { cat logic_puzzle ;}
 function fn_formal()                    { cat logic_formal ;}
@@ -387,7 +386,6 @@ function fn_fallacy()                   { cat logic_fallacy ;}
 function fn_language()                  { cat logic_language ;}
     local opts=(
         cept
-        MECE                            # Mutually Exclusive Collectively Exhaustive
         training500
         puzzle                          # 我理解的一些谜
         formal                          #   形式逻辑(普通逻辑)

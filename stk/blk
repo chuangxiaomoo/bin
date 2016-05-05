@@ -92,6 +92,9 @@ function fn_10jqka()
     TRUNCATE TABLE blk_memb;
     LOAD DATA LOCAL INFILE '${blk_name}' INTO TABLE blk_name;
     LOAD DATA LOCAL INFILE '${blk_memb}' INTO TABLE blk_memb;
+
+    INSERT INTO blk_memb -- SELECT conv('FFC8',16,10)
+    SELECT convert(0xFFC8,signed), code FROM blk_memb WHERE blk=0x40 AND code IN (SELECT code FROM blk_memb WHERE blk=0xCFF9);
     " | mysql kts
     xt_ret $? "mysql" || return $?
 

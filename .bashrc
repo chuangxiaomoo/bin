@@ -41,7 +41,7 @@ alias NMC_RATIO=''
 alias       wup='.s; FINA=0 up 4; TBL=wind SCREENER 0 || up wind'
 alias       fup='.s; FINA=1 up 4'
 alias   .lschao='xargs -n8</tmp/kts/chao'
-alias      .nb.="timeout 3 nc 192.168.100.100 1234 <<< 'duang.wav msg.wav'"
+alias      .nb.="timeout 3 nc 10.0.2.2 1234 <<< 'duang.wav msg.wav'"
 
 alias     ..='cd ..'
 alias    ...='cd ../..'

@@ -709,6 +709,22 @@ function fn_lhb0()
     return $?
 }
 
+function fn_db201()
+{
+    db_date=`mysql -N kts<<<"SELECT date FROM stamp_day ORDER by id DESC LIMIT 1"`
+    now=`date +%F`
+
+    if [ "${now}" = "${db_date}" ]; then
+        hhmm=`date +%H%M | sed 's/^0//'`
+        if [ "${hhmm}" -lt 930 ]; then
+            fn_bell 'msg.wav'
+        else
+            fn_bell 'wolf'
+        fi
+    fi
+    return $?
+}
+
 function fn_dorat()
 {
     case $1 in
@@ -1459,6 +1475,7 @@ function fn_main()
     "dump_day_2_tmp START END           # 导出日线到${daydump} \${START:-\$END} \${END:-\${END}}"
     "trs_min_2_day                      # 最后一笔分线转日线"
     "wind                               # wind(close<avrg)"
+    "db201                              # DB wolf from DDE"
     "day    code                        # DL 1year data from znz"
     "ipo                                # DL ipo codes from east"
     "lhb                                # 龙虎榜"
