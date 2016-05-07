@@ -102,7 +102,7 @@ function fn_lsd()
         PPLUS=<val>
         N high!=low && close/yesc<1.15                  # 有价格变动
         G high!=low && close/yesc<1.15 && high!=open    # 地板上跃起
-        3 open =low
+        E high =low
         "
         exit
         ;;
@@ -119,7 +119,7 @@ function fn_lsd()
         case ${PPLUS} in
         N) CHAO=1;iCOND='high!=low&&d.close/yesc<1.15'                  ;;
         G) CHAO=1;iCOND='high!=low&&d.close/yesc<1.15 && high!=open'    ;;
-        E) CHAO=1;iCOND='open =low'                                     ;;
+        E) CHAO=1;iCOND='high =low'                                     ;;
         esac
 
         sqls="
@@ -1708,7 +1708,8 @@ function fn_wolf_sqls()
         ROUND( (100*(w.amount/shou-$yesc)/$yesc), 1) as avri, 
         ${sql_opri} ${sql_hiri} ${col_trade}
         round(100*(trade-h.low)/h.low, 1) as incr,
-        round(100*(h.high-LEAST(lohi,trade))/LEAST(lohi,trade),1) as jump, tov,
+    --  round(100*(h.high-LEAST(lohi,trade))/LEAST(lohi,trade),1) as jump, 
+        tov,
         ROUND((pbuy+nbuy)/w.tov, 2) as eWolf,
     --  ROUND(100*nmc*(pbuy+nbuy)/w.amount, 2) as eWolf,    -- 若使用(amount/nmc/100)代替tov,在价涨时结果偏大，价跌时偏小
         (pbuy+nbuy) as buy, (psell+nsell) as sell,
@@ -1771,7 +1772,8 @@ function fn_wolf()
         tbl_temp=", xtempday as d"
         sql_cond="&& w.code=d.code"
         fn_wolf_sqls
-        [ "${PARTS:-3}" -eq 3 ] && mysql ${OPT:-'-t'} kts <<<"${xbb_update}${sqls}" | fn_hew_tail
+    #   [ "${PARTS:-3}" -eq 3 ] && mysql ${OPT:-'-t'} kts <<<"${xbb_update}${sqls}" | fn_hew_tail
+        [ "${PARTS:-3}" -eq 3 ] && sqls="${xbb_update}${sqls}" fn_imysql_sqls | fn_hew_tail
         fn_chao ${chao}.${chao2:-wolf}
         ;;
     a|e|E)
@@ -2043,18 +2045,19 @@ function fn_sample()
         ROUND(sum(earn)/${SAMPLES}, 2) as earn,
         sum(rise>${TEN:=9.93}) as click FROM top8
     GROUP by blk
-    HAVING 1 ${COND} ORDER by ${FIELD:-rise} DESC LIMIT ${LIMIT:-20};
+    HAVING 1 ${COND} ORDER by ${FIELD:=rise} DESC LIMIT ${LIMIT:-20};
     " 
     mysql -t kts <<< "${sqls}"
+    xt_ret $? "" || return $?
 
-    fn_echo_succ "END:${END}.${HMS} SAMPLES:${SAMPLES} TEN:${TEN:=9.93}"
+    fn_echo_succ "END:${END}.${HMS} SAMPLES:${SAMPLES} TEN:${TEN:=9.93} FIELD:${FIELD}"
 
     [ -z "${BLK}" ] && return
 
     fn_check_blk_abbr
     # 每个method有专用WIT，此默认作用2
-    WIT=0 CHAO=1 PARTS=2 FIELD= fn_blk u $BLK && \
-    WIT=${WIT:-${iWIT:-2}} YIST=${chao}.blk LIMIT=12 PPLUS=N BLK= SELECT lsd ${1}
+    WIT=0 CHAO=1 PARTS=2 FIELD= COND= fn_blk u $BLK && \
+    WIT=${WIT:-${iWIT:-2}} YIST=${chao}.blk LIMIT=12 PPLUS=N BLK= COND= SELECT lsd ${1}
 }
 
 function fn_blk_delta_codes()
@@ -2104,26 +2107,76 @@ function fn_blk_delta_layout()
 
 function fn_blk_delta()
 {
-    let NR=${1}+1
-    HMS1=`fn_get_time`          # HMS不精确时亦可用
-    HMS2=`fn_get_time ${NR}`
+    HMS1=`fn_get_time $1`          # HMS不精确时亦可用
+    HMS2=`iASC=DESC HMS=$HMS1 fn_get_time ${STEP:-2}`
 
     echo "\
     end: ${HMS1}
     sta: ${HMS2}\
     " | tee ${info}.delta
-    columns="code,date,yesc,open,high,low,close,volume,amount"
 
     echo "
-    $DROP delta;
-    $CREATE delta LIKE day;
-    INSERT INTO delta 
-    SELECT t1.code,t1.date,t1.yesc,t1.open, (t1.close-t2.close), t1.low,t1.close,t1.volume,t1.amount
-    FROM 
-    ( SELECT ${columns} FROM dorat WHERE date='${END}' and time='${HMS1}' ) as t1,
-    ( SELECT ${columns} FROM dorat WHERE date='${END}' and time='${HMS2}' ) as t2
-    WHERE t1.code=t2.code;
+    $DROP deltaN;
+    $CREATE deltaN (
+        blk     INT,
+        sym     CHAR(64),
+        code    INT(6) ZEROFILL NOT NULL, 
+        close   DECIMAL(6,2) NOT NULL DEFAULT 0,
+        yesc    DECIMAL(6,2) NOT NULL DEFAULT 0,
+        rise    DECIMAL(6,2) NOT NULL DEFAULT 0,
+        ride    DECIMAL(6,2) NOT NULL DEFAULT 0,
+        earn    DECIMAL(6,2) NOT NULL DEFAULT 0,
+        INDEX(blk,code)
+    );
+    $DROP delta8;
+    $CREATE delta8 LIKE deltaN;
     " | mysql kts
+
+    SAMPLES=${SAMPLES:-8}
+
+    sortf='rise'
+    col1="code,yesc,close,volume,amount"
+    col2="code,close"
+    iCOND="high!=low && close/yesc<1.15 && close/yesc>=1"
+    x1="( SELECT ${col1} FROM dorat WHERE date='${END}' and time='${HMS1}' AND $iCOND )"
+    x2="( SELECT ${col2} FROM dorat WHERE date='${END}' and time='${HMS2}' AND $iCOND )"
+    sqls="
+    CREATE TEMPORARY TABLE x0 (
+        code    INT(6) ZEROFILL NOT NULL, 
+        yesc    DECIMAL(6,2) NOT NULL,
+        close   DECIMAL(6,2) NOT NULL,
+        close2  DECIMAL(6,2) NOT NULL,
+        volume  DECIMAL(12,2) NOT NULL,
+        amount  DECIMAL(12,2) NOT NULL,
+        INDEX(code)
+    );
+    INSERT INTO x0
+    SELECT x1.code,x1.yesc,x1.close,x2.close,x1.volume,x1.amount 
+        FROM $x1 as x1, $x2 as x2 WHERE x1.code=x2.code;
+
+    INSERT INTO deltaN
+    SELECT n.blk, sym, x.code,x.close,yesc,
+        ROUND(100*(x.close-yesc)/yesc, 2) as rise, 
+        ROUND(100*(x.close-x.close2)/yesc, 2) as ride, 
+        ROUND(100*(x.close-amount/volume)/yesc, 2) as earn
+        FROM blk_name as n, blk_memb as m, x0 as x
+        WHERE n.blk=m.blk AND n.blk NOT in ${EXCLUDE_BLK//,0x40/} AND m.code=x.code;
+
+    INSERT INTO delta8
+    SELECT * from deltaN a 
+        where ${SAMPLES}>(select count(*) from deltaN where blk=a.blk and $sortf>a.$sortf) order by a.blk,a.$sortf desc;
+
+    SELECT hex(blk),sym, ${SAMPLES} as SAMPLES,
+        ROUND(sum(rise)/${SAMPLES}, 2) as rise,
+        ROUND(sum(ride)/${SAMPLES}, 2) as ride,
+        ROUND(sum(earn)/${SAMPLES}, 2) as earn,
+        sum(rise>${TEN:=9.93}) as click FROM delta8
+    GROUP by blk
+    HAVING 1 ${COND} ORDER by ${FIELD:=rise} DESC LIMIT ${LIMIT:-20};
+    " 
+    #echo "${sqls}"; exit
+    #fn_imysql_sqls
+    mysql -t kts <<< "${sqls}"
 
     fn_echo_succ "    gen delta succ!"
     return $?
@@ -2342,18 +2395,19 @@ function fn_blk()
         fn_echo_blue "to find ${2}"
         LIMIT=300 fn_blk l | grep ${2}
         ;;
-    d|dif)
-        ABBR=T1 fn_yist
-        sqls="
-        SELECT T1.code, name FROM
-        (SELECT code FROM blk_memb WHERE blk=0x${2}) as T1, cap
-        $WHERE T1.code=cap.code AND T1.code NOT IN 
-        (SELECT code FROM blk_memb WHERE blk=0x${3})
-        "
+    # 差集
+    dif|D)
+        argv=(${@:2})
+        sqls="SELECT code FROM blk_memb WHERE blk=0x${argv[0]}"
+        for i in ${argv[@]:1}; do
+            sqls="${sqls} and code NOT in (SELECT code FROM blk_memb WHERE blk=0x${i})"
+        done
         #echo "${sqls}"; exit
-        mysql -t kts <<< "${sqls}"
-        fn_chao ${chao}.opt.dif
+        ABBR=cap fn_yist
+        sqls="SELECT cap.code,${nmcYi},name FROM cap $WHERE cap.code in ($sqls)" fn_imysql_sqls
+        fn_chao ${chao}.dif
         ;;
+    # 差集版本2: BLK-YIST
     !)  
         if [ -z "${YIST}" ]; then
             fn_echo_fail "Usage: YIST=xxx SELECT ! blk..."
@@ -2368,32 +2422,31 @@ function fn_blk()
         mysql -t kts <<< "${sqls}"
         fn_chao ${chao}.opt.minus
         ;;
-    A|intersection)
-        ABBR=T1 fn_yist
-        sqls="
-        SELECT T1.code, name FROM
-        (SELECT code FROM blk_memb WHERE blk=0x${2}) as T1,
-        (SELECT code FROM blk_memb WHERE blk=0x${3}) as T2, cap
-        $WHERE T1.code=T2.code && T1.code=cap.code
-        "
+    # 交集
+    intersection|A)
+        argv=(${@:2})
+        sqls="SELECT code FROM blk_memb WHERE blk=0x${argv[0]}"
+        for i in ${argv[@]:1}; do
+            sqls="${sqls} and code in (SELECT code FROM blk_memb WHERE blk=0x${i})"
+        done
         #echo "${sqls}"; exit
-        fn_imysql_sqls
-        fn_chao ${chao}.opt.A
+        ABBR=cap fn_yist
+        sqls="SELECT cap.code,${nmcYi},name FROM cap $WHERE cap.code in ($sqls)" fn_imysql_sqls
+        fn_chao ${chao}.A
         ;;
-    u|union)
-        fn_echo_succ ${notinBLK}
+    # 并集
+    union|U)
         ABBR=m fn_yist
         ABBR=m BLK=${@:2} fn_peeloff_blk
-       #sql_exclude="&& blk NOT IN ${EXCLUDE_BLK}"
         sqls="
         SELECT m.code,count(m.code) as num, ${nmcYi}, c.name 
-               FROM blk_memb as m, cap as c ${frBLK}
-        ${WHERE} m.code=c.code ${inBLK} ${sql_exclude}
-        GROUP by code HAVING 1 ${COND} ${notinBLK}
-        ORDER by ${FIELD:-num} ASC LIMIT ${LIMIT:-500}
+            FROM blk_memb as m, cap as c ${frBLK}
+            ${WHERE} m.code=c.code ${inBLK} ${sql_exclude}
+            GROUP by code HAVING 1 ${COND}
+            ORDER by ${FIELD:-num} ASC LIMIT ${LIMIT:-500}
         " 
         #echo "${sqls}">/dev/stderr; exit
-        [ ${PARTS:-3} -eq 3 ] && mysql -t kts <<< "${sqls}"
+        [ ${PARTS:-3} -eq 3 ] && fn_imysql_sqls
         fn_chao ${chao}.${chao2:-blk}
         ;;
     *)
@@ -2407,10 +2460,10 @@ function fn_blk()
         stat                # 3日热点统计
         acc     off         # off日内代码累计涨幅
         c       code        # 显示code关联的所有板块
-        !       blk [...]   # FROM YIST not in (blk...)
-        d       big small   # 求两个blk的差集 big-small 
+        !       blk [...]   # 求YIST-BLK...的差集
+        D       big small   # 求两个blk的差集 big-small 
         A       blk blk2    # 求两个blk的交集
-        u       blk [...]   # 求几个blk的并集(.c时可作为输出)
+        U       blk [...]   # 求几个blk的并集(.c时可作为输出)
                             # blk中code关联的blk数目排名，越小，概念越纯正
         "
         ;;

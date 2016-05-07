@@ -818,7 +818,6 @@ function fn_guo()                       { cat guo ;}
 function fn_stupid_things()             { cat stupid_things ;}
 function fn_subtitle()                  { cat subtitle ;}
 function fn_kindle()                    { cat kindle ;}
-function fn_meditation()                { cat meditation ;}
 function fn_practice_cept()             { cat practice_cept ;}
 
 
@@ -894,7 +893,7 @@ function fn_main() {
         subtitle
         psychology                      # 心理学
         kindle
-        meditation
+        meditation_cept
         practice_cept                   # 直接成一个文本
         science_cept
         xiaolai_cept
