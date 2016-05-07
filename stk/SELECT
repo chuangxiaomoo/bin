@@ -381,7 +381,8 @@ function fn_dirtio()
     l) fn_list_iF5_times        ;;
     w) fn_list_wolf_times       ;;
     i) fn_dirt_interval ${@:2}  ;;
-    +([0-9]))
+    #  bash -n 检查下行时会报错，因shopt.-s.extglob
+    +([0-9])) 
         fn_isdigit $1
         xt_ret $? "argv.1[$1] must be a iF5 num" || return $?
         fn_isdigit $2
@@ -638,7 +639,7 @@ function fn_rdiff()
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
-function fn_acc() { tablex=tbl_adiff fn_rdiff; }
+function fn_accdiff() { tablex=tbl_adiff fn_rdiff; }
 
 function fn_pma()
 {
@@ -2040,9 +2041,9 @@ function fn_sample()
     INSERT INTO top8
     SELECT * from topN a where ${SAMPLES}>(select count(*) from topN where blk=a.blk and rise>a.rise) order by a.blk,a.rise desc;
 
-    SELECT hex(blk),sym, ${SAMPLES} as SAMPLES,
-        ROUND(sum(rise)/${SAMPLES}, 2) as rise,
-        ROUND(sum(earn)/${SAMPLES}, 2) as earn,
+    SELECT hex(blk),sym, count(code) as SAMPLES,
+        ROUND(sum(rise)/count(code), 2) as rise,
+        ROUND(sum(earn)/count(code), 2) as earn,
         sum(rise>${TEN:=9.93}) as click FROM top8
     GROUP by blk
     HAVING 1 ${COND} ORDER by ${FIELD:=rise} DESC LIMIT ${LIMIT:-20};
@@ -2060,60 +2061,50 @@ function fn_sample()
     WIT=${WIT:-${iWIT:-2}} YIST=${chao}.blk LIMIT=12 PPLUS=N BLK= COND= SELECT lsd ${1}
 }
 
-function fn_blk_delta_codes()
-{
-    DOOR=${DOOR:-0.5}
-    ABBR=d BLK_CAN_NOT_BE_NULL=1 fn_peeloff_blk ${1}
-    sqls="
-        SELECT d.code, 
-            ROUND(100*(d.close-yesc)/yesc,2) as rise, 
-            ROUND(100*high/yesc,2) as drise,
-            name
-        FROM delta as d, cap as c ${frBLK}
-        WHERE d.code=c.code ${inBLK}
-        HAVING drise>${DOOR} ORDER by ${filed:-drise} DESC
-    "
-
-    #echo "${sqls}"; exit
-    mysql -t kts <<< "${sqls}"
-    xt_ret $? "" || return $?
-
-    CHAO=1 fn_chao ${chao}.opt.drise
-    return $?
-}
-
-function fn_blk_delta_layout()
-{
-    sqls="
-    SELECT hex(n.blk) as blk,count(m.code) as num, n.sym, 
-        max(drise) as max_dif_ri,
-        ROUND( sum(drise)/count(m.code), 2 ) as av_dif_ri,
-        ROUND( sum( rise)/count(m.code), 2 ) as avri
-        FROM blk_name as n, blk_memb as m,
-        (
-        SELECT code, ROUND(100*(close-yesc)/yesc,2) as rise, 
-            ROUND(100*high/yesc,2) as drise FROM delta 
-            HAVING drise>${rDOOR} ORDER by drise DESC
-        ) as dlt
-        $WHERE m.blk=n.blk && m.code=dlt.code AND m.blk not in ${EXCLUDE_BLK}
-        GROUP by blk 
-        HAVING 1 ${COND}
-        ORDER by ${FIELD} ${ASC:-DESC}, ${1:-av_dif_ri} DESC LIMIT ${LIMIT:-20};
-    "
-    #echo "${sqls}"; exit
-    mysql -t kts <<< "${sqls}"
-    fn_echo_warn "rDOOR:${rDOOR:=0.5} `cat ${info}.delta |xargs` FIELD:${FIELD:=num} "
-}
-
 function fn_blk_delta()
 {
-    HMS1=`fn_get_time $1`          # HMS不精确时亦可用
+    [ "${2}" = l ] && fn_list_iF5_times
+
+    case $1 in
+    us)
+        # 基于前提约束：只做强势股，绝对值弱于大盘不做考虑
+        iCOND="AND high!=low && close/yesc<1.15 && 100*(close/yesc-1)>=${iDOOR:-0}"
+        sfiled='rise'
+        sdirct='desc'
+        sopr='>'
+        ;;
+    u)
+        iCOND=
+        post_sql="DELETE FROM x0 WHERE close-close2>=0;"
+        sfiled='ride'
+        sdirct='desc'
+        sopr='>'
+        ;;
+    d)
+        iCOND=
+        post_sql="DELETE FROM x0 WHERE close-close2>=0;"
+        sfiled='ride'
+        sdirct='asc'
+        sopr='<'
+        ;;
+
+    h|*)
+        echo "
+   SELECT blk delta 抓住指数每一个拐点细节
+            u       领涨即抗跌排名
+            d       领跌排名
+           us       高涨幅领跌排名
+            l       从3个维度考量：数量、delta涨幅、最高涨幅
+         BLK=       追加展示BLK内的细节
+            h       Print this help
+            "
+        exit
+        ;;
+    esac
+
+    HMS1=`fn_get_time $2`          # HMS不精确时亦可用
     HMS2=`iASC=DESC HMS=$HMS1 fn_get_time ${STEP:-2}`
 
-    echo "\
-    end: ${HMS1}
-    sta: ${HMS2}\
-    " | tee ${info}.delta
 
     echo "
     $DROP deltaN;
@@ -2124,7 +2115,7 @@ function fn_blk_delta()
         close   DECIMAL(6,2) NOT NULL DEFAULT 0,
         yesc    DECIMAL(6,2) NOT NULL DEFAULT 0,
         rise    DECIMAL(6,2) NOT NULL DEFAULT 0,
-        ride    DECIMAL(6,2) NOT NULL DEFAULT 0,
+        ride    DECIMAL(6,3) NOT NULL DEFAULT 0,
         earn    DECIMAL(6,2) NOT NULL DEFAULT 0,
         INDEX(blk,code)
     );
@@ -2133,15 +2124,15 @@ function fn_blk_delta()
     " | mysql kts
 
     SAMPLES=${SAMPLES:-8}
+    TEMPORARY=TEMPORARY
 
-    sortf='rise'
     col1="code,yesc,close,volume,amount"
     col2="code,close"
-    iCOND="high!=low && close/yesc<1.15 && close/yesc>=1"
-    x1="( SELECT ${col1} FROM dorat WHERE date='${END}' and time='${HMS1}' AND $iCOND )"
-    x2="( SELECT ${col2} FROM dorat WHERE date='${END}' and time='${HMS2}' AND $iCOND )"
-    sqls="
-    CREATE TEMPORARY TABLE x0 (
+    x1="( SELECT ${col1} FROM dorat WHERE date='${END}' and time='${HMS1}' $iCOND )"
+    x2="( SELECT ${col2} FROM dorat WHERE date='${END}' and time='${HMS2}' $iCOND )"
+    sqls_pro="
+    DROP TABLE IF EXISTS x0;
+    CREATE $TEMPORARY TABLE x0 (
         code    INT(6) ZEROFILL NOT NULL, 
         yesc    DECIMAL(6,2) NOT NULL,
         close   DECIMAL(6,2) NOT NULL,
@@ -2151,35 +2142,47 @@ function fn_blk_delta()
         INDEX(code)
     );
     INSERT INTO x0
-    SELECT x1.code,x1.yesc,x1.close,x2.close,x1.volume,x1.amount 
+    SELECT x1.code,x1.yesc, x1.close,x2.close, x1.volume,x1.amount 
         FROM $x1 as x1, $x2 as x2 WHERE x1.code=x2.code;
+    ${post_sql}
 
     INSERT INTO deltaN
     SELECT n.blk, sym, x.code,x.close,yesc,
         ROUND(100*(x.close-yesc)/yesc, 2) as rise, 
-        ROUND(100*(x.close-x.close2)/yesc, 2) as ride, 
+        ROUND(100*(x.close-x.close2)/yesc, 3) as ride, 
         ROUND(100*(x.close-amount/volume)/yesc, 2) as earn
         FROM blk_name as n, blk_memb as m, x0 as x
         WHERE n.blk=m.blk AND n.blk NOT in ${EXCLUDE_BLK//,0x40/} AND m.code=x.code;
 
     INSERT INTO delta8
     SELECT * from deltaN a 
-        where ${SAMPLES}>(select count(*) from deltaN where blk=a.blk and $sortf>a.$sortf) order by a.blk,a.$sortf desc;
-
-    SELECT hex(blk),sym, ${SAMPLES} as SAMPLES,
-        ROUND(sum(rise)/${SAMPLES}, 2) as rise,
-        ROUND(sum(ride)/${SAMPLES}, 2) as ride,
-        ROUND(sum(earn)/${SAMPLES}, 2) as earn,
+        where ${SAMPLES}>(select count(*) from deltaN where blk=a.blk and ${sfiled} ${sopr} a.${sfiled}) order by a.blk,a.$sfiled ${sdirct};
+    "
+    sqls="
+    SELECT hex(blk),sym, count(code) as SAMPLES,
+        ROUND(sum(rise)/count(code), 2) as rise,
+        ROUND(sum(ride)/count(code), 3) as ride,
+        ROUND(sum(earn)/count(code), 2) as earn,
         sum(rise>${TEN:=9.93}) as click FROM delta8
     GROUP by blk
-    HAVING 1 ${COND} ORDER by ${FIELD:=rise} DESC LIMIT ${LIMIT:-20};
+    HAVING 1 ${COND} ORDER by ${FIELD:=${sfiled}} ${sdirct} LIMIT ${LIMIT:-20}
     " 
-    #echo "${sqls}"; exit
-    #fn_imysql_sqls
-    mysql -t kts <<< "${sqls}"
+    #echo "${sqls_pro}${sqls}"; exit
+    # mysql -t kts <<<"${sqls_pro}${sqls}"
+    fn_imysql_sqls
+    xt_ret $? "" || return $?
 
-    fn_echo_succ "    gen delta succ!"
-    return $?
+    fn_echo_succ "end:${HMS1} prev:${HMS2} FIELD:${FIELD}"
+
+    [ -z "${BLK}" ] && return
+    # 两次相同的mysql.SELECT请求结果会被缓存
+    # sqlv="SELECT * FROM deltaN d WHERE blk=0x${BLK} ORDER by ${sfiled} ${sdirct} LIMIT ${LIMIT:-12}"
+    fn_check_blk_abbr
+    cols="sym,d.code,d.close,rise,ride,earn"
+    sqls="SELECT ${cols}, ${nmcYi},c.name 
+            FROM delta8 d, cap c WHERE blk=0x${BLK} and d.code=c.code ORDER by ${sfiled} ${sdirct} LIMIT ${iLIMIT:-12}"
+    sqls_pro= fn_imysql_sqls
+    fn_chao ${chao}.delta
 }
 
 function fn_blk_wolf_blk()
@@ -2271,7 +2274,8 @@ function fn_blk()
 #   EXCLUDE_BLK="(0x1234)"
 
     case $1 in
-    g|grep)    LIMIT=500 fn_blk l | grep ${2:-'\<FF'} ;;
+    g|grep)     LIMIT=500 fn_blk l | grep ${2:-'\<FF'} ;;
+    d|delta)    fn_blk_delta ${@:2} ;;
     l|layout)
         ABBR=m fn_yist
         sqls="
@@ -2316,20 +2320,6 @@ function fn_blk()
         [0-9]*)     fn_blk_wolf_team $2                             ;;
         40|[A-Z]*)  COND= fn_blk_wolf_blk   ${@:2}                  ;;
         *)          echo "${usage}"                                 ;;
-        esac
-        ;;
-    delta)
-        case $2 in
-        s|step)     fn_blk_delta ${3:-1} ;;
-        b|blk)      fn_blk_delta_codes ${3} ;;
-        l|layout)   fn_blk_delta_layout ${@:3} ;;
-        *)
-            echo "SELECT blk delta
-            s       STEP    # \$HMS不指定时，默认15:05:00
-            l               # 从3个维度考量：数量、delta涨幅、最高涨幅
-            b       BLK     # 单独展示一个BLK的细节
-            "
-            ;;
         esac
         ;;
     acc)
@@ -2451,20 +2441,20 @@ function fn_blk()
         ;;
     *)
         echo "
-        SELECT blk <param>  # 注：使用HAVING向<SELECT lsd>传递条件
-        l                   # layout
-        sample  iF5         # 价角度：只统计前10涨幅
-        10      iF5         # 价角度：涨停板概念分类 {DOOR:-10}，查讯iF5: SELECT lsd l
-        wolf  [E|a|BLK] iF5 # 能角度：
-        delta   {s|l|b}     # 指数涨幅贡献：做差、显示layout、显示layout中一个BLK的细节
-        stat                # 3日热点统计
-        acc     off         # off日内代码累计涨幅
-        c       code        # 显示code关联的所有板块
-        !       blk [...]   # 求YIST-BLK...的差集
-        D       big small   # 求两个blk的差集 big-small 
-        A       blk blk2    # 求两个blk的交集
-        U       blk [...]   # 求几个blk的并集(.c时可作为输出)
-                            # blk中code关联的blk数目排名，越小，概念越纯正
+        SELECT blk <param>    # 注：使用HAVING向<SELECT lsd>传递条件
+        l                     # layout
+        d|delta u|d|us iF5    # 指数涨幅贡献：做差&显示layout&追加BLK的个股细节
+        sample  iF5           # 价角度：只统计前10涨幅
+        10      iF5           # 价角度：涨停板概念分类 {DOOR:-10}，查讯iF5: SELECT lsd l
+        wolf  [E|a|BLK] iF5   # 能角度：
+        stat                  # 3日热点统计
+        acc     off           # off日内代码累计涨幅
+        c       code          # 显示code关联的所有板块
+        !       blk [...]     # 求YIST-BLK...的差集
+        D       big small     # 求两个blk的差集 big-small 
+        A       blk blk2      # 求两个blk的交集
+        U       blk [...]     # 求几个blk的并集(.c时可作为输出)
+                              # blk中code关联的blk数目排名，越小，概念越纯正
         "
         ;;
     esac
@@ -2872,7 +2862,7 @@ function fn_main()
     #fmacd                                    # 单个代码的macd"
     #fbi                                      # tbl_fbi"
     #td_layout          code                  # 日内最高价时点分布.10:00am"
-    #acc                                      # tbl_adiff"
+    #accdiff                                  # tbl_adiff"
     #acf                                      # tbl_acfdiff"
     #tao5                                     # "
     #rdiff                                    # tbl_rdiff"

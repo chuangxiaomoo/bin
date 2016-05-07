@@ -265,7 +265,10 @@ function fn_hew_tail()
 
 function fn_imysql_sqls()
 {
-     mysql ${OPT:--t} kts<<<"SELECT $IDX t.* FROM ${ITB} ($sqls) as t"   
+    echo "
+    ${sqls_pro}
+    SELECT $IDX t.* FROM ${ITB} ($sqls) as t
+    " | mysql ${OPT:--t} kts
 }
 
 function fn_chao()
@@ -311,6 +314,7 @@ function fn_check_blk_abbr()
     I4  D957    工业4.0       
      M  DADA    新材料概念    
      O  D617    OLED 
+    QH  FFC7    QH360
      Z  DF95    证券
     )
 
