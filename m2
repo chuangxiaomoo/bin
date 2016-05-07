@@ -796,11 +796,13 @@ function fn_Small_Stakes_Hold_em()      { cat texaspoker_Small_Stakes_Hold_em ;}
 function fn_psychology() {
 function fn_misc()                      { cat psychology_misc ;}
 function fn_xiaoxiaoxinxin()            { cat psychology_xiaoxiaoxinxin ;}
-function fn_sxmm()                      { cat psychology_sxmm ;}
+function fn_sxmm()                      { cat psychology_Dongpoyeben ;}
+function fn_Freud()                     { cat psychology_Freud ;}
     local opts=(
         misc
         xiaoxiaoxinxin                  # 小小歆歆 断舍离 悟破习
-        sxmm
+        Dongpoyeben                     # 东坡夜奔
+        Freud                           # Sigmund.西格蒙德·弗洛伊德
     )
     fn_print $@
 }

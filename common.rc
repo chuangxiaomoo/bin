@@ -1,6 +1,5 @@
 #! /bin/bash
 #
-#
 # when replace '/' with SF '#', no need to escape, but with SF '/', it does
 # when replace '\', it must be escaped, use the below vars, regardless of 
 # how may `` and "", it work very well. e.g.

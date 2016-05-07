@@ -137,14 +137,12 @@ function fn_lsd()
     }
 
     fn_sql $@
-    case ${PARTS:-4} in
-    1) return                               ;; # 不输出chao，不输出mysql结果
-    2) CHAO=1 fn_chao ${chao}.${chao2:-lsd} ;; # 只输出chao
-    3) fn_imysql_sqls
-       CHAO=1 fn_chao ${chao}.${chao2:-lsd} ;; # 既输出chao，又输出mysql
-    *) fn_imysql_sqls
-       fn_chao ${chao}.${chao2:-lsd}        ;; # 响应CHAO
+    case ${PARTS:-o} in
+    s) return               ;; # 只获取$sqls
+    f) CHAO=1               ;; # 只输出文件chao.chao2
+    o) fn_imysql_sqls       ;; # 只输出STDOUT
     esac
+    fn_chao ${chao}.${chao2:-lsd}
     fn_echo_warn "${END}.${iTime:-latest} LIST:${#LIST[@]} HAVING:${HAVING//SEL*=/} COND@:$COND + iCOND:${iCOND}"
 }
 
@@ -1003,10 +1001,10 @@ function fn_lohi_wolf()
         export END=${dates[$i]}
 
         # uncomment below 2 lines to 统计最高高度
-        CHAO=1 chao2=mi5 PARTS=2 END= iEND=$j SELECT lohi i
+        CHAO=1 chao2=mi5 PARTS=f END= iEND=$j SELECT lohi i
         export YIST=${chao}.mi5
 
-        LIMIT=${LIMIT} FIELD=incr PARTS=1 fn_lohi i
+        LIMIT=${LIMIT} FIELD=incr PARTS=s fn_lohi i
         echo "
         ${tempday}
         INSERT INTO wind(date,incr,rise,hico,red)
@@ -1024,7 +1022,7 @@ function fn_lohi_mi5()
 {
     LIMIT=${LIMIT:-60}
     let jEND=${iEND:-1}+1
-    CHAO=1 chao2=mi5 PARTS=2 iEND=$jEND SELECT lohi i
+    CHAO=1 chao2=mi5 PARTS=f iEND=$jEND SELECT lohi i
     export YIST=${chao}.mi5
 
     echo "
@@ -1053,7 +1051,7 @@ function fn_lohi_mi5()
         let imod=i%5
         [ "${imod}" = 0 ] && echo ${HMSs[$i]} ${i}...
         export HMS=${HMSs[$i]}
-        LIMIT=${LIMIT} FIELD=incr PARTS=1 fn_lohi i 0
+        LIMIT=${LIMIT} FIELD=incr PARTS=s fn_lohi i 0
         echo "
         ${tempday}
         INSERT INTO f5rise(time,f5rise,hico,red)
@@ -1103,7 +1101,7 @@ function fn_lohi()
               CONDb="((avri-bvri>${DOORb:-1.1})||(prop>.938&&rise>${YRISE:-1.23}))"
             # 熔断缩量版本
             # CONDb="((avri-bvri>${DOORb:-2.0})||(prop>0.8&&rise>0))"
-            END=${PREV} COND="${CONDb}" LIMIT=2000 PARTS=2 chao2=bvri SCALE= SELECT lohi i
+            END=${PREV} COND="${CONDb}" LIMIT=2000 PARTS=f chao2=bvri SCALE= SELECT lohi i
             YIST=${chao}.bvri
         fi
 
@@ -1239,15 +1237,13 @@ function fn_lohi()
 
     fn_yi_descend
 
-    case ${PARTS:-4} in
-    1) return                                                                           ;; # 不输出chao，不输出mysql结果
-    2) CHAO=1 PREFIX=${tempday} sqls=${tbl_super_dive} fn_chao ${chao}.${chao2:-lohi}   ;; # 只输出chao
-    3) mysql ${OPT:--t} kts <<< "${tempday}${tbl_super_dive}"
-       CHAO=1 PREFIX=${tempday} sqls=${tbl_super_dive} fn_chao ${chao}.${chao2:-lohi}   ;; # 既输出chao，又输出mysql
-    *) mysql ${OPT:--t} kts <<< "${tempday}${tbl_super_dive}"
-       PREFIX=${tempday} sqls=${tbl_super_dive} fn_chao ${chao}.${chao2:-lohi}          ;; # 响应CHAO
+    case ${PARTS:-o} in
+    s) return                                                   ;; # 不输出chao，不输出mysql结果
+    f) CHAO=1                                                   ;; # 只输出chao
+    o) mysql ${OPT:--t} kts <<< "${tempday}${tbl_super_dive}"   ;;
     esac
 
+    PREFIX=${tempday} sqls=${tbl_super_dive} fn_chao ${chao}.${chao2:-lohi}
     fn_echo_warn "END=$END time=${HMS} index=${iF5} FIELD=${FIELD}"
 }
 
@@ -1773,8 +1769,12 @@ function fn_wolf()
         tbl_temp=", xtempday as d"
         sql_cond="&& w.code=d.code"
         fn_wolf_sqls
-    #   [ "${PARTS:-3}" -eq 3 ] && mysql ${OPT:-'-t'} kts <<<"${xbb_update}${sqls}" | fn_hew_tail
-        [ "${PARTS:-3}" -eq 3 ] && sqls="${xbb_update}${sqls}" fn_imysql_sqls | fn_hew_tail
+
+        case ${PARTS:-o} in
+        s) return                                                       ;; # 只获取$sqls
+        f) CHAO=1                                                       ;; # 只输出文件chao.chao2
+        o) sqls="${xbb_update}${sqls}" fn_imysql_sqls | fn_hew_tail     ;; # 只输出STDOUT
+        esac
         fn_chao ${chao}.${chao2:-wolf}
         ;;
     a|e|E)
@@ -1950,12 +1950,12 @@ function fn_stat()
             export END=${dates[$i]}
             export PREV=${dates[$j]} #echo ${PREV} ${END}; continue
             # 全天
-            YIST=  END=${PREV} PARTS=2 LIMIT=300 HAVING="rise>9.93&&avrg<9.93"  chao2=full fn_lsd
-            YIST=${chao}.full PARTS=1 LIMIT=300 fn_lsd
+            YIST=  END=${PREV} PARTS=f LIMIT=300 HAVING="rise>9.93&&avrg<9.93"  chao2=full fn_lsd
+            YIST=${chao}.full PARTS=s LIMIT=300 fn_lsd
             fn_update_stati_ban
             # 上午
-            YIST=${chao}.full  END=${PREV} PARTS=2 LIMIT=300 HAVING="rise>9.93"  chao2=mid HMS=13:00:00 fn_lsd 1
-            YIST=${chao}.mid PARTS=1 LIMIT=300 fn_lsd
+            YIST=${chao}.full  END=${PREV} PARTS=f LIMIT=300 HAVING="rise>9.93"  chao2=mid HMS=13:00:00 fn_lsd 1
+            YIST=${chao}.mid PARTS=s LIMIT=300 fn_lsd
             fn_update_stati_ban
         done
 
@@ -1975,14 +1975,14 @@ function fn_stat()
             export PREV=${dates[$j]}
             export END=${dates[$i]}
             # 一字 
-            YIST=  END=${PREV2} PARTS=2 LIMIT=300 HAVING="rise>9.93&&avrg>9.93 ${notinBLK}" chao2=prev2 fn_lsd
+            YIST=  END=${PREV2} PARTS=f LIMIT=300 HAVING="rise>9.93&&avrg>9.93 ${notinBLK}" chao2=prev2 fn_lsd
 
-            # 开板，PARTS=3时不
-            YIST=${chao}.prev2 END=${PREV} PARTS=2 LIMIT=300 HAVING="avrg<9.93" chao2=prev  fn_lsd
+            # 开板
+            YIST=${chao}.prev2 END=${PREV} PARTS=f LIMIT=300 HAVING="avrg<9.93" chao2=prev  fn_lsd
             END=${PREV} fn_update_stati_ban
 
             # 再日
-            YIST=${chao}.prev END=${END} PARTS=1 LIMIT=300 fn_lsd
+            YIST=${chao}.prev END=${END} PARTS=s LIMIT=300 fn_lsd
             UPDATE_STATI_CODES=1 \
             END=${END}  fn_update_stati_ban
             xt_ret $? "" || return $?
@@ -2057,7 +2057,7 @@ function fn_sample()
 
     fn_check_blk_abbr
     # 每个method有专用WIT，此默认作用2
-    WIT=0 CHAO=1 PARTS=2 FIELD= COND= fn_blk u $BLK && \
+    WIT=0 CHAO=1 PARTS=f FIELD= COND= fn_blk U $BLK && \
     WIT=${WIT:-${iWIT:-2}} YIST=${chao}.blk LIMIT=12 PPLUS=N BLK= COND= SELECT lsd ${1}
 }
 
@@ -2102,9 +2102,9 @@ function fn_blk_delta()
         ;;
     esac
 
-    HMS1=`fn_get_time $2`          # HMS不精确时亦可用
-    HMS2=`iASC=DESC HMS=$HMS1 fn_get_time ${STEP:-2}`
-
+    let STEP=${3:-1}+1              # 默认隔1个时间单位
+    HMS1=`fn_get_time $2`           # HMS不精确时亦可用
+    HMS2=`iASC=DESC HMS=$HMS1 fn_get_time ${STEP}`
 
     echo "
     $DROP deltaN;
@@ -2187,10 +2187,9 @@ function fn_blk_delta()
 
 function fn_blk_wolf_blk()
 {
-    CHAO=1 PARTS=2 FIELD= fn_blk u $1                          # output to ${chao}.blk
+    CHAO=1 PARTS=f FIELD= fn_blk U $1                          # output to ${chao}.blk
     LIMIT=20 FIELD= YIST=${chao}.blk SELECT wolf e ${2}
 }
-
 
 function fn_blk_wolf_scale()
 {
@@ -2239,13 +2238,18 @@ function fn_blk_wolf_team()
     #echo "${sqls}" ; exit
     FIELD=${FIELD:-num}
     fn_echo_succ "${END} ${stime} [iDOOR:$iDOOR] [rDOOR:$rDOOR] [TEN:$TEN] [click:${click}] [FIELD:$FIELD]"
-    [ "${PARTS:-3}" -eq 3 ] && mysql -t kts <<< "SELECT * FROM (${sqls}) as tbl ORDER by ${FIELD} DESC"
+
+    case ${PARTS:-o} in
+    s) return                                                                   ;;
+    o) mysql -t kts <<< "SELECT * FROM (${sqls}) as tbl ORDER by ${FIELD} DESC" ;;
+    esac
+
     return
 }
 
 function fn_blk_wolf_inter()
 {
-    PARTS=2 sql_blk=n.blk fn_blk_wolf_team ${1:-1}
+    PARTS=s sql_blk=n.blk fn_blk_wolf_team ${1:-1}
     eWolf="ROUND(100*x.nmc*(pbuy+nbuy)/amount, 2)"
     echo "${sqls}" | mysql -t kts 
     echo "
@@ -2312,11 +2316,11 @@ function fn_blk()
         iDOOR=.50 rDOOR=2 SELECT blk wolf {list|[E.a.BLK]iF5}
         "
         ABBR=m fn_yist
+        cond_lion="nmc>${nmc_wolf}&&nmc<=${nmc_lion}"
         case $2 in
         l|list)     fn_list_wolf_times                              ;;
         a)          sql_nmc="1" fn_blk_wolf_team $3                 ;;
-        E)          sql_nmc="nmc>${nmc_wolf}&&nmc<=${nmc_lion}"
-                    fn_blk_wolf_team $3                             ;;
+        E)          sql_nmc="${cond_lion}" fn_blk_wolf_team $3      ;;
         [0-9]*)     fn_blk_wolf_team $2                             ;;
         40|[A-Z]*)  COND= fn_blk_wolf_blk   ${@:2}                  ;;
         *)          echo "${usage}"                                 ;;
@@ -2348,7 +2352,7 @@ function fn_blk()
         mysql kts <<< "TRUNCATE blk_stat"
         for (( i=${NUM}-1; i>=0; i-- )); do
             date=${dates[$i]}
-            FIELD= rDOOR=5 iCOND="&&x.amount>000" iNUM=2 PARTS=2 END=${date} fn_blk_wolf_team 1   # iNUM 3只才成组
+            FIELD= rDOOR=5 iCOND="&&x.amount>000" iNUM=2 PARTS=s END=${date} fn_blk_wolf_team 1   # iNUM 3只才成组
             sqls=${sqls//hex(/(}
             echo "
             INSERT INTO  blk_stat
@@ -2436,7 +2440,12 @@ function fn_blk()
             ORDER by ${FIELD:-num} ASC LIMIT ${LIMIT:-500}
         " 
         #echo "${sqls}">/dev/stderr; exit
-        [ ${PARTS:-3} -eq 3 ] && fn_imysql_sqls
+
+        case ${PARTS:-o} in
+        s) return               ;;
+        f) CHAO=1               ;;
+        o) fn_imysql_sqls       ;;
+        esac
         fn_chao ${chao}.${chao2:-blk}
         ;;
     *)
@@ -2730,25 +2739,25 @@ function fn_ddd()
     prop=${prop:-.81}; DOOR=
     case $1 in
     yiz)
-        fn_echo_succ "PARTS=2@一字开板"
-        PARTS=2 CHAO=1 END=$PREV COND="rise>9.93" PPLUS=G FIELD=rise LIMIT=400 SELECT lsd
+        fn_echo_succ "PARTS=f@一字开板"
+        PARTS=f CHAO=1 END=$PREV COND="rise>9.93" PPLUS=G FIELD=rise LIMIT=400 SELECT lsd
         YIST=${chao}.lsd   COND="eWolf>.2 && opri> 9.93" DOOR=-1/3 SELECT wolf i $2
         YIST=${chao}.lsd   COND="eWolf>.2 && opri<=9.93" DOOR=-tov/3 FIELD=rise SELECT wolf i $2
-        fn_echo_succ "PARTS=2@非一字板连板"
-        PARTS=2 CHAO=1 END=$PREV COND="rise>9.93" PPLUS=N FIELD=rise LIMIT=400 SELECT lsd
+        fn_echo_succ "PARTS=f@非一字板连板"
+        PARTS=f CHAO=1 END=$PREV COND="rise>9.93" PPLUS=N FIELD=rise LIMIT=400 SELECT lsd
         YIST=${chao}.lsd   COND="eWolf>.2 && opri> 9.93" DOOR=-1/3 SELECT wolf i $2
         YIST=${chao}.lsd   COND="eWolf>.2 && opri<=9.93" DOOR=-1/3 FIELD=rise SELECT wolf i $2
         ;;
     110)
         TYPE=${2:-e}
         COND="(rise>9.93&&eWolf>.49)" \
-        PARTS=2 CHAO=1 LIMIT=200 END=${PREV} SELECT wolf ${TYPE}
+        PARTS=f CHAO=1 LIMIT=200 END=${PREV} SELECT wolf ${TYPE}
         COND="(rise<opri||(opri<0&&rise<opri+2))&&prop<${prop:-.81}" \
         YIST=${chao}.wolf LIMIT=100 SELECT wolf ${TYPE} 
         fn_echo_succ "[prop:${prop}] 昨日涨停 -- ma20&特别关注标的：eYi＞5亿"
 
         COND="(rise<9.94&&avri>4.5&&eWolf>.43&&eYi>5)" \
-        PARTS=2 CHAO=1 LIMIT=200 END=${PREV} SELECT wolf ${TYPE}
+        PARTS=f CHAO=1 LIMIT=200 END=${PREV} SELECT wolf ${TYPE}
         COND="(rise<opri||(opri<0&&rise<opri+2)||cise<0)&&prop<${prop:-.81}" \
         YIST=${chao}.wolf LIMIT=100 SELECT wolf ${TYPE} 
 
@@ -2770,10 +2779,10 @@ function fn_ddd()
         TYPE=${2:-e}
         PREV2=`fn_get_date 3`
         COND="(rise>9.93&&eWolf>.49)||(avrg>5&&eWolf>.43&&eYi>5)" \
-        PARTS=2 CHAO=1 LIMIT=200 chao2=curr END=${PREV2} SELECT wolf ${TYPE}
+        PARTS=f CHAO=1 LIMIT=200 chao2=curr END=${PREV2} SELECT wolf ${TYPE}
         # prop<.6
         COND="(rise<opri||(opri<0&&rise<opri+2))&&eWolf>=.25&&prop<${prop:-.81}" \
-        PARTS=2 CHAO=1 LIMIT=200 chao2=next YIST=${chao}.curr END=${PREV} SELECT wolf ${TYPE} || exit
+        PARTS=f CHAO=1 LIMIT=200 chao2=next YIST=${chao}.curr END=${PREV} SELECT wolf ${TYPE} || exit
                 CHAO=1 LIMIT=200 chao2=100  YIST=${chao}.next COND="scale+prop<1.7" SELECT wolf ${TYPE}
         fn_echo_succ "[prop:${prop}] 两日内价格在PREV2涨停下交易"
         ;;

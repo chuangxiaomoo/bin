@@ -107,7 +107,7 @@ function fn_10jqka()
     local i j
     for (( i=0,j=1; i<${#maps[@]}; i+=2,j+=2 )); do
         chao2=${maps[${j}]}
-        chao2=${chao2} PARTS=2 CHAO=1 SELECT blk u ${maps[${i}]} >& /dev/null && cp ${chao}.${chao2} .blk.${chao2}
+        chao2=${chao2} PARTS=f CHAO=1 SELECT blk U ${maps[${i}]} >& /dev/null && cp ${chao}.${chao2} .blk.${chao2}
     done
     
     fn_echo_succ "up blk 10jqka succ!"
