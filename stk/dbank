@@ -339,7 +339,7 @@ function fn_bist()
 {
     [ -z "${BLK}" ] && return
     fn_check_blk_abbr
-    WIT=0 LIMIT= FIELD= COND= CHAO=1 PARTS=2 fn_blk u ${BLK}
+    WIT=0 LIMIT= FIELD= COND= CHAO=1 PARTS=f fn_blk U ${BLK}
     YIST=${chao}.blk
 }
 
