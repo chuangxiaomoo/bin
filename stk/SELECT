@@ -55,6 +55,7 @@ function fn_lsd()
 
     fn_bist
     fn_yist
+
     case $1 in
     loop)
         local i
@@ -137,6 +138,7 @@ function fn_lsd()
     }
 
     fn_sql $@
+
     case ${PARTS:-o} in
     s) return               ;; # 只获取$sqls
     f) CHAO=1               ;; # 只输出文件chao.chao2
@@ -1709,7 +1711,8 @@ function fn_wolf_sqls()
         tov,
         ROUND((pbuy+nbuy)/w.tov, 2) as eWolf,
     --  ROUND(100*nmc*(pbuy+nbuy)/w.amount, 2) as eWolf,    -- 若使用(amount/nmc/100)代替tov,在价涨时结果偏大，价跌时偏小
-        (pbuy+nbuy) as buy, (psell+nsell) as sell,
+        (pbuy+nbuy) as buy, 
+    --  (psell+nsell) as sell,
     --  pbuy,nbuy, 
     --  round(100*(pbuy+nbuy)/tov, 1) as bloo, round(100*(psell+nsell)/tov, 1) as sloo,
         round(net/tov, 2) as pet,
@@ -1717,6 +1720,7 @@ function fn_wolf_sqls()
     --  round((pbuy/nbuy), 2) as Go, round((pbuy+nbuy)/(psell+nsell),1) as bsp,
         ${xbb_col}
         round((w.shou/h.volume), 2) as prop, h.scale,
+        round((w.tov*h.mavol5/w.shou), 2) as tov5,
         round(w.amount/10000, 1) as eYi, 
         ROUND(nmc, 1) as nmcYi
         ${col_name}
@@ -2055,10 +2059,9 @@ function fn_sample()
 
     [ -z "${BLK}" ] && return
 
-    fn_check_blk_abbr
+    # fn_check_blk_abbr
     # 每个method有专用WIT，此默认作用2
-    WIT=0 CHAO=1 PARTS=f FIELD= COND= fn_blk U $BLK && \
-    WIT=${WIT:-${iWIT:-2}} YIST=${chao}.blk LIMIT=12 PPLUS=N BLK= COND= SELECT lsd ${1}
+    WIT=1 LIMIT=10 PPLUS=N COND= SELECT lsd ${1}
 }
 
 function fn_blk_delta()
@@ -2090,13 +2093,13 @@ function fn_blk_delta()
 
     h|*)
         echo "
-   SELECT blk delta 抓住指数每一个拐点细节
-            u       领涨即抗跌排名
-            d       领跌排名
-           us       高涨幅领跌排名
-            l       从3个维度考量：数量、delta涨幅、最高涨幅
-         BLK=       追加展示BLK内的细节
-            h       Print this help
+   SELECT blk delta C [end off] 抓住指数每一个拐点细节
+            u                   领涨即抗跌排名
+            d                   领跌排名
+           us                   高涨幅领跌排名
+            l                   从3个维度考量：数量、delta涨幅、最高涨幅
+         BLK=                   追加展示BLK内的细节
+            h                   Print this help
             "
         exit
         ;;
@@ -2180,7 +2183,7 @@ function fn_blk_delta()
     fn_check_blk_abbr
     cols="sym,d.code,d.close,rise,ride,earn"
     sqls="SELECT ${cols}, ${nmcYi},c.name 
-            FROM delta8 d, cap c WHERE blk=0x${BLK} and d.code=c.code ORDER by ${sfiled} ${sdirct} LIMIT ${iLIMIT:-12}"
+            FROM delta8 d, cap c WHERE blk=0x${BLK} and d.code=c.code ORDER by ${sfiled} ${sdirct} LIMIT ${iLIMIT:-10}"
     sqls_pro= fn_imysql_sqls
     fn_chao ${chao}.delta
 }
@@ -2280,6 +2283,7 @@ function fn_blk()
     case $1 in
     g|grep)     LIMIT=500 fn_blk l | grep ${2:-'\<FF'} ;;
     d|delta)    fn_blk_delta ${@:2} ;;
+    L)          BLK=PRI fn_check_blk_abbr ;;
     l|layout)
         ABBR=m fn_yist
         sqls="

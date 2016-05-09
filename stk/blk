@@ -107,7 +107,8 @@ function fn_10jqka()
     local i j
     for (( i=0,j=1; i<${#maps[@]}; i+=2,j+=2 )); do
         chao2=${maps[${j}]}
-        chao2=${chao2} PARTS=f CHAO=1 SELECT blk U ${maps[${i}]} >& /dev/null && cp ${chao}.${chao2} .blk.${chao2}
+        # 暂时停止更新, fn_blk L 足够强大
+        # chao2=${chao2} PARTS=f CHAO=1 SELECT blk U ${maps[${i}]} >& /dev/null && cp ${chao}.${chao2} .blk.${chao2}
     done
     
     fn_echo_succ "up blk 10jqka succ!"
