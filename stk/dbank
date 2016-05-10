@@ -313,6 +313,7 @@ function fn_check_blk_abbr()
      M  DADA    新材料概念    
      O  D617    OLED 
     QH  FFC7    QH360
+     S  DFB9    半导体及元件
      Z  DF95    证券
     )
 
@@ -580,7 +581,7 @@ function fn_get_prev()
 {
     # 当END不存在时，亦正确
     sqls="SELECT date FROM day WHERE code=${CODE:-900001} and date<'$END'"
-    mysql -N kts<<<"${sqls} ORDER by date DESC LIMIT 0,1"
+    mysql -N kts<<<"${sqls} ORDER by date DESC LIMIT ${1:-0},1"
 }
 
 function fn_get_next()
@@ -619,7 +620,7 @@ function fn_set_END()
         END=${END:-${CURR}}                             # 指定为CURR
     fi
 
-    PREV=`fn_get_prev ${iPASS:-1}`                      # 指定PREV，通常用作比对日期
+    PREV=`fn_get_prev ${iPASS:-0}`                      # 指定PREV，通常用作比对日期
 
     #echo iEND:${iEND} END:${END} PREV:${PREV}; exit
 }

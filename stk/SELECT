@@ -82,11 +82,10 @@ function fn_lsd()
             fn_echo_warn "NR is 0"
             LIMIT=${LIMIT:-200} HAVING="rise>${rDOOR:-0}" SELECT lsd; exit 0;
         fi
-        LIMIT=${LIMIT:-40}     # 如此大400？
         FIELD=${FIELD:-rise}
         iTime=`fn_get_time ${1}`
-        TEMPDAY="(SELECT * FROM dorat WHERE date='${END}' && time='${iTime}')"
         HAVING="${HAVING:-rise>${rDOOR:-0}}"
+        FEN=${iTime} DAY=dorat fn_xtempday      # faster than sub-select
         fn_echo_warn ${iTime}
         ;;
     u|h|usage)
@@ -116,22 +115,29 @@ function fn_lsd()
     {
         [ "${FIELD}" = 'dive' ] && 
         sql_dive="round( (100*(d.amount/d.volume-d.close)/d.close), 1) as dive,"
-        [ -n "${PPLUS}" ] && 
+
+        iCOND="num=${NUM:-8}" xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
+        xt_ret $? "To avoid this WARNING: END=${PREV} SCREENER lohi 1" || exit $?
+
         case ${PPLUS} in
-        N) CHAO=1;iCOND='high!=low&&d.close/yesc<1.15'                  ;;
-        G) CHAO=1;iCOND='high!=low&&d.close/yesc<1.15 && high!=open'    ;;
-        E) CHAO=1;iCOND='high =low'                                     ;;
+        N) iCOND='d.high!=d.low&&d.close/yesc<1.15'                  ;;
+        G) iCOND='d.high!=d.low&&d.close/yesc<1.15 && d.high!=open'  ;;
+        E) iCOND='d.high =d.low'                                     ;;
         esac
 
+
         sqls="
-        SELECT  $columns, volume,amount, 
+        SELECT  $columns, 
                 $OPRI as opri, 
                 $HIRI as hiri, 
                 ${sql_avrg}
                 $RISE as rise, 
                 ${sql_dive}
-                $TURNOV as tov, ${nmcYi}, c.name
-                FROM ${TEMPDAY} as d, cap as c ${WHERE} d.code = c.code and d.date = '${END}' && ${iCOND:-1}
+                $TURNOV as tov, ROUND(100*h.mavol5*c.close/c.nmc, 2) as tov5,
+                round(d.amount/10000, 2) as eYi, 
+                ${nmcYi}, c.name
+                FROM ${TEMPDAY} d, cap c, curr_lohi h 
+                ${WHERE} d.code = c.code and d.code=h.code && d.date = '${END}' && ${iCOND:-1}
                 HAVING ${HAVING:-1} ${COND} ORDER BY ${FIELD} ${ASC:-desc} limit ${LIMIT:-36}
         "
         #echo "${sqls}"; exit
@@ -213,7 +219,7 @@ function fn_rat()
     SCALE=`fn_get_ratio_close2open`
     # echo ${SCALE}; exit
     tov="round(100*(d.volume)/(c.nmc/c.close),2)"
-    tov5="round(100*(ma.vol5)/(c.nmc/c.close),2)"
+    tovf="round(100*(ma.vol5)/(c.nmc/c.close),2)"
     tov20="round(100*(ma.vol20)/(c.nmc/c.close),2)"
     v1v5="round(5*d.volume*${SCALE}/(ma.vol5),2)"       
     # v5vT="round(4*ma.vol5/(ma.vol20),2)"
@@ -231,7 +237,6 @@ function fn_rat()
         round(100*(d.close-(d.open+low)/2)/((d.open+low)/2),2) as av_rise,
         round(100*(d.close-d.yesc)/d.yesc,2) as rise, 
         ${tov} as tov, 
-        ${tov5} as tov5,
         ${tov20}as tov20,
         ${v1v5} as v1v5, 
         d.amount,c.nmc,c.name FROM tbl_mavol520s as ma, 
@@ -1466,8 +1471,8 @@ function fn_lhb()
         "
         #echo "${sqls}"; exit
         mysql -t kts <<<"${sqls}"
-        fn_echo_warn "lhb of ${date} by [ ${FIELD} ] suggest[ buy>.15&&eBuy>.5 ]"
-        fn_chao
+        fn_echo_warn "lhb of ${date} ${COND} [${FIELD}] suggest[ buy>.15&&eBuy>.5 ]"
+        fn_chao ${chao}.lhb
         ;;
     *)
         fn_echo_succ "\tlhb max_date@${max_dt}"
@@ -1720,7 +1725,7 @@ function fn_wolf_sqls()
     --  round((pbuy/nbuy), 2) as Go, round((pbuy+nbuy)/(psell+nsell),1) as bsp,
         ${xbb_col}
         round((w.shou/h.volume), 2) as prop, h.scale,
-        round((w.tov*h.mavol5/w.shou), 2) as tov5,
+        round((w.tov*h.mavol5/w.shou), 1) as tov5,
         round(w.amount/10000, 1) as eYi, 
         ROUND(nmc, 1) as nmcYi
         ${col_name}
@@ -1765,7 +1770,7 @@ function fn_wolf()
         iCOND="time='${stime}'${eCOND}" xCol=date fn_xCol mat_dde xdde ${END}
         xt_ret $? "" || return $?
 
-        PREV=`END=${date:-${END}} fn_get_prev`
+        PREV=`END=${date:-${END}} fn_get_prev ${iPASS}`
         iCOND="num=${NUM:-8}" xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
         xt_ret $? "To avoid this WARNING: END=${PREV} SCREENER lohi 1" || exit $?
 
@@ -2307,7 +2312,7 @@ function fn_blk()
             sum(${RISE}>${TEN}) as click,
             count(m.code) as num,
             ROUND(sum(${RISE})/count(m.code), 2) as rise,
-            n.sym FROM blk_name as n, blk_memb as m, ${TEMPDAY} as d
+            n.sym FROM blk_name as n, blk_memb as m, ${TEMPDAY:-xtempday} as d
          $WHERE m.code=d.code && n.blk=m.blk AND n.blk not in ${EXCLUDE_BLK} ${notinBLK}
                 AND ${RISE}>${rDOOR}
          GROUP by blk ORDER by ${FIELD:-num} ${ASC:-DESC} LIMIT ${LIMIT:-20};
@@ -2740,7 +2745,6 @@ function fn_notice()
 
 function fn_ddd()
 {
-    prop=${prop:-.81}; DOOR=
     case $1 in
     yiz)
         fn_echo_succ "PARTS=f@一字开板"
@@ -2756,13 +2760,13 @@ function fn_ddd()
         TYPE=${2:-e}
         COND="(rise>9.93&&eWolf>.49)" \
         PARTS=f CHAO=1 LIMIT=200 END=${PREV} SELECT wolf ${TYPE}
-        COND="(rise<opri||(opri<0&&rise<opri+2))&&prop<${prop:-.81}" \
+        COND="(rise<opri||(opri<0&&rise<opri+2)||cise<2)&&prop<${prop:-1.1}" \
         YIST=${chao}.wolf LIMIT=100 SELECT wolf ${TYPE} 
         fn_echo_succ "[prop:${prop}] 昨日涨停 -- ma20&特别关注标的：eYi＞5亿"
 
         COND="(rise<9.94&&avri>4.5&&eWolf>.43&&eYi>5)" \
         PARTS=f CHAO=1 LIMIT=200 END=${PREV} SELECT wolf ${TYPE}
-        COND="(rise<opri||(opri<0&&rise<opri+2)||cise<0)&&prop<${prop:-.81}" \
+        COND="(rise<opri||(opri<0&&rise<opri+2)||cise<2)&&prop<${prop:-1.1}" \
         YIST=${chao}.wolf LIMIT=100 SELECT wolf ${TYPE} 
 
         fn_echo_succ "[prop:${prop}] 昨日大额 -- ma20&+12%&特别关注：剔除大宗交易"
