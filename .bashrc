@@ -31,6 +31,7 @@ alias     SCALE=''      # 通放大倍数
 alias       WIT=''      # 大智慧
 alias     LIMIT=''
 alias      iEND=''
+alias     iPASS=''
 alias    iLIMIT=''
 alias     nmemb=''
 alias       mip='PREV=3 mi5 '
@@ -55,6 +56,7 @@ alias .DEBUG="let 'DEBUG=!DEBUG'; echo \$DEBUG; export DEBUG"
 alias    .s='cd ~/bin/stk'
 alias   .ss='cd ~/bin/stk/sql'
 alias   .rc='. /root/.bashrc'
+alias  .irc='vi /root/.bashrc; . /root/.bashrc'
 alias   .ps='PS1="[\w]\n\u-> \[\033[0m\]"'
 
 
@@ -85,7 +87,6 @@ alias  slcd='sloccount --cached --details'          # slcd | grep "sysctrl" | pr
 alias     x='chmod 777 '
 alias    xt='chmod 777 /tftpboot/*'
 alias    xx='tar -zxvf'
-alias   irc='vi /root/.bashrc; . /root/.bashrc'
 alias    ct='cd ~/sh/t'
 alias   cwd='pwd >> ~/.env;vi ~/.env; .rc'
 alias   swd='pwd > ~/.swd'                          # save pwd, [pushd .]
