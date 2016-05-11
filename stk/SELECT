@@ -45,13 +45,29 @@ function fn_ls()
 	" | mysql -t kts
 }
 
+function fn_update_mavol5()
+{
+    # 切换日期，则确保OK
+    idate=`mysql -N kts <<<"SELECT DISTINCT end FROM t_mavol5"` 
+
+    if [ "${idate}" != ${PREV} ]; then
+        echo 'update mavol5...'
+        iCOND="num=${NUM:-8}" xCol=end fn_xCol mat_lohi t_mavol5 ${PREV}
+        xt_ret $? "To avoid this WARNING: END=${PREV} SCREENER lohi 1" || exit $?
+        echo "
+        INSERT into t_mavol5(end,code,mavol5)
+        SELECT '$PREV',code,0 FROM ${TEMPDAY:-day} 
+        WHERE date='${END}' && code NOT IN (SELECT code from t_mavol5);
+        " | mysql kts
+    fi
+}
+
 function fn_lsd()
 {
     # where d.code = c.code 非常重要，不重叠的FIELD不需要加‘tbl_name.’
     local columns="code,yesc,open,close"
           columns=${columns:-'*'}
           columns=d.${columns//,/,d.}
-    local TEMPDAY=${TBL:-day}   # use day2:2014 day3:2013 when needed
 
     fn_bist
     fn_yist
@@ -85,6 +101,7 @@ function fn_lsd()
         FIELD=${FIELD:-rise}
         iTime=`fn_get_time ${1}`
         HAVING="${HAVING:-rise>${rDOOR:-0}}"
+        TEMPDAY=xtempday
         FEN=${iTime} DAY=dorat fn_xtempday      # faster than sub-select
         fn_echo_warn ${iTime}
         ;;
@@ -113,18 +130,16 @@ function fn_lsd()
 
     function fn_sql()
     {
+        fn_update_mavol5
+
         [ "${FIELD}" = 'dive' ] && 
         sql_dive="round( (100*(d.amount/d.volume-d.close)/d.close), 1) as dive,"
-
-        iCOND="num=${NUM:-8}" xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
-        xt_ret $? "To avoid this WARNING: END=${PREV} SCREENER lohi 1" || exit $?
 
         case ${PPLUS} in
         N) iCOND='d.high!=d.low&&d.close/yesc<1.15'                  ;;
         G) iCOND='d.high!=d.low&&d.close/yesc<1.15 && d.high!=open'  ;;
         E) iCOND='d.high =d.low'                                     ;;
         esac
-
 
         sqls="
         SELECT  $columns, 
@@ -136,8 +151,11 @@ function fn_lsd()
                 $TURNOV as tov, ROUND(100*h.mavol5*c.close/c.nmc, 2) as tov5,
                 round(d.amount/10000, 2) as eYi, 
                 ${nmcYi}, c.name
-                FROM ${TEMPDAY} d, cap c, curr_lohi h 
-                ${WHERE} d.code = c.code and d.code=h.code && d.date = '${END}' && ${iCOND:-1}
+                FROM ${TEMPDAY:-day} d, cap c
+                , t_mavol5 h 
+                ${WHERE} d.code = c.code 
+                and d.code=h.code 
+                && d.date = '${END}' && ${iCOND:-1}
                 HAVING ${HAVING:-1} ${COND} ORDER BY ${FIELD} ${ASC:-desc} limit ${LIMIT:-36}
         "
         #echo "${sqls}"; exit
@@ -481,7 +499,7 @@ function fn_updown()
     head -n -5 $mps_org >> $mps_god
 
     cols1=t.date,cnt,yiz10,inc10,hit10,
-    cols2=${col_risp}inc,dec0,eq0,inc8p,inc5p,inc2p,inc0p,dec0d,dec2d,dec5d,dec8d,hit00,dec10
+    cols2=${col_risp}inc,dec0,eq0,inc7p,inc5p,inc2p,inc0p,dec0d,dec2d,dec5d,dec7d,hit00,dec10
 
 
     echo "
@@ -1681,15 +1699,14 @@ function fn_wolf_code()
         ORDER="ORDER by date DESC, time DESC"
     fi
 
-   #iCOND="num=${NUM:-8}"   xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
-    iCOND="num=${NUM:-8}"   xCol=code fn_xCol mat_lohi curr_lohi ${2}
+    iCOND="num=${NUM:-8}"   xCol=code fn_xCol mat_lohi t_mavol5 ${2}
     xt_ret $? "" || return $?
 
     iCOND="${jCOND}"        xCol=code fn_xCol ${iTBL:-mat_dde} xdde ${2}
     xt_ret $? "" || return $?
 
     LIMIT=${LIMIT:-12}
-    fn_lohi_shift; # exit
+    fn_lohi_shift;          # 进行数据平移
 
     sql_cond="&& w.code=${2} && w.date=h.end"
     col_name=
@@ -1729,7 +1746,7 @@ function fn_wolf_sqls()
         round(w.amount/10000, 1) as eYi, 
         ROUND(nmc, 1) as nmcYi
         ${col_name}
-        FROM xdde as w, curr_lohi as h ${tbl_temp}
+        FROM xdde as w, t_mavol5 as h ${tbl_temp}
         ${WHERE} w.code=h.code ${sql_cond} && net/tov>${DOOR}       -- && w.date<='${END}'
         HAVING 1 ${COND} ${ORDER:-ORDER by ${FIELD} ${ASC:-DESC}} LIMIT ${LIMIT:-36}
     "
@@ -1771,8 +1788,7 @@ function fn_wolf()
         xt_ret $? "" || return $?
 
         PREV=`END=${date:-${END}} fn_get_prev ${iPASS}`
-        iCOND="num=${NUM:-8}" xCol=end fn_xCol mat_lohi curr_lohi ${PREV}
-        xt_ret $? "To avoid this WARNING: END=${PREV} SCREENER lohi 1" || exit $?
+        fn_update_mavol5
 
         fn_xtempday
         tbl_temp=", xtempday as d"
@@ -2018,7 +2034,7 @@ function fn_stat()
 function fn_sample()
 {
     HMS=`fn_get_time $1`
-    FEN=${HMS} DAY=dorat iCOND="high!=low && close/yesc<1.15 && close/yesc>=1" fn_xtempday
+    FEN=${HMS} DAY=dorat iCOND="high!=low&&high!=open && close/yesc<1.15 && close/yesc>=1" fn_xtempday
     xt_ret $? "xtempday error" || return $?
 
     echo "
@@ -2076,7 +2092,7 @@ function fn_blk_delta()
     case $1 in
     us)
         # 基于前提约束：只做强势股，绝对值弱于大盘不做考虑
-        iCOND="AND high!=low && close/yesc<1.15 && 100*(close/yesc-1)>=${iDOOR:-0}"
+        iCOND="AND high!=low&&high!=open && close/yesc<1.15 && 100*(close/yesc-1)>=${iDOOR:-0}"
         sfiled='rise'
         sdirct='desc'
         sopr='>'
