@@ -623,14 +623,14 @@ CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
     DECLARE v_eq0       INT DEFAULT 0; 
     DECLARE v_dec0      INT DEFAULT 0; 
 
-    DECLARE v_inc8p      INT DEFAULT 0; 
+    DECLARE v_inc7p      INT DEFAULT 0; 
     DECLARE v_inc5p      INT DEFAULT 0; 
     DECLARE v_inc2p      INT DEFAULT 0; 
     DECLARE v_inc0p      INT DEFAULT 0; 
 
     DECLARE v_dec2d      INT DEFAULT 0; 
     DECLARE v_dec5d      INT DEFAULT 0; 
-    DECLARE v_dec8d      INT DEFAULT 0; 
+    DECLARE v_dec7d      INT DEFAULT 0; 
     DECLARE v_dec0d      INT DEFAULT 0; 
     DECLARE v_hit00      INT DEFAULT 0; 
     DECLARE v_dec10      INT DEFAULT 0; 
@@ -662,7 +662,7 @@ CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
         inc         INT(6) NOT NULL DEFAULT 0,
         dec0        INT(6) NOT NULL DEFAULT 0,
         eq0         INT(6) NOT NULL DEFAULT 0,
-        inc8p        INT(6) NOT NULL DEFAULT 0,
+        inc7p        INT(6) NOT NULL DEFAULT 0,
         inc5p        INT(6) NOT NULL DEFAULT 0,
         inc2p        INT(6) NOT NULL DEFAULT 0,
         inc0p        INT(6) NOT NULL DEFAULT 0,
@@ -670,7 +670,7 @@ CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
         dec0d        INT(6) NOT NULL DEFAULT 0,
         dec2d        INT(6) NOT NULL DEFAULT 0,
         dec5d        INT(6) NOT NULL DEFAULT 0,
-        dec8d        INT(6) NOT NULL DEFAULT 0,
+        dec7d        INT(6) NOT NULL DEFAULT 0,
         hit00        INT(6) NOT NULL DEFAULT 0,
         dec10        INT(6) NOT NULL DEFAULT 0
     );
@@ -700,21 +700,21 @@ CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng>9.93&&high!=low INTO v_inc10;
         SELECT count(code) FROM tbl_change WHERE date=v_start and hit >9.93&&high!=low INTO v_hit10;
         SELECT count(code) FROM tbl_change WHERE date=v_start and avrg>9.8 &&high =low INTO v_yiz10;
-        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<9.93 &&chng>=8  INTO v_inc8p;
-        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<8  and chng>=5  INTO v_inc5p;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<9.93 &&chng>=7  INTO v_inc7p;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<7  and chng>=5  INTO v_inc5p;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<5  and chng>=2  INTO v_inc2p;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<2  and chng>=0  INTO v_inc0p;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<0  and chng>-2  INTO v_dec0d;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<=-2 and chng>-5 INTO v_dec2d;
-        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<=-5 and chng>-8 INTO v_dec5d;
-        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<=-8             INTO v_dec8d;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<=-5 and chng>-7 INTO v_dec5d;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<=-7             INTO v_dec7d;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<-9.93           INTO v_dec10;
         SELECT count(code) FROM tbl_change WHERE date=v_start and hit00<-9.93          INTO v_hit00;
 
         INSERT INTO tbl_stat_change(date, cnt, inc, eq0, dec0, 
-                inc10, hit10, yiz10, inc8p ,inc5p ,inc2p ,inc0p ,dec0d ,dec2d ,dec5d ,dec8d,hit00,dec10 )
+                inc10, hit10, yiz10, inc7p ,inc5p ,inc2p ,inc0p ,dec0d ,dec2d ,dec5d ,dec7d,hit00,dec10 )
         VALUES(v_start, @cnt, v_inc, v_eq0, v_dec0, 
-                v_inc10, v_hit10, v_yiz10, v_inc8p ,v_inc5p ,v_inc2p ,v_inc0p ,v_dec0d ,v_dec2d ,v_dec5d ,v_dec8d,v_hit00,v_dec10 );
+                v_inc10, v_hit10, v_yiz10, v_inc7p ,v_inc5p ,v_inc2p ,v_inc0p ,v_dec0d ,v_dec2d ,v_dec5d ,v_dec7d,v_hit00,v_dec10 );
         -- LEAVE tag_stat_change;
     END WHILE;
 
