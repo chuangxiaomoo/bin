@@ -485,8 +485,9 @@ function fn_wma()
 function fn_updown()
 {
     case $1 in
-    +([0-9])) HMS=`iASC=DESC fn_get_time ${1}` || exit; NUM=1 ;;
-    l) fn_list_iF5_times                            ;;
+    +([0-9])) HMS=`iASC=DESC fn_get_time ${1}` || exit; NUM=1   ;;
+    l) fn_list_iF5_times                                        ;;
+    h) echo "Usage: NUM=5 SELECT updown"; exit                  ;;
     esac
 
     let iNUM=${NUM:=5}+1
