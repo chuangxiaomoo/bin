@@ -734,7 +734,7 @@ function fn_lohi()
         sta=${1%%~*}
         end=${1##*~}
         local i
-        for (( i=${sta}; i<=${end}; i+=1 )); do
+        for (( i=${end}; i>=${sta}; i-=1 )); do
             SCREENER lohi ${i}
             xt_ret $? "error or interupted" || exit
         done
