@@ -1237,9 +1237,9 @@ function fn_X-Y_problem()               { cat problem_X-Y_problem ;}
 function fn_solving()                   { cat problem_solving ;}
 function fn_ask_question()              { cat problem_ask_question ;}
     local opts=(
-        X-Y_problem
-        solving                         # ../.m2doc/02_如何解题
-        ask_question                    # 你会问问题吗
+        X-Y_problem                     # 问题分类
+        solving                         # Howto ../.m2doc/02_如何解题
+        ask_question                    # sometimes，问题产生源自问问题的方式
     )
     fn_print $@
 }
