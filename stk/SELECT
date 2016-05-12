@@ -51,7 +51,7 @@ function fn_update_mavol5()
     idate=`mysql -N kts <<<"SELECT DISTINCT end FROM t_mavol5"` 
 
     if [ "${idate}" != ${PREV} ]; then
-        echo 'update mavol5...'
+        #fn_echo_succ 'update mavol5...'
         iCOND="num=${NUM:-8}" xCol=end fn_xCol mat_lohi t_mavol5 ${PREV}
         xt_ret $? "To avoid this WARNING: END=${PREV} SCREENER lohi 1" || exit $?
         echo "
@@ -98,8 +98,11 @@ function fn_lsd()
             fn_echo_warn "NR is 0"
             LIMIT=${LIMIT:-200} HAVING="rise>${rDOOR:-0}" SELECT lsd; exit 0;
         fi
-        FIELD=${FIELD:-rise}
+
         iTime=`fn_get_time ${1}`
+        xt_ret $? "Please check data.dorat@${END}" || return $?
+
+        FIELD=${FIELD:-rise}
         HAVING="${HAVING:-rise>${rDOOR:-0}}"
         TEMPDAY=xtempday
         FEN=${iTime} DAY=dorat fn_xtempday      # faster than sub-select
@@ -134,17 +137,19 @@ function fn_lsd()
 
         [ "${FIELD}" = 'dive' ] && 
         sql_dive="round( (100*(d.amount/d.volume-d.close)/d.close), 1) as dive,"
+        c_natural='d.high!=d.low&&d.close/yesc<1.15'
 
         case ${PPLUS} in
-        N) iCOND='d.high!=d.low&&d.close/yesc<1.15'                  ;;
-        G) iCOND='d.high!=d.low&&d.close/yesc<1.15 && d.high!=open'  ;;
-        E) iCOND='d.high =d.low'                                     ;;
+        N|n) iCOND="${c_natural}"                                     ;;
+        G|g) iCOND="${c_natural} && d.high!=open"                     ;;
+        E|e) iCOND='d.high =d.low'                                    ;;
+        V|v) iCOND="${c_natural} && d.high!=open"; HAVING="tov5>5"    ;;
         esac
 
         sqls="
         SELECT  $columns, 
-                $OPRI as opri, 
                 $HIRI as hiri, 
+                $OPRI as opri, 
                 ${sql_avrg}
                 $RISE as rise, 
                 ${sql_dive}
@@ -1669,13 +1674,13 @@ function fn_enable_xbb()
 function fn_lohi_shift()
 {
     let NUM=LIMIT+2     # echo $NUM $LIMIT
-    sql_shift="DELETE FROM curr_lohi WHERE end='${END}'\n"
+    sql_shift="DELETE FROM $t_tov5 WHERE end='${END}'\n"
     dates=(`fn_get_date 1 ${NUM}`)
 
     for (( i=0,j=1; i<${#dates[@]}-1; i++,j++ )); do
         iFrom=${dates[$j]};  
         iTo=${dates[$i]};  
-        sql_shift="${sql_shift}; UPDATE curr_lohi SET end='${iTo}' WHERE end='${iFrom}';\n" 
+        sql_shift="${sql_shift}; UPDATE $t_tov5 SET end='${iTo}' WHERE end='${iFrom}';\n" 
         # echo $i From ${iFrom} to ${iTo} 
     done
     echo -e "${sql_shift}" | mysql -N kts
@@ -1700,7 +1705,8 @@ function fn_wolf_code()
         ORDER="ORDER by date DESC, time DESC"
     fi
 
-    iCOND="num=${NUM:-8}"   xCol=code fn_xCol mat_lohi t_mavol5 ${2}
+    t_tov5='t_mavol5c'
+    iCOND="num=${NUM:-8}"   xCol=code fn_xCol mat_lohi ${t_tov5} ${2}
     xt_ret $? "" || return $?
 
     iCOND="${jCOND}"        xCol=code fn_xCol ${iTBL:-mat_dde} xdde ${2}
@@ -1732,12 +1738,8 @@ function fn_wolf_sqls()
         round(100*(trade-h.low)/h.low, 1) as incr,
     --  round(100*(h.high-LEAST(lohi,trade))/LEAST(lohi,trade),1) as jump, 
         tov,
-        ROUND((pbuy+nbuy)/w.tov, 2) as eWolf,
-    --  ROUND(100*nmc*(pbuy+nbuy)/w.amount, 2) as eWolf,    -- 若使用(amount/nmc/100)代替tov,在价涨时结果偏大，价跌时偏小
-        (pbuy+nbuy) as buy, 
-    --  (psell+nsell) as sell,
-    --  pbuy,nbuy, 
-    --  round(100*(pbuy+nbuy)/tov, 1) as bloo, round(100*(psell+nsell)/tov, 1) as sloo,
+        ROUND((pbuy+nbuy)/w.tov, 2) as eWolf,   -- 若使用(amount/nmc/100)代替tov,在价涨时结果偏大，价跌时偏小
+        (pbuy+nbuy) as buy,                     -- (psell+nsell) as sell,pbuy,nbuy, 
         round(net/tov, 2) as pet,
         ROUND(100*( LEAST(w.amount/shou,trade) - (h.amount/h.volume) )/(h.amount/h.volume), 1) as cise, -- COSE-RISE
     --  round((pbuy/nbuy), 2) as Go, round((pbuy+nbuy)/(psell+nsell),1) as bsp,
@@ -1747,8 +1749,8 @@ function fn_wolf_sqls()
         round(w.amount/10000, 1) as eYi, 
         ROUND(nmc, 1) as nmcYi
         ${col_name}
-        FROM xdde as w, t_mavol5 as h ${tbl_temp}
-        ${WHERE} w.code=h.code ${sql_cond} && net/tov>${DOOR}       -- && w.date<='${END}'
+        FROM xdde as w, ${t_tov5:-t_mavol5} as h ${tbl_temp}
+        ${WHERE} w.code=h.code ${sql_cond} && net/tov>${DOOR} ${sql_pplus}
         HAVING 1 ${COND} ${ORDER:-ORDER by ${FIELD} ${ASC:-DESC}} LIMIT ${LIMIT:-36}
     "
     #echo "${sqls}"; exit
@@ -1794,6 +1796,12 @@ function fn_wolf()
         fn_xtempday
         tbl_temp=", xtempday as d"
         sql_cond="&& w.code=d.code"
+        c_natural='d.high!=d.low&&d.close/yesc<1.15'
+
+        case ${PPLUS} in
+        V|v) sql_pplus="&& ${c_natural} && d.high!=open && (w.tov*h.mavol5/w.shou)>=${vDOOR:-5}"   ;;
+        esac
+
         fn_wolf_sqls
 
         case ${PARTS:-o} in
