@@ -1234,11 +1234,11 @@ function fn_rdm()                       { cat rdm ;}
 
 function fn_problem()                   { 
 function fn_X-Y_problem()               { cat problem_X-Y_problem ;}
-function fn_sloving()                   { cat problem_sloving ;}
+function fn_solving()                   { cat problem_solving ;}
 function fn_ask_question()              { cat problem_ask_question ;}
     local opts=(
         X-Y_problem
-        sloving                         # ../.m2doc/02_如何解题
+        solving                         # ../.m2doc/02_如何解题
         ask_question                    # 你会问问题吗
     )
     fn_print $@
