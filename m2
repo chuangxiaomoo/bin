@@ -257,11 +257,13 @@ function fn_artical()                   {
 function fn_01_高铁陆权战略()           { cat artical_01_高铁陆权战略 ;}
 function fn_03_教育的意义()             { cat artical_03_教育的意义 ;}
 function fn_04_周国平：交往的质量()     { cat artical_04_周国平：交往的质量 ;}
+function fn_05_whatsfriend()            { cat artical_05_whatsfriend ;}
     local opts=(
         01_高铁陆权战略
         02_铁道部取消
         03_教育的意义
         04_周国平：交往的质量
+        05_whatsfriend
     )
     fn_print $@
 }

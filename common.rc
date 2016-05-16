@@ -30,8 +30,7 @@ function xert() { [ "${1}" -eq 0 ] || echo ${@:2}; return ${1}; }
 function xt_ret() 
 {
     [ "${1}" = "0" ] && return 0
-   #printf "${BASH_SOURCE[1]##*/}%-6s %s\n" "|${BASH_LINENO[0]}|" "${@:2}"
-    printf "${BASH_SOURCE[1]##*/}%-6s %s" "|${BASH_LINENO[0]}|" 
+    printf "${BASH_SOURCE[1]##*/}%-6s" "|${BASH_LINENO[0]}|"    # no FUNCNAME print
     FG=31 BG=40
     echo -e "\E[${FG};${BG}m${@:2}"
     echo -ne "\E[0m"

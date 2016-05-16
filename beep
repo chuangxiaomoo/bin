@@ -1,0 +1,6 @@
+#! /bin/bash
+
+for (( i=0; i<${BEEPS:-3}; i+=1 )); do
+    echo -ne '\a'; sleep .15
+done
+echo "beep@`date +%T`"
