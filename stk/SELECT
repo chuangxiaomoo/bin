@@ -140,10 +140,11 @@ function fn_lsd()
         c_natural='d.high!=d.low&&d.close/yesc<1.15'
 
         case ${PPLUS} in
-        N|n) iCOND="${c_natural}"                                     ;;
-        G|g) iCOND="${c_natural} && d.high!=open"                     ;;
-        E|e) iCOND='d.high =d.low'                                    ;;
-        V|v) iCOND="${c_natural} && d.high!=open"; HAVING="tov5>5"    ;;
+        N|n) iCOND="${c_natural}"                                           ;;
+        G|g) iCOND="${c_natural} && d.high!=open"                           ;;
+        E|e) iCOND='d.high =d.low'                                          ;;
+        V|v) iCOND="${c_natural} && d.high!=open"                            ; 
+             LIMIT=${LIMIT:-24};HAVING="tov5>=${vDOOR:-5}&&${HAVING:-1}"    ;;
         esac
 
         sqls="
@@ -384,7 +385,7 @@ function fn_dirt_interval()
 {
     step=${1:-10}
     [ -z "${iHMS}" ] && \
-    iHMS=`mysql -N kts <<<"SELECT count(DISTINCT time) FROM dorat WHERE date='${END}'"`
+    iHMS=`fn_get_nr_time`
     let it2=iHMS-step
     let it1=it2-step
 
@@ -1601,7 +1602,7 @@ function fn_list_iF5_times()
     sed -n  '81,$p' ${chao}.iF5 | cat -n > ${chao}.p3
     join -t $'\t' -a1 -o  1.1 1.2 1.3           2.2 2.3 ${chao}.p1  ${chao}.p2 > ${chao}.p12
     join -t $'\t' -a1 -o      1.2 1.3 1.4 1.5   2.2 2.3 ${chao}.p12 ${chao}.p3
-    exit 0
+    exit 1
 }
 
 function fn_proc_eCOND_scale()

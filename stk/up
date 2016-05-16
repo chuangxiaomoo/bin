@@ -260,13 +260,8 @@ function fn_redo_hexun_day()
     sql="SELECT count(code) FROM day WHERE date='${OPENDATE}' and ((close-yesc)/yesc > .101)"
     num_gt10=`mysql kts -N <<<"${sql}"`
     if [ "${num_gt10}" -ge 30 ]; then
-        # 修正yesc数据
-        # iPREV=`END=${OPENDATE} fn_get_prev`
-        # echo "
-        # UPDATE day as dd,(SELECT * FROM day WHERE date='${iPREV}') as yy SET dd.yesc=yy.close WHERE dd.code=yy.code && dd.date='${OPENDATE}'
-        # " | mysql kts
-        fn_echo_warn "${sql}"
-        fn_bell "msg.wav msg.wav"
+        fn_echo_warn "${sql}"           # 超过30支票涨幅大于10%
+        fn_beep
     fi
 
     if [ "$?" -eq 0 ]; then
@@ -720,7 +715,7 @@ function fn_db201()
     fi
 
     if [ "${now}" = "${db_date}" ]; then
-            fn_bell 'wolf'
+        fn_bell 'wolf'
     fi
     return $?
 }
@@ -728,47 +723,23 @@ function fn_db201()
 function fn_dorat()
 {
     case $1 in
-    l|loop)
+    l|loop) # 午休时段不更新数据
         is_del_routine=true fn_timestamp_market
         xt_ret $? "unarm_close_forbid=true TO RERUN WHEN MARKET CLOSED" || return $?
         fn_isresting && { echo "is reseting"; exit 0; }
         ;;
     esac
 
-    # [ $hhmm = 0940 ] || [ $hhmm = 0950 ] || [ $hhmm = 1015 ]
     hhmm=`date +%H%M | sed 's/^0//'`;
-    
-#   [ "${hhmm}" = 930 ] && sleep 30
-#   let got30=hhmm%100%30   # 半小时响铃一次
-#   let got10=hhmm%100%10   # 9min响铃一次
-#   if [ "${got30}" -le 1 ] || 
-#      [ "${hhmm}" = 933 ] || 
-#      [ "${hhmm}" = 936 ] || 
-#      [ "${hhmm}" = 945 ] || 
-#      ([ $hhmm -le 1045 ] && [ ${got10} -le 2 ]); then
-#       fn_bell "online.wav"
-#   fi
 
-    if [ -z "${TBL}" ]; then
-        fn_redo_hexun_day || FINA=1 up 4
-        xt_ret $? "" || return $?
-        sec_dt=(`mysql -N kts<<<"SELECT date,time FROM stamp_day ORDER by id DESC LIMIT 1"`)
-    else
-        # 手动补全5分钟数据，hexun会失败
-        # DROP TABLE dorat_temp;
-        # CREATE TABLE IF NOT EXISTS dorat_temp LIKE dorat;
-        # INSERT INTO dorat_temp SELECT * FROM dorat WHERE date='2015-08-17' and time='11:14:49';
-        # UPDATE dorat_temp SET time='11:20:00';
-        # INSERT INTO dorat SELECT * FROM dorat_temp;
-        sec_dt=${TBL#dorat_}
-        sec_dt=(`fn_dt_hyphen_2_normal ${sec_dt}`)
-
-    fi
+    fn_redo_hexun_day || FINA=1 up 4
+    xt_ret $? "" || { BEEPS=5 fn_beep; return $? ;} 
+    sec_dt=(`mysql -N kts<<<"SELECT date,time FROM stamp_day ORDER by id DESC LIMIT 1"`)
 
     sec_date=${sec_dt[0]}
     sec_time=${sec_dt[1]}
     columns="code,yesc,open,high,low,close,volume,amount"
-    # COND0="WHERE date='${sec_date}'" fn_cp_tbl day dorat_${sec_date//-/_}_${sec_time//:/_}
+
     echo "
     -- DROP TABLE dorat;
     CREATE TABLE IF NOT EXISTS dorat (
@@ -790,16 +761,37 @@ function fn_dorat()
     xt_ret $? "" || return $?
 
     fn_echo_succ "    succ: insert dorat ${sec_dt[@]}"
-    
-   #nb_2015=`cat /tmp/kts/2015 2>/dev/null`
-   #if [ "${nb_2015:-1}" -eq 1 ]; then
-   #let got20=hhmm%100%20
-    if [ "${got20:-1}" -eq 0 ]; then
-        #echo got21:${got21}@${hhmm} >> /tmp/kts/got21
-        fn_bell "system.wav"
-    fi
 
-    return 0
+    fn_chk_rank
+}
+
+function fn_chk_rank()
+{
+    WIT=1 PPLUS=V SELECT lsd ${icurr:=$1} || exit
+
+    [ -z "${icurr}" ] && icurr=`fn_get_nr_time`
+
+    nr_dif=7
+    let iprev=icurr-1
+    head -${nr_dif} /tmp/kts/chao.lsd > /tmp/kts/chao.lsd.curr
+
+    if [ "${hhmm:-1000}" -lt 933 ]; then
+        fn_beep
+    else
+        CHAO=1 PPLUS=V LIMIT=${nr_dif} chao2='lsd.prev' SELECT lsd ${iprev}
+        
+        # 前5前6前7都没有新手闯入
+        local i
+        for (( i=${nr_dif}-3; i<=${nr_dif}; i+=1 )); do
+            union=`head  -${i} -q /tmp/kts/chao.lsd.* | sort -u | wc -l`
+            [ "${union}" -eq ${i} ] && { match=1; echo "nr_dif:$i"; break ;}
+        done
+
+        # 有闯入者，告警
+        [ "${match:-0}" -eq 0 ] && BEEPS=5 fn_beep
+    fi
+    
+    return $?
 }
 
 function fn_example_not_work_by_group()
@@ -1499,6 +1491,7 @@ function fn_main()
     "bigbid                             # 大宗交易"
     "xbb [l]                            # 生成PREV30成交额峰值测算，加参数l时list数据日期"
     "homework                           # 每日功课"
+    "chk_rank                           # 有新进成员"
     )
 
     # 存储过程函数文件的最后5行都是注释
