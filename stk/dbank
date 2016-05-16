@@ -225,7 +225,7 @@ fn_gen_10jqka_sel()
         -e 's# 3#!3#g' > ${buffer}
     echo -ne "\x${rowx1}\x${rowx2}`cat ${buffer}`" > /winc/zxg/自选股.sel
     cp ${PLAIN} /winc/zxg/chao.txt
-    fn_echo_warn "$rows rows to /winc/zxg/自选股.sel"
+    fn_echo_warn "$rows rows to /winc/zxg/{自选股.sel,chao.txt}"
 }
 
 fn_gen_dzh_blk()
@@ -625,7 +625,7 @@ function fn_set_END()
     #echo iEND:${iEND} END:${END} PREV:${PREV}; exit
 }
 
-function fn_get_Notime()
+function fn_get_nr_time()
 {
     mysql -N kts<<<"SELECT count(DISTINCT time) FROM dorat WHERE date='${END}' && time<='${HMS:-15:30:00}'"
 }
@@ -638,12 +638,12 @@ function fn_get_time()
     let sta=${NR}-1
     [ -z "${1}" ] && iASC=DESC
     odrLimit="ORDER by time ${iASC:-ASC} LIMIT ${sta},${2:-1}"
-    iHMS=`mysql -N kts<<<"SELECT DISTINCT time FROM dorat WHERE date='${END}' && time<='${HMS:-15:30:00}' ${odrLimit}"`
-    if [ -z "${iHMS}" ]; then
+    hhmmss=`mysql -N kts<<<"SELECT DISTINCT time FROM dorat WHERE date='${END}' && time<='${HMS:-15:30:00}' ${odrLimit}"`
+    if [ -z "${hhmmss}" ]; then
         fn_echo_fail "No.${NR} is EMPTY"
         exit 1
     fi
-    echo ${iHMS}
+    echo ${hhmmss}
 }
 
 function fn_list_date()
@@ -723,6 +723,15 @@ function fn_bell()
 {
     # route -p GW 即是host的IP
     timeout 2 nc 10.0.2.2 1234 <<<"${*:-msg.wav}"
+}
+
+function fn_beep()
+{
+    local i
+    for (( i=0; i<${BEEPS:-3}; i+=1 )); do
+        echo -ne '\a' > /dev/pts/0; sleep .15
+    done
+    echo "`date +%T`.FROM.${FUNCNAME[1]}" > /dev/pts/0
 }
 
 function fn_cp_tbl()
