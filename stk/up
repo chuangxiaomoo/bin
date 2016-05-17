@@ -768,30 +768,44 @@ function fn_dorat()
 function fn_chk_rank()
 {
     WIT=1 PPLUS=V SELECT lsd ${icurr:=$1} || exit
-
     [ -z "${icurr}" ] && icurr=`fn_get_nr_time`
-
-    nr_dif=7
     let iprev=icurr-1
-    head -${nr_dif} /tmp/kts/chao.lsd > /tmp/kts/chao.lsd.curr
 
-    if [ "${hhmm:-1000}" -lt 933 ]; then
-        fn_beep
-    else
-        CHAO=1 PPLUS=V LIMIT=${nr_dif} chao2='lsd.prev' SELECT lsd ${iprev}
+    # compute layer2s
+    ceilings=`OPT='-N' PPLUS=v COND="rise>=9.93" CHAO=0 PARTS= WIT= SELECT lsd $1 | wc -l`
 
-        # 前5前6前7都没有新手闯入
-        local i
-        for (( i=${nr_dif}-3; i<=${nr_dif}; i+=1 )); do
-            union=`head  -${i} -q /tmp/kts/chao.lsd.* | sort -u | wc -l`
-            [ "${union}" -eq ${i} ] && { match=1; echo "nr_dif:$i"; break ;}
-        done
-
-        # 有闯入者，告警
-        [ "${match:-0}" -eq 0 ] && BEEPS=5 fn_beep
+    if [ "${ceilings}" -gt 10 ]; then
+        ceilings=10
     fi
 
-    return $?
+    let layer1s=ceilings+3   # 6=3+3 提供1防护
+    let layer2s=ceilings+6   # 6=3+3 提供2防护
+
+    [ "${hhmm:-1000}" -lt 933 ] && fn_beep && return
+
+    # process
+    CHAO=1 PPLUS=V LIMIT=${layer2s} chao2='L2.prev' SELECT lsd ${iprev}
+    xt_ret $? "" || return $?
+
+    head -${layer2s} /tmp/kts/chao.lsd      > /tmp/kts/chao.L2.curr
+    head -${layer1s} /tmp/kts/chao.lsd      > /tmp/kts/chao.L1.curr
+    head -${layer1s} /tmp/kts/chao.L2.prev  > /tmp/kts/chao.L1.prev
+
+    # 防护=layer+1，有新手闯入
+    union=`head  -${layer1s} -q /tmp/kts/chao.L1.* | sort -u | wc -l`
+    [ "${union}" -ne ${layer1s} ] && { match=1; BEEPS=5 ;}  && \
+    birds1=$(fn_name `grep -v -f /tmp/kts/chao.L1.prev /tmp/kts/chao.L1.curr` 2>&1)
+
+    # 防护=layer+2，有新手闯入
+    union=`head  -${layer2s} -q /tmp/kts/chao.L2.* | sort -u | wc -l`
+    [ "${union}" -ne ${layer2s} ] && { match=1 ;}           && \
+    birds2=$(fn_name `grep -v -f /tmp/kts/chao.L2.prev /tmp/kts/chao.L2.curr` 2>&1)
+
+    echo L2:${layer2s} m:${match} B1:${birds1} B2:${birds2} # ;exit
+
+    # 有闯入者，告警
+    [ "${match:-0}" -eq 1 ] && BEEPS=${BEEPS} fn_beep L1:${birds1} L2:${birds2}
+
 }
 
 function fn_example_not_work_by_group()

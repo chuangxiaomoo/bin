@@ -76,19 +76,19 @@ function fn_lsd()
     loop)
         local i
         for (( i=1; i<=${NUM:-10}; i+=1 )); do
-            OPT=-N COND="rise>${rDOOR:-9.93}" SELECT lsd ${i} | wc -l 2>&1
+            OPT=-N COND="rise>=${rDOOR:-9.93}" SELECT lsd ${i} | wc -l 2>&1
         done 2>&1 | grep -v HAVING
         exit
         ;;
     t|top)
         LIMIT=${LIMIT:-200}
-        HAVING="rise>${rDOOR:-9.93}"
+        HAVING="rise>=${rDOOR:-9.93}"
         FIELD=${FIELD:-nmc}
         chao=${chao}.top
         ;;
     f|floor)
         LIMIT=${LIMIT:-200}
-        HAVING="rise<-9.93"
+        HAVING="rise<=-9.93"
         FIELD=${FIELD:-nmc}
         ;;
     l|list)
@@ -184,7 +184,7 @@ function fn_ace()
 
     function fn_sql()
     {
-        sqls="SELECT ${2} FROM day as d,cap as c where d.code=c.code && d.date = '$1' and ${RISE}>9.93 ${@:3}"
+        sqls="SELECT ${2} FROM day as d,cap as c where d.code=c.code && d.date = '$1' and ${RISE}>=9.93 ${@:3}"
         # echo "${sqls}"; exit 1
         mysql -N kts <<<"${sqls}"
     }
@@ -627,20 +627,6 @@ function fn_tao5()
     mysql $mo -t kts <<< "${tbl_super_dive}" |\
         sed -e '1,3s/----+$/\+/g' -e '$s/----+$/\+/g' -e '2s/    |$/|/g'
     xt_ret ${PIPESTATUS[0]} "${FUNCNAME}" || return $?
-}
-
-function fn_name()
-{
-    fn_iscode ${code:=${1}}
-    xt_ret $? "Usage: name code" || exit $?
-
-    sqls="SELECT code, name,
-            CONCAT((round(nmc/10000, 1)),'Yi') as nmcYi
-             FROM cap WHERE code=${code}
-    "
-    fn_echo_succ `mysql -N kts <<< "${sqls}"`
-
-    xt_ret $? "" || return $?
 }
 
 function fn_rdiff()
@@ -1343,10 +1329,10 @@ function fn_sban()
         ZIZE=0.25 fn_ban; exit
         ;;
     .99)
-        COND='tov<=1 && rise>9.93' SELECT lohi ${2:-1} ${3}; exit
+        COND='tov<=1 && rise>=9.93' SELECT lohi ${2:-1} ${3}; exit
         ;;
     g1)
-        COND='tov>1 && rise>9.93' SELECT lohi ${2:-1} ${3}; exit
+        COND='tov>1 && rise>=9.93' SELECT lohi ${2:-1} ${3}; exit
         ;;
     c|code)
         COND="code=$2" SELECT lohi ${3:-1}; exit
@@ -1357,8 +1343,8 @@ function fn_sban()
             a   : close>avri-1
             40  : 0940 tov .18
             47  : 0947 tov .25
-            .99 : tov<=1 && rise>9.93
-            g1  : tov>1 && rise>9.93
+            .99 : tov<=1 && rise>=9.93
+            g1  : tov>1 && rise>=9.93
             c   : c code [i]
             *   : usage
         "
@@ -1985,11 +1971,11 @@ function fn_stat()
             export END=${dates[$i]}
             export PREV=${dates[$j]} #echo ${PREV} ${END}; continue
             # 全天
-            YIST=  END=${PREV} PARTS=f LIMIT=300 HAVING="rise>9.93&&avrg<9.93"  chao2=full fn_lsd
+            YIST=  END=${PREV} PARTS=f LIMIT=300 HAVING="rise>=9.93&&avrg<9.93"  chao2=full fn_lsd
             YIST=${chao}.full PARTS=s LIMIT=300 fn_lsd
             fn_update_stati_ban
             # 上午
-            YIST=${chao}.full  END=${PREV} PARTS=f LIMIT=300 HAVING="rise>9.93"  chao2=mid HMS=13:00:00 fn_lsd 1
+            YIST=${chao}.full  END=${PREV} PARTS=f LIMIT=300 HAVING="rise>=9.93"  chao2=mid HMS=13:00:00 fn_lsd 1
             YIST=${chao}.mid PARTS=s LIMIT=300 fn_lsd
             fn_update_stati_ban
         done
@@ -2010,7 +1996,7 @@ function fn_stat()
             export PREV=${dates[$j]}
             export END=${dates[$i]}
             # 一字
-            YIST=  END=${PREV2} PARTS=f LIMIT=300 HAVING="rise>9.93&&avrg>9.93 ${notinBLK}" chao2=prev2 fn_lsd
+            YIST=  END=${PREV2} PARTS=f LIMIT=300 HAVING="rise>=9.93&&avrg>=9.93 ${notinBLK}" chao2=prev2 fn_lsd
 
             # 开板
             YIST=${chao}.prev2 END=${PREV} PARTS=f LIMIT=300 HAVING="avrg<9.93" chao2=prev  fn_lsd
@@ -2079,7 +2065,7 @@ function fn_sample()
     SELECT hex(blk),sym, count(code) as SAMPLES,
         ROUND(sum(rise)/count(code), 2) as rise,
         ROUND(sum(earn)/count(code), 2) as earn,
-        sum(rise>${TEN:=9.93}) as click FROM top8
+        sum(rise>=${TEN:=9.93}) as click FROM top8
     GROUP by blk
     HAVING 1 ${COND} ORDER by ${FIELD:=rise} DESC LIMIT ${LIMIT:-20};
     "
@@ -2548,7 +2534,7 @@ function fn_dde_wolf()
     sqls="
     SELECT ${columns},ROUND((pbuy+nbuy)/tov, 2) as eWolf,
         round(amount/10000, 1) as eYi, nmc,name FROM dde as d
-    $WHERE 1 ${COND} and date>='${STA}' && date<='${END}' && rise>9.93 && nmc<=120
+    $WHERE 1 ${COND} and date>='${STA}' && date<='${END}' && rise>=9.93 && nmc<=120
     HAVING eWolf>.5
     ORDER by ${FIELD:-code } ASC
     "
@@ -2774,17 +2760,17 @@ function fn_ddd()
     case $1 in
     yiz)
         fn_echo_succ "PARTS=f@一字开板"
-        PARTS=f CHAO=1 END=$PREV COND="rise>9.93" PPLUS=G FIELD=rise LIMIT=400 SELECT lsd
+        PARTS=f CHAO=1 END=$PREV COND="rise>=9.93" PPLUS=G FIELD=rise LIMIT=400 SELECT lsd
         YIST=${chao}.lsd   COND="eWolf>.2 && opri> 9.93" DOOR=-1/3 SELECT wolf i $2
         YIST=${chao}.lsd   COND="eWolf>.2 && opri<=9.93" DOOR=-tov/3 FIELD=rise SELECT wolf i $2
         fn_echo_succ "PARTS=f@非一字板连板"
-        PARTS=f CHAO=1 END=$PREV COND="rise>9.93" PPLUS=N FIELD=rise LIMIT=400 SELECT lsd
+        PARTS=f CHAO=1 END=$PREV COND="rise>=9.93" PPLUS=N FIELD=rise LIMIT=400 SELECT lsd
         YIST=${chao}.lsd   COND="eWolf>.2 && opri> 9.93" DOOR=-1/3 SELECT wolf i $2
         YIST=${chao}.lsd   COND="eWolf>.2 && opri<=9.93" DOOR=-1/3 FIELD=rise SELECT wolf i $2
         ;;
     110)
         TYPE=${2:-e}
-        COND="(rise>9.93&&eWolf>.49)" \
+        COND="(rise>=9.93&&eWolf>.49)" \
         PARTS=f CHAO=1 LIMIT=200 END=${PREV} SELECT wolf ${TYPE}
         COND="(rise<opri||(opri<0&&rise<opri+2)||cise<2)&&prop<${prop:-1.1}" \
         YIST=${chao}.wolf LIMIT=100 SELECT wolf ${TYPE}
@@ -2798,7 +2784,7 @@ function fn_ddd()
         fn_echo_succ "[prop:${prop}] 昨日大额 -- ma20&+12%&特别关注：剔除大宗交易"
         ;;
     000)
-        CHAO=1 LIMIT=200 COND="(rise>9.93&&eWolf>.49&&eYi>1)||(avri>4.5&&eWolf>.43&&eYi>5)" SELECT wolf e
+        CHAO=1 LIMIT=200 COND="(rise>=9.93&&eWolf>.49&&eYi>1)||(avri>4.5&&eWolf>.43&&eYi>5)" SELECT wolf e
         export YIST=${chao}.wolf
         local i
         for (( i=0; i<${STEP:-2}; i+=1 )); do
@@ -2812,7 +2798,7 @@ function fn_ddd()
     100)
         TYPE=${2:-e}
         PREV2=`fn_get_date 3`
-        COND="(rise>9.93&&eWolf>.49)||(avrg>5&&eWolf>.43&&eYi>5)" \
+        COND="(rise>=9.93&&eWolf>.49)||(avrg>5&&eWolf>.43&&eYi>5)" \
         PARTS=f CHAO=1 LIMIT=200 chao2=curr END=${PREV2} SELECT wolf ${TYPE}
         # prop<.6
         COND="(rise<opri||(opri<0&&rise<opri+2))&&eWolf>=.25&&prop<${prop:-.81}" \
@@ -2821,7 +2807,7 @@ function fn_ddd()
         fn_echo_succ "[prop:${prop}] 两日内价格在PREV2涨停下交易"
         ;;
     rhx)
-        CHAO=1 LIMIT=200 COND="(rise>9.93&&eWolf>.49&&eYi>1)||(avri>5&&eWolf>.43&&eYi>5)" SELECT wolf e
+        CHAO=1 LIMIT=200 COND="(rise>=9.93&&eWolf>.49&&eYi>1)||(avri>5&&eWolf>.43&&eYi>5)" SELECT wolf e
         export YIST=${chao}.wolf
         COND="prop>.99&&prop<=1.2"
         local i

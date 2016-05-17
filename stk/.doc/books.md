@@ -8,6 +8,7 @@
 
 # books
 
+  登高四书                    李善友
   幽默
   致命的自负                  哈耶克
 《领导梯队》                  The Leadership Pipeline.是三本社群成员必读书籍之一
