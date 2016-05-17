@@ -82,7 +82,7 @@ function fn_main()
     local i=
     for i in `ls ${znzday}`; do
         # it's so slow, don't use: code in (SELECT code from zxg)
-        sqls=" DELETE FROM day WHERE code=$i and date <='${date_maxyahoo}'" 
+        sqls=" DELETE FROM day WHERE code=$i and date <='${date_maxyahoo}'"
         mysql -N kts<<<"${sqls}"
         xt_ret $? "mysql" || return $?
     done

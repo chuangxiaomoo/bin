@@ -35,7 +35,7 @@ function fn_ls()
     echo "
     SELECT nmc/close FROM cap WHERE code=${code} LIMIT 1 INTO @shares0;
     SELECT * FROM (
-        SELECT $fields, $PEAK as peak, $TROUGH as trough, 
+        SELECT $fields, $PEAK as peak, $TROUGH as trough,
         ${sql_avrg}
         $RISE as rise, $TURNOV0 as turnover
         FROM day as d
@@ -48,7 +48,7 @@ function fn_ls()
 function fn_update_mavol5()
 {
     # 切换日期，则确保OK
-    idate=`mysql -N kts <<<"SELECT DISTINCT end FROM t_mavol5"` 
+    idate=`mysql -N kts <<<"SELECT DISTINCT end FROM t_mavol5"`
 
     if [ "${idate}" != ${PREV} ]; then
         #fn_echo_succ 'update mavol5...'
@@ -56,7 +56,7 @@ function fn_update_mavol5()
         xt_ret $? "To avoid this WARNING: END=${PREV} SCREENER lohi 1" || exit $?
         echo "
         INSERT into t_mavol5(end,code,mavol5)
-        SELECT '$PREV',code,0 FROM ${TEMPDAY:-day} 
+        SELECT '$PREV',code,0 FROM ${TEMPDAY:-day}
         WHERE date='${END}' && code NOT IN (SELECT code from t_mavol5);
         " | mysql kts
     fi
@@ -91,7 +91,7 @@ function fn_lsd()
         HAVING="rise<-9.93"
         FIELD=${FIELD:-nmc}
         ;;
-    l|list) 
+    l|list)
         fn_list_iF5_times ;;
     [0-9]*)
         if [ "${1}" = 0 ]; then
@@ -135,7 +135,7 @@ function fn_lsd()
     {
         fn_update_mavol5
 
-        [ "${FIELD}" = 'dive' ] && 
+        [ "${FIELD}" = 'dive' ] &&
         sql_dive="round( (100*(d.amount/d.volume-d.close)/d.close), 1) as dive,"
         c_natural='d.high!=d.low&&d.close/yesc<1.15'
 
@@ -143,24 +143,24 @@ function fn_lsd()
         N|n) iCOND="${c_natural}"                                           ;;
         G|g) iCOND="${c_natural} && d.high!=open"                           ;;
         E|e) iCOND='d.high =d.low'                                          ;;
-        V|v) iCOND="${c_natural} && d.high!=open"                            ; 
+        V|v) iCOND="${c_natural} && d.high!=open"                            ;
              LIMIT=${LIMIT:-24};HAVING="tov5>=${vDOOR:-5}&&${HAVING:-1}"    ;;
         esac
 
         sqls="
-        SELECT  $columns, 
-                $HIRI as hiri, 
-                $OPRI as opri, 
+        SELECT  $columns,
+                $HIRI as hiri,
+                $OPRI as opri,
                 ${sql_avrg}
-                $RISE as rise, 
+                $RISE as rise,
                 ${sql_dive}
                 $TURNOV as tov, ROUND(100*h.mavol5*c.close/c.nmc, 2) as tov5,
-                round(d.amount/10000, 2) as eYi, 
+                round(d.amount/10000, 2) as eYi,
                 ${nmcYi}, c.name
                 FROM ${TEMPDAY:-day} d, cap c
-                , t_mavol5 h 
-                ${WHERE} d.code = c.code 
-                and d.code=h.code 
+                , t_mavol5 h
+                ${WHERE} d.code = c.code
+                and d.code=h.code
                 && d.date = '${END}' && ${iCOND:-1}
                 HAVING ${HAVING:-1} ${COND} ORDER BY ${FIELD} ${ASC:-desc} limit ${LIMIT:-36}
         "
@@ -200,7 +200,7 @@ function fn_ace()
         nmc80=`fn_sql $i nmc ORDER    by nmc    ASC LIMIT ${pct80},1`
         amt20=`fn_sql $i amount ORDER by amount ASC LIMIT ${pct20},1`
         amt80=`fn_sql $i amount ORDER by amount ASC LIMIT ${pct80},1`
-         
+
         echo ${i} ${rows} ${nmc20} ${nmc80} ${amt20} ${amt80} |
         awk '{printf "%s  %6d\t%6.2f\t%6.2f\t%6.2f\t%6.2f\n", $1, $2, $3/10000,$4/10000,$5/10000,$6/10000 }'
     done
@@ -218,7 +218,7 @@ function fn_comma()
 
 function fn_dt_hyphen_2_normal()
 {
-    dt0=${1:0:10} 
+    dt0=${1:0:10}
     dt1=${1:11:8}
     echo "${dt0//_/-} ${dt1//_/:}"
     return $?
@@ -245,9 +245,9 @@ function fn_rat()
     tov="round(100*(d.volume)/(c.nmc/c.close),2)"
     tovf="round(100*(ma.vol5)/(c.nmc/c.close),2)"
     tov20="round(100*(ma.vol20)/(c.nmc/c.close),2)"
-    v1v5="round(5*d.volume*${SCALE}/(ma.vol5),2)"       
+    v1v5="round(5*d.volume*${SCALE}/(ma.vol5),2)"
     # v5vT="round(4*ma.vol5/(ma.vol20),2)"
-    # ${v5vT} as v5vT, 
+    # ${v5vT} as v5vT,
 
     TBL=${TBL:-cap} END=${PREV} ./SCREENER wma
 
@@ -257,20 +257,20 @@ function fn_rat()
     function fn_build_sqls() {
     sqls="
     SELECT d.code,DATE_FORMAT(d.date,'%m-%d')as date,d.yesc,d.open,d.low,d.close,
-        round(100*((d.open+low)/2-d.yesc)/d.yesc,2) as av_open, 
+        round(100*((d.open+low)/2-d.yesc)/d.yesc,2) as av_open,
         round(100*(d.close-(d.open+low)/2)/((d.open+low)/2),2) as av_rise,
-        round(100*(d.close-d.yesc)/d.yesc,2) as rise, 
-        ${tov} as tov, 
+        round(100*(d.close-d.yesc)/d.yesc,2) as rise,
+        ${tov} as tov,
         ${tov20}as tov20,
-        ${v1v5} as v1v5, 
-        d.amount,c.nmc,c.name FROM tbl_mavol520s as ma, 
+        ${v1v5} as v1v5,
+        d.amount,c.nmc,c.name FROM tbl_mavol520s as ma,
         ${tbl_day} as d, cap as c
-        WHERE ma.code=d.code and ma.code=c.code 
-        HAVING 1 ${COND} ORDER by ${FIELD} ${ASC:-DESC} limit ${LIMIT:-36}" 
+        WHERE ma.code=d.code and ma.code=c.code
+        HAVING 1 ${COND} ORDER by ${FIELD} ${ASC:-DESC} limit ${LIMIT:-36}"
     }
     fn_build_sqls
 
-    echo "$sqls">/dev/stderr 
+    echo "$sqls">/dev/stderr
     mysql -t kts<<<"$sqls"
 
     fn_chao $chao.rat
@@ -282,8 +282,8 @@ function fn_tri()
     STEP=${STEP:-7}
 
     D2=${END}
-    D1=`fn_get_date 1` 
-    D0=`fn_get_date ${STEP}` 
+    D1=`fn_get_date 1`
+    D0=`fn_get_date ${STEP}`
     t2="(SELECT * FROM day WHERE date='${D2}')"
     t1="(SELECT * FROM day WHERE date='${D1}')"
     t0="(SELECT * FROM day WHERE date='${D0}')"
@@ -291,20 +291,20 @@ function fn_tri()
     function fn_build_sqls() {
     product="TRUNCATE(100*(tbl.close-(tbl.amount/tbl.volume))/tbl.close,2)"
     sqls="
-    SELECT * FROM (SELECT '${END}' as date, d.code, d.close, 
+    SELECT * FROM (SELECT '${END}' as date, d.code, d.close,
         $RISE as rise,
-        round(100*(t1.close-t0.yesc)/t0.yesc, 2) as rising, ${STEP}+1 as D, 
-        c.nmc, c.name FROM 
-        ${t2} as d, 
-        ${t1} as t1, 
+        round(100*(t1.close-t0.yesc)/t0.yesc, 2) as rising, ${STEP}+1 as D,
+        c.nmc, c.name FROM
+        ${t2} as d,
+        ${t1} as t1,
         ${t0} as t0, cap as c
         WHERE d.code=t1.code && d.code=t0.code and d.code=c.code   -- 取样本数40 = 2000*20%，7天可翻倍
               ORDER by rising DESC limit 40 ) as t
         ${COND} ORDER by ${FIELD:-rising} ${ASC:-DESC} limit ${LIMIT:-40}
-    " 
+    "
     }
     fn_build_sqls
-    echo "$sqls">/dev/stderr 
+    echo "$sqls">/dev/stderr
     mysql -t kts<<<"$sqls"
 
     fn_chao
@@ -364,11 +364,11 @@ function fn_dif3()
     INSERT INTO t1 SELECT code,close,volume,amount FROM dorat WHERE date='${END}' and time='${HMS1}';
 
     UPDATE dif3 t3 INNER JOIN curr_lohi on t3.code=curr_lohi.code
-                SET opri=100*(t3.open-yesc)/yesc, 
-                    hiri=100*(t3.high-yesc)/yesc, 
+                SET opri=100*(t3.open-yesc)/yesc,
+                    hiri=100*(t3.high-yesc)/yesc,
                     lori=100*(t3.low- yesc)/yesc,
                     shou=curr_lohi.volume;
-    UPDATE dif3 t3 INNER JOIN t2 on t3.code=t2.code 
+    UPDATE dif3 t3 INNER JOIN t2 on t3.code=t2.code
                    INNER JOIN t1 on t2.code=t1.code
                       SET av3=100*((t3.amount/t3.volume)-yesc)/yesc,
                           av2=100*((t2.amount/t2.volume)-yesc)/yesc,
@@ -411,7 +411,7 @@ function fn_dirtio()
     w) fn_list_wolf_times       ;;
     i) fn_dirt_interval ${@:2}  ;;
     #  bash -n 检查下行时会报错，因shopt.-s.extglob
-    +([0-9])) 
+    +([0-9]))
         fn_isdigit $1
         xt_ret $? "argv.1[$1] must be a iF5 num" || return $?
         fn_isdigit $2
@@ -438,13 +438,13 @@ function fn_dirtio()
             round(net/tov, 2) as pet,
             round((volume/d.shou), 2) as prop,
             ROUND(tov, 1) as tov,
-            round(w.amount/10000, 1) as eYi, 
+            round(w.amount/10000, 1) as eYi,
             ROUND(nmc, 1) as nmc,
-            w.name 
+            w.name
             FROM dif3 as d, xdde as w
             $WHERE d.code=w.code && nmc<${nmc:=${nmc_wolf}}
             HAVING 1 ${COND}
-            ORDER by ${FIELD:=wolf} ${ASC:-DESC} limit ${LIMIT:-40}" 
+            ORDER by ${FIELD:=wolf} ${ASC:-DESC} limit ${LIMIT:-40}"
         # echo "$sqls">/dev/stderr; exit
         }
         fn_build_sqls
@@ -472,17 +472,17 @@ function fn_wma()
     fn_echo_warn "----- LIST:${#LIST[@]} COND@${END}: $COND -----"
 
     sqls="
-    SELECT ${columns}, 
+    SELECT ${columns},
     ${SCALE}*vol       as mavol,
-    round(vol5 / 5,2)  as mavol5, 
-    round(vol20/ 20,2) as mavol20, 
-    round(vol60/ 60,2) as mavol60, 
+    round(vol5 / 5,2)  as mavol5,
+    round(vol20/ 20,2) as mavol20,
+    round(vol60/ 60,2) as mavol60,
     round(4*${SCALE}*vol/(vol5-vol),2)  as v1v4,
     c.nmc, c.name
-    FROM tbl_mavol520s as t, cap as c WHERE t.code=c.code 
+    FROM tbl_mavol520s as t, cap as c WHERE t.code=c.code
     HAVING 1 ${COND} ${inLIST}
     ORDER by ${1:-v1v4} ${ASC:-DESC} LIMIT ${LIMIT:-24}
-    " 
+    "
     echo "${sqls}" | tee /dev/stderr | mysql $mo -t kts
 
     fn_chao
@@ -543,14 +543,14 @@ function fn_6maishenjian()
         INSERT INTO tempday SELECT * from day where date='${DATE2}';
         "
         tbl_super_dive="
-        SELECT t.code, DATE_FORMAT(date1,'%m-%d') as start, 
-                       DATE_FORMAT(date2,'%m-%d') as end, ${columns}, chng, 
-                       round(100*(t.low  - avrg)/avrg,2) as lchng, 
-                       round(100*(t.close- avrg)/avrg,2) as wchng, 
-                       round(100*(d.close- avrg)/avrg,2) as avrg_up, 
-                       round(100*(d.close-(t.close+t.low)/2)/avrg,2) as trough_up, 
-                       round((avrg-d.close)/(d.close-(t.close+t.low)/2),2) as odds, 
-                       ${nmcYi}, c.name 
+        SELECT t.code, DATE_FORMAT(date1,'%m-%d') as start,
+                       DATE_FORMAT(date2,'%m-%d') as end, ${columns}, chng,
+                       round(100*(t.low  - avrg)/avrg,2) as lchng,
+                       round(100*(t.close- avrg)/avrg,2) as wchng,
+                       round(100*(d.close- avrg)/avrg,2) as avrg_up,
+                       round(100*(d.close-(t.close+t.low)/2)/avrg,2) as trough_up,
+                       round((avrg-d.close)/(d.close-(t.close+t.low)/2),2) as odds,
+                       ${nmcYi}, c.name
             FROM ${tablex:-tbl_6mai} as t, cap as c, tempday as d
             WHERE t.code = c.code and t.code = d.code HAVING 1 ${COND}
             ORDER by ${1:-wchng} ${ASC:-asc} limit ${LIMIT:-36}     # COND='nmc<250000 and lchng<-9.7 and off<21'
@@ -581,19 +581,19 @@ function fn_dugu9jian()
         INSERT INTO tempday SELECT * from day where date='${DATE2}';
         "
         tbl_super_dive="
-        SELECT t.code,  DATE_FORMAT(date1,'%m-%d') as start, 
-                        DATE_FORMAT(date2,'%m-%d') as end, ${columns}, 
-                        round(avrg*(1-${ORACLE:-10}/100),2) as oracle, 
+        SELECT t.code,  DATE_FORMAT(date1,'%m-%d') as start,
+                        DATE_FORMAT(date2,'%m-%d') as end, ${columns},
+                        round(avrg*(1-${ORACLE:-10}/100),2) as oracle,
                         chng,
-                        $RISE as rise, 
-                        $PEAK as peak, 
+                        $RISE as rise,
+                        $PEAK as peak,
                         $TROUGH as trough,
-                        round(100*(t.low-avrg)/avrg,2) as lchng, 
-                        round(100*(t.close-avrg)/avrg,2) as wchng, 
-                       ${nmcYi}, c.name 
+                        round(100*(t.low-avrg)/avrg,2) as lchng,
+                        round(100*(t.close-avrg)/avrg,2) as wchng,
+                       ${nmcYi}, c.name
            FROM ${tablex:-tbl_9jian} as t, cap as c, tempday as d
            WHERE t.code = c.code and t.code = d.code HAVING 1 ${COND}
-           ORDER by ${1:-lchng} ${ASC:-asc} limit ${LIMIT:-36}      # COND='nmc<250000 and lchng<-9.7 and off<21' 
+           ORDER by ${1:-lchng} ${ASC:-asc} limit ${LIMIT:-36}      # COND='nmc<250000 and lchng<-9.7 and off<21'
         "
         echo "${tbl_super_dive}"
     }
@@ -616,8 +616,8 @@ function fn_tao5()
     function fn_get_tbl_tao5_dive()
     {
         tbl_super_dive="
-        SELECT t.code, ${columns}, c.nmc,c.name 
-           FROM ${tablex:-tbl_tao5} as t, cap as c 
+        SELECT t.code, ${columns}, c.nmc,c.name
+           FROM ${tablex:-tbl_tao5} as t, cap as c
            WHERE t.code = c.code HAVING 1 ${COND} limit ${LIMIT:-144}
         "
         echo "${tbl_super_dive}"
@@ -637,7 +637,7 @@ function fn_name()
     sqls="SELECT code, name,
             CONCAT((round(nmc/10000, 1)),'Yi') as nmcYi
              FROM cap WHERE code=${code}
-    " 
+    "
     fn_echo_succ `mysql -N kts <<< "${sqls}"`
 
     xt_ret $? "" || return $?
@@ -657,7 +657,7 @@ function fn_rdiff()
         SELECT t.id,t.code,
         ${columns}, (wchng+2*rdiff+3*cdiff) as fire
            -- , c.nmc, c.name
-           FROM ${tablex:-tbl_rdiff} as t, cap as c 
+           FROM ${tablex:-tbl_rdiff} as t, cap as c
            WHERE t.code = c.code HAVING 1 ${COND} limit ${LIMIT:-144}
         "
         # echo "${tbl_super_dive}"
@@ -665,7 +665,7 @@ function fn_rdiff()
     }
 
     fn_get_tbl_rdiff_dive $1
-    mysql $mo -t kts <<< "${tbl_super_dive}" 
+    mysql $mo -t kts <<< "${tbl_super_dive}"
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -685,11 +685,11 @@ function fn_pma()
     SELECT d.code, '${END}' as date, sum(d.amount)/sum(d.volume) as ma${NUM}, @iclose,
         round(100 * (@iclose-sum(d.amount)/sum(d.volume))/@iclose, 2) as pcnt,
         round(100*sum(d.volume)/cap.shares, 2) as tov${NUM}
-        FROM 
+        FROM
         (SELECT * FROM day WHERE code=$1 and date<='$END' ORDER by date DESC LIMIT ${NUM}) as d,
         cap WHERE d.code = cap.code ;
     " | mysql -t kts
-    # SELECT sum((high-yesc)/yesc) FROM day WHERE code = 2 and date > '2014-11-03'; 
+    # SELECT sum((high-yesc)/yesc) FROM day WHERE code = 2 and date > '2014-11-03';
     return $?
 }
 
@@ -701,10 +701,10 @@ function fn_fbi()
     fn_name `mysql -N kts <<<"SELECT code FROM ${tablex:-tbl_fdiff} LIMIT 1"`
     echo "
         SELECT id,
-        -- datetime_p, 
+        -- datetime_p,
         TRUNCATE(datetime_p%(1000000000000)/1000000,4) as dt_p,
-        -- datetime_c, 
-        TRUNCATE(datetime_c%(1000000000000)/1000000,4) as dt_c, ${columns}, 
+        -- datetime_c,
+        TRUNCATE(datetime_c%(1000000000000)/1000000,4) as dt_c, ${columns},
         round(close+(avrg_c-close)*.618 - close*ratio*.00236, 2) *              -- close as space
            IF((avrg_c-close)*.618 - close*ratio*.00236<0, -1, 1) as oracle,     -- ratio as time
         (wchng+2*rdiff+3*cdiff) as fire
@@ -718,13 +718,13 @@ function fn_acf() { tablex=tbl_acfdiff fn_fbi; }
 function fn_vol()
 {
     fn_yist
-    get_vol() 
+    get_vol()
     {
     echo "
-    SELECT date, round(sum(volume)/10000, 2) as Volume, 
+    SELECT date, round(sum(volume)/10000, 2) as Volume,
         round(sum(amount)/10000, 2) as Amount, round(sum(amount)/sum(volume), 2) as Trade
         FROM day WHERE date<='${END}' ${COND} ${inLIST}
-        GROUP by date 
+        GROUP by date
         ORDER by date DESC
         LIMIT ${LIMIT:-13};
     " | mysql -t kts
@@ -796,12 +796,12 @@ function fn_td_layout()
         # SELECT date FROM day WHERE code=${code} and date=
         echo "
         INSERT INTO tmpfb(code,datetime,trade,volume,amount)
-        SELECT code,datetime%1000000,trade,volume,amount FROM fenbi 
-            WHERE code=${code} and round(datetime/1000000, 0)=${i} 
-            ORDER by trade ${ASC:-DESC} LIMIT 1; 
+        SELECT code,datetime%1000000,trade,volume,amount FROM fenbi
+            WHERE code=${code} and round(datetime/1000000, 0)=${i}
+            ORDER by trade ${ASC:-DESC} LIMIT 1;
         " | mysql kts -t
         xt_ret $? "" || return $?
-    done 
+    done
 
     mysql -t kts <<< "SELECT * FROM tmpfb ORDER by datetime DESC";
 
@@ -811,22 +811,22 @@ function fn_td_layout()
 function fn_dif120()
 {
     if [ -z "${YIST}" ]; then
-        fn_iscode $1 
+        fn_iscode $1
         xt_ret $? "" || { echo "Usage: 120 code... {END}" && exit; }
         YIST=${file_ma120}
         xargs -n1 <<<"${*}" | sed 's/^0*//g' | xargs printf "%06d\n" > ${YIST}
     fi
 
-    fn_yist 
+    fn_yist
     fn_echo_warn "----- LIST:${#LIST[@]} COND@${END}: $COND -----"
 
     tbl_day="(SELECT * FROM day WHERE date='${END}' ${inLIST})"
 
     sqls="
-    SELECT d.code,d.date,d.close,ma120,100*(d.close-ma120)/ma120 as rise, c.name 
-        ${sqls} FROM ${tbl_day} as d, 
-        tbl_ma240 as t, 
-        cap as c WHERE t.code=d.code and t.code=c.code 
+    SELECT d.code,d.date,d.close,ma120,100*(d.close-ma120)/ma120 as rise, c.name
+        ${sqls} FROM ${tbl_day} as d,
+        tbl_ma240 as t,
+        cap as c WHERE t.code=d.code and t.code=c.code
         HAVING 1 ${inLIST} ORDER by rise ASC
     "
     mysql -t kts<<<"${sqls}"
@@ -852,7 +852,7 @@ function fn_ma240()
     columns=ma.${columns//,/,ma.}
 
 
-    function fn_build_sqls() 
+    function fn_build_sqls()
     {
     sqls="SELECT date FROM day WHERE code=900001 and date<='${END}' ORDER by date DESC LIMIT 4,1"
     ago5=`mysql -N kts<<<"${sqls}" 2>/dev/null`
@@ -871,9 +871,9 @@ function fn_ma240()
         ${x_mid}+
         ${x_long} as x_6line,       -- 一阳穿3线
         c.nmc,c.name FROM tbl_ma240 as ma, cap as c
-        ${WHERE} ma.code=c.code and ma5!=0 and ma.date>'${ago5}' 
+        ${WHERE} ma.code=c.code and ma5!=0 and ma.date>'${ago5}'
         HAVING 1 and code<600000 && nmc<1500000 && pma5>-2 ${COND}
-        ORDER by ${FIELD} ${ASC:-ASC} limit ${LIMIT:-24}" 
+        ORDER by ${FIELD} ${ASC:-ASC} limit ${LIMIT:-24}"
     }
 
     # .0001 使得新股 x_sho x_long 都为 2.000
@@ -885,7 +885,7 @@ function fn_ma240()
     ABBR=ma fn_yist
     fn_build_sqls $1
     fn_echo_warn "----- LIST:${#LIST[@]} COND@${END}: $COND -----"
-    echo "$sqls">/dev/stderr 
+    echo "$sqls">/dev/stderr
     mysql -t kts<<<"$sqls"
 
     fn_echo_warn "Suggest: COND=''"
@@ -909,7 +909,7 @@ function fn_hilo()
         "
         # delete停牌个股
         tbl_super_dive="
-        SELECT ${columns}, 
+        SELECT ${columns},
         -- dive:当前跳水幅度 rebound:反弹幅度离(low+close)/2
         round(100*(t.high -LEAST(t.low,d.low))/t.high,1) as jump,
         round(100*(d.close-LEAST(t.low,d.low))/t.high,1) as rebound,
@@ -941,7 +941,7 @@ function fn_inout()
 
     $DROP        prev_codes;
     CREATE TABLE prev_codes LIKE codes;
-    INSERT INTO  prev_codes(code) 
+    INSERT INTO  prev_codes(code)
         SELECT code FROM (
             SELECT t.code, round(100*(d.close-t.low)/t.low, 2) as incr
             FROM ${hilo_prev} as t, d_curr as d
@@ -950,7 +950,7 @@ function fn_inout()
 
     $DROP        curr_codes;
     CREATE TABLE curr_codes LIKE codes;
-    INSERT INTO  curr_codes(code) 
+    INSERT INTO  curr_codes(code)
         SELECT code FROM (
             SELECT t.code, round(100*(d.close-t.low)/t.low, 2) as incr
             FROM ${hilo_curr} as t, d_temp as d
@@ -974,7 +974,7 @@ function fn_inout()
     {
       echo "
       SELECT * FROM (
-        SELECT ${columns}, 
+        SELECT ${columns},
         round(100*(d.close-t.low)/t.low, 2)  as incr,
         ${RISE} as rise,
         round((d.volume/t.mavol5), 2) as tov, t.scale,
@@ -994,7 +994,7 @@ function fn_inout()
       tbl_super_dive=`fn_in_or_out $1`
       fn_echo_blue "${tbl_super_dive}"
     }
-    
+
     return $?
 }
 
@@ -1003,7 +1003,7 @@ function fn_lohi_wind()
     echo "
     SELECT * FROM (
     SELECT A.date, A.incr, A.rise, A.hico, A.red, (A.incr-B.incr)as dif
-               FROM wind A INNER JOIN 
+               FROM wind A INNER JOIN
                     wind B on(A.id=B.id-1) GROUP BY A.id
     ) as t ORDER by ${FIELD:-date} DESC
     " | mysql -t kts
@@ -1021,7 +1021,7 @@ function fn_lohi_wolf()
         incr        DECIMAL(6,2) NOT NULL DEFAULT 0,
         rise        DECIMAL(6,2) NOT NULL DEFAULT 0,
         hico        DECIMAL(6,2) NOT NULL DEFAULT 0,
-        red         INT 
+        red         INT
     ) " | mysql kts
     xt_ret $? "" || return $?
 
@@ -1040,7 +1040,7 @@ function fn_lohi_wolf()
         echo "
         ${tempday}
         INSERT INTO wind(date,incr,rise,hico,red)
-        SELECT '${END}', sum(incr)/${LIMIT}, sum(rise)/${LIMIT}, sum(rise-hiri)/${LIMIT} as hico, sum(rise>${rDOOR:-0}) 
+        SELECT '${END}', sum(incr)/${LIMIT}, sum(rise)/${LIMIT}, sum(rise-hiri)/${LIMIT} as hico, sum(rise>${rDOOR:-0})
         FROM ( ${tbl_super_dive} ) as iwolf
         " | mysql -N  kts
         # echo "${tbl_super_dive}"; exit
@@ -1064,7 +1064,7 @@ function fn_lohi_mi5()
         time        time NOT NULL,
         f5rise      DECIMAL(6,2) NOT NULL DEFAULT 0,
         hico        DECIMAL(6,2) NOT NULL DEFAULT 0,
-        red         INT 
+        red         INT
     ) " | mysql kts
     xt_ret $? "" || return $?
 
@@ -1129,7 +1129,7 @@ function fn_lohi()
     i|bvri)
         iF5=$2
         if [ "${1}" = bvri ]; then
-            # 大放量.抄底反包股如<天银机电2015-12-29> 
+            # 大放量.抄底反包股如<天银机电2015-12-29>
               CONDb="((avri-bvri>${DOORb:-1.1})||(prop>.938&&rise>${YRISE:-1.23}))"
             # 熔断缩量版本
             # CONDb="((avri-bvri>${DOORb:-2.0})||(prop>0.8&&rise>0))"
@@ -1150,7 +1150,7 @@ function fn_lohi()
             TEMPDAY="tempday"
             tempday="
             $DROP tempday; CREATE TABLE tempday LIKE day;
-            INSERT INTO tempday SELECT code,date,yesc,open,high,low,close,volume,amount 
+            INSERT INTO tempday SELECT code,date,yesc,open,high,low,close,volume,amount
             FROM dorat WHERE date='${END}' && time='${HMS}';
             "
         fi
@@ -1196,7 +1196,7 @@ function fn_lohi()
             SELECT ${columns},
             round(100*(d.close-t.low)/t.low, 2) as incr,
          -- round(100*(GREATEST(t.high,d.close)-d.close)/GREATEST(t.high,d.close), 2) as decn,
-            round(100*(t.amount/t.volume-d.yesc)/d.yesc, 1) as bvri, 
+            round(100*(t.amount/t.volume-d.yesc)/d.yesc, 1) as bvri,
             d.close,
             $OPRI as opri,
             round(100*(d.high-d.yesc)/d.yesc, 2) as hiri,
@@ -1205,7 +1205,7 @@ function fn_lohi()
             ${sql_tov},
             round((${SCALE:-1}*d.volume/t.mavol5), 2) as prop5,
             round((${SCALE:-1}*d.volume/t.volume), 2) as prop, t.scale,
-            round((d.amount/10000), 1) as eYi, 
+            round((d.amount/10000), 1) as eYi,
          -- round((t.amount/10000), 1) as zYi,
             ${nmcYi0}, c.name
             FROM ${hilo_curr} as t, ${tbl_condi}
@@ -1220,7 +1220,7 @@ function fn_lohi()
         }
         ;;
     wolf)
-        fn_lohi_wolf; 
+        fn_lohi_wolf;
         fn_lohi_wind; exit ;;
     wind)
         fn_lohi_wind; exit ;;
@@ -1330,7 +1330,7 @@ function fn_sban()
         fn_get_ratio_close2open idxopen
         # echo ${idxopen} ${tov_pcnt}; exit
         for (( i=${START:=${idxopen}}; i>${STOP:-0}; i-=1 )); do
-            [ "${i}" -ne "${START}" ] && YIST=${chao}.temp 
+            [ "${i}" -ne "${START}" ] && YIST=${chao}.temp
             iCOND="hiri>5 && rise>avri-.6 && avri>0 && avri<9.93 && tov<${tov_pcnt} && nmcYi<80"
             LIMIT=3000 YIST=${YIST} COND=${iCOND} CHAO=1 SELECT lohi ${i}
             cp ${chao}.lohi ${chao}.temp
@@ -1491,7 +1491,7 @@ function fn_lhb()
             round(buy/10000, 2) as eBuy,                        -- 额度(亿)
             round(l.buy/bloo/100, 2) as eYi, ${nmcYi0},
             c.name FROM lhb as l,cap as c ${sql_xtempday}
-            $WHERE l.code=c.code ${sql_relate} 
+            $WHERE l.code=c.code ${sql_relate}
             HAVING 1 ${CAUSE} ${COND} ORDER by ${FIELD:=buy} DESC LIMIT ${LIMIT:-36}
         "
         #echo "${sqls}"; exit
@@ -1544,21 +1544,21 @@ function fn_scale()
 
     index=`mysql -N kts <<<"SELECT FLOOR( (${col_scale} + 30)/(60*6))-1"`
       mod=`mysql -N kts <<<"SELECT FLOOR( (${col_scale} + 30)/(60*3))%2"`
-    
+
     # 每6分钟一个校正
     # iEND=5 CHAO=1 LIMIT=2000 COND="tov>2.5 && tov<7.5" SELECT lsd
     # tov<7.5，11:18:00达到50%
     # tov>7.5，为<7.5更快到达，但总体误差是很小的
 
     iRATIO=(
-        .051 .092 .130 .166 .198 .230 .258 .284 .308 .331 # 10  .331  -- 1.64 
+        .051 .092 .130 .166 .198 .230 .258 .284 .308 .331 # 10  .331  -- 1.64
         .353 .375 .395 .415 .433 .451 .474 .498 .517 .534 # 20  .203            -- 成交呈3223月牙状，中间两中时较稳定
         .553 .569 .590 .611 .629 .654 .673 .692 .709 .733 # 30  .201            -- 如果1st+，且调低预期，3rd+，则要调高最后预期
         .756 .775 .796 .816 .834 .856 .884 .913 .950 1.00 # 40  .267  -- 1.34
     )
     # echo ${index} ${mod} iRATIO+mod: `bc -l<<<"scale=3;${iRATIO[${index}]}*(1+${mod}/80)"`; exit
 
-    # 成交量估算值 = tov * K = tov / 时间百分比 * 动态倍数 
+    # 成交量估算值 = tov * K = tov / 时间百分比 * 动态倍数
     # K = 动态倍数/时间百分比
 
     if [ "${SCALE}" = A ]; then
@@ -1566,7 +1566,7 @@ function fn_scale()
     else
         echo "带权    不带权  prop"
         mysql -N kts <<<"
-            SELECT ROUND( 1 / (${iRATIO[${index}]}*(1+${mod}/80) ), 3), 
+            SELECT ROUND( 1 / (${iRATIO[${index}]}*(1+${mod}/80) ), 3),
                     ROUND( (60*60*4)/${col_scale}, 3),
                     ROUND( ${iRATIO[${index}]}*(1+${mod}/80),2 )"
     fi
@@ -1626,7 +1626,7 @@ function fn_wolf_turnov()
     stime=`mysql -N kts<<< "${sql_stime}"`
     iCOND="time='${stime}'" xCol=date fn_xCol mat_dde xdde ${END}
     sqls="
-    SELECT 
+    SELECT
         date,
         ROUND(sum(rise>0)/count(code), 2) as rise,
         ROUND(sum((pbuy+nbuy)/tov)/count(code), 2) as wolf,
@@ -1665,7 +1665,7 @@ function fn_wolf_top50()
         awk 'BEGIN {sum=0} {sum=sum+$6;} END {printf "avrg: %.2f, avrg.8: %.2f\n", sum/FNR, .8*sum/FNR}'
 }
 
-function fn_enable_xbb() 
+function fn_enable_xbb()
 {
     [ "${XBB:-0}" = 0 ] && return
     xbb_col="speed as xbb,"
@@ -1679,10 +1679,10 @@ function fn_lohi_shift()
     dates=(`fn_get_date 1 ${NUM}`)
 
     for (( i=0,j=1; i<${#dates[@]}-1; i++,j++ )); do
-        iFrom=${dates[$j]};  
-        iTo=${dates[$i]};  
-        sql_shift="${sql_shift}; UPDATE $t_tov5 SET end='${iTo}' WHERE end='${iFrom}';\n" 
-        # echo $i From ${iFrom} to ${iTo} 
+        iFrom=${dates[$j]};
+        iTo=${dates[$i]};
+        sql_shift="${sql_shift}; UPDATE $t_tov5 SET end='${iTo}' WHERE end='${iFrom}';\n"
+        # echo $i From ${iFrom} to ${iTo}
     done
     echo -e "${sql_shift}" | mysql -N kts
 }
@@ -1734,20 +1734,20 @@ function fn_wolf_sqls()
     yesc='(trade/(1+rise/100))'
     sqls="
         SELECT ${col_date} w.code, w.rise,
-        ROUND( (100*(w.amount/shou-$yesc)/$yesc), 1) as avri, 
+        ROUND( (100*(w.amount/shou-$yesc)/$yesc), 1) as avri,
         ${sql_opri} ${sql_hiri} ${col_trade}
         round(100*(trade-h.low)/h.low, 1) as incr,
-    --  round(100*(h.high-LEAST(lohi,trade))/LEAST(lohi,trade),1) as jump, 
+    --  round(100*(h.high-LEAST(lohi,trade))/LEAST(lohi,trade),1) as jump,
         tov,
         ROUND((pbuy+nbuy)/w.tov, 2) as eWolf,   -- 若使用(amount/nmc/100)代替tov,在价涨时结果偏大，价跌时偏小
-        (pbuy+nbuy) as buy,                     -- (psell+nsell) as sell,pbuy,nbuy, 
+        (pbuy+nbuy) as buy,                     -- (psell+nsell) as sell,pbuy,nbuy,
         round(net/tov, 2) as pet,
         ROUND(100*( LEAST(w.amount/shou,trade) - (h.amount/h.volume) )/(h.amount/h.volume), 1) as cise, -- COSE-RISE
     --  round((pbuy/nbuy), 2) as Go, round((pbuy+nbuy)/(psell+nsell),1) as bsp,
         ${xbb_col}
         round((w.shou/h.volume), 2) as prop, h.scale,
         round((w.tov*h.mavol5/w.shou), 1) as tov5,
-        round(w.amount/10000, 1) as eYi, 
+        round(w.amount/10000, 1) as eYi,
         ROUND(nmc, 1) as nmcYi
         ${col_name}
         FROM xdde as w, ${t_tov5:-t_mavol5} as h ${tbl_temp}
@@ -1833,11 +1833,11 @@ function fn_wolf()
         i|a|e|E [iF5]   SELECT time or list-times
         c       code    按日统计
         cf      code    按15分钟统计
-        top             NUM日统计top50 tov 
+        top             NUM日统计top50 tov
         " 2>&1 # | sed 's/^  *//g'
         ;;
     esac
-    
+
     return $?
 }
 
@@ -1851,7 +1851,7 @@ function fn_macd()
     fn_yist
     case $1 in
     c|clean)
-        echo "DROP TABLE IF EXISTS mm55" | mysql kts; 
+        echo "DROP TABLE IF EXISTS mm55" | mysql kts;
         fn_echo_succ "succ: clean macd!"; exit 0
         ;;
     [0-9]*)
@@ -1881,7 +1881,7 @@ function fn_macd()
             HAVING 1 ${COND} ${inLIST}
             ORDER by ${FIELD:-code},FM ${ASC:-ASC};
 	" | mysql -t kts
-    
+
     return $?
 }
 
@@ -1889,7 +1889,7 @@ function fn_update_stati_ban()
 {
     nrLIST=${#LIST[@]}
     sql_earning="
-    INSERT INTO stati_ban SELECT 
+    INSERT INTO stati_ban SELECT
                  '${END}' as date,
               '${nrLIST}' as nrLIST,
               count(code) as num,
@@ -1969,7 +1969,7 @@ function fn_stat()
                 TEMPDAY="(SELECT * FROM dorat WHERE date='${END}' && time='${HMS}')"
                 echo "
                     SELECT sum(amount) FROM ${TEMPDAY} as d $WHERE date='${END}' INTO @curr;
-                    SELECT '${END} ${HMS}' as DateTime, 
+                    SELECT '${END} ${HMS}' as DateTime,
                         ROUND(@curr/sum(amount), 3) as ratio FROM day as d $WHERE date='${END}' HAVING ${COND:-1};
                 " | mysql -N kts
                 xt_ret $? "" || return $?
@@ -2006,10 +2006,10 @@ function fn_stat()
         dates=(`fn_get_date 1 ${NUM:-3}`)
         local i
         for (( i=0,j=1,k=2; i<${#dates[@]}-2; i++,j++,k++ )); do
-            export PREV2=${dates[$k]} 
+            export PREV2=${dates[$k]}
             export PREV=${dates[$j]}
             export END=${dates[$i]}
-            # 一字 
+            # 一字
             YIST=  END=${PREV2} PARTS=f LIMIT=300 HAVING="rise>9.93&&avrg>9.93 ${notinBLK}" chao2=prev2 fn_lsd
 
             # 开板
@@ -2052,7 +2052,7 @@ function fn_sample()
     $CREATE topN (
         blk     INT,
         sym     CHAR(64),
-        code    INT(6) ZEROFILL NOT NULL, 
+        code    INT(6) ZEROFILL NOT NULL,
         close   DECIMAL(6,2) NOT NULL DEFAULT 0,
         yesc    DECIMAL(6,2) NOT NULL DEFAULT 0,
         rise    DECIMAL(6,2) NOT NULL DEFAULT 0,
@@ -2068,7 +2068,7 @@ function fn_sample()
     sqls="
     INSERT INTO topN
     SELECT n.blk, sym, x.code,close,yesc,
-        ROUND(100*(close-yesc)/yesc, 2) as rise, 
+        ROUND(100*(close-yesc)/yesc, 2) as rise,
         ROUND(100*(close-amount/volume)/yesc, 2) as earn
         FROM blk_name as n, blk_memb as m, xtempday as x
         WHERE n.blk=m.blk AND n.blk NOT in ${EXCLUDE_BLK//,0x40/} AND m.code=x.code;
@@ -2082,7 +2082,7 @@ function fn_sample()
         sum(rise>${TEN:=9.93}) as click FROM top8
     GROUP by blk
     HAVING 1 ${COND} ORDER by ${FIELD:=rise} DESC LIMIT ${LIMIT:-20};
-    " 
+    "
     mysql -t kts <<< "${sqls}"
     xt_ret $? "" || return $?
 
@@ -2145,7 +2145,7 @@ function fn_blk_delta()
     $CREATE deltaN (
         blk     INT,
         sym     CHAR(64),
-        code    INT(6) ZEROFILL NOT NULL, 
+        code    INT(6) ZEROFILL NOT NULL,
         close   DECIMAL(6,2) NOT NULL DEFAULT 0,
         yesc    DECIMAL(6,2) NOT NULL DEFAULT 0,
         rise    DECIMAL(6,2) NOT NULL DEFAULT 0,
@@ -2167,7 +2167,7 @@ function fn_blk_delta()
     sqls_pro="
     DROP TABLE IF EXISTS x0;
     CREATE $TEMPORARY TABLE x0 (
-        code    INT(6) ZEROFILL NOT NULL, 
+        code    INT(6) ZEROFILL NOT NULL,
         yesc    DECIMAL(6,2) NOT NULL,
         close   DECIMAL(6,2) NOT NULL,
         close2  DECIMAL(6,2) NOT NULL,
@@ -2176,20 +2176,20 @@ function fn_blk_delta()
         INDEX(code)
     );
     INSERT INTO x0
-    SELECT x1.code,x1.yesc, x1.close,x2.close, x1.volume,x1.amount 
+    SELECT x1.code,x1.yesc, x1.close,x2.close, x1.volume,x1.amount
         FROM $x1 as x1, $x2 as x2 WHERE x1.code=x2.code;
     ${post_sql}
 
     INSERT INTO deltaN
     SELECT n.blk, sym, x.code,x.close,yesc,
-        ROUND(100*(x.close-yesc)/yesc, 2) as rise, 
-        ROUND(100*(x.close-x.close2)/yesc, 3) as ride, 
+        ROUND(100*(x.close-yesc)/yesc, 2) as rise,
+        ROUND(100*(x.close-x.close2)/yesc, 3) as ride,
         ROUND(100*(x.close-amount/volume)/yesc, 2) as earn
         FROM blk_name as n, blk_memb as m, x0 as x
         WHERE n.blk=m.blk AND n.blk NOT in ${EXCLUDE_BLK//,0x40/} AND m.code=x.code;
 
     INSERT INTO delta8
-    SELECT * from deltaN a 
+    SELECT * from deltaN a
         where ${SAMPLES}>(select count(*) from deltaN where blk=a.blk and ${sfiled} ${sopr} a.${sfiled}) order by a.blk,a.$sfiled ${sdirct};
     "
     sqls="
@@ -2200,7 +2200,7 @@ function fn_blk_delta()
         sum(rise>${TEN:=9.93}) as click FROM delta8
     GROUP by blk
     HAVING 1 ${COND} ORDER by ${FIELD:=${sfiled}} ${sdirct} LIMIT ${LIMIT:-20}
-    " 
+    "
     #echo "${sqls_pro}${sqls}"; exit
     # mysql -t kts <<<"${sqls_pro}${sqls}"
     fn_imysql_sqls
@@ -2213,7 +2213,7 @@ function fn_blk_delta()
     # sqlv="SELECT * FROM deltaN d WHERE blk=0x${BLK} ORDER by ${sfiled} ${sdirct} LIMIT ${LIMIT:-12}"
     fn_check_blk_abbr
     cols="sym,d.code,d.close,rise,ride,earn"
-    sqls="SELECT ${cols}, ${nmcYi},c.name 
+    sqls="SELECT ${cols}, ${nmcYi},c.name
             FROM delta8 d, cap c WHERE blk=0x${BLK} and d.code=c.code ORDER by ${sfiled} ${sdirct} LIMIT ${iLIMIT:-10}"
     sqls_pro= fn_imysql_sqls
     fn_chao ${chao}.delta
@@ -2261,14 +2261,14 @@ function fn_blk_wolf_team()
         round(sum(${eWolf})/count(m.code), 2) as wolf,
         sum(rise>${TEN:=9.93}) as click
     FROM blk_name as n, blk_memb as m, xdde as x
-    $WHERE n.blk=m.blk and m.code=x.code 
+    $WHERE n.blk=m.blk and m.code=x.code
         && x.rise<10.1 && m.code NOT IN (${yizis:-888888})
         && m.blk not in ${EXCLUDE_BLK} ${iCOND}
         && ${eWolf}>${iDOOR:=.4} && rise>${rDOOR:=2} && ${sql_nmc:-"nmc<${nmc_wolf}"}
-    GROUP by blk 
+    GROUP by blk
     HAVING num>${iNUM:-1} && click>${click:=-1} ${COND}
     ORDER by num DESC LIMIT ${LIMIT:-16}
-    " 
+    "
     #echo "${sqls}" ; exit
     FIELD=${FIELD:-num}
     fn_echo_succ "${END} ${stime} [iDOOR:$iDOOR] [rDOOR:$rDOOR] [TEN:$TEN] [click:${click}] [FIELD:$FIELD]"
@@ -2285,7 +2285,7 @@ function fn_blk_wolf_inter()
 {
     PARTS=s sql_blk=n.blk fn_blk_wolf_team ${1:-1}
     eWolf="ROUND(100*x.nmc*(pbuy+nbuy)/amount, 2)"
-    echo "${sqls}" | mysql -t kts 
+    echo "${sqls}" | mysql -t kts
     echo "
     SELECT m.code, count(m.code) as num, ${eWolf} as eWolf, c.name
         FROM cap as c, blk_memb as m, xdde as x, (${sqls}) as T
@@ -2300,11 +2300,11 @@ function fn_blk_wolf_inter()
 function fn_blk()
 {
     EXCLUDE_BLK="(
-    0xCE54,  -- 898 | 融资融券    
-    0xDAE8,  -- 574 | 沪港通概念  
-    0xDBD4,  -- 316 | 股东增持    
+    0xCE54,  -- 898 | 融资融券
+    0xDAE8,  -- 574 | 沪港通概念
+    0xDBD4,  -- 316 | 股东增持
     0xDA4D,  -- 305 | 央企国资改革
-    0xD953,  -- 243 | 参股金融    
+    0xD953,  -- 243 | 参股金融
     0xD886,  -- 100 | 证金持股
     0xDB9B   -- 81  | 转融券标的
 -- ,0x40     -- 226 | 新股与次新股
@@ -2320,10 +2320,10 @@ function fn_blk()
         sqls="
         SELECT hex(n.blk) as blk,count(m.code) as num,n.sym FROM blk_name as n, blk_memb as m
         $WHERE n.blk=m.blk AND n.blk not in ${EXCLUDE_BLK} ${notinBLK}
-        GROUP by blk ORDER by ${FIELD:-num} ${ASC:-DESC} LIMIT ${LIMIT:-20}" 
+        GROUP by blk ORDER by ${FIELD:-num} ${ASC:-DESC} LIMIT ${LIMIT:-20}"
         fn_imysql_sqls
         ;;
-    sample) 
+    sample)
         [ "${2}" = l ] && fn_list_iF5_times
         fn_sample ${2}
         ;;
@@ -2346,7 +2346,7 @@ function fn_blk()
         ;;
     wolf)
         set -e
-        usage="Usage: 
+        usage="Usage:
         iDOOR=.40 COND='click>0&&earn>.3'
         iDOOR=.50 rDOOR=2 SELECT blk wolf {list|[E.a.BLK]iF5}
         "
@@ -2370,10 +2370,10 @@ function fn_blk()
         SELECT d.code,sum(${RISE}) as rise, ${nmcYi}, c.name FROM day as d, cap as c ${frBLK}
             ${WHERE} d.code=c.code and d.date>='${sta}' && d.date<='${END}' ${inBLK}
             and low!=high
-            GROUP by code 
+            GROUP by code
             HAVING ${HAVING:-1} ${COND} and rise>${rDOOR:-'-100'}
             ORDER BY ${FIELD:-rise} ${ASC:-desc} LIMIT ${LIMIT:-36}
-        " 
+        "
         }
         fn_sqls
         #echo "${sqls}" ; exit
@@ -2381,7 +2381,7 @@ function fn_blk()
         LIMIT=3000 fn_sqls
         fn_chao ${chao}.opt.acc
         ;;
-    stat)     
+    stat)
         NUM=${NUM:-3}
         dates=(`fn_get_date 1 ${NUM}`)
         mysql kts <<< "TRUNCATE blk_stat"
@@ -2394,16 +2394,16 @@ function fn_blk()
             SELECT '$date', blk,num,sym,rise,earn,wolf,click FROM ($sqls) as t
             " | mysql kts
         done
-        sqls=" SELECT hex(blk),count(blk)as top16s, sym, 
+        sqls=" SELECT hex(blk),count(blk)as top16s, sym,
                     sum(num)as nums, sum(click)as tens,sum(rise)*num as rises
-                    FROM  blk_stat 
-                    GROUP by blk 
+                    FROM  blk_stat
+                    GROUP by blk
                     ORDER by ${FIELD:=top16s} DESC LIMIT ${LIMIT:-40}"
         count=`mysql -N kts<<<"SELECT count(date) FROM (SELECT DISTINCT date FROM blk_stat) as t"`
         fn_echo_succ "blk stat in ${count} days [FIELD:$FIELD]"
-        mysql -t kts <<<"${sqls}"; 
+        mysql -t kts <<<"${sqls}";
         exit ;;
-    inter)     
+    inter)
         fn_blk_wolf_inter $2
         ;;
     c|code)
@@ -2437,7 +2437,7 @@ function fn_blk()
         fn_chao ${chao}.dif
         ;;
     # 差集版本2: BLK-YIST
-    !)  
+    !)
         if [ -z "${YIST}" ]; then
             fn_echo_fail "Usage: YIST=xxx SELECT ! blk..."
             exit
@@ -2468,12 +2468,12 @@ function fn_blk()
         ABBR=m fn_yist
         ABBR=m BLK=${@:2} fn_peeloff_blk
         sqls="
-        SELECT m.code,count(m.code) as num, ${nmcYi}, c.name 
+        SELECT m.code,count(m.code) as num, ${nmcYi}, c.name
             FROM blk_memb as m, cap as c ${frBLK}
             ${WHERE} m.code=c.code ${inBLK} ${sql_exclude}
             GROUP by code HAVING 1 ${COND}
             ORDER by ${FIELD:-num} ASC LIMIT ${LIMIT:-500}
-        " 
+        "
         #echo "${sqls}">/dev/stderr; exit
 
         case ${PARTS:-o} in
@@ -2495,7 +2495,7 @@ function fn_blk()
         acc     off           # off日内代码累计涨幅
         c       code          # 显示code关联的所有板块
         !       blk [...]     # 求YIST-BLK...的差集
-        D       big small     # 求两个blk的差集 big-small 
+        D       big small     # 求两个blk的差集 big-small
         A       blk blk2      # 求两个blk的交集
         U       blk [...]     # 求几个blk的并集(.c时可作为输出)
                               # blk中code关联的blk数目排名，越小，概念越纯正
@@ -2519,7 +2519,7 @@ function fn_dde_acc3()
         iPREV=${dates[$j]}
         #echo ${iCURR} ${iPREV}
         sqls="
-        SELECT C.code FROM 
+        SELECT C.code FROM
         (SELECT code,net FROM dde WHERE date='${iCURR}') as C,
         (SELECT code,net FROM dde WHERE date='${iPREV}') as P
         ${WHERE} C.code=P.code and C.net>=P.net
@@ -2535,7 +2535,7 @@ function fn_dde_acc3()
             ABBR=C YIST=${chao}.dde fn_yist
         fi
     done
-    
+
     return $?
 }
 
@@ -2546,7 +2546,7 @@ function fn_dde_wolf()
     fn_yist
     columns="date,d.code,trade,rise"
     sqls="
-    SELECT ${columns},ROUND((pbuy+nbuy)/tov, 2) as eWolf, 
+    SELECT ${columns},ROUND((pbuy+nbuy)/tov, 2) as eWolf,
         round(amount/10000, 1) as eYi, nmc,name FROM dde as d
     $WHERE 1 ${COND} and date>='${STA}' && date<='${END}' && rise>9.93 && nmc<=120
     HAVING eWolf>.5
@@ -2554,7 +2554,7 @@ function fn_dde_wolf()
     "
     mysql -t kts <<<"${sqls}"
     CHAO=1 fn_chao ${chao}.${chao2:-dde}
-    
+
     return $?
 }
 
@@ -2632,7 +2632,7 @@ function fn_ATR()
         STA=`fn_get_date ${NUM:-10} 1`
         fn_name $1
         echo "
-        SELECT *, ROUND(100*GREATEST(high-low, high-yesc, yesc-low)/yesc, 2) as ATR  
+        SELECT *, ROUND(100*GREATEST(high-low, high-yesc, yesc-low)/yesc, 2) as ATR
             FROM day WHERE code=$1 and date>='${STA}' and date<='${END}' ORDER by date DESC;
         " | mysql -t kts; exit
     fi
@@ -2644,13 +2644,13 @@ function fn_ATR()
 
     fn_yist
     sqls="
-    SELECT t.date, num, t.code, ATR, 
+    SELECT t.date, num, t.code, ATR,
         ROUND( 100*atv/(c.nmc/c.close), 2) as ATV, c.name
          FROM (
-        SELECT date,code, 
+        SELECT date,code,
             ROUND( sum( 100*GREATEST(high-low, high-yesc, yesc-low)/yesc )/count(code), 2 ) as ATR,
             ROUND( sum( volume )/count(code), 2) as atv,
-            count(code) as num 
+            count(code) as num
             FROM
         ( SELECT d.* FROM day as d $WHERE date>='${STA}' && date<='${END}' && high!=low && close>yesc
           ORDER by date DESC ) as d2
@@ -2682,10 +2682,10 @@ function fn_wee()
 
     fn_tbl() {
     echo "
-    ( SELECT date,code, ROUND( sum(volume)/count(code), 2 ) as mavol 
+    ( SELECT date,code, ROUND( sum(volume)/count(code), 2 ) as mavol
         FROM
         ( SELECT d.* FROM day as d $WHERE date>='${1}' && date<='${2}'
-          ORDER by date DESC 
+          ORDER by date DESC
         ) as d2 GROUP by code
     )"
     }
@@ -2750,7 +2750,7 @@ function fn_notice()
         grep --color "${cmd}" `ls -t | head -${NUM:-7}`
         ;;
     code)
-        [ -f "${2}" ] 
+        [ -f "${2}" ]
         xt_ret $? "file [${2}] not exist" || return $?
         grep '^[036][0-9][0-9][0-9]' $2  | awk '{print $1}' | sort -u > ${chao}.nocode
         fn_echo_succ "extract codes from ${2} to ${chao}.nocode OK"
@@ -2787,13 +2787,13 @@ function fn_ddd()
         COND="(rise>9.93&&eWolf>.49)" \
         PARTS=f CHAO=1 LIMIT=200 END=${PREV} SELECT wolf ${TYPE}
         COND="(rise<opri||(opri<0&&rise<opri+2)||cise<2)&&prop<${prop:-1.1}" \
-        YIST=${chao}.wolf LIMIT=100 SELECT wolf ${TYPE} 
+        YIST=${chao}.wolf LIMIT=100 SELECT wolf ${TYPE}
         fn_echo_succ "[prop:${prop}] 昨日涨停 -- ma20&特别关注标的：eYi＞5亿"
 
         COND="(rise<9.94&&avri>4.5&&eWolf>.43&&eYi>5)" \
         PARTS=f CHAO=1 LIMIT=200 END=${PREV} SELECT wolf ${TYPE}
         COND="(rise<opri||(opri<0&&rise<opri+2)||cise<2)&&prop<${prop:-1.1}" \
-        YIST=${chao}.wolf LIMIT=100 SELECT wolf ${TYPE} 
+        YIST=${chao}.wolf LIMIT=100 SELECT wolf ${TYPE}
 
         fn_echo_succ "[prop:${prop}] 昨日大额 -- ma20&+12%&特别关注：剔除大宗交易"
         ;;
@@ -2850,7 +2850,7 @@ function fn_ddd()
 function fn_seat_rank()
 {
     sqls="
-    SELECT code, name, count(code) as num, sum(month) as mon, sum(amount) as eWan 
+    SELECT code, name, count(code) as num, sum(month) as mon, sum(amount) as eWan
         FROM seat_rank GROUP by code HAVING num>1 ORDER by eWan DESC
     "
     mysql -t kts <<< "${sqls}"
@@ -2860,11 +2860,11 @@ function fn_seat_detail()
 {
     sql_door=1
     sql_seat="
-    SELECT code FROM (SELECT code, name, count(code) as num, sum(month) as mon, sum(amount) as eWan 
+    SELECT code FROM (SELECT code, name, count(code) as num, sum(month) as mon, sum(amount) as eWan
         FROM seat_rank GROUP by code HAVING num>${sql_door} ORDER by eWan DESC ) as t
     "
 
-    d60=`fn_get_date 40` 
+    d60=`fn_get_date 40`
 
     # try comment
     DISTINCT=DISTINCT
@@ -2876,7 +2876,7 @@ function fn_seat_detail()
     CHAO=1 fn_chao ${chao}.${chao2:-seat}
 
     YIST=${chao}.seat SELECT blk l
-    
+
     return $?
 }
 
