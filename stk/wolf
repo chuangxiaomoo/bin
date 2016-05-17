@@ -76,6 +76,7 @@ function fn_up_rip()
     LOAD DATA LOCAL INFILE '${wolf_rip}' INTO TABLE
            ddx(date,time,code,net,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name);
 
+    DELETE FROM     ddx WHERE amount=0;
     DELETE FROM     dde WHERE date='${CURR}';
     INSERT INTO     dde(date,time,code,net,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name)
         SELECT date,time,code,net,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name FROM ddx;

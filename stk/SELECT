@@ -52,13 +52,9 @@ function fn_update_mavol5()
 
     if [ "${idate}" != ${PREV} ]; then
         #fn_echo_succ 'update mavol5...'
+        #SCREENER使用全codes后，不再需要修正
         iCOND="num=${NUM:-8}" xCol=end fn_xCol mat_lohi t_mavol5 ${PREV}
         xt_ret $? "To avoid this WARNING: END=${PREV} SCREENER lohi 1" || exit $?
-        echo "
-        INSERT into t_mavol5(end,code,mavol5)
-        SELECT '$PREV',code,0 FROM ${TEMPDAY:-day}
-        WHERE date='${END}' && code NOT IN (SELECT code from t_mavol5);
-        " | mysql kts
     fi
 }
 

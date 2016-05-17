@@ -555,6 +555,7 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
             WHEN @fn_fbi_ratio      THEN call sp_fbi(v_code);
             WHEN @fn_hilo           THEN call sp_hilo(v_code);
             WHEN @fn_lohi           THEN call sp_lohi(v_code);
+            WHEN @fn_dde5           THEN call sp_dde5(v_code);
             ELSE SELECT "no a_type match";
         END CASE;
 
@@ -1299,7 +1300,7 @@ CREATE PROCEDURE sp_create_tbl_lohi() tag_tbl_lohi:BEGIN
         high        DECIMAL(6,2) NOT NULL DEFAULT 0,
         low         DECIMAL(6,2) NOT NULL DEFAULT 0,
         lohi        DECIMAL(6,2)          DEFAULT 0,    -- 100*(high-low)/low
-        scale       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        scale       DECIMAL(6,2)          DEFAULT 0,
         volume      DECIMAL(12,2) NOT NULL DEFAULT 0,
         amount      DECIMAL(12,2) NOT NULL DEFAULT 0,
         mavol5      INT
@@ -1332,7 +1333,6 @@ END tag_cover_lohi //
 
 DROP PROCEDURE IF EXISTS sp_lohi//
 CREATE PROCEDURE sp_lohi(a_code INT(6) ZEROFILL) tag_lohi:BEGIN
-    DECLARE v_id        INT DEFAULT 1; 
     DECLARE v_id_hi     INT DEFAULT 1; 
     DECLARE v_id_lo     INT DEFAULT 1; 
     DECLARE v_date1     date DEFAULT 0;
@@ -1355,13 +1355,13 @@ CREATE PROCEDURE sp_lohi(a_code INT(6) ZEROFILL) tag_lohi:BEGIN
     PREPARE stmt from @sqls; EXECUTE stmt;
 
     SELECT count(*) FROM tempday INTO @v_len;
+    IF @v_len < 5 THEN LEAVE tag_lohi;END IF;
 
     SELECT volume,amount   FROM tempday WHERE id =1         INTO v_volume,v_amount;
     SELECT v_volume/volume FROM tempday WHERE id =2         INTO v_scale;
     SELECT sum(volume)/5   FROM tempday WHERE id<=5         INTO v_mavol5;
     SELECT id,date,close   FROM tempday                     order by close asc  LIMIT 1 INTO v_id_lo, v_date1, v_low;
     SELECT id,date,close   FROM tempday                     order by close DESC LIMIT 1 INTO v_id_hi, v_date2, v_high;
---  SELECT id,date,close   FROM tempday WHERE id<=v_id_lo   order by close DESC LIMIT 1 INTO v_id_hi, v_date2, v_high;
     SELECT min(close)      FROM tempday WHERE date>=v_date2                             INTO v_lohi;
 
     -- lohi被征用为高点下落后低点，只作主升浪
@@ -1373,6 +1373,15 @@ CREATE PROCEDURE sp_lohi(a_code INT(6) ZEROFILL) tag_lohi:BEGIN
     INSERT INTO tmp_lohi(code,date1,date2,   high,low,    lohi,off, scale,  volume, amount, mavol5)
              VALUES(a_code,v_date1,v_date2,v_high,v_low,v_lohi,@len, v_scale,v_volume,v_amount, v_mavol5);
 END tag_lohi //
+
+DROP PROCEDURE IF EXISTS sp_dde5//
+CREATE PROCEDURE sp_dde5(a_code INT(6) ZEROFILL) tag_dde5:BEGIN
+    SET @sqls=concat('
+        INSERT INTO tov5(code,tov)
+            SELECT code,tov FROM dde WHERE code=', 
+        a_code, " and date<= '", @END, "' order by date DESC LIMIT 5");
+    PREPARE stmt from @sqls; EXECUTE stmt;
+END tag_dde5 //
 
 -- 一些需要与shell通信的系统变量
 
@@ -1386,6 +1395,7 @@ END tag_lohi //
     SET @fn_fbi_ratio           = 13;
     SET @fn_hilo                = 14;
     SET @fn_lohi                = 15;
+    SET @fn_dde5                = 16;
     SET @FORCE                  = 0;    -- 1时强制计算过滤停牌很久的个股
     SET @START      = '2013-12-6';
     SET @END        = '2014-11-26';
