@@ -463,6 +463,20 @@ function fn_iscode()
     #echo ${?} is ret code: ${1} num: ${num}
 }
 
+function fn_name()
+{
+    fn_iscode ${code:=${1}}
+    xt_ret $? "Usage: name code" || exit $?
+
+    argv="${@}"
+    argv="${argv// /,}"
+    sqls="SELECT code, name, CONCAT((round(nmc/10000, 1)),'Yi') as nmcYi FROM cap WHERE code IN (${argv})"
+    #echo "${sqls}">/dev/stderr;exit
+    fn_echo_succ `mysql -N kts <<< "${sqls}"`
+
+    xt_ret $? "" || return $?
+}
+
 function fn_isdate()
 {
     echo -n $1 | grep -q -E '^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$'
@@ -728,10 +742,10 @@ function fn_bell()
 function fn_beep()
 {
     local i
-    for (( i=0; i<${BEEPS:-3}; i+=1 )); do
-        echo -ne '\a' > /dev/pts/0; sleep .15
+    for (( i=0; i<${BEEPS:-2}; i+=1 )); do
+        echo -ne '\a' > /dev/pts/0; sleep .16
     done
-    echo "`date +%T`.FROM.${FUNCNAME[1]}" > /dev/pts/0
+    echo "`date +%T`.FROM.${FUNCNAME[1]} ${@}" > /dev/pts/0
 }
 
 function fn_cp_tbl()
