@@ -26,7 +26,7 @@ nmc_lion=300.1
 cd ~/bin/stk
 export PATH=.:~/bin:$PATH
 
-[ "${DEBUG:-0}" = 1 ] && 
+[ "${DEBUG:-0}" = 1 ] &&
 SUBOUT='/dev/stdout' || SUBOUT='/dev/null'
 
 # mySql
@@ -178,7 +178,7 @@ touch $file_ma240
 function fn_isSqltrue()
 {
     sqls="SELECT IF($*, 1, 0)"
-    RET=`mysql -N kts <<<"${sqls}"` 
+    RET=`mysql -N kts <<<"${sqls}"`
     xt_ret $? "" || return $?
     [ "${RET}" -eq 1 ]
     return $?
@@ -190,7 +190,7 @@ function fn_isresting()
     hhmmss=`date +%H%M%S`
     if ([ ${hhmmss} -gt 113100 ] && [ ${hhmmss} -lt 130100 ]) ||
         [ ${hhmmss} -lt 093100 ] ; then
-        echo "is resting @${hhmmss}..."; 
+        echo "is resting @${hhmmss}...";
         return 0
     elif [ ${hhmmss} -gt 145900 ]; then
         echo "market closed, eixt!"
@@ -213,7 +213,7 @@ function fn_txttbl()
     fi
 }
 
-fn_gen_10jqka_sel() 
+fn_gen_10jqka_sel()
 {
     rowx1=`bc <<< "obase=16;${rows}%256"`
     rowx2=`bc <<< "obase=16;${rows}/256"`
@@ -260,7 +260,7 @@ fn_gen_dzh_blk()
 
 function fn_hew_tail()
 {
-    sed -e 's/    |$/|/g' -e 's/----+$/+/g'   
+    sed -e 's/    |$/|/g' -e 's/----+$/+/g'
 }
 
 function fn_imysql_sqls()
@@ -280,7 +280,7 @@ function fn_chao()
     sql_chao="${PREFIX}SELECT code FROM (${sqls//;/}) as t"
     # echo "${sql_chao}"; exit
     # 最后因没有换行而有重复，uniq -u 只处理连续出现的重复行
-    mysql -N kts <<<"${sql_chao}" |grep '^[036]'| tee ${TEE} ${PLAIN} > /dev/null 
+    mysql -N kts <<<"${sql_chao}" |grep '^[036]'| tee ${TEE} ${PLAIN} > /dev/null
 
     # 设置了WIT值就一定要输出dzh
     rows=`wc -l < ${PLAIN}`
@@ -301,17 +301,17 @@ function fn_check_blk_abbr()
 
     maps=(
     BJ  DAE3    白酒
-     G  CFF9    高送转        
-     X  40      新股与次新股  
+     G  CFF9    高送转
+     X  40      新股与次新股
     GX  FFC8    高+新
-     A  FFCD    ADAS+         
-     V  D77B    虚拟现实      
-     L  FFCC    锂电+         
-     H  DB8A    互联网金融    
-    HP  D527    互联网+       
-    I4  D957    工业4.0       
-     M  DADA    新材料概念    
-     O  D617    OLED 
+     A  FFCD    ADAS+
+     V  D77B    虚拟现实
+     L  FFCC    锂电+
+     H  DB8A    互联网金融
+    HP  D527    互联网+
+    I4  D957    工业4.0
+     M  DADA    新材料概念
+     O  D617    OLED
     QH  FFC7    QH360
      S  DFB9    半导体及元件
      Z  DF95    证券
@@ -413,7 +413,7 @@ function fn_peeloff_blk()
     echo "
     $DROP        xblk;
     CREATE TABLE xblk LIKE codes;
-    INSERT INTO  xblk(code) 
+    INSERT INTO  xblk(code)
     SELECT DISTINCT code FROM blk_memb WHERE ${hexCOND};
     " | mysql kts
     frBLK=",xblk"
@@ -432,7 +432,7 @@ function fn_notin_blk()
     fi
     xBLK=(${xBLK//,/ }); xBLK=${xBLK[@]}              # 去回车
     local hexCOND="blk=0x${xBLK// /||blk=0x}"
-    
+
     notinBLK="&& ${ABBR:-d}.code NOT IN (SELECT code FROM blk_memb WHERE ${hexCOND})"
 }
 
@@ -479,13 +479,13 @@ function fn_issqltrue()
     return $RET
 }
 
-function fn_write() 
+function fn_write()
 {
     # wall -n <<<"abc" 2>/dev/null
     mesg y; write root /dev/pts/0 <<< "${1}"
 }
 
-function fn_timestamp_market() 
+function fn_timestamp_market()
 {
     DATETIME=(`$W3M -dump ${url_sh000001} | awk -F',' '{print $(NF-2), $(NF-1)}'`)
     OPENDATE=${DATETIME[0]}
@@ -493,9 +493,9 @@ function fn_timestamp_market()
     if [ -z "$OPENDATE" ]; then
         fn_echo_fail "
         FINA UNREACHABLE!
-        "  
+        "
         return 1
-    fi 
+    fi
 
     export DATE=`date +%Y-%m-%d`
 
@@ -517,7 +517,7 @@ function fn_timestamp_market()
             WARNING: $MAXDATE data exist, try up redo_hexun_day
             " && return 1
         fi
-    fi 
+    fi
 }
 
 function fn_get_vtov()
@@ -531,14 +531,14 @@ function fn_get_vtov()
     " | mysql -N
 }
 
-function fn_get_ratio_close2open() 
+function fn_get_ratio_close2open()
 {
     # ratio = 4小时/sum(open)，用于预测当日量比
     # 在 ./SELECT 通过变量 ratio=`fn_get_ratio_close2open`
     HMS=${HMS:-`fn_get_time 1`}
     sec_date=${END}
     sec_curr=$(date +%s -d "${END} ${HMS}")
-    sec_0930=$(date +%s -d "${sec_date} 09:30:00") 
+    sec_0930=$(date +%s -d "${sec_date} 09:30:00")
     sec_1130=$(date +%s -d "${sec_date} 11:30:00")
     sec_1300=$(date +%s -d "${sec_date} 13:00:00")
     sec_1500=$(date +%s -d "${sec_date} 15:00:00")
@@ -552,11 +552,11 @@ function fn_get_ratio_close2open()
     if [ "$sec_curr" -lt ${sec_0930} ] ; then
         sec_open=0
     elif  [ "$sec_curr" -lt ${sec_1130} ]; then
-        sec_open=$(expr $sec_curr - $sec_0930) 
+        sec_open=$(expr $sec_curr - $sec_0930)
     elif  [ "$sec_curr" -lt ${sec_1300} ]; then
         sec_open=7200
     elif  [ "$sec_curr" -lt ${sec_1500} ]; then
-        sec_open=$(expr $sec_curr - $sec_1300 + 7200) 
+        sec_open=$(expr $sec_curr - $sec_1300 + 7200)
     else
         sec_open=14400
     fi
@@ -572,7 +572,7 @@ function fn_get_ratio_close2open()
     fi
 }
 
-function fn_maxdate() 
+function fn_maxdate()
 {
     mysql -N kts <<< "SELECT max(date) from day WHERE code = 900001;"
 }
@@ -598,8 +598,8 @@ function fn_get_date()
     [ "${sta}" -eq 0 ] && fn_echo_fail "fn_get_date sta could not be 0" && exit
     let sta--           #sta=offset-1
     sqls="
-        SELECT date from day 
-        WHERE code=${code} and date<='${END}' 
+        SELECT date from day
+        WHERE code=${code} and date<='${END}'
         ORDER by date DESC LIMIT ${sta},${2:-1}
     "
     #echo ${sqls}; exit
@@ -614,7 +614,7 @@ function fn_set_END()
         END=${END//END/${CURR}}                         # 指定为END
         PREV=`END=${END//PREV/${CURR}} fn_get_prev`     # 指定为PREV
         END=${END//PREV/${PREV}}                        # echo P:${PREV} E:${END}; exit
-    elif [ -n "${iEND}" ]; then 
+    elif [ -n "${iEND}" ]; then
         END=`END=${CURR} fn_get_date ${iEND} 1`         # 使用iEND时，必是从CURR倒数起
     else
         END=${END:-${CURR}}                             # 指定为CURR
@@ -742,7 +742,7 @@ function fn_cp_tbl()
 
     echo "
     DROP TABLE IF EXISTS $2;
-    CREATE TABLE $2 LIKE $1;   
+    CREATE TABLE $2 LIKE $1;
     INSERT INTO $2 SELECT * FROM $1 ${COND0};
     " | mysql kts
 }
@@ -751,7 +751,7 @@ echo "`date +%F.%T` ${BASH_SOURCE[1]}" >> /var/dbank.trace
 
 [ "${BASH_SOURCE##*/}" != "${0##*/}" ] && return 0
 
-fn_rank_by_nmc() 
+fn_rank_by_nmc()
 {
     echo "
     SELECT * FROM cap ORDER by nmc DESC limit ${LIMIT:-48};
@@ -762,11 +762,11 @@ fn_rank_by_nmc()
 function fn_4yist()
 {
     # .yist.
-    # 
+    #
     # SELECT count(*), sum(nmc) FROM cap WHERE nmc<1000000 ;
-    # SELECT count(*), sum(nmc) FROM cap WHERE nmc>=1000000 and nmc<4000000 ;   
-    # SELECT count(*), sum(nmc) FROM cap WHERE nmc>=4000000 ;                 
-    # 
+    # SELECT count(*), sum(nmc) FROM cap WHERE nmc>=1000000 and nmc<4000000 ;
+    # SELECT count(*), sum(nmc) FROM cap WHERE nmc>=4000000 ;
+    #
     # +----------+-----------+
     # | count(*) | sum(nmc)  |
     # +----------+-----------+
@@ -792,7 +792,7 @@ function fn_4yist()
     mysql -N  kts <<< "${sql}" > .yist.lv3_400
     sql='SELECT code FROM cap ORDER by nmc DESC LIMIT 520,2400'
     mysql -N  kts <<< "${sql}" > .yist.lv4_24k
-    
+
     echo "up .yist files succ"
     return $?
 }
@@ -801,7 +801,7 @@ function fn_4yist()
 function fn_sqls()
 {
     sqls_curr="
-    SELECT ROUND(sum(nmc)/(10000*10000),2), 
+    SELECT ROUND(sum(nmc)/(10000*10000),2),
            ROUND(sum(cap)/(10000*10000),2) FROM $TBL WHERE 1  ${inLIST}  INTO @nmc_Wanyi, @cap_Wanyi;
     SELECT ROUND(sum(nmc)/(10000*10000),2) FROM $TBL WHERE code>400000 ${inLIST} INTO @nmc_sh;
     SELECT count(code)                     FROM $TBL WHERE code>400000 ${inLIST} INTO @N_sh;
@@ -821,7 +821,7 @@ function fn_sqls()
             cap_Wanyi DECIMAL(10,2),
             nmc_Wanyi DECIMAL(10,2),
             nmc_sh DECIMAL(10,2),
-            nmc_sz DECIMAL(10,2), 
+            nmc_sz DECIMAL(10,2),
             nmc_cyb DECIMAL(10,2),
             INDEX(date)
         );
@@ -831,7 +831,7 @@ function fn_sqls()
     fi
 }
 
-fn_group_nmc_layout() 
+fn_group_nmc_layout()
 {
     # cat $sn_cap_nmc nmc_WanYi
     fn_yist
@@ -854,7 +854,7 @@ fn_group_nmc_layout()
     } END {
         printf "    %d支股票市值分布\n", count
         for(k=1; k<=arr_size; k++) {
-            printf "    大于%s亿:\t %d\n", arr_list[k], arr_count[k]; 
+            printf "    大于%s亿:\t %d\n", arr_list[k], arr_count[k];
         }
 
         printf "    分析可见：   市值%%60分布主要在10~100亿\n";
@@ -868,14 +868,14 @@ fn_test()
     fn_get_vtov 14:00:00
 }
 
-function main() 
+function main()
 {
     list=(
         fn_group_nmc_layout
         fn_rank_by_nmc
         fn_4yist
         fn_test
-    )        
+    )
 
     match_word=(`echo ${list[@]}| xargs -n1 | cat -n | grep  "\<$1\>"`)
 

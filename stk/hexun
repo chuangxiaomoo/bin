@@ -1,10 +1,10 @@
 #! /bin/bash -
 
-. `dirname ${0}`/'dbank' || { echo "dbank err" && exit; } 
+. `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
 . /etc/common.rc
 
 function fn_fmt_hexun() {
-    awk -F',' -v v_date=$DATE -v v_time=$TIME '{ 
+    awk -F',' -v v_date=$DATE -v v_time=$TIME '{
         printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%.2f\t%s\t%s\t%s\t%s\t%s\t%s\n", \
                 $1, $3, $4, $5, $6, $7, $8, $9,$10,$11,$12,$13,v_date,v_time
     }' $1
@@ -41,7 +41,7 @@ function fn_main() {
     xt_ret $? "fn_hexun fail" || return $?
 }
 
-# 
+#
 # 1 从统计来看，hexun不统计当日停牌的股票，且较sina要准确
 
 # 2 从速度数据来看，hexun是sina的1/4
@@ -53,8 +53,8 @@ function fn_main() {
 #   成交额以万为单位，成交量以手为单位 (sina成交量是自然单位股)
 #
 #   code name trade pricechange close open high low volume amount turnoverratio
-#   changepercent volumeratio 
-#   
+#   changepercent volumeratio
+#
 # 4 sina比hexun的优势，其有总市值及流通市值数据，以万为单位
 #
 

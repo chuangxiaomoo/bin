@@ -7,7 +7,7 @@ function fn_up_raw()
     fn_get_export_file
     xt_ret $? "" || return $?
 
-    # 代码   名称  DDE大单净量  主动买入比  被动买入比  主动卖出比  被动卖出比 
+    # 代码   名称  DDE大单净量  主动买入比  被动买入比  主动卖出比  被动卖出比
     # 涨幅%  现价  涨速%        总手        换手        金额        流通市值
     iconv -f cp936 -t utf8 ${efile} | tail -n+2 > ${wolf_raw}
     if ! grep -q '^S[HZ]' ${wolf_raw}; then
@@ -26,22 +26,22 @@ function fn_up_raw()
     # 代码  名称  涨幅  涨速    DDE大单净量 换手 量比   金额    流通市值
         sed '/--.--/d' ${wolf_raw}.mid |\
         awk '{
-            printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%.2f\t%.2f\t%s\n", 
+            printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%.2f\t%.2f\t%s\n",
             $1,$5, 0,0,0,0,      $3,0,$4,   0,          $6,$8/10000,$9/100000000,$2
         }' \
         | sed "s/^/${CURR}\t${HHMMSS}\t/g" > ${wolf_rip}
     else
         # tag_blank='00.--.--'
-        # -e "/${tag_blank}/d" 
+        # -e "/${tag_blank}/d"
         awk '{
-            printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%.2f\t%.2f\t%s\n", 
+            printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%.2f\t%.2f\t%s\n",
             $1,$3, $4,$5,$6,$7,  $8,$9,$10, $11/10000,  $12,$13/10000, $14/100000000,$2
         }' ${wolf_raw}.mid \
         | sed -e "s/^/${CURR}\t${HHMMSS}\t/g" > ${wolf_rip}
     fi
 
     # echo ${efile} ${ctime} ${epoch} $HHMMSS
-    
+
     return $?
 }
 
@@ -51,7 +51,7 @@ function fn_up_rip()
     CREATE TABLE IF NOT EXISTS mat_dde (
         id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
         date        date NOT NULL DEFAULT 0,
-        time        time NOT NULL, 
+        time        time NOT NULL,
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
         net         DECIMAL(6,2) NOT NULL DEFAULT 0, -- dec(p-n)/sum(p+n)
         pbuy        DECIMAL(6,2) NOT NULL DEFAULT 0,
@@ -73,7 +73,7 @@ function fn_up_rip()
 
     DROP   TEMPORARY TABLE IF EXISTS ddx;
     CREATE TEMPORARY TABLE ddx LIKE mat_dde;
-    LOAD DATA LOCAL INFILE '${wolf_rip}' INTO TABLE 
+    LOAD DATA LOCAL INFILE '${wolf_rip}' INTO TABLE
            ddx(date,time,code,net,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name);
 
     DELETE FROM     dde WHERE date='${CURR}';
@@ -81,9 +81,9 @@ function fn_up_rip()
         SELECT date,time,code,net,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name FROM ddx;
 
     DELETE FROM mat_dde WHERE date='${CURR}' && time='${HHMMSS}';
-    INSERT INTO mat_dde(date,time,code,net,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name) 
+    INSERT INTO mat_dde(date,time,code,net,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name)
         SELECT date,time,code,net,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name FROM ddx;
-    " | mysql kts   
+    " | mysql kts
     return $?
 }
 
@@ -109,7 +109,7 @@ function fn_bbd_database()
     CREATE TABLE IF NOT EXISTS mat_bbd (
         id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
         date        date NOT NULL DEFAULT 0,
-        time        time NOT NULL, 
+        time        time NOT NULL,
 
         rise        DECIMAL(12,2) NOT NULL DEFAULT 0,
         dde         DECIMAL(12,2) NOT NULL DEFAULT 0,
@@ -129,7 +129,7 @@ function fn_bbd_database()
 
     DROP   TEMPORARY TABLE IF EXISTS bbx;
     CREATE TEMPORARY TABLE bbx LIKE mat_bbd;
-    LOAD DATA LOCAL INFILE '${wolf_rip}' INTO TABLE 
+    LOAD DATA LOCAL INFILE '${wolf_rip}' INTO TABLE
            bbx(date,time,rise,dde,bbd_net,bbd_amount,bbd_buy,bbd_sell,up,down,name);
 
     DELETE FROM     bbd WHERE date='${CURR}';
@@ -137,11 +137,11 @@ function fn_bbd_database()
         SELECT date,time,rise,dde,bbd_net,bbd_amount,bbd_buy,bbd_sell,up,down,name FROM bbx;
 
     DELETE FROM mat_bbd WHERE date='${CURR}' && time='${HHMMSS}';
-    INSERT INTO mat_bbd(date,time,rise,dde,bbd_net,bbd_amount,bbd_buy,bbd_sell,up,down,name) 
+    INSERT INTO mat_bbd(date,time,rise,dde,bbd_net,bbd_amount,bbd_buy,bbd_sell,up,down,name)
         SELECT date,time,rise,dde,bbd_net,bbd_amount,bbd_buy,bbd_sell,up,down,name FROM bbx;
-    " | mysql kts   
+    " | mysql kts
     return $?
-    
+
     return $?
 }
 
@@ -159,7 +159,7 @@ function fn_bbd_file()
     fn_get_export_file
     xt_ret $? "" || return $?
 
-    # 代码   名称  机构动向     主动买入比  被动买入比  主动卖出比  被动卖出比 
+    # 代码   名称  机构动向     主动买入比  被动买入比  主动卖出比  被动卖出比
     # 涨幅%  现价  涨速%        总手        换手        金额        流通市值    所属行业
     iconv -f cp936 -t utf8 ${efile} | tail -n+2 > ${wolf_raw}
     if ! grep -q '机器人概念' ${wolf_raw}; then
@@ -184,16 +184,16 @@ function fn_bbd_file()
 function fn_layout_bbd()
 {
     sqls="
-    SELECT l.code,count(l.code) as num, c.name FROM 
+    SELECT l.code,count(l.code) as num, c.name FROM
         (SELECT m.code FROM (
-            SELECT name FROM bbd ORDER by bbd_amount DESC LIMIT ${LIMIT:-2}) as t, 
-            blk_name as n, blk_memb as m 
-            WHERE n.sym=t.name && n.blk=m.blk) as l, cap as c 
-    WHERE l.code=c.code 
-    GROUP by code 
+            SELECT name FROM bbd ORDER by bbd_amount DESC LIMIT ${LIMIT:-2}) as t,
+            blk_name as n, blk_memb as m
+            WHERE n.sym=t.name && n.blk=m.blk) as l, cap as c
+    WHERE l.code=c.code
+    GROUP by code
     HAVING 1 ${COND}
     ORDER by num DESC
-    " 
+    "
     mysql ${OPT:--t} kts <<<"${sqls}"
     fn_chao ${chao}.bbd
 }
@@ -230,7 +230,7 @@ function fn_main()
         bbd     # 操盘热点导入                  # (3/2):1 20      登堂
         layout  # 热点layout，观察概念叠加      # (5/3):1 25      入室
         zxg     # 打印自选股                    # (2/1):1 33      太极
-        
+
         Go=(pbuy/nbuy)                          # 主动攻击性
         bsp=((pbuy+nbuy)/(psell+nsell))         # 总体攻击性，有涨停被动时应该小心
         机构动向=100*(buy-sell)/(buy+sell)

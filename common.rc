@@ -1,11 +1,11 @@
 #! /bin/bash
 #
 # when replace '/' with SF '#', no need to escape, but with SF '/', it does
-# when replace '\', it must be escaped, use the below vars, regardless of 
+# when replace '\', it must be escaped, use the below vars, regardless of
 # how may `` and "", it work very well. e.g.
-# sed_out=`echo '/\/\$' | 
-# sed -e "s#$_slash#_o_#g" -e "s#$_2backslash#-o-#g" -e "s#$_bsl#+o+#g"` 
-shopt -s gnu_errfmt 
+# sed_out=`echo '/\/\$' |
+# sed -e "s#$_slash#_o_#g" -e "s#$_2backslash#-o-#g" -e "s#$_bsl#+o+#g"`
+shopt -s gnu_errfmt
 shopt -s extglob
 
 _slash='/'          # slash
@@ -27,7 +27,7 @@ PS8="eval echo \${BASH_SOURCE##*/}\|\$LINENO\|: "
 
 function xert() { [ "${1}" -eq 0 ] || echo ${@:2}; return ${1}; }
 
-function xt_ret() 
+function xt_ret()
 {
     [ "${1}" = "0" ] && return 0
     printf "${BASH_SOURCE[1]##*/}%-6s" "|${BASH_LINENO[0]}|"    # no FUNCNAME print
@@ -38,8 +38,8 @@ function xt_ret()
 }
 
 function fn_echo_line()
-{ 
-    echo '|'${BASH_LINENO[0]}'|' $*; 
+{
+    echo '|'${BASH_LINENO[0]}'|' $*;
 }
 
 function fn_echo_blue()
@@ -242,7 +242,7 @@ function fn_sed_auto_insert()
     local add_content=$2
     local add_file=$3
 
-    # use c comment 
+    # use c comment
     local l_comment=${COMMENT:-//}
     local add_start="${l_comment} sed auto add start\n"
     local add_end="${l_comment} sed auto add ending"
@@ -266,9 +266,9 @@ function fn_sed_auto_insert()
 }
 
 
-function fn_exe_usage() 
+function fn_exe_usage()
 {
-    echo "    
+    echo "
     call from $@
     ${0##*/} <id> [OPTIONS...]
     ${0##*/} keyword_in_list
@@ -278,7 +278,7 @@ function fn_exe_usage()
     exit 1
 }
 
-function fn_execute() 
+function fn_execute()
 {
     case $1 in
     ''|l|-l|--list)
@@ -310,7 +310,7 @@ function fn_execute()
                 fn_${cmd} "${@:2}"
                 return $?            # avoid _fn_exe_usage_
             fi
-        done 
+        done
         fn_exe_usage "${BASH_SOURCE[1]##*/}|${BASH_LINENO[0]}|"
         ;;
     esac

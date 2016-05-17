@@ -40,7 +40,7 @@ function fn_cap()
         INDEX(code,date)
     );
 
-    LOAD DATA LOCAL INFILE '$sn_cap_nmc' INTO 
+    LOAD DATA LOCAL INFILE '$sn_cap_nmc' INTO
     TABLE cap(code, date, close, cap, nmc, name);
     " | mysql -u root kts
 
@@ -123,7 +123,7 @@ function fn_hexun_day0()
     echo "    add hexun_day ${DATE}..."
 
     if [ "${FINA:-0}" -eq 1 ] ; then
-        ./sina 
+        ./sina
         xt_ret $? "sina" || return $?
         cp $sn_ripetxt $hx_dayclose
     else
@@ -147,7 +147,7 @@ function fn_hexun_day0()
 
     hx_lines=`cat $hx_dayclose | wc -l`
     if [ $hx_lines -lt ${baselines:=1300} ]; then
-        wall <<< "up:${BASH_LINENO[0]} $hx_lines less than ${baselines} lines" 
+        wall <<< "up:${BASH_LINENO[0]} $hx_lines less than ${baselines} lines"
         return 1
     fi
 
@@ -187,15 +187,15 @@ function fn_trace()
 
         LOAD DATA LOCAL INFILE '${buffer}' INTO TABLE trace(date,curr_asset,frozen,sh,cyb);
 
-           SELECT ${colA}, 
-               (A.curr_asset-B.curr_asset) as earning, 
+           SELECT ${colA},
+               (A.curr_asset-B.curr_asset) as earning,
                round(100*(A.curr_asset-B.curr_asset)/B.curr_asset, 2) as RoE,
                round(100*(A.curr_asset-B.curr_asset)/(B.curr_asset-A.frozen), 2) as RoE_real,
-            -- (A.sh-B.sh) as earning_sh, 
-            -- (A.cyb-B.cyb) as earning_cyb, 
+            -- (A.sh-B.sh) as earning_sh,
+            -- (A.cyb-B.cyb) as earning_cyb,
                round(100*(A.sh-B.sh)/B.sh, 2) as RoE_sh,
                round(100*(A.cyb-B.cyb)/B.cyb, 2) as RoE_cyb
-               FROM trace A INNER JOIN 
+               FROM trace A INNER JOIN
                     trace B on(A.id=B.id+1) GROUP BY A.id;
 
         -- SELECT *,
@@ -203,7 +203,7 @@ function fn_trace()
         --     round(100*(curr_asset-prev_asset)/(prev_asset-frozen), 2) as RoE_real
         --     FROM trace;
     " | mysql -t kts
-    
+
     return $?
 }
 
@@ -229,11 +229,11 @@ function fn_power()
             INDEX(code)
         );
 
-        LOAD DATA LOCAL INFILE '${file1}' INTO TABLE 
+        LOAD DATA LOCAL INFILE '${file1}' INTO TABLE
             power10(code,name,quarter,power10,jigou,jgnewin,sholders);
         SELECT ${colA} FROM power10 as A;
     " | mysql -t kts
-    
+
     return $?
 }
 
@@ -320,7 +320,7 @@ function fn_file_to_table()
             code        INT(6) ZEROFILL NOT NULL DEFAULT 0
         );
         INSERT INTO ${TBL} (code) VALUES
-        `sed -e 's/^/(/' -e 's/ /),(/g' -e 's/$/);/' <<< "${lst[@]}"` 
+        `sed -e 's/^/(/' -e 's/ /),(/g' -e 's/$/);/' <<< "${lst[@]}"`
     " > ${sql_temp}
 
     mysql kts < ${sql_temp}
@@ -446,7 +446,7 @@ function fn_rzrq()
         url="${url0}&st=0&sr=1&p=${i}&ps=100&js=var%20EJcawWJn={pages:(pc),data:[(x)]}"
         w3m -dump "${url}" > ${cache}
         xt_ret $? "" || return $?
-        
+
         cat ${cache} | tr -d '\n' |
             sed -e '1s/^.*data:.//' -e '$s/]}/\n/' |
             sed 's/","/\n/g'  | tr -d '"' >> ${buffer}
@@ -482,7 +482,7 @@ function fn_wind()
 
     INSERT INTO wind(code) SELECT DISTINCT code FROM tbl_9jian WHERE close < avrg;
     " | mysql kts
-    
+
     return $?
 }
 
@@ -548,7 +548,7 @@ function fn_checkcode()
         echo "Usage: $FUNCNAME file"
         exit
     fi
-    
+
     codes=(`cat ${1}|awk '/^[^#]/{print $1}' | xargs`)
 
     local i=
@@ -584,7 +584,7 @@ function fn_ipo()
 
         # 's/,AN//g' 剔除申购准备中的票
         cat ${tmp} |sed -e '1s/(\[//' -e '$s/])//' -e 's/,AN//g' -e 's/"//g' | tr -d '\n' |
-                    sed -e 's/AN201/\n&/g' -e 's/AN//g' | 
+                    sed -e 's/AN201/\n&/g' -e 's/AN//g' |
                     awk -F',' '/^201/{printf "%d\t%s\t%s\n", $1/1000000000000,$5,$4}'  > ${raw}
 
         cat ${raw} >> ${rip}
@@ -629,7 +629,7 @@ function fn_lhb0()
         sed -e 's/.*:\["//' -e 's/"\]\}\]\}//g' | \
         sed -e 's/","/\n/g' | tr '|' ' ' | sed 's/    .*$//g' > ${lhb_raw}.2
 
-    cat ${lhb_raw}.2 | awk '{printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", 
+    cat ${lhb_raw}.2 | awk '{printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
     # $1      $2      $3      $4              $5   $6         $7          $8      $9          $10      $11
     # 序号  代码    名称      相关链接    涨跌幅  龙虎榜成  买入额(万)  占总成交  卖出额(万)  占总成交 上榜原因
       NR,     $1,      $2,     NR,           $4,   $13,    $12/10000, 100*$12/$7, $11/10000, 100*$11/$7,  NR }' | \
@@ -652,7 +652,7 @@ function fn_lhb0()
 #       } else if ($2<700000) {
 #           printf "%s\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%s\t\n", \
 #                   v_date, $2,$5,$6,$7,$8,$9,$10,$11;
-#           nr=$1;  
+#           nr=$1;
 #           code=$2;
 #           chng=$5;
 #       }
@@ -689,15 +689,15 @@ function fn_lhb0()
         chng    DECIMAL(6,2) NOT NULL,
         amount  DECIMAL(10,2) NOT NULL,     -- 万
         buy     DECIMAL(10,2) NOT NULL,
-        bloo    DECIMAL(10,2) NOT NULL, 
+        bloo    DECIMAL(10,2) NOT NULL,
         sell    DECIMAL(10,2) NOT NULL,
-        sloo    DECIMAL(10,2) NOT NULL, 
+        sloo    DECIMAL(10,2) NOT NULL,
         cause   CHAR(20),
         INDEX(date,code)
     );
 
     DELETE FROM lhb WHERE date='$1';
-    LOAD DATA LOCAL INFILE '${lhb_pro}' INTO 
+    LOAD DATA LOCAL INFILE '${lhb_pro}' INTO
     TABLE lhb(date,code,chng,amount,buy,bloo,sell,sloo,cause);
     " | mysql -u root kts
 
@@ -733,7 +733,7 @@ function fn_dorat()
     hhmm=`date +%H%M | sed 's/^0//'`;
 
     fn_redo_hexun_day || FINA=1 up 4
-    xt_ret $? "" || { BEEPS=5 fn_beep; return $? ;} 
+    xt_ret $? "" || { BEEPS=5 fn_beep; return $? ;}
     sec_dt=(`mysql -N kts<<<"SELECT date,time FROM stamp_day ORDER by id DESC LIMIT 1"`)
 
     sec_date=${sec_dt[0]}
@@ -743,8 +743,8 @@ function fn_dorat()
     echo "
     -- DROP TABLE dorat;
     CREATE TABLE IF NOT EXISTS dorat (
-        date        date NOT NULL, 
-        time        time NOT NULL, 
+        date        date NOT NULL,
+        time        time NOT NULL,
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
         yesc        DECIMAL(6,2) NOT NULL,
         open        DECIMAL(6,2) NOT NULL,
@@ -779,7 +779,7 @@ function fn_chk_rank()
         fn_beep
     else
         CHAO=1 PPLUS=V LIMIT=${nr_dif} chao2='lsd.prev' SELECT lsd ${iprev}
-        
+
         # 前5前6前7都没有新手闯入
         local i
         for (( i=${nr_dif}-3; i<=${nr_dif}; i+=1 )); do
@@ -790,14 +790,14 @@ function fn_chk_rank()
         # 有闯入者，告警
         [ "${match:-0}" -eq 0 ] && BEEPS=5 fn_beep
     fi
-    
+
     return $?
 }
 
 function fn_example_not_work_by_group()
 {
     echo "
-    SET @v_id = 1; 
+    SET @v_id = 1;
     SELECT max(id)   FROM code2015 INTO @v_len;
     WHILE @v_id <= @v_len DO
         SELECT code FROM code2015 WHERE id=(@v_id) INTO @v_code;
@@ -846,11 +846,11 @@ CREATE PROCEDURE sp_ma2015() tag_ma2015:BEGIN
         ma2015      DECIMAL(8,2) NOT NULL DEFAULT 0
     );
     INSERT INTO ma2015(code,ma2015)
-        SELECT t.code,ma2015 FROM ( SELECT code,sum(close)/20 as ma2015 FROM dorat2 GROUP by code ) as t, 
-        (SELECT A.code FROM 
+        SELECT t.code,ma2015 FROM ( SELECT code,sum(close)/20 as ma2015 FROM dorat2 GROUP by code ) as t,
+        (SELECT A.code FROM
           (SELECT code FROM day WHERE date='${END}') as A,
-          (SELECT code FROM day WHERE date='${PREV}') as B WHERE A.code=B.code 
-        ) as code2015 
+          (SELECT code FROM day WHERE date='${PREV}') as B WHERE A.code=B.code
+        ) as code2015
         WHERE t.code=code2015.code;
     -- NOT IN 比较慢
     -- SELECT code,sum(close)/20 as ma2015 FROM dorat2 GROUP by code;
@@ -921,7 +921,7 @@ http://www.sipf.com.cn/NewCH/zt/11/101752.shtml
         echo -e "month: \t${dates[$i]}"
         w3m -dump "${host}/${dates[$j]}" | grep 证券交易结算资金 | sed 's/,//g' | \
             awk '{printf "%s\t%s\t%s\t%s\t%s\n", $4,$6,$8,$10,$12}'
-    done 
+    done
 }
 
 function fn_nets()
@@ -945,7 +945,7 @@ function fn_bala()
     xt_ret $? "" || return $?
 
     head -n -5 $mps_org > $mps_nbm
-    
+
     echo "
     DROP TABLE IF EXISTS balance;
     CREATE TABLE balance(
@@ -961,7 +961,7 @@ function fn_bala()
         INDEX(mon)
     );
 
-    LOAD DATA LOCAL INFILE '${chao}.clean' INTO 
+    LOAD DATA LOCAL INFILE '${chao}.clean' INTO
     TABLE balance(mon,fri,close,avrg,kin,kout,net);
     " | mysql kts
 
@@ -981,7 +981,7 @@ END //
 call sp_mamacd();
     " >> $mps_nbm
     mysql $OPT -t kts <"$mps_nbm"
-    
+
     fn_echo_succ "TABLE balance done..."
     return $?
 }
@@ -1010,7 +1010,7 @@ function fn_wklist()
         wkday_prev=$wkday
     done < ${chao}.wkday > ${chao}.wklist
     fn_echo_succ "save to ${chao}.wklist"
-    
+
     return $?
 }
 
@@ -1069,11 +1069,11 @@ function fn_listbana()
     "
     echo "
     SELECT b.*,r.net as bala_rzrq,(b.balance+r.net)as bala_sum,z.close as zzltC,
-        round(371965*z.close/5746.20,2) as LT, 
+        round(371965*z.close/5746.20,2) as LT,
         round(b.balance+r.net-4234.66)as Dif_bala,
         round((371965*z.close/5746.20-193466.21)/5.5,2) as Dif_LT_55
-    FROM balance as b, rzrq as r, zzlt as z 
-    WHERE b.fri=r.date && b.fri=z.date 
+    FROM balance as b, rzrq as r, zzlt as z
+    WHERE b.fri=r.date && b.fri=z.date
     ORDER by fri ${ASC:-DESC} LIMIT ${LIMIT:-40}
     " | mysql ${OPT:--t} kts
 }
@@ -1096,7 +1096,7 @@ function fn_fenbi()
     # echo ${close};exit
     grep -v -f /tmp/kts/fenbi.up1 sql/min.table > /tmp/kts/fenbi.up2
     rows=`wc -l < /tmp/kts/fenbi.up2`
-    
+
     if [ "${rows}" -eq 0 ]; then
         echo rows is 0, exit
         exit
@@ -1167,10 +1167,10 @@ function fn_zzlt()
     cat ${chao}.zzlt
 
     echo "
-    LOAD DATA LOCAL INFILE '${chao}.zzlt' INTO 
+    LOAD DATA LOCAL INFILE '${chao}.zzlt' INTO
     TABLE zzlt(date,wkday,@dummy,@dummy,@dummy,close);
     " | mysql -u root kts
-    
+
     fn_echo_succ "up zzlt OK"
 }
 
@@ -1195,7 +1195,7 @@ function fn_market()
 {
     url0="http://data.eastmoney.com/Notice/Noticelist.aspx?type=0&market=${market}&"
 
-    w3m -cols 1000 -dump "${url0}date=${date}" > ${temp} 
+    w3m -cols 1000 -dump "${url0}date=${date}" > ${temp}
     pages=`cat ${temp} | grep '下一页' | sed 's/下一页.*//g' | awk '{print $NF}'`
     # echo "${url0}date=${date}"
     NL=N fn_echo_warn "market=${market}&date=${date}&pages=$pages\t"
@@ -1223,7 +1223,7 @@ function fn_notice0()
     done
 
     fn_echo_succ "@succ ${notice}/${date}"
-    
+
     return $?
 }
 
@@ -1293,7 +1293,7 @@ function fn_seat_rank()
     TRUNCATE seat_rank;
     LOAD DATA LOCAL INFILE '$chao.seat.rip' INTO TABLE seat_rank;
     " | mysql -u root kts
-    
+
     return $?
 }
 
@@ -1335,15 +1335,15 @@ function fn_seat_detail0()
 function fn_seat_detail()
 {
     sqls="
-    SELECT code FROM (SELECT code, name, count(code) as num, sum(month) as mon, sum(amount) as eWan 
+    SELECT code FROM (SELECT code, name, count(code) as num, sum(month) as mon, sum(amount) as eWan
         FROM seat_rank GROUP by code HAVING num>1 ORDER by eWan DESC ) as t
     "
 
     seats=(`mysql -N kts <<<"${sqls}"`)
 
     #echo ${codes}
-    d80=`fn_get_date 80` 
-    
+    d80=`fn_get_date 80`
+
     local i=
     for (( i=0; i<${#seats[@]}; i++ )); do
         seat=${seats[$i]}
@@ -1380,7 +1380,7 @@ function fn_bigbid()
         sed -e 's/^201[56]/&-/g'  | \
         sed -e 's/^201..../&-/g' > ${bigbid_rip}
 
-    return 
+    return
 
     echo "
     CREATE TEMPORARY TABLE tmp_bigbid LIKE bigbid;
@@ -1408,7 +1408,7 @@ function fn_xbb()
     d50=`END=$PREV fn_get_date 50`
     sqls="
     TRUNCATE yist;
-    $DROP xbb; 
+    $DROP xbb;
     $CREATE xbb (
     date        date,
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
@@ -1420,25 +1420,25 @@ function fn_xbb()
     INSERT INTO yist(code) SELECT DISTINCT code FROM day WHERE date='${END}' && code<888888;
 
     INSERT INTO xbb
-    SELECT '${PREV}', code, count(code) as num, max(amount)/(sum(amount)/count(code)) as prop 
+    SELECT '${PREV}', code, count(code) as num, max(amount)/(sum(amount)/count(code)) as prop
     FROM day as d WHERE date>='${d30}' && date<='${PREV}' GROUP by code HAVING num>25;
     DELETE FROM yist WHERE code in (SELECT code FROM xbb);
 
     INSERT INTO xbb
-    SELECT '${PREV}', d.code,count(d.code) as num, max(amount)/(sum(amount)/count(d.code)) as prop 
-    FROM day as d,yist as y 
+    SELECT '${PREV}', d.code,count(d.code) as num, max(amount)/(sum(amount)/count(d.code)) as prop
+    FROM day as d,yist as y
     WHERE d.code=y.code && date>='${d37}' && date<='${PREV}' GROUP by code HAVING num>25;
     DELETE FROM yist WHERE code in (SELECT code FROM xbb);
 
     INSERT INTO xbb
-    SELECT '${PREV}', d.code,count(d.code) as num, max(amount)/(sum(amount)/count(d.code)) as prop 
-    FROM day as d,yist as y 
+    SELECT '${PREV}', d.code,count(d.code) as num, max(amount)/(sum(amount)/count(d.code)) as prop
+    FROM day as d,yist as y
     WHERE d.code=y.code && date>='${d44}' && date<='${PREV}' GROUP by code HAVING num>25;
     DELETE FROM yist WHERE code in (SELECT code FROM xbb);
 
     INSERT INTO xbb
-    SELECT '${PREV}', d.code,count(d.code) as num, max(amount)/(sum(amount)/count(d.code)) as prop 
-    FROM day as d,yist as y 
+    SELECT '${PREV}', d.code,count(d.code) as num, max(amount)/(sum(amount)/count(d.code)) as prop
+    FROM day as d,yist as y
     WHERE d.code=y.code && date>='${d50}' && date<='${PREV}' GROUP by code HAVING num>20;
     "
     mysql ${OPT:--t} kts <<<"${sqls}"
