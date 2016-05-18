@@ -768,7 +768,7 @@ function fn_matov5()
     d)
         date=`fn_get_date ${2:-1}`
         mysql -N kts<<< "DELETE FROM matov5 WHERE date='${date}'"
-        fn_echo_succ "DELETE ${iEND}[${iNUM}] FROM matov5 succ!"
+        fn_echo_succ "DELETE ${date} FROM matov5 succ!"
         ;;
     [0-9]*)
         date=`fn_get_date ${1:-1}`
