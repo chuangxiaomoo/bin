@@ -58,6 +58,19 @@ function fn_update_mavol5()
     fi
 }
 
+function fn_update_matov5()
+{
+    # 切换日期，则确保OK
+    idate=`mysql -N kts <<<"SELECT DISTINCT date FROM t_matov5"`
+
+    if [ "${idate}" != ${PREV} ]; then
+        #fn_echo_succ 'update mavol5...'
+        #SCREENER使用全codes后，不再需要修正
+        xCol=date fn_xCol matov5 t_matov5 ${PREV}
+        xt_ret $? "To avoid this WARNING: END=${PREV} SCREENER matov5 1" || exit $?
+    fi
+}
+
 function fn_lsd()
 {
     # where d.code = c.code 非常重要，不重叠的FIELD不需要加‘tbl_name.’
@@ -102,7 +115,7 @@ function fn_lsd()
         HAVING="${HAVING:-rise>${rDOOR:-0}}"
         TEMPDAY=xtempday
         FEN=${iTime} DAY=dorat fn_xtempday      # faster than sub-select
-        fn_echo_warn ${iTime}
+        #fn_echo_warn ${iTime}
         ;;
     u|h|usage)
         echo "
@@ -129,7 +142,8 @@ function fn_lsd()
 
     function fn_sql()
     {
-        fn_update_mavol5
+        fn_update_matov5
+        xt_ret $? "" || return $?
 
         [ "${FIELD}" = 'dive' ] &&
         sql_dive="round( (100*(d.amount/d.volume-d.close)/d.close), 1) as dive,"
@@ -150,13 +164,13 @@ function fn_lsd()
                 ${sql_avrg}
                 $RISE as rise,
                 ${sql_dive}
-                $TURNOV as tov, ROUND(100*h.mavol5*c.close/c.nmc, 2) as tov5,
+                $TURNOV as tov, t5.tov as tov5,
                 round(d.amount/10000, 2) as eYi,
                 ${nmcYi}, c.name
                 FROM ${TEMPDAY:-day} d, cap c
-                , t_mavol5 h
+                , t_matov5 t5
                 ${WHERE} d.code = c.code
-                and d.code=h.code
+                and d.code=t5.code
                 && d.date = '${END}' && ${iCOND:-1}
                 HAVING ${HAVING:-1} ${COND} ORDER BY ${FIELD} ${ASC:-desc} limit ${LIMIT:-36}
         "

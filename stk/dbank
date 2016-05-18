@@ -743,7 +743,7 @@ function fn_beep()
 {
     local i
     for (( i=0; i<${BEEPS:-2}; i+=1 )); do
-        echo -ne '\a' > /dev/pts/0; sleep .16
+        echo -ne '\a' > /dev/pts/0; sleep .17
     done
     echo "`date +%T`.FROM.${FUNCNAME[1]} ${@}" > /dev/pts/0
 }

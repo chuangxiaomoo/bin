@@ -699,6 +699,88 @@ function fn_lohi_repair()
 #     fn_lohi_repair $date
 # done
 
+function fn_ddetov5()
+{
+    PREV5=`fn_get_date 5`
+    #echo $PREV5; exit
+    echo "
+    DROP TABLE IF EXISTS tov5;
+    CREATE TABLE tov5 (
+        date        date NOT NULL,
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        tov         DECIMAL(6,2) NOT NULL DEFAULT 0,
+        INDEX(date,code)
+    );
+--  DROP TABLE IF EXISTS matov5;
+    CREATE TABLE IF NOT EXISTS matov5 LIKE tov5;
+
+    TRUNCATE TABLE codes;
+    INSERT INTO codes(code) 
+        SELECT code FROM dde d WHERE date>='$PREV5' && date<='$END' GROUP by code HAVING count(code)=5;
+    INSERT INTO tov5
+        SELECT '$END',d.code,tov FROM dde d, codes c WHERE date>='$PREV5' && date<='$END' && d.code=c.code;
+    TRUNCATE TABLE codes;
+    INSERT INTO codes(code) 
+        SELECT code FROM dde d WHERE date>='$PREV5' && date<='$END' GROUP by code HAVING count(code)<5;
+    " | mysql kts
+
+    # MySQL取每组的前N条记录 WHERE 5>(SELECT count(*) FROM...) spend 100秒，改用循环来INSERT表
+    echo "
+    SET @END='$END';
+    TRUNCATE TABLE codes;
+    INSERT INTO codes(code) 
+        SELECT code FROM dde d WHERE date>='$PREV5' && date<='$END' GROUP by code HAVING count(code)<5;
+    call sp_visit_tbl('codes', @fn_dde5);
+
+    DELETE FROM matov5 WHERE date='$END';
+    INSERT INTO matov5 SELECT '$END',code,sum(tov)/5 FROM tov5 GROUP by code ORDER by code ASC;
+    " | tee -a $mps_god
+    mysql $mo -t kts < $mps_god
+    xt_ret $? "${FUNCNAME}" || return $?
+}
+
+function fn_diftov5()
+{
+    echo "
+    SELECT m.date,m.code,m.tov, 
+        ROUND(100*l.mavol5*c.close/c.nmc, 2) as tov5, ROUND(m.tov/ (100*l.mavol5*c.close/c.nmc), 1) as scaler ,c.name
+        FROM matov5 m, mat_lohi l, cap c 
+        WHERE m.code=l.code and m.code=c.code && l.end='$END' && m.date='${END}' ${COND}
+        ORDER by ${FIELD:-scaler} DESC LIMIT ${LIMIT:-36};
+    " | mysql -t kts
+}
+
+
+function fn_matov5()
+{
+    case $1 in
+    D)  fn_diftov5 ;;
+    l)  sqls="SELECT date from day WHERE code=900001 ORDER by date DESC LIMIT ${LIMIT:-10}" 
+        mysql -N kts<<<"${sqls}" | cat -n; exit ;;
+    e)
+        sqls="SELECT DISTINCT date FROM matov5 ORDER by date DESC LIMIT ${LIMIT:-10}"
+        mysql -N kts<<<"${sqls}" | cat -n
+        mysql -N kts<<< "SELECT DISTINCT date FROM matov5 ORDER by date DESC LIMIT 10" > ${chao}.dlist
+        fn_echo_succ "date-list:"
+        LIMIT=15 fn_matov5 l | grep ${OPT:-'-B100'} --color -f ${chao}.dlist
+        exit
+        ;;
+    d)
+        date=`fn_get_date ${2:-1}`
+        mysql -N kts<<< "DELETE FROM matov5 WHERE date='${date}'"
+        fn_echo_succ "DELETE ${iEND}[${iNUM}] FROM matov5 succ!"
+        ;;
+    [0-9]*)
+        date=`fn_get_date ${1:-1}`
+        END=${date} fn_ddetov5
+        # echo $1
+        ;;
+    *)
+        echo "Usage: SCREENER matov5 {l|e|d|D|iEND}"
+        ;;
+    esac
+}
+
 function fn_lohi()
 {
     iNUM=${NUM:-8}
@@ -790,71 +872,6 @@ function fn_lohi()
     # fn_lohi_repair ${iEND}
 }
 
-function fn_Day5()
-{
-    # MySQL取每组的前N条记录
-    # spend 100 seconds
-    TBL=day
-    echo "
-    DROP TABLE IF EXISTS day5;
-    CREATE TABLE day5 LIKE day;
-    INSERT INTO day5
-        SELECT * from $TBL d
-            where 5>(SELECT count(*) FROM $TBL WHERE code=d.code and date>d.date) ORDER BY d.code, d.date DESC;
-    " | mysql kts
-    xt_ret $? "" || return $?
-}
-
-function fn_day5()
-{
-    TBL=dde
-    PREV5=`fn_get_date 5`
-    #echo $PREV5; exit
-    echo "
-    DROP TABLE IF EXISTS tov5;
-    CREATE TABLE tov5 (
-        date        date NOT NULL,
-        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
-        tov         DECIMAL(6,2) NOT NULL DEFAULT 0,
-        INDEX(date,code)
-    );
-    DROP TABLE IF EXISTS matov5;
-    CREATE TABLE matov5 LIKE tov5;
-
-    TRUNCATE TABLE codes;
-    INSERT INTO codes(code) 
-        SELECT code FROM dde d WHERE date>='$PREV5' && date<='$END' GROUP by code HAVING count(code)=5;
-    INSERT INTO tov5
-        SELECT '$END',d.code,tov FROM dde d, codes c WHERE date>='$PREV5' && date<='$END' && d.code=c.code;
-    TRUNCATE TABLE codes;
-    INSERT INTO codes(code) 
-        SELECT code FROM dde d WHERE date>='$PREV5' && date<='$END' GROUP by code HAVING count(code)<5;
-    " | mysql kts
-
-    echo "
-    SET @END='$END';
-    TRUNCATE TABLE codes;
-    INSERT INTO codes(code) 
-        SELECT code FROM dde d WHERE date>='$PREV5' && date<='$END' GROUP by code HAVING count(code)<5;
-    call sp_visit_tbl('codes', @fn_dde5);
-
-    INSERT INTO matov5 SELECT '$END',code,sum(tov)/5 FROM tov5 GROUP by code ORDER by code ASC;
-    " | tee -a $mps_god
-    mysql $mo -t kts < $mps_god
-    xt_ret $? "${FUNCNAME}" || return $?
-}
-
-function fn_diftov5()
-{
-    echo "
-    SELECT m.date,m.code,m.tov, 
-        ROUND(100*l.mavol5*c.close/c.nmc, 2) as tov5, ROUND(m.tov/ (100*l.mavol5*c.close/c.nmc), 1) as scaler ,c.name
-        FROM matov5 m, mat_lohi l, cap c 
-        WHERE m.code=l.code and m.code=c.code && l.end='$END' ${COND}
-        ORDER by ${FIELD:-scaler} DESC LIMIT ${LIMIT:-50};
-    " | mysql -t kts
-}
-
 function fn_main()
 {
     cmdlist=(
@@ -876,8 +893,7 @@ function fn_main()
     "wma                [field]               # mavol520s's别名 其ma是wchng"
     "ma5D20             [field]               # ma240局部"
     "ma240              [field]               # ma240整体:5B25+ma60x2x4"
-    "day5                                     # maval5"
-    "diftov5                                  # dif lohi and matov5"
+    "matov5             {l|e|d|Dif|iEND}      # maval5"
     )
 
     # SCREENER的宗旨，弃子取势
