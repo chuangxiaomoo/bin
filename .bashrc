@@ -2,9 +2,10 @@
 
 # make sure no space b4 the 2nd '
 
+unalias     BEEPS       # B被BLK独占for其超高频率使用
+
 alias       ASC=''
 alias       BLK=''
-alias     BEEPS=''
 alias      COND=''
 alias      iASC=''
 alias     iCOND=''
@@ -36,7 +37,6 @@ alias      iEND=''
 alias     iPASS=''
 alias    iLIMIT=''
 alias     nmemb=''
-alias       mip='PREV=3 mi5 '
 alias       OPT=''
 alias     PPLUS=''
 alias     PARTS=''
@@ -50,7 +50,7 @@ alias     ..='cd ..'
 alias    ...='cd ../..'
 alias     .b='cd ~/bin'
 alias     .c="let 'CHAO=!CHAO'; echo \$CHAO; export CHAO"
-alias     .d="let 'WIT=!WIT'; echo \$WIT; export WIT"
+alias     .w="let 'WIT=!WIT'; echo \$WIT; export WIT"
 alias     .5="let 'TOV5=++TOV5%3'; echo \$TOV5; export TOV5"
 alias  .SINA="let 'SINA=!SINA'; echo \$SINA; export SINA"
 alias .DEBUG="let 'DEBUG=!DEBUG'; echo \$DEBUG; export DEBUG"
@@ -60,6 +60,9 @@ alias   .ss='cd ~/bin/stk/sql'
 alias   .rc='. /root/.bashrc'
 alias  .irc='vi /root/.bashrc; . /root/.bashrc'
 alias   .ps='PS1="[\w]\n\u-> \[\033[0m\]"'
+
+alias .de_beep="echo 0 >/tmp/kts/chao.beep"
+alias .en_beep="echo 1 >/tmp/kts/chao.beep"
 
 
 alias     f='find'
