@@ -774,14 +774,17 @@ function fn_chk_rank()
     # compute layer2s
     ceilings=`OPT='-N' PPLUS=v COND="rise>=9.93" CHAO=0 PARTS= WIT= SELECT lsd $1 | wc -l`
 
-    if [ "${ceilings}" -gt 10 ]; then
-        ceilings=10
+    if [ "${ceilings}" -gt 16 ]; then
+        ceilings=16
     fi
 
     let layer1s=ceilings+3   # 6=3+3 提供1防护
     let layer2s=ceilings+6   # 6=3+3 提供2防护
 
-    [ "${hhmm:-1000}" -lt 933 ] && fn_beep && return
+    if [ "${hhmm:-1000}" -lt 933 ]; then
+        echo 1 > /tmp/kts/chao.beep
+        fn_beep; return
+    fi
 
     # process
     CHAO=1 PPLUS=V LIMIT=${layer2s} chao2='L2.prev' SELECT lsd ${iprev}
@@ -803,7 +806,8 @@ function fn_chk_rank()
 
     echo L2:${layer2s} m:${match} B1:${birds1} B2:${birds2} # ;exit
 
-    # 有闯入者，告警
+    # 检查是否禁用beep，有闯入者，告警
+    [ "`cat /tmp/kts/chao.beep`" = 0 ] && BEEPS=0
     [ "${match:-0}" -eq 1 ] && BEEPS=${BEEPS} fn_beep L1:${birds1} L2:${birds2}
 
 }
