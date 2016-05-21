@@ -399,17 +399,6 @@ function fn_language()                  { cat logic_language ;}
 }
 
 function fn_phi()                       { 
-function fn_flowers12()                 { cat phi_flowers12 ;}
-function fn_00_Plato()                  { cat phi_00_Plato ;}
-function fn_01_Karlmarx()               { cat phi_01_Karlmarx ;}
-function fn_02_Kant()                   { cat phi_02_Kant ;}
-function fn_03_Popper()                 { cat phi_03_Popper ;}
-function fn_04_Hume()                   { cat phi_04_Hume ;}
-function fn_05_Mill()                   { cat phi_05_Mill ;}
-function fn_06_Russell()                { cat phi_06_Russell ;}
-function fn_0a_Miltonfriedman()         { cat phi_0a_Miltonfriedman ;}
-function fn_freudian()                  { cat phi_freudian ;}
-function fn_emotion()                   { cat phi_emotion ;}
 function fn_wdf_01_心安之窄门()         { cat phi_wdf_01_心安之窄门 ;}
 function fn_wdf_02_国民性()             { cat phi_wdf_02_国民性 ;}
 function fn_wdf_03_儒道互补，内方外圆() { cat phi_wdf_03_儒道互补，内方外圆 ;}
@@ -440,7 +429,22 @@ function fn_wdf_28_终极关怀()           { cat phi_wdf_28_终极关怀 ;}
 function fn_wdf_00()                    { cat phi_wdf_00 ;}
 function fn_epistemology()              { cat phi_epistemology ;}
 function fn_sicence()                   { cat phi_sicence ;}
+
+function fn_flowers12()                 { cat phi_flowers12 ;}
+function fn_00_Plato()                  { cat phi_00_Plato ;}
+function fn_01_Karlmarx()               { cat phi_01_Karlmarx ;}
+function fn_02_Kant()                   { cat phi_02_Kant ;}
+function fn_03_Popper()                 { cat phi_03_Popper ;}
+function fn_04_Hume()                   { cat phi_04_Hume ;}
+function fn_05_Mill()                   { cat phi_05_Mill ;}
+function fn_06_Russell()                { cat phi_06_Russell ;}
+function fn_07_IsaacNewton()            { cat phi_07_IsaacNewton ;}
+function fn_08_Freud()                  { cat phi_08_Freud ;}
+function fn_0a_Miltonfriedman()         { cat phi_0a_Miltonfriedman ;}
+function fn_emotion()                   { cat phi_emotion ;}
+
     local opts=(
+        flowers12                       # 哲学12钗
         00_Plato                        # 柏拉图
         01_Karlmarx                     # pelple's essence
         02_Kant                         # Immanuel 康德
@@ -448,17 +452,15 @@ function fn_sicence()                   { cat phi_sicence ;}
         04_Hume                         # 大卫.休谟
         05_Mill                         # 约翰·斯图亚特·穆勒(也译作·密尔)
         06_Russell                      # Bertrand.罗素
+        07_IsaacNewton                  # 1687年他发表《自然哲学的数学原理》
+        08_Freud                        # 佛洛伊德.自我.本我.超我
 
         0a_Miltonfriedman               # 米尔顿·弗里德曼
 
-        freudian                        # 佛洛伊德.自我.本我.超我
-        emotion                         # Anger 七情六欲
+        emotion                         # 人是情绪的动物.Anger.七情六欲
 
         sicence                         # 科学之哲学
-
         epistemology                    # 知识论
-
-        flowers12                       # 哲学12钗
 
         wdf_00                          # 王德峰
         wdf_01_心安之窄门
