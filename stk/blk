@@ -65,8 +65,8 @@ function fn_10jqka()
     sed -i -e 's/^/0x/g' ${blk_list}
     awk '{printf "%d\t%s\n", $1,$2}' ${blk_name}.raw > ${blk_name}
 
-    # FFCC=锂电+ = 锂电池 + 新能源汽车 + 新能源
-    cat $blk_list | grep -E "CFEC|DC26|EF7D" | sed -e 's/0x....//g' -e 's/,/\n/g' | \
+    # FFCC=特斯拉+ =  特斯拉 + 充电桩 + 新能源汽车
+    cat $blk_list | grep -E "DB6C|DB74|DC26" | sed -e 's/0x....//g' -e 's/,/\n/g' | \
         xargs -n1 | sort -u | tr '\n' ',' | \
         sed -e 's/^/0xFFCC,/' -e 's/,$/\n/' > ${chao}.li_plus
     cat ${chao}.li_plus >> ${blk_list}
@@ -100,9 +100,7 @@ function fn_10jqka()
 
     # blk
     maps=(
-        '40'                        cixin
         'DFC1 DACB DFC9 DFC2'       futures # 有色、小金属、煤炭、钢铁  exclude(黄金CE9C)
-        'DB8A'                      hljr
     )
     local i j
     for (( i=0,j=1; i<${#maps[@]}; i+=2,j+=2 )); do

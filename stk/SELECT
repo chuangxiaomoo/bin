@@ -66,7 +66,8 @@ function fn_update_matov5()
     if [ "${idate}" != ${PREV} ]; then
         #fn_echo_succ 'update mavol5...'
         #SCREENER使用全codes后，不再需要修正
-        xCol=date fn_xCol matov5 t_matov5 ${PREV}
+        xCol=date fn_xCol matov5 t_matov5 ${PREV} || \
+            { echo "rebuild"; END=${PREV} SCREENER matov5 1; xCol=date fn_xCol matov5 t_matov5 ${PREV} ;}
         xt_ret $? "To avoid this WARNING: END=${PREV} SCREENER matov5 1" || exit $?
     fi
 }
@@ -2040,7 +2041,8 @@ function fn_stat()
 function fn_sample()
 {
     HMS=`fn_get_time $1`
-    FEN=${HMS} DAY=dorat iCOND="high!=low&&high!=open && close/yesc<1.15 && close/yesc>=1" fn_xtempday
+    iCOND="high!=low&&high!=open && close/yesc<1.15 && close/yesc>=1 ${cond5}" \
+    FEN=${HMS} DAY=dorat fn_xtempday
     xt_ret $? "xtempday error" || return $?
 
     echo "
@@ -2075,9 +2077,15 @@ function fn_sample()
     SELECT hex(blk),sym, count(code) as SAMPLES,
         ROUND(sum(rise)/count(code), 2) as rise,
         ROUND(sum(earn)/count(code), 2) as earn,
-        sum(rise>=${TEN:=9.93}) as click FROM top8
+        ROUND(sum(rise)/count(code)*.6  + 
+              sum(earn)/count(code)     +
+              ((count(code)-1)/3) + (sum(rise>=5)/2) ,1) as score,
+        sum(rise>=3) as click3,
+        sum(rise>=5) as click5,
+        sum(rise>=${TEN:=9.93}) as click 
+        FROM top8
     GROUP by blk
-    HAVING 1 ${COND} ORDER by ${FIELD:=rise} DESC LIMIT ${LIMIT:-20};
+    HAVING ${COND:-1} ORDER by ${FIELD:=rise} DESC LIMIT ${LIMIT:-20};
     "
     mysql -t kts <<< "${sqls}"
     xt_ret $? "" || return $?
@@ -2088,7 +2096,7 @@ function fn_sample()
 
     # fn_check_blk_abbr
     # 每个method有专用WIT，此默认作用2
-    WIT=1 LIMIT=10 PPLUS=N COND= SELECT lsd ${1}
+    WIT=1 LIMIT=10 PPLUS=N COND= FIELD= SELECT lsd ${1}
 }
 
 function fn_blk_delta()
@@ -2193,6 +2201,8 @@ function fn_blk_delta()
         ROUND(sum(rise)/count(code), 2) as rise,
         ROUND(sum(ride)/count(code), 3) as ride,
         ROUND(sum(earn)/count(code), 2) as earn,
+        sum(rise>=3) as click3,
+        sum(rise>=5) as click5,
         sum(rise>${TEN:=9.93}) as click FROM delta8
     GROUP by blk
     HAVING 1 ${COND} ORDER by ${FIELD:=${sfiled}} ${sdirct} LIMIT ${LIMIT:-20}
@@ -2331,6 +2341,8 @@ function fn_blk()
         fn_echo_succ "Classify @${END}:${iTime} [rDOOR:${rDOOR:=2}] [TEN:${TEN:=9.93}] [FIELD:${FIELD:-num}]"
         echo "
         SELECT hex(n.blk) as blk,
+            sum(${RISE}>3) as click3,
+            sum(${RISE}>5) as click5,
             sum(${RISE}>${TEN}) as click,
             count(m.code) as num,
             ROUND(sum(${RISE})/count(m.code), 2) as rise,
@@ -2353,7 +2365,7 @@ function fn_blk()
         a)          sql_nmc="1" fn_blk_wolf_team $3                 ;;
         E)          sql_nmc="${cond_lion}" fn_blk_wolf_team $3      ;;
         [0-9]*)     fn_blk_wolf_team $2                             ;;
-        40|[A-Z]*)  COND= fn_blk_wolf_blk   ${@:2}                  ;;
+        40|[A-Z]*)  COND= fn_blk_wolf_blk ${@:2}                    ;;
         *)          echo "${usage}"                                 ;;
         esac
         ;;
@@ -2376,6 +2388,29 @@ function fn_blk()
         mysql -t kts <<< "${sqls}"
         LIMIT=3000 fn_sqls
         fn_chao ${chao}.opt.acc
+        ;;
+    hot)
+        COND="SAMPLES>1" \
+        cond5="and tov>=${vDOOR:-5}" \
+        WHERE=",t_matov5 t WHERE d.code=t.code AND" FIELD=${FIELD:-score} \
+        BLK= fn_blk sample $2
+        [ -n "${BLK}" ] && BLK=${BLK} PPLUS=V LIMIT=12 SELECT lsd $2
+        return
+
+        > ${chao}.hot
+        NUM=${NUM:-1}
+        dates=(`fn_get_date 1 ${NUM}`)
+
+        for (( i=${NUM}-1; i>=0; i-- )); do
+            date=${dates[$i]}
+            fn_echo_succ "date[$date]"
+            BLK= PARTS=f PPLUS=V COND="rise>0" LIMIT=${LIMIT:-24} END=${date} SELECT lsd $2      # 2500 * 1%
+            cat ${chao}.lsd >> ${chao}.hot
+        done
+
+        YIST=${chao}.hot ASC= SELECT blk l
+        [ -n "${BLK}" ] && BLK=${BLK} PPLUS=V LIMIT= SELECT lsd $2
+
         ;;
     stat)
         NUM=${NUM:-3}
@@ -2788,6 +2823,7 @@ function fn_ddd()
 
         COND="(rise<9.94&&avri>4.5&&eWolf>.43&&eYi>5)" \
         PARTS=f CHAO=1 LIMIT=200 END=${PREV} SELECT wolf ${TYPE}
+        xt_ret $? "PARTS=f CHAO=1 LIMIT=200 END=${PREV} SELECT wolf ${TYPE}" || return $?
         COND="(rise<opri||(opri<0&&rise<opri+2)||cise<2)&&prop<${prop:-1.1}" \
         YIST=${chao}.wolf LIMIT=100 SELECT wolf ${TYPE}
 

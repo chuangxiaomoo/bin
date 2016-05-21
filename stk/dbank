@@ -306,7 +306,7 @@ function fn_check_blk_abbr()
     GX  FFC8    高+新
      A  FFCD    ADAS+
      V  D77B    虚拟现实
-     L  FFCC    锂电+
+     L  CFEC    锂电+
      H  DB8A    互联网金融
     HP  D527    互联网+
     I4  D957    工业4.0
@@ -314,6 +314,7 @@ function fn_check_blk_abbr()
      O  D617    OLED
     QH  FFC7    QH360
      S  DFB9    半导体及元件
+     T  FFCC    特斯拉
      Z  DF95    证券
     )
 
@@ -672,17 +673,18 @@ function fn_xtempday()
     local columns='*'
 
     if fn_iscode $1; then
-        sql_fork="code=${1}"
+        sql_fork="d.code=${1}"
     elif [ -z "$FEN" ]; then
-        sql_fork="date='${1:-$END}'"
+        sql_fork="d.date='${1:-$END}'"
     elif [ -n "$FEN" ]; then
-        columns='code,date,yesc,open,high,low,close,volume,amount'
-        sql_fork="date='${1:-$END}' and time='${FEN}'"
+        columns='d.code,d.date,yesc,open,high,low,close,volume,amount'
+        sql_fork="d.date='${1:-$END}' and time='${FEN}'"
     fi
 
     echo "
     $DROP ${table}; CREATE TABLE ${table} LIKE day;
-    INSERT INTO ${table} SELECT ${columns} from ${DAY:-day} where ${sql_fork} && ${iCOND:-1};
+    INSERT INTO ${table} 
+        SELECT ${columns} from ${DAY:-day} d ${WHERE:-where} ${sql_fork} && ${iCOND:-1};
     " | mysql kts
     return $?
 }
@@ -745,7 +747,7 @@ function fn_beep()
     for (( i=0; i<${BEEPS:-2}; i+=1 )); do
         echo -ne '\a' > /dev/pts/0; sleep .17
     done
-    echo "`date +%T`.FROM.${FUNCNAME[1]} ${@}" > /dev/pts/0
+    echo "`date +%T`.${FUNCNAME[1]} ${@}" > /dev/pts/0
 }
 
 function fn_cp_tbl()
