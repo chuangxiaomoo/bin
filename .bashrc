@@ -2,10 +2,8 @@
 
 # make sure no space b4 the 2nd '
 
-unalias     BEEPS       # B被BLK独占for其超高频率使用
-
 alias       ASC=''
-alias       BLK=''
+alias       BLK=''  # B被BLK独占for其超高频率使用
 alias      COND=''
 alias      iASC=''
 alias     iCOND=''

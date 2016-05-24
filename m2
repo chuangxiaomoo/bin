@@ -432,7 +432,7 @@ function fn_sicence()                   { cat phi_sicence ;}
 
 function fn_flowers12()                 { cat phi_flowers12 ;}
 function fn_00_Plato()                  { cat phi_00_Plato ;}
-function fn_01_Karlmarx()               { cat phi_01_Karlmarx ;}
+function fn_01_KarlMarx()               { cat phi_01_KarlMarx ;}
 function fn_02_Kant()                   { cat phi_02_Kant ;}
 function fn_03_Popper()                 { cat phi_03_Popper ;}
 function fn_04_Hume()                   { cat phi_04_Hume ;}
@@ -446,7 +446,7 @@ function fn_emotion()                   { cat phi_emotion ;}
     local opts=(
         flowers12                       # 哲学12钗
         00_Plato                        # 柏拉图
-        01_Karlmarx                     # pelple's essence
+        01_KarlMarx                     # pelple's essence
         02_Kant                         # Immanuel 康德
         03_Popper                       # 证伪主义 Karl.波普尔
         04_Hume                         # 大卫.休谟
@@ -834,7 +834,7 @@ function fn_main() {
     local opts=(
         50_interview_faq                # 想想自己的价值？
         01_囧_jiong                     # sleep
-        cold                            # 感冒 牙痛 智齿
+        cold                            # 感冒 牙痛 智齿 sick
         architecture                    # 建筑
         02_如何解题                     # how to solve it, problem_solving
         advertisement
