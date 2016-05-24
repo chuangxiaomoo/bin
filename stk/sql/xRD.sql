@@ -550,6 +550,7 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
             WHEN @fn_mavol520s      THEN call sp_mavol520s(v_code);
             WHEN @fn_ma60x2x4       THEN call sp_ma60x240(v_code);
             WHEN @fn_ma5D20         THEN call sp_ma5D20(v_code);
+            WHEN @fn_ma1020         THEN call sp_ma1020(v_code);
             WHEN @fn_6maishenjian   THEN call sp_6maishenjian(v_code);
             WHEN @fn_taox_ratio     THEN call sp_taox(v_code);
             WHEN @fn_fbi_ratio      THEN call sp_fbi(v_code);
@@ -1187,6 +1188,24 @@ CREATE PROCEDURE sp_ma5D20(a_code INT(6) ZEROFILL) tag_ma5D20:BEGIN
     END IF;
 END tag_ma5D20 //
 
+DROP PROCEDURE IF EXISTS sp_ma1020//
+CREATE PROCEDURE sp_ma1020(a_code INT(6) ZEROFILL) tag_ma1020:BEGIN
+    call sp_create_tempday();
+
+    INSERT INTO tempday(code,date,close) 
+        SELECT code,date,close FROM day 
+            WHERE code=a_code and date<=@END ORDER by date DESC LIMIT 20;
+
+    SELECT count(*) FROM tempday INTO @v_len;
+
+    IF @v_len > 10 THEN 
+        SELECT SUM(close)/10   FROM tempday WHERE id<=10  INTO @v_ma10 ;
+        SELECT SUM(close)/20   FROM tempday WHERE id<=20  INTO @v_ma20 ;
+        INSERT INTO ma1020(date,code,trade,ma10,ma20)
+            SELECT date,code,close,@v_ma10,@v_ma20 FROM tempday WHERE id=1;
+    END IF;
+END tag_ma1020 //
+
 DROP PROCEDURE IF EXISTS sp_ma60x240//
 CREATE PROCEDURE sp_ma60x240(a_code INT(6) ZEROFILL) tag_ma60x240:BEGIN
     DECLARE v_date     DATE;
@@ -1388,6 +1407,7 @@ END tag_dde5 //
     SET @fn_flt_kdj_up          = 1;   
     SET @fn_mavol520s           = 5;
     SET @fn_ma5D20              = 7;
+    SET @fn_ma1020              = 8;
     SET @fn_ma60x2x4            = 9;
     SET @fn_dugu9jian           = 10;
     SET @fn_6maishenjian        = 11;

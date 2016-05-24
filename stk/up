@@ -819,16 +819,16 @@ function fn_example_not_work_by_group()
     SELECT max(id)   FROM code2015 INTO @v_len;
     WHILE @v_id <= @v_len DO
         SELECT code FROM code2015 WHERE id=(@v_id) INTO @v_code;
-        INSERT INTO ma2015(code,ma2015)
+        INSERT INTO ma20f15(code,ma20f15)
             SELECT @v_code, sum(close)/20 FROM (SELECT close FROM dorat2 WHERE code=@v_code) as t;
         SET @v_id = @v_id + 1;
     END WHILE;
     "
 }
 
-function fn_ma2015()
+function fn_ma20f15()
 {
-    function fn_creat_db_ma2015()
+    function fn_creat_db_ma20f15()
     {
         # fn_echo_fail "db DT is ${DT[@]}" > /dev/stderr
         # TEMPORARY=TEMPORARY
@@ -850,36 +850,36 @@ function fn_ma2015()
     iEND=${DT[0]}
     END=${iEND:-$END}
     PREV=`fn_get_prev`
-    fn_creat_db_ma2015 > ${mps_ma2015}
+    fn_creat_db_ma20f15 > ${mps_ma20f15}
 
     echo "
 delimiter //
 
-DROP PROCEDURE IF EXISTS sp_ma2015 //
-CREATE PROCEDURE sp_ma2015() tag_ma2015:BEGIN
-    DROP   TABLE IF EXISTS ma2015;
-    CREATE TABLE ma2015(
+DROP PROCEDURE IF EXISTS sp_ma20f15 //
+CREATE PROCEDURE sp_ma20f15() tag_ma20f15:BEGIN
+    DROP   TABLE IF EXISTS ma20f15;
+    CREATE TABLE ma20f15(
         id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
-        ma2015      DECIMAL(8,2) NOT NULL DEFAULT 0
+        ma20f15      DECIMAL(8,2) NOT NULL DEFAULT 0
     );
-    INSERT INTO ma2015(code,ma2015)
-        SELECT t.code,ma2015 FROM ( SELECT code,sum(close)/20 as ma2015 FROM dorat2 GROUP by code ) as t,
+    INSERT INTO ma20f15(code,ma20f15)
+        SELECT t.code,ma20f15 FROM ( SELECT code,sum(close)/20 as ma20f15 FROM dorat2 GROUP by code ) as t,
         (SELECT A.code FROM
           (SELECT code FROM day WHERE date='${END}') as A,
           (SELECT code FROM day WHERE date='${PREV}') as B WHERE A.code=B.code
         ) as code2015
         WHERE t.code=code2015.code;
     -- NOT IN 比较慢
-    -- SELECT code,sum(close)/20 as ma2015 FROM dorat2 GROUP by code;
-    -- DELETE FROM ma2015 WHERE code NOT IN(SELECT code FROM code2015);
-END tag_ma2015 //
+    -- SELECT code,sum(close)/20 as ma20f15 FROM dorat2 GROUP by code;
+    -- DELETE FROM ma20f15 WHERE code NOT IN(SELECT code FROM code2015);
+END tag_ma20f15 //
 
-call sp_ma2015();
-    " >> ${mps_ma2015}
-    mysql kts < ${mps_ma2015}
+call sp_ma20f15();
+    " >> ${mps_ma20f15}
+    mysql kts < ${mps_ma20f15}
     xt_ret $? "" || return $?
-    fn_echo_succ "    succ: up ma2015@${DT[@]}!"
+    fn_echo_succ "    succ: up ma20f15@${DT[@]}!"
     return $?
 }
 
@@ -1496,7 +1496,7 @@ function fn_main()
     "ipo                                # DL ipo codes from east"
     "lhb                                # 龙虎榜"
     "dorat  [loop]                      # 量比数据，loop when run@crontab"
-    "ma2015                             # "
+    "ma20f15                            # "
     "trace                              # "
     "fenbi  code 2015mmdd               # "
     "money                              # ---------资金分析---------"
