@@ -739,6 +739,64 @@ function fn_ddetov5()
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
+function fn_ma1020_up()
+{
+    fn_echo_succ "up ma1020@${END}..."
+    date=${END}
+    echo "
+    DROP TABLE IF EXISTS ma1020;
+    CREATE TABLE ma1020 (
+        date        date NOT NULL,
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        trade       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        ma10        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        ma20        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        INDEX(date,code)
+    );
+--  DROP TABLE IF EXISTS mat_ma1020;
+    CREATE TABLE IF NOT EXISTS mat_ma1020 LIKE ma1020;
+
+    TRUNCATE TABLE zxg;
+    INSERT INTO zxg(code) SELECT code FROM matov5 WHERE tov>=3 && date='$date';
+
+    SET @END='$date';
+    call sp_visit_tbl('${TBL:-zxg}', @fn_ma1020);       -- Don't use codes here
+
+    DELETE FROM mat_ma1020 WHERE date='$date';
+    INSERT INTO mat_ma1020 SELECT * FROM ma1020;
+    " >> $mps_god
+
+    mysql $mo -t kts <<< "source $mps_god"
+    xt_ret $? "${FUNCNAME}" || return $?
+}
+
+function fn_ma1020()
+{
+    case $1 in
+    l)  sqls="SELECT date from day WHERE code=900001 ORDER by date DESC LIMIT ${LIMIT:-10}" 
+        mysql -N kts<<<"${sqls}" | cat -n; exit ;;
+    e)
+        sqls="SELECT DISTINCT date FROM mat_ma1020 ORDER by date DESC LIMIT ${LIMIT:-10}"
+        mysql -N kts<<<"${sqls}" | cat -n
+        mysql -N kts<<< "SELECT DISTINCT date FROM mat_ma1020 ORDER by date DESC LIMIT 10" > ${chao}.dlist
+        fn_echo_succ "date-list:"
+        LIMIT=15 fn_ma1020 l | grep ${OPT:-'-B100'} --color -f ${chao}.dlist
+        exit
+        ;;
+    d)  date=`fn_get_date ${2:-1}`
+        mysql -N kts<<< "DELETE FROM ma1020 WHERE date='${date}'"
+        fn_echo_succ "DELETE ${date} FROM ma1020 succ!"
+        ;;
+    [0-9]*)
+        date=`fn_get_date ${1:-1}`
+        END=${date} fn_ma1020_up
+        ;;
+    *)
+        echo "Usage: SCREENER ma1020 {l|e|d|iEND}"
+        ;;
+    esac
+}
+
 function fn_diftov5()
 {
     echo "
@@ -892,6 +950,7 @@ function fn_main()
     "fbi                code                  # 完整换手 bei的个例 "
     "wma                [field]               # mavol520s's别名 其ma是wchng"
     "ma5D20             [field]               # ma240局部"
+    "ma1020                                   # "
     "ma240              [field]               # ma240整体:5B25+ma60x2x4"
     "matov5             {l|e|d|Dif|iEND}      # maval5"
     )

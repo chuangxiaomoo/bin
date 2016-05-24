@@ -2063,7 +2063,7 @@ function fn_sample()
 
     SAMPLES=${SAMPLES:-8}
 
-    sqls="
+    sqls_head="
     INSERT INTO topN
     SELECT n.blk, sym, x.code,close,yesc,
         ROUND(100*(close-yesc)/yesc, 2) as rise,
@@ -2073,20 +2073,41 @@ function fn_sample()
 
     INSERT INTO top8
     SELECT * from topN a where ${SAMPLES}>(select count(*) from topN where blk=a.blk and rise>a.rise) order by a.blk,a.rise desc;
-
+    "
+    sqls="${sqls_head}
     SELECT hex(blk),sym, count(code) as SAMPLES,
         ROUND(sum(rise)/count(code), 2) as rise,
         ROUND(sum(earn)/count(code), 2) as earn,
         ROUND(sum(rise)/count(code)*.6  + 
               sum(earn)/count(code)     +
               ((count(code)-1)/3) + (sum(rise>=5)/2) ,1) as score,
-        sum(rise>=3) as click3,
-        sum(rise>=5) as click5,
+        sum(rise>=3) as clk3,
+        sum(rise>=5) as clk5,
         sum(rise>=${TEN:=9.93}) as click 
         FROM top8
     GROUP by blk
     HAVING ${COND:-1} ORDER by ${FIELD:=rise} DESC LIMIT ${LIMIT:-20};
     "
+
+    [ -n "${is_hammer}" ] && \
+    sqls="${sqls_head}
+    SELECT hex(blk),sym,count(t.code) as SAMPLES,
+        ROUND(sum(rise)/count(t.code), 2) as rise,
+        ROUND(sum(earn)/count(t.code), 2) as earn,
+        ROUND(sum(rise)/count(t.code)*.6  + 
+              sum(earn)/count(t.code)     +
+              ((count(t.code)-1)/3) + (sum(rise>=5)/2) ,1) as score,
+        sum(close>ma10) as gt10,
+        sum(close>ma20) as gt20,
+        ROUND(sum(100*(close/ma20-1))/count(t.code), 2) as ri20,
+        sum(rise>=3) as clk3,
+        sum(rise>=5) as clk5,
+        sum(rise>=${TEN:=9.93}) as click
+        FROM top8 t, mat_ma1020 m WHERE m.date='${PREV}' AND t.code=m.code
+    GROUP by blk
+    HAVING ${COND:-1} ORDER by ${FIELD:=rise} DESC LIMIT ${LIMIT:-20};
+    "
+
     mysql -t kts <<< "${sqls}"
     xt_ret $? "" || return $?
 
@@ -2201,8 +2222,8 @@ function fn_blk_delta()
         ROUND(sum(rise)/count(code), 2) as rise,
         ROUND(sum(ride)/count(code), 3) as ride,
         ROUND(sum(earn)/count(code), 2) as earn,
-        sum(rise>=3) as click3,
-        sum(rise>=5) as click5,
+        sum(rise>=3) as clk3,
+        sum(rise>=5) as clk5,
         sum(rise>${TEN:=9.93}) as click FROM delta8
     GROUP by blk
     HAVING 1 ${COND} ORDER by ${FIELD:=${sfiled}} ${sdirct} LIMIT ${LIMIT:-20}
@@ -2341,8 +2362,8 @@ function fn_blk()
         fn_echo_succ "Classify @${END}:${iTime} [rDOOR:${rDOOR:=2}] [TEN:${TEN:=9.93}] [FIELD:${FIELD:-num}]"
         echo "
         SELECT hex(n.blk) as blk,
-            sum(${RISE}>3) as click3,
-            sum(${RISE}>5) as click5,
+            sum(${RISE}>3) as clk3,
+            sum(${RISE}>5) as clk5,
             sum(${RISE}>${TEN}) as click,
             count(m.code) as num,
             ROUND(sum(${RISE})/count(m.code), 2) as rise,
@@ -2388,6 +2409,9 @@ function fn_blk()
         mysql -t kts <<< "${sqls}"
         LIMIT=3000 fn_sqls
         fn_chao ${chao}.opt.acc
+        ;;
+    ham)
+        is_hammer=1 fn_blk hot $2
         ;;
     hot)
         COND="SAMPLES>1" \
