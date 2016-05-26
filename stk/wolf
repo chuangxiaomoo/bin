@@ -21,24 +21,11 @@ function fn_up_raw()
         -e "/${tag_blank}/d" -e '/^$/d' ${wolf_raw} > ${wolf_raw}.mid
 
     hhmm=`date +%H%M | sed 's/^0//'`;
-    #hhmm=1500
-    if [ "${hhmm}" -gt 630 ] && [ "${hhmm}" -lt 931 ]; then
-    # 代码  名称  涨幅  涨速    DDE大单净量 换手 量比   金额    流通市值
-        sed '/--.--/d' ${wolf_raw}.mid |\
-        awk '{
-            printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%.2f\t%.2f\t%s\n",
-            $1,$5, 0,0,0,0,      $3,0,$4,   0,          $6,$8/10000,$9/100000000,$2
-        }' \
-        | sed "s/^/${CURR}\t${HHMMSS}\t/g" > ${wolf_rip}
-    else
-        # tag_blank='00.--.--'
-        # -e "/${tag_blank}/d"
-        awk '{
-            printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%.2f\t%.2f\t%s\n",
-            $1,$3, $4,$5,$6,$7,  $8,$9,$10, $11/10000,  $12,$13/10000, $14/100000000,$2
-        }' ${wolf_raw}.mid \
-        | sed -e "s/^/${CURR}\t${HHMMSS}\t/g" > ${wolf_rip}
-    fi
+    awk '{
+        printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%.2f\t%.2f\t%s\n",
+        $1,$3, $4,$5,$6,$7,  $8,$9,$10, $11/10000,  $12,$13/10000, $14/100000000,$2
+    }' ${wolf_raw}.mid \
+    | sed -e "s/^/${CURR}\t${HHMMSS}\t/g" > ${wolf_rip}
 
     # echo ${efile} ${ctime} ${epoch} $HHMMSS
 
@@ -173,7 +160,7 @@ function fn_bbd_file()
         -e 's/%//g' -e 's/\t$//g' -e 's/\t\t*/\t/g'         \
         -e "/${tag_blank}/d" -e '/^$/d' ${wolf_raw}         \
         | awk '{
-            printf "%s\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%s\t%s\t%s\n",
+            printf "%s\t%s\n",
             $2,$3,$4/10000,$5/10000,$6/10000,$7/10000,$8,$9,$1
         }' \
         | sed "s/^/${CURR}\t${HHMMSS}\t/g" > ${wolf_rip}
@@ -207,23 +194,60 @@ function fn_zxg()
     return $?
 }
 
+function fn_hot()
+{
+    fn_get_export_file
+    xt_ret $? "" || return $?
+
+    # umcomment
+    efile='/tmp/kts/chao.Table'
+    iconv -f cp936 -t utf8 ${efile} | tail -n+2 > ${wolf_raw}
+    if ! grep -q '^S[HZ]' ${wolf_raw}; then
+        fn_echo_fail "not a wolf file"
+        return 1
+    fi
+
+    tag_blank='--.--.--'
+    sed -e 's///g' -e 's/S.//g' -e 's/ //g'               \
+        -e 's/%//g' -e 's/\t$//g' -e 's/\t\t*/\t/g'         \
+        -e "/${tag_blank}/d" -e '/^$/d' ${wolf_raw} > ${bigbid_raw}
+    
+    awk '{
+        if ($10>0 && $15<100*10000*10000) {
+            printf "%s\t%s\n", $1,$10
+        }
+    }' ${bigbid_raw} > ${chao}.hotwolf
+
+    PLAIN=${chao}.hotlist
+    echo "
+    DROP TABLE IF EXISTS hotwolf;
+    CREATE TABLE hotwolf (
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        rise        DECIMAL(6,2) NOT NULL DEFAULT 0
+    );
+    LOAD DATA LOCAL INFILE '${chao}.hotwolf' INTO TABLE hotwolf;
+
+    SELECT max(date) FROM matov5 INTO @max_date;
+    SELECT m.code FROM matov5 m, hotwolf h 
+        WHERE m.code=h.code &&m.date=@max_date && m.tov>4 &&
+                rise<=9.93 && rise>0 ORDER by rise DESC LIMIT 60;
+    " | mysql -N kts > ${PLAIN} 
+
+    rows=`wc -l < ${PLAIN}`
+    fn_gen_10jqka_sel
+    return $?
+}
+
 function fn_main()
 {
     CURR=`fn_maxdate`
 
     case $1 in
-    u|up)
-        fn_up_dde
-        ;;
-    b|bbd)
-        fn_up_bbd
-        ;;
-    l|layout_bbd)
-        fn_layout_bbd
-        ;;
-    z|zxg)
-        fn_zxg ${@:2}
-        ;;
+    hot)    fn_hot          ;;
+    u|up)   fn_up_dde       ;;
+    b|bbd)  fn_up_bbd       ;;
+    l|lay)  fn_layout_bbd   ;;
+    z|zxg)  fn_zxg ${@:2}   ;;
     h|*)
         echo "
         Usage:  wolf <param>...                 # 机构动向

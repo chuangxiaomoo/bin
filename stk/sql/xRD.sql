@@ -1199,10 +1199,11 @@ CREATE PROCEDURE sp_ma1020(a_code INT(6) ZEROFILL) tag_ma1020:BEGIN
     SELECT count(*) FROM tempday INTO @v_len;
 
     IF @v_len > 10 THEN 
-        SELECT SUM(close)/10   FROM tempday WHERE id<=10  INTO @v_ma10 ;
-        SELECT SUM(close)/20   FROM tempday WHERE id<=20  INTO @v_ma20 ;
-        INSERT INTO ma1020(date,code,trade,ma10,ma20)
-            SELECT date,code,close,@v_ma10,@v_ma20 FROM tempday WHERE id=1;
+        SELECT SUM(close)/5         FROM tempday WHERE id<=5   INTO @v_ma5  ;
+        SELECT SUM(close)/10        FROM tempday WHERE id<=10  INTO @v_ma10 ;
+        SELECT SUM(close)/@v_len    FROM tempday WHERE id<=20  INTO @v_ma20 ;
+        INSERT INTO ma1020(date,code,trade,ma5,ma10,ma20)
+            SELECT date,code,close,@v_ma5,@v_ma10,@v_ma20 FROM tempday WHERE id=1;
     END IF;
 END tag_ma1020 //
 

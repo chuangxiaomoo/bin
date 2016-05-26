@@ -20,7 +20,7 @@ helpmsg="
     XTBL        EXCLEDE表，SELECT时使用，默认为空
     NMC_RATIO   NMC_RATIO*100%成本分析空间
 "
-nmc_wolf=150.1
+nmc_wolf=180.1
 nmc_lion=300.1
 # _____________________________boundary_of_wolf______________________________
 cd ~/bin/stk
@@ -300,11 +300,12 @@ function fn_check_blk_abbr()
     [ ${#BLK} -gt 4 ] && return
 
     maps=(
+     A  FFCD    ADAS+
     BJ  DAE3    白酒
+     C  DF8F    计算机应用
      G  CFF9    高送转
      X  40      新股与次新股
     GX  FFC8    高+新
-     A  FFCD    ADAS+
      V  D77B    虚拟现实
      L  CFEC    锂电+
      H  DB8A    互联网金融
@@ -313,6 +314,8 @@ function fn_check_blk_abbr()
      M  DADA    新材料概念
      O  D617    OLED
     QH  FFC7    QH360
+     R  DBDF    机器人
+    RE  CE4E    稀土永磁
      S  DFB9    半导体及元件
      T  FFCC    特斯拉
      Z  DF95    证券
@@ -666,7 +669,7 @@ function fn_list_date()
     fn_get_date 1 ${1:-10} | cat -n
 }
 
-# FEN=${HMS} DAY=dorat
+# FEN=${HMS} DAY=dorat xWHERE可响应fn_yist
 function fn_xtempday()
 {
     local table=${TBL:-xtempday}
@@ -677,15 +680,17 @@ function fn_xtempday()
     elif [ -z "$FEN" ]; then
         sql_fork="d.date='${1:-$END}'"
     elif [ -n "$FEN" ]; then
-        columns='d.code,d.date,yesc,open,high,low,close,volume,amount'
+        columns='d.code,d.date,yesc,open,high,low,d.close,volume,amount'
         sql_fork="d.date='${1:-$END}' and time='${FEN}'"
     fi
 
-    echo "
+    xsqls="
     $DROP ${table}; CREATE TABLE ${table} LIKE day;
     INSERT INTO ${table} 
-        SELECT ${columns} from ${DAY:-day} d ${WHERE:-where} ${sql_fork} && ${iCOND:-1};
-    " | mysql kts
+        SELECT ${columns} from ${DAY:-day} d ${xWHERE:-WHERE} ${sql_fork} && ${iCOND:-1};
+    " 
+    #echo "${xsqls}"; exit 1
+    mysql kts <<< "${xsqls}"
     return $?
 }
 

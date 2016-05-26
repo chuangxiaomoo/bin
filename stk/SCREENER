@@ -702,7 +702,8 @@ function fn_lohi_repair()
 function fn_ddetov5()
 {
     PREV5=`fn_get_date 5`
-    #echo $PREV5; exit
+    fn_echo_succ "up ma1020@${END}..."
+
     echo "
     DROP TABLE IF EXISTS tov5;
     CREATE TABLE tov5 (
@@ -749,6 +750,7 @@ function fn_ma1020_up()
         date        date NOT NULL,
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
         trade       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        ma5         DECIMAL(6,2) NOT NULL DEFAULT 0,
         ma10        DECIMAL(6,2) NOT NULL DEFAULT 0,
         ma20        DECIMAL(6,2) NOT NULL DEFAULT 0,
         INDEX(date,code)
@@ -777,9 +779,9 @@ function fn_ma1020()
         mysql -N kts<<<"${sqls}" | cat -n; exit ;;
     e)
         sqls="SELECT DISTINCT date FROM mat_ma1020 ORDER by date DESC LIMIT ${LIMIT:-10}"
-        mysql -N kts<<<"${sqls}" | cat -n
+        # mysql -N kts<<<"${sqls}" | cat -n
         mysql -N kts<<< "SELECT DISTINCT date FROM mat_ma1020 ORDER by date DESC LIMIT 10" > ${chao}.dlist
-        fn_echo_succ "date-list:"
+        fn_echo_succ "whites-gona-cre.${FUNCNAME[0]}:"
         LIMIT=15 fn_ma1020 l | grep ${OPT:-'-B100'} --color -f ${chao}.dlist
         exit
         ;;
@@ -817,9 +819,9 @@ function fn_matov5()
         mysql -N kts<<<"${sqls}" | cat -n; exit ;;
     e)
         sqls="SELECT DISTINCT date FROM matov5 ORDER by date DESC LIMIT ${LIMIT:-10}"
-        mysql -N kts<<<"${sqls}" | cat -n
+        #mysql -N kts<<<"${sqls}" | cat -n
         mysql -N kts<<< "SELECT DISTINCT date FROM matov5 ORDER by date DESC LIMIT 10" > ${chao}.dlist
-        fn_echo_succ "date-list:"
+        fn_echo_succ "whites-gona-cre.${FUNCNAME[0]}:"
         LIMIT=15 fn_matov5 l | grep ${OPT:-'-B100'} --color -f ${chao}.dlist
         exit
         ;;
@@ -845,10 +847,10 @@ function fn_lohi()
 
     case $1 in
     e)
-        mysql -N kts<<< "SELECT DISTINCT end FROM mat_lohi WHERE num=${iNUM} ORDER by end DESC LIMIT ${LIMIT:-10}" | cat -n
-        top=`mysql -N kts<<< "SELECT DISTINCT end FROM mat_lohi WHERE num=${iNUM} ORDER by end DESC LIMIT 1"`
-        fn_echo_succ "date-list:"
-        fn_lohi l | grep ${OPT:-'-B100'} --color "${top}"
+        # mysql -N kts<<< "SELECT DISTINCT end FROM mat_lohi WHERE num=${iNUM} ORDER by end DESC LIMIT ${LIMIT:-10}" | cat -n
+        mysql -N kts<<< "SELECT DISTINCT end FROM mat_lohi WHERE num=${iNUM} ORDER by end DESC LIMIT 10" > ${chao}.dlist
+        fn_echo_succ "whites-gona-cre.${FUNCNAME[0]}:"
+        LIMIT=15 fn_lohi l | grep ${OPT:-'-B100'} --color -f ${chao}.dlist
         exit
         ;;
     d)

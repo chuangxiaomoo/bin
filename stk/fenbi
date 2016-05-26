@@ -96,8 +96,8 @@ function fn_lhb()
     done
 
     ABBR=f fn_yist
-    fn_xtempday ${PREV}
-    TBL=e fn_xtempday ${END}
+    xWHERE=${WHERE} fn_xtempday ${PREV}
+    TBL=e xWHERE=${WHERE} fn_xtempday ${END}
     #echo ${PREV} prev
 
     tempfb="(SELECT * FROM fenbi WHERE datetime>=$datetime0 and datetime<=${DT} ORDER by datetime DESC)"
