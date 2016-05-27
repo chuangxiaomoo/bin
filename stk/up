@@ -788,6 +788,8 @@ function fn_chk_rank()
     let layer2s=ceilings+6   # 6=3+3 提供2防护
 
     if [ "${hhmm:-1000}" -lt 933 ]; then
+        # top10=30%; 70/5 = x/4; x = 280/5 = 56%; ==> top10=44% ==> vDOOR=4%
+        WIT=2 PPLUS=V vDOOR=3.5 COND="tov5<5" SELECT lsd
         echo 1 > /tmp/kts/chao.beep
         fn_beep; return
     fi
