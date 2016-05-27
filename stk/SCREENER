@@ -715,23 +715,23 @@ function fn_ddetov5()
 --  DROP TABLE IF EXISTS matov5;
     CREATE TABLE IF NOT EXISTS matov5 LIKE tov5;
 
-    TRUNCATE TABLE codes;
-    INSERT INTO codes(code) 
+    TRUNCATE TABLE zxg;
+    INSERT INTO zxg(code) 
         SELECT code FROM dde d WHERE date>='$PREV5' && date<='$END' GROUP by code HAVING count(code)=5;
     INSERT INTO tov5
-        SELECT '$END',d.code,tov FROM dde d, codes c WHERE date>='$PREV5' && date<='$END' && d.code=c.code;
-    TRUNCATE TABLE codes;
-    INSERT INTO codes(code) 
+        SELECT '$END',d.code,tov FROM dde d, zxg c WHERE date>='$PREV5' && date<='$END' && d.code=c.code;
+    TRUNCATE TABLE zxg;
+    INSERT INTO zxg(code) 
         SELECT code FROM dde d WHERE date>='$PREV5' && date<='$END' GROUP by code HAVING count(code)<5;
     " | mysql kts
 
     # MySQL取每组的前N条记录 WHERE 5>(SELECT count(*) FROM...) spend 100秒，改用循环来INSERT表
     echo "
     SET @END='$END';
-    TRUNCATE TABLE codes;
-    INSERT INTO codes(code) 
+    TRUNCATE TABLE zxg;
+    INSERT INTO zxg(code) 
         SELECT code FROM dde d WHERE date>='$PREV5' && date<='$END' GROUP by code HAVING count(code)<5;
-    call sp_visit_tbl('codes', @fn_dde5);
+    call sp_visit_tbl('zxg', @fn_dde5);
 
     DELETE FROM matov5 WHERE date='$END';
     INSERT INTO matov5 SELECT '$END',code,sum(tov)/5 FROM tov5 GROUP by code ORDER by code ASC;
@@ -942,7 +942,6 @@ function fn_main()
     "nouse              [field]               # "
     "focus              [field]               # #{YIST:-.soptter.trade}->zxg and 9jian"
     "hilo               code...               # #{YIST}下跌幅度计算"
-    "lohi               code...               # #{YIST}下跌幅度计算"
     "act                code                  # 2 hour 曲线陡峭"
     "ac5                code                  # 5 hour"
     "ac6                code                  # 3 day TOV5 * .618"
@@ -952,9 +951,10 @@ function fn_main()
     "fbi                code                  # 完整换手 bei的个例 "
     "wma                [field]               # mavol520s's别名 其ma是wchng"
     "ma5D20             [field]               # ma240局部"
-    "ma1020                                   # "
     "ma240              [field]               # ma240整体:5B25+ma60x2x4"
+    "lohi               code...               # #{YIST}下跌幅度计算"
     "matov5             {l|e|d|Dif|iEND}      # maval5"
+    "ma1020                                   # "
     )
 
     # SCREENER的宗旨，弃子取势

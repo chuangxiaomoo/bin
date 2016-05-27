@@ -711,7 +711,13 @@ function fn_db201()
 
     hhmm=`date +%H%M | sed 's/^0//'`
     if [ "${hhmm}" -lt 930 ]; then
-        fn_bell 'msg.wav'; exit
+        # so important
+        max_date=`mysql -N kts <<< "SELECT max(date) FROM matov5"`
+        if [ "${max_date}" != "${END}" ]; then
+            fn_bell 'msg.wav msg.wav msg.wav msg.wav msg.wav'; exit
+        else
+            fn_bell 'msg.wav'; exit
+        fi
     fi
 
     if [ "${now}" = "${db_date}" ]; then
