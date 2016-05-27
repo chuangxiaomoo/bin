@@ -87,7 +87,7 @@ function fn_pro_hammer()
             -- (ma5-平均)*2 = 从底部后的涨幅
             ROUND(    (ma5/((ma5+ma10+ma20)/3) -1)                                          , 2) as apt0,
             ROUND( 1+ (ma5/((ma5+ma10+ma20)/3) -1) * abs( (ma5/((ma5+ma10+ma20)/3) -1)/0.03 ) , 2) as apt,
-            ROUND( t5.tov- 100*((ma5/((ma5+ma10+ma20)/3) -1) * abs( (ma5/((ma5+ma10+ma20)/3) -1)/0.03 ) ) - $RISE , 2) as space,
+            ROUND( t5.tov- 100*((ma5/((ma5+ma10+ma20)/3) -1) * abs( (ma5/((ma5+ma10+ma20)/3) -1)/0.03 ) ) - $RISE -(${nmcYi0%as*}-20)/20, 2) as space,
 --          ROUND((100*(d.close/ma10-1)), 2) as ri10,
 --          ROUND((100*(d.close/ma20-1)), 2) as ri20,
             round(d.amount/10000, 2) as eYi,

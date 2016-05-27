@@ -518,6 +518,11 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
         date_high   date NOT NULL DEFAULT 0
     );
 
+    IF a_tbl = 'codes' THEN
+        SELECT "WARNING: input tbl should not be codes";
+        LEAVE tag_visit;
+    END IF;
+
     SET @cond=' ORDER by code';
     SET @sqls=concat('INSERT INTO codes(code) SELECT code FROM ', a_tbl, @cond);
     PREPARE stmt from @sqls; EXECUTE stmt;
