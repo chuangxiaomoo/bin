@@ -8,6 +8,7 @@
 
 # books
 
+  超越金融                    [google](George Soros, CEU Lecture Series) -- 英文听说急待提升
   登高四书                    李善友
   幽默
   致命的自负                  哈耶克
