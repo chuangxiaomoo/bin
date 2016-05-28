@@ -74,7 +74,14 @@ function fn_update_matov5()
 
 function fn_pro_hammer()
 {
+    hhmm=`date +%H%M | sed 's/^0//'`;
+    t5_times='(100*d.volume*c.close/c.nmc/t5.tov)'
+    TOV_DELTA="+3.3*IF(${t5_times}>1, ${t5_times}-1, 0)"
+
     [ -z "${is_hammer}" ] && return 1
+
+    REALIZED='((ma5/((ma5+ma10+ma20)/3) -1) * abs( (ma5/((ma5+ma10+ma20)/3) -1)/0.03 ))'    # 涨幅 = ma5涨幅*相应乘数
+    REALIZED2="IF($REALIZED>0, ${REALIZED}, 0)"
     sqls="
     SELECT  $columns,
             $HIRI as hiri,
@@ -83,11 +90,10 @@ function fn_pro_hammer()
             $RISE as rise,
             ${sql_dive}
             $TURNOV as tov, t5.tov as tov5,
-            ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2) as scale,
+            ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2) as prop5,
             -- (ma5-平均)*2 = 从底部后的涨幅
-            ROUND(    (ma5/((ma5+ma10+ma20)/3) -1)                                          , 2) as apt0,
-            ROUND( 1+ (ma5/((ma5+ma10+ma20)/3) -1) * abs( (ma5/((ma5+ma10+ma20)/3) -1)/0.03 ) , 2) as apt,
-            ROUND( t5.tov- 100*((ma5/((ma5+ma10+ma20)/3) -1) * abs( (ma5/((ma5+ma10+ma20)/3) -1)/0.03 ) ) - $RISE -(${nmcYi0%as*}-20)/20, 2) as space,
+            ROUND(${REALIZED}, 2) as realiz,
+            ROUND( t5.tov -100*${REALIZED2} -$RISE -IF(${nmc0}-20<80, ${nmc0}-20, 80)/10 ${TOV_DELTA}, 2) as space,
 --          ROUND((100*(d.close/ma10-1)), 2) as ri10,
 --          ROUND((100*(d.close/ma20-1)), 2) as ri20,
             round(d.amount/10000, 2) as eYi,
@@ -201,7 +207,7 @@ function fn_lsd()
                 $RISE as rise,
                 ${sql_dive}
                 $TURNOV as tov, t5.tov as tov5,
-                ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2) as scale,
+                ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2) as prop5,
                 round(d.amount/10000, 2) as eYi,
                 ${nmcYi}, c.name
                 FROM ${TEMPDAY:-day} d, cap c, t_matov5 t5
@@ -2866,6 +2872,15 @@ function fn_notice()
 function fn_ddd()
 {
     case $1 in
+    hot)
+        fn_echo_succ "上午封板"
+        PARTS=f chao2='lsd' CHAO=1 COND="rise>9.93" iASC=DESC HMS=12:00:00 vDOOR=4 PPLUS=V SELECT lsd 1
+        xt_ret $? "${END}.当天无封板" || return $?
+        COND="rise<9.93" YIST='/tmp/kts/chao.lsd' vDOOR=4 PPLUS=V FIELD=space SELECT lsdh
+
+        fn_echo_succ "只是摸板者"
+        COND="hiri>=9.93 && rise<9.93" vDOOR=4 PPLUS=V FIELD=space SELECT lsdh
+        ;;
     yiz)
         fn_echo_succ "PARTS=f@一字开板"
         PARTS=f CHAO=1 END=$PREV COND="rise>=9.93" PPLUS=G FIELD=rise LIMIT=400 SELECT lsd
@@ -2932,6 +2947,7 @@ function fn_ddd()
     *)
         echo "
         XBB=1 SELECT ddd <para> # XBB=1使能xbb列
+        hot                     # 像秃鹰般咬食恐惧者的身体
         000                     # iEND=3 连续缩量[STEP=2]天
         110                     # 2阳1阴--打板小白收割机.rise前30分坚决下跌无诱多.high不创新高
         100                     # 1阳2阴--＞5亿
