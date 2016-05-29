@@ -25,6 +25,8 @@
   美感奥妙和需求进化          [](http://survivor99.com/lcg/books/beauty/index.htm)
   科学与方法                  (昂利·彭加勒)
   科学之哲学                  [](https://book.douban.com/review/5027580/)
+                              [科学哲学](https://book.douban.com/subject/3550249/) <许哲>强烈建议大家去看科学哲学那本书，你会有收获的。
+  小说课(许荣哲)
   写作这回事
   打破自我的标签              压力，是一个中性词。可以被视为威胁，也可以被视为挑战。
   金融炼金术                  哲学家应该看的金融书籍
