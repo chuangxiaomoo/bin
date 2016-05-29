@@ -543,9 +543,16 @@ function fn_wma()
 function fn_updown()
 {
     case $1 in
-    +([0-9])) HMS=`iASC=DESC fn_get_time ${1}` || exit; NUM=1   ;;
-    l) fn_list_iF5_times                                        ;;
-    h) echo "Usage: NUM=5 SELECT updown"; exit                  ;;
+    +([0-9])) 
+        HMS=`iASC=DESC fn_get_time ${1}` || exit; NUM=1       ;;
+    l)  fn_list_iF5_times                                     ;;
+    h)  echo "Usage: NUM=5 SELECT updown"; exit               ;;
+    yiz)
+        fn_echo_succ "PARTS=f@非一字板连板"
+        PARTS=f CHAO=1 END=$PREV COND="rise>=9.93" PPLUS=N FIELD=rise LIMIT=400 SELECT lsd
+        YIST=${chao}.lsd   COND="rise>=9.93" SELECT lsd
+        exit
+        ;;
     esac
 
     let iNUM=${NUM:=5}+1
@@ -2881,16 +2888,6 @@ function fn_ddd()
         fn_echo_succ "只是摸板者"
         COND="hiri>=9.93 && rise<9.93" vDOOR=4 PPLUS=V FIELD=space SELECT lsdh
         ;;
-    yiz)
-        fn_echo_succ "PARTS=f@一字开板"
-        PARTS=f CHAO=1 END=$PREV COND="rise>=9.93" PPLUS=G FIELD=rise LIMIT=400 SELECT lsd
-        YIST=${chao}.lsd   COND="eWolf>.2 && opri> 9.93" DOOR=-1/3 SELECT wolf i $2
-        YIST=${chao}.lsd   COND="eWolf>.2 && opri<=9.93" DOOR=-tov/3 FIELD=rise SELECT wolf i $2
-        fn_echo_succ "PARTS=f@非一字板连板"
-        PARTS=f CHAO=1 END=$PREV COND="rise>=9.93" PPLUS=N FIELD=rise LIMIT=400 SELECT lsd
-        YIST=${chao}.lsd   COND="eWolf>.2 && opri> 9.93" DOOR=-1/3 SELECT wolf i $2
-        YIST=${chao}.lsd   COND="eWolf>.2 && opri<=9.93" DOOR=-1/3 FIELD=rise SELECT wolf i $2
-        ;;
     110)
         TYPE=${2:-e}
         COND="(rise>=9.93&&eWolf>.49)" \
@@ -2947,11 +2944,10 @@ function fn_ddd()
     *)
         echo "
         XBB=1 SELECT ddd <para> # XBB=1使能xbb列
-        hot                     # 像秃鹰般咬食恐惧者的身体
+        hot                     # 昨天破板，像秃鹰般咬食恐惧者的身体
         000                     # iEND=3 连续缩量[STEP=2]天
         110                     # 2阳1阴--打板小白收割机.rise前30分坚决下跌无诱多.high不创新高
         100                     # 1阳2阴--＞5亿
-        yiz [iF5]               # 昨日涨停表现，弱势出连板，即是龙头
         rhx                     # 操作龙头，允次日微放量+DAY3缩量 when [STEP=2]
         "
         ;;

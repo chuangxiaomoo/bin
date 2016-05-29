@@ -428,7 +428,6 @@ function fn_wdf_27_人必有一死()         { cat phi_wdf_27_人必有一死 ;}
 function fn_wdf_28_终极关怀()           { cat phi_wdf_28_终极关怀 ;}
 function fn_wdf_00()                    { cat phi_wdf_00 ;}
 function fn_epistemology()              { cat phi_epistemology ;}
-function fn_sicence()                   { cat phi_sicence ;}
 
 function fn_flowers12()                 { cat phi_flowers12 ;}
 function fn_00_Plato()                  { cat phi_00_Plato ;}
@@ -459,7 +458,6 @@ function fn_emotion()                   { cat phi_emotion ;}
 
         emotion                         # 人是情绪的动物.Anger.七情六欲
 
-        sicence                         # 科学之哲学
         epistemology                    # 知识论
 
         wdf_00                          # 王德峰
@@ -901,7 +899,7 @@ function fn_main() {
         kindle
         meditation_cept
         practice_cept                   # 直接成一个文本
-        science_cept
+        science_cept                    # 科学之哲学
         xiaolai_cept
         misc_cept
     )
