@@ -731,6 +731,7 @@ function fn_install()                   { cat cmd_install ;}
         date
         dd
         dialog
+        easy_install            # 由PEAK(Python Enterprise Application Kit)开发的setuptools包里带的一个命令
         fdisk
         himm
         hexdump                 # xxd od
@@ -751,6 +752,7 @@ function fn_install()                   { cat cmd_install ;}
         strace
         head                    # 
         sleep                   # sleep 1.5h # 1.5 is ok, and m for min, and h for hour
+        screen                  # 让任务启动为bg_task，不以终端为父进程
         tail
         tee
         tr
