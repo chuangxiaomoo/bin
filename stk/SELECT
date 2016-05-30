@@ -170,8 +170,8 @@ function fn_lsd()
         ''      top default
 
         PPLUS=<val>
-        N high!=low && close/yesc<1.15                  # 有价格变动
-        G high!=low && close/yesc<1.15 && high!=open    # 地板上跃起
+        N high!=low && close/yesc<1.15                      # 有价格变动
+        G high!=low && close/yesc<1.15 && open/yesc<1.093   # 地板上跃起
         E high =low
         "
         exit
@@ -192,9 +192,9 @@ function fn_lsd()
 
         case ${PPLUS} in
         N|n) iCOND="${c_natural}"                                           ;;
-        G|g) iCOND="${c_natural} && d.high!=open"                           ;;
+        G|g) iCOND="${c_natural} && d.open/yesc<1.093"                      ;;
         E|e) iCOND='d.high =d.low'                                          ;;
-        V|v) iCOND="${c_natural} && d.high!=open"                            ;
+        V|v) iCOND="${c_natural} && d.open/yesc<1.093"                      ;
              LIMIT=${LIMIT:-24};HAVING="tov5>=${vDOOR:-5}&&${HAVING:-1}"    ;;
         esac
 
@@ -1847,7 +1847,7 @@ function fn_wolf()
         c_natural='d.high!=d.low&&d.close/yesc<1.15'
 
         case ${PPLUS} in
-        V|v) sql_pplus="&& ${c_natural} && d.high!=open && (w.tov*h.mavol5/w.shou)>=${vDOOR:-5}"   ;;
+        V|v) sql_pplus="&& ${c_natural} && d.open/yesc<1.093 && (w.tov*h.mavol5/w.shou)>=${vDOOR:-5}"   ;;
         esac
 
         fn_wolf_sqls
@@ -2091,7 +2091,7 @@ function fn_stat()
 function fn_sample()
 {
     HMS=`fn_get_time $1`
-    iCOND="high!=low&&high!=open && d.close/yesc<1.15 && d.close/yesc>=1 ${cond5}" \
+    iCOND="high!=low&&open/yesc<1.093 && d.close/yesc<1.15 && d.close/yesc>=1 ${cond5}" \
     FEN=${HMS} DAY=dorat fn_xtempday
     xt_ret $? "xtempday error" || return $?
 
@@ -2177,7 +2177,7 @@ function fn_blk_delta()
     case $1 in
     us)
         # 基于前提约束：只做强势股，绝对值弱于大盘不做考虑
-        iCOND="AND high!=low&&high!=open && close/yesc<1.15 && 100*(close/yesc-1)>=${iDOOR:-0}"
+        iCOND="AND high!=low&&open/yesc<1.093 && close/yesc<1.15 && 100*(close/yesc-1)>=${iDOOR:-0}"
         sfiled='rise'
         sdirct='desc'
         sopr='>'
@@ -2470,7 +2470,7 @@ function fn_blk()
         xWHERE="${nmc_t} ,t_matov5 t WHERE d.code=t.code ${nmc_c} AND" \
         FIELD=${FIELD:-score} \
         BLK= fn_blk sample $2
-        [ -n "${BLK}" ] && BLK=${BLK} PPLUS=V LIMIT=12 SELECT lsd $2
+        [ -n "${BLK}" ] && BLK=${BLK} PPLUS=V LIMIT=12 SELECT lsdh $2
         return
 
         > ${chao}.hot
