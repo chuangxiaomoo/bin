@@ -787,13 +787,17 @@ function fn_chk_rank()
     let layer1s=ceilings+3   # 6=3+3 提供1防护
     let layer2s=ceilings+6   # 6=3+3 提供2防护
 
-    if [ "${hhmm:-1000}" -lt 933 ]; then
+    if [ "${hhmm:=1000}" -lt 933 ]; then
         ./blk 10jqka
         # 适用范围：(1) 20亿以下的小盘股 (2) 50亿以下但top10在44%之上
         # top10=30%; 70/5 = x/4; x = 280/5 = 56%; ==> top10=44% ==> vDOOR=4%
-        WIT=2 PPLUS=V vDOOR=3.5 COND="tov5<5" SELECT lsd
+        WIT=2 PPLUS=V vDOOR=3 COND="tov5<5" SELECT lsd || fn_bell
+        WIT=3 iEND=2 COND="rise>=9.93" vDOOR=3 PPLUS=V SELECT lsd | fn_bell
         echo 1 > /tmp/kts/chao.beep
         fn_bell; return
+    elif [ ${hhmm} -eq 948 ]; then
+        # check db201, ad.会使按键精灵阻塞
+        fn_bell
     fi
 
     # process
@@ -819,7 +823,6 @@ function fn_chk_rank()
     # 检查是否禁用beep，有闯入者，告警
     [ "`cat /tmp/kts/chao.beep`" = 0 ] && BEEPS=0
     [ "${match:-0}" -eq 1 ] && BEEPS=${BEEPS} fn_beep L1:${birds1} L2:${birds2}
-
 }
 
 function fn_example_not_work_by_group()
