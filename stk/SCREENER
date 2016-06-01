@@ -45,7 +45,7 @@ function fn_dugu9jian()
     SET @NMC_RATIO=${NMC_RATIO:-1};
     call sp_visit_tbl('$TBL', @fn_dugu9jian);
     " | tee -a $mps_god
-    mysql $mo -t kts <<< "source $mps_god"
+    mysql $OPT -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
 
     test -n "${1}" && SELECT 0 ${1:-wchng}
@@ -69,7 +69,7 @@ function fn_6maishenjian()
     SET @NMC_RATIO=${NMC_RATIO:-1};
     call sp_visit_tbl('$TBL', @fn_6maishenjian);
     " | tee -a $mps_god
-    mysql $mo -t kts <<< "source $mps_god"
+    mysql $OPT -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
 
     SELECT 6maishenjian ${1}
@@ -95,7 +95,7 @@ function fn_taox_ratio0()
     }
 
     fn_get_tbl_taox_dive $1
-    mysql $mo -t kts <<< "${tbl_super_dive}" |\
+    mysql $OPT -t kts <<< "${tbl_super_dive}" |\
         sed -e '1,3s/----+$/\+/g' -e '$s/----+$/\+/g' -e '2s/    |$/|/g'
     xt_ret ${PIPESTATUS[0]} "${FUNCNAME}" || return $?
 }
@@ -117,7 +117,7 @@ function fn_taox_ratio()
     SET @NMC_RATIO=${NMC_RATIO:-1};
     call sp_visit_tbl('$TBL', @fn_taox_ratio);
     " >> $mps_god # | tee -a $mps_god
-    mysql $mo -t kts <<< "source $mps_god"
+    mysql $OPT -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
 
     [ "fn_tao5" = ${FUNCNAME[1]} ] || \
@@ -137,7 +137,7 @@ function fn_fbi_ratio()
     SET @NMC_RATIO=${NMC_RATIO};
     call sp_visit_tbl('$TBL', @fn_fbi_ratio);
     " >> $mps_god
-    mysql $mo -t kts <<< "source $mps_god"
+    mysql $OPT -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -402,7 +402,7 @@ function fn_wma()
     SET @END='$END';
     call sp_visit_tbl('${TBL:-cap}', @fn_mavol520s);
     " | tee -a $mps_god
-    mysql $mo -t kts <<< "source $mps_god"
+    mysql $OPT -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
 
     if [ "${TBL:-cap}" = "cap" ] ; then
@@ -555,7 +555,7 @@ function fn_acc()
     call sp_visit_code(${code});
     " >> $mps_god
     fn_clr_exitcode
-    mysql $mo -t kts <<< "source $mps_god"
+    mysql $OPT -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
     if ! fn_sql_exitsucc; then
         fn_echo_warn "so_little_data"
@@ -611,7 +611,7 @@ function fn_acf()
     call sp_visit_code(${code});
     " >> $mps_god # | tee -a $mps_god
     fn_clr_exitcode
-    mysql $mo kts <<< "source $mps_god"
+    mysql $OPT kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
     if ! fn_sql_exitsucc; then
         fn_echo_warn "so_little_data"
@@ -633,7 +633,7 @@ function fn_ma5D20()
     SET @END='$END';
     call sp_visit_tbl('${TBL:-cap}', @fn_ma5D20);
     " | tee -a $mps_god
-    mysql $mo -t kts <<< "source $mps_god"
+    mysql $OPT -t kts <<< "source $mps_god"
 }
 
 function fn_ma240()
@@ -644,7 +644,7 @@ function fn_ma240()
     SET @END='$END';
     call sp_visit_tbl('${TBL:-cap}', @fn_ma60x2x4);
     " | tee -a $mps_god
-    mysql $mo -t kts <<< "source $mps_god"
+    mysql $OPT -t kts <<< "source $mps_god"
     SELECT ma240 ${@}
 }
 
@@ -670,7 +670,7 @@ function fn_hilo()
     SET @NUM=${NUM:-60};
     call sp_visit_tbl('${TBL:-yist}', @fn_hilo);
     " | tee -a $mps_god
-    mysql $mo -t kts <<< "source $mps_god"
+    mysql $OPT -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -702,16 +702,21 @@ function fn_lohi_repair()
 function fn_ddetov5()
 {
     PREV5=`fn_get_date 5`
-    fn_echo_succ "up ma1020@${END}..."
+    fn_echo_succ "up matov5@${END}..."
 
     echo "
     DROP TABLE IF EXISTS tov5;
     CREATE TABLE tov5 (
         date        date NOT NULL,
-        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
-        tov         DECIMAL(6,2) NOT NULL DEFAULT 0,
+        code        INT(6) ZEROFILL DEFAULT 0,
+        tov         DECIMAL(6,2) DEFAULT 0,
+        day23       DECIMAL(6,2) DEFAULT 0,
+        day35       DECIMAL(6,2) DEFAULT 0,
+        wk12        DECIMAL(6,2) DEFAULT 0,
+        wk23        DECIMAL(6,2) DEFAULT 0,
         INDEX(date,code)
     );
+
 --  DROP TABLE IF EXISTS matov5;
     CREATE TABLE IF NOT EXISTS matov5 LIKE tov5;
 
@@ -719,24 +724,86 @@ function fn_ddetov5()
     INSERT INTO zxg(code) 
         SELECT code FROM dde d WHERE date>='$PREV5' && date<='$END' GROUP by code HAVING count(code)=5;
     INSERT INTO tov5
-        SELECT '$END',d.code,tov FROM dde d, zxg c WHERE date>='$PREV5' && date<='$END' && d.code=c.code;
-    TRUNCATE TABLE zxg;
-    INSERT INTO zxg(code) 
-        SELECT code FROM dde d WHERE date>='$PREV5' && date<='$END' GROUP by code HAVING count(code)<5;
+        SELECT d.date,d.code,tov,1,1,1,1 FROM dde d, zxg c WHERE date>='$PREV5' && date<='$END' && d.code=c.code;
     " | mysql kts
 
+    num=`mysql -N kts <<< "SELECT COUNT(code) FROM zxg"` 
+    [ ${num} -gt 100 ]
+    xt_ret $? "Error: [num:${num}] -gt 1000" || return $?
+    
     # MySQL取每组的前N条记录 WHERE 5>(SELECT count(*) FROM...) spend 100秒，改用循环来INSERT表
+    # 5日内必现的票
     echo "
     SET @END='$END';
+
     TRUNCATE TABLE zxg;
     INSERT INTO zxg(code) 
         SELECT code FROM dde d WHERE date>='$PREV5' && date<='$END' GROUP by code HAVING count(code)<5;
     call sp_visit_tbl('zxg', @fn_dde5);
 
     DELETE FROM matov5 WHERE date='$END';
-    INSERT INTO matov5 SELECT '$END',code,sum(tov)/5 FROM tov5 GROUP by code ORDER by code ASC;
+    INSERT INTO matov5 SELECT '$END',code,sum(tov)/5,1,1,1,1 FROM tov5 GROUP by code ORDER by code ASC;
     " | tee -a $mps_god
-    mysql $mo -t kts < $mps_god
+    mysql $OPT -t kts < $mps_god
+    xt_ret $? "${FUNCNAME}" || return $?
+}
+
+function fn_ddetov25()
+{
+    PREV25=`fn_get_date 10`
+    fn_echo_succ "up matov5@${END}..."
+
+    echo "
+    DROP TABLE IF EXISTS tov5;
+    CREATE TABLE tov5 (
+        date        date NOT NULL,
+        code        INT(6) ZEROFILL DEFAULT 0,
+        tov         DECIMAL(6,2) DEFAULT 0,
+        day23       DECIMAL(6,2) DEFAULT 0,
+        day35       DECIMAL(6,2) DEFAULT 0,
+        wk12        DECIMAL(6,2) DEFAULT 0,
+        wk23        DECIMAL(6,2) DEFAULT 0,
+        INDEX(date,code)
+    );
+
+--  DROP TABLE IF EXISTS matov5;
+    CREATE TABLE IF NOT EXISTS matov5 LIKE tov5;
+
+    DROP TABLE IF EXISTS  zxg;
+    CREATE TABLE zxg LIKE codes;
+    INSERT INTO zxg(code) SELECT DISTINCT code FROM day WHERE date>='${PREV25}' && date<='${END}' and code<888888;
+
+    SET @END='$END';
+    call sp_visit_tbl('zxg', @fn_dde25);
+
+    DELETE FROM matov5 WHERE date='$END';
+    INSERT INTO matov5 SELECT * FROM tov5;
+    " >> $mps_god
+   #" | tee -a $mps_god
+    mysql $OPT -t kts < $mps_god
+    xt_ret $? "${FUNCNAME}" || return $?
+}
+
+function fn_tt25()
+{
+    PREV25=`fn_get_date 10`
+    fn_echo_succ "up matov5@${END}..."
+
+    echo "
+    DROP TABLE IF EXISTS tov5;
+    CREATE TABLE tov5 LIKE matov5;
+
+    DROP TABLE IF EXISTS  zxg;
+    CREATE TABLE zxg LIKE codes;
+    INSERT INTO zxg(code) VALUES(${1});
+
+    SET @END='$END';
+    SELECT code,date,tov FROM dde WHERE code=${1} and date<='${END}' ORDER by date DESC LIMIT 25;
+    call sp_visit_tbl('zxg', @fn_dde25);
+    SELECT * FROM tov5;
+    " >> $mps_god
+   #" | tee -a $mps_god
+    mysql $OPT -t kts < $mps_god
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -753,13 +820,14 @@ function fn_ma1020_up()
         ma5         DECIMAL(6,2) NOT NULL DEFAULT 0,
         ma10        DECIMAL(6,2) NOT NULL DEFAULT 0,
         ma20        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        ma60        DECIMAL(6,2) NOT NULL DEFAULT 0,
         INDEX(date,code)
     );
 --  DROP TABLE IF EXISTS mat_ma1020;
     CREATE TABLE IF NOT EXISTS mat_ma1020 LIKE ma1020;
 
     TRUNCATE TABLE zxg;
-    INSERT INTO zxg(code) SELECT code FROM matov5 WHERE tov>=3 && date='$date';
+    INSERT INTO zxg(code) SELECT code FROM matov5 WHERE tov>=3.5 && date='$date';
 
     SET @END='$date';
     call sp_visit_tbl('${TBL:-zxg}', @fn_ma1020);       -- Don't use codes here
@@ -768,7 +836,7 @@ function fn_ma1020_up()
     INSERT INTO mat_ma1020 SELECT * FROM ma1020;
     " >> $mps_god
 
-    mysql $mo -t kts <<< "source $mps_god"
+    mysql $OPT -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -802,8 +870,8 @@ function fn_ma1020()
 function fn_diftov5()
 {
     echo "
-    SELECT m.date,m.code,m.tov, 
-        ROUND(100*l.mavol5*c.close/c.nmc, 2) as tov5, ROUND(m.tov/ (100*l.mavol5*c.close/c.nmc), 1) as scaler ,c.name
+    SELECT m.date,m.code,m.tov as tov5_ths,
+        ROUND(100*l.mavol5*c.close/c.nmc, 2) as tov5_lohi, ROUND(m.tov/ (100*l.mavol5*c.close/c.nmc), 1) as scaler ,c.name
         FROM matov5 m, mat_lohi l, cap c 
         WHERE m.code=l.code and m.code=c.code && l.end='$END' && m.date='${END}' ${COND}
         ORDER by ${FIELD:-scaler} DESC LIMIT ${LIMIT:-36};
@@ -832,7 +900,8 @@ function fn_matov5()
         ;;
     [0-9]*)
         date=`fn_get_date ${1:-1}`
-        END=${date} fn_ddetov5
+       #END=${date} fn_ddetov5
+        END=${date} fn_ddetov25
         # echo $1
         ;;
     *)
@@ -927,9 +996,25 @@ function fn_lohi()
     INSERT INTO mat_lohi(end,num,code,date1,date2,off,high,low,lohi,scale,amount,volume,mavol5)
         SELECT  '${iEND}',${iNUM},code,date1,date2,off,high,low,lohi,scale,amount,volume,mavol5 FROM tbl_lohi;
     " | tee -a $mps_god
-    mysql $mo -t kts < $mps_god
+    mysql $OPT -t kts < $mps_god
     xt_ret $? "${FUNCNAME}" || return $?
     # fn_lohi_repair ${iEND}
+}
+
+function fn_dde()
+{
+    case $1 in
+    l)  sqls="SELECT date from day WHERE code=900001 && date<'${END}' ORDER by date DESC LIMIT ${LIMIT:-10}" 
+        mysql -N kts<<<"${sqls}" | cat -n; exit ;;
+    e|*)
+        sqls="SELECT DISTINCT date FROM dde ORDER by date DESC LIMIT ${LIMIT:-10}"
+        # mysql -N kts<<<"${sqls}" | cat -n
+        mysql -N kts<<< "SELECT DISTINCT date FROM dde WHERE date<'${END}' ORDER by date DESC LIMIT 10" > ${chao}.dlist
+        fn_echo_succ "whites-gona-cre.${FUNCNAME[0]}:"
+        LIMIT=15 fn_dde l | grep ${OPT:-'-B100'} --color -f ${chao}.dlist
+        exit
+        ;;
+    esac
 }
 
 function fn_main()
@@ -952,9 +1037,11 @@ function fn_main()
     "wma                [field]               # mavol520s's别名 其ma是wchng"
     "ma5D20             [field]               # ma240局部"
     "ma240              [field]               # ma240整体:5B25+ma60x2x4"
-    "lohi               code...               # #{YIST}下跌幅度计算"
+    "dde                [e]                   # #{YIST}下跌幅度计算"
+    "lohi               {l|e|d|Dif|iEND}      # #{YIST}下跌幅度计算"
     "matov5             {l|e|d|Dif|iEND}      # maval5"
-    "ma1020                                   # "
+    "ma1020             {l|e|d|Dif|iEND}      # t5.tov>3.5"
+    "tt25               code                  # t5.tov>3.5"
     )
 
     # SCREENER的宗旨，弃子取势

@@ -71,6 +71,10 @@ function fn_cap()
     fi
 
     ./dbank 1
+
+    # 修正top10
+    sqls="INSERT INTO top10 SELECT code,0,name FROM cap WHERE code NOT in (SELECT code FROM top10)"
+    mysql kts <<< "${sqls}"
 }
 
 function fn_add_yesclose()
@@ -716,6 +720,8 @@ function fn_db201()
         if [ "${max_date}" != "${END}" ]; then
             fn_bell 'msg.wav msg.wav msg.wav msg.wav msg.wav'; exit
         else
+            # 同步时间
+            timeout 30 ntpdate cn.pool.ntp.org
             fn_bell 'msg.wav'; exit
         fi
     fi

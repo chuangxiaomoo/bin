@@ -46,8 +46,9 @@ function fn_rebuild_list_and_download_from_last_xRD()
     [ -s "$yahooask" ]
     xt_ret $? "empty file $yahooask" || return $?
 
+    total=`wc -l ${yahooask}`
     echo "
-    going to xRD `wc -l ${yahooask}` codes
+    going to xRD ${total} codes
     "
 
     fn_yahoo start

@@ -116,12 +116,14 @@ function fn_yahoo()
 #   list=${list:-000509}
     list=${list:-`cat $yahooask`}
     local i=
+    local cur=0
     for i in ${list} ; do
+        let cur++
         sqls="SELECT date FROM day WHERE code=${i} ORDER by date DESC LIMIT 360,1"
         d360=`mysql -N kts<<<"${sqls}" 2>/dev/null`
         d360=${d360//-/ }
         start_sps=(${d360:-${start_600}})
-        fn_gether_symbol $i && echo "${i/sh/} completed records [30*${index}]"
+        fn_gether_symbol $i && printf "%03d/${total} ${i} completed records [30*${index}]\n" $cur
     done
 }
 

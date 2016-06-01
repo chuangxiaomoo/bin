@@ -80,8 +80,12 @@ function fn_pro_hammer()
 
     [ -z "${is_hammer}" ] && return 1
 
-    REALIZED='((ma5/((ma5+ma10+ma20)/3) -1) * abs( (ma5/((ma5+ma10+ma20)/3) -1)/0.03 ))'    # 涨幅 = ma5涨幅*相应乘数
+    REALIZ='(ma5/((ma5+ma10+ma20)/3) -1)'
+    REALIZED='(d.close/((ma5+ma10+ma20)/3) -1)'    # 涨幅 = ma5涨幅 * 相应乘数  .03= 1/5+1/10
     REALIZED2="IF($REALIZED>0, ${REALIZED}, 0)"
+    pwr_nmc="IF(${nmc0}-20<80, ${nmc0}-20, 80)/10"
+    pwr_t10=1 # "IF(top10<.1, 1, 1.1-top10)"
+    columns="d.code"
     sqls="
     SELECT  $columns,
             $HIRI as hiri,
@@ -91,23 +95,28 @@ function fn_pro_hammer()
             ${sql_dive}
             $TURNOV as tov, t5.tov as tov5,
             ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2) as prop5,
-            -- (ma5-平均)*2 = 从底部后的涨幅
-            ROUND(${REALIZED}, 2) as realiz,
-            ROUND( t5.tov -100*${REALIZED2} -$RISE -IF(${nmc0}-20<80, ${nmc0}-20, 80)/10 ${TOV_DELTA}, 2) as space,
---          ROUND((100*(d.close/ma10-1)), 2) as ri10,
---          ROUND((100*(d.close/ma20-1)), 2) as ri20,
+            concat(top10, '_', ROUND(${REALIZED2}, 2)) as t10_rliz,
+            GREATEST(day23, day35) as inc_dy,
+            GREATEST(wk12, wk23) as inc_wk,
+--          ROUND(100*${REALIZED}) as rliz,
+            ROUND(100*(d.close/ma60-1), 1) as r60,
+            ROUND( t5.tov/$pwr_t10 -100*${REALIZED2} -${pwr_nmc} ${TOV_DELTA}, 1) as space,
+--          ROUND((100*(d.close/ma10-1)), 2) as r10,
+--          ROUND((100*(d.close/ma20-1)), 2) as r20,
             round(d.amount/10000, 2) as eYi,
             ${nmcYi}, c.name
-            FROM ${TEMPDAY:-day} d, cap c, t_matov5 t5, mat_ma1020 m
+            FROM ${TEMPDAY:-day} d, cap c, t_matov5 t5, mat_ma1020 m, top10 p
             ${WHERE} d.code=m.code && m.date='${PREV}' AND
-            d.code = c.code AND d.code=t5.code
-            && d.date = '${END}' && ${iCOND:-1}
+            d.code = c.code AND d.code=t5.code AND d.code=p.code
+            && d.date = '${END}' && ${iCOND:-1} && ${cCOND:-1}
             HAVING ${HAVING:-1} ${COND} ORDER BY ${FIELD} ${ASC:-desc} limit ${LIMIT:-36}
     "
+    #echo "${sqls}"; exit
 }
 
 function fn_lsdh()
 {
+    [ "${1:0:1}" = c ] && cCOND="d.code=${1/c/}"
     is_hammer=1 fn_lsd ${@}
 }
 
@@ -222,9 +231,9 @@ function fn_lsd()
     fn_sql $@
 
     case ${PARTS:-o} in
-    s) return               ;; # 只获取$sqls
-    f) CHAO=1               ;; # 只输出文件chao.chao2
-    o) fn_imysql_sqls       ;; # 只输出STDOUT
+    s) return                       ;; # 只获取$sqls
+    f) CHAO=1                       ;; # 只输出文件chao.chao2
+    o) fn_imysql_sqls | fn_hew_tail ;; # 只输出STDOUT
     esac
     fn_chao ${chao}.${chao2:-lsd}
     fn_echo_warn "${END}.${iTime:-latest} LIST:${#LIST[@]} HAVING:${HAVING//SEL*=/} COND@:$COND + iCOND:${iCOND}"
@@ -535,7 +544,7 @@ function fn_wma()
     HAVING 1 ${COND} ${inLIST}
     ORDER by ${1:-v1v4} ${ASC:-DESC} LIMIT ${LIMIT:-24}
     "
-    echo "${sqls}" | tee /dev/stderr | mysql $mo -t kts
+    echo "${sqls}" | tee /dev/stderr | mysql $OPT -t kts
 
     fn_chao
 }
@@ -581,7 +590,7 @@ function fn_updown()
     " >> $mps_god
     # | tee /dev/stderr >> $mps_god
 
-    mysql $mo -t kts <<< "source $mps_god"
+    mysql $OPT -t kts <<< "source $mps_god"
 
     return
 }
@@ -618,7 +627,7 @@ function fn_6maishenjian()
     }
 
     fn_get_tbl_6jian_dive $1
-    mysql $mo -t kts <<< "${tempday}${tbl_super_dive}"
+    mysql $OPT -t kts <<< "${tempday}${tbl_super_dive}"
     xt_ret $? "${FUNCNAME}" || return $?
 
     PREFIX=${tempday} sqls=${tbl_super_dive} fn_chao
@@ -658,7 +667,7 @@ function fn_dugu9jian()
     }
 
     fn_get_tbl_9jian_dive $1
-    mysql ${mo:-'-t'} kts <<< "${tempday}${tbl_super_dive}"
+    mysql ${OPT:-'-t'} kts <<< "${tempday}${tbl_super_dive}"
     xt_ret ${PIPESTATUS[0]} "${FUNCNAME}" || return $?
 
     PREFIX=${tempday} sqls=${tbl_super_dive} fn_chao
@@ -683,7 +692,7 @@ function fn_tao5()
     }
 
     fn_get_tbl_tao5_dive $1
-    mysql $mo -t kts <<< "${tbl_super_dive}" |\
+    mysql $OPT -t kts <<< "${tbl_super_dive}" |\
         sed -e '1,3s/----+$/\+/g' -e '$s/----+$/\+/g' -e '2s/    |$/|/g'
     xt_ret ${PIPESTATUS[0]} "${FUNCNAME}" || return $?
 }
@@ -710,7 +719,7 @@ function fn_rdiff()
     }
 
     fn_get_tbl_rdiff_dive $1
-    mysql $mo -t kts <<< "${tbl_super_dive}"
+    mysql $OPT -t kts <<< "${tbl_super_dive}"
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -750,8 +759,8 @@ function fn_fbi()
         TRUNCATE(datetime_p%(1000000000000)/1000000,4) as dt_p,
         -- datetime_c,
         TRUNCATE(datetime_c%(1000000000000)/1000000,4) as dt_c, ${columns},
-        round(close+(avrg_c-close)*.618 - close*ratio*.00236, 2) *              -- close as space
-           IF((avrg_c-close)*.618 - close*ratio*.00236<0, -1, 1) as oracle,     -- ratio as time
+        round(close+(avrg_c-close)*.618 - close*ratio*.00236, 2) *              -- close as SPACE
+           IF((avrg_c-close)*.618 - close*ratio*.00236<0, -1, 1) as oracle,     -- ratio as TIME
         (wchng+2*rdiff+3*cdiff) as fire
         FROM ${tablex:-tbl_fdiff} LIMIT ${LIMIT:-200}
     " | mysql -t kts
@@ -968,7 +977,7 @@ function fn_hilo()
     }
 
     fn_yi_dive $1
-    mysql $mo -t kts <<< "${tempday}${tbl_super_dive}"
+    mysql $OPT -t kts <<< "${tempday}${tbl_super_dive}"
     xt_ret $? "${FUNCNAME}" || return $?
 
     PREFIX=${tempday} sqls=${tbl_super_dive} fn_chao
@@ -2987,6 +2996,13 @@ function fn_seat_detail()
     return $?
 }
 
+
+function fn_am925()
+{
+    echo 
+    return $?
+}
+
 function fn_main()
 {
     cmdlist=(
@@ -3039,6 +3055,7 @@ function fn_main()
     "ddd                                      # 连续缩量后放量"
     "seat_rank                                # 总排名"
     "seat_detail                              # seat-blk"
+    "am925                                    # seat-blk"
     )
 
     fn_set_END

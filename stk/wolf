@@ -216,21 +216,21 @@ function fn_hot()
         if ($10>0 && $15<100*10000*10000) {
             printf "%s\t%s\n", $1,$10
         }
-    }' ${bigbid_raw} > ${chao}.hotwolf
+    }' ${bigbid_raw} > /tmp/kts/chao.am925
 
-    PLAIN=${chao}.hotlist
+    PLAIN=${chao}.am925
     echo "
-    DROP TABLE IF EXISTS hotwolf;
-    CREATE TABLE hotwolf (
+    DROP TABLE IF EXISTS am925;
+    CREATE TABLE am925 (
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
         rise        DECIMAL(6,2) NOT NULL DEFAULT 0
     );
-    LOAD DATA LOCAL INFILE '${chao}.hotwolf' INTO TABLE hotwolf;
+    LOAD DATA LOCAL INFILE '${chao}.am925' INTO TABLE am925;
 
     SELECT max(date) FROM matov5 INTO @max_date;
-    SELECT m.code FROM matov5 m, hotwolf h 
-        WHERE m.code=h.code &&m.date=@max_date && m.tov>4 &&
-                rise<=9.93 && rise>0 ORDER by rise DESC LIMIT 60;
+    SELECT m.code FROM matov5 m, am925 h 
+        WHERE m.code=h.code &&m.date=@max_date && m.tov>3 &&
+                rise<=9.93 && rise>=-3 ORDER by rise DESC LIMIT 500;
     " | mysql -N kts > ${PLAIN} 
 
     rows=`wc -l < ${PLAIN}`
