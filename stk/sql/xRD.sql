@@ -562,6 +562,7 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
             WHEN @fn_hilo           THEN call sp_hilo(v_code);
             WHEN @fn_lohi           THEN call sp_lohi(v_code);
             WHEN @fn_dde5           THEN call sp_dde5(v_code);
+            WHEN @fn_dde25          THEN call sp_dde25(v_code);
             ELSE SELECT "no a_type match";
         END CASE;
 
@@ -1199,16 +1200,23 @@ CREATE PROCEDURE sp_ma1020(a_code INT(6) ZEROFILL) tag_ma1020:BEGIN
 
     INSERT INTO tempday(code,date,close) 
         SELECT code,date,close FROM day 
-            WHERE code=a_code and date<=@END ORDER by date DESC LIMIT 20;
+            WHERE code=a_code and date<=@END ORDER by date DESC LIMIT 60;
 
     SELECT count(*) FROM tempday INTO @v_len;
 
+    SET @v_L20 = 20; 
+    IF  @v_len < 20 THEN SET @v_L20 = ROUND(@v_len*.6); END IF;
+
+    SET @v_L60 = 60; 
+    IF  @v_len < 60 THEN SET @v_L60 = ROUND(@v_len*.6); END IF;
+
     IF @v_len > 10 THEN 
-        SELECT SUM(close)/5         FROM tempday WHERE id<=5   INTO @v_ma5  ;
-        SELECT SUM(close)/10        FROM tempday WHERE id<=10  INTO @v_ma10 ;
-        SELECT SUM(close)/@v_len    FROM tempday WHERE id<=20  INTO @v_ma20 ;
-        INSERT INTO ma1020(date,code,trade,ma5,ma10,ma20)
-            SELECT date,code,close,@v_ma5,@v_ma10,@v_ma20 FROM tempday WHERE id=1;
+        SELECT SUM(close)/5       FROM tempday WHERE id<=5      INTO @v_ma5  ;
+        SELECT SUM(close)/10      FROM tempday WHERE id<=10     INTO @v_ma10 ;
+        SELECT SUM(close)/@v_L20  FROM tempday WHERE id<=@v_L20 INTO @v_ma20 ;
+        SELECT SUM(close)/@v_L60  FROM tempday WHERE id<=@v_L60 INTO @v_ma60 ;
+        INSERT INTO ma1020(date,code,trade,ma5,ma10,ma20,ma60)
+            SELECT date,code,close,@v_ma5,@v_ma10,@v_ma20,@v_ma60 FROM tempday WHERE id=1;
     END IF;
 END tag_ma1020 //
 
@@ -1402,11 +1410,70 @@ END tag_lohi //
 DROP PROCEDURE IF EXISTS sp_dde5//
 CREATE PROCEDURE sp_dde5(a_code INT(6) ZEROFILL) tag_dde5:BEGIN
     SET @sqls=concat('
-        INSERT INTO tov5(code,tov)
-            SELECT code,tov FROM dde WHERE code=', 
+        INSERT INTO tov5(date,code,tov)
+            SELECT date,code,tov FROM dde WHERE code=', 
         a_code, " and date<= '", @END, "' order by date DESC LIMIT 5");
     PREPARE stmt from @sqls; EXECUTE stmt;
 END tag_dde5 //
+
+
+DROP PROCEDURE IF EXISTS sp_dde25//
+CREATE PROCEDURE sp_dde25(a_code INT(6) ZEROFILL) tag_dde25:BEGIN
+    DROP   TEMPORARY TABLE IF EXISTS ttov;
+    CREATE TEMPORARY TABLE ttov (
+        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        tov         DECIMAL(6,2) NOT NULL DEFAULT 0
+    );
+
+    SET @sqls=concat('
+        INSERT INTO ttov(code,tov)
+            SELECT code,tov FROM dde WHERE code=', 
+        a_code, " and date<= '", @END, "' order by date DESC LIMIT 5");
+    PREPARE stmt from @sqls; EXECUTE stmt;
+
+    SELECT SUM(tov)/5         FROM ttov WHERE id<=5             INTO @v_tov5 ;
+
+    IF @v_tov5 < 3.5 THEN 
+        INSERT INTO tov5(date,code,tov,day23,day35,wk12,wk23) VALUES (@END,a_code,@v_tov5,1,1,1,1); 
+        LEAVE tag_dde25;
+    END IF;
+
+    # LIMIT 5,25
+    # 保证id连续: innodb_autoinc_lock_mode=0 /etc/mysql/my.cnf 
+    SET @sqls=concat('
+        INSERT INTO ttov(code,tov)
+            SELECT code,tov FROM dde WHERE code=', 
+        a_code, " and date<= '", @END, "' order by date DESC LIMIT 5,20");
+    PREPARE stmt from @sqls; EXECUTE stmt;
+    SELECT count(*) FROM ttov INTO @v_len;
+
+    IF @v_len < 25 THEN 
+        INSERT INTO tov5(date,code,tov,day23,day35,wk12,wk23) VALUES (@END,a_code,@v_tov5,1,1,1,1); 
+        LEAVE tag_dde25;
+    END IF;
+
+    SELECT SUM(tov)/2         FROM ttov WHERE id<=2             INTO @v_dy5T2 ;    # top2
+    SELECT SUM(tov)/3         FROM ttov WHERE id>=3 && id<=5    INTO @v_dy5B3 ;    # bot3
+
+    SELECT SUM(tov)/3         FROM ttov WHERE id<=3             INTO @v_dy8T3 ;
+    SELECT SUM(tov)/5         FROM ttov WHERE id>=4 && id<=8    INTO @v_dy8B5 ;
+
+  # SELECT @END, @v_dy8T3, @v_dy8B5; SELECT * FROM ttov ; LEAVE tag_dde25;
+
+    SELECT SUM(tov)/10        FROM ttov WHERE id>=6 && id<=15   INTO @v_wk3B2 ;
+
+    SELECT SUM(tov)/10        FROM ttov WHERE id<=10            INTO @v_wk5T2 ;
+    SELECT SUM(tov)/15        FROM ttov WHERE id>=11 && id<=25  INTO @v_wk5B3 ;
+
+    INSERT INTO tov5(date,code,tov,day23,day35,wk12,wk23)
+        VALUES (@END,a_code,@v_tov5,
+                @v_dy5T2/@v_dy5B3,
+                @v_dy8T3/@v_dy8B5,
+                @v_tov5/@v_wk3B2,
+                @v_wk5T2/@v_wk5B3
+        );
+END tag_dde25 //
 
 -- 一些需要与shell通信的系统变量
 
@@ -1422,6 +1489,7 @@ END tag_dde5 //
     SET @fn_hilo                = 14;
     SET @fn_lohi                = 15;
     SET @fn_dde5                = 16;
+    SET @fn_dde25               = 17;
     SET @FORCE                  = 0;    -- 1时强制计算过滤停牌很久的个股
     SET @START      = '2013-12-6';
     SET @END        = '2014-11-26';

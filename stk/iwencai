@@ -40,41 +40,39 @@ function fn_shares_h()
 
 function fn_top10()
 {
-#   # KEY:  十大流通股东持股数/流通a股，总股本
-#   fn_get_export_file
-#   xt_ret $? "" || return $?
+#   1. KEY:  十大流通股东持股数/流通a股，总股本
+#   2. 第10列为top10所占比例
+#   3. 导出文件到 /winc/Export/     NOTE: 不选中代码时默认导出全部，70条每页时，导得更全
+#   4. 新建文件，打开 .xls，将A-I复制到这个文件，并ffu设置编码为utf8
+#   5. 手动去掉前两行 tail -n+3
 
-#   iconv -f cp936 -t utf8 ${efile} | tail -n+3 > ${wolf_raw}   # 从iwencai取数据，去前2行
-#   if ! grep -q '601398.SH' ${wolf_raw}; then
-#       fn_echo_fail "not a wolf file"
-#       return 1
-#   fi
+    fn_get_export_file
+    xt_ret $? "" || return $?
 
-#   tag_blank='--.--.--'
-#   sed -e 's///g' -e 's/.S[ZH]//g' -e 's/ //g'           \
-#       -e 's/%//g' -e 's/\t$//g' -e 's/\t\t*/\t/g'         \
-#       -e "/${tag_blank}/d" -e '/^$/d' ${wolf_raw}         \
-#       | awk '{
-#           printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\n", 
-#           $1,$5,$6,$7,$8,$9,$2
-#       }' | sed '/--/d' > ${wolf_rip}.iwencai              # -- 即‘温氏股份’
+    cp ${efile} ${wolf_raw}
+    if ! grep -q '601398.SH' ${wolf_raw}; then
+        fn_echo_fail "not a wolf file"
+        return 1
+    fi
+
+    sed -e 's/.S[ZH]//g' -e 's///g' ${wolf_raw} | \
+    awk '{
+        printf "%s\t%s\t%s\n", $1,$7,$2
+    }' | sed 's/--/0/g' > ${wolf_rip}
 
     # echo ${efile} ${ctime} ${epoch} $HHMMSS
     echo "
     ${DROP} top10;
     CREATE TABLE IF NOT EXISTS top10(
         code            INT(6) ZEROFILL NOT NULL DEFAULT 0,
-        top10           DECIMAL(16,2) NOT NULL,     -- top10流通和
-        curr_a          DECIMAL(16,2) NOT NULL,     -- 流通A
-        shares          DECIMAL(16,2) NOT NULL,     -- 总股本
-        top10_curr_aR   DECIMAL(8,2) NOT NULL,      -- 
-        top10_sharesR   DECIMAL(6,2) NOT NULL,      --
-        top10_ajst_aR   DECIMAL(6,2) NOT NULL,      -- 经过修正top10占比
+        top10           DECIMAL(6,2) NOT NULL,
         name            CHAR(16),
         INDEX(code)
     );
-    LOAD DATA LOCAL INFILE '${wolf_rip}.curr_top10' INTO 
-    TABLE top10( code ,top10 ,curr_a ,shares ,top10_curr_aR ,top10_sharesR ,name );
+
+    LOAD DATA LOCAL INFILE '${wolf_rip}' INTO TABLE top10;
+
+    UPDATE top10 SET top10 = .95 WHERE top10>.95;
     " | mysql kts
     xt_ret $? "" || return $?
 }
