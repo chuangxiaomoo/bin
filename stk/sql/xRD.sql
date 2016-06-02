@@ -563,6 +563,7 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
             WHEN @fn_lohi           THEN call sp_lohi(v_code);
             WHEN @fn_dde5           THEN call sp_dde5(v_code);
             WHEN @fn_dde25          THEN call sp_dde25(v_code);
+            WHEN @fn_dde21          THEN call sp_dde21(v_code);
             ELSE SELECT "no a_type match";
         END CASE;
 
@@ -1475,6 +1476,61 @@ CREATE PROCEDURE sp_dde25(a_code INT(6) ZEROFILL) tag_dde25:BEGIN
         );
 END tag_dde25 //
 
+DROP PROCEDURE IF EXISTS sp_dde21//
+CREATE PROCEDURE sp_dde21(a_code INT(6) ZEROFILL) tag_dde21:BEGIN
+    DROP   TEMPORARY TABLE IF EXISTS ttov;
+    CREATE TEMPORARY TABLE ttov (
+        id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        tov         DECIMAL(6,2) NOT NULL DEFAULT 0
+    );
+
+    SET @sqls=concat('
+        INSERT INTO ttov(code,tov)
+            SELECT code,tov FROM dde WHERE code=', 
+        a_code, " and date<= '", @END, "' order by date DESC LIMIT 5");
+    PREPARE stmt from @sqls; EXECUTE stmt;
+
+    SELECT SUM(tov)/5         FROM ttov WHERE id<=5             INTO @v_tov5 ;
+
+    IF @v_tov5 < 3.5 THEN 
+        INSERT INTO tov5(date,code,tov,dy12,dy23,wk12,wk23) VALUES (@END,a_code,@v_tov5,1,1,1,1); 
+        LEAVE tag_dde21;
+    END IF;
+
+    # LIMIT 5,25
+    # 保证id连续: innodb_autoinc_lock_mode=0 /etc/mysql/my.cnf 
+    SET @sqls=concat('
+        INSERT INTO ttov(code,tov)
+            SELECT code,tov FROM dde WHERE code=', 
+        a_code, " and date<= '", @END, "' order by date DESC LIMIT 5,16");
+    PREPARE stmt from @sqls; EXECUTE stmt;
+    SELECT count(*) FROM ttov INTO @v_len;
+
+    # 为次新股考虑：如<第一创业>
+    SELECT tov                FROM ttov WHERE id=1              INTO @v_top1 ;
+    SELECT SUM(tov)/2         FROM ttov WHERE id>=2 && id<=3    INTO @v_bot2 ;
+    SELECT SUM(tov)/2         FROM ttov WHERE id<=2             INTO @v_top2 ;
+    SELECT SUM(tov)/3         FROM ttov WHERE id>=3 && id<=5    INTO @v_bot3 ;
+
+    IF @v_len < 21 THEN 
+        INSERT INTO tov5(date,code,tov,dy12,dy23,wk12,wk23) VALUES (@END,a_code,@v_tov5, @v_top1/@v_bot2, @v_top2/@v_bot3, 1,1); 
+        LEAVE tag_dde21;
+    END IF;
+
+    SELECT SUM(tov)/8         FROM ttov WHERE id>=6 && id<=13   INTO @v_bot8 ;
+    SELECT SUM(tov)/8         FROM ttov WHERE id<=8             INTO @v_top8 ;
+    SELECT SUM(tov)/13        FROM ttov WHERE id>=9  && id<=21  INTO @v_bot13;
+
+    INSERT INTO tov5(date,code,tov,dy12,dy23,wk12,wk23)
+        VALUES (@END,a_code,@v_tov5,
+                @v_top1/@v_bot2,
+                @v_top2/@v_bot3,
+                @v_tov5/@v_bot8,
+                @v_top8/@v_bot13
+        );
+END tag_dde21 //
+
 -- 一些需要与shell通信的系统变量
 
     SET @fn_flt_kdj_up          = 1;   
@@ -1490,6 +1546,7 @@ END tag_dde25 //
     SET @fn_lohi                = 15;
     SET @fn_dde5                = 16;
     SET @fn_dde25               = 17;
+    SET @fn_dde21               = 18;
     SET @FORCE                  = 0;    -- 1时强制计算过滤停牌很久的个股
     SET @START      = '2013-12-6';
     SET @END        = '2014-11-26';

@@ -412,7 +412,7 @@ function fn_wma()
         # tag a tag, touch file the fisttime after $sec_1500
         sec_1500=$(date +%s -d "${END} 15:00:00")
         sec_curr=$(date +%s)
-        # ! must append with a whitespace
+        # ! must append with a blackpace
         if ! ([ "${END}" = "${CURR}" ] && [ "${sec_curr}" -lt "${sec_1500}" ]); then
             mkdir -p /tmp/tov/
             touch /tmp/tov/${tbl_tov_date}
@@ -784,10 +784,54 @@ function fn_ddetov25()
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
-function fn_tt25()
+function fn_ddetov21()
 {
     PREV25=`fn_get_date 10`
     fn_echo_succ "up matov5@${END}..."
+
+    echo "
+    DROP TABLE IF EXISTS tov5;
+    CREATE TABLE tov5 (
+        date        date NOT NULL,
+        code        INT(6) ZEROFILL DEFAULT 0,
+        tov         DECIMAL(6,2) DEFAULT 0,
+        dy12        DECIMAL(6,2) DEFAULT 0,
+        dy23        DECIMAL(6,2) DEFAULT 0,
+        wk12        DECIMAL(6,2) DEFAULT 0,
+        wk23        DECIMAL(6,2) DEFAULT 0,
+        INDEX(date,code)
+    );
+
+--  DROP TABLE IF EXISTS matov5;
+    CREATE TABLE IF NOT EXISTS matov5 LIKE tov5;
+
+    DROP TABLE IF EXISTS  zxg;
+    CREATE TABLE zxg LIKE codes;
+    INSERT INTO zxg(code) SELECT DISTINCT code FROM day WHERE date>='${PREV25}' && date<='${END}' and code<888888;
+
+    SET @END='$END';
+    call sp_visit_tbl('zxg', @fn_dde21);
+
+    DELETE FROM matov5 WHERE date='$END';
+    INSERT INTO matov5 SELECT * FROM tov5;
+    " >> $mps_god
+#   " | tee -a $mps_god
+    mysql $OPT -t kts < $mps_god
+    xt_ret $? "${FUNCNAME}" || return $?
+#   fn_echo_succ "I sleep 30"; sleep 30
+}
+
+function fn_tt25()
+{
+    [ -n "${1}" ]
+    xt_ret $? "Usage: fn_tt25 code" || return $?
+
+    PREV25=`fn_get_date 10`
+    fn_echo_succ "up matov5@${END}..."
+
+    sqls="SELECT code,date,tov FROM dde WHERE code=${1} and date<='${END}' ORDER by date DESC LIMIT 21"
+    fn_imysql_sqls
+    xt_ret $? "" || return $?
 
     echo "
     DROP TABLE IF EXISTS tov5;
@@ -798,9 +842,8 @@ function fn_tt25()
     INSERT INTO zxg(code) VALUES(${1});
 
     SET @END='$END';
-    SELECT code,date,tov FROM dde WHERE code=${1} and date<='${END}' ORDER by date DESC LIMIT 25;
-    call sp_visit_tbl('zxg', @fn_dde25);
-    SELECT * FROM tov5;
+#   call sp_visit_tbl('zxg', @fn_dde21); SELECT * FROM tov5;
+    call sp_visit_tbl('zxg', @fn_ma1020); SELECT * FROM tempday;
     " >> $mps_god
    #" | tee -a $mps_god
     mysql $OPT -t kts < $mps_god
@@ -843,12 +886,12 @@ function fn_ma1020_up()
 function fn_ma1020()
 {
     case $1 in
-    l)  sqls="SELECT date from day WHERE code=900001 ORDER by date DESC LIMIT ${LIMIT:-10}" 
+    l)  sqls="SELECT date from day WHERE code=900001 && date<='${END}' ORDER by date DESC LIMIT ${LIMIT:-10}" 
         mysql -N kts<<<"${sqls}" | cat -n; exit ;;
     e)
         sqls="SELECT DISTINCT date FROM mat_ma1020 ORDER by date DESC LIMIT ${LIMIT:-10}"
         # mysql -N kts<<<"${sqls}" | cat -n
-        mysql -N kts<<< "SELECT DISTINCT date FROM mat_ma1020 ORDER by date DESC LIMIT 10" > ${chao}.dlist
+        mysql -N kts<<< "SELECT DISTINCT date FROM mat_ma1020 WHERE date<='${END}' ORDER by date DESC LIMIT 10" > ${chao}.dlist
         fn_echo_succ "whites-gona-cre.${FUNCNAME[0]}:"
         LIMIT=15 fn_ma1020 l | grep ${OPT:-'-B100'} --color -f ${chao}.dlist
         exit
@@ -883,12 +926,12 @@ function fn_matov5()
 {
     case $1 in
     D)  fn_diftov5 ;;
-    l)  sqls="SELECT date from day WHERE code=900001 ORDER by date DESC LIMIT ${LIMIT:-10}" 
+    l)  sqls="SELECT date from day WHERE code=900001 && date<='${END}' ORDER by date DESC LIMIT ${LIMIT:-10}" 
         mysql -N kts<<<"${sqls}" | cat -n; exit ;;
     e)
         sqls="SELECT DISTINCT date FROM matov5 ORDER by date DESC LIMIT ${LIMIT:-10}"
         #mysql -N kts<<<"${sqls}" | cat -n
-        mysql -N kts<<< "SELECT DISTINCT date FROM matov5 ORDER by date DESC LIMIT 10" > ${chao}.dlist
+        mysql -N kts<<< "SELECT DISTINCT date FROM matov5 WHERE date<='${END}' ORDER by date DESC LIMIT 10" > ${chao}.dlist
         fn_echo_succ "whites-gona-cre.${FUNCNAME[0]}:"
         LIMIT=15 fn_matov5 l | grep ${OPT:-'-B100'} --color -f ${chao}.dlist
         exit
@@ -901,8 +944,8 @@ function fn_matov5()
     [0-9]*)
         date=`fn_get_date ${1:-1}`
        #END=${date} fn_ddetov5
-        END=${date} fn_ddetov25
-        # echo $1
+       #END=${date} fn_ddetov25
+        END=${date} fn_ddetov21
         ;;
     *)
         echo "Usage: SCREENER matov5 {l|e|d|D|iEND}"
@@ -915,9 +958,11 @@ function fn_lohi()
     iNUM=${NUM:-8}
 
     case $1 in
+    l)  sqls="SELECT date from day WHERE code=900001 && date<='${END}' ORDER by date DESC LIMIT ${LIMIT:-10}" 
+        mysql -N kts<<<"${sqls}" | cat -n; exit ;;
     e)
         # mysql -N kts<<< "SELECT DISTINCT end FROM mat_lohi WHERE num=${iNUM} ORDER by end DESC LIMIT ${LIMIT:-10}" | cat -n
-        mysql -N kts<<< "SELECT DISTINCT end FROM mat_lohi WHERE num=${iNUM} ORDER by end DESC LIMIT 10" > ${chao}.dlist
+        mysql -N kts<<< "SELECT DISTINCT end FROM mat_lohi WHERE num=${iNUM} && end<='${END}' ORDER by end DESC LIMIT 10" > ${chao}.dlist
         fn_echo_succ "whites-gona-cre.${FUNCNAME[0]}:"
         LIMIT=15 fn_lohi l | grep ${OPT:-'-B100'} --color -f ${chao}.dlist
         exit
@@ -933,12 +978,6 @@ function fn_lohi()
             mysql -N kts<<< "DELETE FROM mat_lohi WHERE end='${iEND}' and num=${iNUM}"
             fn_echo_succ "DELETE ${iEND}[${iNUM}] FROM mat_lohi succ!"
         done
-        exit
-        ;;
-    l)
-        echo "
-        SELECT date from day WHERE code=900001 ORDER by date DESC LIMIT ${LIMIT:-10}
-        " | mysql -N kts | cat -n
         exit
         ;;
     [0-9]*~[0-9]*)
@@ -1004,12 +1043,12 @@ function fn_lohi()
 function fn_dde()
 {
     case $1 in
-    l)  sqls="SELECT date from day WHERE code=900001 && date<'${END}' ORDER by date DESC LIMIT ${LIMIT:-10}" 
+    l)  sqls="SELECT date from day WHERE code=900001 && date<='${END}' ORDER by date DESC LIMIT ${LIMIT:-10}" 
         mysql -N kts<<<"${sqls}" | cat -n; exit ;;
     e|*)
         sqls="SELECT DISTINCT date FROM dde ORDER by date DESC LIMIT ${LIMIT:-10}"
         # mysql -N kts<<<"${sqls}" | cat -n
-        mysql -N kts<<< "SELECT DISTINCT date FROM dde WHERE date<'${END}' ORDER by date DESC LIMIT 10" > ${chao}.dlist
+        mysql -N kts<<< "SELECT DISTINCT date FROM dde WHERE date<='${END}' ORDER by date DESC LIMIT 10" > ${chao}.dlist
         fn_echo_succ "whites-gona-cre.${FUNCNAME[0]}:"
         LIMIT=15 fn_dde l | grep ${OPT:-'-B100'} --color -f ${chao}.dlist
         exit

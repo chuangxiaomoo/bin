@@ -6,42 +6,21 @@ function fn_ls()
 {
     [ $# -eq "0" ] && fn_execute -l && exit
 
-    if fn_isdigit $1; then
-        code=$1
-    else
-        local shmout=$SHMPATH/shmout
-        local index=1
-        echo "google  $1 ..."
-        google $1 | tee $shmout
-        [ 0 -ne  "${PIPESTATUS[0]}" ] && echo google fail && exit 1
-
-        lines=`cat $shmout | grep '^[603]' | wc -l`
-        [ 0 -eq "$lines" ] && echo "Error: no symbol $1 found" && exit
-        if [ 1 -eq "$lines" ]; then
-            code=`awk '/^[603]/{print $1}' $shmout`
-            echo $code
-        else
-            while :; do
-                cat -n $shmout
-                read -p "    Please input index[1]:" index
-                [ "${index:=1}" -le $lines ] && let index-- && break
-            done
-            codes=(`awk '{print $1}' $shmout`)
-            code=${codes[$index]}
-        fi
-    fi
+    fn_iscode ${code:=$1}
+    xt_ret $? "Error: [$1] no a code" || return $?
 
     fields='d.code,d.date,d.yesc,d.open,d.high,d.low,d.close,d.volume,d.amount'
     echo "
-    SELECT nmc/close FROM cap WHERE code=${code} LIMIT 1 INTO @shares0;
+    SELECT nmc/close FROM cap WHERE code=${code} LIMIT 1 INTO @shares0; -- TURNOV0使用
     SELECT * FROM (
         SELECT $fields, $PEAK as peak, $TROUGH as trough,
+        $RISE as rise, 
         ${sql_avrg}
-        $RISE as rise, $TURNOV0 as turnover
+        $TURNOV0 as tov
         FROM day as d
         WHERE d.code = ${code} and d.date <= '${END}'
         ORDER by date DESC
-    ) as tbl HAVING 1 ${COND} ORDER by ${FIELD:-date} DESC LIMIT ${LIMIT:-48};
+    ) as tbl HAVING 1 ${COND} ORDER by ${FIELD:-date} DESC LIMIT ${LIMIT:-24};
 	" | mysql -t kts
 }
 
@@ -83,6 +62,7 @@ function fn_pro_hammer()
     REALIZ='(ma5/((ma5+ma10+ma20)/3) -1)'
     REALIZED='(d.close/((ma5+ma10+ma20)/3) -1)'    # 涨幅 = ma5涨幅 * 相应乘数  .03= 1/5+1/10
     REALIZED2="IF($REALIZED>0, ${REALIZED}, 0)"
+    pwr_d25='(GREATEST(dy12, dy23) + GREATEST(wk12, wk23)-2) * 8'
     pwr_nmc="IF(${nmc0}-20<80, ${nmc0}-20, 80)/10"
     pwr_t10=1 # "IF(top10<.1, 1, 1.1-top10)"
     columns="d.code"
@@ -91,16 +71,16 @@ function fn_pro_hammer()
             $HIRI as hiri,
             $OPRI as opri,
             ${sql_avrg}
-            $RISE as rise,
-            ${sql_dive}
             $TURNOV as tov, t5.tov as tov5,
             ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2) as prop5,
             concat(top10, '_', ROUND(${REALIZED2}, 2)) as t10_rliz,
-            GREATEST(day23, day35) as inc_dy,
+            GREATEST(dy12, dy23) as inc_dy,
             GREATEST(wk12, wk23) as inc_wk,
 --          ROUND(100*${REALIZED}) as rliz,
             ROUND(100*(d.close/ma60-1), 1) as r60,
-            ROUND( t5.tov/$pwr_t10 -100*${REALIZED2} -${pwr_nmc} ${TOV_DELTA}, 1) as space,
+            $RISE as rise,
+            ROUND( t5.tov/$pwr_t10 +${pwr_d25} -100*${REALIZED2} 
+                   -${pwr_nmc} ${TOV_DELTA}, 1) as space,
 --          ROUND((100*(d.close/ma10-1)), 2) as r10,
 --          ROUND((100*(d.close/ma20-1)), 2) as r20,
             round(d.amount/10000, 2) as eYi,
@@ -109,14 +89,13 @@ function fn_pro_hammer()
             ${WHERE} d.code=m.code && m.date='${PREV}' AND
             d.code = c.code AND d.code=t5.code AND d.code=p.code
             && d.date = '${END}' && ${iCOND:-1} && ${cCOND:-1}
-            HAVING ${HAVING:-1} ${COND} ORDER BY ${FIELD} ${ASC:-desc} limit ${LIMIT:-36}
+            HAVING ${HAVING:-1} ${COND} ORDER BY ${FIELD:-rise} ${ASC:-desc} limit ${LIMIT:-36}
     "
     #echo "${sqls}"; exit
 }
 
 function fn_lsdh()
 {
-    [ "${1:0:1}" = c ] && cCOND="d.code=${1/c/}"
     is_hammer=1 fn_lsd ${@}
 }
 
@@ -124,38 +103,19 @@ function fn_lsd()
 {
     # where d.code = c.code 非常重要，不重叠的FIELD不需要加‘tbl_name.’
     local columns="code,yesc,open,close"
-          columns=${columns:-'*'}
-          columns=d.${columns//,/,d.}
+          columns=${columns:-'*'}; columns=d.${columns//,/,d.}
 
     fn_bist
     fn_yist
 
     case $1 in
-    loop)
-        local i
-        for (( i=1; i<=${NUM:-10}; i+=1 )); do
-            OPT=-N COND="rise>=${rDOOR:-9.93}" SELECT lsd ${i} | wc -l 2>&1
-        done 2>&1 | grep -v HAVING
-        exit
-        ;;
-    t|top)
-        LIMIT=${LIMIT:-200}
-        HAVING="rise>=${rDOOR:-9.93}"
-        FIELD=${FIELD:-nmc}
-        chao=${chao}.top
-        ;;
-    f|floor)
-        LIMIT=${LIMIT:-200}
-        HAVING="rise<=-9.93"
-        FIELD=${FIELD:-nmc}
-        ;;
-    l|list)
-        fn_list_iF5_times ;;
+    t|top)  LIMIT=${LIMIT:-200}; HAVING="rise>=${rDOOR:-9.93}"; FIELD=${FIELD:-nmc}; chao2=top ;;
+    f|flo)  LIMIT=${LIMIT:-200}; HAVING="rise<=-9.93"; FIELD=${FIELD:-nmc} ;;
+    c|code) cCOND="d.code=${2:-300059}" ;;
+    l|list) fn_list_iF5_times ;;
     [0-9]*)
-        if [ "${1}" = 0 ]; then
-            fn_echo_warn "NR is 0"
-            LIMIT=${LIMIT:-200} HAVING="rise>${rDOOR:-0}" SELECT lsd; exit 0;
-        fi
+        [ "${1}" -ne 0 ]
+        xt_ret $? "NR is 0" || return $?
 
         iTime=`fn_get_time ${1}`
         xt_ret $? "Please check data.dorat@${END}" || return $?
@@ -173,10 +133,8 @@ function fn_lsd()
         usage   show usage
         list    list 5min table
         {0-9}*  index from 5min table
-        top     10%
-        loop    count(rise>rDOOR)统计
-        floor   -10%
-        ''      top default
+        top|''  10%
+        flo     -10%
 
         PPLUS=<val>
         N high!=low && close/yesc<1.15                      # 有价格变动
@@ -185,9 +143,6 @@ function fn_lsd()
         "
         exit
         ;;
-    *)
-        FIELD=${FIELD:-rise}
-        ;;
     esac
 
     function fn_sql()
@@ -195,8 +150,6 @@ function fn_lsd()
         fn_update_matov5
         xt_ret $? "" || return $?
 
-        [ "${FIELD}" = 'dive' ] &&
-        sql_dive="round( (100*(d.amount/d.volume-d.close)/d.close), 1) as dive,"
         c_natural='d.high!=d.low&&d.close/yesc<1.15'
 
         case ${PPLUS} in
@@ -214,7 +167,6 @@ function fn_lsd()
                 $OPRI as opri,
                 ${sql_avrg}
                 $RISE as rise,
-                ${sql_dive}
                 $TURNOV as tov, t5.tov as tov5,
                 ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2) as prop5,
                 round(d.amount/10000, 2) as eYi,
@@ -222,8 +174,8 @@ function fn_lsd()
                 FROM ${TEMPDAY:-day} d, cap c, t_matov5 t5
                 ${WHERE} d.code = c.code
                 and d.code=t5.code
-                && d.date = '${END}' && ${iCOND:-1}
-                HAVING ${HAVING:-1} ${COND} ORDER BY ${FIELD} ${ASC:-desc} limit ${LIMIT:-36}
+                && d.date = '${END}' && ${iCOND:-1} && ${cCOND:-1}
+                HAVING ${HAVING:-1} ${COND} ORDER BY ${FIELD:-rise} ${ASC:-desc} limit ${LIMIT:-36}
         "
         #echo "${sqls}"; exit
     }
@@ -964,7 +916,6 @@ function fn_hilo()
         # delete停牌个股
         tbl_super_dive="
         SELECT ${columns},
-        -- dive:当前跳水幅度 rebound:反弹幅度离(low+close)/2
         round(100*(t.high -LEAST(t.low,d.low))/t.high,1) as jump,
         round(100*(d.close-LEAST(t.low,d.low))/t.high,1) as rebound,
         ${nmcYi0}, c.name
@@ -981,75 +932,6 @@ function fn_hilo()
     xt_ret $? "${FUNCNAME}" || return $?
 
     PREFIX=${tempday} sqls=${tbl_super_dive} fn_chao
-}
-
-function fn_inout()
-{
-    inout_codes="
-    $DROP        d_temp;
-    CREATE TABLE d_temp LIKE day;
-    INSERT INTO  d_temp ${d_temp};
-    $DROP        d_curr;
-    CREATE TABLE d_curr LIKE day;
-    INSERT INTO  d_curr ${d_curr};
-
-    $DROP        prev_codes;
-    CREATE TABLE prev_codes LIKE codes;
-    INSERT INTO  prev_codes(code)
-        SELECT code FROM (
-            SELECT t.code, round(100*(d.close-t.low)/t.low, 2) as incr
-            FROM ${hilo_prev} as t, d_curr as d
-            WHERE t.code=d.code ORDER by incr DESC LIMIT ${LIMIT:-40}    -- PREV排名前40
-        ) as t;
-
-    $DROP        curr_codes;
-    CREATE TABLE curr_codes LIKE codes;
-    INSERT INTO  curr_codes(code)
-        SELECT code FROM (
-            SELECT t.code, round(100*(d.close-t.low)/t.low, 2) as incr
-            FROM ${hilo_curr} as t, d_temp as d
-            WHERE t.code=d.code ORDER by incr DESC LIMIT ${LIMIT:-40}    -- CURR排名前40
-        ) as t;
-
-    $DROP        sit_codes;
-    CREATE TABLE sit_codes LIKE codes;
-    INSERT INTO  sit_codes(code) SELECT p.code FROM prev_codes as p, curr_codes as c  WHERE p.code=c.code;
-
-    $DROP        out_codes;
-    CREATE TABLE out_codes LIKE codes;
-    INSERT INTO  out_codes(code) SELECT code FROM prev_codes WHERE code NOT IN(SELECT code FROM curr_codes);
-
-    $DROP         in_codes;
-    CREATE TABLE  in_codes LIKE codes;
-    INSERT INTO   in_codes(code) SELECT code FROM curr_codes WHERE code NOT IN(SELECT code FROM prev_codes);
-    "
-
-    function fn_in_or_out()
-    {
-      echo "
-      SELECT * FROM (
-        SELECT ${columns},
-        round(100*(d.close-t.low)/t.low, 2)  as incr,
-        ${RISE} as rise,
-        round((d.volume/t.mavol5), 2) as tov, t.scale,
-        round((d.amount/10000), 1) as eYi,
-        ${nmcYi0}, c.name
-        FROM ${hilo_curr} as t, d_temp as d, cap as c
-        WHERE t.code=d.code and t.code=c.code
-        HAVING 1
-        ORDER by incr ${ASC:-DESC} ) as newton
-        WHERE code IN (SELECT code FROM ${1}_codes)                 -- 新进 = 今天前40-(2天的交集)
-      HAVING ${HAVING:-1} ORDER by ${FIELD:-incr} ${ASC:-DESC}      -- 淘汰 = 昨天前40-(2天的交集)
-      "
-    }
-    function fn_yi_descend()
-    {
-      tempday="${inout_codes}"
-      tbl_super_dive=`fn_in_or_out $1`
-      fn_echo_blue "${tbl_super_dive}"
-    }
-
-    return $?
 }
 
 function fn_lohi_wind()
@@ -1171,9 +1053,6 @@ function fn_lohi()
        d_curr="SELECT * from day where date='${iCURR}'"     # 次新day数据，必是必市后数据
 
     case $1 in
-    in|out|sit)
-        fn_inout
-        ;;
     l|list)
         fn_list_iF5_times
         ;;
@@ -1213,7 +1092,7 @@ function fn_lohi()
 
         if [ "${SCALE:-0}" = 'A' ]; then
             HMS=${HMS:-`fn_get_time 1`}
-            SCALE=`SCALE=A fn_scale ${HMS}`
+            SCALE=`SCALE=A HMS=${HMS} fn_scale`
             fn_echo_succ SCALE ${SCALE}
         fi
 
@@ -1583,11 +1462,7 @@ function fn_lhb()
 
 function fn_scale()
 {
-    if [ -z "${1}" ]; then
-        HMS=CURRENT_TIME
-    else
-        HMS="'${1}'"
-    fi
+    HMS=${HMS:-CURRENT_TIME}
     SEC_150000=54000
     SEC_113000=41400
     SEC_093000=34200
@@ -2723,18 +2598,6 @@ function fn_g20()
     return $?
 }
 
-function fn_dive()
-{
-    dates=`fn_get_date 1 ${1:-10}`
-
-    local i=
-    for i in ${dates}; do
-        COND="dive>${DOOR:-10}" END=${i} FIELD=dive SELECT lsd
-    done
-
-    return $?
-}
-
 function fn_ATR()
 {
     # usage
@@ -3033,7 +2896,6 @@ function fn_main()
     #tao5                                     # "
     #rdiff                                    # tbl_rdiff"
     #tri                                      # 3连阳"
-    #dive                                     # 跳水第2日买进"
     #ban                condi [time]          # 条件. 0945后使用"
     #sban               condi [time]          # super ban"
     "vol                {0|3|6|03}            # ^^3市成交^^"
@@ -3049,7 +2911,7 @@ function fn_main()
     "dde                                      # dde(CURR)>dde(PREV)"
     "wolf                                     # DDE"
     "blk                                      # 板块信息+涨幅统计"
-    "scale                                    # 成交量放大倍数"
+    "scale                                    # HMS= 可指定时间"
     "ATR                all|redOnly|code      # AverageTrueRangeOf阳线非一字板"
     "notice                                   # 公告"
     "ddd                                      # 连续缩量后放量"

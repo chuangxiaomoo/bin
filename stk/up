@@ -831,20 +831,6 @@ function fn_chk_rank()
     [ "${match:-0}" -eq 1 ] && BEEPS=${BEEPS} fn_beep L1:${birds1} L2:${birds2}
 }
 
-function fn_example_not_work_by_group()
-{
-    echo "
-    SET @v_id = 1;
-    SELECT max(id)   FROM code2015 INTO @v_len;
-    WHILE @v_id <= @v_len DO
-        SELECT code FROM code2015 WHERE id=(@v_id) INTO @v_code;
-        INSERT INTO ma20f15(code,ma20f15)
-            SELECT @v_code, sum(close)/20 FROM (SELECT close FROM dorat2 WHERE code=@v_code) as t;
-        SET @v_id = @v_id + 1;
-    END WHILE;
-    "
-}
-
 function fn_ma20f15()
 {
     function fn_creat_db_ma20f15()
@@ -1493,8 +1479,72 @@ function fn_hwork()
         SCREENER lohi   $argv
         SCREENER matov5 $argv
         SCREENER ma1020 $argv
+        up chk_day
         fn_bell
     } >& ${STDOUT} 
+}
+
+function fn_chk_day()
+{
+    columns="code,date,yesc,open,high,low,close,volume,amount"
+
+    case $1 in
+    r)
+        t1500=`fn_get_time`
+        [ "${t1500//:/}" -ge 150000 ]
+        xt_ret $? "Error: timestamp@${t1500}" || return $?
+
+        echo "
+        DELETE from day WHERE date='${END}';
+        INSERT INTO day SELECT ${columns} FROM dorat WHERE date='${END}' && time='${t1500}';
+        " | mysql kts
+        ;;
+    l)
+        grep -v -f ${chao}.vs_less ${chao}.vs_more > /tmp/kts/chao.vs
+        num=`wc -l < /tmp/kts/chao.vs`
+        fn_echo_succ "There r ${num} lines: /tmp/kts/chao.vs"
+        ;;
+    *)
+        END=`fn_get_date $1`
+        t1500=`fn_get_time`
+        [ "${t1500//:/}" -ge 150000 ]
+        xt_ret $? "Error: timestamp@${t1500}" || return $?
+
+        sqls="SELECT DISTINCT code FROM dorat WHERE date='$END' and time='${t1500}' && code < 888888"
+        mysql -N kts <<< "${sqls}" > ${chao}.vs_dorat
+
+        sqls="SELECT DISTINCT code FROM day WHERE date='$END' and code < 888888"
+        mysql -N kts <<< "${sqls}" > ${chao}.vs_day
+
+        sqls="SELECT DISTINCT code FROM dde WHERE date='$END' and code < 888888"
+        mysql -N kts <<< "${sqls}" > ${chao}.vs_dde
+        
+        dor=`wc -l < ${chao}.vs_dorat` 
+        day=`wc -l < ${chao}.vs_day` 
+        dde=`wc -l < ${chao}.vs_dde` 
+
+        fn_echo_succ "${END} dor:$dor day:$day dde:$dde"
+
+        [ "${dor}" -gt "${dde}" ] && [ "${day}" -gt "${dde}" ]
+        xt_ret $? "something wrong"
+
+        [ "${dor}" -eq "${day}" ] && exit
+
+        if [ "${dor}" -gt "${day}" ]; then
+            cp ${chao}.vs_dorat ${chao}.vs_more
+            cp ${chao}.vs_day   ${chao}.vs_less
+        elif [ "${day}" -gt "${dor}" ]; then
+            cp ${chao}.vs_dorat ${chao}.vs_less
+            cp ${chao}.vs_day   ${chao}.vs_more
+        fi
+
+        fn_chk_day l
+        fn_echo_warn "
+        _to_del200_: DELETE FROM day WHERE  code>=200000 && code < 300000;
+        _to_repare_: up chk_day r"
+        exit
+        ;;
+    esac
 }
 
 function fn_main()
@@ -1538,6 +1588,7 @@ function fn_main()
     "xbb [l]                            # 生成PREV30成交额峰值测算，加参数l时list数据日期"
     "hwork                              # 每日功课"
     "chk_rank                           # 有新进成员"
+    "chk_day                            # day vs. dde"
     )
 
     # 存储过程函数文件的最后5行都是注释
