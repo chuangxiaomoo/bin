@@ -1,0 +1,5 @@
+# 查看各表占用空间大小
+
+SELECT TABLE_NAME, (DATA_LENGTH+INDEX_LENGTH)/1024/1024 
+    FROM information_schema.TABLES where TABLE_SCHEMA = 'kts';
+
