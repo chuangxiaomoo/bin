@@ -1,0 +1,38 @@
+#! /bin/bash
+
+. `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
+. /etc/common.rc
+
+
+function fn_size()
+{
+    sqls="
+        SELECT TABLE_NAME, ROUND( (DATA_LENGTH+INDEX_LENGTH)/1024/1024, 2) as size_M 
+            FROM information_schema.TABLES where TABLE_SCHEMA = 'kts' ORDER by size_M DESC"
+    fn_imysql_sqls
+    
+    return $?
+}
+
+function fn_stat()
+{
+    fn_echo_succ "tov5.No.500"
+    sqls=" SELECT * FROM matov5 WHERE date='${END}' ORDER by tov DESC LIMIT 500,1 "
+    fn_imysql_sqls
+    return $?
+}
+
+
+function fn_main()
+{
+    cmdlist=(
+    # fixed sequence
+    "size                               # kts.TABLES所占用的空间大小"
+    "stat                               # "
+    )
+
+    fn_set_END
+    fn_execute "$@"
+}
+
+fn_main "$@"
