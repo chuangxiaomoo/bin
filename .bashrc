@@ -43,6 +43,8 @@ alias       wup='.s; FINA=0 up 4; TBL=wind SCREENER 0 || up wind'
 alias       fup='.s; FINA=1 up 4'
 alias   .lschao='xargs -n8</tmp/kts/chao'
 alias      .nb.="timeout 3 nc 10.0.2.2 1234 <<< 'duang.wav msg.wav'"
+alias      .NTP="ntpdate cn.pool.ntp.org"
+
 
 alias     ..='cd ..'
 alias    ...='cd ../..'
@@ -73,8 +75,6 @@ alias   lsd='find `ls -A` -maxdepth 0 -type d | xargs'
 #lias   lsf='find . -maxdepth 1 -type f | sed 's#\./##g' | xargs'
 #lias   lsd='find . -maxdepth 1 -name '\''[a-zA-Z]*'\'' -type d | xargs | sed '\''s#\./##g'\'''
 
-alias  ktel="ps -ef | grep [t]elnet | awk '{print \$2}' | xargs kill -9"
-alias  ktel="ps -ef | grep [t]elnet | awk '{print \$2}' | xargs kill -9"
 alias  kpts="ps -ef | grep '[p]ts/[0-9]' | awk '{print \$2}' | xargs kill -9"
 alias    rr='rm -rf'
 alias    rm='rm -i'

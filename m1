@@ -1105,6 +1105,7 @@ function fn_sql()                       {
 function fn_kts()                       { cat sql_kts ;}
 function fn_min()                       { cat sql_min ;}
 function fn_base()                      { cat sql_base ;}
+function fn_misc()                      { cat sql_misc ;}       # 重要技巧
 function fn_datatype()                  { cat sql_datatype ;}
 function fn_show()                      { cat sql_show ;}
 function fn_create()                    { cat sql_create ;}
