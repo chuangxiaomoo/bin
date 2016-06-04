@@ -787,7 +787,19 @@ function fn_ddetov25()
 function fn_ddetov21()
 {
     PREV25=`fn_get_date 10`
-    fn_echo_succ "up matov5@${END}..."
+    sqls="SELECT FLOOR(tov) FROM dde WHERE date='${END}' ORDER by tov DESC LIMIT 500,1"
+    t500=`mysql -N kts <<< "${sqls}"`
+    xt_ret $? "" || return $?
+
+    case $t500 in
+    [5-9])  Ponzi=5     ;;
+    4)      Ponzi=4     ;;
+    *)      Ponzi=3.5   ;;
+    esac
+
+    fn_echo_succ "up matov5@${END} t500:${t500} Ponzi:${Ponzi}..."
+
+    exit 
 
     echo "
     DROP TABLE IF EXISTS tov5;
@@ -796,7 +808,7 @@ function fn_ddetov21()
         code        INT(6) ZEROFILL DEFAULT 0,
         tov         DECIMAL(6,2) DEFAULT 0,
         dy12        DECIMAL(6,2) DEFAULT 0,
-        dy23        DECIMAL(6,2) DEFAULT 0,
+        dy35        DECIMAL(6,2) DEFAULT 0,
         wk12        DECIMAL(6,2) DEFAULT 0,
         wk23        DECIMAL(6,2) DEFAULT 0,
         INDEX(date,code)
@@ -810,6 +822,7 @@ function fn_ddetov21()
     INSERT INTO zxg(code) SELECT DISTINCT code FROM day WHERE date>='${PREV25}' && date<='${END}' and code<888888;
 
     SET @END='$END';
+    SET @Ponzi=${Ponzi};
     call sp_visit_tbl('zxg', @fn_dde21);
 
     DELETE FROM matov5 WHERE date='$END';
@@ -842,8 +855,8 @@ function fn_tt25()
     INSERT INTO zxg(code) VALUES(${1});
 
     SET @END='$END';
-#   call sp_visit_tbl('zxg', @fn_dde21); SELECT * FROM tov5;
-    call sp_visit_tbl('zxg', @fn_ma1020); SELECT * FROM tempday;
+    call sp_visit_tbl('zxg', @fn_dde21); SELECT * FROM tov5;
+#   call sp_visit_tbl('zxg', @fn_ma1020); SELECT * FROM tempday;
     " >> $mps_god
    #" | tee -a $mps_god
     mysql $OPT -t kts < $mps_god

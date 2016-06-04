@@ -15,7 +15,7 @@ function fn_cap()
         read -p "
         Make sure U have down full.FIN?
         cp /dzh2/Download/FIN/full.FIN $p_bin"
-        cp /dzh2/Download/FIN/full.FIN $p_bin
+        ( cd $p_bin && ln -sf /dzh2/Download/FIN/full.FIN )
         xt_ret $? "" || return $?
     fi
 
@@ -343,7 +343,7 @@ function fn_up_tbl_xRD()
         echo "keep $p_bin/full.PWR"
     else
         echo "cp /dzh2/Download/PWR/full.PWR $p_bin"
-        cp /dzh2/Download/PWR/full.PWR $p_bin
+        ( cd $p_bin && ln -sf /dzh2/Download/PWR/full.PWR )
         xt_ret $? "" || return $?
     fi
 
@@ -1477,7 +1477,7 @@ function fn_hwork()
 
     {
         SCREENER lohi   $argv
-        SCREENER matov5 $argv
+        SCREENER matov5 $argv && \
         SCREENER ma1020 $argv
         up chk_day
         fn_bell
@@ -1587,7 +1587,7 @@ function fn_main()
     "bigbid                             # 大宗交易"
     "xbb [l]                            # 生成PREV30成交额峰值测算，加参数l时list数据日期"
     "hwork                              # 每日功课"
-    "chk_rank                           # 有新进成员"
+    "chk_rank                           # 有新进成员，[up dorat]定期调用"
     "chk_day                            # day vs. dde"
     )
 
