@@ -62,7 +62,7 @@ function fn_pro_hammer()
     REALIZ='(ma5/((ma5+ma10+ma20)/3) -1)'
     REALIZED='(d.close/((ma5+ma10+ma20)/3) -1)'    # 涨幅 = ma5涨幅 * 相应乘数  .03= 1/5+1/10
     REALIZED2="IF($REALIZED>0, ${REALIZED}, 0)"
-    pwr_d25='(GREATEST(dy12, dy23) + GREATEST(wk12, wk23)-2) * 8'
+    pwr_d25='(GREATEST(dy12, dy35) + GREATEST(wk12, wk23)-2) * 8'
     pwr_nmc="IF(${nmc0}-20<80, ${nmc0}-20, 80)/10"
     pwr_t10=1 # "IF(top10<.1, 1, 1.1-top10)"
     columns="d.code"
@@ -74,13 +74,13 @@ function fn_pro_hammer()
             $TURNOV as tov, t5.tov as tov5,
             ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2) as prop5,
             concat(top10, '_', ROUND(${REALIZED2}, 2)) as t10_rliz,
-            GREATEST(dy12, dy23) as inc_dy,
-            GREATEST(wk12, wk23) as inc_wk,
+            (GREATEST(wk12, wk23)-1) as i_wk,
+            (GREATEST(dy12, dy35)-1) as i_dy,
 --          ROUND(100*${REALIZED}) as rliz,
-            ROUND(100*(d.close/ma60-1), 1) as r60,
             $RISE as rise,
             ROUND( t5.tov/$pwr_t10 +${pwr_d25} -100*${REALIZED2} 
                    -${pwr_nmc} ${TOV_DELTA}, 1) as space,
+            ROUND(100*(d.close/ma60-1), 1) as ma60,
 --          ROUND((100*(d.close/ma10-1)), 2) as r10,
 --          ROUND((100*(d.close/ma20-1)), 2) as r20,
             round(d.amount/10000, 2) as eYi,
