@@ -701,28 +701,21 @@ function fn_lohi_repair()
 
 function fn_ddetov5()
 {
+    NEXT=`fn_get_next`
     PREV5=`fn_get_date 5`
     fn_echo_succ "up matov5@${END}..."
 
     echo "
     DROP TABLE IF EXISTS tov5;
-    CREATE TABLE tov5 (
-        date        date NOT NULL,
-        code        INT(6) ZEROFILL DEFAULT 0,
-        tov         DECIMAL(6,2) DEFAULT 0,
-        day23       DECIMAL(6,2) DEFAULT 0,
-        day35       DECIMAL(6,2) DEFAULT 0,
-        wk12        DECIMAL(6,2) DEFAULT 0,
-        wk23        DECIMAL(6,2) DEFAULT 0,
-        INDEX(date,code)
-    );
-
---  DROP TABLE IF EXISTS matov5;
-    CREATE TABLE IF NOT EXISTS matov5 LIKE tov5;
-
+    CREATE TABLE tov5 LIKE matov5;
+    TRUNCATE TABLE ris200;
     TRUNCATE TABLE zxg;
-    INSERT INTO zxg(code) 
-        SELECT code FROM dde d WHERE date>='$PREV5' && date<='$END' GROUP by code HAVING count(code)=5;
+
+    INSERT INTO ris200(code)
+        SELECT d.code FROM dde d WHERE date='$NEXT' ORDER by rise DESC LIMIT 500;
+    INSERT INTO zxg(code)
+        SELECT d.code FROM dde d, ris200 r WHERE d.code=r.code && date>='$PREV5' && date<='$END' GROUP by code HAVING count(d.code)=5;
+
     INSERT INTO tov5
         SELECT d.date,d.code,tov,1,1,1,1 FROM dde d, zxg c WHERE date>='$PREV5' && date<='$END' && d.code=c.code;
     " | mysql kts
@@ -737,13 +730,14 @@ function fn_ddetov5()
     SET @END='$END';
 
     TRUNCATE TABLE zxg;
-    INSERT INTO zxg(code) 
-        SELECT code FROM dde d WHERE date>='$PREV5' && date<='$END' GROUP by code HAVING count(code)<5;
+    INSERT INTO zxg(code)
+        SELECT d.code FROM dde d, ris200 r WHERE d.code=r.code && date>='$PREV5' && date<='$END' GROUP by code HAVING count(d.code)<5;
     call sp_visit_tbl('zxg', @fn_dde5);
 
     DELETE FROM matov5 WHERE date='$END';
     INSERT INTO matov5 SELECT '$END',code,sum(tov)/5,1,1,1,1 FROM tov5 GROUP by code ORDER by code ASC;
-    " | tee -a $mps_god
+    " >> $mps_god
+    #" | tee -a $mps_god
     mysql $OPT -t kts < $mps_god
     xt_ret $? "${FUNCNAME}" || return $?
 }
@@ -792,14 +786,12 @@ function fn_ddetov21()
     xt_ret $? "" || return $?
 
     case $t500 in
-    [5-9])  Ponzi=5     ;;
-    4)      Ponzi=4     ;;
+    [6-9])  Ponzi=5     ;;
+    4|5)    Ponzi=4     ;;
     *)      Ponzi=3.5   ;;
     esac
 
     fn_echo_succ "up matov5@${END} t500:${t500} Ponzi:${Ponzi}..."
-
-    exit 
 
     echo "
     DROP TABLE IF EXISTS tov5;
@@ -956,8 +948,9 @@ function fn_matov5()
         ;;
     [0-9]*)
         date=`fn_get_date ${1:-1}`
-       #END=${date} fn_ddetov5
        #END=${date} fn_ddetov25
+        test -n "$DDETOV5" &&
+        END=${date} fn_ddetov5 ||               # fast create head-200
         END=${date} fn_ddetov21
         ;;
     *)

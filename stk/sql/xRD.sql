@@ -524,7 +524,7 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
     END IF;
 
     SET @cond=' ORDER by code';
-    SET @sqls=concat('INSERT INTO codes(code) SELECT code FROM ', a_tbl, @cond);
+    SET @sqls=concat('INSERT INTO codes(code) SELECT DISTINCT code FROM ', a_tbl, @cond);
     PREPARE stmt from @sqls; EXECUTE stmt;
     SELECT max(id)   FROM codes INTO v_len;
     SELECT max(date) FROM day WHERE code=900001 INTO @v_maxdate;
@@ -1507,18 +1507,17 @@ CREATE PROCEDURE sp_dde21(a_code INT(6) ZEROFILL) tag_dde21:BEGIN
     PREPARE stmt from @sqls; EXECUTE stmt;
     SELECT count(*) FROM ttov INTO @v_len;
 
-    # 为次新股考虑：如<第一创业>
-
-    IF @v_len < 21 THEN 
-        INSERT INTO tov5(date,code,tov,dy12,dy35,wk12,wk23) VALUES (@END,a_code,@v_tov5, 1,1,1,1); 
-        LEAVE tag_dde21;
-    END IF;
-
     SELECT tov                FROM ttov WHERE id=1              INTO @v_top1 ;
     SELECT SUM(tov)/2         FROM ttov WHERE id>=2 && id<=3    INTO @v_bot2 ;
 
     SELECT SUM(tov)/3         FROM ttov WHERE id<=3             INTO @v_top3 ;
     SELECT SUM(tov)/5         FROM ttov WHERE id>=4 && id<=8    INTO @v_bot5 ;
+
+    IF @v_len < 21 THEN 
+        # 为次新股考虑：如<第一创业>
+        INSERT INTO tov5(date,code,tov,dy12,dy35,wk12,wk23) VALUES (@END,a_code,@v_tov5, @v_top1/@v_bot2, @v_top3/@v_bot5, 1,1); 
+        LEAVE tag_dde21;
+    END IF;
 
     SELECT SUM(tov)/8         FROM ttov WHERE id>=6 && id<=13   INTO @v_bot8 ;
     SELECT SUM(tov)/8         FROM ttov WHERE id<=8             INTO @v_top8 ;

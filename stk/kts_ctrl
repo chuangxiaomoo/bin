@@ -17,7 +17,7 @@ function fn_size()
 function fn_stat()
 {
     fn_echo_succ "tov5.No.500"
-    sqls=" SELECT * FROM matov5 WHERE date='${END}' ORDER by tov DESC LIMIT 500,1 "
+    sqls=" SELECT date,code,tov,nmc,name FROM dde WHERE date='${END}' ORDER by tov DESC LIMIT 500,1 "
     fn_imysql_sqls
     return $?
 }

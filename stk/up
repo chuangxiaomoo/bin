@@ -718,38 +718,28 @@ function fn_db201()
         # so important
         max_date=`mysql -N kts <<< "SELECT max(date) FROM matov5"`
         if [ "${max_date}" != "${END}" ]; then
+            fn_beep "------ LAST homework is not done ------"
             fn_bell 'msg.wav msg.wav msg.wav msg.wav msg.wav'; exit
         else
             # 同步时间
-            timeout 30 ntpdate cn.pool.ntp.org
+            timeout 30 ntpdate cn.pool.ntp.org || \
+            fn_beep "------ NTP sync failure ------"
             fn_bell 'msg.wav'; exit
         fi
     fi
 
-    if [ "${now}" = "${db_date}" ]; then
-        fn_bell 'wolf'
-    fi
-    return $?
+    # 当日开市&有dorat数据更新
+    [ "${now}" = "${db_date}" ] && fn_bell 'wolf'
 }
 
-function fn_dorat()
+function fn_ld_dorat()
 {
-    case $1 in
-    l|loop) # 午休时段不更新数据
-        is_del_routine=true fn_timestamp_market
-        xt_ret $? "unarm_close_forbid=true TO RERUN WHEN MARKET CLOSED" || return $?
-        fn_isresting && { echo "is reseting"; exit 0; }
-        ;;
-    esac
+    if [ -z "${sec_date}" ]; then
+        sec_dt=(`mysql -N kts<<<"SELECT date,time FROM stamp_day ORDER by id DESC LIMIT 1"`)
+        sec_date=${sec_dt[0]}
+        sec_time=${sec_dt[1]}
+    fi
 
-    hhmm=`date +%H%M | sed 's/^0//'`;
-
-    fn_redo_hexun_day || FINA=1 up 4
-    xt_ret $? "" || { BEEPS=5 fn_beep; return $? ;}
-    sec_dt=(`mysql -N kts<<<"SELECT date,time FROM stamp_day ORDER by id DESC LIMIT 1"`)
-
-    sec_date=${sec_dt[0]}
-    sec_time=${sec_dt[1]}
     columns="code,yesc,open,high,low,close,volume,amount"
 
     echo "
@@ -770,6 +760,68 @@ function fn_dorat()
     DELETE from dorat WHERE date='${sec_date}' && time='${sec_time}';
     INSERT INTO dorat SELECT date,'${sec_time}',${columns} FROM ${TBL:-day} WHERE date='${sec_date}';
     " | mysql kts
+    
+    return $?
+}
+
+function fn_am925()
+{
+    fn_get_export_file
+    xt_ret $? "" || return $?
+
+    # umcomment
+    # efile='/tmp/kts/chao.Table'
+    iconv -f cp936 -t utf8 ${efile} | tail -n+2 > ${wolf_raw}
+    if ! grep -q '^S[HZ]' ${wolf_raw}; then
+        fn_echo_fail "not a wolf file"
+        return 1
+    fi
+
+    tag_blank='--.--.--'
+    sed -e 's///g' -e 's/S.//g' -e 's/ //g'               \
+        -e 's/%//g' -e 's/\t$//g' -e 's/\t\t*/\t/g'         \
+        -e "/${tag_blank}/d" -e '/^$/d' ${wolf_raw} > ${bigbid_raw}
+
+    awk -v vdate=${YYMMDD} '{
+        printf "%s\t%s\t %.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n",
+        $1,vdate, $3,$4,$5,$6,$7, $8/10000,$9/10000
+    }' ${bigbid_raw} > ${wolf_rip}
+
+    printf "900001\t${YYMMDD}\n"  >> ${wolf_rip}
+
+    fn_echo_succ "re-build day @${YYMMDD}.${HHMMSS}"
+
+    # exit # un-comment to debug
+
+    echo "
+    DELETE FROM day WHERE date='${YYMMDD}';
+    LOAD DATA LOCAL INFILE '${wolf_rip}' INTO TABLE day;
+    " | mysql kts
+    xt_ret $? "" || return $?
+
+    fn_echo_succ "re-build dorat @${YYMMDD}.${HHMMSS}"
+    sec_date=${YYMMDD} sec_time=${HHMMSS} fn_ld_dorat
+    xt_ret $? "" || return $?
+
+    fn_chk_rank
+}
+
+function fn_dorat()
+{
+    case $1 in
+    l|loop) # 午休时段不更新数据
+        is_del_routine=true fn_timestamp_market
+        xt_ret $? "unarm_close_forbid=true TO RERUN WHEN MARKET CLOSED" || return $?
+        fn_isresting && { echo "is reseting"; exit 0; }
+        ;;
+    esac
+
+    hhmm=`date +%H%M | sed 's/^0//'`;
+
+    fn_redo_hexun_day || FINA=1 up 4
+    xt_ret $? "" || { BEEPS=5 fn_beep; return $? ;}
+
+    fn_ld_dorat
     xt_ret $? "" || return $?
 
     fn_echo_succ "    succ: insert dorat ${sec_dt[@]}"
@@ -784,16 +836,17 @@ function fn_chk_rank()
     let iprev=icurr-1
 
     # compute layer2s
+    fn_echo_succ "ceilings=rise>=9.93..."
     ceilings=`OPT='-N' PPLUS=v COND="rise>=9.93" CHAO=0 PARTS= WIT= SELECT lsd $1 | wc -l`
 
     if [ "${ceilings}" -gt 16 ]; then
         ceilings=16
     fi
 
-    let layer1s=ceilings+3   # 6=3+3 提供1防护
-    let layer2s=ceilings+6   # 6=3+3 提供2防护
+    let layer1s=ceilings+3                  # 6=3+3 提供1防护
+    let layer2s=ceilings+6                  # 6=3+3 提供2防护
 
-    if [ "${hhmm:=1000}" -lt 933 ]; then
+    if [ "${hhmm:=1000}" -lt 930 ]; then    # 925在10jqka中进行
         ./blk 10jqka
         # 适用范围：(1) 20亿以下的小盘股 (2) 50亿以下但top10在44%之上
         # top10=30%; 70/5 = x/4; x = 280/5 = 56%; ==> top10=44% ==> vDOOR=4%
@@ -807,8 +860,9 @@ function fn_chk_rank()
     fi
 
     # process
+    fn_echo_succ "layer2s=ceilings+6=${ceilings}+6..."
     CHAO=1 PPLUS=V LIMIT=${layer2s} chao2='L2.prev' SELECT lsd ${iprev}
-    xt_ret $? "" || return $?
+    xt_ret $? "$BLK $YIST:  CHAO=1 PPLUS=V LIMIT=${layer2s} chao2='L2.prev' SELECT lsd ${iprev}" || return $?
 
     head -${layer2s} /tmp/kts/chao.lsd      > /tmp/kts/chao.L2.curr
     head -${layer1s} /tmp/kts/chao.lsd      > /tmp/kts/chao.L1.curr
@@ -1574,6 +1628,7 @@ function fn_main()
     "ipo                                # DL ipo codes from east"
     "lhb                                # 龙虎榜"
     "dorat  [loop]                      # 量比数据，loop when run@crontab"
+    "am925                              # 10jqka日线数据"
     "ma20f15                            # "
     "trace                              # "
     "fenbi  code 2015mmdd               # "
