@@ -1,2 +1,2 @@
 #! /bin/bash
-timeout 3 nc 10.0.2.2 1234 <<< "msg.wav"
+timeout 3 nc 10.0.2.2 1234 <<< "${*:-msg.wav}"

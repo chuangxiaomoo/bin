@@ -7,6 +7,7 @@ alias       BLK=''  # B被BLK独占for其超高频率使用
 alias      COND=''
 alias      iASC=''
 alias     iCOND=''
+alias     kCOND=''
 alias      CHAO=''
 alias     CAUSE=''
 alias     CIXIN=''
@@ -63,7 +64,6 @@ alias   .ps='PS1="[\w]\n\u-> \[\033[0m\]"'
 
 alias .de_beep="echo 0 >/tmp/kts/chao.beep"
 alias .en_beep="echo 1 >/tmp/kts/chao.beep"
-
 
 alias     f='find'
 alias     l='ls -CF'

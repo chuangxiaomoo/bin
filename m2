@@ -16,7 +16,7 @@ function fn_中医学理论体系()            { cat herb_中医学理论体系 
     fn_print $@
 }
 
-function fn_mng()                       { 
+function fn_mng()                       {
 function fn_honor()    	                { cat mng_honor ;}
 function fn_promotion()                 { cat mng_promotion ;}
 function fn_01_审时度势见机行事()       { cat mng_01_审时度势见机行事 ;}
@@ -54,7 +54,7 @@ function fn_22_莱茵河如何跨国治污()     { cat mng_22_莱茵河如何跨
     fn_print $@
 }
 
-function fn_annual()                    { 
+function fn_annual()                    {
 function fn_plan_what()                 { cat annual_plan_what ;}
 function fn_report_what()               { cat annual_report_what ;}
 function fn_seminar_what()              { cat annual_seminar_what ;}
@@ -110,7 +110,7 @@ function fn_2016_event()                { cat annual_2016_event ;}
 function fn_book()                      {
 function fn_cept()                      { cat book_cept ;}
 function fn_laozi()                     { cat book_laozi ;}
-function fn_sunzi()                     { cat book_sunzi; 
+function fn_sunzi()                     { cat book_sunzi;
                                           cat arch_sunzi ;}
 function fn_liutao()                    { cat book_liutao ;}
 function fn_lunyu()                     { cat book_lunyu ;}
@@ -126,15 +126,15 @@ function fn_dt_暗时间()                 { cat book_dt_暗时间 ;}
 function fn_tf_把时间当作朋友()         { cat book_tf_把时间当作朋友;
                                           cat ref_lai ;
                                           cat TIME; }
-function fn_yl_你的灯亮着吗()           { cat book_yl_你的灯亮着吗 
+function fn_yl_你的灯亮着吗()           { cat book_yl_你的灯亮着吗
                                           cat read_yl_你的灯亮着吗 ;}
 function fn_lf_雷锋日记()               { cat book_lf_雷锋日记 ;}
 function fn_py_金字塔原理()             { cat book_py_金字塔原理 ;}
-function fn_economic_naturalist()       { cat book_economic_naturalist 
+function fn_economic_naturalist()       { cat book_economic_naturalist
                                           cat read_economic_naturalist ;}
 function fn_10years()                   { cat book_10years ;}
 function fn_conservatism()              { cat book_conservatism ;
-                                          cat read_conservatism ;} 
+                                          cat read_conservatism ;}
 function fn_f1_富同学穷同学()           { cat book_f1_富同学穷同学 ;}
 function fn_f2_海底捞你学不会()         { cat book_f2_海底捞你学不会 ;}
 function fn_f3_教父()                   { cat book_f3_教父 ;}
@@ -149,10 +149,10 @@ function fn_201_经济学通识()            { cat book_201_经济学通识 ;}
 function fn_900_平凡的世界()            { cat book_900_平凡的世界 ;}
 function fn_tiandao()                   { cat book_tiandao book_遥远的救世主;}
     local opts=(
-        cept       
+        cept
         wanna                   # 想读的书
         sunzi                   # 孙子兵法
-        laozi                   # 道德经 daodejing 
+        laozi                   # 道德经 daodejing
         liutao                  # 六韬.太公兵法
         36ji                    # 36计
         lunyu                   # 论语
@@ -175,7 +175,7 @@ function fn_tiandao()                   { cat book_tiandao book_遥远的救世�
         f2_海底捞你学不会
         f1_富同学穷同学
         f3_教父
-        66_佛语 
+        66_佛语
 
         100_周鸿祎自述
         101_livermore
@@ -200,7 +200,7 @@ function fn_meeting()                   { cat meeting ;}
 function fn_01_囧_jiong()               { cat 01_囧_jiong ;}
 function fn_02_如何解题()               { cat 02_如何解题 ;}
 
-function fn_howto()                     { 
+function fn_howto()                     {
 function fn_01_提高逻辑思维能力()       { cat howto_01_提高逻辑思维能力 ;}
 function fn_02_训练思维的深度和缜密度() { cat howto_02_训练思维的深度和缜密度 ;}
 function fn_03_沟通_communication()     { cat howto_03_沟通_communication ;}
@@ -232,14 +232,14 @@ function fn_clips()                     { cat english_clips ;}
         vocabulary
         sentence
         speaking
-        listening_layers                # 语言的层次 
+        listening_layers                # 语言的层次
         reading
         interpreting                    # 在电脑上用vi补全对照听写
     )
     fn_print $@
 }
 
-function fn_zhihu()                     { 
+function fn_zhihu()                     {
 function fn_yolfilm()                   { cat zhihu_yolfilm ;}
 function fn_在酒桌上遭人恶意灌酒()      { cat zhihu_在酒桌上遭人恶意灌酒 ;}
 function fn_牛人名人再忙也要上知乎？()  { cat zhihu_牛人名人再忙也要上知乎？ ;}
@@ -253,7 +253,7 @@ function fn_郭敬明的电影《小时代》？()  { cat zhihu_郭敬明的电�
     fn_print $@
 }
 
-function fn_artical()                   { 
+function fn_artical()                   {
 function fn_01_高铁陆权战略()           { cat artical_01_高铁陆权战略 ;}
 function fn_03_教育的意义()             { cat artical_03_教育的意义 ;}
 function fn_04_周国平：交往的质量()     { cat artical_04_周国平：交往的质量 ;}
@@ -268,7 +268,7 @@ function fn_05_whatsfriend()            { cat artical_05_whatsfriend ;}
     fn_print $@
 }
 
-function fn_value()                     { 
+function fn_value()                     {
 function fn_01_传统()                   { cat value_01_传统 ;}
 function fn_02_当代()                   { cat value_02_当代 ;}
     local opts=(
@@ -283,7 +283,7 @@ function fn_socrates()                  { cat socrates ;}
 function fn_aesthetics()                { cat aesthetics ;}
 function fn_tick()                      { cat tick.md ;}
 
-function fn_stk()                       { 
+function fn_stk()                       {
 function fn_cept()                      { cat stk_cept ;}
 function fn_ipo_ops()                   { cat stk_ipo_ops ;}
 function fn_ipo_rules()                 { cat stk_ipo_rules ;}
@@ -319,7 +319,7 @@ function fn_jc_Golf智慧_快就是慢()      { cat stk_jc_Golf智慧_快就是�
 
         00_技术分析                         # strategy
         01_战术                         # tactics
-        02_小数据                       # 个股 data 
+        02_小数据                       # 个股 data
         03_大数据                       # macro data
         07_牛眼投资法                   # bulleye
 
@@ -336,7 +336,7 @@ function fn_jc_Golf智慧_快就是慢()      { cat stk_jc_Golf智慧_快就是�
     fn_print $@
 }
 
-function fn_futures()                   {  
+function fn_futures()                   {
 function fn_cept()                      { cat futures_cept ;}
     local opts=(
         cept
@@ -344,7 +344,7 @@ function fn_cept()                      { cat futures_cept ;}
     fn_print $@
 }
 
-function fn_math()                      { 
+function fn_math()                      {
 function fn_e_n_log()                   { cat math_e_n_log ;}
 function fn_11_magical_70()             { cat math_11_magical_70 ;}
 function fn_12_fibonacci_sequence()     { cat math_12_fibonacci_sequence ;}
@@ -356,7 +356,7 @@ function fn_12_fibonacci_sequence()     { cat math_12_fibonacci_sequence ;}
     fn_print $@
 }
 
-function fn_why()                       { 
+function fn_why()                       {
 function fn_01_为什么拿好人卡()         { cat why_01_为什么拿好人卡 ;}
 function fn_02_一朝天子一朝臣()         { cat why_02_一朝天子一朝臣 ;}
     local opts=(
@@ -366,7 +366,7 @@ function fn_02_一朝天子一朝臣()         { cat why_02_一朝天子一朝�
     fn_print $@
 }
 
-function fn_movie()                     { 
+function fn_movie()                     {
 function fn_videos()                    { cat movie_videos ;}
 function fn_100films()                  { cat movie_100films ;}
 function fn_01_Akkila与拼字大赛()       { cat movie_01_Akkila与拼字大赛 ;}
@@ -398,7 +398,7 @@ function fn_language()                  { cat logic_language ;}
     fn_print $@
 }
 
-function fn_phi()                       { 
+function fn_phi()                       {
 function fn_wdf_01_心安之窄门()         { cat phi_wdf_01_心安之窄门 ;}
 function fn_wdf_02_国民性()             { cat phi_wdf_02_国民性 ;}
 function fn_wdf_03_儒道互补，内方外圆() { cat phi_wdf_03_儒道互补，内方外圆 ;}
@@ -503,7 +503,7 @@ function fn_brain()                     { cat xuexi_brain ;}
     fn_print $@
 }
 
-function fn_huawei()                    { 
+function fn_huawei()                    {
 function fn_to_sort()                   { cat huawei_to_sort ;}
 function fn_forum()                     { cat huawei_forum ;}
 function fn_cultural()                  { cat huawei_cultural ;}
@@ -543,7 +543,7 @@ function fn_WiMax_1st_meeting()         { cat huawei_WiMax_1st_meeting ;}
     local opts=(
         WiMax_1st_meeting               # 唯一一次大会
         cultural
-        misc                            # 一些哲学 
+        misc                            # 一些哲学
         to_sort                         # 未整理的 ruby python valgrind 等
         account_临行                    # 最后一次上传到csdn评论的账号 cu.h
         forum                           # 论坛里的小伙伴
@@ -553,7 +553,7 @@ function fn_WiMax_1st_meeting()         { cat huawei_WiMax_1st_meeting ;}
         OSMU                            # 张义强团队
 
         Du_DIY与戴明                    # Master Du
-        Du_提升C代码质量                # 壁垒，根本不在于是否采用OO 
+        Du_提升C代码质量                # 壁垒，根本不在于是否采用OO
         Du_模块中慎用vmalloc            # 多用__get_free_pages
         Du_企业和军队
         Du_乱弹几点感悟
@@ -563,11 +563,11 @@ function fn_WiMax_1st_meeting()         { cat huawei_WiMax_1st_meeting ;}
         Mo_letter2
         Du_letter2
 
-        Dong_语录                       # 
+        Dong_语录                       #
         Dong_产品经理                   # pm
         Dong_letter                     # 张冬
         Dong_建议大家都去当2b县长
-        Dong_【苏格拉底】关于专家       # 【对话苏格拉底】关于专家 
+        Dong_【苏格拉底】关于专家       # 【对话苏格拉底】关于专家
         Dong_工作如解题解题如抽丝
         Dong_优良的笔头表达能力
         Dong_研发要我来喂
@@ -580,7 +580,7 @@ function fn_WiMax_1st_meeting()         { cat huawei_WiMax_1st_meeting ;}
     fn_print $@
 }
 
-function fn_humor()                     { 
+function fn_humor()                     {
 function fn_misc()                      { cat humor_misc ;}
 function fn_animals()                   { cat humor_animals ;}
 function fn_duanzi()                    { cat humor_duanzi ;}
@@ -600,7 +600,7 @@ function fn_01_tingbao()                { cat girl_01_tingbao ;}
 function fn_11_2013相亲记()             { cat girl_11_2013相亲记 ;}
 function fn_12_wife()                   { cat girl_12_wife ;}
     local opts=(
-        misc       
+        misc
         loveletter
         11_2013相亲记                   # xiangqin 爱情观
         00_jiebao
@@ -610,7 +610,7 @@ function fn_12_wife()                   { cat girl_12_wife ;}
     fn_print $@
 }
 
-function fn_prof()                      { 
+function fn_prof()                      {
 function fn_01_思考一()                 { cat prof_01_思考一 ;}
 function fn_11_Geek与产品机器()         { cat prof_11_Geek与产品机器 ;}
     local opts=(
@@ -662,7 +662,7 @@ function fn_7777_howtobe()              { cat ljsw_7777_howtobe ;}
         08_大家都有拖延症
         51_右派为什么那么横             # 保守派的3个特性
         x1_你的阅读造就了你             # you are what u read
-        L0_孤独寂寞朋友                 # 
+        L0_孤独寂寞朋友                 #
 
         210_右派为什么这么横
         215_发现你的太平洋              # 创业
@@ -671,18 +671,18 @@ function fn_7777_howtobe()              { cat ljsw_7777_howtobe ;}
         0815_费马大定理
         0822_南明为什么扛不住           # 八旗制度 去中心化 海尔创业平台
         0907_纳粹的毒瘾                 # 希特勒
-        0920_3D打印                     # 
+        0920_3D打印                     #
         0926_领导，你为啥不信我？       # 权力
         1003_张勋复辟                   # 权力2
         1017_外交                       # 强国思维
         1008_怎样炼成世界级高手
-        0521_物种战争                                        
+        0521_物种战争
         7777_howtobe                    # 什么是好的？
     )
     fn_print $@
 }
 
-function fn_zhenhuan()                  { 
+function fn_zhenhuan()                  {
 function fn_01_曹云金()                 { cat zhenhuan_01_曹云金 ;}
 function fn_11_煎饼果子()               { cat zhenhuan_11_煎饼果子 ;}
     local opts=(
@@ -703,7 +703,7 @@ function fn_04_责任与中年危机()         { cat family_04_责任与中年�
         00_不滥爱                       # thinking for love
         01_王海滨                       # 男人的责任与爱
         02_地图                         # map 家天下
-        03_为什么现在不相亲             # 
+        03_为什么现在不相亲             #
         04_责任与中年危机               # 责任缘自曾经获得帮助
 
     )
@@ -727,7 +727,7 @@ function fn_stock()                     { cat influence_stock ;}
         cept
         agile
         sxmm
-        stock                           # 
+        stock                           #
     )
     fn_print $@
 }
@@ -756,14 +756,14 @@ function fn_leverage()                  { cat finance_leverage ;}
 function fn_fortune()                   { cat finance_fortune ;}
 function fn_behavioral()                { cat finance_behavioral ;}
     local opts=(
-        cept                            # 
+        cept                            #
         leverage                        # 杠杆
         behavioral                      # 行为金融学 behavioral finance
     )
     fn_print $@
 }
 
-function fn_texaspoker()                { 
+function fn_texaspoker()                {
 function fn_philosophy()                { cat texaspoker_philosophy ;}
 function fn_life()                      { cat texaspoker_life ;}
 function fn_xiuxing()                   { cat texaspoker_xiuxing ;}
@@ -840,7 +840,7 @@ function fn_main() {
         estate                          # 房地产
         phi                             # philosophy
         logic
-        xuexi                           # 
+        xuexi                           #
         annual
         artical
         book
@@ -850,7 +850,7 @@ function fn_main() {
         driver
         english
         economic
-        finance                         
+        finance
         faith
         family                          # 难念的经 家国天下
         girl
@@ -862,14 +862,14 @@ function fn_main() {
         howto
         ideas
         idealism                        # 理想主义
-        influence                       # 三十而立 影响力 30 
+        influence                       # 三十而立 影响力 30
         poet
         math                            # 数
         meeting
         mng
         mindhacks
         ljsw                            # 罗辑思维
-        sbfm                            # 上兵伐谋 
+        sbfm                            # 上兵伐谋
         movie
         music
         personage
@@ -886,18 +886,20 @@ function fn_main() {
         why
         words
         yufen
-        rose                            # 
+        rose                            #
         zhihu
         zhenhuan                        # 甄嬛体
         sanxing三省
         life_is_a_bus                   # 公交车
         game_theory
-        redwine 
+        redwine
         stupid_things                   # 哪些年做过的蠢事 habit
         subtitle
         psychology                      # 心理学
         kindle
         meditation_cept
+        psychology_cept
+        education_cept                  # 教育
         practice_cept                   # 直接成一个文本
         science_cept                    # 科学之哲学
         xiaolai_cept
