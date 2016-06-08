@@ -42,7 +42,7 @@ function fn_cap()
 
     LOAD DATA LOCAL INFILE '$sn_cap_nmc' INTO
     TABLE cap(code, date, close, cap, nmc, name);
-    " | mysql -u root kts
+    " | mysql kts
 
     echo "
     INFILE '$sn_cap_nmc'
@@ -58,7 +58,7 @@ function fn_cap()
 
     echo "
     UPDATE cap SET nmc=close*shares WHERE nmc/close<shares;
-    " | mysql -u root kts
+    " | mysql kts
 
     # update .codelist
     cd ${workdir}
@@ -364,7 +364,7 @@ function fn_up_tbl_xRD()
     );
 
     LOAD DATA LOCAL INFILE '$p_bin/xRD.list' INTO TABLE xRD;
-    " | mysql -u root kts
+    " | mysql kts
 
 
     if [ "$?" -eq 0 ] ; then
@@ -703,33 +703,40 @@ function fn_lhb0()
     DELETE FROM lhb WHERE date='$1';
     LOAD DATA LOCAL INFILE '${lhb_pro}' INTO
     TABLE lhb(date,code,chng,amount,buy,bloo,sell,sloo,cause);
-    " | mysql -u root kts
+    " | mysql kts
 
+    return $?
+}
+
+function fn_morningcall()       
+{
+    # __NTP同步__@09:20:00 FROM cron
+    timeout 30 ntpdate cn.pool.ntp.org || \
+    fn_beep "------ NTP sync failure ------"
+    fn_bell 'msg.wav'
+
+    # clean log of [up dorat loop]
+    > /tmp/kts/chao.loop
+
+    # enable BEEP
+    echo 1 > /tmp/kts/chao.beep
+
+    # check-matov5 
+    max_date=`mysql -N kts <<< "SELECT max(date) FROM matov5"`
+    if [ "${max_date}" != "${END}" ]; then
+        fn_beep "------ LAST homework is not done ------"
+        fn_bell 'msg.wav msg.wav msg.wav msg.wav msg.wav'
+    fi
+    
     return $?
 }
 
 function fn_db201()
 {
+    fn_isholiday ${date_F} && return
+    # 开市&有dorat 1st数据更新(09:34:00)后才有效
     db_date=`mysql -N kts<<<"SELECT date FROM stamp_day ORDER by id DESC LIMIT 1"`
-    now=`date +%F`
-
-    hhmm=`date +%H%M | sed 's/^0//'`
-    if [ "${hhmm}" -lt 930 ]; then
-        # so important
-        max_date=`mysql -N kts <<< "SELECT max(date) FROM matov5"`
-        if [ "${max_date}" != "${END}" ]; then
-            fn_beep "------ LAST homework is not done ------"
-            fn_bell 'msg.wav msg.wav msg.wav msg.wav msg.wav'; exit
-        else
-            # 同步时间
-            timeout 30 ntpdate cn.pool.ntp.org || \
-            fn_beep "------ NTP sync failure ------"
-            fn_bell 'msg.wav'; exit
-        fi
-    fi
-
-    # 当日开市&有dorat数据更新
-    [ "${now}" = "${db_date}" ] && fn_bell 'wolf'
+    [ "${date_F}" = "${db_date}" ] && fn_bell 'wolf'
 }
 
 function fn_ld_dorat()
@@ -762,6 +769,12 @@ function fn_ld_dorat()
     " | mysql kts
     
     return $?
+}
+
+function fn_am925_bell()
+{
+    fn_isholiday ${date_F} && return
+    /root/bin/bell am925
 }
 
 function fn_am925()
@@ -808,6 +821,8 @@ function fn_am925()
 
 function fn_dorat()
 {
+    fn_isholiday ${date_F} && return
+
     case $1 in
     l|loop) # 午休时段不更新数据
         is_del_routine=true fn_timestamp_market
@@ -846,13 +861,12 @@ function fn_chk_rank()
     let layer1s=ceilings+3                  # 6=3+3 提供1防护
     let layer2s=ceilings+6                  # 6=3+3 提供2防护
 
-    if [ "${hhmm:=1000}" -lt 930 ]; then    # 925在10jqka中进行
+    hhmm=${hhmm:-$(date +%H%M --date="`fn_get_time $icurr`")}
+
+    if [ "${hhmm}" -lt 930 ]; then    # 925在10jqka中进行
         ./blk 10jqka
-        # 适用范围：(1) 20亿以下的小盘股 (2) 50亿以下但top10在44%之上
-        # top10=30%; 70/5 = x/4; x = 280/5 = 56%; ==> top10=44% ==> vDOOR=4%
-        WIT=2 PPLUS=V vDOOR=3 COND="tov5<5" SELECT lsd || fn_bell
-        WIT=3 iEND=2 COND="rise>=9.93" vDOOR=3 PPLUS=V SELECT lsd | fn_bell
-        echo 1 > /tmp/kts/chao.beep
+        WIT=2 PPLUS=V vDOOR=3 COND="tov5<5" SELECT lsd              || fn_bell
+        WIT=3 iEND=2 COND="rise>=9.93" vDOOR=3 PPLUS=V SELECT lsd   || fn_bell
         fn_bell; return
     elif [ ${hhmm} -eq 948 ]; then
         # check db201, ad.会使按键精灵阻塞
@@ -1246,7 +1260,7 @@ function fn_zzlt()
     echo "
     LOAD DATA LOCAL INFILE '${chao}.zzlt' INTO
     TABLE zzlt(date,wkday,@dummy,@dummy,@dummy,close);
-    " | mysql -u root kts
+    " | mysql kts
 
     fn_echo_succ "up zzlt OK"
 }
@@ -1369,7 +1383,7 @@ function fn_seat_rank()
     echo "
     TRUNCATE seat_rank;
     LOAD DATA LOCAL INFILE '$chao.seat.rip' INTO TABLE seat_rank;
-    " | mysql -u root kts
+    " | mysql kts
 
     return $?
 }
@@ -1601,6 +1615,23 @@ function fn_chk_day()
     esac
 }
 
+
+function fn_holiday()
+{
+    echo "
+    $DROP holiday;
+    $CREATE holiday (
+        date        date
+    );
+    INSERT INTO holiday(date) values
+        ('2016-06-09'),
+        ('2016-06-10'),
+        ('2038-01-01');
+    " | mysql kts
+    
+    return $?
+}
+
 function fn_main()
 {
     cmdlist=(
@@ -1628,8 +1659,11 @@ function fn_main()
     "ipo                                # DL ipo codes from east"
     "lhb                                # 龙虎榜"
     "dorat  [loop]                      # 量比数据，loop when run@crontab"
-    "am925                              # 10jqka日线数据"
+    "am925                              # load日线数据FROM.10jqka"
+    "am925_bell                         # 触发按键精灵"
+    "holiday                            # 检查是否法定假日"
     "ma20f15                            # "
+    "morningcall                        # "
     "trace                              # "
     "fenbi  code 2015mmdd               # "
     "money                              # ---------资金分析---------"
@@ -1642,7 +1676,7 @@ function fn_main()
     "bigbid                             # 大宗交易"
     "xbb [l]                            # 生成PREV30成交额峰值测算，加参数l时list数据日期"
     "hwork                              # 每日功课"
-    "chk_rank                           # 有新进成员，[up dorat]定期调用"
+    "chk_rank [iF5]                     # 有新进成员，[up dorat]定期调用"
     "chk_day                            # day vs. dde"
     )
 

@@ -131,7 +131,7 @@ function fn_pro_hammer()
 
     OOCKET='(IF(dy12>1 && dy35>dy12, dy35+(dy12-1), GREATEST(dy12,dy35))-1)'    # 修正2rd后的max(dy12,dy35)
     ROCKET='ROUND(IF(dy12>=dy35, dy12+.38*(dy35-1), dy35+.64*(dy12-1))-1, 2)'   # 修正2rd后的max(dy12,dy35)
-    pwr_dy5="LEAST(${ROCKET}, (34/t5.tov)) * LEAST(t5.tov,20)"                  # 最大ROCKET爆发为2.236，最大换手上限为20
+    pwr_dy5="LEAST(${ROCKET}, (25/t5.tov), t5.tov) * LEAST(t5.tov,20)"          # ROCKET的范围(25/t5.tov, t5.tov)，最大换手上限为20
             
     pwr_t10="IF(top10<.2, 1, .9/(1-top10))"
     pwr_nmc="IF(${nmc0}/${pwr_t10}-20<100, ${nmc0}/${pwr_t10}-20, 100)/8"
@@ -183,7 +183,9 @@ function fn_lsd()
     t|top)  LIMIT=${LIMIT:-200}; HAVING="rise>=${rDOOR:-9.93}"; FIELD=${FIELD:-nmc}; chao2=top ;;
     f|flo)  LIMIT=${LIMIT:-200}; HAVING="rise<=-9.93"; FIELD=${FIELD:-nmc} ;;
     c|code) cCOND="d.code=${2:-300059}" ;;
-    y|dy5)  mysql -t kts <<< "SELECT * FROM matov5 WHERE code=${2:-300059} and date<='${END}' ORDER by date DESC LIMIT 8"; exit ;;
+    y|dy5)  ROCKET='ROUND(IF(dy12>=dy35, dy12+.38*(dy35-1), dy35+.64*(dy12-1))-1, 2)';
+            sql_dy="SELECT *,${ROCKET} as i_dy FROM matov5 WHERE code=${2:-300059} and date<='${END}' ORDER by date DESC LIMIT 8"
+            mysql -t kts <<< "${sql_dy}"; exit ;;
     l|list) fn_list_iF5_times ;;
     [0-9]*)
         [ "${1}" -ne 0 ]
@@ -227,8 +229,8 @@ function fn_lsd()
         E|e) iCOND="!${c_natural}"                                          ;;  # 一字板，全天不开板
         V|v) iCOND="${c_natural} && d.open/yesc<1.093"
              LIMIT=${LIMIT:-24};HAVING="tov5>=${vDOOR:-5}&&${HAVING:-1}"    ;;
-        K|k) iBOO8="(i_wk*100+tov5>0 && 1.1*i_dy>i_wk)"
-             kCOND="${kCOND:-i_dy>.1 &&space+rise>${kDOOR:-10} &&${iBOO8}}"
+        K|k) iBOO8="(i_wk*100+tov5>0)"
+             kCOND="${kCOND:-space+rise>${kDOOR:-5} &&${iBOO8}}"
              iCOND="${c_natural} && d.open/yesc<1.093"
              LIMIT=${LIMIT:-24};HAVING="tov5>=${vDOOR:-5}&&${HAVING:-1}"    ;;
         R|r) iCOND="d.high!=d.low"                                          ;;  # 数据开始变动
@@ -2829,13 +2831,15 @@ function fn_ddd()
 {
     case $1 in
     hot)
-        fn_echo_succ "上午封板"
-        PARTS=f chao2='lsd' CHAO=1 COND="rise>9.93" iASC=DESC HMS=12:00:00 vDOOR=4 PPLUS=V SELECT lsd 1
-        xt_ret $? "${END}.当天无封板" || return $?
-        COND="rise<9.93" YIST='/tmp/kts/chao.lsd' vDOOR=4 PPLUS=V FIELD=space SELECT lsdh
+        fn_echo_succ "PREV.上午封板"
+        iEND=2 PARTS=f chao2='lsd' CHAO=1 COND="rise>9.93" iASC=DESC HMS=12:00:00 vDOOR=4 PPLUS=V SELECT lsd 1
+        xt_ret $? "" || return $?
 
-        fn_echo_succ "只是摸板者"
-        COND="hiri>=9.93 && rise<9.93" vDOOR=4 PPLUS=V FIELD=space SELECT lsdh
+        fn_echo_succ "PREV.下午开板"
+        iEND=2 COND="rise<9.93" YIST='/tmp/kts/chao.lsd' vDOOR=4 PPLUS=V FIELD=space SELECT lsdh
+
+        fn_echo_succ "CURR.今天表现"
+        COND="rise<9.93" YIST='/tmp/kts/chao.lsd' vDOOR=4 PPLUS=V FIELD=space SELECT lsdh
         ;;
     110)
         TYPE=${2:-e}

@@ -401,11 +401,14 @@ function fn_get_export_file()
     elif [ "${ctime}" -gt ${t1130} ] && [ "${ctime}" -lt ${t1300} ]; then
         ctime=${t1130}
     elif [ "${ctime}" -lt ${t0930} ]; then
+        # 因为CURR的缘故，此条件无效
         ctime=${t0930}
     fi
 
     YYMMDD=`date -d @${ctime} +%F`
     HHMMSS=`date -d @${ctime} +%T`
+
+    # echo $YYMMDD $HHMMSS
 
     return 0
 }
@@ -494,6 +497,12 @@ function fn_name()
 function fn_isdate()
 {
     echo -n $1 | grep -q -E '^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$'
+}
+
+function fn_isholiday()
+{
+    # 是假日时，COUNT(date)=1为真，COUNT(date)!=1为假，返回0 => BASH的真
+    return `mysql -N kts <<< "SELECT COUNT(date)!=1 FROM holiday WHERE date='${1:-2038-01-01}'"`
 }
 
 function fn_isdatetime()
@@ -779,7 +788,9 @@ function fn_cp_tbl()
     " | mysql kts
 }
 
-echo "`date +%F.%T` ${BASH_SOURCE[1]}" >> /var/dbank.trace
+date_F=`date +%F`
+date_T=`date +%T`
+echo "${date_F}.${date_T} ${BASH_SOURCE[1]}" >> /var/dbank.trace
 
 [ "${BASH_SOURCE##*/}" != "${0##*/}" ] && return 0
 
