@@ -194,18 +194,15 @@ function fn_trace()
            SELECT ${colA},
                (A.curr_asset-B.curr_asset) as earning,
                round(100*(A.curr_asset-B.curr_asset)/B.curr_asset, 2) as RoE,
-               round(100*(A.curr_asset-B.curr_asset)/(B.curr_asset-A.frozen), 2) as RoE_real,
+            -- round(100*(A.curr_asset-B.curr_asset)/(B.curr_asset-A.frozen), 2) as RoE_real,
             -- (A.sh-B.sh) as earning_sh,
             -- (A.cyb-B.cyb) as earning_cyb,
                round(100*(A.sh-B.sh)/B.sh, 2) as RoE_sh,
-               round(100*(A.cyb-B.cyb)/B.cyb, 2) as RoE_cyb
+               round(100*(A.cyb-B.cyb)/B.cyb, 2) as RoE_cyb,
+               round(100*(A.curr_asset-B.curr_asset)/B.curr_asset, 2)-round(100*(A.cyb-B.cyb)/B.cyb, 2) as RoE_leading
                FROM trace A INNER JOIN
-                    trace B on(A.id=B.id+1) GROUP BY A.id;
-
-        -- SELECT *,
-        --     round(100*(curr_asset-prev_asset)/prev_asset, 2) as RoE,
-        --     round(100*(curr_asset-prev_asset)/(prev_asset-frozen), 2) as RoE_real
-        --     FROM trace;
+                    trace B on(A.id=B.id+1) GROUP BY A.id 
+               HAVING 1 ${COND};
     " | mysql -t kts
 
     return $?
@@ -725,7 +722,7 @@ function fn_morningcall()
     max_date=`mysql -N kts <<< "SELECT max(date) FROM matov5"`
     if [ "${max_date}" != "${END}" ]; then
         fn_beep "------ LAST homework is not done ------"
-        fn_bell 'msg.wav msg.wav msg.wav msg.wav msg.wav'
+        fn_bell 'msg.wav duang.wav'
     fi
     
     return $?
@@ -816,7 +813,8 @@ function fn_am925()
     sec_date=${YYMMDD} sec_time=${HHMMSS} fn_ld_dorat
     xt_ret $? "" || return $?
 
-    fn_chk_rank
+    # 重新init.END
+    END=${YYMMDD} fn_chk_rank
 }
 
 function fn_dorat()
@@ -846,7 +844,8 @@ function fn_dorat()
 
 function fn_chk_rank()
 {
-    WIT=1 PPLUS=V SELECT lsd ${icurr:=$1} || exit
+   #WIT=1 PPLUS=V SELECT lsd  ${icurr:=$1} || exit
+    WIT=1 PPLUS=K SELECT lsds ${icurr:=$1} || exit
     [ -z "${icurr}" ] && icurr=`fn_get_nr_time`
     let iprev=icurr-1
 
@@ -892,11 +891,11 @@ function fn_chk_rank()
     [ "${union}" -ne ${layer2s} ] && { match=1 ;}           && \
     birds2=$(fn_name `grep -v -f /tmp/kts/chao.L2.prev /tmp/kts/chao.L2.curr` 2>&1)
 
-    echo L2:${layer2s} m:${match} B1:${birds1} B2:${birds2} # ;exit
+    #echo L2:${layer2s} m:${match} B1:${birds1} B2:${birds2} # ;exit
 
     # 检查是否禁用beep，有闯入者，告警
     [ "`cat /tmp/kts/chao.beep`" = 0 ] && BEEPS=0
-    [ "${match:-0}" -eq 1 ] && BEEPS=${BEEPS} fn_beep L1:${birds1} L2:${birds2}
+    [ "${match:-0}" -eq 1 ] && BEEPS=${BEEPS} fn_beep "L1:${birds1}L2:${birds2}"
 }
 
 function fn_ma20f15()
@@ -1547,7 +1546,8 @@ function fn_hwork()
         SCREENER lohi   $argv
         SCREENER matov5 $argv && \
         SCREENER ma1020 $argv
-        up chk_day
+        up chk_day                  # 检查是否有数据缺失
+        nb_index up                 # 指数更新以用于ma5告警
         fn_bell
     } >& ${STDOUT} 
 }

@@ -1492,9 +1492,12 @@ CREATE PROCEDURE sp_dde21(a_code INT(6) ZEROFILL) tag_dde21:BEGIN
     PREPARE stmt from @sqls; EXECUTE stmt;
 
     SELECT SUM(tov)/5         FROM ttov WHERE id<=5             INTO @v_tov5 ;
+    SELECT tov                FROM ttov WHERE id=1              INTO @v_top1 ;
+    SELECT SUM(tov)/2         FROM ttov WHERE id>=2 && id<=3    INTO @v_bot2 ;
 
     IF @v_tov5 < 3.5 THEN 
-        INSERT INTO tov5(date,code,tov,dy12,dy35,wk12,wk23) VALUES (@END,a_code,@v_tov5,1,1,1,1); 
+        # 东风汽车.暴发
+        INSERT INTO tov5(date,code,tov,dy12,dy35,wk12,wk23) VALUES (@END,a_code,@v_tov5,@v_top1/@v_bot2, 1,1,1); 
         LEAVE tag_dde21;
     END IF;
 
@@ -1506,9 +1509,6 @@ CREATE PROCEDURE sp_dde21(a_code INT(6) ZEROFILL) tag_dde21:BEGIN
         a_code, " and date<= '", @END, "' order by date DESC LIMIT 5,16");
     PREPARE stmt from @sqls; EXECUTE stmt;
     SELECT count(*) FROM ttov INTO @v_len;
-
-    SELECT tov                FROM ttov WHERE id=1              INTO @v_top1 ;
-    SELECT SUM(tov)/2         FROM ttov WHERE id>=2 && id<=3    INTO @v_bot2 ;
 
     SELECT SUM(tov)/3         FROM ttov WHERE id<=3             INTO @v_top3 ;
     SELECT SUM(tov)/5         FROM ttov WHERE id>=4 && id<=8    INTO @v_bot5 ;

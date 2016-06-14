@@ -56,35 +56,42 @@ function fn_pro_wolves()
     [ -z "${is_wolves}" ] && return 1
 
     fn_isdigit ${sta:=${1:-1}} || fn_list_iF5_times
+
     let sta--
     stime=`mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC LIMIT ${sta},1"`
-    iCOND="time='${stime}'${eCOND}" xCol=date fn_xCol mat_dde xdde ${END}
-    xt_ret $? "" || return $?
+    s_old=`mysql -N kts<<< "SELECT DISTINCT time FROM xdde WHERE date='${END}'                       LIMIT ${sta},1"`
+
+    if [ "${stime}" != "${s_old}" ]; then
+        iCOND="time='${stime}'${eCOND}" xCol=date fn_xCol mat_dde xdde ${END}
+        xt_ret $? "" || return $?
+    fi
+
+    sql_accelr='t5.tov>3 AND'
 
     sqls="
     SELECT  $columns,
-            $HIRI as hiri,
-            $OPRI as opri,
-            ${sql_avrg}
-            CONCAT(ROUND((pbuy+nbuy)/w.tov, 2), IF(net>0.0001,'+',''), round(net/w.tov, 2)) as wolf,
-            CONCAT(top10, '_', ROUND(${REALIZED2}, 2)) as t10_rliz,
             (LEAST(wk12, wk23)-1) as i_wk,
             ${ROCKET} as i_dy,
             $TURNOV as tov, t5.tov as tov5,
-            ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2) as prop5,
+            ROUND(${pwr_dy5},1) as PWR5,
+            ROUND((${pwr_t10}-1)*t5.tov,1) as TP10,                                                         # _line_for_wolf_
+            ROUND(-${pwr_nmc}, 1) as _NMC,
+            CONCAT(ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2), '_',ROUND(${BOOST},1) ) as prop5BOO,
+            concat(top10, '_', ROUND(${REALIZED2}, 2)) as tp10_rliz,
             $RISE as rise,
-            ROUND( t5.tov*$pwr_t10 +${pwr_dy5} -100*${REALIZED2} 
+            ROUND( t5.tov*${pwr_t10} +${pwr_dy5} -100*${REALIZED2} 
                    -${pwr_nmc} +${BOOST}, 1) as space,
             ROUND(100*(d.close/ma60-1), 1) as ma60,
+            CONCAT(IF(net>0,'+','-'), round(abs(net)/w.tov, 2),'_',ROUND((pbuy+nbuy)/w.tov, 2)) as wolf,
             round(d.amount/10000, 1) as eYi,
             ${nmcYi}, c.name
             FROM ${TEMPDAY:-day} d, cap c, t_matov5 t5, mat_ma1020 m, top10 p, xdde w
-            ${WHERE} d.code=m.code && m.date='${PREV}' AND w.date='${END}' AND
-            d.code = c.code AND d.code=t5.code AND d.code=p.code AND d.code=w.code AND
+            ${WHERE} d.code=m.code && m.date='${PREV}' AND
+            d.code = c.code AND d.code=t5.code AND d.code=p.code AND
+                                ${sql_accelr} d.code=w.code AND w.date='${END}' AND                         # _line_for_wolf_
             d.date = '${END}' && ${iCOND:-1} && ${cCOND:-1} 
             HAVING ${HAVING:-1} && ${kCOND:-1} ${COND} ORDER BY ${FIELD:-rise} ${ASC:-desc} limit ${LIMIT:-36}
     "
-    
     return $?
 }
 
@@ -98,10 +105,10 @@ function fn_pro_spacer()
             ${ROCKET} as i_dy,
             $TURNOV as tov, t5.tov as tov5,
             ROUND(${pwr_dy5},1) as PWR5,
-            ROUND((${pwr_t10}-1)*t5.tov,1) as TOP10,
+            ROUND((${pwr_t10}-1)*t5.tov,1) as TP10,
             ROUND(-${pwr_nmc}, 1) as _NMC,
-            CONCAT(ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2), '_',ROUND(${BOOST},1) ) as prop5_BOO,
-            concat(top10, '_', ROUND(${REALIZED2}, 2)) as t10_rliz,
+            CONCAT(ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2), '_',ROUND(${BOOST},1) ) as prop5BOO,
+            concat(top10, '_', ROUND(${REALIZED2}, 2)) as tp10_rliz,
             $RISE as rise,
             ROUND( t5.tov*${pwr_t10} +${pwr_dy5} -100*${REALIZED2} 
                    -${pwr_nmc} +${BOOST}, 1) as space,
@@ -122,11 +129,11 @@ function fn_pro_hammer()
     [ -z "${is_hammer:-${is_spacer:-${is_wolves}}}" ] && return 1
 
     PROP=`fn_scale PROP`
-    BOOST="GREATEST((100*d.volume*c.close/c.nmc/t5.tov)/${PROP}, 1.5)"     # 保下限 1.5
-    BOOST="10* LEAST(${BOOST}-1.5, .6)"                                    # 保上限 .6
+    BOOST="GREATEST((100*d.volume*c.close/c.nmc/t5.tov)/${PROP}, (1.1+(20-GREATEST(LEAST(20,t5.tov),12))*.05))"     # 1.1~1.5
+    BOOST="10* LEAST(${BOOST}-(1.1+(20-GREATEST(LEAST(20,t5.tov),12))*.05), .6)"                                    # 保上限 .6
 
     REALIZ='(ma5/((ma5+ma10+ma20)/3) -1)'
-    REALIZED='(d.close/((ma5+ma10+ma20)/3) -1)'    # 涨幅 = ma5涨幅 * 相应乘数  .03= 1/5+1/10
+    REALIZED='(d.close/((ma5+ma10+ma20)/3) -1)'                                 # 涨幅 = ma5涨幅 * 相应乘数  .03= 1/5+1/10
     REALIZED2="IF($REALIZED>0, ${REALIZED}, 0)"
 
     OOCKET='(IF(dy12>1 && dy35>dy12, dy35+(dy12-1), GREATEST(dy12,dy35))-1)'    # 修正2rd后的max(dy12,dy35)
@@ -134,7 +141,7 @@ function fn_pro_hammer()
     pwr_dy5="LEAST(${ROCKET}, (25/t5.tov), t5.tov) * LEAST(t5.tov,20)"          # ROCKET的范围(25/t5.tov, t5.tov)，最大换手上限为20
             
     pwr_t10="IF(top10<.2, 1, .9/(1-top10))"
-    pwr_nmc="IF(${nmc0}/${pwr_t10}-20<100, ${nmc0}/${pwr_t10}-20, 100)/8"
+    pwr_nmc="IF(${nmc0}/${pwr_t10}-20<100, ${nmc0}/${pwr_t10}-20, 100)/10"
     columns="d.code"
 
     fn_pro_spacer || \
@@ -144,11 +151,10 @@ function fn_pro_hammer()
             $HIRI as hiri,
             $OPRI as opri,
             ${sql_avrg}
-            concat(top10, '_', ROUND(${REALIZED2}, 2)) as t10_rliz,
+            top10 as tp10,
+            ROUND(${REALIZED2},2) as rliz,
             (LEAST(wk12, wk23)-1) as i_wk,
---          ${OOCKET} as i_db,
             ${ROCKET} as i_dy,
---          ROUND(100*${REALIZED}) as rliz,
             $TURNOV as tov, t5.tov as tov5,
             ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2) as prop5,
             $RISE as rise,
@@ -228,19 +234,20 @@ function fn_lsd()
         G|g) iCOND="${c_natural} && d.open/yesc<1.093"                      ;;  # 非一字open
         E|e) iCOND="!${c_natural}"                                          ;;  # 一字板，全天不开板
         V|v) iCOND="${c_natural} && d.open/yesc<1.093"
-             LIMIT=${LIMIT:-24};HAVING="tov5>=${vDOOR:-5}&&${HAVING:-1}"    ;;
+             LIMIT=${LIMIT:-24};HAVING="tov5>=${vDOOR:-4}&&${HAVING:-1}"    ;;
         K|k) iBOO8="(i_wk*100+tov5>0)"
              kCOND="${kCOND:-space+rise>${kDOOR:-5} &&${iBOO8}}"
              iCOND="${c_natural} && d.open/yesc<1.093"
-             LIMIT=${LIMIT:-24};HAVING="tov5>=${vDOOR:-5}&&${HAVING:-1}"    ;;
+             LIMIT=${LIMIT:-24};HAVING="tov5>=${vDOOR:-4}&&${HAVING:-1}"    ;;
         R|r) iCOND="d.high!=d.low"                                          ;;  # 数据开始变动
         esac
 
         fn_pro_hammer || \
         sqls="
         SELECT  $columns,
-                $HIRI as hiri,
                 $OPRI as opri,
+                $HIRI as hiri,
+                $LORI as lori,
                 ${sql_avrg}
                 $RISE as rise,
                 $TURNOV as tov, t5.tov as tov5,
@@ -1810,7 +1817,7 @@ function fn_wolf()
         c_natural='d.high!=d.low&&d.close/yesc<1.15'
 
         case ${PPLUS} in
-        V|v) sql_pplus="&& ${c_natural} && d.open/yesc<1.093 && (w.tov*h.mavol5/w.shou)>=${vDOOR:-5}"   ;;
+        V|v) sql_pplus="&& ${c_natural} && d.open/yesc<1.093 && (w.tov*h.mavol5/w.shou)>=${vDOOR:-4}"   ;;
         esac
 
         fn_wolf_sqls
@@ -2429,7 +2436,7 @@ function fn_blk()
     hot)
         #nmc_t=',cap c'; nmc_c='AND d.code=c.code AND nmc<100*10000';
         COND="SAMPLES>1" \
-        cond5="AND tov>=${vDOOR:-5}" \
+        cond5="AND tov>=${vDOOR:-4}" \
         xWHERE="${nmc_t} ,t_matov5 t WHERE d.code=t.code ${nmc_c} AND" \
         FIELD=${FIELD:-score} \
         BLK= fn_blk sample $2
@@ -2831,15 +2838,20 @@ function fn_ddd()
 {
     case $1 in
     hot)
-        fn_echo_succ "PREV.上午封板"
-        iEND=2 PARTS=f chao2='lsd' CHAO=1 COND="rise>9.93" iASC=DESC HMS=12:00:00 vDOOR=4 PPLUS=V SELECT lsd 1
+        iEND=${iEND:-1}
+        END=`fn_get_date ${iEND}`
+        fn_echo_succ "上午封板@${END}"
+        PARTS=f chao2='lsd' CHAO=1 COND="rise>9.93" iASC=DESC HMS=12:00:00 vDOOR=3 PPLUS=V SELECT lsd 1
         xt_ret $? "" || return $?
 
-        fn_echo_succ "PREV.下午开板"
-        iEND=2 COND="rise<9.93" YIST='/tmp/kts/chao.lsd' vDOOR=4 PPLUS=V FIELD=space SELECT lsdh
+        fn_echo_succ "下午开板@${END}"
+        COND="rise<9.93" YIST='/tmp/kts/chao.lsd' SELECT lsds
 
-        fn_echo_succ "CURR.今天表现"
-        COND="rise<9.93" YIST='/tmp/kts/chao.lsd' vDOOR=4 PPLUS=V FIELD=space SELECT lsdh
+        let iCURR=iEND-1
+
+        [ "${iCURR}" -gt 0 ]        && \
+        fn_echo_succ "NEXT.表现"    && \
+        iEND=${iCURR} YIST='/tmp/kts/chao.lsd' SELECT lsds
         ;;
     110)
         TYPE=${2:-e}
@@ -2911,7 +2923,7 @@ function fn_seat_rank()
 {
     sqls="
     SELECT code, name, count(code) as num, sum(month) as mon, sum(amount) as eWan
-        FROM seat_rank GROUP by code HAVING num>1 ORDER by eWan DESC
+        FROM seat_rank GROUP by code HAVING num>${NUM:-0} ORDER by eWan DESC
     "
     mysql -t kts <<< "${sqls}"
 }
@@ -2998,7 +3010,7 @@ function fn_main()
     "ATR                all|redOnly|code      # AverageTrueRangeOf阳线非一字板"
     "notice                                   # 公告"
     "ddd                                      # 连续缩量后放量"
-    "seat_rank                                # 总排名"
+    "seat_rank                                # 总排名，上榜次数num>#NUM"
     "seat_detail                              # seat-blk"
     "am925                                    # seat-blk"
     )

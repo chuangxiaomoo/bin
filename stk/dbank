@@ -194,7 +194,7 @@ function fn_isresting()
         [ ${hhmmss} -lt 093300 ] ; then
         echo "is resting @${hhmmss}...";
         return 0
-    elif [ ${hhmmss} -gt 145900 ]; then
+    elif [ ${hhmmss} -gt 145700 ]; then
         echo "market closed, eixt!"
         exit 0
     else
@@ -502,7 +502,10 @@ function fn_isdate()
 function fn_isholiday()
 {
     # 是假日时，COUNT(date)=1为真，COUNT(date)!=1为假，返回0 => BASH的真
-    return `mysql -N kts <<< "SELECT COUNT(date)!=1 FROM holiday WHERE date='${1:-2038-01-01}'"`
+    RET=`mysql -N kts <<< "SELECT COUNT(date)!=1 FROM holiday WHERE date='${1:-2038-01-01}'"`
+    # [ "${RET}" = 0 ] && fn_echo_pts0 "${date_F}.${date_T} is holiday"
+
+    return $RET
 }
 
 function fn_isdatetime()
@@ -772,7 +775,8 @@ function fn_beep()
     for (( i=0; i<${BEEPS:-2}; i+=1 )); do
         echo -ne '\a' > /dev/pts/0; sleep .17
     done
-    echo "`date +%T`.${FUNCNAME[1]} ${@}" > /dev/pts/0
+    # fn_echo_succ自带了NL
+    echo -ne "${date_T}.${FUNCNAME[1]}\n${@}" > /dev/pts/0
 }
 
 function fn_cp_tbl()
@@ -790,7 +794,7 @@ function fn_cp_tbl()
 
 date_F=`date +%F`
 date_T=`date +%T`
-echo "${date_F}.${date_T} ${BASH_SOURCE[1]}" >> /var/dbank.trace
+echo "${date_F}.${date_T} ${BASH_SOURCE[1]} ${@}" >> /var/dbank.trace
 
 [ "${BASH_SOURCE##*/}" != "${0##*/}" ] && return 0
 

@@ -785,6 +785,7 @@ function fn_ddetov21()
     t500=`mysql -N kts <<< "${sqls}"`
     xt_ret $? "" || return $?
 
+    # xRD.sql使用Ponzi=3.5
     case $t500 in
     [6-9])  Ponzi=5     ;;
     4|5)    Ponzi=4     ;;
@@ -859,6 +860,7 @@ function fn_ma1020_up()
 {
     fn_echo_succ "up ma1020@${END}..."
     date=${END}
+    PREV13=`fn_get_date 13`
     echo "
     DROP TABLE IF EXISTS ma1020;
     CREATE TABLE ma1020 (
@@ -873,6 +875,14 @@ function fn_ma1020_up()
     );
 --  DROP TABLE IF EXISTS mat_ma1020;
     CREATE TABLE IF NOT EXISTS mat_ma1020 LIKE ma1020;
+
+    TRUNCATE TABLE zxg;
+    INSERT INTO zxg(code) SELECT code FROM matov5 WHERE tov< 3.5 && date='$date';
+
+    INSERT INTO ma1020
+        SELECT '${date}', d.code, sum(close)/count(*), sum(close)/count(*), 
+            sum(close)/count(*), sum(close)/count(*),sum(close)/count(*)
+            FROM day d, zxg z WHERE d.code=z.code && date>='${PREV13}' && date<='${date}' GROUP by code;
 
     TRUNCATE TABLE zxg;
     INSERT INTO zxg(code) SELECT code FROM matov5 WHERE tov>=3.5 && date='$date';
