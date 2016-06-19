@@ -14,7 +14,7 @@ function fn_cap()
     else
         read -p "
         Make sure U have down full.FIN?
-        cp /dzh2/Download/FIN/full.FIN $p_bin"
+        ln -sf /dzh2/Download/FIN/full.FIN $p_bin"
         ( cd $p_bin && ln -sf /dzh2/Download/FIN/full.FIN )
         xt_ret $? "" || return $?
     fi
@@ -208,36 +208,6 @@ function fn_trace()
     return $?
 }
 
-function fn_power()
-{
-    file0='/root/bin/stk/.soptter.power10'
-    file1='/tmp/kts/power10'
-    colA="code,quarter,power10,jigou,jgnewin,sholders,name"
-    colA="A.${colA//,/,A.}"
-
-    grep -v '^#' ${file0} > ${file1}
-    echo "
-        DROP TABLE IF EXISTS power10;
-        CREATE TABLE power10 (
-            id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
-            quarter     INT DEFAULT 0,
-            power10     DECIMAL(6,2) DEFAULT 0,
-            jigou       INT DEFAULT 0,
-            jgnewin     INT DEFAULT 0,
-            code        INT(6)  ZEROFILL,
-            sholders    INT DEFAULT 0,
-            name        CHAR(16),
-            INDEX(code)
-        );
-
-        LOAD DATA LOCAL INFILE '${file1}' INTO TABLE
-            power10(code,name,quarter,power10,jigou,jgnewin,sholders);
-        SELECT ${colA} FROM power10 as A;
-    " | mysql -t kts
-
-    return $?
-}
-
 function fn_del_hexun_day()
 {
     unarm_close_forbid=true \
@@ -339,7 +309,7 @@ function fn_up_tbl_xRD()
     if [ "$1" = "--keep.PWR" ] || [ "$1" = "-k" ]; then
         echo "keep $p_bin/full.PWR"
     else
-        echo "cp /dzh2/Download/PWR/full.PWR $p_bin"
+        echo "ln -sf /dzh2/Download/PWR/full.PWR $p_bin"
         ( cd $p_bin && ln -sf /dzh2/Download/PWR/full.PWR )
         xt_ret $? "" || return $?
     fi
@@ -776,6 +746,8 @@ function fn_am925_bell()
 
 function fn_am925()
 {
+    #fn_echo_succ "test"; exit
+
     fn_get_export_file
     xt_ret $? "" || return $?
 
@@ -845,16 +817,16 @@ function fn_dorat()
 function fn_chk_rank()
 {
    #WIT=1 PPLUS=V SELECT lsd  ${icurr:=$1} || exit
-    WIT=1 PPLUS=K SELECT lsds ${icurr:=$1} || exit
+    WIT=1 PPLUS=K kCOND="rise+space>5" SELECT lsds ${icurr:=$1} || exit
     [ -z "${icurr}" ] && icurr=`fn_get_nr_time`
     let iprev=icurr-1
 
     # compute layer2s
     fn_echo_succ "ceilings=rise>=9.93..."
-    ceilings=`OPT='-N' PPLUS=v COND="rise>=9.93" CHAO=0 PARTS= WIT= SELECT lsd $1 | wc -l`
+    ceilings=`OPT='-N' CHAO=0 WIT= PARTS= COND="rise>=9.93" kCOND="rise+space>5" PPLUS=K SELECT lsds $1 | wc -l`
 
-    if [ "${ceilings}" -gt 16 ]; then
-        ceilings=16
+    if [ "${ceilings}" -ge 16 ]; then
+        PREFIX="Tops[${ceilings}]" BEEPS=5 fn_beep "__More_than_16_birds__\n"; return
     fi
 
     let layer1s=ceilings+3                  # 6=3+3 提供1防护
@@ -864,8 +836,8 @@ function fn_chk_rank()
 
     if [ "${hhmm}" -lt 930 ]; then    # 925在10jqka中进行
         ./blk 10jqka
-        WIT=2 PPLUS=V vDOOR=3 COND="tov5<5" SELECT lsd              || fn_bell
-        WIT=3 iEND=2 COND="rise>=9.93" vDOOR=3 PPLUS=V SELECT lsd   || fn_bell
+        WIT=2 PPLUS=V vDOOR=3 COND="tov5<5" SELECT lsds                 || fn_bell
+        WIT=3 END= iEND=2 COND="rise>=9.93" vDOOR=3 PPLUS=V SELECT lsds || fn_bell
         fn_bell; return
     elif [ ${hhmm} -eq 948 ]; then
         # check db201, ad.会使按键精灵阻塞
@@ -874,7 +846,7 @@ function fn_chk_rank()
 
     # process
     fn_echo_succ "layer2s=ceilings+6=${ceilings}+6..."
-    CHAO=1 PPLUS=V LIMIT=${layer2s} chao2='L2.prev' SELECT lsd ${iprev}
+    CHAO=1 PPLUS=K kCOND="rise+space>5" LIMIT=${layer2s} chao2='L2.prev' SELECT lsds ${iprev}
     xt_ret $? "$BLK $YIST:  CHAO=1 PPLUS=V LIMIT=${layer2s} chao2='L2.prev' SELECT lsd ${iprev}" || return $?
 
     head -${layer2s} /tmp/kts/chao.lsd      > /tmp/kts/chao.L2.curr
@@ -895,7 +867,8 @@ function fn_chk_rank()
 
     # 检查是否禁用beep，有闯入者，告警
     [ "`cat /tmp/kts/chao.beep`" = 0 ] && BEEPS=0
-    [ "${match:-0}" -eq 1 ] && BEEPS=${BEEPS} fn_beep "L1:${birds1}L2:${birds2}"
+    [ "${match:-0}" -eq 1 ] && \
+    PREFIX="Tops[${ceilings}]" BEEPS=${BEEPS} fn_beep "L1:${birds1}L2:${birds2}"
 }
 
 function fn_ma20f15()
@@ -1615,7 +1588,6 @@ function fn_chk_day()
     esac
 }
 
-
 function fn_holiday()
 {
     echo "
@@ -1632,6 +1604,86 @@ function fn_holiday()
     return $?
 }
 
+function fn_xRD0()
+{
+    sed -e "s/tag0/${1:0:1}/" \
+        -e "s/tag1/${1:1:1}/" \
+        -e "s/tag2/${1:2:1}/" \
+        -e "s/tag3/${1:3:1}/" \
+        -e "s/tag4/${1:4:1}/" \
+        -e "s/tag5/${1:5:1}/" .src/xRD.q > /10jqka/xRD.q
+    xt_ret $? "" || return $?
+
+    > /Export/Table.txt
+    fn_bell xRD
+    timeout 8 nc -l 2911
+    xt_ret $? "xRD@${1} fail!" || return $?
+
+    # iconv & add yesc
+    iconv -f cp936 -t utf8 /Export/Table.txt    |
+    tail -201                                   |
+    sed -e '/时间/d'                            \
+        -e 's/[,一二三四五]//g'                 \
+        -e 's/  */\t/g'                         \
+        -e 's/\t\t/\t/g'                        \
+        -e 's///g'                            \
+        -e '/^$/d'                              |
+    awk -v code=$1 '{
+        printf "%s\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n",
+        code,$1, yesc,$2,$3,$4,$5, $8/10000,$9/10000;
+        yesc=$5
+    }' > /tmp/kts/chao.xRD
+
+    # re-fresh data
+    xEND=`tail -1 /tmp/kts/chao.xRD | awk '{print $2}'`
+
+    if [ "${xEND}" != "${END}" ]; then
+        sqls="SELECT max(date) FROM day WHERE code=$1"
+        rEND=`mysql -N kts <<< "${sqls}"`
+        [ "${xEND}" = ${rEND} ]
+        xt_ret $? "xRD@${1} data stuck!" || return $?
+        fn_echo_warn "halt guy@${1}"
+    fi
+
+    echo "
+    DELETE FROM day WHERE code=$1;
+    LOAD DATA LOCAL INFILE '/tmp/kts/chao.xRD' INTO TABLE day;
+    " | mysql kts
+    xt_ret $? "" || return $?
+
+    fn_echo_succ "update db@${1} succ!"
+}
+
+function fn_autoxRD()
+{
+    fn_iscode $1 && { fn_xRD0 $1; exit 0 ;}
+
+   #bat-mode
+   #last_xRD=`mysql -N kts <<< "SELECT max(date) FROM tbl_xRDdate"`
+   #xt_ret $? "" || return $?
+   #song_ratio>0
+   #sqls="SELECT code FROM xRD WHERE song_ratio>0 && date>'${last_xRD}' and date<='${date_F}' ORDER by date ASC"
+    
+    [ "${date_T//:/}" -gt 092500 ]
+    xt_ret $? "Too early @${date_T}" || return $?
+
+    sqls="SELECT code FROM xRD WHERE song_ratio>0 AND date='${date_F}' ORDER by date ASC"
+   #xfile=${chao}.xfail
+    xfile=${chao}.xlist
+    mysql -N kts <<< "${sqls}" > ${chao}.xlist
+
+    local i=
+    for i in `cat ${xfile}`; do
+        fn_iscode ${i}
+        xt_ret $? "" || return $?
+        fn_xRD0 ${i}
+        xt_ret $? "" || return $?
+    done
+
+    SCREENER ma1020 2
+    xt_ret $? "" || return $?
+}
+
 function fn_main()
 {
     cmdlist=(
@@ -1646,14 +1698,19 @@ function fn_main()
     "file_to_table {code...|file}       # 写file到表{TBL:-zxg}，并......ZXG.BLK...."
     "table_to_file {table:-chao}        # 添加表{table:-chao}到/tmp/zxg"
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
-    "checkcode file                     # "
-    "html                               # flush YIST=.soptter.xxx soptter output into html"
     "copy_table_2_table src dst         # --- 使用 1 1 做为代号"
     "add_yesclose                       # 为yahoo.指南针数据添加yesclose"
     "load_directory                     # load文件夹${znzday}到表day"
     "dump_day_2_tmp START END           # 导出日线到${daydump} \${START:-\$END} \${END:-\${END}}"
-    "trs_min_2_day                      # 最后一笔分线转日线"
-    "wind                               # wind(close<avrg)"
+    #checkcode file                     # "
+    #html                               # flush YIST=.soptter.xxx soptter output into html"
+    #trs_min_2_day                      # 最后一笔分线转日线"
+    #xbb [l]                            # 生成PREV30成交额峰值测算，加参数l时list数据日期"
+    #wind                               # wind(close<avrg)"
+    #ma20f15                            # "
+    #fenbi  code 2015mmdd               # "
+    #money                              # -----资金分析，拟合出增量资金与指数的5倍关系-----"
+    #merge  file...                     # 合并多个文件到chao.merge"
     "db201                              # DB wolf from DDE"
     "day    code                        # DL 1year data from znz"
     "ipo                                # DL ipo codes from east"
@@ -1661,20 +1718,15 @@ function fn_main()
     "dorat  [loop]                      # 量比数据，loop when run@crontab"
     "am925                              # load日线数据FROM.10jqka"
     "am925_bell                         # 触发按键精灵"
+    "autoxRD                            # xRD_FROM_10jqka"
     "holiday                            # 检查是否法定假日"
-    "ma20f15                            # "
     "morningcall                        # "
     "trace                              # "
-    "fenbi  code 2015mmdd               # "
-    "money                              # ---------资金分析---------"
-    "power                              # 权重分析"
-    "merge  file...                     # 合并多个文件到chao.merge"
     "dig                                # 从<chao.dig>输入，并输出到<dig.txt>"
     "notice NUM                         # 至多NUM天，更新公告 /opt/notice/"
     "seat_rank                          # 总排名"
     "seat_detail                        # top-30-seat所操作的股票"
     "bigbid                             # 大宗交易"
-    "xbb [l]                            # 生成PREV30成交额峰值测算，加参数l时list数据日期"
     "hwork                              # 每日功课"
     "chk_rank [iF5]                     # 有新进成员，[up dorat]定期调用"
     "chk_day                            # day vs. dde"

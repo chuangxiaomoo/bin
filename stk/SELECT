@@ -13,7 +13,7 @@ function fn_ls()
     echo "
     SELECT nmc/close FROM cap WHERE code=${code} LIMIT 1 INTO @shares0; -- TURNOV0使用
     SELECT * FROM (
-        SELECT $fields, $PEAK as peak, $TROUGH as trough,
+        SELECT $fields,
         $RISE as rise, 
         ${sql_avrg}
         $TURNOV0 as tov
@@ -55,11 +55,11 @@ function fn_pro_wolves()
 {
     [ -z "${is_wolves}" ] && return 1
 
-    fn_isdigit ${sta:=${1:-1}} || fn_list_iF5_times
+    fn_isdigit ${iDDE:-1} || fn_list_wolf_times
 
-    let sta--
-    stime=`mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC LIMIT ${sta},1"`
-    s_old=`mysql -N kts<<< "SELECT DISTINCT time FROM xdde WHERE date='${END}'                       LIMIT ${sta},1"`
+    let iDDE--
+    stime=`mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC LIMIT ${iDDE},1"`
+    s_old=`mysql -N kts<<< "SELECT DISTINCT time FROM xdde WHERE date='${END}'                       LIMIT ${iDDE},1"`
 
     if [ "${stime}" != "${s_old}" ]; then
         iCOND="time='${stime}'${eCOND}" xCol=date fn_xCol mat_dde xdde ${END}
@@ -235,8 +235,8 @@ function fn_lsd()
         E|e) iCOND="!${c_natural}"                                          ;;  # 一字板，全天不开板
         V|v) iCOND="${c_natural} && d.open/yesc<1.093"
              LIMIT=${LIMIT:-24};HAVING="tov5>=${vDOOR:-4}&&${HAVING:-1}"    ;;
-        K|k) iBOO8="(i_wk*100+tov5>0)"
-             kCOND="${kCOND:-space+rise>${kDOOR:-5} &&${iBOO8}}"
+     KK|K|k) [ "${PPLUS}" = KK ] && iBOO8="&&(i_wk*100+tov5>0 || tov5>=15)"     # KK加上i_wk限制
+             kCOND="${kCOND:-space+rise>${kDOOR:-5}} ${iBOO8}"                  # kCOND可以指定
              iCOND="${c_natural} && d.open/yesc<1.093"
              LIMIT=${LIMIT:-24};HAVING="tov5>=${vDOOR:-4}&&${HAVING:-1}"    ;;
         R|r) iCOND="d.high!=d.low"                                          ;;  # 数据开始变动
@@ -814,8 +814,10 @@ function fn_vol()
     get_vol()
     {
     echo "
-    SELECT date, round(sum(volume)/10000, 2) as Volume,
-        round(sum(amount)/10000, 2) as Amount, round(sum(amount)/sum(volume), 2) as Trade
+    SELECT date, 
+        round(sum(amount)/10000, 2) as Amount, 
+        round(sum(volume)/10000, 2) as Volume,
+        round(sum(amount)/sum(volume), 2) as Trade
         FROM day WHERE date<='${END}' ${COND} ${inLIST}
         GROUP by date
         ORDER by date DESC
@@ -837,6 +839,7 @@ function fn_vol()
         COND='and code<400000'
         ;;
     *)
+        echo "Usage: SELECT stat vol {0|3|6|03}     # 默认统计所有A股"
         COND='and code<700000'
         ;;
     esac
@@ -1343,52 +1346,9 @@ function fn_ban()
     xt_ret $? "" || return $?
 }
 
-function fn_sban()
-{
-    case $1 in
-    a|avri)
-        fn_get_ratio_close2open idxopen
-        # echo ${idxopen} ${tov_pcnt}; exit
-        for (( i=${START:=${idxopen}}; i>${STOP:-0}; i-=1 )); do
-            [ "${i}" -ne "${START}" ] && YIST=${chao}.temp
-            iCOND="hiri>5 && rise>avri-.6 && avri>0 && avri<9.93 && tov<${tov_pcnt} && nmcYi<80"
-            LIMIT=3000 YIST=${YIST} COND=${iCOND} CHAO=1 SELECT lohi ${i}
-            cp ${chao}.lohi ${chao}.temp
-        done
-        ;;
-    40)
-        ZIZE=0.18 fn_ban; exit
-        ;;
-    47)
-        ZIZE=0.25 fn_ban; exit
-        ;;
-    .99)
-        COND='tov<=1 && rise>=9.93' SELECT lohi ${2:-1} ${3}; exit
-        ;;
-    g1)
-        COND='tov>1 && rise>=9.93' SELECT lohi ${2:-1} ${3}; exit
-        ;;
-    c|code)
-        COND="code=$2" SELECT lohi ${3:-1}; exit
-        ;;
-    u|*)
-        echo "
-        SELECT sban <param>
-            a   : close>avri-1
-            40  : 0940 tov .18
-            47  : 0947 tov .25
-            .99 : tov<=1 && rise>=9.93
-            g1  : tov>1 && rise>=9.93
-            c   : c code [i]
-            *   : usage
-        "
-        ;;
-    esac
-}
-
 function fn_xrd()
 {
-    mysql kts <<<"SELECT * from xRD WHERE date${OP:->}'${END}' order by ${1:-date} ASC"
+    mysql -t kts <<<"SELECT * from xRD WHERE date >= '${END}' order by ${1:-date} DESC"
     return $?
 }
 
@@ -1399,7 +1359,8 @@ function fn_cap()
     elif [ -f "${YIST}" ]; then
         fn_yist
     else
-        fn_execute -l && exit
+        echo "Usage: SELECT cap code"
+        echo "       YIST=x SELECT cap"; exit
     fi
 
     mysql -t kts <<<"SELECT * FROM cap WHERE ${COND:-1} ${inLIST} ORDER by nmc DESC;"
@@ -1947,6 +1908,23 @@ function fn_create_stati_ban()
 function fn_stat()
 {
     case $1 in
+    top)
+        PREV5=`fn_get_date ${NUM:-5}`
+        echo "
+        SELECT 
+            d.code,
+            SUM((d.close-d.yesc)/d.yesc>.093) as cnt,
+            SUM(high=low) as yiz,
+            c.name
+            FROM day d , cap c WHERE d.code=c.code AND d.date>='${PREV5}' AND d.date<='${END}' 
+            GROUP by code HAVING yiz<2 AND ${COND}
+            ORDER by cnt DESC LIMIT ${LIMIT:-24};
+        " | mysql -t kts
+        fn_echo_succ "${PREV5} ~ ${END}"
+        ;;
+    vol)
+        fn_vol $2
+        ;;
     m|mid)
         fn_echo_warn "1000,500换手率"
         LIMIT=1000,1 END=${END} FIELD=tov SELECT lsd
@@ -1968,7 +1946,6 @@ function fn_stat()
         usage="
     Usage:
         u|h     This message
-        iF5     iF5
     CONDs:
         code>=300000 and code<400000
         code>=600000 and code<700000
@@ -2047,10 +2024,11 @@ function fn_stat()
     *)
         echo "
         SELECT stat <param>:
-        m   middle of 1160
-        t   realtimetov
-        ban 涨停板收益统计
-        yiz 一字板收益统计
+        m                       # middle of 1160
+        t|realtimetov           # 统计各时段成交额
+        ban                     # 涨停板收益统计
+        yiz                     # 一字板收益统计
+        vol                     # 统计成交额
         "
         exit
         ;;
@@ -2952,13 +2930,6 @@ function fn_seat_detail()
     return $?
 }
 
-
-function fn_am925()
-{
-    echo 
-    return $?
-}
-
 function fn_main()
 {
     cmdlist=(
@@ -2966,20 +2937,19 @@ function fn_main()
     "6maishenjian       [sortfield]           # chng只是(close-open)/open"
     "comma              [tbl_name:-day]       # 逗分列名"
     "list_date          num                   # num默认10"
-    "wma                [sortfield:tov5]      # 均价+现成513.静态rat"
-    "rat                [sortfield:-ratio]    # wma+day-->动态rat，实时速度快"
-    "dorat                                    # 分时数据iF5"
-    "ma240              [sortfield:-ratio]    # "
-    "ma240_usage        {1~9}                 # 分析ma 5 13 34 55"
-    "dif120             code...               # cost:(close-ma120) & sort by #{ASC:id}"
-    "stat                                     # 大盘统计"
+    #wma                [sortfield:tov5]      # 均价+现成513.静态rat"
+    #rat                [sortfield:-ratio]    # wma+day-->动态rat，实时速度快"
+    #ma240              [sortfield:-ratio]    # "
+    #ma240_usage        {1~9}                 # 分析ma 5 13 34 55"
+    #dif120             code...               # cost:(close-ma120) & sort by #{ASC:id}"
     # ----------------  ABOVE IS FIXED SEQUENCE --------------------
+    "dorat                                    # 分时数据iF5"
+    "stat                                     # 大盘统计"
     "xrd                FIELD                 # #{OP:->}"
-    "ace                sta num               # 10日内所有+10% amount nmc 统计 [SELECT wolf top]"
-    "cap                code                  # 查询nmc&cap"
-    "name               code                  # 名"
-    "pma                code                  # NUM=5日平均"
     "dirtio                                   # diff(dorat)"
+    #cap                code                  # 查询nmc&cap"
+    #name               code                  # 名"
+    #pma                code                  # NUM=5日平均"
     #macd               [clean]               # macd-alarm-sys"
     #fmacd                                    # 单个代码的macd"
     #fbi                                      # tbl_fbi"
@@ -2990,8 +2960,10 @@ function fn_main()
     #rdiff                                    # tbl_rdiff"
     #tri                                      # 3连阳"
     #ban                condi [time]          # 条件. 0945后使用"
-    #sban               condi [time]          # super ban"
-    "vol                {0|3|6|03}            # ^^3市成交^^"
+    #wee                                      # NUM日为1个单位，3个周期环比[成交量放大倍数]"
+    #ATR                all|redOnly|code      # AverageTrueRangeOf阳线非一字板"
+    #ace                sta num               # 10日内所有+10% amount nmc 统计 [SELECT wolf top]"
+    #g20                                      # 创20日新高"
     "ls                 {code|symbol}         # 日线数据 \$LIMIT"
     "lsd                [{top|floor}][FIELD]  # --- END YIST LIMIT 涨幅排名"
     "lsdh                                     # lsd-hammer"
@@ -3000,19 +2972,15 @@ function fn_main()
     "updown                                   # 近期{NUM=5}涨跌家数统计"
     "hilo               FIELD                 # 跌幅统计"
     "lohi               FIELD                 # 涨幅统计"
-    "wee                                      # NUM日为1个单位，3个周期环比[成交量放大倍数]"
-    "g20                                      # 创20日新高"
     "lhb                excption              # 龙虎榜"
     "dde                                      # dde(CURR)>dde(PREV)"
     "wolf                                     # DDE"
     "blk                                      # 板块信息+涨幅统计"
     "scale                                    # HMS= 可指定时间"
-    "ATR                all|redOnly|code      # AverageTrueRangeOf阳线非一字板"
     "notice                                   # 公告"
     "ddd                                      # 连续缩量后放量"
     "seat_rank                                # 总排名，上榜次数num>#NUM"
     "seat_detail                              # seat-blk"
-    "am925                                    # seat-blk"
     )
 
     fn_set_END

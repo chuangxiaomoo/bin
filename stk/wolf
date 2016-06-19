@@ -85,6 +85,7 @@ function fn_up_dde()
     nr=`wc -l<${wolf_rip}`
 
     if [ "${nr}" -lt 2600 ]; then
+        fn_bell
         fn_echo_fail "Error: nr[${nr}] so little"; exit
     fi
 

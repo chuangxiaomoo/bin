@@ -47,7 +47,6 @@ LORI='TRUNCATE(100*(d.low-d.yesc)/d.yesc, 2)'
 HIRI='TRUNCATE(100*(d.high-d.yesc)/d.yesc, 2)'
 OPRI='TRUNCATE(100*(d.open-d.yesc)/d.yesc, 2)'
 RISE='TRUNCATE(100*(d.close-d.yesc)/d.yesc, 2)'
-PEAK='TRUNCATE(100*(d.high-d.close)/yesc, 2)'
 APPLE='ROUND(100*(x.close-x.yesc)/x.yesc, 1)'
 nmcYi='ROUND(c.nmc/10000, 1) as nmcYi'
 # ${nmcYi0%as*} 去as
@@ -487,7 +486,7 @@ function fn_name()
 
     argv="${@}"
     argv="${argv// /,}"
-    sqls="SELECT code, name, CONCAT((round(nmc/10000, 1)),'Yi') as nmcYi FROM cap WHERE code IN (${argv})"
+    sqls="SELECT code, name, CONCAT((round(nmc/10000)),'Yi') as nmcYi FROM cap WHERE code IN (${argv})"
     #echo "${sqls}">/dev/stderr;exit
     fn_echo_succ `mysql -N kts <<< "${sqls}"`
 
@@ -776,7 +775,7 @@ function fn_beep()
         echo -ne '\a' > /dev/pts/0; sleep .17
     done
     # fn_echo_succ自带了NL
-    echo -ne "${date_T}.${FUNCNAME[1]}\n${@}" > /dev/pts/0
+    echo -ne "${date_T}.${PREFIX:-${FUNCNAME[1]}}\n${@}" > /dev/pts/0
 }
 
 function fn_cp_tbl()
