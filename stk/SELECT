@@ -1346,9 +1346,9 @@ function fn_ban()
     xt_ret $? "" || return $?
 }
 
-function fn_xrd()
+function fn_xRD()
 {
-    mysql -t kts <<<"SELECT * from xRD WHERE date >= '${END}' order by ${1:-date} DESC"
+    mysql -t kts <<<"SELECT * from xRD WHERE date >= '${END}' && date<='${date_F}' ORDER BY ${FIELD:-date} DESC"
     return $?
 }
 
@@ -2945,7 +2945,7 @@ function fn_main()
     # ----------------  ABOVE IS FIXED SEQUENCE --------------------
     "dorat                                    # 分时数据iF5"
     "stat                                     # 大盘统计"
-    "xrd                FIELD                 # #{OP:->}"
+    "xRD                FIELD                 # #{OP:->}"
     "dirtio                                   # diff(dorat)"
     #cap                code                  # 查询nmc&cap"
     #name               code                  # 名"

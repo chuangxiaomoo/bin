@@ -65,7 +65,7 @@ function fn_main()
 {
     read -p "
     Usage: autoxRD [code]
-    make sure [up up_tbl_xRD --keep.PWR] is done!!!
+    make sure [up xRDdb --keep.PWR] is done!!!
     type any key to continue."
 
     iLIST="${*}"
