@@ -149,9 +149,9 @@ function fn_hexun_day0()
     }' >> $hx_dayclose
     xt_ret $? "NETWORK" || return $?
 
-    hx_lines=`cat $hx_dayclose | wc -l`
+    hx_lines=`wc -l < $hx_dayclose`
     if [ $hx_lines -lt ${baselines:=1300} ]; then
-        wall <<< "up:${BASH_LINENO[0]} $hx_lines less than ${baselines} lines"
+        fn_echo_pts0 "${date_T}.fn_hexun_day0.lines [ $hx_lines -lt ${baselines} ] & FINA=${FINA:-0}"
         return 1
     fi
 
@@ -1566,7 +1566,7 @@ function fn_chk_day()
 
         fn_echo_succ "${END} dor:$dor day:$day dde:$dde"
 
-        [ "${dor}" -gt "${dde}" ] && [ "${day}" -gt "${dde}" ]
+        [ "${dor}" -ge "${dde}" ] && [ "${day}" -ge "${dde}" ]
         xt_ret $? "something wrong"
 
         [ "${dor}" -eq "${day}" ] && exit

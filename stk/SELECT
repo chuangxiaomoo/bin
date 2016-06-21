@@ -51,6 +51,56 @@ function fn_update_matov5()
     fi
 }
 
+function fn_pro_hammer()
+{
+    [ -z "${is_hammer:-${is_spacer:-${is_wolves}}}" ] && return 1
+
+    PROP=`fn_scale PROP`
+    VTOV="LEAST(100*d.volume*c.close/c.nmc/${PROP}, 30)/t5.tov"
+    BOOST="GREATEST(${VTOV}, (1.1+(20-GREATEST(LEAST(20,t5.tov),12))*.05))"     # 保范围 1.1~1.5
+    BOOST="10*LEAST(${BOOST}-(1.1+(20-GREATEST(LEAST(20,t5.tov),12))*.05), .6)" # 保上限 .6
+
+    REALIZ='(ma5/((ma5+ma10+ma20)/3) -1)'
+    REALIZED='(d.close/((ma5+ma10+ma20)/3) -1)'                                 # 涨幅 = ma5涨幅 * 相应乘数  .03= 1/5+1/10
+    REALIZED2="IF($REALIZED>0, ${REALIZED}, 0)"
+
+    RIFLE='ROUND((GREATEST(wk12,wk23)-1)*.2+(LEAST(wk12,wk23)-1)*.8 ,2)'      # tov5接近20%，i_wk在5在内可将阴影消除
+    ROCKET='ROUND(IF(dy12>=dy35, dy12+.30*(dy35-1), dy35+.5*(dy12-1))-1, 2)'    # 修正2rd后的max(dy12,dy35)
+    pwr_dy5="LEAST(${ROCKET}, (25/t5.tov), t5.tov) * LEAST(t5.tov,20)"          # ROCKET的范围(25/t5.tov, t5.tov)，最大换手上限为20
+            
+    pwr_t10="IF(top10<.2, 1, .9/(1-top10))"
+    pwr_nmc="IF(${nmc0}/${pwr_t10}-20<100, ${nmc0}/${pwr_t10}-20, 100)/10"
+    columns="d.code"
+
+    fn_pro_spacer || \
+    fn_pro_wolves || \
+    sqls="
+    SELECT  $columns,
+            $HIRI as hiri,
+            $OPRI as opri,
+            ${sql_avrg}
+            top10 as tp10,
+            ROUND(${REALIZED2},2) as rliz,
+            ${RIFLE} as i_wk,
+            ${ROCKET} as i_dy,
+            $TURNOV as tov, t5.tov as tov5,
+            ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2) as prop5,
+            $RISE as rise,
+            ROUND( t5.tov*$pwr_t10 +${pwr_dy5} -100*${REALIZED2} 
+                   -${pwr_nmc} +${BOOST}, 1) as space,
+            ROUND(100*(d.close/ma60-1), 1) as ma60,
+            round(d.amount/10000, 2) as eYi,
+            ${nmcYi}, c.name
+            FROM ${TEMPDAY:-day} d, cap c, t_matov5 t5, mat_ma1020 m, top10 p
+            ${WHERE} d.code=m.code && m.date='${PREV}' AND
+            d.code = c.code AND d.code=t5.code AND d.code=p.code AND
+            d.date = '${END}' && ${iCOND:-1} && ${cCOND:-1}
+            HAVING ${HAVING:-1} && ${kCOND:-1} ${COND} ORDER BY ${FIELD:-rise} ${ASC:-desc} limit ${LIMIT:-36}
+    "
+    #echo "${sqls}"; exit
+}
+
+
 function fn_pro_wolves()
 {
     [ -z "${is_wolves}" ] && return 1
@@ -70,7 +120,7 @@ function fn_pro_wolves()
 
     sqls="
     SELECT  $columns,
-            (LEAST(wk12, wk23)-1) as i_wk,
+            ${RIFLE} as i_wk,
             ${ROCKET} as i_dy,
             $TURNOV as tov, t5.tov as tov5,
             ROUND(${pwr_dy5},1) as PWR5,
@@ -101,7 +151,7 @@ function fn_pro_spacer()
 
     sqls="
     SELECT  $columns,
-            (LEAST(wk12, wk23)-1) as i_wk,
+            ${RIFLE} as i_wk,
             ${ROCKET} as i_dy,
             $TURNOV as tov, t5.tov as tov5,
             ROUND(${pwr_dy5},1) as PWR5,
@@ -113,60 +163,13 @@ function fn_pro_spacer()
             ROUND( t5.tov*${pwr_t10} +${pwr_dy5} -100*${REALIZED2} 
                    -${pwr_nmc} +${BOOST}, 1) as space,
             ROUND(100*(d.close/ma60-1), 1) as ma60,
+            ROUND(100*(m.trade/ma5-1), 1) as ma5,
             round(d.amount/10000, 2) as eYi,
             ${nmcYi}, c.name
             FROM ${TEMPDAY:-day} d, cap c, t_matov5 t5, mat_ma1020 m, top10 p
             ${WHERE} d.code=m.code && m.date='${PREV}' AND
             d.code = c.code AND d.code=t5.code AND d.code=p.code AND
             d.date = '${END}' && ${iCOND:-1} && ${cCOND:-1} 
-            HAVING ${HAVING:-1} && ${kCOND:-1} ${COND} ORDER BY ${FIELD:-rise} ${ASC:-desc} limit ${LIMIT:-36}
-    "
-    #echo "${sqls}"; exit
-}
-
-function fn_pro_hammer()
-{
-    [ -z "${is_hammer:-${is_spacer:-${is_wolves}}}" ] && return 1
-
-    PROP=`fn_scale PROP`
-    BOOST="GREATEST((100*d.volume*c.close/c.nmc/t5.tov)/${PROP}, (1.1+(20-GREATEST(LEAST(20,t5.tov),12))*.05))"     # 1.1~1.5
-    BOOST="10* LEAST(${BOOST}-(1.1+(20-GREATEST(LEAST(20,t5.tov),12))*.05), .6)"                                    # 保上限 .6
-
-    REALIZ='(ma5/((ma5+ma10+ma20)/3) -1)'
-    REALIZED='(d.close/((ma5+ma10+ma20)/3) -1)'                                 # 涨幅 = ma5涨幅 * 相应乘数  .03= 1/5+1/10
-    REALIZED2="IF($REALIZED>0, ${REALIZED}, 0)"
-
-    OOCKET='(IF(dy12>1 && dy35>dy12, dy35+(dy12-1), GREATEST(dy12,dy35))-1)'    # 修正2rd后的max(dy12,dy35)
-    ROCKET='ROUND(IF(dy12>=dy35, dy12+.38*(dy35-1), dy35+.64*(dy12-1))-1, 2)'   # 修正2rd后的max(dy12,dy35)
-    pwr_dy5="LEAST(${ROCKET}, (25/t5.tov), t5.tov) * LEAST(t5.tov,20)"          # ROCKET的范围(25/t5.tov, t5.tov)，最大换手上限为20
-            
-    pwr_t10="IF(top10<.2, 1, .9/(1-top10))"
-    pwr_nmc="IF(${nmc0}/${pwr_t10}-20<100, ${nmc0}/${pwr_t10}-20, 100)/10"
-    columns="d.code"
-
-    fn_pro_spacer || \
-    fn_pro_wolves || \
-    sqls="
-    SELECT  $columns,
-            $HIRI as hiri,
-            $OPRI as opri,
-            ${sql_avrg}
-            top10 as tp10,
-            ROUND(${REALIZED2},2) as rliz,
-            (LEAST(wk12, wk23)-1) as i_wk,
-            ${ROCKET} as i_dy,
-            $TURNOV as tov, t5.tov as tov5,
-            ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2) as prop5,
-            $RISE as rise,
-            ROUND( t5.tov*$pwr_t10 +${pwr_dy5} -100*${REALIZED2} 
-                   -${pwr_nmc} +${BOOST}, 1) as space,
-            ROUND(100*(d.close/ma60-1), 1) as ma60,
-            round(d.amount/10000, 2) as eYi,
-            ${nmcYi}, c.name
-            FROM ${TEMPDAY:-day} d, cap c, t_matov5 t5, mat_ma1020 m, top10 p
-            ${WHERE} d.code=m.code && m.date='${PREV}' AND
-            d.code = c.code AND d.code=t5.code AND d.code=p.code AND
-            d.date = '${END}' && ${iCOND:-1} && ${cCOND:-1}
             HAVING ${HAVING:-1} && ${kCOND:-1} ${COND} ORDER BY ${FIELD:-rise} ${ASC:-desc} limit ${LIMIT:-36}
     "
     #echo "${sqls}"; exit
@@ -233,11 +236,11 @@ function fn_lsd()
         N|n) iCOND="${c_natural}"                                           ;;  # 可一字open 
         G|g) iCOND="${c_natural} && d.open/yesc<1.093"                      ;;  # 非一字open
         E|e) iCOND="!${c_natural}"                                          ;;  # 一字板，全天不开板
-        V|v) iCOND="${c_natural} && d.open/yesc<1.093"
+        V|v) iCOND="${c_natural} && d.open/yesc<1.093"                          # exclude<一字开板>
              LIMIT=${LIMIT:-24};HAVING="tov5>=${vDOOR:-4}&&${HAVING:-1}"    ;;
      KK|K|k) [ "${PPLUS}" = KK ] && iBOO8="&&(i_wk*100+tov5>0 || tov5>=15)"     # KK加上i_wk限制
              kCOND="${kCOND:-space+rise>${kDOOR:-5}} ${iBOO8}"                  # kCOND可以指定
-             iCOND="${c_natural} && d.open/yesc<1.093"
+             iCOND="${c_natural}"                                               # include<一字开板>
              LIMIT=${LIMIT:-24};HAVING="tov5>=${vDOOR:-4}&&${HAVING:-1}"    ;;
         R|r) iCOND="d.high!=d.low"                                          ;;  # 数据开始变动
         esac
@@ -1144,7 +1147,7 @@ function fn_lohi()
 
     case $1 in
     l|list)
-        fn_list_iF5_times
+        iASC=DESC fn_list_iF5_times
         ;;
     d|date)
         SCREENER lohi l; exit 0
