@@ -897,6 +897,7 @@ function fn_main() {
         subtitle
         psychology                      # 心理学
         kindle
+        writing
         meditation_cept
         psychology_cept
         education_cept                  # 教育

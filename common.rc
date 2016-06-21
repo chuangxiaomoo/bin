@@ -79,6 +79,11 @@ function fn_echo_fail()
     return 0
 }
 
+function fn_echo_pts0()
+{
+    echo "${@}" >& /dev/pts/0
+}
+
 function fn_pkill_children()
 {
     local papa=$1

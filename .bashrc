@@ -33,6 +33,7 @@ alias      STEP=''
 alias     SCALE=''      # 通放大倍数 
 alias       WIT=''      # 大智慧
 alias     LIMIT=''
+alias      iDDE=''
 alias      iEND=''
 alias     iPASS=''
 alias    iLIMIT=''
@@ -43,14 +44,15 @@ alias     PARTS=''
 alias NMC_RATIO=''
 alias       wup='.s; FINA=0 up 4; TBL=wind SCREENER 0 || up wind'
 alias       fup='.s; FINA=1 up 4'
+#lias     .b='cd ~/bin'
+alias .bell.xrd="timeout 3 nc 127.0.0.1 2911 <<< '_xRD_done_'"
+alias .bell.win="timeout 3 nc  10.0.2.2 1234 <<< 'duang.wav msg.wav'"
 alias   .lschao='xargs -n8</tmp/kts/chao'
-alias      .nb.="timeout 3 nc 10.0.2.2 1234 <<< 'duang.wav msg.wav'"
 alias      .NTP="ntpdate cn.pool.ntp.org"
 
 
 alias     ..='cd ..'
 alias    ...='cd ../..'
-alias     .b='cd ~/bin'
 alias     .c="let 'CHAO=!CHAO'; echo \$CHAO; export CHAO"
 alias     .w="let 'WIT=!WIT'; echo \$WIT; export WIT"
 alias     .5="let 'TOV5=++TOV5%3'; echo \$TOV5; export TOV5"
