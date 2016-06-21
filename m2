@@ -190,10 +190,19 @@ function fn_tiandao()                   { cat book_tiandao book_遥远的救世�
     fn_print $@
 }
 
+function fn_music()    	                {
+function fn_misc()                      { cat music_misc ;}
+function fn_theory()                    { cat music_theory ;}
+    local opts=(
+        misc
+        theory
+    )
+cat music ;
+}
+
 function fn_mindhacks()                 { cat mindhacks ;}
 function fn_guang()    	                { cat guang ;}
 function fn_words()    	                { cat words ;}      # juzi
-function fn_music()    	                { cat music ;}
 function fn_poet()    	                { cat poet ;}
 function fn_personage()                 { cat personage ;}
 function fn_meeting()                   { cat meeting ;}
