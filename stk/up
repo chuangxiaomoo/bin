@@ -1687,7 +1687,7 @@ function fn_autoxRD()
 function fn_tp10()
 {
     tp10_rip='/tmp/kts/tp10'
-    sed 's/  */\t/g' .src/top10R > ${tp10_rip}
+    sed 's/  */\t/g' .src/top10R.list > ${tp10_rip}
     xt_ret $? "" || return $?
 
     echo "
