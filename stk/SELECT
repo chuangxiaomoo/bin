@@ -51,20 +51,33 @@ function fn_update_matov5()
     fi
 }
 
+function fn_pro_header_30min()
+{
+    # 前40分收敛处理
+    hhmmss=${iTime:-${date_T}}
+    [ "${hhmmss//:/}" -lt 094000 ] && H40='*.7' && return
+    [ "${hhmmss//:/}" -lt 095000 ] && H40='*.8' && return
+    [ "${hhmmss//:/}" -lt 101000 ] && H40='*.9' && return
+}
+
 function fn_pro_hammer()
 {
     [ -z "${is_hammer:-${is_spacer:-${is_wolves}}}" ] && return 1
 
+    #echo ${PROP} is PROP
+    fn_pro_header_30min
     PROP=`fn_scale PROP`
-    VTOV="LEAST(100*d.volume*c.close/c.nmc/${PROP}, 30)/t5.tov"
-    BOOST="GREATEST(${VTOV}, (1.1+(20-GREATEST(LEAST(20,t5.tov),12))*.05))"     # 保范围 1.1~1.5
-    BOOST="10*LEAST(${BOOST}-(1.1+(20-GREATEST(LEAST(20,t5.tov),12))*.05), .6)" # 保上限 .6
+    _VAX="(vax3/vax60 + (${TURNOV}/${PROP}${H40}>vax60)*5)"
+    VTOV="LEAST(100*d.volume*c.close/c.nmc/${PROP}, 30)/t5.tov"                         # 获量比 tov/matov5
+    BOOST="GREATEST(${VTOV}$H40,(1.1+(20-GREATEST(LEAST(20,t5.tov),12))*.05))"          # 保范围 1.1~1.5 对应tov5 20%~12%
+    BOOST="10*LEAST(${BOOST}-   (1.1+(20-GREATEST(LEAST(20,t5.tov),12))*.05), .6)"      # 保上限 .6
+    BOOST="${BOOST}*GREATEST(LEAST(dy12,2),1)"
 
     REALIZ='(ma5/((ma5+ma10+ma20)/3) -1)'
     REALIZED='(d.close/((ma5+ma10+ma20)/3) -1)'                                 # 涨幅 = ma5涨幅 * 相应乘数  .03= 1/5+1/10
     REALIZED2="IF($REALIZED>0, ${REALIZED}, 0)"
 
-    RIFLE='ROUND((GREATEST(wk12,wk23)-1)*.2+(LEAST(wk12,wk23)-1)*.8 ,2)'      # tov5接近20%，i_wk在5在内可将阴影消除
+    RIFLE='ROUND((GREATEST(wk12,wk23)-1)*.2+(LEAST(wk12,wk23)-1)*.8 ,2)'        # tov5接近20%，i_wk在5在内可将阴影消除
     ROCKET='ROUND(IF(dy12>=dy35, dy12+.30*(dy35-1), dy35+.5*(dy12-1))-1, 2)'    # 修正2rd后的max(dy12,dy35)
     pwr_dy5="LEAST(${ROCKET}, (25/t5.tov), t5.tov) * LEAST(t5.tov,20)"          # ROCKET的范围(25/t5.tov, t5.tov)，最大换手上限为20
             
@@ -105,7 +118,7 @@ function fn_pro_wolves()
 {
     [ -z "${is_wolves}" ] && return 1
 
-    fn_isdigit ${iDDE:-1} || fn_list_wolf_times
+    fn_isdigit ${iDDE:=1} || fn_list_wolf_times
 
     let iDDE--
     stime=`mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC LIMIT ${iDDE},1"`
@@ -125,12 +138,13 @@ function fn_pro_wolves()
             $TURNOV as tov, t5.tov as tov5,
             ROUND(${pwr_dy5},1) as PWR5,
             ROUND((${pwr_t10}-1)*t5.tov,1) as TP10,                                                         # _line_for_wolf_
-            ROUND(-${pwr_nmc}, 1) as _NMC,
+--          ROUND(-${pwr_nmc}, 1) as _NMC,
             CONCAT(ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2), '_',ROUND(${BOOST},1) ) as prop5BOO,
             concat(top10, '_', ROUND(${REALIZED2}, 2)) as tp10_rliz,
             $RISE as rise,
             ROUND( t5.tov*${pwr_t10} +${pwr_dy5} -100*${REALIZED2} 
                    -${pwr_nmc} +${BOOST}, 1) as space,
+            ROUND(${_VAX}, 2) as vax,
             ROUND(100*(d.close/ma60-1), 1) as ma60,
             CONCAT(IF(net>0,'+','-'), round(abs(net)/w.tov, 2),'_',ROUND((pbuy+nbuy)/w.tov, 2)) as wolf,
             round(d.amount/10000, 1) as eYi,
@@ -148,6 +162,7 @@ function fn_pro_wolves()
 function fn_pro_spacer()
 {
     [ -z "${is_spacer}" ] && return 1
+    echo ${PROP} ${H40}
 
     sqls="
     SELECT  $columns,
@@ -163,7 +178,8 @@ function fn_pro_spacer()
             ROUND( t5.tov*${pwr_t10} +${pwr_dy5} -100*${REALIZED2} 
                    -${pwr_nmc} +${BOOST}, 1) as space,
             ROUND(100*(d.close/ma60-1), 1) as ma60,
-            ROUND(100*(m.trade/ma5-1), 1) as ma5,
+         -- ROUND(100*(m.trade/ma5-1), 1) as ma5,
+            ROUND(${_VAX}, 2) as vax,
             round(d.amount/10000, 2) as eYi,
             ${nmcYi}, c.name
             FROM ${TEMPDAY:-day} d, cap c, t_matov5 t5, mat_ma1020 m, top10 p
@@ -193,13 +209,16 @@ function fn_lsd()
     f|flo)  LIMIT=${LIMIT:-200}; HAVING="rise<=-9.93"; FIELD=${FIELD:-nmc} ;;
     c|code) cCOND="d.code=${2:-300059}" ;;
     y|dy5)  ROCKET='ROUND(IF(dy12>=dy35, dy12+.38*(dy35-1), dy35+.64*(dy12-1))-1, 2)';
-            sql_dy="SELECT *,${ROCKET} as i_dy FROM matov5 WHERE code=${2:-300059} and date<='${END}' ORDER by date DESC LIMIT 8"
-            mysql -t kts <<< "${sql_dy}"; exit ;;
+            echo "
+            SELECT m.*,${ROCKET} as i_dy,vax3,vax60 FROM matov5 m, mat_ma1020 v
+            WHERE m.code=v.code AND m.date=v.date AND m.code=${2} and m.date<='${END}' ORDER by date DESC LIMIT 8
+            " | mysql -t kts; exit ;;
     l|list) fn_list_iF5_times ;;
     [0-9]*)
         [ "${1}" -ne 0 ]
         xt_ret $? "NR is 0" || return $?
 
+        iHMS=$1 # 被fn_scale引用
         iTime=`fn_get_time ${1}`
         xt_ret $? "Please check data.dorat@${END}" || return $?
 

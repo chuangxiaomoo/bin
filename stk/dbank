@@ -475,7 +475,7 @@ function fn_isindex()
 function fn_iscode()
 {
     local num=`echo -n $1 | wc -c`
-    [[ "${1}" =~ ^[0-9]+$ ]] && [ "${1}" -ne 0 ] && [ ${num:-0} -eq 6 ]
+    [[ "${1}" =~ ^[036][0-9]+$ ]] && [ "${1}" -ne 0 ] && [ ${num:-0} -eq 6 ]
     #echo ${?} is ret code: ${1} num: ${num}
 }
 

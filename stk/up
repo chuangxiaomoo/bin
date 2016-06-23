@@ -126,7 +126,7 @@ function fn_hexun_day0()
 
     echo "    add hexun_day ${DATE}..."
 
-    if [ "${FINA:-0}" -eq 1 ] ; then
+    if [ "${FINA:-1}" -eq 1 ] ; then
         ./sina
         xt_ret $? "sina" || return $?
         cp $sn_ripetxt $hx_dayclose
@@ -267,6 +267,7 @@ function fn_file_to_table_quick()
     CREATE TABLE yist (
         id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0
+        ,INDEX(code)
     );
     LOAD DATA LOCAL INFILE '$f_yist' INTO TABLE yist(code);
     " | mysql kts
@@ -289,6 +290,7 @@ function fn_file_to_table()
         CREATE TABLE ${TBL} (
             id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
             code        INT(6) ZEROFILL NOT NULL DEFAULT 0
+            ,INDEX(code)
         );
         INSERT INTO ${TBL} (code) VALUES
         `sed -e 's/^/(/' -e 's/ /),(/g' -e 's/$/);/' <<< "${lst[@]}"`
@@ -1547,6 +1549,13 @@ function fn_chk_day()
         ;;
     *)
         END=`fn_get_date $1`
+        # dde
+        stamp_T=`mysql -N kts <<< "SELECT DISTINCT time FROM dde WHERE date='${END}'"`
+        [ "${stamp_T}" = "15:00:00" ]
+        xt_ret $? "DDE stamp error@${stamp_T}" || return $?
+        fn_echo_succ "DDE stamp succ@${stamp_T}"
+
+        # day AND dorat
         t1500=`fn_get_time`
         [ "${t1500//:/}" -ge 150000 ]
         xt_ret $? "Error: timestamp@${t1500}" || return $?
@@ -1675,7 +1684,7 @@ function fn_autoxRD()
     local i=
     for i in `cat ${xfile}`; do
         fn_iscode ${i}
-        xt_ret $? "" || return $?
+        xt_ret $? "bad@[${i}]" || continue
         fn_xRD0 ${i}
         xt_ret $? "" || return $?
     done
@@ -1740,7 +1749,7 @@ function fn_main()
     "holiday                            # 检查是否法定假日"
     "morningcall                        # "
     "trace                              # "
-    "tp10                               # top10"
+    "tp10                               # __LOAD__ top10R.list"
     "dig                                # 从<chao.dig>输入，并输出到<dig.txt>"
     "notice NUM                         # 至多NUM天，更新公告 /opt/notice/"
     "seat_rank                          # 总排名"

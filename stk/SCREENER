@@ -866,11 +866,13 @@ function fn_ma1020_up()
     CREATE TABLE ma1020 (
         date        date NOT NULL,
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
-        trade       DECIMAL(6,2) NOT NULL DEFAULT 0,
-        ma5         DECIMAL(6,2) NOT NULL DEFAULT 0,
-        ma10        DECIMAL(6,2) NOT NULL DEFAULT 0,
-        ma20        DECIMAL(6,2) NOT NULL DEFAULT 0,
-        ma60        DECIMAL(6,2) NOT NULL DEFAULT 0,
+        trade       DECIMAL(6,2)  NOT NULL DEFAULT 0,
+        ma5         DECIMAL(6,2)  NOT NULL DEFAULT 0,
+        ma10        DECIMAL(6,2)  NOT NULL DEFAULT 0,
+        ma20        DECIMAL(6,2)  NOT NULL DEFAULT 0,
+        ma60        DECIMAL(6,2)  NOT NULL DEFAULT 0,
+        vax3        DECIMAL(12,2) NOT NULL DEFAULT 0,
+        vax60       DECIMAL(12,2) NOT NULL DEFAULT 0,
         INDEX(date,code)
     );
 --  DROP TABLE IF EXISTS mat_ma1020;
@@ -879,7 +881,7 @@ function fn_ma1020_up()
     TRUNCATE TABLE zxg;
     INSERT INTO zxg(code) SELECT code FROM matov5 WHERE tov< 3.5 && date='$date';
 
-    INSERT INTO ma1020
+    INSERT INTO ma1020(date,code,trade,ma5,ma10,ma20,ma60)
         SELECT '${date}', d.code, sum(close)/count(*), sum(close)/count(*), 
             sum(close)/count(*), sum(close)/count(*),sum(close)/count(*)
             FROM day d, zxg z WHERE d.code=z.code && date>='${PREV13}' && date<='${date}' GROUP by code;
@@ -921,6 +923,76 @@ function fn_ma1020()
         ;;
     *)
         echo "Usage: SCREENER ma1020 {l|e|d|iEND}"
+        ;;
+    esac
+}
+
+
+function fn_xtov_up()
+{
+    fn_echo_succ "up xtov@${END}..."
+
+    PREV120=`fn_get_date 120`
+    PREV90=`fn_get_date 90`
+    PREV60=`fn_get_date 60`
+    PREV3=`fn_get_date 3`
+    echo "
+    DROP TABLE IF EXISTS xtov,xtov_3;
+    CREATE TABLE IF NOT EXISTS xtov (
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        vax3        DECIMAL(12,2) NOT NULL DEFAULT 0,
+        vax60       DECIMAL(12,2) NOT NULL DEFAULT 0
+        ,INDEX(code)
+    );
+    CREATE TABLE xtov_3 LIKE xtov;
+
+    DROP TABLE IF EXISTS  c_all;
+    CREATE TABLE c_all LIKE codes;
+    INSERT INTO c_all(code) SELECT DISTINCT code FROM mat_ma1020 WHERE date='${END}';
+
+    INSERT INTO xtov(code,vax60)
+        SELECT code, max(tov) FROM dde WHERE date>='${PREV60}' AND date<'${PREV3}'
+        GROUP by code HAVING COUNT(*) >=57;
+
+    # 最耗时的地方在联合查询，INDEX(code)成为必备
+    DELETE c.* FROM c_all c, xtov x WHERE c.code=x.code;
+    INSERT INTO xtov(code,vax60)
+        SELECT d.code, max(tov) FROM dde d, c_all c WHERE d.code=c.code AND date>='${PREV90}' AND date<'${PREV3}'
+        GROUP by code HAVING COUNT(*) >=57;
+
+    DELETE c.* FROM c_all c, xtov x WHERE c.code=x.code;
+    INSERT INTO xtov(code,vax60)
+        SELECT d.code, max(tov) FROM dde d, c_all c WHERE d.code=c.code AND date>='${PREV120}' AND date<'${PREV3}'
+        GROUP by code;
+
+    # 更新vax3
+    INSERT INTO xtov_3(code,vax3)
+        SELECT d.code, max(tov) FROM dde d, xtov c WHERE d.code=c.code AND date>='${PREV3}' AND date<'${END}'
+        GROUP by code;
+    UPDATE xtov,xtov_3 SET xtov.vax3=xtov_3.vax3 WHERE xtov.code=xtov_3.code;
+    UPDATE mat_ma1020 m, xtov x SET m.vax3=x.vax3, m.vax60=x.vax60 WHERE m.code=x.code AND m.date='${END}';
+    " | mysql -N kts
+    
+    return $?
+}
+
+function fn_xtov()
+{
+    case $1 in
+    l)  sqls="SELECT date from day WHERE code=900001 && date<='${END}' ORDER by date DESC LIMIT ${LIMIT:-10}" 
+        mysql -N kts<<<"${sqls}" | cat -n; exit ;;
+    e)
+        mysql -N kts<<< "SELECT DISTINCT date FROM mat_ma1020 WHERE date<='${END}' && vax60>0 ORDER by date DESC LIMIT 10" > ${chao}.dlist
+        fn_echo_succ "whites-gona-cre.${FUNCNAME[0]}:"
+        LIMIT=15 fn_ma1020 l | grep ${OPT:-'-B100'} --color -f ${chao}.dlist
+        exit
+        ;;
+    [0-9]*)
+        date=`fn_get_date ${1:-1}`
+        END=${date} fn_xtov_up
+        ;;
+    *)
+        echo "Usage: SCREENER xtov {l|e|iEND}"
         ;;
     esac
 }
@@ -1064,9 +1136,9 @@ function fn_dde()
     e|*)
         sqls="SELECT DISTINCT date FROM dde ORDER by date DESC LIMIT ${LIMIT:-10}"
         # mysql -N kts<<<"${sqls}" | cat -n
-        mysql -N kts<<< "SELECT DISTINCT date FROM dde WHERE date<='${END}' ORDER by date DESC LIMIT 10" > ${chao}.dlist
+        mysql -N kts<<< "SELECT DISTINCT date FROM dde WHERE date<='${END}' ORDER by date DESC LIMIT ${LIMIT:-10}" > ${chao}.dlist
         fn_echo_succ "whites-gona-cre.${FUNCNAME[0]}:"
-        LIMIT=15 fn_dde l | grep ${OPT:-'-B100'} --color -f ${chao}.dlist
+        fn_dde l | grep ${OPT:-'-B100'} --color -f ${chao}.dlist
         exit
         ;;
     esac
@@ -1096,6 +1168,7 @@ function fn_main()
     "lohi               {l|e|d|Dif|iEND}      # #{YIST}下跌幅度计算"
     "matov5             {l|e|d|Dif|iEND}      # maval5"
     "ma1020             {l|e|d|Dif|iEND}      # t5.tov>3.5"
+    "xtov               {l|e|d|Dif|iEND}      # extreme-tov"
     "tt25               code                  # t5.tov>3.5"
     )
 

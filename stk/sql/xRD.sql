@@ -503,6 +503,7 @@ CREATE PROCEDURE sp_visit_tbl(a_tbl CHAR(32), a_type INT) tag_visit:BEGIN
     CREATE TABLE codes (
         id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
         code        INT(6) ZEROFILL NOT NULL DEFAULT 0
+        ,INDEX(code)
     );
     DROP TABLE IF EXISTS tbl_visit; -- for visit output
     CREATE TABLE tbl_visit(
@@ -1337,7 +1338,8 @@ CREATE PROCEDURE sp_create_tbl_lohi() tag_tbl_lohi:BEGIN
         scale       DECIMAL(6,2)          DEFAULT 0,
         volume      DECIMAL(12,2) NOT NULL DEFAULT 0,
         amount      DECIMAL(12,2) NOT NULL DEFAULT 0,
-        mavol5      INT
+        mavol5      INT,
+        INDEX(code)
     );
     CREATE TEMPORARY TABLE tmp_lohi LIKE tbl_lohi;
 --  DROP   TABLE IF EXISTS mat_lohi;
