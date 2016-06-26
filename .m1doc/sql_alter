@@ -7,6 +7,7 @@
 
 . 添加列    
     ALTER TABLE table_name ADD col_name  int(4) not null;
+    ALTER TABLE mat_ma1020 ADD vax3      DECIMAL(12,2) NOT NULL DEFAULT 0;
 
 . 删除列
     ALTER TABLE table_name DROP COLUMN column_name

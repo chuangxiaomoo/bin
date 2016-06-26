@@ -214,11 +214,13 @@ function fn_01_提高逻辑思维能力()       { cat howto_01_提高逻辑思�
 function fn_02_训练思维的深度和缜密度() { cat howto_02_训练思维的深度和缜密度 ;}
 function fn_03_沟通_communication()     { cat howto_03_沟通_communication ;}
 function fn_04_屌丝如何逆袭()           { cat howto_04_屌丝如何逆袭 ;}
+function fn_05_挑选西瓜()               { cat howto_05_挑选西瓜 ;}
     local opts=(
         01_提高逻辑思维能力
         02_训练思维的深度和缜密度
         03_沟通_communication
         04_屌丝如何逆袭
+        05_挑选西瓜
     )
     fn_print $@
 }
@@ -642,6 +644,7 @@ function fn_07_大数据()                 { cat ljsw_07_大数据 ;}
 function fn_08_大家都有拖延症()         { cat ljsw_08_大家都有拖延症 ;}
 function fn_L0_孤独寂寞朋友()           { cat ljsw_L0_孤独寂寞朋友 ;}
 
+function fn_144_什么是好的经济学()      { cat ljsw_144_什么是好的经济学 ;}
 function fn_210_右派为什么这么横()      { cat ljsw_210_右派为什么这么横 ;}
 function fn_215_发现你的太平洋()        { cat ljsw_215_发现你的太平洋 ;}
 
@@ -657,7 +660,6 @@ function fn_1003_张勋复辟()             { cat ljsw_1003_张勋复辟 ;}
 function fn_1017_外交()                 { cat ljsw_1017_外交 ;}
 function fn_1008_怎样炼成世界级高手()   { cat ljsw_1008_怎样炼成世界级高手 ;}
 function fn_0521_物种战争()             { cat ljsw_0521_物种战争 ;}
-function fn_7777_howtobe()              { cat ljsw_7777_howtobe ;}
     local opts=(
         voice
         00_曾国藩
@@ -673,6 +675,7 @@ function fn_7777_howtobe()              { cat ljsw_7777_howtobe ;}
         x1_你的阅读造就了你             # you are what u read
         L0_孤独寂寞朋友                 #
 
+        144_什么是好的经济学
         210_右派为什么这么横
         215_发现你的太平洋              # 创业
         0802_他拯救了美国？
@@ -686,7 +689,6 @@ function fn_7777_howtobe()              { cat ljsw_7777_howtobe ;}
         1017_外交                       # 强国思维
         1008_怎样炼成世界级高手
         0521_物种战争
-        7777_howtobe                    # 什么是好的？
     )
     fn_print $@
 }

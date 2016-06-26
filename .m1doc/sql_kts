@@ -33,6 +33,7 @@ CREATE TABLE cap (
     cap     INT(14),
     nmc     INT(14), 
     name    CHAR(16)
+    ,INDEX(code)
 );
 
 CREATE TABLE blk_name (

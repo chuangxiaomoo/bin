@@ -870,6 +870,7 @@ function fn_pod()                       { cat perl_pod ;}
     local opts=(
         gate_入门
         pod
+        excel2txt                       # 转换工具，很棒 GOOGLE安装这
     )
     fn_print $@
 }
