@@ -920,6 +920,7 @@ function fn_ma1020()
     [0-9]*)
         date=`fn_get_date ${1:-1}`
         END=${date} fn_ma1020_up
+        END=${date} fn_xtov_up
         ;;
     *)
         echo "Usage: SCREENER ma1020 {l|e|d|iEND}"
@@ -934,6 +935,7 @@ function fn_xtov_up()
 
     PREV120=`fn_get_date 120`
     PREV90=`fn_get_date 90`
+    PREV70=`fn_get_date 70`
     PREV60=`fn_get_date 60`
     PREV3=`fn_get_date 3`
     echo "
@@ -957,6 +959,11 @@ function fn_xtov_up()
     # 最耗时的地方在联合查询，INDEX(code)成为必备
     DELETE c.* FROM c_all c, xtov x WHERE c.code=x.code;
     INSERT INTO xtov(code,vax60)
+        SELECT d.code, max(tov) FROM dde d, c_all c WHERE d.code=c.code AND date>='${PREV70}' AND date<'${PREV3}'
+        GROUP by code HAVING COUNT(*) >=57;
+
+    DELETE c.* FROM c_all c, xtov x WHERE c.code=x.code;
+    INSERT INTO xtov(code,vax60)
         SELECT d.code, max(tov) FROM dde d, c_all c WHERE d.code=c.code AND date>='${PREV90}' AND date<'${PREV3}'
         GROUP by code HAVING COUNT(*) >=57;
 
@@ -965,9 +972,9 @@ function fn_xtov_up()
         SELECT d.code, max(tov) FROM dde d, c_all c WHERE d.code=c.code AND date>='${PREV120}' AND date<'${PREV3}'
         GROUP by code;
 
-    # 更新vax3
+    # 更新xtov中的vax3
     INSERT INTO xtov_3(code,vax3)
-        SELECT d.code, max(tov) FROM dde d, xtov c WHERE d.code=c.code AND date>='${PREV3}' AND date<'${END}'
+        SELECT d.code, max(tov) FROM dde d, xtov c WHERE d.code=c.code AND date>='${PREV3}' AND date<='${END}'
         GROUP by code;
     UPDATE xtov,xtov_3 SET xtov.vax3=xtov_3.vax3 WHERE xtov.code=xtov_3.code;
     UPDATE mat_ma1020 m, xtov x SET m.vax3=x.vax3, m.vax60=x.vax60 WHERE m.code=x.code AND m.date='${END}';

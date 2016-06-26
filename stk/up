@@ -806,7 +806,7 @@ function fn_dorat()
     hhmm=`date +%H%M | sed 's/^0//'`;
 
     fn_redo_hexun_day || FINA=1 up 4
-    xt_ret $? "" || { BEEPS=5 fn_beep; return $? ;}
+    xt_ret $? "" || { BEEPS=10 fn_beep __dorat_fail__; return 1 ;}
 
     fn_ld_dorat
     xt_ret $? "" || return $?

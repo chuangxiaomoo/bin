@@ -55,6 +55,7 @@ function fn_pro_header_30min()
 {
     # 前40分收敛处理
     hhmmss=${iTime:-${date_T}}
+    [ "${hhmmss//:/}" -lt 093000 ] && return
     [ "${hhmmss//:/}" -lt 094000 ] && H40='*.7' && return
     [ "${hhmmss//:/}" -lt 095000 ] && H40='*.8' && return
     [ "${hhmmss//:/}" -lt 101000 ] && H40='*.9' && return
@@ -64,10 +65,9 @@ function fn_pro_hammer()
 {
     [ -z "${is_hammer:-${is_spacer:-${is_wolves}}}" ] && return 1
 
-    #echo ${PROP} is PROP
     fn_pro_header_30min
     PROP=`fn_scale PROP`
-    _VAX="(vax3/vax60 + (${TURNOV}/${PROP}${H40}>vax60)*5)"
+    _VAX="(GREATEST(vax3,${TURNOV}/${PROP}${H40})/vax60 + (vax3>vax60)*5)"
     VTOV="LEAST(100*d.volume*c.close/c.nmc/${PROP}, 30)/t5.tov"                         # 获量比 tov/matov5
     BOOST="GREATEST(${VTOV}$H40,(1.1+(20-GREATEST(LEAST(20,t5.tov),12))*.05))"          # 保范围 1.1~1.5 对应tov5 20%~12%
     BOOST="10*LEAST(${BOOST}-   (1.1+(20-GREATEST(LEAST(20,t5.tov),12))*.05), .6)"      # 保上限 .6
@@ -137,7 +137,7 @@ function fn_pro_wolves()
             ${ROCKET} as i_dy,
             $TURNOV as tov, t5.tov as tov5,
             ROUND(${pwr_dy5},1) as PWR5,
-            ROUND((${pwr_t10}-1)*t5.tov,1) as TP10,                                                         # _line_for_wolf_
+            ROUND((${pwr_t10}-1)*t5.tov,1) as TP10,    # _line_for_wolf_
 --          ROUND(-${pwr_nmc}, 1) as _NMC,
             CONCAT(ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2), '_',ROUND(${BOOST},1) ) as prop5BOO,
             concat(top10, '_', ROUND(${REALIZED2}, 2)) as tp10_rliz,
@@ -209,6 +209,7 @@ function fn_lsd()
     f|flo)  LIMIT=${LIMIT:-200}; HAVING="rise<=-9.93"; FIELD=${FIELD:-nmc} ;;
     c|code) cCOND="d.code=${2:-300059}" ;;
     y|dy5)  ROCKET='ROUND(IF(dy12>=dy35, dy12+.38*(dy35-1), dy35+.64*(dy12-1))-1, 2)';
+            fn_name $2
             echo "
             SELECT m.*,${ROCKET} as i_dy,vax3,vax60 FROM matov5 m, mat_ma1020 v
             WHERE m.code=v.code AND m.date=v.date AND m.code=${2} and m.date<='${END}' ORDER by date DESC LIMIT 8
@@ -259,8 +260,8 @@ function fn_lsd()
              LIMIT=${LIMIT:-24};HAVING="tov5>=${vDOOR:-4}&&${HAVING:-1}"    ;;
      KK|K|k) [ "${PPLUS}" = KK ] && iBOO8="&&(i_wk*100+tov5>0 || tov5>=15)"     # KK加上i_wk限制
              kCOND="${kCOND:-space+rise>${kDOOR:-5}} ${iBOO8}"                  # kCOND可以指定
-             iCOND="${c_natural}"                                               # include<一字开板>
-             LIMIT=${LIMIT:-24};HAVING="tov5>=${vDOOR:-4}&&${HAVING:-1}"    ;;
+             iCOND="${c_natural}&&t5.tov>2&&(t5.tov/(1-top10)>${vDOOR:-4})"     # include<一字开板>
+             LIMIT=${LIMIT:-24};HAVING="${HAVING:-1}"                       ;;
         R|r) iCOND="d.high!=d.low"                                          ;;  # 数据开始变动
         esac
 
@@ -295,7 +296,7 @@ function fn_lsd()
 
     fn_chao ${chao}.${chao2:-lsd}
     fn_echo_warn "${END}.${iTime:-latest} LIST:${#LIST[@]} HAVING:${HAVING//SEL*=/} COND@:$COND + iCOND:${iCOND}"
-    [ -z "${kCOND}" ] || fn_echo_succ "kCOND: ${kCOND}"     # use || to make [return 0]
+    [ -z "${kCOND}" ] || fn_echo_succ "PROP:${PROP} kCOND:${kCOND}"     # use || to make [return 0]
 
     return 0
 }
@@ -2583,39 +2584,6 @@ function fn_blk()
     return $?
 }
 
-function fn_dde_acc3()
-{
-    NUM=${NUM:-4}
-    dates=(`fn_get_date 1 ${NUM}`)
-    let NUM=NUM-1
-
-    local i
-    for (( i=0; i<${NUM}; i+=1 )); do
-        let j=i+1
-        iCURR=${dates[$i]}
-        iPREV=${dates[$j]}
-        #echo ${iCURR} ${iPREV}
-        sqls="
-        SELECT C.code FROM
-        (SELECT code,net FROM dde WHERE date='${iCURR}') as C,
-        (SELECT code,net FROM dde WHERE date='${iPREV}') as P
-        ${WHERE} C.code=P.code and C.net>=P.net
-        "
-        mysql -N kts <<<"${sqls}" > ${chao}.dde
-
-        fn_echo_warn "got `wc -l<${chao}.dde` @${iCURR} ${j}"
-
-        if [ "${j}" -eq ${NUM} ]; then
-            fn_echo_succ "gen zxg fro 10jqka"
-            PLAIN=${chao}.dde fn_gen_10jqka_sel
-        else
-            ABBR=C YIST=${chao}.dde fn_yist
-        fi
-    done
-
-    return $?
-}
-
 function fn_dde_wolf()
 {
     STA=`fn_get_date ${NUM:-10}`
@@ -2639,12 +2607,16 @@ function fn_dde()
 {
     USAGE="
     SELECT dde <param>
-    3       dde-net 3连升
+    c code
     wolf    [SELECT blk stat g]的配套查询
     "
     case $1 in
-    3)
-        fn_dde_acc3
+    [036][0-9]*)
+        fn_iscode $1
+        xt_ret $? "" || return $?
+        field='date,code,net,pbuy,nbuy,psell,nsell,rise,trade,shou,tov,amount,nmc,name'
+        sqls="SELECT ${field} FROM dde WHERE code=$1 and date<='${END}' ORDER by date DESC LIMIT ${LIMIT:-12}"
+        fn_imysql_sqls | fn_hew_tail
         ;;
     wolf)
         fn_dde_wolf
