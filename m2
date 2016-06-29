@@ -437,7 +437,6 @@ function fn_wdf_25_上手之于概念()       { cat phi_wdf_25_上手之于概�
 function fn_wdf_26_未言语前已心领神会() { cat phi_wdf_26_未言语前已心领神会 ;}
 function fn_wdf_27_人必有一死()         { cat phi_wdf_27_人必有一死 ;}
 function fn_wdf_28_终极关怀()           { cat phi_wdf_28_终极关怀 ;}
-function fn_wdf_00()                    { cat phi_wdf_00 ;}
 function fn_epistemology()              { cat phi_epistemology ;}
 
 function fn_flowers12()                 { cat phi_flowers12 ;}
@@ -454,6 +453,7 @@ function fn_0a_Miltonfriedman()         { cat phi_0a_Miltonfriedman ;}
 function fn_emotion()                   { cat phi_emotion ;}
 
     local opts=(
+        phi_cept                        # 哲学的内容&分类&概念
         flowers12                       # 哲学12钗
         00_Plato                        # 柏拉图
         01_KarlMarx                     # pelple's essence
@@ -471,7 +471,6 @@ function fn_emotion()                   { cat phi_emotion ;}
 
         epistemology                    # 知识论
 
-        wdf_00                          # 王德峰
         wdf_01_心安之窄门
         wdf_02_国民性
         wdf_03_儒道互补，内方外圆       # 中国文化精神传统的特征
@@ -766,10 +765,12 @@ function fn_cept()                      { cat finance_cept ;}
 function fn_leverage()                  { cat finance_leverage ;}
 function fn_fortune()                   { cat finance_fortune ;}
 function fn_behavioral()                { cat finance_behavioral ;}
+function fn_market()                    { cat finance_market ;}
     local opts=(
         cept                            #
         leverage                        # 杠杆
         behavioral                      # 行为金融学 behavioral finance
+        market                          # Yale.open
     )
     fn_print $@
 }
