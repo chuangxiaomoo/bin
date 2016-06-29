@@ -74,12 +74,13 @@ function fn_pro_hammer()
     BOOST="${BOOST}*GREATEST(LEAST(dy12,2),1)"
 
     REALIZ='(ma5/((ma5+ma10+ma20)/3) -1)'
-    REALIZED='(d.close/((ma5+ma10+ma20)/3) -1)'                                 # 涨幅 = ma5涨幅 * 相应乘数  .03= 1/5+1/10
+    REALIZED='(d.close/((ma5+ma10+ma20)/3) -1)'                                         # 涨幅 = ma5涨幅 * 相应乘数  .03= 1/5+1/10
     REALIZED2="IF($REALIZED>0, ${REALIZED}, 0)"
 
-    RIFLE='ROUND((GREATEST(wk12,wk23)-1)*.2+(LEAST(wk12,wk23)-1)*.8 ,2)'        # tov5接近20%，i_wk在5在内可将阴影消除
-    ROCKET='ROUND(IF(dy12>=dy35, dy12+.30*(dy35-1), dy35+.5*(dy12-1))-1, 2)'    # 修正2rd后的max(dy12,dy35)
-    pwr_dy5="LEAST(${ROCKET}, (25/t5.tov), t5.tov) * LEAST(t5.tov,20)"          # ROCKET的范围(25/t5.tov, t5.tov)，最大换手上限为20
+    RIFLE='ROUND((GREATEST(wk12,wk23)-1)*.2+(LEAST(wk12,wk23)-1)*.8 ,2)'                # tov5接近20%，i_wk在5在内可将阴影消除
+    ROCKET='ROUND(IF(dy12>=dy35, dy12+.30*(dy35-1), dy35+.5*(dy12-1))-1, 2)'            # 修正2rd后的max(dy12,dy35)
+    pwr_dy5="LEAST(${ROCKET}, (25/t5.tov), t5.tov) * LEAST(t5.tov,20)"                  # ROCKET的范围(25/t5.tov, t5.tov)，最大换手上限为20
+    pwr_vax="(vax3>vax60 && dy12>1.38)*10 + (vax3>vax60 && dy12<=1.38)*5"
             
     pwr_t10="IF(top10<.2, 1, .9/(1-top10))"
     pwr_nmc="IF(${nmc0}/${pwr_t10}-20<100, ${nmc0}/${pwr_t10}-20, 100)/10"
@@ -100,7 +101,8 @@ function fn_pro_hammer()
             ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2) as prop5,
             $RISE as rise,
             ROUND( t5.tov*$pwr_t10 +${pwr_dy5} -100*${REALIZED2} 
-                   -${pwr_nmc} +${BOOST}, 1) as space,
+                   -${pwr_nmc} +${pwr_vax} +${BOOST}, 1) as space,
+            ROUND(${_VAX}, 2) as vax,
             ROUND(100*(d.close/ma60-1), 1) as ma60,
             round(d.amount/10000, 2) as eYi,
             ${nmcYi}, c.name
@@ -143,7 +145,7 @@ function fn_pro_wolves()
             concat(top10, '_', ROUND(${REALIZED2}, 2)) as tp10_rliz,
             $RISE as rise,
             ROUND( t5.tov*${pwr_t10} +${pwr_dy5} -100*${REALIZED2} 
-                   -${pwr_nmc} +${BOOST}, 1) as space,
+                   -${pwr_nmc} +${pwr_vax} +${BOOST}, 1) as space,
             ROUND(${_VAX}, 2) as vax,
             ROUND(100*(d.close/ma60-1), 1) as ma60,
             CONCAT(IF(net>0,'+','-'), round(abs(net)/w.tov, 2),'_',ROUND((pbuy+nbuy)/w.tov, 2)) as wolf,
@@ -176,7 +178,7 @@ function fn_pro_spacer()
             concat(top10, '_', ROUND(${REALIZED2}, 2)) as tp10_rliz,
             $RISE as rise,
             ROUND( t5.tov*${pwr_t10} +${pwr_dy5} -100*${REALIZED2} 
-                   -${pwr_nmc} +${BOOST}, 1) as space,
+                   -${pwr_nmc} +${pwr_vax} +${BOOST}, 1) as space,
             ROUND(100*(d.close/ma60-1), 1) as ma60,
          -- ROUND(100*(m.trade/ma5-1), 1) as ma5,
             ROUND(${_VAX}, 2) as vax,
@@ -232,6 +234,7 @@ function fn_lsd()
         ;;
     u|h|usage)
         echo "
+    Usage:
         SELECT lsd <param>:
         usage   show usage
         list    list 5min table
@@ -239,7 +242,18 @@ function fn_lsd()
         top|''  10%
         flo     -10%
 
-        PPLUS=<val>
+    Brother:
+        lsdh    space+vax+hiri+opri
+        lsdw    space+vax+wolf
+        lsds    space=TP10+_NMC+PWR5+BOO
+
+    PPLUS:
+        E       一字到底
+        G       非一字open
+        N       非一字到底
+        V       tov5>=${vDOOR:-4}
+        K       space+rise>${kDOOR:-5}
+        KK      space+rise>${kDOOR:-5} && (i_wk*100+tov5>0 || tov5>=15)
         "
         exit
         ;;
@@ -251,6 +265,7 @@ function fn_lsd()
         xt_ret $? "" || return $?
 
         c_natural='(d.high!=d.low||d.close/yesc<1.093)'
+        c_Volkswagen="AND(t5.tov>2.4&&(t5.tov/(1-top10)>${vDOOR:-4}))"
 
         case ${PPLUS} in
         N|n) iCOND="${c_natural}"                                           ;;  # 可一字open 
@@ -258,11 +273,11 @@ function fn_lsd()
         E|e) iCOND="!${c_natural}"                                          ;;  # 一字板，全天不开板
         V|v) iCOND="${c_natural} && d.open/yesc<1.093"                          # exclude<一字开板>
              LIMIT=${LIMIT:-24};HAVING="tov5>=${vDOOR:-4}&&${HAVING:-1}"    ;;
+        X|x) iCOND="${c_natural}${c_Volkswagen} &&dy12>1.8&&vax3/vax60>=.88";;  # 昨天量创新高
      KK|K|k) [ "${PPLUS}" = KK ] && iBOO8="&&(i_wk*100+tov5>0 || tov5>=15)"     # KK加上i_wk限制
              kCOND="${kCOND:-space+rise>${kDOOR:-5}} ${iBOO8}"                  # kCOND可以指定
-             iCOND="${c_natural}&&t5.tov>2&&(t5.tov/(1-top10)>${vDOOR:-4})"     # include<一字开板>
+             iCOND="${c_natural}${c_Volkswagen}"                                # include<一字开板>
              LIMIT=${LIMIT:-24};HAVING="${HAVING:-1}"                       ;;
-        R|r) iCOND="d.high!=d.low"                                          ;;  # 数据开始变动
         esac
 
         fn_pro_hammer || \
@@ -1371,8 +1386,13 @@ function fn_ban()
 
 function fn_xRD()
 {
-    mysql -t kts <<<"SELECT * from xRD WHERE date >= '${END}' && date<='${date_F}' ORDER BY ${FIELD:-date} DESC"
-    return $?
+    sqls="SELECT * from xRD WHERE date >= '${END}' && date<='${date_F}' HAVING 1 ${COND} ORDER BY ${FIELD:-date} DESC"
+   #END=${date_F}
+   #sqls="SELECT * from xRD WHERE date='${END}' HAVING 1 ${COND} ORDER BY ${FIELD:-date} DESC"
+    fn_imysql_sqls
+    xt_ret $? "" || return $?
+
+    fn_chao ${chao}
 }
 
 function fn_cap()
@@ -2061,6 +2081,7 @@ function fn_stat()
 
 function fn_sample()
 {
+    echo BLK is ${BLK}
     HMS=`fn_get_time $1`
     iCOND="high!=low&&open/yesc<1.093 && d.close/yesc<1.15 && d.close/yesc>=1 ${cond5}" \
     FEN=${HMS} DAY=dorat fn_xtempday
@@ -2107,7 +2128,7 @@ function fn_sample()
         sum(rise>=${TEN:=9.93}) as click 
         FROM top8
     GROUP by blk
-    HAVING ${COND:-1} ORDER by ${FIELD:=rise} DESC LIMIT ${LIMIT:-20};
+    HAVING 1 ${COND} ORDER by ${FIELD:=score} DESC LIMIT ${LIMIT:-20};
     "
 
     [ -n "${is_hammer}" ] && \
@@ -2126,7 +2147,7 @@ function fn_sample()
         sum(rise>=${TEN:=9.93}) as click
         FROM top8 t, mat_ma1020 m WHERE m.date='${PREV}' AND t.code=m.code
     GROUP by blk
-    HAVING ${COND:-1} ORDER by ${FIELD:=rise} DESC LIMIT ${LIMIT:-20};
+    HAVING 1 ${COND} ORDER by ${FIELD:=score} DESC LIMIT ${LIMIT:-20};
     "
 
     mysql -t kts <<< "${sqls}"
@@ -2138,7 +2159,7 @@ function fn_sample()
 
     # fn_check_blk_abbr
     # 每个method有专用WIT，此默认作用2
-    WIT=1 LIMIT=10 PPLUS=N COND= FIELD= SELECT lsd ${1}
+    WIT=1 LIMIT=10 PPLUS=N COND= FIELD= SELECT lsds ${1}
 }
 
 function fn_blk_delta()
@@ -2436,7 +2457,7 @@ function fn_blk()
         ;;
     hot)
         #nmc_t=',cap c'; nmc_c='AND d.code=c.code AND nmc<100*10000';
-        COND="SAMPLES>1" \
+        COND="AND SAMPLES>1" \
         cond5="AND tov>=${vDOOR:-4}" \
         xWHERE="${nmc_t} ,t_matov5 t WHERE d.code=t.code ${nmc_c} AND" \
         FIELD=${FIELD:-score} \
@@ -2924,6 +2945,24 @@ function fn_seat_detail()
     return $?
 }
 
+
+function fn_xtov()
+{
+    ROCKET='ROUND(IF(dy12>=dy35, dy12+.30*(dy35-1), dy35+.5*(dy12-1))-1, 2)'    # 修正2rd后的max(dy12,dy35)
+    sqls="
+    SELECT m.date, m.code, tov as tov5, dy12, 
+        ${ROCKET} as i_dy, 
+        ROUND(vax3/vax60, 2) as vax, ${nmcYi}, name
+        FROM mat_ma1020 m, matov5 v, cap c 
+        WHERE m.code=v.code AND m.code=c.code AND m.date='${END}' AND v.date='${END}'
+        HAVING vax>=${DOOR:-.88} ${COND}
+        LIMIT ${LIMIT:-24}
+    "
+    fn_imysql_sqls | fn_hew_tail
+    
+    return $?
+}
+
 function fn_main()
 {
     cmdlist=(
@@ -2969,6 +3008,7 @@ function fn_main()
     "lhb                excption              # 龙虎榜"
     "dde                                      # dde(CURR)>dde(PREV)"
     "wolf                                     # DDE"
+    "xtov                                     # 放量情况"
     "blk                                      # 板块信息+涨幅统计"
     "scale                                    # HMS= 可指定时间"
     "notice                                   # 公告"

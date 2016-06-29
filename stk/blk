@@ -47,11 +47,13 @@ function fn_dzh()
 
 function fn_10jqka()
 {
-    iconv -f cp936 -t utf8 /10jqka/BlockUpdate/block_conception.ini > .10jqka.ini
-    iconv -f cp936 -t utf8 /10jqka/BlockUpdate/block_industry.ini  >> .10jqka.ini
+    ini_10jqka='/tmp/kts/.10jqka.ini'
+    iconv -f cp936 -t utf8 /10jqka/BlockUpdate/block_conception.ini > ${ini_10jqka}
+    iconv -f cp936 -t utf8 /10jqka/BlockUpdate/block_industry.ini  >> ${ini_10jqka} 
+    xt_ret $? "" || return $?
 
-    cat .10jqka.ini | grep -E '^40=|^B3=|^[0-9A-F]{4}=[^$]' | grep -v ':' > ${blk_name}.raw
-    cat .10jqka.ini | grep -E '^40=|^B3=|^[0-9A-F]{4}=[^$]' | grep    ':' > ${blk_list}
+    cat ${ini_10jqka} | grep -E '^40=|^B3=|^[0-9A-F]{4}=[^$]' | grep -v ':' > ${blk_name}.raw
+    cat ${ini_10jqka} | grep -E '^40=|^B3=|^[0-9A-F]{4}=[^$]' | grep    ':' > ${blk_list}
 
     sed -i -e 's/[0-9][0-9]://g' -e 's/=/,/g' -e 's/,$//g' ${blk_list}
 

@@ -827,8 +827,9 @@ function fn_chk_rank()
     fn_echo_succ "ceilings=rise>=9.93..."
     ceilings=`OPT='-N' CHAO=0 WIT= PARTS= COND="rise>=9.93" kCOND="rise+space>5" PPLUS=K SELECT lsds $1 | wc -l`
 
+    [ ${ceilings} -ge 14 ] && [ ${ceilings} -le 16 ] && fn_bell
     if [ "${ceilings}" -ge 16 ]; then
-        PREFIX="Tops[${ceilings}]" BEEPS=5 fn_beep "__More_than_16_birds__\n"; return
+        PREFIX="Tops[${ceilings}]" fn_beep "__More_than_16_birds__\n"; return
     fi
 
     let layer1s=ceilings+3                  # 6=3+3 提供1防护
@@ -841,9 +842,9 @@ function fn_chk_rank()
         WIT=2 PPLUS=V vDOOR=3 COND="tov5<5" SELECT lsds                 || fn_bell
         WIT=3 END= iEND=2 COND="rise>=9.93" vDOOR=3 PPLUS=V SELECT lsds || fn_bell
         fn_bell; return
-    elif [ ${hhmm} -eq 948 ]; then
+    elif [ ${hhmm} -eq 1000 ]; then
         # check db201, ad.会使按键精灵阻塞
-        fn_bell
+        fn_bell tweet.wav tweet.wav
     fi
 
     # process

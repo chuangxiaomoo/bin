@@ -1151,6 +1151,35 @@ function fn_dde()
     esac
 }
 
+function fn_xin()
+{
+    PARTS=f SELECT blk U 40
+    xt_ret $? "" || return $?
+
+    YIST=${chao}.blk fn_yist
+    PREV4=`fn_get_date ${NUM:-4}`
+
+    sqls="
+    SELECT d.code, sum(close/yesc<=1.05) as rise  FROM day d $WHERE date>='${PREV4}' and date<='${END}'
+    GROUP by code HAVING rise>=${DOOR:-4}
+    "
+    # mysql -t kts <<< "${sqls}"
+    fn_echo_succ "xin@${END} feed cond [all.rise <= 5%]"
+    CHAO=1 fn_chao ${chao}.xin
+}
+
+function fn_std()
+{
+    YIST=${YIST:-${chao}.xin} fn_yist
+    sqls="
+    SELECT d.code, ROUND(100*(STD(close)/yesc),2) as SD FROM dorat d 
+    $WHERE date='${END}' and time>='09:59:00' && time<='13:30:00'
+    GROUP by code
+    ORDER by SD ASC
+    "
+    mysql -t kts <<< "${sqls}"
+}
+
 function fn_main()
 {
     cmdlist=(
@@ -1171,6 +1200,8 @@ function fn_main()
     #wma                [field]               # mavol520s's别名 其ma是wchng"
     #ma5D20             [field]               # ma240局部"
     #ma240              [field]               # ma240整体:5B25+ma60x2x4"
+    "xin                                      # 新股4天未有大涨幅者"
+    "std                                      # 分时数据的STD"
     "dde                {l|e}                 # db201数据"
     "lohi               {l|e|d|Dif|iEND}      # #{YIST}下跌幅度计算"
     "matov5             {l|e|d|Dif|iEND}      # maval5"
