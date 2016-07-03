@@ -1,0 +1,10 @@
+#! /bin/bash
+#
+# 解决xargs不能设置环境变量的局限
+# Usage: seq 1 5 | iTAG=iEND iargs SELECT lsd 
+# Equal:           iEND=1..5       SELECT lsd
+
+while read; do
+    echo eval ${iTAG:-iEND}=$REPLY $@
+done < /dev/stdin
+

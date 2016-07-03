@@ -104,7 +104,7 @@ function fn_2016_event()                { cat annual_2016_event ;}
 }
 
 #
-# Just like BRAIN sort knowledge always, we need sort contineuously!
+# Just like BRAIN sort KNOWLEDGE always, we need sort contineuously!
 # a BOOK can append with a reflect
 #
 function fn_book()                      {
@@ -146,7 +146,9 @@ function fn_103_雷军的第二个四年()      { cat book_103_雷军的第二�
 function fn_104_罗永浩天生骄傲()        { cat book_104_罗永浩天生骄傲 ;}
 function fn_200_逃不开的经济周期()      { cat book_200_逃不开的经济周期 ;}
 function fn_201_经济学通识()            { cat book_201_经济学通识 ;}
+function fn_899_权力的游戏()            { cat book_899_权力的游戏 ;}
 function fn_900_平凡的世界()            { cat book_900_平凡的世界 ;}
+function fn_901_人类简史()              { cat book_901_人类简史 ;}
 function fn_tiandao()                   { cat book_tiandao book_遥远的救世主;}
     local opts=(
         cept
@@ -185,7 +187,9 @@ function fn_tiandao()                   { cat book_tiandao book_遥远的救世�
 
         200_逃不开的经济周期
         201_经济学通识              # xuezhaofeng
+        899_权力的游戏              # A_Song_of_Ice_and_Fire
         900_平凡的世界
+        901_人类简史
     )
     fn_print $@
 }
@@ -269,12 +273,14 @@ function fn_01_高铁陆权战略()           { cat artical_01_高铁陆权战�
 function fn_03_教育的意义()             { cat artical_03_教育的意义 ;}
 function fn_04_周国平：交往的质量()     { cat artical_04_周国平：交往的质量 ;}
 function fn_05_whatsfriend()            { cat artical_05_whatsfriend ;}
+function fn_06_哪些知识会让你变蠢？()   { cat artical_06_哪些知识会让你变蠢？ ;}
     local opts=(
         01_高铁陆权战略
         02_铁道部取消
         03_教育的意义
         04_周国平：交往的质量
         05_whatsfriend
+        06_哪些知识会让你变蠢？
     )
     fn_print $@
 }
@@ -437,7 +443,6 @@ function fn_wdf_25_上手之于概念()       { cat phi_wdf_25_上手之于概�
 function fn_wdf_26_未言语前已心领神会() { cat phi_wdf_26_未言语前已心领神会 ;}
 function fn_wdf_27_人必有一死()         { cat phi_wdf_27_人必有一死 ;}
 function fn_wdf_28_终极关怀()           { cat phi_wdf_28_终极关怀 ;}
-function fn_epistemology()              { cat phi_epistemology ;}
 
 function fn_flowers12()                 { cat phi_flowers12 ;}
 function fn_00_Plato()                  { cat phi_00_Plato ;}
@@ -450,10 +455,16 @@ function fn_06_Russell()                { cat phi_06_Russell ;}
 function fn_07_IsaacNewton()            { cat phi_07_IsaacNewton ;}
 function fn_08_Freud()                  { cat phi_08_Freud ;}
 function fn_0a_Miltonfriedman()         { cat phi_0a_Miltonfriedman ;}
+
 function fn_emotion()                   { cat phi_emotion ;}
+function fn_epistemology()              { cat phi_epistemology ;}
+function fn_valuetheory()               { cat phi_valuetheory ;}
 
     local opts=(
-        phi_cept                        # 哲学的内容&分类&概念
+        phi_cept                        # 哲学 = 形而上学+伦理学+认识论
+        epistemology                    # 知识论 theory of knowledge
+        valuetheory
+
         flowers12                       # 哲学12钗
         00_Plato                        # 柏拉图
         01_KarlMarx                     # pelple's essence
@@ -469,7 +480,6 @@ function fn_emotion()                   { cat phi_emotion ;}
 
         emotion                         # 人是情绪的动物.Anger.七情六欲
 
-        epistemology                    # 知识论
 
         wdf_01_心安之窄门
         wdf_02_国民性
@@ -609,6 +619,7 @@ function fn_00_jiebao()                 { cat girl_00_jiebao ;}
 function fn_01_tingbao()                { cat girl_01_tingbao ;}
 function fn_11_2013相亲记()             { cat girl_11_2013相亲记 ;}
 function fn_12_wife()                   { cat girl_12_wife ;}
+function fn_100_手把手教你泡妞()        { cat girl_100_手把手教你泡妞 ;}
     local opts=(
         misc
         loveletter
@@ -616,6 +627,7 @@ function fn_12_wife()                   { cat girl_12_wife ;}
         00_jiebao
         01_tingbao
         12_wife                         # 贤良12妻
+        100_手把手教你泡妞
     )
     fn_print $@
 }
@@ -917,6 +929,7 @@ function fn_main() {
         science_cept                    # 科学之哲学
         xiaolai_cept
         misc_cept
+        Arts_cept
     )
     fn_print $@
 }
