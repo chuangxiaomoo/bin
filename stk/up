@@ -818,12 +818,32 @@ function fn_dorat()
 
 function fn_chk_rank()
 {
-   #WIT=1 PPLUS=V SELECT lsd  ${icurr:=$1} || exit
-    WIT=1 PPLUS=K kCOND="rise+space>5" SELECT lsds ${icurr:=$1} || exit
-    [ -z "${icurr}" ] && icurr=`fn_get_nr_time`
-    let iprev=icurr-1
+    # OUTPUT__DZH__
+    [ -z "${icurr:=$1}" ] && icurr=`fn_get_nr_time`
+    hhmm=${hhmm:-$(date +%H%M --date="`fn_get_time $icurr`")}
 
-    # compute layer2s
+    if [ "${hhmm}" -lt 930 ]; then          # 昨日涨停
+        ./blk 10jqka
+        WIT=3 END= iEND=2 COND="rise>=9.93" PARTS=f PPLUS=G SELECT lsds || fn_bell
+        fn_bell; return
+    elif [ ${hhmm} -eq 1000 ]; then
+        fn_bell tweet.wav tweet.wav         # 创业板vs.HS300 db201, 每周要重启一次按键精灵防阻塞
+    fi
+
+    PARTS=f COND="tov5<5 && rise+space>5" PPLUS=G SELECT lsds || exit
+    WIT=1   COND="tov5>=5" PPLUS=K kCOND="rise+space>5" SELECT lsds ${icurr} || exit
+
+    # 跌幅预警
+    thrx='-4'
+    sqls="WHERE date='${END}' ORDER by rise ASC LIMIT 40 "
+    sqls="(SELECT code, ROUND(100*(d.close-d.yesc)/d.yesc, 2) as rise FROM day d ${sqls})"
+    sqls="SELECT SUM(rise<${thrx}) FROM ${sqls} as t"
+    dive=`mysql -N kts <<< "${sqls}"`
+    if [ "${dive}" -gt 10 ]; then
+        fn_bell tweet.wav tweet.wav
+    fi
+
+    # 涨停计算
     fn_echo_succ "ceilings=rise>=9.93..."
     ceilings=`OPT='-N' CHAO=0 WIT= PARTS= COND="rise>=9.93" kCOND="rise+space>5" PPLUS=K SELECT lsds $1 | wc -l`
 
@@ -835,21 +855,10 @@ function fn_chk_rank()
     let layer1s=ceilings+3                  # 6=3+3 提供1防护
     let layer2s=ceilings+6                  # 6=3+3 提供2防护
 
-    hhmm=${hhmm:-$(date +%H%M --date="`fn_get_time $icurr`")}
-
-    if [ "${hhmm}" -lt 930 ]; then    # 925在10jqka中进行
-        ./blk 10jqka
-        WIT=2 PPLUS=V vDOOR=3 COND="tov5<5" SELECT lsds                 || fn_bell
-        WIT=3 END= iEND=2 COND="rise>=9.93" vDOOR=3 PPLUS=V SELECT lsds || fn_bell
-        fn_bell; return
-    elif [ ${hhmm} -eq 1000 ]; then
-        # check db201, ad.会使按键精灵阻塞
-        fn_bell tweet.wav tweet.wav
-    fi
-
     # process
+    let iprev=icurr-1
     fn_echo_succ "layer2s=ceilings+6=${ceilings}+6..."
-    CHAO=1 PPLUS=K kCOND="rise+space>5" LIMIT=${layer2s} chao2='L2.prev' SELECT lsds ${iprev}
+    CHAO=1 COND="tov5>=5" PPLUS=K kCOND="rise+space>5" LIMIT=${layer2s} chao2='L2.prev' SELECT lsds ${iprev}
     xt_ret $? "$BLK $YIST:  CHAO=1 PPLUS=V LIMIT=${layer2s} chao2='L2.prev' SELECT lsd ${iprev}" || return $?
 
     head -${layer2s} /tmp/kts/chao.lsd      > /tmp/kts/chao.L2.curr
@@ -871,7 +880,7 @@ function fn_chk_rank()
     # 检查是否禁用beep，有闯入者，告警
     [ "`cat /tmp/kts/chao.beep`" = 0 ] && BEEPS=0
     [ "${match:-0}" -eq 1 ] && \
-    PREFIX="Tops[${ceilings}]" BEEPS=${BEEPS} fn_beep "L1:${birds1}L2:${birds2}"
+    PREFIX="Tops[${ceilings}]Dive${thrx}[${dive}]" BEEPS=${BEEPS} fn_beep "L1:${birds1}L2:${birds2}"
 }
 
 function fn_ma20f15()

@@ -43,10 +43,10 @@ WGET='timeout 34 /usr/bin/wget'
 W3M='timeout  60 /usr/bin/w3m'
 
 # FLOOR() and ROUND()
-LORI='TRUNCATE(100*(d.low-d.yesc)/d.yesc, 2)'
-HIRI='TRUNCATE(100*(d.high-d.yesc)/d.yesc, 2)'
-OPRI='TRUNCATE(100*(d.open-d.yesc)/d.yesc, 2)'
-RISE='TRUNCATE(100*(d.close-d.yesc)/d.yesc, 2)'
+LORI='ROUND(100*(d.low-d.yesc)/d.yesc, 2)'
+HIRI='ROUND(100*(d.high-d.yesc)/d.yesc, 2)'
+OPRI='ROUND(100*(d.open-d.yesc)/d.yesc, 2)'
+RISE='ROUND(100*(d.close-d.yesc)/d.yesc, 2)'
 APPLE='ROUND(100*(x.close-x.yesc)/x.yesc, 1)'
 nmcYi='ROUND(c.nmc/10000, 1) as nmcYi'
 # ${nmcYi0%as*} 去as

@@ -56,9 +56,10 @@ function fn_pro_header_30min()
     # 前40分收敛处理
     hhmmss=${iTime:-${date_T}}
     [ "${hhmmss//:/}" -lt 093000 ] && return
-    [ "${hhmmss//:/}" -lt 094000 ] && H40='*.7' && return
-    [ "${hhmmss//:/}" -lt 095000 ] && H40='*.8' && return
-    [ "${hhmmss//:/}" -lt 101000 ] && H40='*.9' && return
+    [ "${hhmmss//:/}" -lt 094000 ] && H40='*.5' && return
+    [ "${hhmmss//:/}" -lt 095000 ] && H40='*.6' && return
+    [ "${hhmmss//:/}" -lt 100000 ] && H40='*.7' && return
+    [ "${hhmmss//:/}" -lt 103000 ] && H40='*.8' && return
 }
 
 function fn_pro_hammer()
@@ -67,11 +68,14 @@ function fn_pro_hammer()
 
     fn_pro_header_30min
     PROP=`fn_scale PROP`
-    _VAX="(GREATEST(vax3,${TURNOV}/${PROP}${H40})/vax60 + (vax3>vax60)*5)"
+    VAX1="(${TURNOV}/${PROP}${H40}>vax60)*9"                                            # CURR,在13:00:00后更加准确
+    VAX2="(vax3>vax60 && dy12> 1.38)     *5"                                            # PREV
+    VAX3="(vax3>vax60 && dy12<=1.38)       "                                            # PREV3
+    _VAX="(${VAX1}+${VAX2}+${VAX3})"                                                    # 最近的日期，权重越大
     VTOV="LEAST(100*d.volume*c.close/c.nmc/${PROP}, 30)/t5.tov"                         # 获量比 tov/matov5
     BOOST="GREATEST(${VTOV}$H40,(1.1+(20-GREATEST(LEAST(20,t5.tov),12))*.05))"          # 保范围 1.1~1.5 对应tov5 20%~12%
     BOOST="10*LEAST(${BOOST}-   (1.1+(20-GREATEST(LEAST(20,t5.tov),12))*.05), .6)"      # 保上限 .6
-    BOOST="${BOOST}*GREATEST(LEAST(dy12,2),1)"
+    BOOST="${BOOST}*GREATEST(LEAST(dy12,1.5),1)"
 
     REALIZ='(ma5/((ma5+ma10+ma20)/3) -1)'
     REALIZED='(d.close/((ma5+ma10+ma20)/3) -1)'                                         # 涨幅 = ma5涨幅 * 相应乘数  .03= 1/5+1/10
@@ -80,7 +84,7 @@ function fn_pro_hammer()
     RIFLE='ROUND((GREATEST(wk12,wk23)-1)*.2+(LEAST(wk12,wk23)-1)*.8 ,2)'                # tov5接近20%，i_wk在5在内可将阴影消除
     ROCKET='ROUND(IF(dy12>=dy35, dy12+.30*(dy35-1), dy35+.5*(dy12-1))-1, 2)'            # 修正2rd后的max(dy12,dy35)
     pwr_dy5="LEAST(${ROCKET}, (25/t5.tov), t5.tov) * LEAST(t5.tov,20)"                  # ROCKET的范围(25/t5.tov, t5.tov)，最大换手上限为20
-    pwr_vax="(vax3>vax60 && dy12>1.38)*10 + (vax3>vax60 && dy12<=1.38)*5"
+    pwr_vax="${_VAX}* (10-LEAST(t5.tov/(1-top10), 10))/5"
             
     pwr_t10="IF(top10<.2, 1, .9/(1-top10))"
     pwr_nmc="IF(${nmc0}/${pwr_t10}-20<100, ${nmc0}/${pwr_t10}-20, 100)/10"
@@ -102,7 +106,7 @@ function fn_pro_hammer()
             $RISE as rise,
             ROUND( t5.tov*$pwr_t10 +${pwr_dy5} -100*${REALIZED2} 
                    -${pwr_nmc} +${pwr_vax} +${BOOST}, 1) as space,
-            ROUND(${_VAX}, 2) as vax,
+            CONCAT(ROUND(${_VAX}, 2), '_',ROUND(${pwr_vax}))as vax,
             ROUND(100*(d.close/ma60-1), 1) as ma60,
             round(d.amount/10000, 2) as eYi,
             ${nmcYi}, c.name
@@ -131,7 +135,7 @@ function fn_pro_wolves()
         xt_ret $? "" || return $?
     fi
 
-    sql_accelr='t5.tov>3 AND'
+    sql_accelr='t5.tov>2 AND'
 
     sqls="
     SELECT  $columns,
@@ -146,7 +150,7 @@ function fn_pro_wolves()
             $RISE as rise,
             ROUND( t5.tov*${pwr_t10} +${pwr_dy5} -100*${REALIZED2} 
                    -${pwr_nmc} +${pwr_vax} +${BOOST}, 1) as space,
-            ROUND(${_VAX}, 2) as vax,
+            CONCAT(ROUND(${_VAX}, 2), '_',ROUND(${pwr_vax}))as vax,
             ROUND(100*(d.close/ma60-1), 1) as ma60,
             CONCAT(IF(net>0,'+','-'), round(abs(net)/w.tov, 2),'_',ROUND((pbuy+nbuy)/w.tov, 2)) as wolf,
             round(d.amount/10000, 1) as eYi,
@@ -180,8 +184,9 @@ function fn_pro_spacer()
             ROUND( t5.tov*${pwr_t10} +${pwr_dy5} -100*${REALIZED2} 
                    -${pwr_nmc} +${pwr_vax} +${BOOST}, 1) as space,
             ROUND(100*(d.close/ma60-1), 1) as ma60,
+         -- d.close,ma60,
          -- ROUND(100*(m.trade/ma5-1), 1) as ma5,
-            ROUND(${_VAX}, 2) as vax,
+            CONCAT(ROUND(${_VAX}, 2), '_',ROUND(${pwr_vax}))as vax,
             round(d.amount/10000, 2) as eYi,
             ${nmcYi}, c.name
             FROM ${TEMPDAY:-day} d, cap c, t_matov5 t5, mat_ma1020 m, top10 p
@@ -213,7 +218,7 @@ function fn_lsd()
     y|dy5)  ROCKET='ROUND(IF(dy12>=dy35, dy12+.38*(dy35-1), dy35+.64*(dy12-1))-1, 2)';
             fn_name $2
             echo "
-            SELECT m.*,${ROCKET} as i_dy,vax3,vax60 FROM matov5 m, mat_ma1020 v
+            SELECT m.*,${ROCKET} as i_dy,ma20,ma60,vax3,vax60 FROM matov5 m, mat_ma1020 v
             WHERE m.code=v.code AND m.date=v.date AND m.code=${2} and m.date<='${END}' ORDER by date DESC LIMIT 8
             " | mysql -t kts; exit ;;
     l|list) fn_list_iF5_times ;;
@@ -226,7 +231,7 @@ function fn_lsd()
         xt_ret $? "Please check data.dorat@${END}" || return $?
 
         FIELD=${FIELD:-rise}
-        HAVING="${HAVING:-rise>${rDOOR:--2}}"
+        HAVING="${HAVING:-1}"
         TEMPDAY=xtempday
         FEN=${iTime} DAY=dorat fn_xtempday      # faster than sub-select
         xt_ret $? "" || return $?
@@ -630,9 +635,9 @@ function fn_updown()
 {
     case $1 in
     +([0-9])) 
-        HMS=`iASC=DESC fn_get_time ${1}` || exit; NUM=1       ;;
-    l)  fn_list_iF5_times                                     ;;
-    h)  echo "Usage: NUM=5 SELECT updown"; exit               ;;
+        HMS=`iASC=${iASC:-DESC} fn_get_time ${1}` || exit; NUM=1        ;;
+    l)  iASC=DESC fn_list_iF5_times                                     ;;
+    h)  echo "Usage: iASC=ASC NUM=5 SELECT updown # ASC 09:25:00"; exit ;;
     yiz)
         fn_echo_succ "PARTS=f@非一字板连板"
         PARTS=f CHAO=1 END=$PREV COND="rise>=9.93" PPLUS=N FIELD=rise LIMIT=400 SELECT lsd
@@ -1506,13 +1511,17 @@ function fn_lhb()
             ${sql_avrg}
             ${sql_next}
             ${sql_tov}
-            round(sell/10000, 2) as eSell,
-            round((buy-sell)/10000, 2) as eNet,
+
+         -- round(bloo/sloo, 2) as bsp,
+
             round(sloo/100, 2) as sell,
-            round(bloo/sloo, 2) as bsp,
-            round(bloo/100-sloo/100, 2) as pet,                 -- 净买入占比
             round(bloo/100, 2) as buy,                          -- 成交占比
+            round(bloo/100-sloo/100, 2) as pet,                 -- 净买入占比
+
+            round(sell/10000, 2) as eSell,
             round(buy/10000, 2) as eBuy,                        -- 额度(亿)
+            round((buy-sell)/10000, 2) as eNet,
+
             round(l.buy/bloo/100, 2) as eYi, ${nmcYi0},
             c.name FROM lhb as l,cap as c ${sql_xtempday}
             $WHERE l.code=c.code ${sql_relate}

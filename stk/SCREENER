@@ -839,6 +839,7 @@ function fn_tt25()
     fn_imysql_sqls
     xt_ret $? "" || return $?
 
+    # ma1020 or tov5
     echo "
     DROP TABLE IF EXISTS tov5;
     CREATE TABLE tov5 LIKE matov5;
@@ -848,8 +849,8 @@ function fn_tt25()
     INSERT INTO zxg(code) VALUES(${1});
 
     SET @END='$END';
-    call sp_visit_tbl('zxg', @fn_dde21); SELECT * FROM tov5;
-#   call sp_visit_tbl('zxg', @fn_ma1020); SELECT * FROM tempday;
+#   call sp_visit_tbl('zxg', @fn_dde21); SELECT * FROM tov5;
+    call sp_visit_tbl('zxg', @fn_ma1020); SELECT * FROM tempday; SELECT * FROM ma1020 WHERE code=$1;
     " >> $mps_god
    #" | tee -a $mps_god
     mysql $OPT -t kts < $mps_god
@@ -879,7 +880,7 @@ function fn_ma1020_up()
     CREATE TABLE IF NOT EXISTS mat_ma1020 LIKE ma1020;
 
     TRUNCATE TABLE zxg;
-    INSERT INTO zxg(code) SELECT code FROM matov5 WHERE tov< 3.5 && date='$date';
+    INSERT INTO zxg(code) SELECT code FROM matov5 WHERE tov< 2 && date='$date';     -- 门槛tov5=2%
 
     INSERT INTO ma1020(date,code,trade,ma5,ma10,ma20,ma60)
         SELECT '${date}', d.code, sum(close)/count(*), sum(close)/count(*), 
@@ -887,7 +888,7 @@ function fn_ma1020_up()
             FROM day d, zxg z WHERE d.code=z.code && date>='${PREV13}' && date<='${date}' GROUP by code;
 
     TRUNCATE TABLE zxg;
-    INSERT INTO zxg(code) SELECT code FROM matov5 WHERE tov>=3.5 && date='$date';
+    INSERT INTO zxg(code) SELECT code FROM matov5 WHERE tov>=2 && date='$date';
 
     SET @END='$date';
     call sp_visit_tbl('${TBL:-zxg}', @fn_ma1020);       -- Don't use codes here
