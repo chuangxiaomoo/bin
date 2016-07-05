@@ -624,8 +624,8 @@ function fn_acf()
 function fn_ma5D20()
 {
     fn_txttbl
-    if ! mysql kts<<<"SHOW TABLES" | grep -q 'tbl_ma240'; then
-        echo -e "\n    error: tbl_ma240 not exist\n"
+    if ! mysql kts<<<"SHOW TABLES" | grep -q 'tbl_ma120'; then
+        echo -e "\n    error: tbl_ma120 not exist\n"
         exit 1
     fi
 
@@ -636,20 +636,60 @@ function fn_ma5D20()
     mysql $OPT -t kts <<< "source $mps_god"
 }
 
-function fn_ma240()
+function fn_ma120_up()
 {
-    fn_txttbl
+    fn_echo_succ "up ma120@${END}..."
     echo "
-    --  ${FUNCNAME} ...
+    DROP TABLE IF EXISTS ma120;
+    CREATE TABLE ma120(
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        date        date NOT NULL,
+        close       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        ma20        DECIMAL(6,2) NOT NULL DEFAULT 0,        
+        ma120       DECIMAL(6,2) NOT NULL DEFAULT 0,
+        INDEX(date,code)
+    );
+    CREATE TABLE IF NOT EXISTS mat_ma120 LIKE ma120;
+
     SET @END='$END';
-    call sp_visit_tbl('${TBL:-cap}', @fn_ma60x2x4);
-    " | tee -a $mps_god
+    TRUNCATE TABLE zxg;
+    INSERT INTO zxg(code) SELECT DISTINCT d.code FROM dde d WHERE date>='${PREV3}' AND date<='${END}';
+
+    call sp_visit_tbl('${TBL:-zxg}', @fn_ma120);
+
+    DELETE FROM mat_ma120 WHERE date='$END';
+    INSERT INTO mat_ma120 SELECT * FROM ma120;
+    " >> $mps_god
+    # | tee -a $mps_god
     mysql $OPT -t kts <<< "source $mps_god"
-    SELECT ma240 ${@}
 }
 
-
-# start end turnov tpd rat15 rat210 gap2max
+function fn_ma120()
+{
+    case $1 in
+    l)  sqls="SELECT date from day WHERE code=900001 && date<='${END}' ORDER by date DESC LIMIT ${LIMIT:-10}" 
+        mysql -N kts<<<"${sqls}" | cat -n; exit ;;
+    e)
+        sqls="SELECT DISTINCT date FROM mat_ma120 ORDER by date DESC LIMIT ${LIMIT:-10}"
+        # mysql -N kts<<<"${sqls}" | cat -n
+        mysql -N kts<<< "SELECT DISTINCT date FROM mat_ma120 WHERE date<='${END}' ORDER by date DESC LIMIT 10" > ${chao}.dlist
+        fn_echo_succ "whites-gona-cre.${FUNCNAME[0]}:"
+        LIMIT=15 fn_ma120 l | grep ${OPT:-'-B100'} --color -f ${chao}.dlist
+        exit
+        ;;
+    d)  date=`fn_get_date ${2:-1}`
+        mysql -N kts<<< "DELETE FROM ma120 WHERE date='${date}'"
+        fn_echo_succ "DELETE ${date} FROM ma120 succ!"
+        ;;
+    [0-9]*)
+        date=`fn_get_date ${1:-1}`
+        END=${date} fn_ma120_up
+        ;;
+    *)
+        echo "Usage: SCREENER ma120 {l|e|d|iEND}"
+        ;;
+    esac
+}
 
 function fn_hilo()
 {
@@ -861,7 +901,7 @@ function fn_ma1020_up()
 {
     fn_echo_succ "up ma1020@${END}..."
     date=${END}
-    PREV13=`fn_get_date 13`
+    PREV20=`fn_get_date 20`
     echo "
     DROP TABLE IF EXISTS ma1020;
     CREATE TABLE ma1020 (
@@ -885,7 +925,7 @@ function fn_ma1020_up()
     INSERT INTO ma1020(date,code,trade,ma5,ma10,ma20,ma60)
         SELECT '${date}', d.code, sum(close)/count(*), sum(close)/count(*), 
             sum(close)/count(*), sum(close)/count(*),sum(close)/count(*)
-            FROM day d, zxg z WHERE d.code=z.code && date>='${PREV13}' && date<='${date}' GROUP by code;
+            FROM day d, zxg z WHERE d.code=z.code && date>='${PREV20}' && date<='${date}' GROUP by code;
 
     TRUNCATE TABLE zxg;
     INSERT INTO zxg(code) SELECT code FROM matov5 WHERE tov>=2 && date='$date';
@@ -1199,14 +1239,14 @@ function fn_main()
     #bei                {code...|file}        # 完整换手 ZIZE=6 nmemb=1 NMC_RATIO=100%"
     #fbi                code                  # 完整换手 bei的个例 "
     #wma                [field]               # mavol520s's别名 其ma是wchng"
-    #ma5D20             [field]               # ma240局部"
-    #ma240              [field]               # ma240整体:5B25+ma60x2x4"
+    #ma5D20             [field]               # ma120局部"
     "xin                                      # 新股4天未有大涨幅者"
     "std                                      # 分时数据的STD"
     "dde                {l|e}                 # db201数据"
     "lohi               {l|e|d|Dif|iEND}      # #{YIST}下跌幅度计算"
     "matov5             {l|e|d|Dif|iEND}      # maval5"
     "ma1020             {l|e|d|Dif|iEND}      # t5.tov>3.5"
+    "ma120              [field]               # ma20+ma120"
     "xtov               {l|e|d|Dif|iEND}      # extreme-tov"
     "tt25               code                  # t5.tov>3.5"
     )

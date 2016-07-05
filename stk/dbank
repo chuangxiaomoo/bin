@@ -370,7 +370,9 @@ function fn_yist()
         # scene 2
         CID="y.id,"
         WHERE=",yist as y WHERE ${ABBR:-d}.code=y.code &&"
+        return 0
     fi
+    return 1
 }
 
 function fn_get_export_file()

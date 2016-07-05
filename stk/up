@@ -833,13 +833,14 @@ function fn_chk_rank()
     PARTS=f COND="tov5<5 && rise+space>5" PPLUS=G SELECT lsds || exit
     WIT=1   COND="tov5>=5" PPLUS=K kCOND="rise+space>5" SELECT lsds ${icurr} || exit
 
-    # 跌幅预警
-    thrx='-4'
     sqls="WHERE date='${END}' ORDER by rise ASC LIMIT 40 "
     sqls="(SELECT code, ROUND(100*(d.close-d.yesc)/d.yesc, 2) as rise FROM day d ${sqls})"
-    sqls="SELECT SUM(rise<${thrx}) FROM ${sqls} as t"
-    dive=`mysql -N kts <<< "${sqls}"`
-    if [ "${dive}" -gt 10 ]; then
+    # 设置阈值、上限、下限，!取反
+    thrx=-4.5
+    upper=10
+    lower=15
+    dive=`mysql -N kts <<< "SELECT SUM(rise<${thrx}) FROM ${sqls} as t"`
+    if ([ "${dive}" -gt ${upper} ] && [ "${dive}" -lt ${lower} ]); then
         fn_bell tweet.wav tweet.wav
     fi
 
@@ -1531,6 +1532,7 @@ function fn_hwork()
         SCREENER lohi   $argv
         SCREENER matov5 $argv && \
         SCREENER ma1020 $argv
+        SCREENER ma120  $argv
         up chk_day                  # 检查是否有数据缺失
         nb_index up                 # 指数更新以用于ma5告警
         fn_bell
@@ -1640,7 +1642,7 @@ function fn_xRD0()
 
     # iconv & add yesc
     iconv -f cp936 -t utf8 /Export/Table.txt    |
-    tail -201                                   |
+    tail -241                                   |
     sed -e '/时间/d'                            \
         -e 's/[,一二三四五]//g'                 \
         -e 's/  */\t/g'                         \
