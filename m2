@@ -8,10 +8,12 @@ cd ${ARCHIVE}
 function fn_herb()                      {
 function fn_5邪()                       { cat herb_5邪 ;}
 function fn_中医学理论体系()            { cat herb_中医学理论体系 ;}
+function fn_medicine()                  { cat herb_medicine ;}
     local opts=(
         中医学理论体系
         5邪
         case                            # 叶天士 临症指南
+        medicine                        # 常见药
     )
     fn_print $@
 }
@@ -146,6 +148,7 @@ function fn_103_雷军的第二个四年()      { cat book_103_雷军的第二�
 function fn_104_罗永浩天生骄傲()        { cat book_104_罗永浩天生骄傲 ;}
 function fn_200_逃不开的经济周期()      { cat book_200_逃不开的经济周期 ;}
 function fn_201_经济学通识()            { cat book_201_经济学通识 ;}
+function fn_202_苏黎世投机定律()        { cat book_202_苏黎世投机定律 ;}
 function fn_899_权力的游戏()            { cat book_899_权力的游戏 ;}
 function fn_900_平凡的世界()            { cat book_900_平凡的世界 ;}
 function fn_901_人类简史()              { cat book_901_人类简史 ;}
@@ -187,6 +190,9 @@ function fn_tiandao()                   { cat book_tiandao book_遥远的救世�
 
         200_逃不开的经济周期
         201_经济学通识              # xuezhaofeng
+        202_苏黎世投机定律
+
+
         899_权力的游戏              # A_Song_of_Ice_and_Fire
         900_平凡的世界
         901_人类简史
