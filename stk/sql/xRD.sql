@@ -668,12 +668,9 @@ CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
     );
 
     SET v_start=@START;
+    SET @cursor = 0;
 
-    -- @START 这天没有进入统计
-    WHILE v_start <> @END DO
-        SELECT date FROM day WHERE code=900001 and date>v_start limit 1 INTO v_start;
-        -- SELECT v_start;
-
+    REPEAT
         TRUNCATE TABLE tbl_change;
         IF @HMS = '00:00:00' THEN
             INSERT INTO tbl_change(code,date,chng,avrg,high,low,hit,hit00) SELECT 
@@ -708,7 +705,9 @@ CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
         VALUES(v_start, @cnt, v_inc, v_eq0, v_dec0, 
                 v_inc10, v_hit10, v_yiz10, v_inc7p ,v_inc5p ,v_inc2p ,v_inc0p ,v_dec0d ,v_dec2d ,v_dec5d ,v_dec7d,v_hit00,v_dec10 );
         -- LEAVE tag_stat_change;
-    END WHILE;
+        SELECT date FROM day WHERE code=900001 and date>v_start limit 1 INTO v_start;
+        SET @cursor=@cursor+1;
+    UNTIL @cursor=@NUM END REPEAT;
 
 END tag_stat_change //
 

@@ -60,25 +60,22 @@ function fn_pro_header_30min()
     [ "${hhmmss//:/}" -lt 103000 ] && PROP="$PROP5" || PROP="$PROP0"    # 1小时后用平均值
     return
     # 前40分收敛处理
-    [ "${hhmmss//:/}" -lt 093000 ] && return
-    [ "${hhmmss//:/}" -lt 094000 ] && H40='*.5' && return
-    [ "${hhmmss//:/}" -lt 095000 ] && H40='*.6' && return
-    [ "${hhmmss//:/}" -lt 100000 ] && H40='*.7' && return
-    [ "${hhmmss//:/}" -lt 103000 ] && H40='*.8' && return
+    [ "${hhmmss//:/}" -lt 110000 ] && H40='*1.5'  && return
+    [ "${hhmmss//:/}" -lt 140000 ] && H40='*1.33' && return
+    [ "${hhmmss//:/}" -lt 150000 ] && H40='*1.25' && return
 }
 
 function fn_pro_hammer()
 {
     [ -z "${is_hammer:-${is_spacer:-${is_wolves}}}" ] && return 1
 
-    fn_pro_header_30min
     VAX1="(${TURNOV}/${PROP}>vax60)*9"                                                  # CURR,在13:00:00后更加准确
     VAX2="(vax3>vax60 && dy12> 1.38)*5"                                                 # PREV
     VAX3="(vax3>vax60 && dy12<=1.38)"                                                   # PREV3
     _VAX="(${VAX1}+${VAX2}+${VAX3})"                                                    # 最近的日期，权重越大
     VTOV="LEAST(100*d.volume*c.close/c.nmc/${PROP}, 30)/t5.tov"                         # 获量比 tov/matov5
-    BOOST="GREATEST(${VTOV}$H40,(1.1+(20-GREATEST(LEAST(20,t5.tov),12))*.05))"          # 保范围 1.1~1.5 对应tov5 20%~12%
-    BOOST="10*LEAST(${BOOST}-   (1.1+(20-GREATEST(LEAST(20,t5.tov),12))*.05), .6)"      # 保上限 .6
+    BOOST="GREATEST(${VTOV}, (1.1+(20-GREATEST(LEAST(20,t5.tov),12))*.05))"             # 保范围 1.1~1.5 对应tov5 20%~12%
+    BOOST="10*LEAST(${BOOST}-(1.1+(20-GREATEST(LEAST(20,t5.tov),12))*.05), .6)"         # 保上限 .6
     BOOST="${BOOST}*GREATEST(LEAST(dy12,1.5),1)"
 
     REALIZ='(ma5/((ma5+ma10+ma20)/3) -1)'
@@ -88,10 +85,12 @@ function fn_pro_hammer()
     RIFLE='ROUND((GREATEST(wk12,wk23)-1)*.2+(LEAST(wk12,wk23)-1)*.8 ,2)'                # tov5接近20%，i_wk在5在内可将阴影消除
     ROCKET='ROUND(IF(dy12>=dy35, dy12+.30*(dy35-1), dy35+.5*(dy12-1))-1, 2)'            # 修正2rd后的max(dy12,dy35)
     pwr_dy5="LEAST(${ROCKET}, (25/t5.tov), t5.tov) * LEAST(t5.tov,20)"                  # ROCKET的范围(25/t5.tov, t5.tov)，最大换手上限为20
-    pwr_vax="${_VAX}* (10-LEAST(t5.tov/(1-top10), 10))/5"                               # 只对实际换手5~10有效
+    pwr_vax="${_VAX}* (10-LEAST(t5.tov/(1-.3*top10), 10))/5"                            # 只对实际换手5~10有效
             
-    pwr_t10="IF(top10<.2, 1, .9/(1-top10))"
-    pwr_nmc="IF(${nmc0}/${pwr_t10}-20<100, ${nmc0}/${pwr_t10}-20, 100)/10"
+    pwr_t10="IF(top10<.1, 1, .95/(1-top10))"
+    pwr_nmc="IF(${nmc0}/${pwr_t10}-30<100, ${nmc0}/${pwr_t10}-30, 100)/12"
+
+    sql_ma60="ROUND(100*(ma5/ma10-1), 1) as ma60"
     columns="d.code"
 
     fn_pro_spacer || \
@@ -111,7 +110,7 @@ function fn_pro_hammer()
             ROUND( t5.tov*$pwr_t10 +${pwr_dy5} -100*${REALIZED2} 
                    -${pwr_nmc} +${pwr_vax} +${BOOST}, 1) as space,
             CONCAT(ROUND(${_VAX}, 2), '_',ROUND(${pwr_vax}))as vax,
-            ROUND(100*(d.close/ma60-1), 1) as ma60,
+            ${sql_ma60},
             round(d.amount/10000, 2) as eYi,
             ${nmcYi}, c.name
             FROM ${TEMPDAY:-day} d, cap c, t_matov5 t5, mat_ma1020 m, top10 p
@@ -155,7 +154,7 @@ function fn_pro_wolves()
             ROUND( t5.tov*${pwr_t10} +${pwr_dy5} -100*${REALIZED2} 
                    -${pwr_nmc} +${pwr_vax} +${BOOST}, 1) as space,
             CONCAT(ROUND(${_VAX}, 2), '_',ROUND(${pwr_vax}))as vax,
---          ROUND(100*(d.close/ma60-1), 1) as ma60,
+--          ${sql_ma60},
 --          CONCAT(IF(net>0,'+','-'), round(abs(net)/w.tov, 2),'_',ROUND((pbuy+nbuy)/w.tov, 2)) as wolf,
             ROUND((pbuy+nbuy)/w.tov, 2) as wolf, ROUND(net/w.tov, 2) as pet,
             round(d.amount/10000, 1) as eYi,
@@ -187,7 +186,7 @@ function fn_pro_spacer()
             $RISE as rise,
             ROUND( t5.tov*${pwr_t10} +${pwr_dy5} -100*${REALIZED2} 
                    -${pwr_nmc} +${pwr_vax} +${BOOST}, 1) as space,
-            ROUND(100*(d.close/ma60-1), 1) as ma60,
+            ${sql_ma60},
          -- d.close,ma60,
          -- ROUND(100*(m.trade/ma5-1), 1) as ma5,
             CONCAT(ROUND(${_VAX}, 2), '_',ROUND(${pwr_vax}))as vax,
@@ -268,6 +267,7 @@ function fn_lsd()
 
     function fn_sql()
     {
+        fn_pro_header_30min
         fn_update_matov5
         xt_ret $? "" || return $?
 
@@ -275,17 +275,18 @@ function fn_lsd()
         c_Volkswagen="AND(t5.tov>2&&(t5.tov/(1-top10)>${vDOOR:-4}))"
 
         case ${PPLUS} in
-        N|n) iCOND="${c_natural}"                                           ;;  # 可一字open 
-        G|g) iCOND="${c_natural} && d.open/yesc<1.093"                      ;;  # 非一字open
-        E|e) iCOND="!${c_natural}"                                          ;;  # 一字板，全天不开板
-        V|v) iCOND="${c_natural} && d.open/yesc<1.093"                          # exclude<一字开板>
-             LIMIT=${LIMIT:-24};HAVING="tov5>=${vDOOR:-4}&&${HAVING:-1}"    ;;
-        vax) iCOND="${c_natural}${c_Volkswagen} &&dy12>1.8&&vax3/vax60>=.88";;  # 昨天量创新高
-     KK|K|k) [ "${PPLUS}" = KK ] && iBOO8="&&(i_wk*100+tov5>0 || tov5>=15)"     # KK加上i_wk限制
-             kCOND="${kCOND:-space+rise>${kDOOR:-5}} ${iBOO8}"                  # kCOND可以指定
-             kCOND="${kCOND}&&tov5>=${vDOOR:-4}"                                # 
-             iCOND="${c_natural}"                                               # include<一字开板>
-             LIMIT=${LIMIT:-24};HAVING="${HAVING:-1}"                       ;;
+        N|n) iCOND="${c_natural}"                                                       ;;  # 可一字open 
+        G|g) iCOND="${c_natural} && d.open/yesc<1.093"                                  ;;  # 非一字open
+        E|e) iCOND="!${c_natural}"                                                      ;;  # 一字板，全天不开板
+        V|v) iCOND="${c_natural} && d.open/yesc<1.093"                                      # exclude<一字开板>
+             LIMIT=${LIMIT:-24};HAVING="tov5>=${vDOOR:-3.5}&&${HAVING:-1}"              ;;
+        vax) iCOND="${c_natural}${c_Volkswagen} &&dy12>1.8&&vax3/vax60>=.88"            ;;  # 昨天量创新高
+     KK|K|k) [ "${PPLUS}" = KK ] &&                                                         # KK加上i_wk限制
+             iBOO8="&&((i_dy>=0&&prop5BOO>${PROP5}) ||(i_dy<0&&prop5BOO>$H40${PROP5}))"
+             kCOND="${kCOND:-space+rise>${kDOOR:-5}} ${iBOO8}"                              # kCOND可以指定
+             kCOND="${kCOND}&&tov5>=${vDOOR:-3.5} "
+             iCOND="${c_natural}"                                                           # include<一字开板>
+             LIMIT=${LIMIT:-24};HAVING="${HAVING:-1}"                                   ;;
         esac
 
         fn_pro_hammer || \
@@ -296,13 +297,15 @@ function fn_lsd()
                 $LORI as lori,
                 ${sql_avrg}
                 $RISE as rise,
-                $TURNOV as tov, t5.tov as tov5,
-                ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2) as prop5,
+                $TURNOV as tov, 
+         --     t5.tov as tov5,
+         --     ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2) as prop5,
                 round(d.amount/10000, 2) as eYi,
                 ${nmcYi}, c.name
-                FROM ${TEMPDAY:-day} d, cap c, t_matov5 t5
+                FROM ${TEMPDAY:-day} d, cap c
+         --     , t_matov5 t5
                 ${WHERE} d.code = c.code
-                and d.code=t5.code
+         --     and d.code=t5.code
                 && d.date = '${END}' && ${iCOND:-1} && ${cCOND:-1}
                 HAVING ${HAVING:-1} ${COND} ORDER BY ${FIELD:-rise} ${ASC:-desc} limit ${LIMIT:-36}
         "
@@ -319,8 +322,7 @@ function fn_lsd()
 
     fn_chao ${chao}.${chao2:-lsd}
     fn_echo_warn "${END}.${iTime:-latest} LIST:${#LIST[@]} HAVING:${HAVING//SEL*=/} COND@:$COND + iCOND:${iCOND}"
-    [ -z "${kCOND}" ] || fn_echo_succ "PROP:${PROP0}~${PROP5} kCOND:${kCOND}"     # use || to make [return 0]
-
+    fn_echo_succ "PROP:${PROP0}~${PROP5} COND:${kCOND}"
     return 0
 }
 
@@ -649,8 +651,7 @@ function fn_updown()
         ;;
     esac
 
-    let iNUM=${NUM:=5}+1
-    START=`fn_get_date ${iNUM}`
+    START=`fn_get_date ${NUM:-5}`
 
     fn_echo_succ "From ${START} to ${END}.${HMS}..."
 
@@ -663,7 +664,7 @@ function fn_updown()
 
 
     echo "
-    SET @NUM=${NUM};
+    SET @NUM=${NUM:-5};
     SET @END='${END}';
     SET @START='$START';
     SET @HMS='${HMS:-00:00:00}';
@@ -853,46 +854,6 @@ function fn_fbi()
 
 
 function fn_acf() { tablex=tbl_acfdiff fn_fbi; }
-
-function fn_vol()
-{
-    fn_yist
-    get_vol()
-    {
-    echo "
-    SELECT date, 
-        round(sum(amount)/10000, 2) as Amount, 
-        round(sum(volume)/10000, 2) as Volume,
-        round(sum(amount)/sum(volume), 2) as Trade
-        FROM day WHERE date<='${END}' ${COND} ${inLIST}
-        GROUP by date
-        ORDER by date DESC
-        LIMIT ${LIMIT:-13};
-    " | mysql -t kts
-    }
-
-    case $1 in
-    0)
-        COND='and code<100000'
-        ;;
-    3)
-        COND='and code>=300000 and code<400000'
-        ;;
-    6)
-        COND='and code>=600000 and code<700000'
-        ;;
-    03)
-        COND='and code<400000'
-        ;;
-    *)
-        echo "Usage: SELECT stat vol {0|3|6|03}     # 默认统计所有A股"
-        COND='and code<700000'
-        ;;
-    esac
-
-    get_vol
-    return $?
-}
 
 function fn_dorat()
 {
@@ -1504,24 +1465,23 @@ function fn_lhb()
         fi
 
         ABBR=l fn_yist
-        xt_ret $? "" || return $?
 
         columns="${col_date}code,cause"
         columns=l.${columns//,/,l.}
 
         sqls="
-            SELECT ${columns}, round(chng,1) as rise,
+            SELECT ${columns}, 
+            ${OPRI} as opri,
+            ${RISE} as rise,
             ${sql_avrg}
             ${sql_next}
             ${sql_tov}
-
          -- round(bloo/sloo, 2) as bsp,
-
-            round(sloo/100, 2) as sell,
-            round(bloo/100, 2) as buy,                          -- 成交占比
+            round(sloo/ 100, 2) as sell,
+            round(bloo/ 100, 2) as buy,                         -- 成交占比
             round(bloo/100-sloo/100, 2) as pet,                 -- 净买入占比
 
-            round(sell/10000, 2) as eSell,
+            round(sell/10000,2) as eSell,
             round(buy/10000, 2) as eBuy,                        -- 额度(亿)
             round((buy-sell)/10000, 2) as eNet,
 
@@ -1918,48 +1878,6 @@ function fn_macd()
     return $?
 }
 
-function fn_update_stati_ban()
-{
-    nrLIST=${#LIST[@]}
-    sql_earning="
-    INSERT INTO stati_ban SELECT
-                 '${END}' as date,
-              '${nrLIST}' as nrLIST,
-              count(code) as num,
-    sum(hiri)/count(code) as e_hiri,
-    sum(opri)/count(code) as e_opri,
-    sum(rise)/count(code) as e_clri,
-    sum(avrg)/count(code) as e_avrg
-    FROM (${sqls//;/}) as t
-    "
-
-    if [ "${UPDATE_STATI_CODES:-0}" = 1 ]; then
-        echo "
-        SELECT code FROM (${sqls//;/}) as t
-        " | mysql -N kts >> ${chao}.stati_ban
-    fi
-    mysql -t kts <<<"${sql_earning}"
-    xt_ret $? "" || return $?
-}
-
-function fn_create_stati_ban()
-{
-    echo "
-    $DROP stati_ban;
-    $CREATE stati_ban (
-        date    date,
-        nrLIST  INT,
-        num     INT,
-        e_hiri  DECIMAL(6,2) NOT NULL DEFAULT 0,
-        e_opri  DECIMAL(6,2) NOT NULL DEFAULT 0,
-        e_clri  DECIMAL(6,2) NOT NULL DEFAULT 0,
-        e_avrg  DECIMAL(6,2) NOT NULL DEFAULT 0,
-        INDEX(date)
-    );
-    " | mysql kts
-    > ${chao}.stati_ban
-}
-
 function fn_prop()
 {
     # tempday
@@ -2006,6 +1924,23 @@ function fn_prop()
     fn_imysql_sqls
 }
 
+function fn_flat()
+{
+    PARTS=f SELECT blk U 40
+    xt_ret $? "" || return $?
+
+    YIST=${chao}.blk fn_yist
+    PREV4=`fn_get_date ${NUM:-4}`
+
+    sqls="
+    SELECT d.code, sum(close/yesc<=1.05) as rise  FROM day d $WHERE date>='${PREV4}' and date<='${END}'
+    GROUP by code HAVING rise>=${DOOR:-4}
+    "
+    # mysql -t kts <<< "${sqls}"
+    fn_echo_succ "xin@${END} feed cond [all.rise <= 5%]"
+    CHAO=1 fn_chao ${chao}.flat
+}
+
 function fn_stat()
 {
     case $1 in
@@ -2022,13 +1957,35 @@ function fn_stat()
             ORDER by cnt DESC LIMIT ${LIMIT:-36}
         "
         fn_imysql_sqls | fn_hew_tail
-        fn_echo_succ "[NUM:${NUM:-8}]日热点 @${END}"
+        fn_echo_succ "[NUM:${NUM:-8}]日热点 @${END} [FIELD:-${FIELD:-cnt}]"
+        fn_chao ${chao}.hot
         ;;
-    vol)
-        fn_vol $2
+    born|b)
+        PREV5=`fn_get_date ${NUM:-8}`
+        HMS=`fn_get_time $2`
+        [ "${NUM:-8}" -ne 2 ] && iCOND="(d.close-d.yesc)/d.yesc>.093"           # NUM=2，当天复牌股
+        FEN=${HMS} DAY=dorat fn_xtempday
+        sqls="
+        SELECT 
+            d.code,
+            COUNT( d.code ) as works,
+            SUM((d.close-d.yesc)/d.yesc>.093 ) as cnt,
+            SUM(d.high=d.low) as yiz,
+            SUM((d.close-d.yesc)/d.yesc >.15) as new,               -- 非新股
+            c.name
+            FROM day d , cap c, xtempday x 
+            WHERE d.code=c.code && d.code=x.code AND d.date>='${PREV5}' AND d.date<='${END}' 
+            GROUP by code HAVING works<${NUM:-8}
+                && cnt>=works-1                                     -- 连板or当天开板
+                && new<1 ${COND}
+            ORDER by ${FIELD:-cnt} DESC LIMIT ${LIMIT:-36}
+        "
+        fn_imysql_sqls | fn_hew_tail
+        fn_echo_succ "[NUM:${NUM:-8}]日复牌 @${END} [FIELD:-${FIELD:-cnt}]"
+        fn_chao ${chao}.born
         ;;
     m|mid)
-        fn_echo_warn "1000,500换手率"
+        fn_echo_warn "head-1000,tail-500换手率"
         LIMIT=1000,1 END=${END} FIELD=tov SELECT lsd
         ASC=DESC LIMIT=500,1 END=${END} FIELD=tov SELECT lsd
         fn_echo_blue "1250th成交额"
@@ -2044,93 +2001,14 @@ function fn_stat()
         LIMIT="${LIMIT},2" END=${END} FIELD=amount SELECT lsd top
         fn_echo_succ "***** Layout @${END} ******"
         ;;
-    t|time)
-        usage="
-    Usage:
-        u|h     This message
-    CONDs:
-        code>=300000 and code<400000
-        code>=600000 and code<700000
-        code<400000
-        code<700000
-        "
-        case ${2:-1} in
-        u|h)
-            echo "${usage}"; exit
-            ;;
-        *)
-            fn_yist
-            for (( iF5=1; iF5<=${NUM:-1}; iF5+=2 )); do
-                HMS=`HMS= fn_get_time ${iF5}`
-                TEMPDAY="(SELECT * FROM dorat WHERE date='${END}' && time='${HMS}')"
-                echo "
-                    SELECT sum(amount) FROM ${TEMPDAY} as d $WHERE date='${END}' INTO @curr;
-                    SELECT '${END} ${HMS}' as DateTime,
-                        ROUND(@curr/sum(amount), 3) as ratio FROM day as d $WHERE date='${END}' HAVING ${COND:-1};
-                " | mysql -N kts
-                xt_ret $? "" || return $?
-            done
-            ;;
-        esac
-        ;;
-    ban)
-        fn_create_stati_ban
-        dates=(`fn_get_date 1 ${NUM:-3}`)
-        local i
-        for (( i=0,j=1; i<${#dates[@]}-1; i++,j++ )); do
-            export END=${dates[$i]}
-            export PREV=${dates[$j]} #echo ${PREV} ${END}; continue
-            # 全天
-            YIST=  END=${PREV} PARTS=f LIMIT=300 HAVING="rise>=9.93&&avrg<9.93"  chao2=full fn_lsd
-            YIST=${chao}.full PARTS=s LIMIT=300 fn_lsd
-            fn_update_stati_ban
-            # 上午
-            YIST=${chao}.full  END=${PREV} PARTS=f LIMIT=300 HAVING="rise>=9.93"  chao2=mid HMS=13:00:00 fn_lsd 1
-            YIST=${chao}.mid PARTS=s LIMIT=300 fn_lsd
-            fn_update_stati_ban
-        done
-
-        mysql -t kts <<<"SELECT *,(e_clri-e_opri)as e_next FROM stati_ban"
-        fn_echo_succ "
-        奇数行，全天数据
-        偶数行，上午封板数据
-        "
-        ;;
-    yiz)
-        fn_notin_blk FFA1
-        fn_create_stati_ban
-        dates=(`fn_get_date 1 ${NUM:-3}`)
-        local i
-        for (( i=0,j=1,k=2; i<${#dates[@]}-2; i++,j++,k++ )); do
-            export PREV2=${dates[$k]}
-            export PREV=${dates[$j]}
-            export END=${dates[$i]}
-            # 一字
-            YIST=  END=${PREV2} PARTS=f LIMIT=300 HAVING="rise>=9.93&&avrg>=9.93 ${notinBLK}" chao2=prev2 fn_lsd
-
-            # 开板
-            YIST=${chao}.prev2 END=${PREV} PARTS=f LIMIT=300 HAVING="avrg<9.93" chao2=prev  fn_lsd
-            END=${PREV} fn_update_stati_ban
-
-            # 再日
-            YIST=${chao}.prev END=${END} PARTS=s LIMIT=300 fn_lsd
-            UPDATE_STATI_CODES=1 \
-            END=${END}  fn_update_stati_ban
-            xt_ret $? "" || return $?
-        done
-
-        mysql -t kts <<<"SELECT *,(e_clri-e_opri)as e_next FROM stati_ban"
-
-        fn_echo_succ "`wc -l ${chao}.stati_ban`"
-        ;;
     *)
         echo "
         SELECT stat <param>:
-        m                       # middle of 1160
+        hot                     # 涨停板收益统计
+        flat                    # 一字板收益统计
+        b|born                  # 当日复牌
+        m|mid                   # 指标中值状态 middle of 1160
         t|realtimetov           # 统计各时段成交额
-        ban                     # 涨停板收益统计
-        yiz                     # 一字板收益统计
-        vol                     # 统计成交额
         "
         exit
         ;;

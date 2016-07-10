@@ -144,6 +144,7 @@ mps_ma2015="/tmp/kts/ma2015.sql"
      error='/tmp/kts/error'
      cache='/tmp/kts/cache'
     buffer='/tmp/kts/buffer'
+    memory='/tmp/kts/memory'
    file_wb='/tmp/kts/wb'
    daydump='/tmp/kts/day.dump'
   exclude0='/tmp/kts/exclude0'
@@ -302,6 +303,7 @@ function fn_check_blk_abbr()
 
     maps=(
      A  FFCD    ADAS+
+    B3  B3      生物医药 
     BJ  DAE3    白酒
      C  DF8F    计算机应用
      G  CFF9    高送转
@@ -766,8 +768,8 @@ function fn_create_tbl_codes()
 
 function fn_bell()
 {
-    # route -p GW 即是host的IP
-    timeout 2 nc 10.0.2.2 1234 <<<"${*:-msg.wav}"
+    echo "Belling at ${BASH_SOURCE[1]##*/}|${BASH_LINENO[0]}| ${FUNCNAME[1]}" > /dev/pts/0
+    timeout 2 nc 10.0.2.2 1234 <<<"${*:-msg.wav}"   # route -p GW 即是host的IP
 }
 
 function fn_beep()

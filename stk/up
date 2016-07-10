@@ -542,25 +542,21 @@ function fn_day()
 
 function fn_ipo()
 {
-    tmp='/tmp/kts/.ipo.tmp'
-    raw='/tmp/kts/.ipo.raw'
-    rip='/tmp/kts/.ipo.rip'
-
-    > ${rip}
+    > ${memory}.ipo
 
     local i
-    for (( i=1; i<=1; i+=1 )); do
+    for (( i=1; i<=10; i+=1 )); do
         url="http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx?type=NS&sty=NSST&st=12&sr=-1&p=${i}&ps=50"
 
         echo dump ${url}
-        w3m -dump "${url}" > ${tmp}
+        w3m -dump "${url}" > ${cache}
 
         # 's/,AN//g' 剔除申购准备中的票
-        cat ${tmp} |sed -e '1s/(\[//' -e '$s/])//' -e 's/,AN//g' -e 's/"//g' | tr -d '\n' |
-                    sed -e 's/AN201/\n&/g' -e 's/AN//g' |
-                    awk -F',' '/^201/{printf "%d\t%s\t%s\n", $1/1000000000000,$5,$4}'  > ${raw}
+        cat ${cache} |sed -e '1s/(\[//' -e '$s/])//' -e 's/,AN//g' -e 's/"//g' | tr -d '\n' |
+                     sed -e 's/AN201/\n&/g' -e 's/AN//g' |
+                     awk -F',' '/^201/{printf "%d\t%s\t%s\n", $1/1000000000000,$5,$4}'  > ${buffer}
 
-        cat ${raw} >> ${rip}
+        cat ${buffer} >> ${memory}.ipo
     done
 
     fn_echo_succ "
@@ -833,12 +829,12 @@ function fn_chk_rank()
     PARTS=f COND="tov5<5 && rise+space>5" PPLUS=G SELECT lsds || exit
     WIT=1   COND="tov5>=5" PPLUS=K kCOND="rise+space>5" SELECT lsds ${icurr} || exit
 
-    sqls="WHERE date='${END}' ORDER by rise ASC LIMIT 40 "
+    sqls="WHERE date='${END}' ORDER by rise ASC LIMIT 100 "
     sqls="(SELECT code, ROUND(100*(d.close-d.yesc)/d.yesc, 2) as rise FROM day d ${sqls})"
     # 设置阈值、上限、下限，!取反
-    thrx=-4.5
-    upper=10
-    lower=15
+    thrx=-5
+    upper=15
+    lower=35
     dive=`mysql -N kts <<< "SELECT SUM(rise<${thrx}) FROM ${sqls} as t"`
     if ([ "${dive}" -gt ${upper} ] && [ "${dive}" -lt ${lower} ]); then
         fn_bell tweet.wav tweet.wav
