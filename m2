@@ -246,7 +246,9 @@ function fn_interprete()                { cat english_interprete ;}
 function fn_interpreting()              { cat english_interpreting ;}
 function fn_friends()                   { cat english_friends ;}
 function fn_clips()                     { cat english_clips ;}
+function fn_Proverbs_in_Alphabet()      { cat english_Proverbs_in_Alphabet ;}
     local opts=(
+        Proverbs_in_Alphabet
         clips                           #
         friends                         # 老友记
         US_TV_series                    # 美剧
@@ -280,6 +282,7 @@ function fn_03_教育的意义()             { cat artical_03_教育的意义 ;}
 function fn_04_周国平：交往的质量()     { cat artical_04_周国平：交往的质量 ;}
 function fn_05_whatsfriend()            { cat artical_05_whatsfriend ;}
 function fn_06_哪些知识会让你变蠢？()   { cat artical_06_哪些知识会让你变蠢？ ;}
+function fn_07_如何构建经济学思维方式() { cat artical_07_如何构建经济学思维方式 ;}
     local opts=(
         01_高铁陆权战略
         02_铁道部取消
@@ -287,6 +290,7 @@ function fn_06_哪些知识会让你变蠢？()   { cat artical_06_哪些知识�
         04_周国平：交往的质量
         05_whatsfriend
         06_哪些知识会让你变蠢？
+        07_如何构建经济学思维方式
     )
     fn_print $@
 }
@@ -460,9 +464,12 @@ function fn_05_Mill()                   { cat phi_05_Mill ;}
 function fn_06_Russell()                { cat phi_06_Russell ;}
 function fn_07_IsaacNewton()            { cat phi_07_IsaacNewton ;}
 function fn_08_Freud()                  { cat phi_08_Freud ;}
+function fn_09_Socrates()               { cat phi_09_Socrates ;}
 function fn_0a_Miltonfriedman()         { cat phi_0a_Miltonfriedman ;}
 
 function fn_emotion()                   { cat phi_emotion ;}
+function fn_relationship()              { cat phi_relationship ;}
+
 function fn_epistemology()              { cat phi_epistemology ;}
 function fn_valuetheory()               { cat phi_valuetheory ;}
 
@@ -481,11 +488,12 @@ function fn_valuetheory()               { cat phi_valuetheory ;}
         06_Russell                      # Bertrand.罗素
         07_IsaacNewton                  # 1687年他发表《自然哲学的数学原理》
         08_Freud                        # 佛洛伊德.自我.本我.超我
+        09_Socrates                     # 苏格拉底-诘问法
 
         0a_Miltonfriedman               # 米尔顿·弗里德曼
 
         emotion                         # 人是情绪的动物.Anger.七情六欲
-
+        relationship
 
         wdf_01_心安之窄门
         wdf_02_国民性
@@ -569,7 +577,7 @@ function fn_WiMax_1st_meeting()         { cat huawei_WiMax_1st_meeting ;}
     local opts=(
         WiMax_1st_meeting               # 唯一一次大会
         cultural
-        misc                            # 一些哲学
+        misc                            # 一些哲学、师道
         to_sort                         # 未整理的 ruby python valgrind 等
         account_临行                    # 最后一次上传到csdn评论的账号 cu.h
         forum                           # 论坛里的小伙伴

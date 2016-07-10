@@ -114,7 +114,7 @@ alias    vt='vi /root/bin/.m2doc/tick.md'
 
 alias sdiff='svn diff -r PREV'
 
-alias   w3m='w3m -cols 78'
+alias w3mdump='/usr/bin/w3m -dump -cols 82'         # 82时的实际宽度是80
 
 alias   ltmux='TERM=xterm /usr/local/bin/tmux'
 alias    tmux='TERM=xterm /usr/bin/tmux'
