@@ -283,6 +283,9 @@ function fn_04_周国平：交往的质量()     { cat artical_04_周国平：�
 function fn_05_whatsfriend()            { cat artical_05_whatsfriend ;}
 function fn_06_哪些知识会让你变蠢？()   { cat artical_06_哪些知识会让你变蠢？ ;}
 function fn_07_如何构建经济学思维方式() { cat artical_07_如何构建经济学思维方式 ;}
+
+function fn_100_人际关系痛苦的根源()    { cat artical_100_人际关系痛苦的根源 ;}
+
     local opts=(
         01_高铁陆权战略
         02_铁道部取消
@@ -291,6 +294,7 @@ function fn_07_如何构建经济学思维方式() { cat artical_07_如何构建
         05_whatsfriend
         06_哪些知识会让你变蠢？
         07_如何构建经济学思维方式
+        100_人际关系痛苦的根源          # 缺乏界限感
     )
     fn_print $@
 }
