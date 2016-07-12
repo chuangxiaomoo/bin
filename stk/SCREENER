@@ -638,6 +638,9 @@ function fn_ma5D20()
 
 function fn_ma120_up()
 {
+    PREV=`fn_get_date 2`
+    PREV20=`fn_get_date 20`
+    PREV120=`fn_get_date 120`
     fn_echo_succ "up ma120@${END}..."
     echo "
     DROP TABLE IF EXISTS ma120;
@@ -652,12 +655,44 @@ function fn_ma120_up()
     CREATE TABLE IF NOT EXISTS mat_ma120 LIKE ma120;
 
     SET @END='$END';
+
+-- workaholic
+    DROP   TABLE IF EXISTS t_code;
+    DROP   TABLE IF EXISTS t_temp;
+    DROP   TABLE IF EXISTS t_buff;
+    CREATE TEMPORARY TABLE t_temp LIKE ma120;
+    CREATE TEMPORARY TABLE t_buff LIKE ma120;
+    CREATE TEMPORARY TABLE t_code LIKE zxg;
+
+    TRUNCATE TABLE t_code;
+    INSERT INTO t_code(code) SELECT DISTINCT code FROM (
+        SELECT code,count(*) as num FROM day 
+        WHERE date>='${PREV120}' AND date<='${END}' AND code<700000
+        GROUP by code
+        HAVING num=120
+    ) as t;
+
+    INSERT INTO t_temp(code,date,close) 
+        SELECT d.code,date,close FROM day d, t_code c WHERE d.code=c.code AND date='${END}';
+
+    INSERT INTO t_buff(code,ma20) 
+        SELECT d.code,sum(close)/20 FROM day d, t_code c WHERE d.code=c.code AND date>='${PREV20}' AND date<='${END}' GROUP by code;
+    UPDATE t_temp t,t_buff b SET t.ma20=b.ma20 WHERE t.code=b.code;
+
+    TRUNCATE TABLE t_buff;
+    INSERT INTO t_buff(code,ma120) 
+        SELECT d.code,sum(close)/120 FROM day d, t_code c WHERE d.code=c.code AND date>='${PREV120}' AND date<='${END}' GROUP by code;
+    UPDATE t_temp t,t_buff b SET t.ma120=b.ma120 WHERE t.code=b.code;
+
+-- non-workaholic
     TRUNCATE TABLE zxg;
-    INSERT INTO zxg(code) SELECT DISTINCT d.code FROM dde d WHERE date>='${PREV3}' AND date<='${END}';
+    INSERT INTO zxg(code) SELECT DISTINCT d.code FROM day d WHERE date>='${PREV}' AND date<='${END}' AND code<700000;
+    DELETE FROM zxg WHERE code in (SELECT code FROM t_code);
 
     call sp_visit_tbl('${TBL:-zxg}', @fn_ma120);
 
     DELETE FROM mat_ma120 WHERE date='$END';
+    INSERT INTO ma120     SELECT * FROM t_temp;
     INSERT INTO mat_ma120 SELECT * FROM ma120;
     " >> $mps_god
     # | tee -a $mps_god
@@ -674,7 +709,7 @@ function fn_ma120()
         # mysql -N kts<<<"${sqls}" | cat -n
         mysql -N kts<<< "SELECT DISTINCT date FROM mat_ma120 WHERE date<='${END}' ORDER by date DESC LIMIT 10" > ${chao}.dlist
         fn_echo_succ "whites-gona-cre.${FUNCNAME[0]}:"
-        LIMIT=15 fn_ma120 l | grep ${OPT:-'-B100'} --color -f ${chao}.dlist
+        LIMIT=20 fn_ma120 l | grep ${OPT:-'-B100'} --color -f ${chao}.dlist
         exit
         ;;
     d)  date=`fn_get_date ${2:-1}`
@@ -1243,11 +1278,11 @@ function fn_main()
     "xin                                      # 新股4天未有大涨幅者"
     "std                                      # 分时数据的STD"
     "dde                {l|e}                 # db201数据"
-    "lohi               {l|e|d|Dif|iEND}      # #{YIST}下跌幅度计算"
-    "matov5             {l|e|d|Dif|iEND}      # maval5"
-    "ma1020             {l|e|d|Dif|iEND}      # t5.tov>3.5"
-    "ma120              [field]               # ma20+ma120"
-    "xtov               {l|e|d|Dif|iEND}      # extreme-tov"
+    "lohi               {l|e|d|iEND}          # #{YIST}下跌幅度计算"
+    "matov5             {l|e|d|iEND}          # maval5"
+    "ma1020             {l|e|d|iEND}          # t5.tov>3.5"
+    "ma120              {l|e|d|iEND}          # ma20+ma120"
+    "xtov               {l|e|d|iEND}          # extreme-tov"
     "tt25               code                  # t5.tov>3.5"
     )
 

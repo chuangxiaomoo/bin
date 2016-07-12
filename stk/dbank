@@ -194,7 +194,7 @@ function fn_isresting()
         [ ${hhmmss} -lt 093300 ] ; then
         echo "is resting @${hhmmss}...";
         return 0
-    elif [ ${hhmmss} -gt 145700 ]; then
+    elif [ ${hhmmss} -gt 145500 ]; then
         echo "market closed, eixt!"
         exit 0
     else
@@ -384,6 +384,7 @@ function fn_get_export_file()
     ctime=`ls -lt --time-style=+%s ${efile} | awk '{print $6}'`
     fresh=600
     epoch=`date --date="${fresh} minute ago" +%s`
+    t0920=`date --date="${CURR} 09:20:00" +%s`
     t0930=`date --date="${CURR} 09:30:00" +%s`
     t1130=`date --date="${CURR} 11:30:00" +%s`
     t1300=`date --date="${CURR} 13:00:00" +%s`
@@ -397,15 +398,17 @@ function fn_get_export_file()
 
     let t_next0900=$t1500+18*60*60
 
-    # 收盘后处理
 
     if [ "${ctime}" -gt ${t1500} ] && [ "${ctime}" -lt ${t_next0900} ]; then
+        # 收盘后处理
         ctime=${t1500}
     elif [ "${ctime}" -gt ${t1130} ] && [ "${ctime}" -lt ${t1300} ]; then
+        # 中午休盘
         ctime=${t1130}
-    elif [ "${ctime}" -lt ${t0930} ]; then
-        # 因为CURR的缘故，此条件无效
-        ctime=${t0930}
+    else
+        # 因为CURR的缘故，第一次时间处理将走这个分支
+        # 09:15:00 ~ 09:25
+        ctime=${ctime}
     fi
 
     YYMMDD=`date -d @${ctime} +%F`
@@ -768,8 +771,10 @@ function fn_create_tbl_codes()
 
 function fn_bell()
 {
+    # route -p GW 即是host的IP
+    # 同样接受{xRD|wolf}等作为命令
+    timeout 3 nc 10.0.2.2 1234 <<<"${*:-msg.wav}"
     echo "Belling at ${BASH_SOURCE[1]##*/}|${BASH_LINENO[0]}| ${FUNCNAME[1]}" > /dev/pts/0
-    timeout 2 nc 10.0.2.2 1234 <<<"${*:-msg.wav}"   # route -p GW 即是host的IP
 }
 
 function fn_beep()

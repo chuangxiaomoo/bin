@@ -757,7 +757,7 @@ function fn_am925()
         return 1
     fi
 
-    tag_blank='--.--.--'
+    tag_blank='--.--.--.--'
     sed -e 's///g' -e 's/S.//g' -e 's/ //g'               \
         -e 's/%//g' -e 's/\t$//g' -e 's/\t\t*/\t/g'         \
         -e "/${tag_blank}/d" -e '/^$/d' ${wolf_raw} > ${bigbid_raw}
@@ -771,7 +771,7 @@ function fn_am925()
 
     fn_echo_succ "re-build day @${YYMMDD}.${HHMMSS}"
 
-    # exit # un-comment to debug
+    #exit # un-comment to debug
 
     echo "
     DELETE FROM day WHERE date='${YYMMDD}';
@@ -826,15 +826,16 @@ function fn_chk_rank()
         fn_bell tweet.wav tweet.wav         # 创业板vs.HS300 db201, 每周要重启一次按键精灵防阻塞
     fi
 
+    # 刷新DZH
     PARTS=f COND="tov5<5 && rise+space>5" PPLUS=G SELECT lsds || exit
-    WIT=1   COND="tov5>=5" PPLUS=K kCOND="rise+space>5" SELECT lsds ${icurr} || exit
+    WIT=1 PPLUS=K kCOND="rise+space>5" SELECT lsds ${icurr} || exit
 
-    sqls="WHERE date='${END}' ORDER by rise ASC LIMIT 100 "
-    sqls="(SELECT code, ROUND(100*(d.close-d.yesc)/d.yesc, 2) as rise FROM day d ${sqls})"
     # 设置阈值、上限、下限，!取反
     thrx=-5
-    upper=15
-    lower=35
+    upper=12
+    lower=20
+    sqls="WHERE date='${END}' ORDER by rise ASC LIMIT 100 "
+    sqls="(SELECT code, ROUND(100*(d.close-d.yesc)/d.yesc, 2) as rise FROM day d ${sqls})"
     dive=`mysql -N kts <<< "SELECT SUM(rise<${thrx}) FROM ${sqls} as t"`
     if ([ "${dive}" -gt ${upper} ] && [ "${dive}" -lt ${lower} ]); then
         fn_bell tweet.wav tweet.wav
@@ -855,7 +856,7 @@ function fn_chk_rank()
     # process
     let iprev=icurr-1
     fn_echo_succ "layer2s=ceilings+6=${ceilings}+6..."
-    CHAO=1 COND="tov5>=5" PPLUS=K kCOND="rise+space>5" LIMIT=${layer2s} chao2='L2.prev' SELECT lsds ${iprev}
+    CHAO=1 PPLUS=K kCOND="rise+space>5" LIMIT=${layer2s} chao2='L2.prev' SELECT lsds ${iprev}
     xt_ret $? "$BLK $YIST:  CHAO=1 PPLUS=V LIMIT=${layer2s} chao2='L2.prev' SELECT lsd ${iprev}" || return $?
 
     head -${layer2s} /tmp/kts/chao.lsd      > /tmp/kts/chao.L2.curr
@@ -1673,6 +1674,10 @@ function fn_xRD0()
 
 function fn_autoxRD()
 {
+    [ "${2}" = xRD ] && {
+        fn_xRDdb
+        xt_ret $? "" || return $?
+    }
     fn_iscode $1 && { fn_xRD0 $1; exit 0 ;}
 
    #bat-mode
