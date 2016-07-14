@@ -61,7 +61,7 @@ function fn_10jqka()
     # blk_name.raw  FFC1=板块名
     # blk_list      FFC1,000004,000403
     grep '^#.*=' .preference.blk.md | sed 's/^# *//g' >> ${blk_name}.raw
-    grep '^FF' .preference.blk.md | awk '{print $1}' >> ${blk_list}
+    grep '^[A-Z]' .preference.blk.md | awk '{print $1}' >> ${blk_list}
 
     sed -i -e 's/^/0x/g' -e 's/=/\t/g' ${blk_name}.raw
     sed -i -e 's/^/0x/g' ${blk_list}

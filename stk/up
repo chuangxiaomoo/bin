@@ -686,6 +686,9 @@ function fn_morningcall()
     # enable BEEP
     echo 1 > /tmp/kts/chao.beep
 
+    # ma120
+    SELECT ma120 || fn_bell 'duang.wav'
+
     # check-matov5 
     max_date=`mysql -N kts <<< "SELECT max(date) FROM matov5"`
     if [ "${max_date}" != "${END}" ]; then
@@ -818,12 +821,14 @@ function fn_chk_rank()
     [ -z "${icurr:=$1}" ] && icurr=`fn_get_nr_time`
     hhmm=${hhmm:-$(date +%H%M --date="`fn_get_time $icurr`")}
 
-    if [ "${hhmm}" -lt 930 ]; then          # 昨日涨停
+    if [ "${hhmm}" -lt 920 ]; then              # 复牌检查
+        return
+    elif [ "${hhmm}" -lt 930 ]; then            # 昨日涨停
         ./blk 10jqka
         WIT=3 END= iEND=2 COND="rise>=9.93" PARTS=f PPLUS=G SELECT lsds || fn_bell
         fn_bell; return
     elif [ ${hhmm} -eq 1000 ]; then
-        fn_bell tweet.wav tweet.wav         # 创业板vs.HS300 db201, 每周要重启一次按键精灵防阻塞
+        fn_bell tweet.wav tweet.wav             # 创业板vs.HS300 db201, 每周要重启一次按键精灵防阻塞
     fi
 
     # 刷新DZH
@@ -838,7 +843,7 @@ function fn_chk_rank()
     sqls="(SELECT code, ROUND(100*(d.close-d.yesc)/d.yesc, 2) as rise FROM day d ${sqls})"
     dive=`mysql -N kts <<< "SELECT SUM(rise<${thrx}) FROM ${sqls} as t"`
     if ([ "${dive}" -gt ${upper} ] && [ "${dive}" -lt ${lower} ]); then
-        fn_bell tweet.wav tweet.wav
+        fn_bell duang.wav
     fi
 
     # 涨停计算
@@ -1701,6 +1706,11 @@ function fn_autoxRD()
         fn_xRD0 ${i}
         xt_ret $? "" || return $?
     done
+
+    echo "
+    INSERT INTO tbl_xRDdate (date) VALUES('${date_T}');
+    " | mysql kts
+    xt_ret $? "mysql" || return $?
 
     SCREENER ma1020 2
     xt_ret $? "" || return $?

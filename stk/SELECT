@@ -68,9 +68,9 @@ function fn_pro_hammer()
 {
     [ -z "${is_hammer:-${is_spacer:-${is_wolves}}}" ] && return 1
 
-    VAX1="(${TURNOV}/${PROP}>vax60)*9"                                                  # CURR,在13:00:00后更加准确
-    VAX2="(vax3>vax60 && dy12> 1.38)*5"                                                 # PREV
-    VAX3="(vax3>vax60 && dy12<=1.38)"                                                   # PREV3
+    VAX1="(${TURNOV}/${PROP}>vax60)*5"                                                  # CURR,在13:00:00后更加准确
+    VAX2="(vax3>vax60 && dy12> 1.38)*3"                                                 # PREV
+    VAX3="LEAST(vax3/vax60,1.9)"                                                        # PREV3
     _VAX="(${VAX1}+${VAX2}+${VAX3})"                                                    # 最近的日期，权重越大
     VTOV="LEAST(100*d.volume*c.close/c.nmc/${PROP}, 30)/t5.tov"                         # 获量比 tov/matov5
     BOOST="GREATEST(${VTOV}, (1.1+(20-GREATEST(LEAST(20,t5.tov),12))*.05))"             # 保范围 1.1~1.5 对应tov5 20%~12%
@@ -82,10 +82,10 @@ function fn_pro_hammer()
     REALIZED2="IF($REALIZED>0, ${REALIZED}, 0)"
 
    #RIFLE='ROUND(IF(wk12>=wk23, .90*wk12+.20*wk23, .80*wk23+.30*wk12) -1.1, 2)'         # wk12占更大权重
-    RIFLE='ROUND((GREATEST(wk12,wk23)-1)*.2+(LEAST(wk12,wk23)-1)*.8 ,2)'                # tov5接近20%，i_wk在5在内可将阴影消除
+    RIFLE='LEAST(99, ROUND((GREATEST(wk12,wk23)-1)*.2+(LEAST(wk12,wk23)-1)*.8 ,2))'     # tov5接近20%，i_wk在5在内可将阴影消除
     ROCKET='ROUND(IF(dy12>=dy35, .70*dy12+.40*dy35, .60*dy35+.50*dy12) -1.1, 2)'        # dy12占更大权重
     pwr_dy5="LEAST(${ROCKET}, (25/t5.tov), t5.tov) * LEAST(t5.tov,20)"                  # ROCKET的范围(25/t5.tov, t5.tov)，最大换手上限为20
-    pwr_vax="${_VAX}* (10-LEAST(t5.tov/(1-.3*top10), 10))/5"                            # 只对实际换手5~10有效
+    pwr_vax="${_VAX}* (10-LEAST(t5.tov/(1-.3*top10), 10))/4"                            # 只对实际换手5~10有效
             
     pwr_t10="IF(top10<.1, 1, .95/(1-top10))"
     pwr_nmc="IF(${nmc0}/${pwr_t10}-30<100, ${nmc0}/${pwr_t10}-30, 100)/12"
@@ -109,7 +109,7 @@ function fn_pro_hammer()
             $RISE as rise,
             ROUND( t5.tov*$pwr_t10 +${pwr_dy5} -100*${REALIZED2} 
                    -${pwr_nmc} +${pwr_vax} +${BOOST}, 1) as space,
-            CONCAT(ROUND(${_VAX}, 2), '_',ROUND(${pwr_vax}))as vax,
+            CONCAT(ROUND(${_VAX}, 1), '_',ROUND(${pwr_vax}))as vax,
             ${sql_ma60},
             round(d.amount/10000, 2) as eYi,
             ${nmcYi}, c.name
@@ -148,12 +148,12 @@ function fn_pro_wolves()
             ROUND(${pwr_dy5},1) as PWR5,
             ROUND((${pwr_t10}-1)*t5.tov,1) as TP10,    # _line_for_wolf_
 --          ROUND(-${pwr_nmc}, 1) as _NMC,
-            concat(top10, '_', ROUND(${REALIZED2}, 2)) as tp10_rliz,
+            concat(ROUND(${nmc0}*(1-top10)/100,2), '_', top10, '_', ROUND(${REALIZED2}, 2)) as nmc_tp10_rliz,
             CONCAT(ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2), '_',ROUND(${BOOST},1) ) as prop5BOO,
             $RISE as rise,
             ROUND( t5.tov*${pwr_t10} +${pwr_dy5} -100*${REALIZED2} 
                    -${pwr_nmc} +${pwr_vax} +${BOOST}, 1) as space,
-            CONCAT(ROUND(${_VAX}, 2), '_',ROUND(${pwr_vax}))as vax,
+            CONCAT(ROUND(${_VAX}, 1), '_',ROUND(${pwr_vax}))as vax,
 --          ${sql_ma60},
 --          CONCAT(IF(net>0,'+','-'), round(abs(net)/w.tov, 2),'_',ROUND((pbuy+nbuy)/w.tov, 2)) as wolf,
             ROUND((pbuy+nbuy)/w.tov, 2) as wolf, ROUND(net/w.tov, 2) as pet,
@@ -181,7 +181,7 @@ function fn_pro_spacer()
             ROUND(${pwr_dy5},1) as PWR5,
             ROUND((${pwr_t10}-1)*t5.tov,1) as TP10,
             ROUND(-${pwr_nmc}, 1) as _NMC,
-            concat(top10, '_', ROUND(${REALIZED2}, 2)) as tp10_rliz,
+            concat(ROUND(${nmc0}*(1-top10)/100,2), '_', top10, '_', ROUND(${REALIZED2}, 2)) as nmc_tp10_rliz,
             CONCAT(ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2), '_',ROUND(${BOOST},1) ) as prop5BOO,
             $RISE as rise,
             ROUND( t5.tov*${pwr_t10} +${pwr_dy5} -100*${REALIZED2} 
@@ -189,8 +189,8 @@ function fn_pro_spacer()
             ${sql_ma60},
          -- d.close,ma60,
          -- ROUND(100*(m.trade/ma5-1), 1) as ma5,
-            CONCAT(ROUND(${_VAX}, 2), '_',ROUND(${pwr_vax}))as vax,
-            round(d.amount/10000, 2) as eYi,
+            CONCAT(ROUND(${_VAX}, 1), '_',ROUND(${pwr_vax}))as vax,
+            round(d.amount/10000, 1) as eYi,
             ${nmcYi}, c.name
             FROM ${TEMPDAY:-day} d, cap c, t_matov5 t5, mat_ma1020 m, top10 p
             ${WHERE} d.code=m.code && m.date='${PREV}' AND
@@ -300,7 +300,7 @@ function fn_lsd()
                 $TURNOV as tov, 
          --     t5.tov as tov5,
          --     ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2) as prop5,
-                round(d.amount/10000, 2) as eYi,
+                round(d.amount/10000, 1) as eYi,
                 ${nmcYi}, c.name
                 FROM ${TEMPDAY:-day} d, cap c
          --     , t_matov5 t5
@@ -1901,7 +1901,7 @@ function fn_prop()
     TRUNCATE tov8;
     INSERT INTO tov8
     SELECT code,tov,shou FROM (
-      SELECT code, sum(tov)/3 as tov, sum(shou)/3 as shou, SUM(tov>=${DOOR:-8}) as num, name FROM dde WHERE date>='${PREV4}' and date<='${PREV}' 
+      SELECT code, sum(tov)/3 as tov, sum(shou)/3 as shou, SUM(tov>=${DOOR:-7}) as num, name FROM dde WHERE date>='${PREV4}' and date<='${PREV}' 
         GROUP by code
         HAVING num=3 ORDER by code ASC
     ) as t;
@@ -1920,8 +1920,8 @@ function fn_prop()
     "
     mysql ${OPT:-'-t'} kts <<<"${sqls}"
 
-    sqls="SELECT d.code,ROUND(d.volume/t.shou, 3) as prop0 FROM xtempday d, tov8 t WHERE d.code=t.code ORDER by prop0 DESC"
-    fn_imysql_sqls
+    # sqls="SELECT d.code,ROUND(d.volume/t.shou, 3) as prop0 FROM xtempday d, tov8 t WHERE d.code=t.code ORDER by prop0 DESC"
+    # fn_imysql_sqls
 }
 
 function fn_flat()
@@ -2875,14 +2875,14 @@ function fn_xtov()
 
 function fn_ma120()
 {
-    PREV10=`fn_get_date ${1:-10}`
-    PREV90=`fn_get_date ${1:-110}`
+    PREV10=`fn_get_date 10`
+    PREV90=`fn_get_date 110`
     sqls="
     SELECT d.date, d.code, COUNT(d.code) as num, SUM(d.close>ma120*1.005) as excel, ${nmcYi}, c.name
        FROM mat_ma120 as d, cap as c
        WHERE d.code = c.code AND d.date>='${PREV90}' AND d.date<='${PREV10}' 
        GROUP by code
-       HAVING num>30 AND excel<2
+       HAVING num>30 AND excel<2 ${COND}
        ORDER by code DESC LIMIT ${LIMIT:-2000}
     "
     #fn_imysql_sqls | fn_hew_tail; exit

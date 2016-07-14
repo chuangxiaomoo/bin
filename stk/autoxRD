@@ -25,7 +25,7 @@ function fn_rebuild_list_and_download_from_last_xRD()
         last_xRD=$(date +'%F' --date='90 days ago')
         echo "
         INSERT INTO tbl_xRDdate (date) VALUES('${last_xRD}');
-        " | mysql -u root kts
+        " | mysql kts
         xt_ret $? "mysql" || return $?
     fi
 
@@ -94,14 +94,11 @@ function fn_main()
 
     up load_directory
     xt_ret $? "load znzday fail" || return $?
+    fn_echo_succ "LOAD over"
 
-    echo "LOAD over"
-
-    # dzh 会超前写入除权数据
-    # INSERT INTO tbl_xRDdate (date) VALUES((SELECT max(date) FROM xRD));
     echo "
     INSERT INTO tbl_xRDdate (date) VALUES('${date_maxyahoo}');
-    " | mysql -u root kts
+    " | mysql kts
     xt_ret $? "mysql" || return $?
 
     echo "UPDATE ${date_maxyahoo}"
