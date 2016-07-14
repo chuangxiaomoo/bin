@@ -27,10 +27,10 @@ function fn_checking()
     [ "${OPT}" = '>' ] && iSTEP=${pcnt2thx} || iSTEP="-${pcnt2thx}"
 
     #echo " ${s_399006[1]}+(${iSTEP}) ${OPT} ${s_399300[1]} " ; exit
-    if fn_isSqltrue " ${s_399006[1]}+(${iSTEP}) ${OPT} ${s_399300[1]} "; then
+    if fn_issqltrue " ${s_399006[1]}+(${iSTEP}) ${OPT} ${s_399300[1]} "; then
         fn_echo_succ "Bingo jump!"; fn_bell;
     fi
-    if [ ${CHAO:-0} -eq 0 ] && fn_isSqltrue " ${s_399006[2]}>.49"; then
+    if [ ${CHAO:-0} -eq 0 ] && fn_issqltrue " ${s_399006[2]}>.49"; then
         fn_echo_succ "Bingo prop!"; fn_bell;
     fi
     

@@ -4,11 +4,11 @@
 . /etc/common.rc
 
 function fn_sina_ticktime() {
-    cat $sn_rawxml | xargs -d ',' -n1 2>/dev/null | grep -m1 ticktime ; exit
+    cat ${cache}.sn | xargs -d ',' -n1 2>/dev/null | grep -m1 ticktime ; exit
 }
 
 function fn_sina_filedname() {
-    cat $sn_rawxml | \
+    cat ${cache}.sn | \
      sed -e 's/\},/&\n/g' -e 's#["{}]##g' -e '1s#^\[##g' -e '$s#]##g' \
          -e 's/ticktime:..:..:..,//g' | \
       head -1 $file | xargs -d',' -n1 | grep -v '^$' | cat -n -b  ; exit
@@ -54,8 +54,8 @@ function fn_sina() {
 
     # link=$url$page$all so slowly
     for link in $url$page$sh $url$page$sz1 $url$page$sz2; do
-        echo      $link > /dev/stderr
-        $W3M -dump $link > $sn_rawxml 2>$sn_stderr
+        echo       $link > /dev/stderr
+        $W3M -dump $link > ${cache}.sn 2>${error}
         xt_ret $? "NETWORK" || return $?
 
         # std xml parser
@@ -71,29 +71,26 @@ function fn_sina() {
         # -- step5, del filed such as ticktime
         # -- step6, del filed names
 
-        cat $sn_rawxml | \
+        cat ${cache}.sn | \
             sed -e 's/\},/&\n/g' -e 's#["{}]##g' -e '1s#^.*\[##g' -e '$s#].*##g' \
                 -e 's/ticktime:..:..:..,//g' | \
-            sed -e 's/[a-z]*://g' > $sn_ripexml
+            sed -e 's/[a-z]*://g' > ${buffer}.sn
 
-        # fn_fmt_sina $sn_ripexml
-        fn_standardize_sina $sn_ripexml
+        # fn_fmt_sina ${buffer}.sn
+        fn_standardize_sina ${buffer}.sn
 
-        cat $sn_ripexml | \
+        cat ${buffer}.sn | \
             awk -F',' -v v_date=$OPENDATE '{
                 if($4 == 0 ) { v_close = $9; } else { v_close = $4; }
                 printf "%s\t%s\t%.2f\t%.0f\t%.0f\t%s\n", $2,v_date,v_close, $17,$18, $3;
-            }' >> $sn_cap_nmc
-            # '{printf "%s\t%s\t%s\t%s\t%s\t%s\n", $2,v_date,$4, $17,$18, $3}' | \
-            # sed -e 's/\.[0-9][0-9]*//g' >> $sn_cap_nmc
+            }' >> ${flash}.cap
 
-    done > $sn_ripetxt
-    sort -k3 -g $sn_cap_nmc -o $sn_cap_nmc
+    done > ${flash}.sn
+    sort -k3 -g ${flash}.cap -o ${flash}.cap
 }
 
 function fn_main() {
-    mkdir -p ${sn_rawxml%/*}
-    >${sn_cap_nmc}
+    >${flash}.cap
 
     # fn_sina_ticktime
     # fn_sina_filedname

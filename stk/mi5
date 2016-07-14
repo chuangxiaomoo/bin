@@ -7,7 +7,7 @@
 
 function fn_parser_load()
 {
-    sed -e 1d -e 's/://g' ${fenbi_raw1} | 
+    sed -e 1d -e 's/://g' ${buffer} | 
     awk -v code=${code} -v date=${date//-/} '{
         if (NF > 5)
             printf "%s\t%s%s\t%s\t%s\t%.2f\n", code,date,$1,$2,$4,$5/100
@@ -43,15 +43,15 @@ function fn_do_once()
     sina='http://market.finance.sina.com.cn/downxls.php?'
     [ ${code:0:1} -eq 6 ] && sec=sh || sec=sz
 
-#   echo $WGET \""${sina}date=${date}&symbol=${sec}${code}"\" -O ${fenbi_raw1}
+#   echo $WGET \""${sina}date=${date}&symbol=${sec}${code}"\" -O ${buffer}
 
     echo download ${code} on ${date}
-    $WGET "${sina}date=${date}&symbol=${sec}${code}" -O ${fenbi_raw1} 2>/dev/null ||
-    $WGET "${sina}date=${date}&symbol=${sec}${code}" -O ${fenbi_raw1} 2>/dev/null
+    $WGET "${sina}date=${date}&symbol=${sec}${code}" -O ${buffer} 2>/dev/null ||
+    $WGET "${sina}date=${date}&symbol=${sec}${code}" -O ${buffer} 2>/dev/null
     xt_ret $? "timeout" || return $?
 
-    [ -f "${fenbi_raw1}" ]
-    xt_ret $? "${fenbi_raw1} not exist" || return $?
+    [ -f "${buffer}" ]
+    xt_ret $? "${buffer} not exist" || return $?
 
     fn_parser_load
     xt_ret $? "" || return $?

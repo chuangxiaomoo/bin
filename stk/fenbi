@@ -10,7 +10,6 @@ function fn_down_eastmoney_fb()
 {
     [ ${1:0:1} -eq 6 ] && sec=1 || sec=2
     # sina的分笔粒度是最小的，分笔数据3家对比详见：
-    mkdir -p `dirname $fenbi_raw`
 
     host="http://hqdigi2.eastmoney.com/EM_Quote2010NumericApplication/CompatiblePage.aspx?"
     para="Type=OB&stk=${1}${sec}&Reference=xml&limit=0&page="
@@ -18,16 +17,16 @@ function fn_down_eastmoney_fb()
     page_cnt=`$W3M -dump "$host${para}1" 2>/dev/null | head -1 | awk -F"[:,]" '{print $2}'`
     [ -z "$page_cnt" ] && echo "error: null page_cnt" && exit
 
-    > $fenbi_raw
+    > $buffer
     local i
     for (( i=1; i<=$page_cnt; i++ )); do
          url=$host${para}$i
-         $W3M -dump "$url" 2>/dev/null >> $fenbi_raw
+         $W3M -dump "$url" 2>/dev/null >> $buffer
          xt_ret $? "NETWORK" || return $?
     done
 
-    sed -i '/jsTimeSharingData/d' $fenbi_raw
-    cat $fenbi_raw | tr -d '[' | tr -d ']};' | sed 's/","/\n/g'  | tr -d '"' > ${fenbi_ripe}
+    sed -i '/jsTimeSharingData/d' $buffer
+    cat $buffer | tr -d '[' | tr -d ']};' | sed 's/","/\n/g'  | tr -d '"' > ${memory}
 }
 
 function fn_get_url()
@@ -159,17 +158,17 @@ function fn_hexun()
         url=`fn_get_url ${code} ${dt} ${num}`
 
         echo ${url};
-        ${W3M} -dump "${url}" > ${fenbi_raw}
+        ${W3M} -dump "${url}" > ${buffer}
         xt_ret $? "timeout" || return $?
 
-        cat ${fenbi_raw} | sed -n '/\[\[/,$p' |
-            sed  -e '1s/^.*\[\[/[[/' -e '$s/]].*$/]]/' > ${fenbi_ripe}
+        cat ${buffer} | sed -n '/\[\[/,$p' |
+            sed  -e '1s/^.*\[\[/[[/' -e '$s/]].*$/]]/' > ${memory}
 
-        [ "`stat -c%s $fenbi_ripe`" -gt 80 ]
+        [ "`stat -c%s $memory`" -gt 80 ]
         xt_ret $? "no data" || return 0
         
         # 2015-03-17 中国平安amount($3)不准，使用($2*$4)/10000替代
-        cat ${fenbi_ripe} | JSON.sh -b |
+        cat ${memory} | JSON.sh -b |
             awk -v code=$code '{
                 printf "%s\t%s\t%.2f\t%.2f\t%.2f\n", 
                 code,$1,$2/100,$4/100,($2*$4)/10000

@@ -26,13 +26,13 @@ fn_realtime()
 
     # 深证综指 sz399106
     indexlist='sh000001,sh000016,sz399300,sz399101,sz399004,sz399005,,sz399006'
-    $W3M -dump "http://hq.sinajs.cn/list=${indexlist},${comma_sepa_list}" > ${rt_stdout} 
+    $W3M -dump "http://hq.sinajs.cn/list=${indexlist},${comma_sepa_list}" > ${buffer} 
     xt_ret $? "NETWORK" || return $?
 
     printf "%6s\t%s\t\t%s\t%-5s\t%5s\t%s\n" \
             symbole trade pcnt  pcnt_hi pcnt_lo __name
 
-    cat ${rt_stdout} | \
+    cat ${buffer} | \
         sed -e '1s/sh000001/sh900001/' -e 's/var hq_str_..//g' -e 's/="/,/g' | \
         sed -n '1,6p' | awk -F',' '{
                 printf "%06d\t%-8.2f\t%.2f\t%.2f\t%.2f\t%s\n", 
@@ -44,7 +44,7 @@ fn_realtime()
                 $2;
             }'  | sort -g -r -k3
 
-    cat ${rt_stdout} | \
+    cat ${buffer} | \
         sed -e '1s/sh000001/sh900001/' -e 's/var hq_str_..//g' -e 's/="/,/g' | \
         sed -n '7,$p' | awk -F',' '{
             if (NF > 5)
@@ -63,7 +63,6 @@ fn_realtime()
 
 function fn_main()
 {
-    mkdir -p ${rt_stdout%/*}
 #   YIST=${YIST:-'.ipo.201504'}
 #   YIST=${YIST:-'.blk.szcz'}
 #   YIST=${YIST:-'.etf.50'}

@@ -53,11 +53,11 @@ function fn_rebuild_list_and_download_from_last_xRD()
 
     fn_yahoo start
 
-    echo "    Redoing the timeout ones[`cat $yahootimeout`]..."
-    cp $yahootimeout $yahooask
+    echo "    Redoing the timeout ones[`cat $yahooout`]..."
+    cp $yahooout $yahooask
     NOCLEAN=1 fn_yahoo start
 
-    test -z "`cat $yahootimeout`"
+    test -z "`cat $yahooout`"
     xt_ret $? "ask_help_to tag_try_2_times_fail" || return 0
 }
 

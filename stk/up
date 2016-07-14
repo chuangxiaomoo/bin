@@ -22,9 +22,9 @@ function fn_cap()
     $workdir/sina
     xt_ret $? "sina fail" || return $?
 
-    lines=`cat $sn_cap_nmc | wc -l`
+    lines=`cat ${flash}.cap | wc -l`
     [ $lines -gt 2000 ] && [ $lines -lt 3000 ]
-    xt_ret $? "$sn_cap_nmc lines $lines not in [2000,3000]" || return $?
+    xt_ret $? "${flash}.cap lines $lines not in [2000,3000]" || return $?
 
     echo "
     DROP TABLE IF EXISTS cap;
@@ -40,12 +40,12 @@ function fn_cap()
         INDEX(code,date)
     );
 
-    LOAD DATA LOCAL INFILE '$sn_cap_nmc' INTO
+    LOAD DATA LOCAL INFILE '${flash}.cap' INTO
     TABLE cap(code, date, close, cap, nmc, name);
     " | mysql kts
 
     echo "
-    INFILE '$sn_cap_nmc'
+    INFILE '${flash}.cap'
     update shares from dzh2 full.FIN...
     UPDATE cap SET nmc=close*shares WHERE nmc/close<shares;
     为兼容旧代码，最后的shares=nmc/close（只更新nmc，不更新shares）
@@ -118,8 +118,6 @@ function fn_hexun_day()
 
 function fn_hexun_day0()
 {
-    mkdir -p ${hx_dayclose%/*}
-
     unarm_close_forbid=true \
     fn_timestamp_market
     xt_ret $? "${FUNCNAME}" || return $?
@@ -129,7 +127,7 @@ function fn_hexun_day0()
     if [ "${FINA:-1}" -eq 1 ] ; then
         ./sina
         xt_ret $? "sina" || return $?
-        cp $sn_ripetxt $hx_dayclose
+        cp ${flash}.sn $dayclose
     else
         $workdir/hexun || {
             echo "try again..."
@@ -139,34 +137,34 @@ function fn_hexun_day0()
         awk '{
             printf "%06d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n",
                       $1, $13, $4, $5,  $6,  $7,  $2, ($8/100), ($9/10000)
-        }'  $hx_ripetxt > $hx_dayclose
+        }'  $flash > $dayclose
     fi
 
 
     $W3M -dump ${url_sh000001} | awk -F',' '{
         printf "%06d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n",
             '900001', $31, $3, $2, $5, $6, $4, ($9/100), ($10/10000);
-    }' >> $hx_dayclose
+    }' >> $dayclose
     xt_ret $? "NETWORK" || return $?
 
-    hx_lines=`wc -l < $hx_dayclose`
+    hx_lines=`wc -l < $dayclose`
     if [ $hx_lines -lt ${baselines:=1300} ]; then
         fn_echo_pts0 "${date_T}.fn_hexun_day0.lines [ $hx_lines -lt ${baselines} ] & FINA=${FINA:-0}"
         return 1
     fi
 
-    grep -q 900001 $hx_dayclose || { echo "Error: 900001" && return 1 ;}
+    grep -q 900001 $dayclose || { echo "Error: 900001" && return 1 ;}
 
     mysql<<<"INSERT INTO kts.stamp_day values(DEFAULT, '$OPENDATE', '$OPENTIME')"
     xt_ret $? "" || return $?
 
     p_hx_day="$warehs/hx_day"
     mkdir -p $p_hx_day
-    cp $hx_dayclose $p_hx_day/$DATE
+    cp $dayclose $p_hx_day/$DATE
 
     echo "
     DELETE FROM day WHERE date='${DATE}';
-    LOAD DATA LOCAL INFILE '${hx_dayclose}' INTO TABLE day;
+    LOAD DATA LOCAL INFILE '${dayclose}' INTO TABLE day;
     " | mysql kts
 }
 
@@ -294,9 +292,9 @@ function fn_file_to_table()
         );
         INSERT INTO ${TBL} (code) VALUES
         `sed -e 's/^/(/' -e 's/ /),(/g' -e 's/$/);/' <<< "${lst[@]}"`
-    " > ${sql_temp}
+    " > ${flash}.sql
 
-    mysql kts < ${sql_temp}
+    mysql kts < ${flash}.sql
     xt_ret $? "${FUNCNAME}" || return $?
 }
 
@@ -365,11 +363,11 @@ function fn_trs_min_2_day()
     echo "
     SELECT code,date,yesc,open,high,low,trade,volume/100,amount/10000
         FROM min WHERE date='$DATE' and time='15:09:00';
-	" | mysql -N kts > $m2d_temp
+	" | mysql -N kts > $buffer
 
     ## LOAD时数据自动会进行四舍5入
     echo "
-    LOAD DATA LOCAL INFILE '$m2d_temp' INTO TABLE day
+    LOAD DATA LOCAL INFILE '$buffer' INTO TABLE day
 	" | mysql kts
 
     return 0
@@ -395,14 +393,14 @@ function fn_redo_hexun_day_fr_min()
     echo "
     SELECT code,date,yesc,open,high,low,trade,volume/100,amount/10000
         FROM min WHERE date='$DATE' and time='${TIME}';
-	" | mysql -N kts > $m2d_temp
-    xt_ret $? "mysql > $m2d_temp" || return $?
+	" | mysql -N kts > $buffer
+    xt_ret $? "mysql > $buffer" || return $?
 
     ## LOAD时数据自动会进行四舍5入
     echo "
-    LOAD DATA LOCAL INFILE '$m2d_temp' INTO TABLE day
+    LOAD DATA LOCAL INFILE '$buffer' INTO TABLE day
 	" | mysql kts
-    xt_ret $? "load data $m2d_temp" || return $?
+    xt_ret $? "load data $buffer" || return $?
 
     echo "    end of redo hexun_day fr min..."
 
@@ -442,23 +440,6 @@ function fn_rzrq()
     fn_echo_succ "up rzrq succ"
 }
 
-function fn_wind()
-{
-    echo -n ${CURR} > ${file_wb}
-    SCREENER 0
-    echo "
-    DROP TABLE IF EXISTS wind;
-    CREATE TABLE wind (
-        id      INT(6) PRIMARY key AUTO_INCREMENT NOT NULL,
-        code    INT(6)  ZEROFILL
-    );
-
-    INSERT INTO wind(code) SELECT DISTINCT code FROM tbl_9jian WHERE close < avrg;
-    " | mysql kts
-
-    return $?
-}
-
 function fn_copy_table_2_table()
 {
     fn_cp_tbl ${1:-zxg} ${2:-ipo}
@@ -468,14 +449,14 @@ function fn_copy_table_2_table()
 function fn_html()
 {
     if [ "${FINA:-1}" -eq 1 ] ; then
-        timeout 10 ./soptter > ${js_xunner_txt}
+        timeout 10 ./soptter > ${cache}
     else
-        timeout 10 ./xunner > ${js_xunner_txt}
+        timeout 10 ./xunner > ${cache}
     fi
     xt_ret $? "timeout" || return $?
 
-    names=(`awk '!/name/ {print $NF}' ${js_xunner_txt}`)
-    codes=(`awk '!/name/ {print $1}' ${js_xunner_txt}| sed -e 's/^[03]/sz&/g' -e 's/^6/sh&/g'`)
+    names=(`awk '!/name/ {print $NF}' ${cache}`)
+    codes=(`awk '!/name/ {print $1}' ${cache}| sed -e 's/^[03]/sz&/g' -e 's/^6/sh&/g'`)
     codes[0]=sh000001
     # echo ${names[@]}; echo ${codes[@]}; exit
 
@@ -1396,7 +1377,7 @@ function fn_seat_detail0()
             sed 's/，.*$//g' >> ${chao}.seat.rip
 
         min_date=`tail -1 ${chao}.seat.rip | awk '{print $2}'`
-        fn_isSqltrue "'$min_date'<='${sta_date}'" && break
+        fn_issqltrue "'$min_date'<='${sta_date}'" && break
     done
 
     fn_echo_succ "done of seat:$1"
@@ -1756,7 +1737,6 @@ function fn_main()
     #html                               # flush YIST=.soptter.xxx soptter output into html"
     #trs_min_2_day                      # 最后一笔分线转日线"
     #xbb [l]                            # 生成PREV30成交额峰值测算，加参数l时list数据日期"
-    #wind                               # wind(close<avrg)"
     #ma20f15                            # "
     #fenbi  code 2015mmdd               # "
     #money                              # -----资金分析，拟合出增量资金与指数的5倍关系-----"

@@ -6,7 +6,6 @@
 . /etc/common.rc
 
 mkdir -p ${znzday}
-mkdir -p ${day_gether%/*}
 
 function fn_maxyahoo() 
 {
@@ -40,7 +39,7 @@ function fn_gether_symbol()
     endin_year=${endin_sps[0]}; endin_month=${endin_sps[1]}; endin_day=${endin_sps[2]}
     start_date=$start_year-$start_month-$start_day
 
-    > ${day_gether}
+    > ${flash}.yahoo
     
           index=1
     local last=1
@@ -54,24 +53,24 @@ function fn_gether_symbol()
 
         # echo $url && exit
 
-        $W3M -dump "${url}" > ${day_temp} || \
-        $W3M -dump "${url}" > ${day_temp}
+        $W3M -dump "${url}" > ${cache} || \
+        $W3M -dump "${url}" > ${cache}
         if [ 0 -ne "$?" ]; then
-            echo $code >> ${yahootimeout}
+            echo $code >> ${yahooout}
             echo "${symbol} timeout at page=${index}" 
             return 1
         fi
 
-        sed -n '/^20[01].-/,/^$/p' ${day_temp} | head -n -1 >> ${day_gether}
+        sed -n '/^20[01].-/,/^$/p' ${cache} | head -n -1 >> ${flash}.yahoo
 
         if [ "${is_precise_last}" = 'false' ]; then
-            last=`tail -1 ${day_temp} | sed 's/ \.\.//g' | awk '{print $(NF-1)}' 2>/dev/null`
+            last=`tail -1 ${cache} | sed 's/ \.\.//g' | awk '{print $(NF-1)}' 2>/dev/null`
             [ -z "${last}" ] && break       # 小数据
             fn_isdigit ${last} || {
                 echo "疑似ST代码$code got last:${last} on index:${index}" 2>/dev/null
                 return 0
             }
-            if tail -1 ${day_temp} | grep -q '[0-9] 　下一页'; then
+            if tail -1 ${cache} | grep -q '[0-9] 　下一页'; then
                 # 上一页　 .. 2 3 4 5 　下一页
                 is_precise_last=true
             fi
@@ -82,16 +81,16 @@ function fn_gether_symbol()
     ## 添加yesclose，同 ./up znz2mysql
     ## xRD时，yahoo中的volume没有进行处理，volume ~= amount/close
     ## First record 日期 != $start_date, 从mySql读取yesclose
-    sed -i -e 's/  */\t/g' -e 's/,//g' ${day_gether} 
-    sort -k1 -g ${day_gether} -o ${day_gether}
-    first_date=`head -1 ${day_gether} | awk '{print $1}'`
+    sed -i -e 's/  */\t/g' -e 's/,//g' ${flash}.yahoo 
+    sort -k1 -g ${flash}.yahoo -o ${flash}.yahoo
+    first_date=`head -1 ${flash}.yahoo | awk '{print $1}'`
     
     if [ "$first_date" != "${start_date}" ] ; then
         yesc=`mysql -N kts <<<"SELECT close FROM day WHERE code=${code} and 
                             date<'${start_date}' ORDER by date DESC limit 1"`
         # echo "SELECT close FROM day WHERE code=${code} and date<'${start_date}' --> ${yesc:-0}"
     fi
-    cat ${day_gether} | awk -v icode=$code -v iyesc=${yesc:-0} '{
+    cat ${flash}.yahoo | awk -v icode=$code -v iyesc=${yesc:-0} '{
         printf "%06d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n", 
             icode, $1, iyesc, $2, $3, $4, $5, 4*$7/($2+$3+$4+$5), $7;
         iyesc=$5
@@ -104,7 +103,7 @@ function fn_yahoo()
     [ "start" = "$1" ] 
     xt_ret $? "fn_yahoo start please" || return $?
 
-    > $yahootimeout
+    > $yahooout
     [ -z "${NOCLEAN}" ] && rm   -rf ${znzday}/*
 
     # 365 ~= 240 个交易日，考虑到8个月停牌情况，上调日数为600

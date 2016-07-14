@@ -9,14 +9,13 @@
 
 function fn_main()
 {
-    mkdir -p ${mi5_day%/*}
-    ./min5 > ${mi5_day}
+    ./min5 > ${flash}.F5
     while read index code date v1 v2 a1 a2; do
         echo "
         SELECT ${index}, (volume-${v1})/${v2}, (amount-${a1})/${a2} FROM day 
         WHERE code=${code} and date='${date}';
         " | mysql kts -N
-    done < ${mi5_day}
+    done < ${flash}.F5
     
 }
 

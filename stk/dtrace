@@ -8,9 +8,9 @@ function fn_xunner()
     printf "%6s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%-5s\t%5s\t%5s\t%5s\n" \
             symbol avrg trade chng yesc open high pcnt_hi loww pcnt_lo turnov vratio name
 
-    # cat ${rt_stdout} 
+    # cat ${buffer} 
 
-    sed -n '1,2p' ${rt_stdout}  | 
+    sed -n '1,2p' ${buffer}  | 
         tr -d '\n' | tr "'" '"' | 
         sed -e 's/^.*= *//' -e 's/;.*$//' | 
         JSON.sh -b | tr -d '"' | 
@@ -30,9 +30,9 @@ fn_realtime()
     while :; do
         w3m -dump "${url}" 2>/dev/null | \
             sed -e 's/;indexdataArr/;\nindexdataArr/' \
-                -e 's/*//g'  -e 's/ST//g'  > ${rt_stdout}
+                -e 's/*//g'  -e 's/ST//g'  > ${buffer}
 
-        [ -n "`head -c2 ${rt_stdout}`" ] && break
+        [ -n "`head -c2 ${buffer}`" ] && break
         echo "w3m fail, try again!"
         sleep .5
     done
@@ -42,7 +42,6 @@ fn_realtime()
 
 function fn_main() 
 {
-    mkdir -p ${rt_stdout%/*}
     [ -z "$*" ] && echo "Usage: $0 code" && exit 
     fn_realtime `echo -n 00000${1} | tail -c6`
 }

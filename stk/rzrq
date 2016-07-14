@@ -7,7 +7,6 @@ ws_rzrq=$warehs/rzrq
 rzrq_day=$ws_rzrq/day
 rzrq_overview=$ws_rzrq/overview
 mkdir -p $rzrq_overview $rzrq_day
-mkdir -p ${rzrq_rawxml%/*}
 
 function fn_rzrq_day() 
 {
@@ -18,17 +17,15 @@ function fn_rzrq_day()
     url="${url}DetailCollectDay.ashx"
     url="${url}?date=$idate&count=1000&page=1"
 
-    $W3M -dump "$url" > $rzrq_rawxml 2>$rzrq_stderr
+    $W3M -dump "$url" > $cache 2>$error
     xt_ret $? "NETWORK" || return $?
 
-    cat $rzrq_rawxml | sed -e '1s/.*:\[//' -e 's/}./}\n/g' | \
+    cat $cache | sed -e '1s/.*:\[//' -e 's/}./}\n/g' | \
     head -n -2 | # head -2 | 
      sed -e 's/^{/,/' -e 's/,FBuy:.*//g' | sed -e 's/,[a-zA-Z][a-zA-Z]*//g' | 
      tr -d "'"  | tr -d ',' | 
      sed -e 's#^.*rzrq/s##' -e 's#\.shtml##' -e 's/-:/0:/g' |
      tr ':' '\t' | sed "s/^/$idate\t/"
-    # sed -e 's/\],/\n/g' -e '$s/]];//g'> $rzrq_ripexml
-    # fn_fmt_hexun $hx_ripexml
 }
 
 
@@ -40,12 +37,12 @@ function fn_rzrq_overview()
     url="${url}DetailCollectOverview.ashx"
     url="${url}?date=$idate&count=1&titType=null&page=1"
 
-    $W3M -dump "$url" > $rzrq_rawxml 2>$rzrq_stderr
+    $W3M -dump "$url" > $cache 2>$error
     xt_ret $? "NETWORK" || return $?
     # 非贪婪
     # echo 'asfs callback=12345&abcde&sfd' | sed 's/callback=.*&//g' 
     # echo 'asfs callback=12345&abcde&sfd' | sed 's/callback=[^&]*&//g' 
-    cat $rzrq_rawxml | sed -e '1s/.*:\[//' -e 's/}./}\n/g'  | 
+    cat $cache | sed -e '1s/.*:\[//' -e 's/}./}\n/g'  | 
       head -n -2 |
         sed -e 's/^{/,/' -e 's/<a[^>]*>//g' -e 's#</a>只##g' -e 's/ //g'|
         sed -e 's/,[a-zA-Z][a-zA-Z]*//g' | 

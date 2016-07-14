@@ -40,14 +40,13 @@ function fn_xunner()
     # w3m -dump 'http://quote.stock.hexun.com/stockdata/stock_quote.aspx?
     # stocklist=000002|000001&indexlist=000001_1|399001_2|399006_2'
 
-    sed '/indexdataArr/Q' ${js_xunner} | sed '1,3s/\[,/[/' > ${js_xunner_stk}
-    sed -n  '/indexdataArr/,$p' ${js_xunner} > ${js_xunner_idx}
+    sed '/indexdataArr/Q' ${buffer} | sed '1,3s/\[,/[/' > ${memory}
+    sed -n  '/indexdataArr/,$p' ${buffer} > ${flash}
 
     printf "%6s\t%s\t%s\t\t%s\t%s\t%-5s\t%5s\t%5s\t%5s\n" \
             symbol avrg trade change pcnt_hi pcnt_lo turnov vratio name
 
-    # echo ${js_xunner_idx}
-    cat ${js_xunner_idx} | \
+    cat ${flash} | \
         tr -d '\n' | tr "'" '"' | \
         sed -e 's/^.*= *//' -e 's/;.*$//' | \
         sed -e 's/[a-z][a-z][a-z]*/"&"/g' -e 's/;.*//g' | \
@@ -55,7 +54,7 @@ function fn_xunner()
         awk '{printf "%s\t%.2f\t%.2f\t\t%.2f\t%.2f\t%.2f\t\t\t\t\t%s\n", 
                 $1,10.00,$3,$4, 100*($3-$9)/$5, 100*($3-$10)/$5, $2}'
 
-    cat ${js_xunner_stk} | \
+    cat ${memory} | \
         tr -d '\n' | tr "'" '"' | \
         sed -e 's/^.*= *//' -e 's/;.*$//' | # purge 'dataArr = '
         # sed -e 's/[a-z][a-z][a-z]*/"&"/g' | tee /tmp/mid | \
@@ -82,10 +81,10 @@ function fn_main()
     while :; do
         w3m -dump "${url}" 2>/dev/null | \
             sed -e 's/;indexdataArr/;\nindexdataArr/' \
-                -e 's/*//g'  -e 's/ST//g'  > ${js_xunner} 
+                -e 's/*//g'  -e 's/ST//g'  > ${buffer} 
         # tee /tmp/xunner 
 
-        [ -n "`head -c2 ${js_xunner}`" ] && break
+        [ -n "`head -c2 ${buffer}`" ] && break
         echo "w3m fail, try again!"
     done
 

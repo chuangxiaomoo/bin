@@ -911,33 +911,6 @@ function fn_td_layout()
     return $?
 }
 
-function fn_dif120()
-{
-    if [ -z "${YIST}" ]; then
-        fn_iscode $1
-        xt_ret $? "" || { echo "Usage: 120 code... {END}" && exit; }
-        YIST=${file_ma120}
-        xargs -n1 <<<"${*}" | sed 's/^0*//g' | xargs printf "%06d\n" > ${YIST}
-    fi
-
-    fn_yist
-    fn_echo_warn "----- LIST:${#LIST[@]} COND@${END}: $COND -----"
-
-    tbl_day="(SELECT * FROM day WHERE date='${END}' ${inLIST})"
-
-    sqls="
-    SELECT d.code,d.date,d.close,ma120,100*(d.close-ma120)/ma120 as rise, c.name
-        ${sqls} FROM ${tbl_day} as d,
-        tbl_ma240 as t,
-        cap as c WHERE t.code=d.code and t.code=c.code
-        HAVING 1 ${inLIST} ORDER by rise ASC
-    "
-    mysql -t kts<<<"${sqls}"
-    xt_ret $? "${FUNCNAME}" || return $?
-
-    return 0
-}
-
 function fn_ma240_usage()
 {
     echo "
@@ -994,9 +967,8 @@ function fn_ma240()
     fn_echo_warn "Suggest: COND=''"
 
     [ "${CHAO:=0}" -eq 0 ] && echo "----- CHAO:${CHAO} -----" && return
-    fn_chao ${file_ma240}
+    fn_chao ${chao}.240
 }
-
 
 function fn_hilo()
 {
@@ -2909,7 +2881,6 @@ function fn_main()
     #rat                [sortfield:-ratio]    # wma+day-->动态rat，实时速度快"
     #ma240              [sortfield:-ratio]    # "
     #ma240_usage        {1~9}                 # 分析ma 5 13 34 55"
-    #dif120             code...               # cost:(close-ma120) & sort by #{ASC:id}"
     # ----------------  ABOVE IS FIXED SEQUENCE --------------------
     "dorat                                    # 分时数据iF5"
     "stat                                     # 大盘统计"

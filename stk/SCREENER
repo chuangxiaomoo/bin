@@ -14,13 +14,6 @@
 
 function fn_dugu9jian()
 {
-    if [ "${TBL}" = wind ] ; then
-        if [ "`cat ${file_wb}`" != ${CURR} ]; then
-            echo "wind is out of day. continue to run [./up wind]"
-            exit 1
-        fi
-    fi
-
     fn_txttbl
     TBL=${TBL:-'cap'}
 

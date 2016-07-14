@@ -63,68 +63,24 @@ url_sh000001='http://hq.sinajs.cn/list=sh000001'
 
 mod_fbi=100
 mod_mi5=100
-sql_temp='/dev/shm/sql.temp'
-sql_tempday='/dev/shm/sql.tempday'
 
 p_bin='/root/bin/stk/bin/'
 warehs='/opt0/warehs'
 znzday='/opt0/warehs/znzday'
 workdir='/root/bin/stk'
 
-m2d_temp='/dev/shm/hexun/min2day'
+yahooout='/tmp/kts/yahooout'
+yahooask='/tmp/kts/yahoo.ask'
+dayclose='/tmp/kts/dayclose'
 
-hx_stderr='/dev/shm/hexun/stderr'
-hx_rawxml='/dev/shm/hexun/rawxml'
-hx_ripexml='/dev/shm/hexun/ripexml'
-hx_ripetxt='/dev/shm/hexun/ripetxt'
-hx_dayclose='/dev/shm/hexun/dayclose'
+yjkb_raw='/tmp/kts/yjkb_raw'
+yjkb_rip='/tmp/kts/yjkb_rip'
 
-rzrq_stderr='/dev/shm/rzrq/stderr'
-rzrq_rawxml='/dev/shm/rzrq/rawxml'
-rzrq_ripexml='/dev/shm/rzrq/ripexml'
-rzrq_ripetxt='/dev/shm/rzrq/ripetxt'
+yjbb_raw='/tmp/kts/yjbb_raw'
+yjbb_rip='/tmp/kts/yjbb_rip'
 
-soptter_zxg='.soptter.zxg'
-
-sn_stderr='/dev/shm/sina/stderr'
-sn_rawxml='/dev/shm/sina/rawxml'
-sn_ripexml='/dev/shm/sina/ripexml'
-sn_ripetxt='/dev/shm/sina/ripetxt'
-sn_cap_nmc='/dev/shm/sina/cap_nmc'
-
-go_rawxml='/dev/shm/google/rawxml'
-go_ripexml='/dev/shm/google/ripexml'
-go_temp='/dev/shm/google/temp'
-windout='/dev/shm/windbell/temp'
-
-js_xunner='/dev/shm/xunner.js'
-js_xunner_idx='/dev/shm/xunner.idx'
-js_xunner_stk='/dev/shm/xunner.stk'
-js_xunner_txt='/dev/shm/xunner.txt'
-
-rt_stdout='/dev/shm/realtime/stdout'
-rt_ripetxt='/dev/shm/realtime/ripetxt'
-
-mi5_day='/dev/shm/mi5/day'
-mi5_min='/dev/shm/mi5/min'
-day_temp='/dev/shm/day/temp'
-day_ripe='/dev/shm/day/ripe'
-day_gether='/dev/shm/day/gether'
-yahooask='/dev/shm/day/yahoo.ask'
-yahootimeout='/dev/shm/day/yahoo.ask.timeout'
-
-fenbi_raw='/dev/shm/fenbi/raw'
-fenbi_raw1='/dev/shm/fenbi/raw1'
-fenbi_ripe='/dev/shm/fenbi/ripe'
-
-yjkb_raw='/dev/shm/yjkb_raw'
-yjkb_rip='/dev/shm/yjkb_rip'
-
-yjbb_raw='/dev/shm/yjbb_raw'
-yjbb_rip='/dev/shm/yjbb_rip'
-
-yjyg_raw='/dev/shm/yjyg_raw'
-yjyg_rip='/dev/shm/yjyg_rip'
+yjyg_raw='/tmp/kts/yjyg_raw'
+yjyg_rip='/tmp/kts/yjyg_rip'
 
 blk_name='/tmp/kts/blk_name'
 blk_memb='/tmp/kts/blk_memb'
@@ -145,15 +101,9 @@ mps_ma2015="/tmp/kts/ma2015.sql"
      cache='/tmp/kts/cache'
     buffer='/tmp/kts/buffer'
     memory='/tmp/kts/memory'
-   file_wb='/tmp/kts/wb'
+     flash='/tmp/kts/flash'
    daydump='/tmp/kts/day.dump'
-  exclude0='/tmp/kts/exclude0'
-  exclude1='/tmp/kts/exclude1'
-  exclude2='/tmp/kts/exclude2'
 file_focus='/tmp/kts/focus'
-file_ma120='/tmp/kts/ma120'
-file_ma240='/tmp/kts/ma240'
- file_2015='/tmp/kts/2015'
  list_limo='/tmp/kts/limo'
  date_dif3='/tmp/kts/dif3'
   date_wma='/tmp/kts/wma'
@@ -165,25 +115,10 @@ file_index='/tmp/kts/index'
 file_intmp='/tmp/kts/intmp'
 
 mkdir -p /tmp/kts
-mkdir -p /dev/shm/fenbi
 
 touch $cache
 touch $buffer
 touch $chao
-touch $file_wb
-touch $exclude0
-touch $exclude1
-touch $file_ma120
-touch $file_ma240
-
-function fn_isSqltrue()
-{
-    sqls="SELECT IF($*, 1, 0)"
-    RET=`mysql -N kts <<<"${sqls}"`
-    xt_ret $? "" || return $?
-    [ "${RET}" -eq 1 ]
-    return $?
-}
 
 function fn_isresting()
 {
@@ -523,12 +458,6 @@ function fn_issqltrue()
 {
     RET=`mysql -N kts <<< "SELECT IF(${*}, 0, 1)"`
     return $RET
-}
-
-function fn_write()
-{
-    # wall -n <<<"abc" 2>/dev/null
-    mesg y; write root /dev/pts/0 <<< "${1}"
 }
 
 function fn_timestamp_market()

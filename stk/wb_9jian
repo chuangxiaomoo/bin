@@ -34,15 +34,15 @@ function fn_dugu9jian()
 
     fn_get_tbl_9jian_dive $1
 
-    mysql -N kts <<<"${tbl_super_dive}" | grep -v -f ${exclude} > ${windout}
+    mysql -N kts <<<"${tbl_super_dive}" | grep -v -f ${exclude} > ${flash}
 
-    nr=`cat ${windout} | wc -l`
+    nr=`cat ${flash} | wc -l`
     if [ "${nr}" -ge 1 ] ; then
         # close 360安全卫士
         # D:; cd D:\tools\VLC
         # for /l %i in (1,1,100) do echo %i && netcat -l -p 1234 && vlc.exe o23.mp4
         timeout 3 nc 192.168.2.49 1234 <<< "ooh my god"
-        cat ${windout}
+        cat ${flash}
         wall -n <<< "Got ${nr} from 9jian" 2>/dev/null
     fi
 }

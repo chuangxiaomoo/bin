@@ -15,23 +15,22 @@ function fn_google()
 {
     key=$1
     echo "w3m -dump 'http://data.stock.hexun.com/include/AjaxSearch2011.ashx?key=$key'"  > /dev/stderr
-    w3m -dump "http://data.stock.hexun.com/include/AjaxSearch2011.ashx?key=$key" > ${go_rawxml}
+    w3m -dump "http://data.stock.hexun.com/include/AjaxSearch2011.ashx?key=$key" > ${buffer}
     xt_ret $? "NETWORK" || return $?
 
-    cat $go_rawxml | 
+    cat $buffer | 
         sed -e 's/*//g'  -e 's/ST//g' |
         tr -d '\n' | tr "'" '"' |
         sed -e 's/^.*= //' -e 's/;$//' |
-        sed -e 's/\<[a-z]\{3,\}\>/"&"/g' -e 's/""/"/g' > $go_ripexml
+        sed -e 's/\<[a-z]\{3,\}\>/"&"/g' -e 's/""/"/g' > $memory
 
-    cat ${go_ripexml} |
+    cat ${memory} |
         JSON.sh -b | tr -d '"' | grep '^[630][0-9]'
 }
 
 
 function fn_google0() {
     [ -z "$*" ] && echo "Usage: $0 symbole" && exit 
-    mkdir -p ${go_rawxml%/*}
 
     local i=
     for i in $@; do
@@ -40,14 +39,14 @@ function fn_google0() {
         host='https://www.google.com.hk/finance/match'
         host="${host}?matchtype=matchall&hl=zh-CN&ei=K6cmUpCpNomukgWYzgE&q="
         host="${host}$i"
-        $W3M -dump "${host}" > $go_rawxml
+        $W3M -dump "${host}" > $buffer
         xt_ret $? "NETWORK" || return $?
 
-        cat $go_rawxml | \
+        cat $buffer | \
             sed -e 's/\},/&\n/g' -e 's#["{}]##g' -e '1s#^.*\[##g' -e '$s#].*##g' | \
-            sed -e 's/[a-z]*://g' > $go_ripexml
+            sed -e 's/[a-z]*://g' > $memory
 
-        awk -F',' '/SHA|SHE/ {printf "%-8s%s\n", $1, $2}' $go_ripexml
+        awk -F',' '/SHA|SHE/ {printf "%-8s%s\n", $1, $2}' $memory
     done
 }
 
@@ -60,9 +59,9 @@ function fn_main()
     if fn_iscode ${1}; then
         codes=$1
     else
-        fn_google $@ | tee $go_temp
+        fn_google $@ | tee $cache
         [ 0 -ne  "${PIPESTATUS[0]}" ] && echo google fail && exit 1
-        codes=`cat $go_temp | awk '{print $1}' | xargs`
+        codes=`cat $cache | awk '{print $1}' | xargs`
         codes=${codes// /,}
     fi
 
