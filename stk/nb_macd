@@ -20,7 +20,7 @@ function fn_routine()
     tips_cnt=0
     tips_old=0
     tips_got=''
-    >${list_limo}
+    >${flash}.limo
 
     while read code symble COND0 tips; do
         if [ "${code}" = 3dcybz ]; then
@@ -107,7 +107,7 @@ function fn_routine()
             ;;
         esac
 
-        [ "${tips_cnt}" -gt ${tips_old} ] && echo ${code} >> ${list_limo}
+        [ "${tips_cnt}" -gt ${tips_old} ] && echo ${code} >> ${flash}.limo
         code0=$code
         tips_old=${tips_cnt}
     done<<<"`grep ${PATTERN:-'^[/036]'} .soptter.macd`"
@@ -125,7 +125,7 @@ function fn_routine()
     #echo ${tips_got}
     if [ -n "${tips_got}" ]; then
          fn_bell "$tips_got"
-         YIST=${list_limo} SELECT macd
+         YIST=${flash}.limo SELECT macd
     fi
 
     fn_echo_warn "\

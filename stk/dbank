@@ -64,55 +64,37 @@ url_sh000001='http://hq.sinajs.cn/list=sh000001'
 mod_fbi=100
 mod_mi5=100
 
-p_bin='/root/bin/stk/bin/'
+# ____________________temp_files________________________
+info='/tmp/kts/info'
+chao='/tmp/kts/chao'
+error='/tmp/kts/error'
+cache='/tmp/kts/cache'
+flash='/tmp/kts/flash'
+buffer='/tmp/kts/buffer'
+memory='/tmp/kts/memory'
+
 warehs='/opt0/warehs'
 znzday='/opt0/warehs/znzday'
-workdir='/root/bin/stk'
+cdpath='/root/bin/stk'
+p_sbin='/root/bin/stk/bin/'
 
+daydump='/tmp/kts/day.dump'
+dayclose='/tmp/kts/dayclose'
 yahooout='/tmp/kts/yahooout'
 yahooask='/tmp/kts/yahoo.ask'
-dayclose='/tmp/kts/dayclose'
-
-yjkb_raw='/tmp/kts/yjkb_raw'
-yjkb_rip='/tmp/kts/yjkb_rip'
-
-yjbb_raw='/tmp/kts/yjbb_raw'
-yjbb_rip='/tmp/kts/yjbb_rip'
-
-yjyg_raw='/tmp/kts/yjyg_raw'
-yjyg_rip='/tmp/kts/yjyg_rip'
 
 blk_name='/tmp/kts/blk_name'
 blk_memb='/tmp/kts/blk_memb'
 blk_list='/tmp/kts/blk_list'
 
-   mps_org="sql/xRD.sql"
-   mps_acc="sql/acc.sql"
-   mps_acf="sql/acf.sql"
-   mps_nbm="/tmp/kts/nbm.sql"
-   mps_god="/tmp/kts/God.sql"
-mps_ma2015="/tmp/kts/ma2015.sql"
-      info='/tmp/kts/info'
-      chao='/tmp/kts/chao'
-   lhb_raw='/tmp/kts/lhb.raw'
-   lhb_rip='/tmp/kts/lhb.rip'
-   lhb_pro='/tmp/kts/lhb.pro'
-     error='/tmp/kts/error'
-     cache='/tmp/kts/cache'
-    buffer='/tmp/kts/buffer'
-    memory='/tmp/kts/memory'
-     flash='/tmp/kts/flash'
-   daydump='/tmp/kts/day.dump'
-file_focus='/tmp/kts/focus'
- list_limo='/tmp/kts/limo'
- date_dif3='/tmp/kts/dif3'
-  date_wma='/tmp/kts/wma'
-  wolf_raw='/tmp/kts/wolf.raw'
-  wolf_rip='/tmp/kts/wolf.rip'
-bigbid_raw='/tmp/kts/bigbid.raw'
-bigbid_rip='/tmp/kts/bigbid.rip'
-file_index='/tmp/kts/index'
-file_intmp='/tmp/kts/intmp'
+wolf_raw='/tmp/kts/wolf.raw'
+wolf_rip='/tmp/kts/wolf.rip'
+
+mps_org="sql/xRD.sql"
+mps_acc="sql/acc.sql"
+mps_acf="sql/acf.sql"
+mps_nbm="/tmp/kts/nbm.sql"
+mps_god="/tmp/kts/God.sql"
 
 mkdir -p /tmp/kts
 

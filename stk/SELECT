@@ -655,7 +655,7 @@ function fn_updown()
 
     fn_echo_succ "From ${START} to ${END}.${HMS}..."
 
-    cd $workdir
+    cd $cdpath
     > $mps_god
     head -n -5 $mps_org >> $mps_god
 
@@ -1892,8 +1892,10 @@ function fn_prop()
     "
     mysql ${OPT:-'-t'} kts <<<"${sqls}"
 
-    # sqls="SELECT d.code,ROUND(d.volume/t.shou, 3) as prop0 FROM xtempday d, tov8 t WHERE d.code=t.code ORDER by prop0 DESC"
-    # fn_imysql_sqls
+    # s silent, o output
+    [ "${PARTS:-s}" = s ] && return
+    sqls="SELECT d.code,ROUND(d.volume/t.shou, 3) as prop0 FROM xtempday d, tov8 t WHERE d.code=t.code ORDER by prop0 DESC"
+    fn_imysql_sqls
 }
 
 function fn_flat()

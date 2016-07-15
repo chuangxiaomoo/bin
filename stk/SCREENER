@@ -357,10 +357,10 @@ function fn_wma()
         # 表 tbl_mavol520s 是TBL的分析结果，供后续处理分析。
         if [ -f /tmp/tov/${tbl_tov_date} ]; then
             if [ "cap" = "${TBL:-cap}" ]; then
-                WMA=`cat ${date_wma} 2>/dev/null`
+                WMA=`cat ${buffer} 2>/dev/null`
                 if [ "${WMA}" != ${END} ]; then
                     fn_cp_tbl ${tbl_tov_date} tbl_mavol520s;
-                    echo ${END} > ${date_wma}      # 不用每次都 fn_cp_tbl tbl_mavol520s
+                    echo ${END} > ${buffer}      # 不用每次都 fn_cp_tbl tbl_mavol520s
                 else
                     echo "    Repeat wma, ignore!"
                 fi
@@ -397,7 +397,7 @@ function fn_wma()
         if ! ([ "${END}" = "${CURR}" ] && [ "${sec_curr}" -lt "${sec_1500}" ]); then
             mkdir -p /tmp/tov/
             touch /tmp/tov/${tbl_tov_date}
-            echo ${END} > ${date_wma}      # 不用每次都 fn_cp_tbl tbl_mavol520s
+            echo ${END} > ${buffer}      # 不用每次都 fn_cp_tbl tbl_mavol520s
         fi
     else
         SELECT wma ${@}
@@ -406,8 +406,8 @@ function fn_wma()
 
 function fn_focus()
 {
-    cat ${YIST:-'.soptter.sulon'} .soptter.trade | awk '/^[^#]/{print $1}'|sort -u> ${file_focus}
-    YIST=${file_focus} LIMIT=99 fn_dugu9jian ${1:-wchng}
+    cat ${YIST:-'.soptter.sulon'} .soptter.trade | awk '/^[^#]/{print $1}'|sort -u> ${flash}
+    YIST=${flash} LIMIT=99 fn_dugu9jian ${1:-wchng}
 }
 
 function fn_auto_nmemb()
@@ -1269,7 +1269,7 @@ function fn_main()
 
     # SCREENER的宗旨，弃子取势
     # 存储过程函数文件的最后5行都是注释
-    cd $workdir
+    cd $cdpath
     head -n -5 $mps_org > $mps_god
 
     # 为提高效率，可能使用临时表，调试时备份可使用 call sp_cp_tbl('fr', 'to');

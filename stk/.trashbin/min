@@ -31,7 +31,7 @@ function fn_main()
 
     # in case today is on holiday
 
-    $workdir/hexun
+    $cdpath/hexun
 
     TIME=`date +%H.%M.%S`
     $W3M -dump ${url_sh000001} | awk -v v_time=${TIME} -F',' '{

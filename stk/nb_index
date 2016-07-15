@@ -8,19 +8,19 @@ function fn_checking()
     shou_399300=`mysql -N kts <<< "SELECT shou FROM sz_index WHERE date='$PREV' && code=399300"`
     # echo ${shou_399300} ${shou_399006}; exit
     w3m -dump 'http://qt.gtimg.cn/?q=s_sz399300,s_sz399102,s_sz399006,s_sz399005,s_sh000001' | \
-        awk -v dt=$END -F'~' '{printf "%s\t%s\t%.2f\t%.2f\t%.2f\t%s\t%s\n", dt, $3,$4,$5,$6,$7,$8}' > ${file_index}
+        awk -v dt=$END -F'~' '{printf "%s\t%s\t%.2f\t%.2f\t%.2f\t%s\t%s\n", dt, $3,$4,$5,$6,$7,$8}' > ${flash}
     echo "
     DROP   TEMPORARY TABLE IF EXISTS tmp_index;
     CREATE TEMPORARY TABLE tmp_index LIKE sz_index;
-    LOAD DATA LOCAL INFILE '${file_index}' INTO TABLE tmp_index;
+    LOAD DATA LOCAL INFILE '${flash}' INTO TABLE tmp_index;
     UPDATE tmp_index SET amount = ${shou_399006:-0} WHERE code=399006;
     UPDATE tmp_index SET amount = ${shou_399300:-0} WHERE code=399300;
     SELECT code,trade,risp,round(shou/amount,2) as prop FROM tmp_index WHERE code in (399006,399300) ORDER by code DESC;
-    " | mysql -t kts | tee ${file_intmp}
+    " | mysql -t kts | tee ${buffer}
     xt_ret $? "" || return $?
 
-    s_399300=(`awk '/399300/{print $4,$6,$8}' ${file_intmp}`) # trade rise prop
-    s_399006=(`awk '/399006/{print $4,$6,$8}' ${file_intmp}`) # trade rise prop
+    s_399300=(`awk '/399300/{print $4,$6,$8}' ${buffer}`) # trade rise prop
+    s_399006=(`awk '/399006/{print $4,$6,$8}' ${buffer}`) # trade rise prop
     #echo ${s_399300[@]}
     #echo ${s_399006[@]}
     #
@@ -45,10 +45,10 @@ function fn_main()
     case $1 in
     up)
         w3m -dump 'http://qt.gtimg.cn/?q=s_sz399300,s_sz399102,s_sz399006,s_sz399005,s_sh000001' | \
-            awk -v dt=$END -F'~' '{printf "%s\t%s\t%.2f\t%.2f\t%.2f\t%s\t%s\n", dt, $3,$4,$5,$6,$7,$8}' > ${file_index}
+            awk -v dt=$END -F'~' '{printf "%s\t%s\t%.2f\t%.2f\t%.2f\t%s\t%s\n", dt, $3,$4,$5,$6,$7,$8}' > ${flash}
         echo "
         DELETE FROM sz_index WHERE date='${END}';
-        LOAD DATA LOCAL INFILE '${file_index}' INTO TABLE sz_index;
+        LOAD DATA LOCAL INFILE '${flash}' INTO TABLE sz_index;
         " | mysql -N kts
         xt_ret $? "" || return $?
         ;;

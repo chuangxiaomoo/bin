@@ -5,12 +5,8 @@
 
 function fn_bb_load()
 {
-    if [ ! -f "${1}" ]; then
-        echo "Redo after try: cp .template/yjbb_rip ${yjbb_rip}"; exit 1
-    fi
-
-    timestamp=`head -1 /dev/shm/yjbb_rip | awk '{print $1}'`
-    echo "Delete data of ${timestamp} and load ${yjbb_rip}..."
+    timestamp=`head -1 ${flash}.yjbb | awk '{print $1}'`
+    echo "Delete data of ${timestamp} and load ${flash}.yjbb..."
 
     echo "
     DROP TABLE IF EXISTS tbl_yjbb;
@@ -46,12 +42,12 @@ function fn_bb_dl_all()
 
     url0="http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx?type=SR&sty=YJBB&"
     url0="${url0}fd=${stamp}&st=13&sr=-1&p=1&ps=3000"
-    w3m -dump ${url0} > ${yjbb_raw}
-    if ! grep -q "${stamp}" ${yjbb_raw}; then
+    w3m -dump ${url0} > ${cache}
+    if ! grep -q "${stamp}" ${cache}; then
         fn_echo_fail "no ${stamp} data"
         exit 1
     fi
-    cat ${yjbb_raw} |tr -d '\n' |
+    cat ${cache} |tr -d '\n' |
         sed -e '1s/^...//' -e '1s/...$//' -e 's/","/\n/g' | 
         awk -F',' '{
             printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
@@ -59,12 +55,12 @@ function fn_bb_dl_all()
             $6,$7,$8/10000,
             $9,$10,$11,
             $12,$13,$17
-        }' | grep "^[036]" > ${yjbb_rip}
+        }' | grep "^[036]" > ${flash}.yjbb
 
-    sed -i "s/^/${stamp}\t/" ${yjbb_rip}
-    sort -g -k2 ${yjbb_rip} -o ${yjbb_rip}
+    sed -i "s/^/${stamp}\t/" ${flash}.yjbb
+    sort -g -k2 ${flash}.yjbb -o ${flash}.yjbb
 
-    fn_bb_load ${yjbb_rip}
+    fn_bb_load ${flash}.yjbb
 
     return $?
 }
@@ -94,12 +90,8 @@ function fn_bb_select()
 
 function fn_kb_load()
 {
-    if [ ! -f "${1}" ]; then
-        echo "Redo after try: cp .template/yjkb_rip ${yjkb_rip}"; exit 1
-    fi
-
-    timestamp=`head -1 /dev/shm/yjkb_rip | awk '{print $1}'`
-    echo "Delete data of ${timestamp} and load ${yjkb_rip}..."
+    timestamp=`head -1 ${flash}.yjkb | awk '{print $1}'`
+    echo "Delete data of ${timestamp} and load ${flash}.yjkb..."
 
     echo "
     DROP TABLE IF EXISTS tbl_yjkb;
@@ -135,14 +127,14 @@ function fn_kb_dl_all()
      
     url0="http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx?type=SR&sty=YJKB&"
     url0="${url0}fd=${stamp}&st=13&sr=-1&p=1&ps=500"     # 只取500，多了无用
-    w3m -dump ${url0} > ${yjkb_raw}
-    if ! grep -q "${stamp}" ${yjkb_raw}; then
+    w3m -dump ${url0} > ${cache}
+    if ! grep -q "${stamp}" ${cache}; then
         fn_echo_fail "no ${stamp} data"
         exit 1
     fi
     # $5是去年同期
     # cashflow 补0
-    cat ${yjkb_raw} |tr -d '\n' |
+    cat ${cache} |tr -d '\n' |
         sed -e '1s/^...//' -e '1s/...$//' -e 's/","/\n/g' | 
         awk -F',' '{
             printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
@@ -150,12 +142,12 @@ function fn_kb_dl_all()
             $4/10000, $6,$7,
             $8/10000, $10,$11,
             $12,$13,  0,$14
-        }' | grep "^[036]" > ${yjkb_rip}
+        }' | grep "^[036]" > ${flash}.yjkb
 
-    sed -i "s/^/${stamp}\t/" ${yjkb_rip}
-    sort -g -k2 ${yjkb_rip} -o ${yjkb_rip}
+    sed -i "s/^/${stamp}\t/" ${flash}.yjkb
+    sort -g -k2 ${flash}.yjkb -o ${flash}.yjkb
 
-    fn_kb_load ${yjkb_rip}
+    fn_kb_load ${flash}.yjkb
 
     return $?
 }
@@ -185,13 +177,6 @@ function fn_kb_select()
 
 function fn_yb_load()
 {
-    if [ ! -f "${1}" ]; then
-        echo "Redo after try: cp .template/yjyg_rip ${yjyg_rip}"; exit 1
-    fi
-
-    # timestamp=`head -1 /dev/shm/yjyg_rip | awk '{print $1}'`
-    # echo "Delete data of ${timestamp} and load ${yjyg_rip}..."
-
     echo "
     DROP TABLE IF EXISTS tbl_yjyg;
     CREATE TABLE IF NOT EXISTS tbl_yjyg (
@@ -219,17 +204,17 @@ function fn_yb_dl_all()
     url0="http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx?type=SR&sty=YJYG&"
     url0="${url0}fd=${stamp}&st=4&sr=-1&p=1&ps=3000"
     echo "DL from ${url0}"
-    w3m -cols 1000 -dump ${url0} > ${yjyg_raw}
-    if ! grep -q "${stamp}" ${yjyg_raw}; then
+    w3m -cols 1000 -dump ${url0} > ${cache}
+    if ! grep -q "${stamp}" ${cache}; then
         fn_echo_fail "no ${stamp} data"
         exit 1
     fi
 
-    cat ${yjyg_raw} |tr -d '\n' |
+    cat ${cache} |tr -d '\n' |
         sed -e '1s/^...//' -e '1s/...$//' -e 's/","/\n/g' |
         sed -e 's/预亏/-3/g' -e 's/预减/-2/g' -e 's/减亏/-1/g' -e 's/持平/0/g' \
-            -e 's/预警/0/g' -e 's/预盈/1/g' -e 's/预增/2/g' > ${yjyg_rip}.pre
-    cat ${yjyg_rip}.pre |
+            -e 's/预警/0/g' -e 's/预盈/1/g' -e 's/预增/2/g' > ${flash}.pre
+    cat ${flash}.pre |
         awk -F',' '{
             if ($6>=0) {
                 printf "%s\t%.2f\t%d\t%s\t%.2f\t%s\t%s\t%s\n", 
@@ -238,11 +223,9 @@ function fn_yb_dl_all()
                 printf "%s\t%.2f\t%d\t%s\t%.2f\t%s\t%s\t%s\n", 
                     $1,$4,$5,$6,$6*(1-$4/100),$8,$9,$2
             }
-        }' | grep "^[036]" > ${yjyg_rip}
+        }' | grep "^[036]" > ${flash}
 
-    #sort -g -k2 ${yjyg_rip} -o ${yjyg_rip}
-
-    fn_yb_load ${yjyg_rip}
+    fn_yb_load ${flash}
 
     return $?
 }
