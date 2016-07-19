@@ -102,24 +102,6 @@ touch $cache
 touch $buffer
 touch $chao
 
-function fn_isresting()
-{
-    # 只测双数
-    # hexun数据延迟，093400才开始更新
-    hhmmss=`date +%H%M%S`
-    if ([ ${hhmmss} -gt 113100 ] && [ ${hhmmss} -lt 130100 ]) ||
-        [ ${hhmmss} -lt 093300 ] ; then
-        echo "is resting @${hhmmss}...";
-        return 0
-    elif [ ${hhmmss} -gt 145500 ]; then
-        echo "market closed, eixt!"
-        exit 0
-    else
-        echo tick @${hhmmss}...
-        return 1
-    fi
-}
-
 function fn_txttbl()
 {
     if [ -n "${NMC_RATIO}" ]; then
@@ -403,20 +385,6 @@ function fn_iscode()
     #echo ${?} is ret code: ${1} num: ${num}
 }
 
-function fn_name()
-{
-    fn_iscode ${code:=${1}}
-    xt_ret $? "Usage: name code" || exit $?
-
-    argv="${@}"
-    argv="${argv// /,}"
-    sqls="SELECT code, name, CONCAT((round(nmc/10000)),'Yi') as nmcYi FROM cap WHERE code IN (${argv})"
-    #echo "${sqls}">/dev/stderr;exit
-    fn_echo_succ `mysql -N kts <<< "${sqls}"`
-
-    xt_ret $? "" || return $?
-}
-
 function fn_isdate()
 {
     echo -n $1 | grep -q -E '^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$'
@@ -440,6 +408,52 @@ function fn_issqltrue()
 {
     RET=`mysql -N kts <<< "SELECT IF(${*}, 0, 1)"`
     return $RET
+}
+
+function fn_isresting()
+{
+    # 只测双数
+    # hexun数据延迟，093400才开始更新
+    hhmmss=`date +%H%M%S`
+    if ([ ${hhmmss} -gt 113100 ] && [ ${hhmmss} -lt 130100 ]) ||
+        [ ${hhmmss} -lt 093300 ] ; then
+        echo "is resting @${hhmmss}...";
+        return 0
+    elif [ ${hhmmss} -gt 145500 ]; then
+        echo "market closed, eixt!"
+        exit 0
+    else
+        echo tick @${hhmmss}...
+        return 1
+    fi
+}
+
+function fn_name()
+{
+    fn_iscode ${code:=${1}}
+    xt_ret $? "Usage: name code" || exit $?
+
+    argv="${@}"
+    argv="${argv// /,}"
+    sqls="SELECT code, name, CONCAT((round(nmc/10000)),'Yi') as nmcYi FROM cap WHERE code IN (${argv})"
+    #echo "${sqls}">/dev/stderr;exit
+    fn_echo_succ `mysql -N kts <<< "${sqls}"`
+
+    xt_ret $? "" || return $?
+}
+
+function fn_carbon()
+{
+    case $1 in
+    get) mysql -N kts <<<"SELECT $2 FROM carbon"   || RET=1 ;;
+    set) mysql -N kts <<<"UPDATE carbon SET $2=$3" || RET=1 ;;
+    *)   RET=1 ;;
+    esac
+
+    if [ "${RET}" = 1 ]; then
+        fn_echo_fail "carbon[$1]: ${BASH_SOURCE[1]##*/}|${BASH_LINENO[0]}| ${FUNCNAME[1]}"
+        exit 1 
+    fi
 }
 
 function fn_timestamp_market()

@@ -882,7 +882,7 @@ CREATE PROCEDURE sp_taox(a_code INT(6) ZEROFILL) tag_taox:BEGIN
     IF v_cnt100 < 2 THEN
         -- 使用数据库文件实现EXIT_CODE
         -- SELECT a_code, "so_little_taox_data";
-        INSERT INTO exitcode VALUES (1);
+        UPDATE carbon SET errno=1; 
     END IF;
     -- SELECT v_cnt100;
 END tag_taox //
@@ -979,7 +979,7 @@ CREATE PROCEDURE sp_fbi(a_code INT(6) ZEROFILL) tag_fbi:BEGIN
     IF v_cnt100 < 2 THEN
         -- 使用数据库文件实现EXIT_CODE
         -- SELECT a_code, "so_little_fbi_data";
-        INSERT INTO exitcode VALUES (1);
+        UPDATE carbon SET errno=1; 
     END IF;
     -- SELECT v_cnt100;
 END tag_fbi //

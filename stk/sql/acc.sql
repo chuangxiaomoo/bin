@@ -121,7 +121,7 @@ CREATE PROCEDURE sp_acc(a_code INT(6) ZEROFILL) tag_acc:BEGIN
                 round(v_shares0*(2+@PPLUS/@PARTS),2) as volomeNeed, 
                 TRUNCATE((@v_volumes-2*v_shares0)/v_vol_unit-@PARTS, 0) as maxPPLUS;
         -- SELECT a_code, @END, @NUM, "so_little_acf_data";
-        INSERT INTO exitcode VALUES (1);
+        UPDATE carbon SET errno=1;
         LEAVE tag_acc; 
     END IF;
 

@@ -53,9 +53,9 @@ function fn_update_matov5()
 
 function fn_pro_header_30min()
 {
-    OPT='-N' fn_prop > ${chao}.prop
-    PROP0=`awk '{print $4}' ${chao}.prop`
-    PROP5=`awk '{print $6}' ${chao}.prop`
+    PARTS=s fn_prop > ${chao}.prop
+    PROP0=`fn_carbon get prop0`
+    PROP5=`fn_carbon get prop5`
     hhmmss=${iTime:-${date_T}}
     [ "${hhmmss//:/}" -lt 103000 ] && PROP="$PROP5" || PROP="$PROP0"    # 1小时后用平均值
     # 前40分收敛处理
@@ -1861,8 +1861,9 @@ function fn_prop()
         xt_ret $? "" || return $?
     }
 
-    #
-    PREV4=`fn_get_date ${NUM:-4}`
+    NUM=${NUM:-4}   # 2，与昨日比较是否放量
+    let CNT=NUM-1
+    PREV4=`fn_get_date ${NUM}`
     sqls="
     $CREATE tov8 (
         code    INT(6) ZEROFILL NOT NULL,
@@ -1873,29 +1874,40 @@ function fn_prop()
     TRUNCATE tov8;
     INSERT INTO tov8
     SELECT code,tov,shou FROM (
-      SELECT code, sum(tov)/3 as tov, sum(shou)/3 as shou, SUM(tov>=${DOOR:-7}) as num, name FROM dde WHERE date>='${PREV4}' and date<='${PREV}' 
+      SELECT code, sum(tov)/${CNT} as tov, sum(shou)/${CNT} as shou, SUM(tov>=${DOOR:-7}) as num, name 
+        FROM dde WHERE date>='${PREV4}' and date<='${PREV}' 
         GROUP by code
-        HAVING num=3 ORDER by code ASC
+        HAVING num=${CNT} ORDER by code ASC
     ) as t;
 
     SELECT COUNT(d.code),ROUND( sum(d.volume/t.shou)/COUNT(d.code), 3) 
-        FROM xtempday d, tov8 t WHERE d.code=t.code INTO @c_all, @pavrg;
+        FROM xtempday d, tov8 t WHERE d.code=t.code INTO @c_all, @propa;
 
+    SELECT 
+        COUNT(d.code) as num,
+        ROUND( sum(d.volume/t.shou)/COUNT(d.code), 3) as prop
+        FROM xtempday d, tov8 t WHERE d.code=t.code && d.volume/t.shou>@propa 
+        INTO @nump, @propp;
+
+    UPDATE carbon SET prop0=@propa, prop5=@propp;
+    "
+    sqls_sufix="
     SELECT
         '${END}' as date,
         '${iTime}' as time,
-        @c_all as full,
-        @pavrg as pavrg,
-        COUNT(d.code) as num,
-        ROUND( sum(d.volume/t.shou)/COUNT(d.code), 3) as prop
-        FROM xtempday d, tov8 t WHERE d.code=t.code && d.volume/t.shou>@pavrg;
-    "
-    mysql ${OPT:-'-t'} kts <<<"${sqls}"
+        @c_all as num,
+        @propa as propa,    -- a is avrg
+        @nump as nump,
+        @propp as propp;    -- p is power
 
-    # s silent, o output
-    [ "${PARTS:-s}" = s ] && return
-    sqls="SELECT d.code,ROUND(d.volume/t.shou, 3) as prop0 FROM xtempday d, tov8 t WHERE d.code=t.code ORDER by prop0 DESC"
-    fn_imysql_sqls
+    SELECT d.code,ROUND(d.volume/t.shou, 3) as prop 
+        FROM xtempday d, tov8 t WHERE d.code=t.code HAVING 1 ${COND} ORDER by prop DESC;
+    "
+
+    [ "${PARTS:-o}" = o ] && sqls="${sqls}${sqls_sufix}"    # s silent, o output
+
+    #echo "${sqls}"; exit
+    mysql -t kts <<< "${sqls}"
 }
 
 function fn_flat()
@@ -1967,28 +1979,30 @@ function fn_stat()
         fn_chao ${chao}.born
         ;;
     m|mid)
-        fn_echo_warn "head-1000,tail-500换手率"
-        LIMIT=1000,1 END=${END} FIELD=tov SELECT lsd
+        fn_echo_fail "换手率排名500,1000"
         ASC=DESC LIMIT=500,1 END=${END} FIELD=tov SELECT lsd
-        fn_echo_blue "1250th成交额"
-        LIMIT=1250,2 END=${END} FIELD=amount SELECT lsd
-        fn_echo_succ "897(2345*.382),1789(2345*.618*1.235)流通市值"
-        ASC=asc LIMIT=897,1  END=${END} FIELD=nmc SELECT lsd
-        ASC=asc LIMIT=1789,1 END=${END} FIELD=nmc SELECT lsd
-        fn_echo_fail "涨停板amount中位数，top1/3，与amount500th相近"
-        num=`OPT='-N' LIMIT=400 END=${END} FIELD=amount SELECT lsd top 2>/dev/null | wc -l`
-        let LIMIT=num/2-3
-        LIMIT="${LIMIT},2" END=${END} FIELD=amount SELECT lsd top
-        let LIMIT=num/3-2
-        LIMIT="${LIMIT},2" END=${END} FIELD=amount SELECT lsd top
-        fn_echo_succ "***** Layout @${END} ******"
+        ASC=DESC LIMIT=999,1 END=${END} FIELD=tov SELECT lsd
+
+        fn_echo_blue "成交额排名300,500"
+        ASC=DESC LIMIT=300,1 END=${END} FIELD=amount SELECT lsd
+        ASC=DESC LIMIT=500,1 END=${END} FIELD=amount SELECT lsd
+
+        fn_echo_fail "流通市值排名500,1000"
+        ASC=DESC LIMIT=500,1 END=${END} FIELD=nmc SELECT lsd
+        ASC=DESC LIMIT=999,1 END=${END} FIELD=nmc SELECT lsd
+
+        fn_echo_blue "自然涨停中位数，相近成交额500th"
+        num=`OPT='-N' LIMIT=400 END=${END} FIELD=amount PPLUS=N SELECT lsd top 2>/dev/null | wc -l`
+        let LIMIT=num/2
+        ASC=DESC LIMIT="${LIMIT},2" END=${END} FIELD=amount SELECT lsd top
+        fn_echo_succ "_____ Layout @${END} ______"
         ;;
     *)
         echo "
         SELECT stat <param>:
         hot                     # 涨停板收益统计
         flat                    # 一字板收益统计
-        b|born                  # 当日复牌
+        b|born tp10             # NUM=2，当天复牌股
         m|mid                   # 指标中值状态 middle of 1160
         t|realtimetov           # 统计各时段成交额
         "
@@ -2274,10 +2288,10 @@ function fn_blk()
     0xCE54,  -- 898 | 融资融券
     0xDAE8,  -- 574 | 沪港通概念
     0xDBD4,  -- 316 | 股东增持
-    0xDA4D,  -- 305 | 央企国资改革
     0xD953,  -- 243 | 参股金融
     0xD886,  -- 100 | 证金持股
     0xDB9B   -- 81  | 转融券标的
+--  0xDA4D,  -- 305 | 央企国资改革
 -- ,0x40     -- 226 | 新股与次新股
     )"
 #   EXCLUDE_BLK="(0x1234)"
@@ -2872,6 +2886,32 @@ function fn_xii()
     return $?
 }
 
+function fn_seq()
+{
+    w3m -dump "http://home.flashdata2.jrj.com.cn/limitStatistic/zt/${END//-/}.js" > ${cache}.seq
+    cat ${cache}.seq | \
+        sed -e '1s#^.*:\[\[##g' -e '$s#]]}.*##g' -e 's#],\[#\n#g' -e 's/"//g' |
+        awk -F',' -v v_date=$END '{ printf "%s\t%s\n", $1,$3 }' > ${flash}.seq
+    #   awk -F',' -v v_date=$END '{
+    #       printf "%s  %8s\t%-12s\t%s    %6.2f\t%5.2f\t%5.2f\t%5.2f\n", v_date,$1,$2,$3,$4,$5,$6/100000000,$7;
+    #   }'
+    fn_xtempday
+    echo "
+    CREATE TEMPORARY TABLE seq (
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        time        time,
+        INDEX(code,time)
+    );
+    LOAD DATA LOCAL INFILE '${flash}.seq' INTO TABLE seq;
+
+    SELECT '${END}' as date, d.code,s.time, ${TURNOV} as tov,
+        ROUND(${nmc0}*(1-top10)/100,2) as nmc, ${nmcYi0}, c.name
+        FROM seq s, xtempday d, cap c, top10 t
+        WHERE s.code=d.code && s.code=c.code && s.code=t.code
+        ORDER by time DESC
+    " | mysql -t kts
+}
+
 function fn_main()
 {
     cmdlist=(
@@ -2923,6 +2963,7 @@ function fn_main()
     "prop               iF5                   # 大tov.prop"
     "scale                                    # HMS= 可指定时间"
     "notice                                   # 公告"
+    "seq                                      # 涨停顺序"
     "ddd                                      # 连续缩量后放量"
     "seat_rank                                # 总排名，上榜次数num>#NUM"
     "seat_detail                              # seat-blk"

@@ -192,18 +192,12 @@ function fn_nmemb_of_10percent()
 
 function fn_clr_exitcode()
 {
-    echo "
-     CREATE table IF NOT EXISTS exitcode (
-     code   INT(6) ZEROFILL NOT NULL DEFAULT 0
-     );
-     truncate TABLE exitcode;
-    " | mysql kts
-    return $?
+    fn_carbon set errno 0
 }
 
 function fn_sql_exitsucc()
 {
-    return `mysql -N -B kts <<<"SELECT count(code) FROM exitcode"`
+    return `fn_carbon get errno`
 }
 
 function fn_tao5()
@@ -235,8 +229,8 @@ function fn_tao5()
 
     mysql kts <<<"truncate TABLE tbl_tao5"
     xt_ret $? "Don't worry, this error show when run 1st time"
+
     fn_clr_exitcode
-    xt_ret $? "try create tbl_tao5: SCREENER tao 2" || return $?
 
     local i=0
     for (( i=0; i<${ZIZE}; i+=1 )); do
@@ -484,8 +478,8 @@ function ___fbi()
 
     mysql kts <<<"truncate TABLE tbl_fbi5; truncate TABLE tbl_fdiff;"
     xt_ret $? "Don't worry, this error show when run 1st time"
+
     fn_clr_exitcode
-    xt_ret $? "clr exitcode" || return $?
 
     local i=0
     for (( i=0; i<${ZIZE}; i+=1 )); do
@@ -535,9 +529,12 @@ function fn_acc()
     SET @NMC_RATIO=${NMC_RATIO:-${irt}};
     call sp_visit_code(${code});
     " >> $mps_god
+
     fn_clr_exitcode
+
     mysql $OPT -t kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
+
     if ! fn_sql_exitsucc; then
         fn_echo_warn "so_little_data"
         exit
@@ -591,9 +588,12 @@ function fn_acf()
     SET @NMC_RATIO=${NMC_RATIO:-${irt}};
     call sp_visit_code(${code});
     " >> $mps_god # | tee -a $mps_god
+
     fn_clr_exitcode
+
     mysql $OPT kts <<< "source $mps_god"
     xt_ret $? "${FUNCNAME}" || return $?
+
     if ! fn_sql_exitsucc; then
         fn_echo_warn "so_little_data"
         exit

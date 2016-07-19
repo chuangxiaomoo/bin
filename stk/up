@@ -177,6 +177,7 @@ function fn_trace()
     grep -v '^#' ${frog} | sed 's/  */\t/g'> ${buffer}
 
     echo "
+        -- trace不可是TEMPORARY, 因为INNER-JOIN不允许
         DROP TABLE IF EXISTS trace;
         CREATE TABLE trace (
             id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
@@ -1538,9 +1539,9 @@ function fn_chk_day()
         " | mysql kts
         ;;
     l)
-        grep -v -f ${chao}.vs_less ${chao}.vs_more > /tmp/kts/chao.vs
-        num=`wc -l < /tmp/kts/chao.vs`
-        fn_echo_succ "There r ${num} lines: /tmp/kts/chao.vs"
+        grep -v -f ${chao}.chk.less ${chao}.chk.more > /tmp/kts/chao.chk
+        num=`wc -l < /tmp/kts/chao.chk`
+        fn_echo_succ "There r ${num} lines: /tmp/kts/chao.chk"
         ;;
     *)
         END=`fn_get_date $1`
@@ -1556,17 +1557,17 @@ function fn_chk_day()
         xt_ret $? "Error: timestamp@${t1500}" || return $?
 
         sqls="SELECT DISTINCT code FROM dorat WHERE date='$END' and time='${t1500}' && code < 888888"
-        mysql -N kts <<< "${sqls}" > ${chao}.vs_dorat
+        mysql -N kts <<< "${sqls}" > ${chao}.chk.dorat
 
         sqls="SELECT DISTINCT code FROM day WHERE date='$END' and code < 888888"
-        mysql -N kts <<< "${sqls}" > ${chao}.vs_day
+        mysql -N kts <<< "${sqls}" > ${chao}.chk.day
 
         sqls="SELECT DISTINCT code FROM dde WHERE date='$END' and code < 888888"
-        mysql -N kts <<< "${sqls}" > ${chao}.vs_dde
+        mysql -N kts <<< "${sqls}" > ${chao}.chk.dde
         
-        dor=`wc -l < ${chao}.vs_dorat` 
-        day=`wc -l < ${chao}.vs_day` 
-        dde=`wc -l < ${chao}.vs_dde` 
+        dor=`wc -l < ${chao}.chk.dorat` 
+        day=`wc -l < ${chao}.chk.day` 
+        dde=`wc -l < ${chao}.chk.dde` 
 
         fn_echo_succ "${END} dor:$dor day:$day dde:$dde"
 
@@ -1576,11 +1577,11 @@ function fn_chk_day()
         [ "${dor}" -eq "${day}" ] && exit
 
         if [ "${dor}" -gt "${day}" ]; then
-            cp ${chao}.vs_dorat ${chao}.vs_more
-            cp ${chao}.vs_day   ${chao}.vs_less
+            cp ${chao}.chk.dorat ${chao}.chk.more
+            cp ${chao}.chk.day   ${chao}.chk.less
         elif [ "${day}" -gt "${dor}" ]; then
-            cp ${chao}.vs_dorat ${chao}.vs_less
-            cp ${chao}.vs_day   ${chao}.vs_more
+            cp ${chao}.chk.dorat ${chao}.chk.less
+            cp ${chao}.chk.day   ${chao}.chk.more
         fi
 
         fn_chk_day l

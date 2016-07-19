@@ -11,8 +11,6 @@ tables="
     xRD
     tbl_xRDdate
 
-    exitcode
-
     ipo
     rzrq_day
 "
