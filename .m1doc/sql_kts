@@ -242,3 +242,16 @@ CREATE TABLE bigbid(
     INDEX(date,code)
 );
 
+# 采用单列，visit更加明了
+DROP TABLE IF EXISTS carbon;
+CREATE TABLE carbon(
+    errno       INT NOT NULL DEFAULT 0,
+    cache       DECIMAL(6,2) NOT NULL DEFAULT 0,
+    flash       DECIMAL(6,2) NOT NULL DEFAULT 0,
+    prop0       DECIMAL(6,3) NOT NULL DEFAULT 0,
+    prop5       DECIMAL(6,3) NOT NULL DEFAULT 0,
+    propa       DECIMAL(6,3) NOT NULL DEFAULT 0,
+    propp       DECIMAL(6,3) NOT NULL DEFAULT 0 
+);
+INSERT INTO carbon(errno) VALUES(0);
+

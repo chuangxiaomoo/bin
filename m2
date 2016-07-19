@@ -821,7 +821,7 @@ function fn_uncertainty()               { cat texaspoker_uncertainty ;}
 function fn_Small_Stakes_Hold_em()      { cat texaspoker_Small_Stakes_Hold_em ;}
     local opts=(
         philosophy                      # 哲理
-        xiuxing                         # 修行 意志力
+        xiuxing                         # 修行 意志力 如何稳定盈利？
         emotion_management              # 情绪管理
         loser
         sng_master_1st
@@ -864,7 +864,7 @@ function fn_guo()                       { cat guo ;}
 function fn_stupid_things()             { cat stupid_things ;}
 function fn_subtitle()                  { cat subtitle ;}
 function fn_kindle()                    { cat kindle ;}
-function fn_practice_cept()             { cat practice_cept ;}
+function fn_literature()                { cat literature ;}
 
 
 # 新教与天主教。信则得救，不信则下地狱 vs 助人行善
@@ -940,6 +940,7 @@ function fn_main() {
         psychology                      # 心理学
         kindle
         writing
+        literature                      # 文学
         meditation_cept
         psychology_cept
         education_cept                  # 教育
