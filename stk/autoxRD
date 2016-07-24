@@ -16,15 +16,15 @@
 function fn_rebuild_list_and_download_from_last_xRD()
 {
     last_xRD=`echo "
-    CREATE TABLE IF NOT EXISTS tbl_xRDdate ( date DATE NOT NULL DEFAULT 0 );
-    SELECT max(date) FROM tbl_xRDdate;
+    CREATE TABLE IF NOT EXISTS xRDdate ( date DATE NOT NULL DEFAULT 0 );
+    SELECT max(date) FROM xRDdate;
     " | mysql -u root -N kts`
     xt_ret $? "mysql" || return $?
 
     if [ NULL = "$last_xRD" ] ; then
         last_xRD=$(date +'%F' --date='90 days ago')
         echo "
-        INSERT INTO tbl_xRDdate (date) VALUES('${last_xRD}');
+        INSERT INTO xRDdate (date) VALUES('${last_xRD}');
         " | mysql kts
         xt_ret $? "mysql" || return $?
     fi
@@ -97,7 +97,7 @@ function fn_main()
     fn_echo_succ "LOAD over"
 
     echo "
-    INSERT INTO tbl_xRDdate (date) VALUES('${date_maxyahoo}');
+    INSERT INTO xRDdate (date) VALUES('${date_maxyahoo}');
     " | mysql kts
     xt_ret $? "mysql" || return $?
 

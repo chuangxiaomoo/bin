@@ -300,7 +300,7 @@ function fn_lsd()
                 $TURNOV as tov, 
          --     t5.tov as tov5,
          --     ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2) as prop5,
-                round(d.amount/10000, 1) as eYi,
+                round(d.amount/10000, 3) as eYi,
                 ${nmcYi}, c.name
                 FROM ${TEMPDAY:-day} d, cap c
          --     , t_matov5 t5
@@ -543,21 +543,31 @@ function fn_dirt_interval()
     fn_dirtio ${it1} ${it2} $2
 }
 
+
+function fn_dirt_vv()
+{
+    
+    echo vv
+    exit
+}
+
 function fn_dirtio()
 {
     usage="
     SELECT dirtio           TT=t1 avri默认属表
     u                       print usage
+    v                       vol-vol
     l                       print iF5-list
     st                      print wolf-time-list
     i step                  start-offset mode
-    HMS1 HMS2 [wolf]        show close to diff
+    HMS1 HMS2 [wolf]        HMS3由{iHMS|HMS}指定
     COND='ri2>ri1 && hiri<9.93&&dirt<10'
     "
     case $1 in
     l) fn_list_iF5_times        ;;
     w) fn_list_wolf_times       ;;
     i) fn_dirt_interval ${@:2}  ;;
+    v) fn_dirt_vv       ${@:2}  ;;
     #  bash -n 检查下行时会报错，因shopt.-s.extglob
     +([0-9]))
         fn_isdigit $1
@@ -1910,6 +1920,60 @@ function fn_prop()
     mysql -t kts <<< "${sqls}"
 }
 
+function fn_tovprop()
+{
+    # tempday
+    [ -z "${HMS}" ] && {
+        HMS=`fn_get_time ${1}`
+        xt_ret $? "Please check data.dorat@${END}" || return $?
+        TEMPDAY=xtempday
+        FEN=${HMS} DAY=dorat fn_xtempday      # faster than sub-select
+        xt_ret $? "" || return $?
+    }
+
+    NUM=${NUM:-4}   # 2，与昨日比较是否放量
+    let CNT=NUM-1
+    PREV4=`fn_get_date ${NUM}`
+    sqls="
+    $CREATE tovprop LIKE tov8;
+    TRUNCATE tovprop;
+    INSERT INTO tovprop
+        SELECT code, sum(tov)/COUNT(code) as tov, sum(shou)/COUNT(code) as shou 
+        FROM dde WHERE date>='${PREV4}' and date<='${PREV}' 
+        GROUP by code 
+        ORDER by code ASC;
+
+    -- LEAST(1.25)是为了更加平滑
+    SELECT COUNT(d.code),ROUND(sum(LEAST(d.volume/t.shou, 1.25))/COUNT(d.code), 3)
+        FROM xtempday d, tovprop t WHERE d.code=t.code INTO @c_all, @propa;
+
+    SELECT 
+        COUNT(d.code) as num,
+        ROUND( sum(LEAST(d.volume/t.shou, @propa*1.25))/COUNT(d.code), 3) as prop
+        FROM xtempday d, tovprop t WHERE d.code=t.code && d.volume/t.shou>@propa 
+        INTO @nump, @propp;
+
+    UPDATE carbon SET propa=@propa, propp=@propp;
+    "
+    sqls_sufix="
+    SELECT
+        '${END}' as date,
+        '${iTime}' as time,
+        @c_all as num,
+        @propa as propa,    -- a is avrg
+        @nump as nump,
+        @propp as propp;    -- p is power
+
+    SELECT d.code,ROUND(d.volume/t.shou, 3) as prop 
+        FROM xtempday d, tovprop t WHERE d.code=t.code HAVING 1 ${COND} ORDER by prop DESC LIMIT 1;
+    "
+
+    [ "${PARTS:-o}" = o ] && sqls="${sqls}${sqls_sufix}"    # s silent, o output
+
+    #echo "${sqls}"; exit
+    mysql -t kts <<< "${sqls}"
+}
+
 function fn_flat()
 {
     ABS=$1      # 支持ABS以过滤反弹
@@ -2012,15 +2076,51 @@ function fn_stat()
     return $?
 }
 
+
+function fn_prop_proc()
+{
+    PARTS=s fn_tovprop
+    score="
+        ROUND(sum(LEAST(d.volume/v.shou/@propp, 5))/COUNT(t.code), 2) as prop,
+        ROUND(sum(tov/(1-top10))/COUNT(t.code), 2) as tov,
+        ROUND(sum(rise)/count(t.code)*.6  + 
+              sum(earn)/count(t.code)     +
+              ((count(t.code)-1)/3) + (sum(rise>=5)/3) +
+              (LEAST(sum(tov/(1-top10))/COUNT(t.code), 10)/2-3.5)+
+              ( sum(LEAST(d.volume/v.shou/@propp, 5))/COUNT(t.code) -2)*3
+             ,1) as score
+    "
+    PFROM="
+    FROM top8 t, tovprop v, xtempday d, top10 p
+    WHERE t.code=v.code && t.code=d.code && t.code=p.code
+    "
+
+    sqls_prop="
+    SELECT propa,propp FROM carbon INTO @propa,@propp;
+    SELECT d.code, ${RISE} as rise, @propa,@propp, volume, shou, volume/shou/@propp as prop
+    FROM xtempday d, tovprop v $WHERE d.code=v.code
+    ORDER by rise DESC LIMIT 10;
+    "
+
+    p_cond="prop>=1.7"
+}
+
 function fn_sample()
 {
     fn_yist && xWHERE=${WHERE}
 
     echo BLK is ${BLK}
     HMS=`fn_get_time $1`
-    iCOND="(high!=low||d.close/yesc<1.093) && d.close/yesc<1.15 && d.close/yesc>=1 ${cond5}" \
+    iCOND="(high!=low||d.close/yesc<1.093) && d.close/yesc<1.15 && d.close/yesc>=.985 ${cond5}" \
     FEN=${HMS} DAY=dorat fn_xtempday
     xt_ret $? "xtempday error" || return $?
+
+    score="
+        ROUND(sum(rise)/count(code)*.6  + 
+              sum(earn)/count(code)     +
+              ((count(code)-1)/3) + (sum(rise>=5)/3) ,1) as score
+    "
+    [ "${P}" = 1 ] && fn_prop_proc
 
     echo "
     $DROP topN;
@@ -2050,22 +2150,23 @@ function fn_sample()
 
     INSERT INTO top8
     SELECT * from topN a where ${SAMPLES}>(select count(*) from topN where blk=a.blk and rise>a.rise) order by a.blk,a.rise desc;
+
+    SELECT propa,propp FROM carbon INTO @propa,@propp;
     "
     sqls="${sqls_head}
-    SELECT hex(blk),sym, count(code) as SAMPLES,
-        ROUND(sum(rise)/count(code), 2) as rise,
-        ROUND(sum(earn)/count(code), 2) as earn,
-        ROUND(sum(rise)/count(code)*.6  + 
-              sum(earn)/count(code)     +
-              ((count(code)-1)/3) + (sum(rise>=5)/3) ,1) as score,
+    SELECT hex(blk),sym, count(t.code) as SAMPLES,
+        ROUND(sum(rise)/count(t.code), 2) as rise,
+        ROUND(sum(earn)/count(t.code), 2) as earn,
         sum(rise>=3) as clk3,
         sum(rise>=5) as clk5,
-        sum(rise>=${TEN:=9.93}) as click 
-        FROM top8
+        sum(rise>=${TEN:=9.93}) as click,
+        ${score}
+    ${PFROM:-FROM top8 t}
     GROUP by blk
-    HAVING 1 ${COND} ORDER by ${FIELD:=score} DESC LIMIT ${LIMIT:-20};
+    HAVING ${p_cond:-1} ${COND} ORDER by ${FIELD:=score} DESC LIMIT ${LIMIT:-20};
     "
 
+    #echo "${sqls}"; exit
     mysql -t kts <<< "${sqls}"
     xt_ret $? "" || return $?
 
@@ -2075,7 +2176,9 @@ function fn_sample()
 
     # fn_check_blk_abbr
     # 每个method有专用WIT，此默认作用2
-    WIT=1 LIMIT=10 PPLUS=N COND= FIELD= SELECT lsds ${1}
+    WIT=1 LIMIT=10 PPLUS=N COND= FIELD= fn_lsds ${1}
+
+    [ -n "${sqls_prop}" ] && mysql -t kts <<< "${sqls_prop}"
 }
 
 function fn_blk_delta()
@@ -2371,7 +2474,7 @@ function fn_blk()
     hot)
         #nmc_t=',cap c'; nmc_c='AND d.code=c.code AND nmc<100*10000';
         COND="AND SAMPLES>1" \
-        cond5="AND tov>=${vDOOR:-4}" \
+        cond5="AND tov>=${vDOOR:-3.5}" \
         xWHERE="${nmc_t} ,t_matov5 t WHERE d.code=t.code ${nmc_c} AND" \
         FIELD=${FIELD:-score} \
         BLK= fn_blk sample $2
@@ -2728,21 +2831,19 @@ function fn_notice()
 function fn_ddd()
 {
     case $1 in
-    hot)
-        iEND=${iEND:-1}
-        END=`fn_get_date ${iEND}`
+    bang)
         fn_echo_succ "上午封板@${END}"
-        PARTS=f chao2='lsd' CHAO=1 COND="rise>9.93" iASC=DESC HMS=12:00:00 vDOOR=3 PPLUS=V SELECT lsd 1
+        PARTS=f chao2='lsd' CHAO=1 COND="rise>9.93" iASC=DESC HMS=12:00:00 vDOOR=3 SELECT lsd 1
         xt_ret $? "" || return $?
 
         fn_echo_succ "下午开板@${END}"
-        COND="rise<9.93" YIST='/tmp/kts/chao.lsd' SELECT lsds
+                chao2=bang CHAO=1 COND="rise<9.93" YIST=${chao}.lsd SELECT lsd
 
-        let iCURR=iEND-1
-
-        [ "${iCURR}" -gt 0 ]        && \
-        fn_echo_succ "NEXT.表现"    && \
-        iEND=${iCURR} YIST='/tmp/kts/chao.lsd' SELECT lsds
+        if [ "${iEND:-1}" -gt 1 ] && [ `wc -l <${chao}.bang` -gt 0 ]; then
+            NEXT=`fn_get_next`
+            fn_echo_succ "NEXT.表现"
+            END=${NEXT} YIST=${chao}.bang SELECT lsd
+        fi
         ;;
     110)
         TYPE=${2:-e}
@@ -2800,7 +2901,7 @@ function fn_ddd()
     *)
         echo "
         XBB=1 SELECT ddd <para> # XBB=1使能xbb列
-        hot                     # 昨天破板，像秃鹰般咬食恐惧者的身体
+        bang                    # 上午封板显实力，下午开板显套利空间
         000                     # iEND=3 连续缩量[STEP=2]天
         110                     # 2阳1阴--打板小白收割机.rise前30分坚决下跌无诱多.high不创新高
         100                     # 1阳2阴--＞5亿
@@ -2864,18 +2965,38 @@ function fn_xtov()
 function fn_ma120()
 {
     PREV10=`fn_get_date 10`
+    PREV65=`fn_get_date 40`     # 13 weeks || 8 weeks
     PREV90=`fn_get_date 110`
-    sqls="
-    SELECT d.date, d.code, COUNT(d.code) as num, SUM(d.close>ma120*1.005) as excel, ${nmcYi}, c.name
-       FROM mat_ma120 as d, cap as c
-       WHERE d.code = c.code AND d.date>='${PREV90}' AND d.date<='${PREV10}' 
-       GROUP by code
-       HAVING num>30 AND excel<2 ${COND}
-       ORDER by code DESC LIMIT ${LIMIT:-2000}
-    "
-    #fn_imysql_sqls | fn_hew_tail; exit
-    CHAO=1 fn_chao ${chao}.120
-    fn_echo_succ "gen ma120 @${PREV90}~${PREV10} succ..."
+
+    if [ "${1}" = 20 ]; then
+        iTime=`fn_get_time ${2}`
+        FEN=${iTime} DAY=dorat fn_xtempday
+        xt_ret $? "" || return $?
+        sqls="
+        SELECT d.date, d.code, d.close, ${RISE} as rise, max(ma20) as max20, ${nmcTp} as nmc, c.name
+           FROM mat_ma120 as m, cap as c, xtempday d, top10 t
+           WHERE m.code=t.code AND m.code=c.code AND m.code=d.code AND (d.high!=d.low||d.close/yesc<1.093) AND
+                 m.date>='${PREV65}' AND m.date<'${END}' AND ${nmcTp}<=60
+           GROUP by code
+           HAVING close>max20 ${COND}
+           ORDER by ${FIELD:-rise} DESC LIMIT ${LIMIT:-20}
+        "
+        fn_imysql_sqls | fn_hew_tail
+        CHAO=1 fn_chao ${chao}.20
+        fn_echo_succ "gen max20 @${END}.${iTime} succ..."
+    else
+        sqls="
+        SELECT d.date, d.code, COUNT(d.code) as num, SUM(d.close>ma120*1.005) as excel, ${nmcYi}, c.name
+           FROM mat_ma120 as d, cap as c
+           WHERE d.code = c.code AND d.date>='${PREV90}' AND d.date<='${PREV10}' 
+           GROUP by code
+           HAVING num>30 AND excel<2 ${COND}
+           ORDER by code DESC LIMIT ${LIMIT:-2000}
+        "
+        #fn_imysql_sqls | fn_hew_tail; exit
+        CHAO=1 fn_chao ${chao}.120
+        fn_echo_succ "gen ma120 @${PREV90}~${PREV10} succ..."
+    fi
 }
 
 function fn_xii()
@@ -2927,7 +3048,7 @@ function fn_main()
     "dorat                                    # 分时数据iF5"
     "stat                                     # 大盘统计"
     "xRD                FIELD                 # #{OP:->}"
-    "dirtio                                   # diff(dorat)"
+    "dirtio             HMS1 HMS2             # diff(dorat), HMS3由{iHMS|HMS}指定"
     #cap                code                  # 查询nmc&cap"
     #name               code                  # 名"
     #pma                code                  # NUM=5日平均"
@@ -2961,6 +3082,7 @@ function fn_main()
     "blk                                      # 板块信息+涨幅统计"
     "ma120                                    # 超跌-list"
     "prop               iF5                   # 大tov.prop"
+    "tovprop            iF5                   # 全tov.prop"
     "scale                                    # HMS= 可指定时间"
     "notice                                   # 公告"
     "seq                                      # 涨停顺序"

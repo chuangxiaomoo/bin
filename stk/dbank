@@ -48,6 +48,7 @@ HIRI='ROUND(100*(d.high-d.yesc)/d.yesc, 2)'
 OPRI='ROUND(100*(d.open-d.yesc)/d.yesc, 2)'
 RISE='ROUND(100*(d.close-d.yesc)/d.yesc, 2)'
 APPLE='ROUND(100*(x.close-x.yesc)/x.yesc, 1)'
+nmcTp='ROUND(c.nmc/10000*(1-top10), 1)'
 nmcYi='ROUND(c.nmc/10000, 1) as nmcYi'
 # ${nmcYi0%as*} 去as
 nmcYi0='ROUND(nmc*d.close/c.close/10000, 1) as nmcYi'

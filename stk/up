@@ -806,6 +806,7 @@ function fn_chk_rank()
     if [ "${hhmm}" -lt 920 ]; then              # 复牌检查
         return
     elif [ "${hhmm}" -lt 930 ]; then            # 昨日涨停
+        mysql kts <<< "DELETE FROM dorat WHERE date='${END}' and time<'09:24:00'";
         ./blk 10jqka
         WIT=3 END= iEND=2 COND="rise>=9.93" PARTS=f PPLUS=G SELECT lsds || fn_bell
         fn_bell; return
@@ -814,12 +815,12 @@ function fn_chk_rank()
     fi
 
     # 刷新DZH
-    PARTS=f COND="tov5<5 && rise+space>5" PPLUS=G SELECT lsds || exit
+    WIT=2 YIST=/tmp/kts/chao.120 PPLUS=G SELECT lsds || exit
     WIT=1 PPLUS=K kCOND="rise+space>5" SELECT lsds ${icurr} || exit
 
     # 设置阈值、上限、下限，!取反
     thrx=-5
-    upper=10
+    upper=14
     lower=40
     sqls="WHERE date='${END}' ORDER by rise ASC LIMIT 100 "
     sqls="(SELECT code, ROUND(100*(d.close-d.yesc)/d.yesc, 2) as rise FROM day d ${sqls})"
@@ -1667,17 +1668,13 @@ function fn_autoxRD()
     }
     fn_iscode $1 && { fn_xRD0 $1; exit 0 ;}
 
-   #bat-mode
-   #last_xRD=`mysql -N kts <<< "SELECT max(date) FROM tbl_xRDdate"`
-   #xt_ret $? "" || return $?
-   #song_ratio>0
-   #sqls="SELECT code FROM xRD WHERE song_ratio>0 && date>'${last_xRD}' and date<='${date_F}' ORDER by date ASC"
-    
     [ "${date_T//:/}" -gt 092500 ]
     xt_ret $? "Too early @${date_T}" || return $?
 
+    # 指定iEND时，补充过往除权
+    [ "${iEND:-1}" -ne 1 ] && date_F=${END}
+    fn_echo_succ  "xRD @${date_F}..."
     sqls="SELECT code FROM xRD WHERE song_ratio>0 AND date='${date_F}' ORDER by date ASC"
-   #xfile=${chao}.xfail
     xfile=${chao}.xlist
     mysql -N kts <<< "${sqls}" > ${chao}.xlist
 
@@ -1690,7 +1687,7 @@ function fn_autoxRD()
     done
 
     echo "
-    INSERT INTO tbl_xRDdate (date) VALUES('${date_T}');
+    INSERT INTO xRDdate (date) VALUES('${date_F}');
     " | mysql kts
     xt_ret $? "mysql" || return $?
 
