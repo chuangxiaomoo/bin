@@ -24,6 +24,16 @@ function fn_ls()
 	" | mysql -t kts
 }
 
+
+function fn_lsf()
+{
+    cols='date,time,code,yesc,open,high,low,close,volume,ROUND(amount/10000,2) as eYi'
+    echo "
+    SELECT ${cols} FROM dorat WHERE date='${END}' AND code=${1} ORDER by time ASC LIMIT ${LIMIT:-36}
+    " | mysql -t kts
+    return $?
+}
+
 function fn_update_mavol5()
 {
     # 切换日期，则确保OK
@@ -90,7 +100,7 @@ function fn_pro_hammer()
     pwr_t10="IF(top10<.1, 1, .95/(1-top10))"
     pwr_nmc="IF(${nmc0}/${pwr_t10}-30<100, ${nmc0}/${pwr_t10}-30, 100)/12"
 
-    sql_ma60="ROUND(100*(ma5/ma10-1), 1) as ma60"
+    sql_ma20="ROUND(100*(d.close/ma20-1), 1) as ma20"
     columns="d.code"
 
     fn_pro_spacer || \
@@ -110,7 +120,7 @@ function fn_pro_hammer()
             ROUND( t5.tov*$pwr_t10 +${pwr_dy5} -100*${REALIZED2} 
                    -${pwr_nmc} +${pwr_vax} +${BOOST}, 1) as space,
             CONCAT(ROUND(${_VAX}, 1), '_',ROUND(${pwr_vax}))as vax,
-            ${sql_ma60},
+            ${sql_ma20},
             round(d.amount/10000, 2) as eYi,
             ${nmcYi}, c.name
             FROM ${TEMPDAY:-day} d, cap c, t_matov5 t5, mat_ma1020 m, top10 p
@@ -146,15 +156,15 @@ function fn_pro_wolves()
             ${ROCKET} as i_dy,
             $TURNOV as tov, t5.tov as tov5,
             ROUND(${pwr_dy5},1) as PWR5,
-            ROUND((${pwr_t10}-1)*t5.tov,1) as TP10,    # _line_for_wolf_
+--          ROUND((${pwr_t10}-1)*t5.tov,1) as TP10,    # _line_for_wolf_
 --          ROUND(-${pwr_nmc}, 1) as _NMC,
             concat(ROUND(${nmc0}*(1-top10)/100,2), '_', top10, '_', ROUND(${REALIZED2}, 2)) as nmc_tp10_rliz,
-            CONCAT(ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2), '_',ROUND(${BOOST},1) ) as prop5BOO,
+            CONCAT(LEAST(9.99,ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2)), '_',ROUND(${BOOST},1) ) as prop5BOO,
             $RISE as rise,
             ROUND( t5.tov*${pwr_t10} +${pwr_dy5} -100*${REALIZED2} 
                    -${pwr_nmc} +${pwr_vax} +${BOOST}, 1) as space,
             CONCAT(ROUND(${_VAX}, 1), '_',ROUND(${pwr_vax}))as vax,
---          ${sql_ma60},
+--          ${sql_ma20},
 --          CONCAT(IF(net>0,'+','-'), round(abs(net)/w.tov, 2),'_',ROUND((pbuy+nbuy)/w.tov, 2)) as wolf,
             ROUND((pbuy+nbuy)/w.tov, 2) as wolf, ROUND(net/w.tov, 2) as pet,
             round(d.amount/10000, 1) as eYi,
@@ -179,14 +189,14 @@ function fn_pro_spacer()
             ${ROCKET} as i_dy,
             $TURNOV as tov, t5.tov as tov5,
             ROUND(${pwr_dy5},1) as PWR5,
-            ROUND((${pwr_t10}-1)*t5.tov,1) as TP10,
+--          ROUND((${pwr_t10}-1)*t5.tov,1) as TP10,
             ROUND(-${pwr_nmc}, 1) as _NMC,
             concat(ROUND(${nmc0}*(1-top10)/100,2), '_', top10, '_', ROUND(${REALIZED2}, 2)) as nmc_tp10_rliz,
-            CONCAT(ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2), '_',ROUND(${BOOST},1) ) as prop5BOO,
+            CONCAT(LEAST(9.99,ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2)), '_',ROUND(${BOOST},1) ) as prop5BOO,
             $RISE as rise,
             ROUND( t5.tov*${pwr_t10} +${pwr_dy5} -100*${REALIZED2} 
                    -${pwr_nmc} +${pwr_vax} +${BOOST}, 1) as space,
-            ${sql_ma60},
+            ${sql_ma20},
          -- d.close,ma60,
          -- ROUND(100*(m.trade/ma5-1), 1) as ma5,
             CONCAT(ROUND(${_VAX}, 1), '_',ROUND(${pwr_vax}))as vax,
@@ -544,19 +554,11 @@ function fn_dirt_interval()
 }
 
 
-function fn_dirt_vv()
-{
-    
-    echo vv
-    exit
-}
-
 function fn_dirtio()
 {
     usage="
     SELECT dirtio           TT=t1 avri默认属表
     u                       print usage
-    v                       vol-vol
     l                       print iF5-list
     st                      print wolf-time-list
     i step                  start-offset mode
@@ -567,7 +569,6 @@ function fn_dirtio()
     l) fn_list_iF5_times        ;;
     w) fn_list_wolf_times       ;;
     i) fn_dirt_interval ${@:2}  ;;
-    v) fn_dirt_vv       ${@:2}  ;;
     #  bash -n 检查下行时会报错，因shopt.-s.extglob
     +([0-9]))
         fn_isdigit $1
@@ -1564,18 +1565,6 @@ function fn_list_wolf_times()
 function fn_enum_wolf_times()
 {
     mysql -N kts<<< "SELECT DISTINCT time FROM mat_dde WHERE date='${END}' ORDER by time DESC" | wc -l
-}
-
-function fn_list_iF5_times()
-{
-    sqls="SELECT DISTINCT time FROM dorat WHERE date='${END}' ORDER by time ${iASC:-ASC}"
-    OPT='-N' fn_imysql_sqls > ${chao}.iF5
-    sed -n  '1,40p' ${chao}.iF5 | cat -n > ${chao}.p1
-    sed -n '41,80p' ${chao}.iF5 | cat -n > ${chao}.p2
-    sed -n  '81,$p' ${chao}.iF5 | cat -n > ${chao}.p3
-    join -t $'\t' -a1 -o  1.1 1.2 1.3           2.2 2.3 ${chao}.p1  ${chao}.p2 > ${chao}.p12
-    join -t $'\t' -a1 -o      1.2 1.3 1.4 1.5   2.2 2.3 ${chao}.p12 ${chao}.p3
-    exit 1
 }
 
 function fn_proc_eCOND_scale()
@@ -2587,7 +2576,7 @@ function fn_blk()
         SELECT blk <param>    # 注：使用HAVING向<SELECT lsd>传递条件
         l                     # layout
         d|delta u|d|us iF5    # 指数涨幅贡献：做差&显示layout&追加BLK的个股细节
-        sample  iF5           # 价角度：只统计前10涨幅
+        sample  iF5           # 价角度：只统计前10涨幅 P=1放量追踪
         hot     iF5           # sample+tov5(vDOOR)
         10      iF5           # 价角度：涨停板概念分类 {DOOR:-10}，查讯iF5: SELECT lsd l
         wolf  [E|a|BLK] iF5   # 能角度：
@@ -2964,9 +2953,9 @@ function fn_xtov()
 
 function fn_ma120()
 {
-    PREV10=`fn_get_date 10`
+    PREV10=`fn_get_date 13`
     PREV65=`fn_get_date 40`     # 13 weeks || 8 weeks
-    PREV90=`fn_get_date 110`
+    PREV90=`fn_get_date 105`    # 21 weeks
 
     if [ "${1}" = 20 ]; then
         iTime=`fn_get_time ${2}`
@@ -3033,6 +3022,74 @@ function fn_seq()
     " | mysql -t kts
 }
 
+function fn_volvo()
+{
+
+    case $1 in
+    p)  P=1 fn_volvo ${@:2} ;;
+    l)  fn_list_iF5_times   ;;
+    e)  sqls="SELECT DISTINCT time FROM mat_vcdif WHERE date='${END}'"
+        mysql -N kts <<<"${sqls}" > ${chao}.volvo.e
+        SELECT lsd l | grep --color -f ${chao}.volvo.e
+        ;;
+    c)
+        fn_iscode $2
+        xt_ret $? "code[$2]" || return $?
+        sqls_pro="SELECT yesc FROM day WHERE date='${END}' AND code=${2} INTO @yesc;"
+        sqls="
+        SELECT m.*, vol1,vol2,volvo,gate, ROUND(100*cdiff/@yesc,2) as rif4
+        FROM volvo v, mat_vcdif m WHERE v.code=m.code AND m.date='${END}' AND m.code=${2} ORDER by time ASC 
+        "
+        fn_imysql_sqls
+        ;;
+    [0-9]*|'')
+        HMS=`fn_get_time ${1}`
+        FEN=${HMS} DAY=dorat fn_xtempday      # faster than sub-select
+        cols='m.time,m.code,vol1,vol2,volvo,gate'
+
+        if [ "${P}" = 1 ]; then
+            fn_isF4 ${HMS} && COND="${COND} AND time='${HMS}'&&nmc>=2" || { fn_echo_fail "notF4"; exit ;}
+        fi
+
+        sqls="
+        SELECT ${cols}, 
+            ROUND(volvo/gate, 2) as vPct,
+            vdiff,
+            ROUND(100*cdiff/yesc, 2) as rif4,
+            ${RISE} as rise,
+            ROUND(SUM(adiff)/10000,2) as eSum,
+            ROUND(d.amount/10000, 1) as eYi,
+            ROUND(sum(adiff)/d.amount,2) as ePct,
+            COUNT(m.code) as num, 
+            ROUND(${nmc0}*(1-top10)/100,2) as nmc, c.name
+            FROM volvo v, xtempday d, cap c, top10 p,
+                 (SELECT * FROM mat_vcdif WHERE date='${END}' && time<='${HMS}' ORDER by time DESC) m
+            WHERE v.code=m.code AND v.code=d.code AND v.code=c.code AND v.code=p.code AND 
+            high!=low AND (cdiff/yesc>=.006 || (m.close-yesc)/yesc>=.06)              -- SCREENER volvo make [cdiff>=0]
+            GROUP by v.code
+            HAVING 1 ${COND}
+            ORDER by ${FIELD:-num} DESC LIMIT ${LIMIT:-24}
+        "
+        fn_imysql_sqls | fn_hew_tail
+        fn_echo_succ "${END}.${HMS} FIELD:${FIELD:-num}"
+        ;;
+    *|usage)
+        echo "
+        SELECT volvo
+        iF5             # full
+        f4              # single F4
+        e               # exist iF5 list
+        c   code        # code
+        p               # 当下F4进行突破
+        u               # usage
+        "
+        ;;
+    esac
+
+    exit
+
+}
+
 function fn_main()
 {
     cmdlist=(
@@ -3067,6 +3124,7 @@ function fn_main()
     #ace                sta num               # 10日内所有+10% amount nmc 统计 [SELECT wolf top]"
     #g20                                      # 创20日新高"
     "ls                 {code|symbol}         # 日线数据 \$LIMIT"
+    "lsf                code                  # 分时数据"
     "lsd                [{top|floor}][FIELD]  # --- END YIST LIMIT 涨幅排名"
     "lsdh                                     # lsd-hammer-无space细节"
     "lsds                                     # lsd-spacer-有space细节"
@@ -3084,6 +3142,7 @@ function fn_main()
     "prop               iF5                   # 大tov.prop"
     "tovprop            iF5                   # 全tov.prop"
     "scale                                    # HMS= 可指定时间"
+    "volvo                                    # 联合查询"
     "notice                                   # 公告"
     "seq                                      # 涨停顺序"
     "ddd                                      # 连续缩量后放量"

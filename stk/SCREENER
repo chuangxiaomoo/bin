@@ -1237,6 +1237,94 @@ function fn_std()
     mysql -t kts <<< "${sqls}"
 }
 
+function fn_up_volvo()
+{
+    HMS1=09:34:30; HMS2=09:38:30
+   #HMS1=09:36:30; HMS2=09:42:30
+
+    vol1='vol1*.8'
+    VOL1=`iASC=DESC HMS=$HMS1 fn_get_time 1`
+    VOL2=`iASC=DESC HMS=$HMS2 fn_get_time 1`
+    PREV3=`fn_get_date 3`
+
+    echo $VOL1 $VOL2
+    echo "
+    DROP TABLE IF EXISTS volvo;
+    CREATE TABLE IF NOT EXISTS volvo (
+        date        date NOT NULL, 
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        vol1        DECIMAL(12,2) NOT NULL,
+        vol2        DECIMAL(12,2) NOT NULL,
+        volvo       DECIMAL(12,2) NOT NULL,
+        gate        DECIMAL(12,2) NOT NULL,
+        INDEX(code)
+    );
+    INSERT INTO volvo(date,code,vol1)
+        SELECT date,code,volume FROM dorat WHERE date='${END}' and time='${VOL1}';
+    UPDATE volvo v1, (SELECT date,code,volume FROM dorat WHERE date='${END}' and time='${VOL2}') v2
+        SET v1.vol2=v2.volume-v1.vol1 WHERE v1.code=v2.code;
+    UPDATE volvo SET volvo=IF(${vol1}>vol2, ${vol1}*.4+vol2*.6, ${vol1}*.6+vol2*.4);                     -- big*.4 + samll*.6
+    UPDATE volvo SET gate =IF(${vol1}>vol2, ${vol1}*.4+vol2*.6, ${vol1}*.6+vol2*.4)*4;                   -- big*.4 + samll*.6
+    UPDATE volvo v1, (SELECT code,sum(volume)/2 as volume2
+        FROM day WHERE date>='$PREV3' && date<='$PREV' GROUP by code) v2
+        SET v1.gate=v2.volume2/60*4 WHERE v1.code=v2.code;                                               -- 2倍属正常，4倍则放量
+    " | mysql kts
+    return $?
+}
+
+function fn_volvo()
+{
+    fn_isdigit ${1} || { fn_echo_succ "Usage:  SCREENER volvo iF5"; fn_list_iF5_times ;}
+
+    if [ `mysql -N kts <<< "SELECT date FROM volvo LIMIT 1"` = ${END} ]; then
+        fn_echo_warn "Skip update volvo"; # fn_up_volvo
+    else
+        fn_echo_succ "Goto update volvo"; fn_up_volvo
+    fi
+    
+    iVOL1=${1:-`fn_get_nr_time`}
+    HMS1=`iASC=ASC fn_get_time ${iVOL1}`
+
+    if fn_isF4 ${HMS1}; then
+        fn_echo_succ  yes ${HMS1}
+    else
+        fn_echo_fail  no  ${HMS1}; return
+    fi
+
+    let iVOL2=iVOL1-2
+    HMS2=`iASC=ASC fn_get_time ${iVOL2}`
+   #echo ${HMS1} ${HMS2}; exit
+
+    echo "
+--  DROP    TABLE IF EXISTS mat_vcdif;
+    CREATE  TABLE IF NOT EXISTS mat_vcdif (
+        date        date NOT NULL,
+        time        time NOT NULL,
+        code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+        close       DECIMAL(6,2) NOT NULL,
+        cdiff       DECIMAL(6,2) NOT NULL,
+        vdiff       DECIMAL(12,2) NOT NULL,
+        adiff       DECIMAL(12,2) NOT NULL,
+        INDEX(date,time,code)
+    );
+    CREATE TEMPORARY TABLE vcdif LIKE mat_vcdif;
+
+    INSERT INTO vcdif(date,time,code,close,cdiff,vdiff,adiff)
+        SELECT '${END}','${HMS1}', t1.code, t1.close, t1.close-t2.close, t1.volume-t2.volume, t1.amount-t2.amount FROM
+            (SELECT code,yesc,close,volume,amount FROM dorat WHERE date='${END}' and time='${HMS1}') t1,
+            (SELECT code,yesc,close,volume,amount FROM dorat WHERE date='${END}' and time='${HMS2}') t2
+        WHERE t1.code=t2.code;
+
+    DELETE FROM mat_vcdif WHERE date='${END}' and time='${HMS1}';
+    INSERT INTO mat_vcdif(date,time,code,close,cdiff,vdiff,adiff)
+        SELECT d.* FROM vcdif d, volvo v
+        WHERE d.code=v.code AND d.cdiff>=0 AND d.vdiff>=v.gate AND v.volvo<v.gate;
+    " | mysql -t kts
+    fn_echo_succ "volvo @${END}.${HMS1}"
+
+    exit
+}
+
 function fn_main()
 {
     cmdlist=(
@@ -1260,6 +1348,7 @@ function fn_main()
     "std                                      # 分时数据的STD"
     "dde                {l|e}                 # db201数据"
     "lohi               {l|e|d|iEND}          # #{YIST}下跌幅度计算"
+    "volvo              {l|e|d|iEND}          # volvo筛选"
     "matov5             {l|e|d|iEND}          # maval5"
     "ma1020             {l|e|d|iEND}          # t5.tov>3.5"
     "ma120              {l|e|d|iEND}          # ma20+ma120"

@@ -820,12 +820,12 @@ function fn_chk_rank()
 
     # 设置阈值、上限、下限，!取反
     thrx=-5
-    upper=14
-    lower=40
-    sqls="WHERE date='${END}' ORDER by rise ASC LIMIT 100 "
+    left=10
+    right=20
+    sqls="WHERE date='${END}' ORDER by rise ASC"
     sqls="(SELECT code, ROUND(100*(d.close-d.yesc)/d.yesc, 2) as rise FROM day d ${sqls})"
     dive=`mysql -N kts <<< "SELECT SUM(rise<${thrx}) FROM ${sqls} as t"`
-    if ! ([ "${dive}" -gt ${upper} ] && [ "${dive}" -lt ${lower} ]); then
+    if ([ "${dive}" -gt ${left} ] && [ "${dive}" -lt ${right} ]); then
         fn_bell duang.wav
     fi
 
@@ -865,7 +865,8 @@ function fn_chk_rank()
 
     # 检查是否禁用beep，有闯入者，告警
     [ "`cat /tmp/kts/chao.beep`" = 0 ] && BEEPS=0
-    [ "${match:-0}" -eq 1 ] && \
+    [ "${match:-0}" -eq 0 ] && BEEPS=0
+
     PREFIX="Tops[${ceilings}]Dive${thrx}[${dive}]" BEEPS=${BEEPS} fn_beep "L1:${birds1}L2:${birds2}"
 }
 
@@ -1662,10 +1663,17 @@ function fn_xRD0()
 
 function fn_autoxRD()
 {
-    [ "${2}" = xRD ] && {
+    if [ "${1}" = e ]; then
+        mysql -N kts <<< "SELECT date FROM xRDdate ORDER by date DESC LIMIT 5" > ${chao}.autoxRD
+        SELECT list_date | grep --color -f ${chao}.autoxRD
+        exit
+    fi
+
+    if [ "${2}" = xRD ]; then
         fn_xRDdb
         xt_ret $? "" || return $?
-    }
+    fi
+
     fn_iscode $1 && { fn_xRD0 $1; exit 0 ;}
 
     [ "${date_T//:/}" -gt 092500 ]
