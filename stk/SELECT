@@ -2965,12 +2965,12 @@ function fn_ma120()
         SELECT d.date, d.code, d.close, ${RISE} as rise, max(ma20) as max20, ${nmcTp} as nmc, c.name
            FROM mat_ma120 as m, cap as c, xtempday d, top10 t
            WHERE m.code=t.code AND m.code=c.code AND m.code=d.code AND (d.high!=d.low||d.close/yesc<1.093) AND
-                 m.date>='${PREV65}' AND m.date<'${END}' AND ${nmcTp}<=60
+                 m.date>='${PREV65}' AND m.date<'${END}' AND ${nmcTp}<=90
            GROUP by code
-           HAVING close>max20 ${COND}
-           ORDER by ${FIELD:-rise} DESC LIMIT ${LIMIT:-20}
+           HAVING close*1.0382>=max20 ${COND}
+           ORDER by ${FIELD:-rise} DESC LIMIT ${LIMIT:-1000}
         "
-        fn_imysql_sqls | fn_hew_tail
+        # fn_imysql_sqls | fn_hew_tail
         CHAO=1 fn_chao ${chao}.20
         fn_echo_succ "gen max20 @${END}.${iTime} succ..."
     else
@@ -3031,13 +3031,14 @@ function fn_volvo()
     e)  sqls="SELECT DISTINCT time FROM mat_vcdif WHERE date='${END}'"
         mysql -N kts <<<"${sqls}" > ${chao}.volvo.e
         SELECT lsd l | grep --color -f ${chao}.volvo.e
+        fn_echo_succ "F2-list @${END}"
         ;;
     c)
         fn_iscode $2
         xt_ret $? "code[$2]" || return $?
         sqls_pro="SELECT yesc FROM day WHERE date='${END}' AND code=${2} INTO @yesc;"
         sqls="
-        SELECT m.*, vol1,vol2,volvo,gate, ROUND(100*cdiff/@yesc,2) as rif4
+        SELECT m.*, vol1,vol2,volvo,gate, ROUND(vdiff/gate,2) as gPct, ROUND(100*cdiff/@yesc,2) as rif4
         FROM volvo v, mat_vcdif m WHERE v.code=m.code AND m.date='${END}' AND m.code=${2} ORDER by time ASC 
         "
         fn_imysql_sqls
@@ -3045,7 +3046,8 @@ function fn_volvo()
     [0-9]*|'')
         HMS=`fn_get_time ${1}`
         FEN=${HMS} DAY=dorat fn_xtempday      # faster than sub-select
-        cols='m.time,m.code,vol1,vol2,volvo,gate'
+        cols='m.code,m.time,vol1,vol2,volvo,gate'
+        ABBR=v fn_yist
 
         if [ "${P}" = 1 ]; then
             fn_isF4 ${HMS} && COND="${COND} AND time='${HMS}'&&nmc>=2" || { fn_echo_fail "notF4"; exit ;}
@@ -3063,15 +3065,16 @@ function fn_volvo()
             COUNT(m.code) as num, 
             ROUND(${nmc0}*(1-top10)/100,2) as nmc, c.name
             FROM volvo v, xtempday d, cap c, top10 p,
-                 (SELECT * FROM mat_vcdif WHERE date='${END}' && time<='${HMS}' ORDER by time DESC) m
-            WHERE v.code=m.code AND v.code=d.code AND v.code=c.code AND v.code=p.code AND 
+                 (SELECT * FROM mat_vcdif WHERE date='${END}' && time<='${HMS}' ORDER by time ${iASC:-DESC}) m
+            $WHERE v.code=m.code AND v.code=d.code AND v.code=c.code AND v.code=p.code AND (${OP}(vdiff>=gate)) AND
             high!=low AND (cdiff/yesc>=.006 || (m.close-yesc)/yesc>=.06)              -- SCREENER volvo make [cdiff>=0]
             GROUP by v.code
             HAVING 1 ${COND}
-            ORDER by ${FIELD:-num} DESC LIMIT ${LIMIT:-24}
+            ORDER by ${FIELD:-rise} DESC LIMIT ${LIMIT:-24}
         "
         fn_imysql_sqls | fn_hew_tail
-        fn_echo_succ "${END}.${HMS} FIELD:${FIELD:-num}"
+        fn_echo_succ "${END}.${HMS} FIELD:${FIELD:-rise}"
+        fn_chao ${chao}.volvo
         ;;
     *|usage)
         echo "
@@ -3138,11 +3141,11 @@ function fn_main()
     "wolf                                     # DDE"
     "xtov                                     # 放量情况"
     "blk                                      # 板块信息+涨幅统计"
-    "ma120                                    # 超跌-list"
+    "ma120              [20]                  # 超跌-list，参数20时，close＞60内所有ma20的主升模式"
     "prop               iF5                   # 大tov.prop"
     "tovprop            iF5                   # 全tov.prop"
     "scale                                    # HMS= 可指定时间"
-    "volvo                                    # 联合查询"
+    "volvo                                    # 联合查询[iASC指定time.GROUP排序，默认DESC]"
     "notice                                   # 公告"
     "seq                                      # 涨停顺序"
     "ddd                                      # 连续缩量后放量"

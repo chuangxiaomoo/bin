@@ -1239,6 +1239,12 @@ function fn_std()
 
 function fn_up_volvo()
 {
+    if [ `mysql -N kts <<< "SELECT date FROM volvo LIMIT 1"` != ${END} ]; then
+        fn_echo_succ "Goto update volvo @${END}";
+    else
+        return 0
+    fi
+
     HMS1=09:34:30; HMS2=09:38:30
    #HMS1=09:36:30; HMS2=09:42:30
 
@@ -1247,7 +1253,6 @@ function fn_up_volvo()
     VOL2=`iASC=DESC HMS=$HMS2 fn_get_time 1`
     PREV3=`fn_get_date 3`
 
-    echo $VOL1 $VOL2
     echo "
     DROP TABLE IF EXISTS volvo;
     CREATE TABLE IF NOT EXISTS volvo (
@@ -1263,37 +1268,55 @@ function fn_up_volvo()
         SELECT date,code,volume FROM dorat WHERE date='${END}' and time='${VOL1}';
     UPDATE volvo v1, (SELECT date,code,volume FROM dorat WHERE date='${END}' and time='${VOL2}') v2
         SET v1.vol2=v2.volume-v1.vol1 WHERE v1.code=v2.code;
-    UPDATE volvo SET volvo=IF(${vol1}>vol2, ${vol1}*.4+vol2*.6, ${vol1}*.6+vol2*.4);                     -- big*.4 + samll*.6
-    UPDATE volvo SET gate =IF(${vol1}>vol2, ${vol1}*.4+vol2*.6, ${vol1}*.6+vol2*.4)*4;                   -- big*.4 + samll*.6
-    UPDATE volvo v1, (SELECT code,sum(volume)/2 as volume2
+    UPDATE volvo SET volvo=IF(${vol1}>vol2, ${vol1}*.4+vol2*.6, ${vol1}*.6+vol2*.4);                    -- big*.4 + samll*.6
+    UPDATE volvo SET gate =IF(${vol1}>vol2, ${vol1}*.4+vol2*.6, ${vol1}*.6+vol2*.4)*4;                  -- big*.4 + samll*.6
+    UPDATE volvo v1, (SELECT code,sum(volume)/32 as volume2                                             -- 32 = 1/128 * 4倍则放量
         FROM day WHERE date>='$PREV3' && date<='$PREV' GROUP by code) v2
-        SET v1.gate=v2.volume2/60*4 WHERE v1.code=v2.code;                                               -- 2倍属正常，4倍则放量
+        SET v1.gate=v2.volume2 WHERE v1.code=v2.code;
     " | mysql kts
     return $?
 }
 
 function fn_volvo()
 {
-    fn_isdigit ${1} || { fn_echo_succ "Usage:  SCREENER volvo iF5"; fn_list_iF5_times ;}
+    case $1 in
+      u)fn_up_volvo   ; exit ;;
+      e)SELECT volvo e; exit ;;
+      d)mysql -N kts <<< "DELETE FROM mat_vcdif WHERE date='${END}'"
+        fn_echo_succ "succ: DELETE FROM mat_vcdif WHERE date='${END}'"
+        exit ;;
+      x)fn_volvo `fn_get_nr_time`; exit ;;
+      a)iHMS=`mysql -N kts <<< "SELECT max(time) FROM mat_vcdif WHERE date='${END}'"|sed 's/NULL/09:40:00/g'`
+        sta=`HMS=${iHMS} fn_get_nr_time`
+        end=`fn_get_nr_time`
+        let sta=${sta:-6}+1
 
-    if [ `mysql -N kts <<< "SELECT date FROM volvo LIMIT 1"` = ${END} ]; then
-        fn_echo_warn "Skip update volvo"; # fn_up_volvo
-    else
-        fn_echo_succ "Goto update volvo"; fn_up_volvo
-    fi
+        #echo ${END} ${iHMS} ${sta} ${end}; exit
+
+        local i
+        for (( i=$sta; i<=$end; i+=1 )); do
+            fn_volvo $i
+        done
+        exit ;;
+      *)fn_isdigit ${1} || { fn_echo_succ "Usage:  SCREENER volvo {a|d|e|u|iF5}"; fn_list_iF5_times ;}
+        ;;
+    esac
+
+    fn_up_volvo
+    xt_ret $? "" || return $?
     
-    iVOL1=${1:-`fn_get_nr_time`}
+    iVOL1=${1}
     HMS1=`iASC=ASC fn_get_time ${iVOL1}`
 
     if fn_isF4 ${HMS1}; then
-        fn_echo_succ  yes ${HMS1}
+        fn_echo_succ yes ${HMS1}
     else
-        fn_echo_fail  no  ${HMS1}; return
+           echo      no  ${HMS1}; return
     fi
 
     let iVOL2=iVOL1-2
     HMS2=`iASC=ASC fn_get_time ${iVOL2}`
-   #echo ${HMS1} ${HMS2}; exit
+    #echo ${HMS1} ${HMS2}; exit
 
     echo "
 --  DROP    TABLE IF EXISTS mat_vcdif;
@@ -1318,11 +1341,9 @@ function fn_volvo()
     DELETE FROM mat_vcdif WHERE date='${END}' and time='${HMS1}';
     INSERT INTO mat_vcdif(date,time,code,close,cdiff,vdiff,adiff)
         SELECT d.* FROM vcdif d, volvo v
-        WHERE d.code=v.code AND d.cdiff>=0 AND d.vdiff>=v.gate AND v.volvo<v.gate;
+        WHERE d.code=v.code AND d.cdiff>=0 AND d.vdiff>=0.75*v.gate AND v.volvo<v.gate;
     " | mysql -t kts
     fn_echo_succ "volvo @${END}.${HMS1}"
-
-    exit
 }
 
 function fn_main()

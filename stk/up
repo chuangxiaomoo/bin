@@ -805,14 +805,15 @@ function fn_chk_rank()
 
     if [ "${hhmm}" -lt 920 ]; then              # 复牌检查
         return
-    elif [ "${hhmm}" -lt 930 ]; then            # 昨日涨停
+    elif [ "${hhmm}" -lt 930 ]; then
         mysql kts <<< "DELETE FROM dorat WHERE date='${END}' and time<'09:24:00'";
         ./blk 10jqka
+        fn_echo_blue "昨日涨停->自选股3.BLK"
         WIT=3 END= iEND=2 COND="rise>=9.93" PARTS=f PPLUS=G SELECT lsds || fn_bell
         fn_bell; return
-    elif [ ${hhmm} -eq 1000 ]; then
-        fn_bell tweet.wav tweet.wav             # 创业板vs.HS300 db201, 每周要重启一次按键精灵防阻塞
     fi
+
+    SCREENER volvo x || fn_bell
 
     # 刷新DZH
     WIT=2 YIST=/tmp/kts/chao.120 PPLUS=G SELECT lsds || exit
@@ -821,11 +822,11 @@ function fn_chk_rank()
     # 设置阈值、上限、下限，!取反
     thrx=-5
     left=10
-    right=20
+    right=30
     sqls="WHERE date='${END}' ORDER by rise ASC"
     sqls="(SELECT code, ROUND(100*(d.close-d.yesc)/d.yesc, 2) as rise FROM day d ${sqls})"
     dive=`mysql -N kts <<< "SELECT SUM(rise<${thrx}) FROM ${sqls} as t"`
-    if ([ "${dive}" -gt ${left} ] && [ "${dive}" -lt ${right} ]); then
+    if  ([ "${dive}" -gt ${left} ] && [ "${dive}" -lt ${right} ]); then
         fn_bell duang.wav
     fi
 
@@ -835,7 +836,7 @@ function fn_chk_rank()
 
     [ ${ceilings} -ge 14 ] && [ ${ceilings} -le 16 ] && fn_bell
     if [ "${ceilings}" -ge 16 ]; then
-        PREFIX="Tops[${ceilings}]" fn_beep "__More_than_16_birds__\n"; return
+        SUFFIX="Tops[${ceilings}]" fn_beep "__More_than_16_birds__\n"; return
     fi
 
     let layer1s=ceilings+3                  # 6=3+3 提供1防护
@@ -862,12 +863,13 @@ function fn_chk_rank()
     birds2=$(fn_name `grep -v -f /tmp/kts/chao.L2.prev /tmp/kts/chao.L2.curr` 2>&1)
 
     #echo L2:${layer2s} m:${match} B1:${birds1} B2:${birds2} # ;exit
-
     # 检查是否禁用beep，有闯入者，告警
     [ "`cat /tmp/kts/chao.beep`" = 0 ] && BEEPS=0
     [ "${match:-0}" -eq 0 ] && BEEPS=0
+    [ -z "${birds2}" ] && iNL="\n"
 
-    PREFIX="Tops[${ceilings}]Dive${thrx}[${dive}]" BEEPS=${BEEPS} fn_beep "L1:${birds1}L2:${birds2}"
+    SUFFIX="Tops[${ceilings}]Dive[${thrx}% ${dive}].{$left~$right}" \
+    BEEPS=${BEEPS} fn_beep "L1:${birds1}L2:${birds2}${iNL}"
 }
 
 function fn_ma20f15()
@@ -1721,6 +1723,13 @@ function fn_tp10()
     fn_echo_succ "Re-fresh top10 succ!"
 }
 
+function fn_am10o_task()
+{
+    SELECT ma120 20             # 好趋势个股
+    fn_bell tweet.wav tweet.wav # 创业板vs.HS300 db201, 每周要重启一次按键精灵防阻塞
+    return $?
+}
+
 function fn_main()
 {
     cmdlist=(
@@ -1754,6 +1763,7 @@ function fn_main()
     "dorat  [loop]                      # 量比数据，loop when run@crontab"
     "am925                              # load日线数据FROM.10jqka"
     "am925_bell                         # 触发按键精灵"
+    "am10o_task                         # "
     "autoxRD                            # xRD_FROM_10jqka"
     "holiday                            # 检查是否法定假日"
     "morningcall                        # "
