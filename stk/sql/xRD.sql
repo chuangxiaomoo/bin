@@ -1216,12 +1216,13 @@ CREATE PROCEDURE sp_ma120(a_code INT(6) ZEROFILL) tag_ma120:BEGIN
         SELECT code,date,close FROM day 
             WHERE code=a_code and date<=@END ORDER by date DESC LIMIT 120;
 
-    SELECT count(*)   FROM tempday INTO @v_len;
-    IF @v_len < 120 THEN LEAVE tag_ma120; END IF;
+    SELECT count(*) FROM tempday INTO @v_len;
+    IF @v_len < 25 THEN LEAVE tag_ma120; END IF;
+    # SELECT a_code,@v_len;
 
     SELECT date,close FROM tempday WHERE id=1 INTO v_date,v_close;
-    SELECT SUM(close)/20   FROM tempday WHERE id<=20  INTO v_ma20 ;
-    SELECT SUM(close)/120  FROM tempday WHERE id<=120 INTO v_ma120;
+    SELECT SUM(close)/20     FROM tempday WHERE id<=20  INTO v_ma20 ;
+    SELECT SUM(close)/@v_len FROM tempday WHERE id<=120 INTO v_ma120;
 
     -- 不使用v_date，以防止重复
     INSERT INTO ma120 (code, date, close, ma20, ma120)

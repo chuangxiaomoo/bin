@@ -10,8 +10,8 @@ function fn_ls()
     xt_ret $? "Error: [$1] no a code" || return $?
 
     fields='d.code,d.date,d.yesc,d.open,d.high,d.low,d.close,d.volume,d.amount'
-    echo "
-    SELECT nmc/close FROM cap WHERE code=${code} LIMIT 1 INTO @shares0; -- TURNOV0使用
+    sqls_pro="SELECT nmc/close FROM cap WHERE code=${code} LIMIT 1 INTO @shares0;" # @shares0供TURNOV0使用
+    sqls="
     SELECT * FROM (
         SELECT $fields,
         $RISE as rise, 
@@ -20,8 +20,9 @@ function fn_ls()
         FROM day as d
         WHERE d.code = ${code} and d.date <= '${END}'
         ORDER by date DESC
-    ) as tbl HAVING 1 ${COND} ORDER by ${FIELD:-date} DESC LIMIT ${LIMIT:-24};
-	" | mysql -t kts
+    ) as tbl HAVING 1 ${COND} ORDER by ${FIELD:-date} DESC LIMIT ${LIMIT:-24}
+	"
+    fn_imysql_sqls
 }
 
 
@@ -3047,18 +3048,20 @@ function fn_volvo()
         HMS=`fn_get_time ${1}`
         FEN=${HMS} DAY=dorat fn_xtempday      # faster than sub-select
         cols='m.code,m.time,vol1,vol2,volvo,gate'
+
+        fn_bist
         ABBR=v fn_yist
 
         if [ "${P}" = 1 ]; then
-            fn_isF4 ${HMS} && COND="${COND} AND time='${HMS}'&&nmc>=2" || { fn_echo_fail "notF4"; exit ;}
+            fn_isF4 ${HMS} && COND="${COND} AND time='${HMS}'" || { fn_echo_fail "notF4"; exit ;}
         fi
 
         sqls="
         SELECT ${cols}, 
             ROUND(volvo/gate, 2) as vPct,
-            vdiff,
             ROUND(100*cdiff/yesc, 2) as rif4,
             ${RISE} as rise,
+            ROUND(adiff/10000,2) as eF4,
             ROUND(SUM(adiff)/10000,2) as eSum,
             ROUND(d.amount/10000, 1) as eYi,
             ROUND(sum(adiff)/d.amount,2) as ePct,
@@ -3072,6 +3075,7 @@ function fn_volvo()
             HAVING 1 ${COND}
             ORDER by ${FIELD:-rise} DESC LIMIT ${LIMIT:-24}
         "
+        #echo "${sqls}"; exit
         fn_imysql_sqls | fn_hew_tail
         fn_echo_succ "${END}.${HMS} FIELD:${FIELD:-rise}"
         fn_chao ${chao}.volvo

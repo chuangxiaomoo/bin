@@ -75,6 +75,7 @@
 # 魔论            .doc/Molun.md
 # 博弈论          .doc/gametheory.md
 # 物理            .doc/physics.md
-# 套路            .doc/tao.md
 # Equation        .doc/Methodology.md
+# 套路            .doc/tao.md
+# 参数            .doc/args.md
 # ERRORs          .doc/error.md

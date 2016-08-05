@@ -814,15 +814,20 @@ function fn_chk_rank()
     fi
 
     SCREENER volvo x || fn_bell
+    COND="(rise>2.5&&eF4>.12)||eF4>.382" OP=1+ P=1 SELECT volvo > ${chao}.rock
+    if [ `wc -l < ${chao}.rock` -ne 0 ]; then
+        cat ${chao}.rock > /dev/pts/0
+        MSG=f4_is_Rocking fn_bell online.wav
+    fi
 
     # 刷新DZH
     WIT=2 YIST=/tmp/kts/chao.120 PPLUS=G SELECT lsds || exit
     WIT=1 PPLUS=K kCOND="rise+space>5" SELECT lsds ${icurr} || exit
 
     # 设置阈值、上限、下限，!取反
-    thrx=-5
-    left=10
-    right=30
+    thrx=-4
+    left=12
+    right=20
     sqls="WHERE date='${END}' ORDER by rise ASC"
     sqls="(SELECT code, ROUND(100*(d.close-d.yesc)/d.yesc, 2) as rise FROM day d ${sqls})"
     dive=`mysql -N kts <<< "SELECT SUM(rise<${thrx}) FROM ${sqls} as t"`
@@ -832,9 +837,9 @@ function fn_chk_rank()
 
     # 涨停计算
     fn_echo_succ "ceilings=rise>=9.93..."
-    ceilings=`OPT='-N' CHAO=0 WIT= PARTS= COND="rise>=9.93" kCOND="rise+space>5" PPLUS=K SELECT lsds $1 | wc -l`
+    ceilings=`OPT='-N' CHAO=0 WIT= PARTS= COND="rise>=9.93" PPLUS=G SELECT lsd $1 | wc -l`
 
-    [ ${ceilings} -ge 14 ] && [ ${ceilings} -le 16 ] && fn_bell
+    [ ${ceilings} -ge 12 ] && [ ${ceilings} -le 17 ] && MSG=Top10s_touch_15 fn_bell system.wav 
     if [ "${ceilings}" -ge 16 ]; then
         SUFFIX="Tops[${ceilings}]" fn_beep "__More_than_16_birds__\n"; return
     fi
@@ -1669,13 +1674,12 @@ function fn_autoxRD()
         mysql -N kts <<< "SELECT date FROM xRDdate ORDER by date DESC LIMIT 5" > ${chao}.autoxRD
         SELECT list_date | grep --color -f ${chao}.autoxRD
         exit
-    fi
-
-    if [ "${2}" = xRD ]; then
+    elif [ "${1}" = xRD ]; then
         fn_xRDdb
         xt_ret $? "" || return $?
     fi
 
+    cd ~/bin/stk
     fn_iscode $1 && { fn_xRD0 $1; exit 0 ;}
 
     [ "${date_T//:/}" -gt 092500 ]
