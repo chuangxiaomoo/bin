@@ -587,7 +587,7 @@ function fn_lhb0()
     awk -v v_date=$1 '{
         printf "%s\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%s\n", \
                 v_date, $2,$5,$6,$7,$8,$9,$10,$11;
-    }' > ${falsh}
+    }' > ${flash}
 #   # ' N' 恒顺众日升 乱码
 #   cat ${cache} | grep -A1000 '^1\>' |
 #       sed -e 's/^           /999 1 2 3 4/' -e 's/ N\>//g' |
@@ -620,12 +620,12 @@ function fn_lhb0()
 #   -e 's/S、ST、.ST连续三个交易日.*跌幅.*/s3dn12/g'                    \
 #   -e 's/S、ST、.ST连续三个交易日.*涨幅.*/s3up12/g'                    \
 #   -e 's/连续三个交易日.*涨幅偏离值累计20%/3up20/g'                    \
-#   -e 's/连续三个交易日.*跌幅偏离值累计20%/3dn20/g'  > ${falsh}
+#   -e 's/连续三个交易日.*跌幅偏离值累计20%/3dn20/g'  > ${flash}
 
-    awk '{print $2}' ${falsh} | grep -q '^6'
+    awk '{print $2}' ${flash} | grep -q '^6'
     xt_ret $? "Error: sh_sec lhb is not released" || return $?
 
-    lines=`wc -l<${falsh}`
+    lines=`wc -l<${flash}`
     if [ "${lines}" -lt 5 ]; then
         echo "Bad lhb data: ${url}"
         exit
@@ -648,7 +648,7 @@ function fn_lhb0()
     );
 
     DELETE FROM lhb WHERE date='$1';
-    LOAD DATA LOCAL INFILE '${falsh}' INTO
+    LOAD DATA LOCAL INFILE '${flash}' INTO
     TABLE lhb(date,code,chng,amount,buy,bloo,sell,sloo,cause);
     " | mysql kts
 
@@ -825,9 +825,9 @@ function fn_chk_rank()
     WIT=1 PPLUS=K kCOND="rise+space>5" SELECT lsds ${icurr} || exit
 
     # 设置阈值、上限、下限，!取反
-    thrx=-4
+    thrx=-5
     left=12
-    right=20
+    right=15
     sqls="WHERE date='${END}' ORDER by rise ASC"
     sqls="(SELECT code, ROUND(100*(d.close-d.yesc)/d.yesc, 2) as rise FROM day d ${sqls})"
     dive=`mysql -N kts <<< "SELECT SUM(rise<${thrx}) FROM ${sqls} as t"`
@@ -839,9 +839,10 @@ function fn_chk_rank()
     fn_echo_succ "ceilings=rise>=9.93..."
     ceilings=`OPT='-N' CHAO=0 WIT= PARTS= COND="rise>=9.93" PPLUS=G SELECT lsd $1 | wc -l`
 
-    [ ${ceilings} -ge 12 ] && [ ${ceilings} -le 17 ] && MSG=Top10s_touch_15 fn_bell system.wav 
-    if [ "${ceilings}" -ge 16 ]; then
-        SUFFIX="Tops[${ceilings}]" fn_beep "__More_than_16_birds__\n"; return
+    [ ${ceilings} -ge 12 ] && [ ${ceilings} -le 18 ] && MSG=Top10s_touch_${ceilings} fn_bell system.wav 
+    if [ "${ceilings}" -ge 18 ]; then
+        SUFFIX="Tops[${ceilings}]Dive[${thrx}% ${dive}].{$left~$right}" \
+        fn_beep "__More_than_16_birds__\n"; return
     fi
 
     let layer1s=ceilings+3                  # 6=3+3 提供1防护
@@ -1189,7 +1190,8 @@ function fn_merge()
 
     cat ${@} > ${chao}.merge
     xt_ret $? "merge ${@}" || return $?
-    PLAIN=${chao}.merge fn_gen_10jqka_sel
+    PLAIN=
+    fn_chao ${chao}.merge
     return $?
 }
 
@@ -1254,9 +1256,8 @@ function fn_dig()
         grep .codelist -f - | \
         tee ${chao}.drip
     sed -i 's/$/\r/' ${chao}.drip
-    PLAIN=${chao}.drip fn_gen_10jqka_sel
-    fn_echo_succ "succ to 自选股.sel"
-    return $?
+    fn_echo_succ "dig succ to ${chao}.drip"
+    fn_chao ${chao}.drip
 }
 
 
@@ -1705,8 +1706,8 @@ function fn_autoxRD()
     " | mysql kts
     xt_ret $? "mysql" || return $?
 
-    SCREENER ma1020 2
-    xt_ret $? "" || return $?
+  # SCREENER ma1020 2
+  # xt_ret $? "" || return $?
 }
 
 function fn_tp10()

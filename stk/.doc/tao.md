@@ -230,7 +230,7 @@ e.g. {{{
 >
 COND="prop5BOO>.8 && i_wk>=0 && ma60<23 &&vax>8 && nmcYi*(1-tp10_rliz)<60" iEND=2 PPLUS=G SELECT lsds
 
-# 套路.突破+压单
+# 套路.fairy.突破+压单
 
 没有别的要求：当天就要赚钱
 

@@ -689,13 +689,13 @@ CREATE PROCEDURE sp_stat_change() tag_stat_change:BEGIN
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng>9.93&&high!=low INTO v_inc10;
         SELECT count(code) FROM tbl_change WHERE date=v_start and hit >9.93&&high!=low INTO v_hit10;
         SELECT count(code) FROM tbl_change WHERE date=v_start and avrg>9.8 &&high =low INTO v_yiz10;
-        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<9.93 &&chng>=7  INTO v_inc7p;
-        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<7  and chng>=5  INTO v_inc5p;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and             chng>=7  INTO v_inc7p;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and             chng>=5  INTO v_inc5p;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<5  and chng>=2  INTO v_inc2p;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<2  and chng>=0  INTO v_inc0p;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<0  and chng>-2  INTO v_dec0d;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<=-2 and chng>-5 INTO v_dec2d;
-        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<=-5 and chng>-7 INTO v_dec5d;
+        SELECT count(code) FROM tbl_change WHERE date=v_start and chng<=-5             INTO v_dec5d;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<=-7             INTO v_dec7d;
         SELECT count(code) FROM tbl_change WHERE date=v_start and chng<-9.93           INTO v_dec10;
         SELECT count(code) FROM tbl_change WHERE date=v_start and hit00<-9.93          INTO v_hit00;

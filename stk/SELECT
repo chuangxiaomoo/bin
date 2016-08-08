@@ -665,14 +665,14 @@ function fn_updown()
 
     START=`fn_get_date ${NUM:-5}`
 
-    fn_echo_succ "From ${START} to ${END}.${HMS}..."
+    fn_echo_succ "[NUM:${NUM:-5}] records from ${START} to ${END}.${HMS}..."
 
     cd $cdpath
     > $mps_god
     head -n -5 $mps_org >> $mps_god
 
-    cols1=t.date,cnt,yiz10,inc10,hit10,
-    cols2=${col_risp}inc,dec0,eq0,inc7p,inc5p,inc2p,inc0p,dec0d,dec2d,dec5d,dec7d,hit00,dec10
+    cols1=date,cnt,yiz10,inc10,hit10,
+    cols2=inc,dec0,eq0,inc7p,inc5p,inc2p,inc0p,dec0d,dec2d,dec5d,dec7d,hit00,dec10
 
 
     echo "
@@ -682,9 +682,8 @@ function fn_updown()
     SET @HMS='${HMS:-00:00:00}';
     call sp_stat_change();
     SELECT ${cols1} ROUND(100*inc10/hit10,2) as succ, ${cols2}
-        FROM tbl_stat_change as t
-        ${sql_where}
-        ORDER by ${FIELD:-date} ${ASC:-ASC};
+    FROM tbl_stat_change WHERE 1 ${COND}
+    ORDER by ${FIELD:-date} ${ASC:-ASC};
     " >> $mps_god
     # | tee /dev/stderr >> $mps_god
 
@@ -1992,11 +1991,11 @@ function fn_stat()
             SUM(high=low) as yiz,
             c.name
             FROM day d , cap c WHERE d.code=c.code AND d.date>='${PREV5}' AND d.date<='${END}' 
-            GROUP by code HAVING cnt>1 && cnt>yiz ${COND}
+            GROUP by code HAVING cnt>=${DOOR:=1} && cnt>yiz ${COND}
             ORDER by cnt DESC LIMIT ${LIMIT:-36}
         "
         fn_imysql_sqls | fn_hew_tail
-        fn_echo_succ "[NUM:${NUM:-8}]日热点 @${END} [FIELD:-${FIELD:-cnt}]"
+        fn_echo_succ "[NUM:${NUM:-8}]日热点 @${END} [FIELD:${FIELD:-cnt}] [cnt.DOOR:${DOOR}]"
         fn_chao ${chao}.hot
         ;;
     flat)
@@ -3039,7 +3038,9 @@ function fn_volvo()
         xt_ret $? "code[$2]" || return $?
         sqls_pro="SELECT yesc FROM day WHERE date='${END}' AND code=${2} INTO @yesc;"
         sqls="
-        SELECT m.*, vol1,vol2,volvo,gate, ROUND(vdiff/gate,2) as gPct, ROUND(100*cdiff/@yesc,2) as rif4
+        SELECT m.*, vol1,vol2,volvo,gate, ROUND(vdiff/gate,2) as gPct, 
+            ROUND(100*cdiff/@yesc,2) as rif4, 
+            ROUND(100*(m.close-@yesc)/@yesc, 2) as rise
         FROM volvo v, mat_vcdif m WHERE v.code=m.code AND m.date='${END}' AND m.code=${2} ORDER by time ASC 
         "
         fn_imysql_sqls
@@ -3052,25 +3053,27 @@ function fn_volvo()
         fn_bist
         ABBR=v fn_yist
 
-        if [ "${P}" = 1 ]; then
-            fn_isF4 ${HMS} && COND="${COND} AND time='${HMS}'" || { fn_echo_fail "notF4"; exit ;}
-        fi
+        case $P in
+        1) fn_isF4 ${HMS} && COND="${COND} AND time='${HMS}'" || { fn_echo_fail "notF4"; exit ;}    ;;
+        e) eFun=max; FIELD=eF4; eCOND="AND 100*(m.close-d.yesc)/d.yesc<6.88"                        ;;
+        esac
 
         sqls="
         SELECT ${cols}, 
             ROUND(volvo/gate, 2) as vPct,
             ROUND(100*cdiff/yesc, 2) as rif4,
             ${RISE} as rise,
-            ROUND(adiff/10000,2) as eF4,
-            ROUND(SUM(adiff)/10000,2) as eSum,
+            ROUND(${eFun}(adiff)/10000,2) as eF4,
+            ROUND(SUM(adiff)/10000,2) as eAll,
             ROUND(d.amount/10000, 1) as eYi,
             ROUND(sum(adiff)/d.amount,2) as ePct,
             COUNT(m.code) as num, 
             ROUND(${nmc0}*(1-top10)/100,2) as nmc, c.name
             FROM volvo v, xtempday d, cap c, top10 p,
                  (SELECT * FROM mat_vcdif WHERE date='${END}' && time<='${HMS}' ORDER by time ${iASC:-DESC}) m
-            $WHERE v.code=m.code AND v.code=d.code AND v.code=c.code AND v.code=p.code AND (${OP}(vdiff>=gate)) AND
-            high!=low AND (cdiff/yesc>=.006 || (m.close-yesc)/yesc>=.06)              -- SCREENER volvo make [cdiff>=0]
+            $WHERE v.code=m.code AND v.code=d.code AND v.code=c.code AND v.code=p.code AND (${OP}(vdiff>=gate))
+                AND high!=low AND (cdiff/yesc>=.006 || (m.close-yesc)/yesc>=.06)              -- SCREENER volvo make [cdiff>=0]
+                ${eCOND}
             GROUP by v.code
             HAVING 1 ${COND}
             ORDER by ${FIELD:-rise} DESC LIMIT ${LIMIT:-24}
