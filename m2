@@ -283,6 +283,7 @@ function fn_04_周国平：交往的质量()     { cat artical_04_周国平：�
 function fn_05_whatsfriend()            { cat artical_05_whatsfriend ;}
 function fn_06_哪些知识会让你变蠢？()   { cat artical_06_哪些知识会让你变蠢？ ;}
 function fn_07_如何构建经济学思维方式() { cat artical_07_如何构建经济学思维方式 ;}
+function fn_08_novel()                  { cat artical_08_novel ;}
 
 function fn_100_人际关系痛苦的根源()    { cat artical_100_人际关系痛苦的根源 ;}
 
@@ -294,6 +295,7 @@ function fn_100_人际关系痛苦的根源()    { cat artical_100_人际关系�
         05_whatsfriend
         06_哪些知识会让你变蠢？
         07_如何构建经济学思维方式
+        08_novel
         100_人际关系痛苦的根源          # 缺乏界限感
     )
     fn_print $@
@@ -850,6 +852,24 @@ function fn_Freud()                     { cat psychology_Freud ;}
     )
     fn_print $@
 }
+function fn_guo() { 
+function fn_term()                      { cat guo_term ;}
+function fn_rhymeA()                    { cat guo_rhymeA ;}
+function fn_rhyme3()                    { cat guo_rhyme3 ;}
+function fn_rhyme7()                    { cat guo_rhyme7 ;}
+function fn_rhyme10()                   { cat guo_rhyme10 ;}
+function fn_rhyme200()                  { cat guo_rhyme200 ;}
+    local opts=(                        # guo
+        rhymeA                          # 凡遇要处总诀
+        rhyme3                          # 三字经
+        rhyme7                          # 围棋七字精选50
+        rhyme10                         # 围棋十诀
+        rhyme30                         # 入段须知格言三十条
+        rhyme200                        # 围棋七字口诀200
+        term
+    )
+    fn_print $@
+}
 
 function fn_game_theory()               { cat game_theory ;}
 function fn_debate_competition()        { cat debate_competition ;}
@@ -860,7 +880,6 @@ function fn_estate()                    { cat estate ;}
 function fn_driver()                    { cat driver ;}
 function fn_cold()                      { cat cold ;}
 function fn_sport()                     { cat sport ;}
-function fn_guo()                       { cat guo ;}
 function fn_stupid_things()             { cat stupid_things ;}
 function fn_subtitle()                  { cat subtitle ;}
 function fn_kindle()                    { cat kindle ;}

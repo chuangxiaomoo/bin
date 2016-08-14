@@ -5,7 +5,7 @@
 # Equal:           iEND=1..5       SELECT lsd
 
 while read; do
-    echo ${iTAG:-iEND}=$REPLY $@
-    eval ${iTAG:-iEND}=$REPLY $@
+    echo "# ${iTAG:-iEND}=$REPLY $@"
+    eval    ${iTAG:-iEND}=$REPLY $@
 done < /dev/stdin
 
