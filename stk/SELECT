@@ -30,8 +30,9 @@ function fn_lsf()
 {
     cols='date,time,code,yesc,open,high,low,close,volume,ROUND(amount/10000,2) as eYi'
     echo "
-    SELECT ${cols} FROM dorat WHERE date='${END}' AND code=${1} ORDER by time ASC LIMIT ${LIMIT:-36}
+    SELECT ${cols} FROM dorat WHERE date='${END}' AND code=${1} ORDER by time ASC LIMIT ${2:-0},${LIMIT:-20}
     " | mysql -t kts
+    fn_echo_succ "Usage: LIMIT=xx lsf code \$2 ---> LIMIT \${2:-${2:-0}},${LIMIT:-20}"
     return $?
 }
 
@@ -128,7 +129,7 @@ function fn_pro_hammer()
             ${WHERE} d.code=m.code && m.date='${PREV}' AND
             d.code = c.code AND d.code=t5.code AND d.code=p.code AND
             d.date = '${END}' && ${iCOND:-1} && ${cCOND:-1}
-            HAVING ${HAVING:-1} && ${kCOND:-1} ${COND} ORDER BY ${FIELD:-rise} ${ASC:-desc} limit ${LIMIT:-36}
+            HAVING ${HAV:-1} && ${kCOND:-1} ${COND} ORDER BY ${FIELD:-rise} ${ASC:-desc} limit ${LIMIT:-36}
     "
     #echo "${sqls}"; exit
 }
@@ -175,7 +176,7 @@ function fn_pro_wolves()
             d.code = c.code AND d.code=t5.code AND d.code=p.code AND
                                 ${sql_accelr} d.code=w.code AND w.date='${END}' AND                         # _line_for_wolf_
             d.date = '${END}' && ${iCOND:-1} && ${cCOND:-1} 
-            HAVING ${HAVING:-1} && ${kCOND:-1} ${COND} ORDER BY ${FIELD:-rise} ${ASC:-desc} limit ${LIMIT:-36}
+            HAVING ${HAV:-1} && ${kCOND:-1} ${COND} ORDER BY ${FIELD:-rise} ${ASC:-desc} limit ${LIMIT:-36}
     "
     return $?
 }
@@ -207,7 +208,7 @@ function fn_pro_spacer()
             ${WHERE} d.code=m.code && m.date='${PREV}' AND
             d.code = c.code AND d.code=t5.code AND d.code=p.code AND
             d.date = '${END}' && ${iCOND:-1} && ${cCOND:-1} 
-            HAVING ${HAVING:-1} && ${kCOND:-1} ${COND} ORDER BY ${FIELD:-rise} ${ASC:-desc} limit ${LIMIT:-36}
+            HAVING ${HAV:-1} && ${kCOND:-1} ${COND} ORDER BY ${FIELD:-rise} ${ASC:-desc} limit ${LIMIT:-36}
     "
     #echo "${sqls}"; exit
 }
@@ -215,6 +216,14 @@ function fn_pro_spacer()
 function fn_lsdh() { is_hammer=1 fn_lsd ${@} ;}
 function fn_lsdw() { is_wolves=1 fn_lsd ${@} ;}
 function fn_lsds() { is_spacer=1 fn_lsd ${@} ;}
+function fn_lsdt()
+{
+    nmc_tp10="ROUND(${nmc0}*(1-top10)/100,2) as nmc"
+    tbl_tp10=', top10 p'
+    con_tp10='AND d.code=p.code'
+    div_tp10='(1-top10)'
+    fn_lsd ${@}
+}
 
 function fn_lsd()
 {
@@ -226,8 +235,8 @@ function fn_lsd()
     fn_yist
 
     case ${1:-1} in
-    t|top)  LIMIT=${LIMIT:-200}; HAVING="rise>=${rDOOR:-9.93}"; FIELD=${FIELD:-nmc}; chao2=top ;;
-    f|flo)  LIMIT=${LIMIT:-200}; HAVING="rise<=-9.93"; FIELD=${FIELD:-nmc} ;;
+    t|top)  LIMIT=${LIMIT:-200}; HAV="rise>=${rDOOR:-9.93}"; FIELD=${FIELD:-nmc}; chao2=top ;;
+    f|flo)  LIMIT=${LIMIT:-200}; HAV="rise<=-9.93"; FIELD=${FIELD:-nmc} ;;
     c|code) cCOND="d.code=${2:-300059}" ;;
     y|dy5)  ROCKET='ROUND(IF(dy12>=dy35, dy12+.38*(dy35-1), dy35+.64*(dy12-1))-1, 2)';
             fn_name $2
@@ -242,7 +251,7 @@ function fn_lsd()
         xt_ret $? "Please check data.dorat@${END}" || return $?
 
         FIELD=${FIELD:-rise}
-        HAVING="${HAVING:-1}"
+        HAV="${HAV:-1}"
         TEMPDAY=xtempday
         FEN=${iTime} DAY=dorat fn_xtempday      # faster than sub-select
         xt_ret $? "" || return $?
@@ -290,14 +299,14 @@ function fn_lsd()
         G|g) iCOND="${c_natural} && d.open/yesc<1.093"                                  ;;  # 非一字open
         E|e) iCOND="!${c_natural}"                                                      ;;  # 一字板，全天不开板
         V|v) iCOND="${c_natural} && d.open/yesc<1.093"                                      # exclude<一字开板>
-             LIMIT=${LIMIT:-24};HAVING="tov5>=${vDOOR:-3.5}&&${HAVING:-1}"              ;;
+             LIMIT=${LIMIT:-24};HAV="tov5>=${vDOOR:-3.5}&&${HAV:-1}"              ;;
         vax) iCOND="${c_natural}${c_Volkswagen} &&dy12>1.8&&vax3/vax60>=.88"            ;;  # 昨天量创新高
      KK|K|k) [ "${PPLUS}" = KK ] &&                                                         # KK加上i_wk限制
              iBOO8="&&((i_dy>=0&&prop5BOO>${PROP5}) ||(i_dy<0&&prop5BOO>${PROP5}$H40))"
              kCOND="${kCOND:-space+rise>${kDOOR:-5}} ${iBOO8}"                              # kCOND可以指定
              kCOND="${kCOND}&&tov5>=${vDOOR:-3.5} "
              iCOND="${c_natural}"                                                           # include<一字开板>
-             LIMIT=${LIMIT:-24};HAVING="${HAVING:-1}"                                   ;;
+             LIMIT=${LIMIT:-24};HAV="${HAV:-1}"                                   ;;
         esac
 
         fn_pro_hammer || \
@@ -308,17 +317,16 @@ function fn_lsd()
                 $LORI as lori,
                 ${sql_avrg}
                 $RISE as rise,
-                $TURNOV as tov, 
-         --     t5.tov as tov5,
+                ROUND(100*d.volume*c.close/c.nmc/${div_tp10:-1}, 2) as tov, 
          --     ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2) as prop5,
                 round(d.amount/10000, 3) as eYi,
-                ${nmcYi}, c.name
-                FROM ${TEMPDAY:-day} d, cap c
+                ${nmc_tp10:-${nmcYi}}, c.name
+                FROM ${TEMPDAY:-day} d, cap c ${tbl_tp10}
          --     , t_matov5 t5
-                ${WHERE} d.code = c.code
+                ${WHERE} d.code=c.code ${con_tp10}
          --     and d.code=t5.code
                 && d.date = '${END}' && ${iCOND:-1} && ${cCOND:-1}
-                HAVING ${HAVING:-1} ${COND} ORDER BY ${FIELD:-rise} ${ASC:-desc} limit ${LIMIT:-36}
+                HAVING ${HAV:-1} ${COND} ORDER BY ${FIELD:-rise} ${ASC:-desc} limit ${LIMIT:-36}
         "
         #echo "${sqls}"; exit
     }
@@ -332,7 +340,7 @@ function fn_lsd()
     esac
 
     fn_chao ${chao}.${chao2:-lsd}
-    fn_echo_warn "${END}.${iTime:-latest} LIST:${#LIST[@]} HAVING:${HAVING//SEL*=/} COND@:$COND + iCOND:${iCOND}"
+    fn_echo_warn "${END}.${iTime:-latest} LIST:${#LIST[@]} HAV:${HAV//SEL*=/} COND@:$COND + iCOND:${iCOND}"
     fn_echo_succ "PROP:${PROP0}~${PROP5} COND:${kCOND}"
     return 0
 }
@@ -1227,7 +1235,7 @@ function fn_lohi()
             HAVING 1 ${COND}
             ${notinBLK}
             ORDER by incr ${ASC:-DESC} ) as t
-          HAVING ${HAVING:-1} ORDER by ${FIELD:=incr} ${ASC:-DESC} LIMIT ${LIMIT:-36}
+          HAVING ${HAV:-1} ORDER by ${FIELD:=incr} ${ASC:-DESC} LIMIT ${LIMIT:-36}
           "
           [ ${DEBUG:-0} -eq 1 ] && echo "${tempday}${tbl_super_dive}" && exit
         }
@@ -1311,7 +1319,7 @@ function fn_ban()
     {
     # 有时小票连续3板也是好票 <300314	戴维医疗>，特别是10点前封板票
     incr="incr<${incr:-22}"
-    COND="${incr}" LIMIT=1400 HAVING="avri>2&&rise>avri-.6 && tov>${factor}&&tov<.8 && ${xCOND}" SELECT lohi ${1:-1}
+    COND="${incr}" LIMIT=1400 HAV="avri>2&&rise>avri-.6 && tov>${factor}&&tov<.8 && ${xCOND}" SELECT lohi ${1:-1}
     }
 
     fn_echo_blue "small"
@@ -1332,7 +1340,7 @@ function fn_ban()
     # 底部、中部，拒绝顶部
     fn_echo_warn "scale<1.2"
     xCOND="eYi>nmcYi*${factor}*${tov}"
-    COND='incr>=22 && scale<1.2' LIMIT=1400 HAVING="avri>2&&rise>avri-.6 && tov>${factor} and ${xCOND}" SELECT lohi ${1:-1} 2>/dev/null
+    COND='incr>=22 && scale<1.2' LIMIT=1400 HAV="avri>2&&rise>avri-.6 && tov>${factor} and ${xCOND}" SELECT lohi ${1:-1} 2>/dev/null
     xt_ret $? "" || return $?
 }
 
@@ -2100,6 +2108,7 @@ function fn_sample()
 
     echo BLK is ${BLK}
     HMS=`fn_get_time $1`
+    # 非一字板 && ＞-1.5%的个股
     iCOND="(high!=low||d.close/yesc<1.093) && d.close/yesc<1.15 && d.close/yesc>=.985 ${cond5}" \
     FEN=${HMS} DAY=dorat fn_xtempday
     xt_ret $? "xtempday error" || return $?
@@ -2450,7 +2459,7 @@ function fn_blk()
             ${WHERE} d.code=c.code and d.date>='${sta}' && d.date<='${END}' ${inBLK}
             and low!=high
             GROUP by code
-            HAVING ${HAVING:-1} ${COND} and rise>${rDOOR:-'-100'}
+            HAVING ${HAV:-1} ${COND} and rise>${rDOOR:-'-100'}
             ORDER BY ${FIELD:-rise} ${ASC:-desc} LIMIT ${LIMIT:-36}
         "
         }
@@ -3033,6 +3042,22 @@ function fn_volvo()
         SELECT lsd l | grep --color -f ${chao}.volvo.e
         fn_echo_succ "F2-list @${END}"
         ;;
+#bang)  eThrd=`OPT=-N LIMIT=35,1 FIELD=eYi OP=1+ fn_volvo 2>/dev/null| awk '{print $14}'`
+   b*)  SCREENER volvo c
+        mysql -N kts <<< "SELECT code FROM volvo WHERE volvo<gate" > ${chao}.gate.volvo
+        rThrd=`LIMIT=36 YIST=${chao}.gate.volvo OPT=-N FIELD=eYi PPLUS=G COND="rise>0" SELECT lsd $2 |
+            awk 'BEGIN{total=0}{total+=$10}END{print total/48}'`
+        #                        YIST=${chao}.gate.volvo PPLUS=G FIELD=eYi COND="rise>3" SELECT lsd $2; exit
+        eThrd=`OPT=-N LIMIT=35,1 YIST=${chao}.gate.volvo PPLUS=G FIELD=eYi COND="rise>${rThrd}" SELECT lsd $2 2>/dev/null| awk '{print $12}'`
+        fn_echo_blue "rThrd:${rThrd}% eThrd:${eThrd}Yi"
+        [ -z "${eThrd}" ] && fn_echo_fail "Null eThrd" && exit
+        YIST=${chao}.gate.volvo COND="AND rise>${DOOR:-9.93} && eYi>${eThrd}" PPLUS=G FIELD=${FIELD:-eYi} fn_lsdt $2 > ${cache}.bang
+        if [ -z "${CHK_RANK}" ]; then
+            cat ${cache}.bang
+            [ `wc -l<${cache}.bang` = 0 ] && fn_echo_fail "no big money@${END}"
+        fi
+        #echo $eThrd; exit
+        ;;
     c)
         fn_iscode $2
         xt_ret $? "code[$2]" || return $?
@@ -3055,7 +3080,7 @@ function fn_volvo()
 
         case $P in
         1) fn_isF4 ${HMS} && COND="${COND} AND time='${HMS}'" || { fn_echo_fail "notF4"; exit ;}    ;;
-        e) eFun=max; FIELD=eF4; eCOND="AND 100*(m.close-d.yesc)/d.yesc<6.88"                        ;;
+        e) OP=${OP:-1+}; FIELD=${FIELD:-eYi}; __eCOND="AND 100*(m.close-d.yesc)/d.yesc<6.88"        ;;
         esac
 
         sqls="
@@ -3063,6 +3088,7 @@ function fn_volvo()
             ROUND(volvo/gate, 2) as vPct,
             ROUND(100*cdiff/yesc, 2) as rif4,
             ${RISE} as rise,
+            ${HIRI} as hiri,
             ROUND(${eFun}(adiff)/10000,2) as eF4,
             ROUND(SUM(adiff)/10000,2) as eAll,
             ROUND(d.amount/10000, 1) as eYi,
@@ -3080,7 +3106,7 @@ function fn_volvo()
         "
         #echo "${sqls}"; exit
         fn_imysql_sqls | fn_hew_tail
-        fn_echo_succ "${END}.${HMS} FIELD:${FIELD:-rise}"
+        fn_echo_succ "${END}.${HMS} FIELD:${FIELD:-rise} eThrd:${eThrd}"
         fn_chao ${chao}.volvo
         ;;
     *|usage)
@@ -3095,9 +3121,7 @@ function fn_volvo()
         "
         ;;
     esac
-
     exit
-
 }
 
 function fn_main()
@@ -3138,6 +3162,7 @@ function fn_main()
     "lsd                [{top|floor}][FIELD]  # --- END YIST LIMIT 涨幅排名"
     "lsdh                                     # lsd-hammer-无space细节"
     "lsds                                     # lsd-spacer-有space细节"
+    "lsdt                                     # lsd-nmc.top10"
     "lsdw                                     # lsd-wolves"
     "xii                                      # ma120-专用"
     "updown                                   # 近期{NUM=5}涨跌家数统计"

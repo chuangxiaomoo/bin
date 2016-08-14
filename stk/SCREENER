@@ -1240,8 +1240,9 @@ function fn_std()
 function fn_up_volvo()
 {
     #  前置条件: fn_isF4检查合法性
-    if [ "`mysql -N kts <<< 'SELECT date FROM volvo LIMIT 1'`" != ${END} ]; then
-        fn_echo_succ "Goto update volvo @${END}";
+    VAR=`mysql -N kts <<< 'SELECT date FROM volvo LIMIT 1'`
+    if [ "${VAR}" != ${END} ]; then
+        fn_echo_blue "Goto update volvo @${END} vs. ${VAR//*-/PREV.}";
     else
         return 0
     fi
@@ -1271,7 +1272,7 @@ function fn_up_volvo()
     UPDATE volvo v1, (SELECT date,code,volume FROM dorat WHERE date='${END}' and time='${VOL2}') v2
         SET v1.vol2=v2.volume-v1.vol1 WHERE v1.code=v2.code;
     UPDATE volvo SET volvo=IF(${vol1}>vol2, ${vol1}*.4+vol2*.6, ${vol1}*.6+${vol2}*.4);                    -- big*.4 + samll*.6
-    UPDATE volvo SET gate =IF(${vol1}>vol2, ${vol1}*.4+vol2*.6, ${vol1}*.6+${vol2}*.4)*4;                  -- big*.4 + samll*.6
+--  UPDATE volvo SET gate =IF(${vol1}>vol2, ${vol1}*.4+vol2*.6, ${vol1}*.6+${vol2}*.4)*4;                  -- 停牌个股gate默认为0
     UPDATE volvo v1, (SELECT code,sum(volume)/32 as volume2                                             -- 32 = 1/128 * 4倍则放量
         FROM day WHERE date>='$PREV3' && date<='$PREV' GROUP by code) v2
         SET v1.gate=v2.volume2 WHERE v1.code=v2.code;
@@ -1284,6 +1285,7 @@ function fn_volvo()
     case $1 in
       e)SELECT volvo e; exit ;;
       u)mysql -N kts <<< "DELETE FROM volvo"; fn_up_volvo; exit ;;
+      c)                                      fn_up_volvo; exit ;;      # check only
       d)mysql -N kts <<< "DELETE FROM mat_vcdif WHERE date='${END}'"
         fn_echo_succ "succ: DELETE FROM mat_vcdif WHERE date='${END}'"
         exit ;;

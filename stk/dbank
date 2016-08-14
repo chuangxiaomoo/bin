@@ -68,6 +68,7 @@ mod_mi5=100
 # ____________________temp_files________________________
 info='/tmp/kts/info'
 chao='/tmp/kts/chao'
+patt='/tmp/kts/patt'
 error='/tmp/kts/error'
 cache='/tmp/kts/cache'
 flash='/tmp/kts/flash'
@@ -163,6 +164,11 @@ fn_gen_dzh_blk()
 function fn_hew_tail()
 {
     sed -e 's/    |$/|/g' -e 's/----+$/+/g'
+}
+
+function fn_chop_ends()
+{
+    sed -e 's/^[ \t][ \t]*//g' -e 's/[ \t][ \t]*$//g'
 }
 
 function fn_imysql_sqls()

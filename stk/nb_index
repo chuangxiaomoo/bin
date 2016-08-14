@@ -45,6 +45,19 @@ function fn_main()
     case $1 in
     up)
         # [腾迅股票数据接口 http/javascript](http://blog.csdn.net/ustbhacker/article/details/8365756)
+        # s_s[zh] 代表简要数据
+        #
+        # 0: 未知
+        # 1: 名字
+        # 2: 代码
+        # 3: 当前价格
+        # 4: 涨跌
+        # 5: 涨跌%
+        # 6: 成交量（手）
+        # 7: 成交额（万）
+        # 8: 
+        # 9: 总市值
+
         w3m -dump 'http://qt.gtimg.cn/?q=s_sz399300,s_sz399102,s_sz399006,s_sz399005,s_sh000001' | \
             awk -v dt=$END -F'~' '{printf "%s\t%s\t%.2f\t%.2f\t%.2f\t%s\t%s\n", dt, $3,$4,$5,$6,$7,$8}' > ${flash}
         echo "

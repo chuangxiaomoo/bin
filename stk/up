@@ -664,6 +664,8 @@ function fn_morningcall()
 
     # clean log of [up dorat loop]
     > /tmp/kts/chao.loop
+    > /tmp/kts/patt.
+    > /tmp/kts/patt.bang
 
     # enable BEEP
     echo 1 > /tmp/kts/chao.beep
@@ -813,12 +815,20 @@ function fn_chk_rank()
         fn_bell; return
     fi
 
-    SCREENER volvo x || fn_bell
-    COND="(rise>2.5&&eF4>.12)||eF4>.382" OP=1+ P=1 SELECT volvo > ${chao}.rock
-    if [ `wc -l < ${chao}.rock` -ne 0 ]; then
-        cat ${chao}.rock > /dev/pts/0
+    CHK_RANK=1 FIELD=rise DOOR=4 OP= SELECT volvo bang
+    awk '{print $1}' /tmp/kts/patt.bang> ${patt}.1
+    cat ${cache}.bang | grep -v -f ${patt}.1 >${buffer}.bang 
+    if [ `wc -l <${buffer}.bang` -gt 4 ]; then
+        cat ${buffer}.bang > /dev/pts/0
         MSG=f4_is_Rocking fn_bell online.wav
     fi
+
+    # SCREENER volvo x || fn_bell
+    # COND="(rise>2.5&&eF4>.12)||eF4>.382" OP=1+ P=1 SELECT volvo > ${chao}.rock
+    # if [ `wc -l < ${chao}.rock` -ne 0 ]; then
+    #     cat ${chao}.rock > /dev/pts/0
+    #     MSG=f4_is_Rocking fn_bell online.wav
+    # fi
 
     # 刷新DZH
     WIT=2 YIST=/tmp/kts/chao.120 PPLUS=G SELECT lsds || exit
@@ -827,7 +837,7 @@ function fn_chk_rank()
     # 设置阈值、上限、下限，!取反
     thrx=-5
     left=12
-    right=15
+    right=25
     sqls="WHERE date='${END}' ORDER by rise ASC"
     sqls="(SELECT code, ROUND(100*(d.close-d.yesc)/d.yesc, 2) as rise FROM day d ${sqls})"
     dive=`mysql -N kts <<< "SELECT SUM(rise<${thrx}) FROM ${sqls} as t"`
@@ -1434,32 +1444,24 @@ function fn_bigbid()
     # keywords：3月 大宗交易
     # link获取：点下一页，从firebug获取
 
-    token=fdaa290de2b177707b302dddd506b40d  # 3月
-   #token=da436eaacb2bb82a9c200831f7a6b09f  # 4月
-    url="http://www.iwencai.com/stockpick/cache?token=${token}&p=1&perpage=1000&showType=[%22%22,%22%22,"
-    url="${url}%22onTable%22,%22onTable%22,%22onTable%22,%22onTable%22,"
-    url="${url}%22onTable%22,%22onTable%22,%22onTable%22,%22onTable%22]"
-    echo ${url}
-    w3m -dump "${url}" | \
-        grep -A10000 'result' | \
-        grep -B10000 'oriIndexID' | \
-        sed -e '1s/^.*result...//g' -e '$s/...oriIndexID.*$//g' | tr -d '\n' | \
-        sed -e 's/\],/&\n/g' -e 's/.S[HZ]//g' | \
-        tr  -d '[\[\]"]'  > ${buffer}
-    awk -F',' '{printf "%s\t%s\t%.2f\t%s\t%.2f\t%.2f\n", $6,$1,$5/10000,$7,$8,$9/10000}' ${buffer} | \
-        sed -e 's/^201[56]/&-/g'  | \
-        sed -e 's/^201..../&-/g' > ${flash}
+    PREV5=`fn_get_date ${NUM:-8}`
 
-    return
+    url="http://data.eastmoney.com/dzjy/default.html"
+    w3m -dump "${url}" > ${cache}
 
-    echo "
-    CREATE TEMPORARY TABLE tmp_bigbid LIKE bigbid;
-    LOAD DATA LOCAL INFILE '$flash' INTO TABLE tmp_bigbid;
-    SELECT max(date),min(date) FROM tmp_bigbid INTO @max_d,@min_d;
-    DELETE FROM bigbid WHERE date>=@min_d && date<=@max_d;
-    INSERT INTO bigbid SELECT * FROM tmp_bigbid;
-    " | mysql -N kts
-    return $?
+    if [ ${PREV5%-*} != ${END%-*} ]; then
+        fn_echo_warn dif mon ${PREV5%-*} ${END%-*}
+        mon=${PREV5%-*}
+        url=http://data.eastmoney.com/dzjy/${mon//-/}.html
+        w3m -dump "${url}" >> ${cache}
+    fi
+
+    grep -B10000 "${PREV5}" ${cache} > ${chao}.dig
+
+    sed 's/[036][0-9][0-9][0-9][0-9][0-9]/\n&\n/g' ${chao}.dig | \
+        grep '^[036][0-9][0-9][0-9][0-9][0-9]' | sort -u > ${chao}.dzjy
+
+    fn_echo_succ "up bigbid succ@${END}"
 }
 
 function fn_xbb()
@@ -1528,6 +1530,7 @@ function fn_hwork()
         SCREENER ma1020 $argv
         SCREENER ma120  $argv
         up chk_day                  # 检查是否有数据缺失
+        up bigbid                   # 8日大宗交易
         nb_index up                 # 指数更新以用于ma5告警
         fn_bell
     } >& ${STDOUT} 
@@ -1712,6 +1715,10 @@ function fn_autoxRD()
 
 function fn_tp10()
 {
+    # tp10由3部分组成
+    # 1 iwencai top10       , 下载网上粗制版本
+    # 2 up cap              , 更新每日新股
+    # 3 up tp10             , 手动更正H股杂乱数据
     tp10_rip='/tmp/kts/tp10'
     sed 's/  */\t/g' .src/top10R.list > ${tp10_rip}
     xt_ret $? "" || return $?
