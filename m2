@@ -856,15 +856,15 @@ function fn_guo() {
 function fn_term()                      { cat guo_term ;}
 function fn_rhymeA()                    { cat guo_rhymeA ;}
 function fn_rhyme3()                    { cat guo_rhyme3 ;}
-function fn_rhyme7()                    { cat guo_rhyme7 ;}
 function fn_rhyme10()                   { cat guo_rhyme10 ;}
+function fn_rhyme50()                   { cat guo_rhyme50 ;}
 function fn_rhyme200()                  { cat guo_rhyme200 ;}
     local opts=(                        # guo
         rhymeA                          # 凡遇要处总诀
         rhyme3                          # 三字经
-        rhyme7                          # 围棋七字精选50
         rhyme10                         # 围棋十诀
         rhyme30                         # 入段须知格言三十条
+        rhyme50                         # 围棋七字精选50
         rhyme200                        # 围棋七字口诀200
         term
     )
