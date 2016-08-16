@@ -663,9 +663,9 @@ function fn_morningcall()
     fn_bell 'msg.wav'
 
     # clean log of [up dorat loop]
-    > /tmp/kts/chao.loop
-    > /tmp/kts/patt.
-    > /tmp/kts/patt.bang
+    >       /tmp/kts/chao.loop
+    >       /tmp/kts/patt.bang
+    ln -sf  /tmp/kts/patt.bang /tmp/kts/chao.p
 
     # enable BEEP
     echo 1 > /tmp/kts/chao.beep
@@ -815,9 +815,9 @@ function fn_chk_rank()
         fn_bell; return
     fi
 
-    CHK_RANK=1 FIELD=rise DOOR=4 OP= SELECT volvo bang
-    awk '{print $1}' /tmp/kts/patt.bang> ${patt}.1
-    cat ${cache}.bang | grep -v -f ${patt}.1 >${buffer}.bang 
+    CHK_RANK=1 FIELD=rise DOOR=4 OP= SELECT volvo bang          # 2>&1 | grep 'rThrd:' > /dev/pts/0
+    awk '/^[036]/ {print $1}' /tmp/kts/patt.bang> ${patt}.1     # pat中不可有空行
+    cat ${cache}.bang | grep -v -f ${patt}.1 > ${buffer}.bang 
     if [ `wc -l <${buffer}.bang` -gt 4 ]; then
         cat ${buffer}.bang > /dev/pts/0
         MSG=f4_is_Rocking fn_bell online.wav
@@ -1278,7 +1278,7 @@ function fn_market()
     w3m -cols 1000 -dump "${url0}date=${date}" > ${temp}
     pages=`cat ${temp} | grep '下一页' | sed 's/下一页.*//g' | awk '{print $NF}'`
     # echo "${url0}date=${date}"
-    NL=N fn_echo_warn "market=${market}&date=${date}&pages=$pages\t"
+    NL="\t" fn_echo_warn "market=${market}&date=${date}&pages=$pages"
 
     local i
     for (( i=2; i<=${pages:-0}; i+=1 )); do

@@ -436,6 +436,11 @@ function fn_isresting()
     fi
 }
 
+function fn_isF2()
+{
+    return `mysql -N <<< "SELECT ('$1'<'09:39:00')"`
+}
+
 function fn_isF4()
 {
     # isF4 返回0，else 1 2 3 + <0942

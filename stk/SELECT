@@ -259,13 +259,13 @@ function fn_lsd()
         ;;
     u|h|usage)
         echo "
-    Usage:
-        SELECT lsd <param>:
-        usage   show usage
+    Usage: SELECT lsd <param>
+        u|h     show usage
         list    list 5min table
         {0-9}*  index from 5min table
         top|''  10%
         flo     -10%
+        c code
 
     Brother:
         lsdh    space+vax+hiri+opri
@@ -3043,15 +3043,17 @@ function fn_volvo()
         fn_echo_succ "F2-list @${END}"
         ;;
 #bang)  eThrd=`OPT=-N LIMIT=35,1 FIELD=eYi OP=1+ fn_volvo 2>/dev/null| awk '{print $14}'`
-   b*)  SCREENER volvo c
+   b*)  F2=`fn_get_time ${2}`
+        fn_isF2 $F2 || { fn_echo_warn "${F2} no-F2"; return ;} 
+        SCREENER volvo c
         mysql -N kts <<< "SELECT code FROM volvo WHERE volvo<gate" > ${chao}.gate.volvo
         rThrd=`LIMIT=36 YIST=${chao}.gate.volvo OPT=-N FIELD=eYi PPLUS=G COND="rise>0" SELECT lsd $2 |
             awk 'BEGIN{total=0}{total+=$10}END{print total/48}'`
         #                        YIST=${chao}.gate.volvo PPLUS=G FIELD=eYi COND="rise>3" SELECT lsd $2; exit
-        eThrd=`OPT=-N LIMIT=35,1 YIST=${chao}.gate.volvo PPLUS=G FIELD=eYi COND="rise>${rThrd}" SELECT lsd $2 2>/dev/null| awk '{print $12}'`
+        eThrd=`OPT=-N LIMIT=35,1 YIST=${chao}.gate.volvo PPLUS=G FIELD=eYi COND="rise>${rThrd}&&eYi<20" SELECT lsd $2 2>/dev/null| awk '{print $12}'`
         fn_echo_blue "rThrd:${rThrd}% eThrd:${eThrd}Yi"
         [ -z "${eThrd}" ] && fn_echo_fail "Null eThrd" && exit
-        YIST=${chao}.gate.volvo COND="AND rise>${DOOR:-9.93} && eYi>${eThrd}" PPLUS=G FIELD=${FIELD:-eYi} fn_lsdt $2 > ${cache}.bang
+        YIST=${chao}.gate.volvo COND="AND rise>${DOOR:-3.82} && eYi>${eThrd}" PPLUS=G FIELD=${FIELD:-eYi} fn_lsdt $2 > ${cache}.bang
         if [ -z "${CHK_RANK}" ]; then
             cat ${cache}.bang
             [ `wc -l<${cache}.bang` = 0 ] && fn_echo_fail "no big money@${END}"
