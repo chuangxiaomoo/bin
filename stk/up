@@ -62,8 +62,8 @@ function fn_cap()
 
     # update .codelist
     cd ${cdpath}
-    mysql -N -B kts<<<"SELECT code,name FROM cap order by code asc;" | sed 's/ //g' > .codelist
-
+    sqls="SELECT code,name FROM cap order by code asc"
+    mysql -N kts<<<"${sqls}"  | sed -e 's/ //g' -e 's/恒顺众.*/恒顺众昇/'> .codelist
 
     if [ `wc -l<.codelist` -gt 3000 ]; then
         fn_echo_fail "more than 3000 codes, please check it!"
@@ -665,8 +665,8 @@ function fn_morningcall()
     # clean log of [up dorat loop]
     >       /tmp/kts/chao.loop
     >       /tmp/kts/patt.bang
-    ln -sf  /tmp/kts/patt.bang /tmp/kts/chao.p
-
+    ln -sf  /tmp/kts/patt.bang  /tmp/kts/chao.u
+    cp      .src/ugly.10.u      /tmp/kts/chao.u
     # enable BEEP
     echo 1 > /tmp/kts/chao.beep
 
@@ -796,7 +796,7 @@ function fn_dorat()
 
     fn_echo_succ "    succ: insert dorat ${sec_dt[@]}"
 
-    fn_chk_rank
+    # fn_chk_rank
 }
 
 function fn_chk_rank()
@@ -815,13 +815,16 @@ function fn_chk_rank()
         fn_bell; return
     fi
 
-    CHK_RANK=1 FIELD=rise DOOR=4 OP= SELECT volvo bang          # 2>&1 | grep 'rThrd:' > /dev/pts/0
-    awk '/^[036]/ {print $1}' /tmp/kts/patt.bang> ${patt}.1     # pat中不可有空行
-    cat ${cache}.bang | grep -v -f ${patt}.1 > ${buffer}.bang 
-    if [ `wc -l <${buffer}.bang` -gt 4 ]; then
-        cat ${buffer}.bang > /dev/pts/0
-        MSG=f4_is_Rocking fn_bell online.wav
-    fi
+    CHK_RANK=1 FIELD=rise DOOR=4 OP= SELECT volvo bang && {
+        awk '/^[036]/ {print $1}' /tmp/kts/patt.bang> ${patt}.1
+        cat ${cache}.bang | grep -v -f ${patt}.1 > ${buffer}.bang
+        awk '{print $4}' ${buffer}.bang | grep '^[036]' > ${buffer}.bang.c
+        grep -f ${buffer}.bang.c .codelist > /tmp/kts/chao.raw
+        if [ `wc -l <${buffer}.bang` -gt 4 ]; then
+            cat ${buffer}.bang > /dev/pts/0
+            MSG=f4_is_Rocking fn_bell online.wav
+        fi
+    }
 
     # SCREENER volvo x || fn_bell
     # COND="(rise>2.5&&eF4>.12)||eF4>.382" OP=1+ P=1 SELECT volvo > ${chao}.rock

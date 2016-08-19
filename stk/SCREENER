@@ -1077,10 +1077,11 @@ function fn_matov5()
 {
     case $1 in
     D)  fn_diftov5 ;;
-    l)  sqls="SELECT date from day WHERE code=900001 && date<='${END}' ORDER by date DESC LIMIT ${LIMIT:-10}" 
+    l)  #sqls="SELECT date from day WHERE code=900001 && date<='${END}' ORDER by date DESC LIMIT ${LIMIT:-10}" 
+        sqls="SELECT date, COUNT(DISTINCT code) FROM matov5 WHERE date<='${END}' GROUP by date ORDER by date DESC LIMIT ${LIMIT:-10}"
         mysql -N kts<<<"${sqls}" | cat -n; exit ;;
     e)
-        sqls="SELECT DISTINCT date FROM matov5 ORDER by date DESC LIMIT ${LIMIT:-10}"
+        #sqls="SELECT date, COUNT(DISTINCT code) FROM matov5 GROUP by date ORDER by date DESC LIMIT ${LIMIT:-10}"
         #mysql -N kts<<<"${sqls}" | cat -n
         mysql -N kts<<< "SELECT DISTINCT date FROM matov5 WHERE date<='${END}' ORDER by date DESC LIMIT 10" > ${chao}.dlist
         fn_echo_succ "whites-gona-cre.${FUNCNAME[0]}:"
@@ -1197,14 +1198,23 @@ function fn_dde()
     case $1 in
     l)  sqls="SELECT date from day WHERE code=900001 && date<='${END}' ORDER by date DESC LIMIT ${LIMIT:-10}" 
         mysql -N kts<<<"${sqls}" | cat -n; exit ;;
-    e|*)
-        sqls="SELECT DISTINCT date FROM dde ORDER by date DESC LIMIT ${LIMIT:-10}"
+    e)  sqls="SELECT DISTINCT date FROM dde ORDER by date DESC LIMIT ${LIMIT:-10}"
         # mysql -N kts<<<"${sqls}" | cat -n
         mysql -N kts<<< "SELECT DISTINCT date FROM dde WHERE date<='${END}' ORDER by date DESC LIMIT ${LIMIT:-10}" > ${chao}.dlist
         fn_echo_succ "whites-gona-cre.${FUNCNAME[0]}:"
         fn_dde l | grep ${OPT:-'-B100'} --color -f ${chao}.dlist
         exit
         ;;
+    r)  echo "
+        DELETE FROM dde WHERE date='${END}';
+        SELECT max(time) FROM mat_dde WHERE date='${END}' INTO @max_time;
+        INSERT INTO dde(date,time,code,net,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name)
+            SELECT date,time,code,net,pbuy,nbuy,psell,nsell,rise,trade,speed,shou,tov,amount,nmc,name FROM mat_dde
+            WHERE date='${END}' and time=@max_time;
+        " | mysql kts
+        fn_echo_succ "repair dde @${END} succ!"
+        ;;
+    *)  echo "SCREENER dde {list|exist|repair}" ;;
     esac
 }
 
@@ -1272,10 +1282,10 @@ function fn_up_volvo()
     UPDATE volvo v1, (SELECT date,code,volume FROM dorat WHERE date='${END}' and time='${VOL2}') v2
         SET v1.vol2=v2.volume-v1.vol1 WHERE v1.code=v2.code;
     UPDATE volvo SET volvo=IF(${vol1}>vol2, ${vol1}*.4+vol2*.6, ${vol1}*.6+${vol2}*.4);                    -- big*.4 + samll*.6
---  UPDATE volvo SET gate =IF(${vol1}>vol2, ${vol1}*.4+vol2*.6, ${vol1}*.6+${vol2}*.4)*4;                  -- 停牌个股gate默认为0
-    UPDATE volvo v1, (SELECT code,sum(volume)/32 as volume2                                             -- 32 = 1/128 * 4倍则放量
+    UPDATE volvo v1, (SELECT code,sum(volume)/32 as volume2                                                -- 32 = 1/128 * 4倍则放量
         FROM day WHERE date>='$PREV3' && date<='$PREV' GROUP by code) v2
         SET v1.gate=v2.volume2 WHERE v1.code=v2.code;
+    UPDATE volvo SET volvo=(vol1+vol2)/2 WHERE vol1>gate && vol2>gate && volvo<gate;
     " | mysql kts
     return $?
 }

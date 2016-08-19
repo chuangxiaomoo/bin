@@ -195,6 +195,7 @@ function fn_pro_spacer()
             ROUND(-${pwr_nmc}, 1) as _NMC,
             concat(ROUND(${nmc0}*(1-top10)/100,2), '_', top10, '_', ROUND(${REALIZED2}, 2)) as nmc_tp10_rliz,
             CONCAT(LEAST(9.99,ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2)), '_',ROUND(${BOOST},1) ) as prop5BOO,
+            $HIRI as hiri,
             $RISE as rise,
             ROUND( t5.tov*${pwr_t10} +${pwr_dy5} -100*${REALIZED2} 
                    -${pwr_nmc} +${pwr_vax} +${BOOST}, 1) as space,
@@ -203,7 +204,8 @@ function fn_pro_spacer()
          -- ROUND(100*(m.trade/ma5-1), 1) as ma5,
             CONCAT(ROUND(${_VAX}, 1), '_',ROUND(${pwr_vax}))as vax,
             round(d.amount/10000, 1) as eYi,
-            ${nmcYi}, c.name
+            ROUND(${nmc0}*(1-top10)/100,2) as nmc,
+            c.name
             FROM ${TEMPDAY:-day} d, cap c, t_matov5 t5, mat_ma1020 m, top10 p
             ${WHERE} d.code=m.code && m.date='${PREV}' AND
             d.code = c.code AND d.code=t5.code AND d.code=p.code AND
@@ -3037,6 +3039,7 @@ function fn_volvo()
     case $1 in
     p)  P=1 fn_volvo ${@:2} ;;
     l)  fn_list_iF5_times   ;;
+    v)  mysql -t kts <<< "SELECT * FROM volvo WHERE code=${2}" ;;
     e)  sqls="SELECT DISTINCT time FROM mat_vcdif WHERE date='${END}'"
         mysql -N kts <<<"${sqls}" > ${chao}.volvo.e
         SELECT lsd l | grep --color -f ${chao}.volvo.e
@@ -3044,7 +3047,7 @@ function fn_volvo()
         ;;
 #bang)  eThrd=`OPT=-N LIMIT=35,1 FIELD=eYi OP=1+ fn_volvo 2>/dev/null| awk '{print $14}'`
    b*)  F2=`fn_get_time ${2}`
-        fn_isF2 $F2 || { fn_echo_warn "${F2} no-F2"; return ;} 
+        fn_isF2 $F2 || { fn_echo_warn "${F2} no-F2"; return 1 ;} 
         SCREENER volvo c
         mysql -N kts <<< "SELECT code FROM volvo WHERE volvo<gate" > ${chao}.gate.volvo
         rThrd=`LIMIT=36 YIST=${chao}.gate.volvo OPT=-N FIELD=eYi PPLUS=G COND="rise>0" SELECT lsd $2 |
@@ -3052,13 +3055,20 @@ function fn_volvo()
         #                        YIST=${chao}.gate.volvo PPLUS=G FIELD=eYi COND="rise>3" SELECT lsd $2; exit
         eThrd=`OPT=-N LIMIT=35,1 YIST=${chao}.gate.volvo PPLUS=G FIELD=eYi COND="rise>${rThrd}&&eYi<20" SELECT lsd $2 2>/dev/null| awk '{print $12}'`
         fn_echo_blue "rThrd:${rThrd}% eThrd:${eThrd}Yi"
+
         [ -z "${eThrd}" ] && fn_echo_fail "Null eThrd" && exit
-        YIST=${chao}.gate.volvo COND="AND rise>${DOOR:-3.82} && eYi>${eThrd}" PPLUS=G FIELD=${FIELD:-eYi} fn_lsdt $2 > ${cache}.bang
+
         if [ -z "${CHK_RANK}" ]; then
+            COND="${bCOND} AND (hiri>${DOOR:-3.8}&&rise>=3.5) && eYi>${eThrd}" \
+            YIST=${chao}.gate.volvo PPLUS=G FIELD=${FIELD:-rise} fn_lsds $2 > ${cache}.bang
             cat ${cache}.bang
             [ `wc -l<${cache}.bang` = 0 ] && fn_echo_fail "no big money@${END}"
+        else
+            bCOND="&& rise<=6.2"
+            COND="${bCOND} AND (hiri>${DOOR:-3.8}&&rise>=3.5) && eYi>${eThrd}" \
+            YIST=${chao}.gate.volvo PPLUS=G FIELD=${FIELD:-rise} fn_lsds $2 > ${cache}.bang 2>/dev/pts/0
         fi
-        #echo $eThrd; exit
+        return 0
         ;;
     c)
         fn_iscode $2
