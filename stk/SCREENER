@@ -747,57 +747,6 @@ function fn_lohi_repair()
     return $?
 }
 
-# NUM=30
-# dates=(`END=2016-04-15 fn_get_date 1 ${NUM}`)
-# for (( i=${NUM}-1; i>=0; i-- )); do
-#     date=${dates[$i]};
-#     fn_echo_succ ${date}
-#     fn_lohi_repair $date
-# done
-
-function fn_ddetov5()
-{
-    NEXT=`fn_get_next`
-    PREV5=`fn_get_date 5`
-    fn_echo_succ "up matov5@${END}..."
-
-    echo "
-    DROP TABLE IF EXISTS tov5;
-    CREATE TABLE tov5 LIKE matov5;
-    TRUNCATE TABLE ris200;
-    TRUNCATE TABLE zxg;
-
-    INSERT INTO ris200(code)
-        SELECT d.code FROM dde d WHERE date='$NEXT' ORDER by rise DESC LIMIT 500;
-    INSERT INTO zxg(code)
-        SELECT d.code FROM dde d, ris200 r WHERE d.code=r.code && date>='$PREV5' && date<='$END' GROUP by code HAVING count(d.code)=5;
-
-    INSERT INTO tov5
-        SELECT d.date,d.code,tov,1,1,1,1 FROM dde d, zxg c WHERE date>='$PREV5' && date<='$END' && d.code=c.code;
-    " | mysql kts
-
-    num=`mysql -N kts <<< "SELECT COUNT(code) FROM zxg"` 
-    [ ${num} -gt 100 ]
-    xt_ret $? "Error: [num:${num}] -gt 1000" || return $?
-    
-    # MySQL取每组的前N条记录 WHERE 5>(SELECT count(*) FROM...) spend 100秒，改用循环来INSERT表
-    # 5日内必现的票
-    echo "
-    SET @END='$END';
-
-    TRUNCATE TABLE zxg;
-    INSERT INTO zxg(code)
-        SELECT d.code FROM dde d, ris200 r WHERE d.code=r.code && date>='$PREV5' && date<='$END' GROUP by code HAVING count(d.code)<5;
-    call sp_visit_tbl('zxg', @fn_dde5);
-
-    DELETE FROM matov5 WHERE date='$END';
-    INSERT INTO matov5 SELECT '$END',code,sum(tov)/5,1,1,1,1 FROM tov5 GROUP by code ORDER by code ASC;
-    " >> $mps_god
-    #" | tee -a $mps_god
-    mysql $OPT -t kts < $mps_god
-    xt_ret $? "${FUNCNAME}" || return $?
-}
-
 function fn_ddetov25()
 {
     PREV25=`fn_get_date 10`
@@ -848,7 +797,7 @@ function fn_ddetov21()
     *)      Ponzi=3.5   ;;
     esac
 
-    fn_echo_succ "up matov5@${END} t500:${t500} Ponzi:${Ponzi}..."
+    fn_echo_succ "up __FAST__:${__FAST__:-0} matov5@${END} t500:${t500} Ponzi:${Ponzi}..."
 
     echo "
     DROP TABLE IF EXISTS tov5;
@@ -872,6 +821,7 @@ function fn_ddetov21()
 
     SET @END='$END';
     SET @Ponzi=${Ponzi};
+    SET @__FAST__=${__FAST__:-0};
     call sp_visit_tbl('zxg', @fn_dde21);
 
     DELETE FROM matov5 WHERE date='$END';
@@ -1095,9 +1045,6 @@ function fn_matov5()
         ;;
     [0-9]*)
         date=`fn_get_date ${1:-1}`
-       #END=${date} fn_ddetov25
-        test -n "$DDETOV5" &&
-        END=${date} fn_ddetov5 ||               # fast create head-200
         END=${date} fn_ddetov21
         ;;
     *)

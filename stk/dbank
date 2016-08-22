@@ -269,7 +269,7 @@ function fn_yist()
     inLIST=
     WHERE=WHERE
     if [ -f "${YIST}" ]; then
-        LIST=(`cat ${YIST}|awk '/^[036]/{print $1}' | xargs`)
+        LIST=(`awk '/^[036]/{print $1}' ${YIST} | xargs`)
         [ -z "${LIST[0]}" ] && return
         TBL=yist up file_to_table ${YIST}
 

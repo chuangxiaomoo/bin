@@ -76,7 +76,7 @@
 # 博弈论          .doc/gametheory.md
 # 物理            .doc/physics.md
 # Equation        .doc/Methodology.md
-# 愚形            .src/ugly.10
+# 愚形            .src/ugly.10.u
 # 套路            .doc/tao.md
 # 参数            .doc/args.md
 # ERRORs          .doc/error.md

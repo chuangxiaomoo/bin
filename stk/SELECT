@@ -57,7 +57,7 @@ function fn_update_matov5()
     if [ "${idate}" != ${PREV} ]; then
         xCol=date fn_xCol matov5 t_matov5 ${PREV} || { 
             fn_echo_warn "SIMPLE building..., FULL-MATOV5-CMD: END=${PREV} SCREENER matov5 1";
-            END=${PREV} DDETOV5=1 SCREENER matov5 1; xCol=date fn_xCol matov5 t_matov5 ${PREV} 
+            __FAST__=1 END=${PREV} SCREENER matov5 1; xCol=date fn_xCol matov5 t_matov5 ${PREV} 
         }
         xt_ret $? "To avoid this WARNING: END=${PREV} SCREENER matov5 1" || exit $?
     fi
@@ -1979,13 +1979,18 @@ function fn_flat()
     fn_bist
     fn_yist
 
-    PREV4=`fn_get_date ${NUM:-4}`
+    PREV5=`fn_get_date ${NUM:-5}`
     sqls="
-    SELECT d.code, sum(${ABS}(close/yesc-1)<=.05) as cnt FROM day d $WHERE date>='${PREV4}' and date<='${END}'
-    GROUP by code HAVING cnt>=${DOOR:-4}
+    SELECT d.code, 
+        sum(${ABS}(close/yesc-1)<=.05) as cnt,
+        sum(${ABS}(close/yesc-1)) as sumrise
+    FROM day d $WHERE date>='${PREV5}' and date<='${PREV}'
+    GROUP by code HAVING cnt>=${DOOR:-4} && sumrise<8
+    ORDER by sumrise DESC
     "
-    # mysql -t kts <<< "${sqls}"
-    fn_echo_succ "flat@${END} feed cond [${ABS}(rise.cnt) <= 5%]"
+
+    [ "${PARTS:-f}" = o ] && mysql -t kts <<< "${sqls}"
+    fn_echo_succ "PARTS:${PARTS:-f} flat@${END} feed cond [${ABS}(rise.cnt) <= 5%]"
     CHAO=1 fn_chao ${chao}.flat
 }
 
@@ -1993,16 +1998,19 @@ function fn_stat()
 {
     case $1 in
     hot)
+        fn_yist
         PREV5=`fn_get_date ${NUM:-8}`
         sqls="
         SELECT 
             d.code,
+            COUNT(d.code) as live,
             SUM((d.close-d.yesc)/d.yesc>.093 && (d.close-d.yesc)/d.yesc<.15) as cnt,
             SUM(high=low) as yiz,
             c.name
-            FROM day d , cap c WHERE d.code=c.code AND d.date>='${PREV5}' AND d.date<='${END}' 
-            GROUP by code HAVING cnt>=${DOOR:=1} && cnt>yiz ${COND}
-            ORDER by cnt DESC LIMIT ${LIMIT:-36}
+            FROM day d , cap c 
+            $WHERE d.code=c.code AND d.date>='${PREV5}' AND d.date<='${END}' 
+            GROUP by code HAVING cnt>=${DOOR:=1} && ${HAV:-'cnt>yiz'} ${COND}
+            ORDER by ${FIELD:-cnt} DESC LIMIT ${LIMIT:-36}
         "
         fn_imysql_sqls | fn_hew_tail
         fn_echo_succ "[NUM:${NUM:-8}]日热点 @${END} [FIELD:${FIELD:-cnt}] [cnt.DOOR:${DOOR}]"
@@ -2146,7 +2154,7 @@ function fn_sample()
         ROUND(100*(close-yesc)/yesc, 2) as rise,
         ROUND(100*(close-amount/volume)/yesc, 2) as earn
         FROM blk_name as n, blk_memb as m, xtempday as x
-        WHERE n.blk=m.blk AND n.blk NOT in ${EXCLUDE_BLK//,0x40/} AND m.code=x.code;
+        WHERE n.blk=m.blk AND n.blk NOT in ${EXCLUDE_BLK} AND m.code=x.code;
 
     INSERT INTO top8
     SELECT * from topN a where ${SAMPLES}>(select count(*) from topN where blk=a.blk and rise>a.rise) order by a.blk,a.rise desc;
@@ -2394,10 +2402,9 @@ function fn_blk()
     0xD953,  -- 243 | 参股金融
     0xD886,  -- 100 | 证金持股
     0xDB9B   -- 81  | 转融券标的
---  0xDA4D,  -- 305 | 央企国资改革
+-- ,0xDA4D   -- 305 | 央企国资改革
 -- ,0x40     -- 226 | 新股与次新股
     )"
-#   EXCLUDE_BLK="(0x1234)"
 
     case $1 in
     g|grep)     LIMIT=500 fn_blk l | grep ${2:-'\<FF'} ;;
@@ -3044,6 +3051,12 @@ function fn_volvo()
         mysql -N kts <<<"${sqls}" > ${chao}.volvo.e
         SELECT lsd l | grep --color -f ${chao}.volvo.e
         fn_echo_succ "F2-list @${END}"
+        ;;
+  dir)  PARTS=f LIMIT=100 PPLUS=E SELECT lsd $2
+        grep -v -f ${chao}.xin ${chao}.lsd > ${chao}.yiz
+
+        [ -s ${chao}.yiz ] || { fn_echo_fail "chao.yiz is EMPTY [大盘振荡&新股大开板]"; exit ;}
+        HAV="yiz>0" DOOR=0 FIELD=live YIST=/tmp/kts/chao.yiz fn_stat hot
         ;;
 #bang)  eThrd=`OPT=-N LIMIT=35,1 FIELD=eYi OP=1+ fn_volvo 2>/dev/null| awk '{print $14}'`
    b*)  F2=`fn_get_time ${2}`

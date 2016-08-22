@@ -1468,6 +1468,11 @@ CREATE PROCEDURE sp_dde21(a_code INT(6) ZEROFILL) tag_dde21:BEGIN
         LEAVE tag_dde21;
     END IF;
 
+    IF @__FAST__ = 1 THEN 
+        INSERT INTO tov5(date,code,tov,dy12,dy35,wk12,wk23) VALUES (@END,a_code,@v_tov5, @v_top1/@v_bot2, @v_top3/@v_bot5, 1,1); 
+        LEAVE tag_dde21;
+    END IF;
+
     # LIMIT 8,13
     # 保证id连续: innodb_autoinc_lock_mode=0 /etc/mysql/my.cnf 
     SET @sqls=concat('
@@ -1476,7 +1481,6 @@ CREATE PROCEDURE sp_dde21(a_code INT(6) ZEROFILL) tag_dde21:BEGIN
         a_code, " and date<= '", @END, "' order by date DESC LIMIT 8,13");
     PREPARE stmt from @sqls; EXECUTE stmt;
     SELECT count(*) FROM ttov INTO @v_len;
-
 
     IF @v_len < 21 THEN 
         # 为次新股考虑：如<第一创业>

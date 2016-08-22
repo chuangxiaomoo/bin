@@ -111,6 +111,9 @@ function fn_10jqka()
         # chao2=${chao2} PARTS=f CHAO=1 SELECT blk U ${maps[${i}]} >& /dev/null && cp ${chao}.${chao2} .blk.${chao2}
     done
     
+    # 输出新股
+    PARTS=f chao2=xin SELECT blk U 40
+
     fn_echo_succ "up blk 10jqka succ!"
 }
 
