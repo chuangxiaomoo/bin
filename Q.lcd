@@ -1,0 +1,8 @@
+#! /bin/bash
+
+# 命令输出到副屏
+
+{
+    echo
+    eval $@
+} >& /dev/pts/0

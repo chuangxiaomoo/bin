@@ -285,6 +285,8 @@ function fn_06_哪些知识会让你变蠢？()   { cat artical_06_哪些知识�
 function fn_07_如何构建经济学思维方式() { cat artical_07_如何构建经济学思维方式 ;}
 function fn_08_novel()                  { cat artical_08_novel ;}
 
+function fn_40_学习批判性思考()         { cat artical_40_学习批判性思考 ;}
+
 function fn_100_人际关系痛苦的根源()    { cat artical_100_人际关系痛苦的根源 ;}
 
     local opts=(
@@ -296,6 +298,7 @@ function fn_100_人际关系痛苦的根源()    { cat artical_100_人际关系�
         06_哪些知识会让你变蠢？
         07_如何构建经济学思维方式
         08_novel
+        40_学习批判性思考
         100_人际关系痛苦的根源          # 缺乏界限感
     )
     fn_print $@
@@ -869,6 +872,16 @@ function fn_rhyme200()                  { cat guo_rhyme200 ;}
         term
     )
     fn_print $@
+}
+
+
+function fn_writing() {
+function fn_format_XiaoLai()            { cat writing_format_XiaoLai ;}
+    local opts=(                        # writing
+        format_XiaoLai
+    )
+    
+    return $?
 }
 
 function fn_game_theory()               { cat game_theory ;}
