@@ -204,7 +204,7 @@ function fn_trace()
                round(100*(A.curr_asset-B.curr_asset)/B.curr_asset, 2)-round(100*(A.cyb-B.cyb)/B.cyb, 2) as RoE_leading
                FROM trace A INNER JOIN
                     trace B on(A.id=B.id+1) GROUP BY A.id 
-               HAVING 1 ${COND};
+               HAVING 1 ${COND} ORDER by date DESC LIMIT ${LIMIT:-40};
     " | mysql -t kts
 
     return $?
@@ -667,14 +667,15 @@ function fn_morningcall()
 
     # clean log of [up dorat loop]
     >       /tmp/kts/chao.loop
-    ln -sf  /tmp/kts/patt.bang  /tmp/kts/chao.u
-    cp      /tmp/kts/patt.bang  /tmp/kts/chao.u2            # 归档昨日记录
-    cp      .src/ugly.10.u      /tmp/kts/chao.u             # 初始化今日记录
+    >       /tmp/kts/chao.eThrd
+    cp      /tmp/kts/chao.u /tmp/kts/chao.u2            # 归档昨日记录
+    cp      .src/ugly.10.u  /tmp/kts/chao.u             # 初始化今日记录
+
     # enable BEEP
     echo 1 > /tmp/kts/chao.beep
 
-    # ma120
-    SELECT ma120 || fn_bell 'duang.wav'
+    SELECT ma120 || fn_bell 'duang.wav'                 # ma120
+    SELECT ddd d3                                       # 连续3天缩量
 
     # check-matov5 
     max_date=`mysql -N kts <<< "SELECT max(date) FROM matov5"`
@@ -818,38 +819,33 @@ function fn_chk_rank()
         fn_bell; return
     fi
 
-    CHK_RANK=1 FIELD=rise DOOR=4 OP= SELECT volvo bang && {
-        awk '/^[036]/ {print $1}' /tmp/kts/patt.bang> ${patt}.1
+    CHK_RANK=1 FIELD=rise lowDOOR=4 OP= SELECT volvo bang $1 && {               # gen ${cache}.bang
+        eThrd=`cat ${chao}.eThrd`
+        awk '/^[036]/ {print $1}' /tmp/kts/chao.u> ${patt}.1
         cat ${cache}.bang | grep -v -f ${patt}.1 > ${buffer}.bang
         awk '{print $4}' ${buffer}.bang | grep '^[036]' > ${buffer}.bang.c
         grep -f ${buffer}.bang.c .codelist > /tmp/kts/chao.raw
         if [ `wc -l <${buffer}.bang` -gt 4 ]; then
             cat ${buffer}.bang > /dev/pts/0
+            fn_echo_fail `grep -f /tmp/kts/chao.d3 --color /tmp/kts/chao.raw` >& /dev/pts/0
             MSG=f4_is_Rocking fn_bell online.wav
         fi
     }
 
-    # SCREENER volvo x || fn_bell
-    # COND="(rise>2.5&&eF4>.12)||eF4>.382" OP=1+ P=1 SELECT volvo > ${chao}.rock
-    # if [ `wc -l < ${chao}.rock` -ne 0 ]; then
-    #     cat ${chao}.rock > /dev/pts/0
-    #     MSG=f4_is_Rocking fn_bell online.wav
-    # fi
-
     # 刷新DZH
-    WIT=2 PARTS=f YIST=/tmp/kts/chao.120 PPLUS=G SELECT lsds || exit
-    WIT=1 PARTS=f PPLUS=K kCOND="rise+space>5" SELECT lsds ${icurr} || exit
+    WIT=2 PARTS=f YIST=/tmp/kts/chao.120 PPLUS=G SELECT lsds ${icurr} || exit
+    WIT=1 PARTS=f PPLUS=K kCOND="rise+space>5"   SELECT lsds ${icurr} || exit
 
     # 设置阈值、上限、下限，!取反
     thrx=-5
-    left=40
-    right=60
+    invt=
+    left=18
+    right=25
     sqls="WHERE date='${END}' ORDER by rise ASC"
     sqls="(SELECT code, ROUND(100*(d.close-d.yesc)/d.yesc, 2) as rise FROM day d ${sqls})"
     dive=`mysql -N kts <<< "SELECT SUM(rise<${thrx}) FROM ${sqls} as t"`
-    if ! ([ "${dive}" -gt ${left} ] && [ "${dive}" -lt ${right} ]); then
-         fn_bell duang.wav
-    fi
+
+    fn_issqltrue "${invt}(${dive}>${left} && ${dive}<${right})" && fn_bell duang.wav
 
     # 涨停计算
     fn_echo_succ "ceilings=rise>=9.93..."
@@ -857,7 +853,7 @@ function fn_chk_rank()
 
     [ ${ceilings} -ge 12 ] && [ ${ceilings} -le 18 ] && MSG=Top10s_touch_${ceilings} fn_bell system.wav 
     if [ "${ceilings}" -ge 18 ]; then
-        SUFFIX="Tops[${ceilings}]Dive[${thrx}% ${dive}].{$left~$right}" \
+        SUFFIX="Tops[${ceilings}]Dive[${thrx}% ${dive}].{${invt}$left~$right} eThrd:${eThrd}" \
         fn_beep "__More_than_16_birds__\n"; return
     fi
 
@@ -890,7 +886,7 @@ function fn_chk_rank()
     [ "${match:-0}" -eq 0 ] && BEEPS=0
     [ -z "${birds2}" ] && iNL="\n"
 
-    SUFFIX="Tops[${ceilings}]Dive[${thrx}% ${dive}].{$left~$right}" \
+    SUFFIX="Tops[${ceilings}]Dive[${thrx}% ${dive}].${invt}{$left~$right} eThrd:${eThrd}" \
     BEEPS=${BEEPS} fn_beep "L1:${birds1}L2:${birds2}${iNL}"
 }
 
@@ -1411,11 +1407,33 @@ function fn_seat_detail0()
 
     echo "
     CREATE TEMPORARY TABLE seat_detail0 LIKE seat_detail;
+    CREATE           TABLE IF NOT EXISTS seat_zhao LIKE seat_detail;
     LOAD DATA LOCAL INFILE '${chao}.seat.rip' INTO TABLE seat_detail0;
     DELETE FROM seat_detail0 WHERE date<='${sta_date}';
-    INSERT INTO seat_detail SELECT * FROM seat_detail0;
+    INSERT INTO ${stbl:-seat_detail} SELECT * FROM seat_detail0;
     " | mysql kts
     xt_ret $? "" || return $?
+}
+
+function fn_seat_zhao()
+{
+    seats=(80033815 80422837 80161167)
+    d80=`fn_get_date 20`
+
+    local i=
+    for (( i=0; i<${#seats[@]}; i++ )); do
+        seat=${seats[$i]}
+        sql_date="SELECT max(date) FROM ${stbl:-seat_zhao} WHERE seat=${seat}"
+        sta_date=`mysql -N kts <<<"${sql_date}"`
+        if [ -z "${sta_date/NULL/}" ]; then
+            fn_echo_warn "replace null-date of seat[${i}]:$seat with d80:${d80}"
+            sta_date=$d80
+        fi
+        fn_echo_warn "start seat[${i}]:$seat"
+        stbl=seat_zhao fn_seat_detail0 ${seat}
+    done
+    
+    return $?
 }
 
 function fn_seat_detail()
@@ -1433,7 +1451,7 @@ function fn_seat_detail()
     local i=
     for (( i=0; i<${#seats[@]}; i++ )); do
         seat=${seats[$i]}
-        sql_date="SELECT max(date) FROM seat_detail WHERE seat=${seat}"
+        sql_date="SELECT max(date) FROM ${stbl:-seat_detail} WHERE seat=${seat}"
         sta_date=`mysql -N kts <<<"${sql_date}"`
         if [ -z "${sta_date/NULL/}" ]; then
             fn_echo_warn "replace null-date of seat[${i}]:$seat with d80:${d80}"
@@ -1735,6 +1753,7 @@ function fn_tp10()
     LOAD DATA LOCAL INFILE '${tp10_rip}' INTO TABLE top10R(code,name,top10);
     DELETE t.* FROM top10 t, top10R r WHERE t.code=r.code;
     INSERT INTO top10 SELECT * FROM top10R;
+    UPDATE top10 SET top10=.85 WHERE top10>=.85;
     " | mysql kts
     xt_ret $? "" || return $?
 
@@ -1791,6 +1810,7 @@ function fn_main()
     "notice NUM                         # 至多NUM天，更新公告 /opt/notice/"
     "seat_rank                          # 总排名"
     "seat_detail                        # top-30-seat所操作的股票"
+    "seat_zhao                          # 赵一万"
     "bigbid                             # 大宗交易"
     "hwork                              # 每日功课"
     "chk_rank [iF5]                     # 有新进成员，[up dorat]定期调用"

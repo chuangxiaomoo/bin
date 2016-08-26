@@ -65,7 +65,7 @@ function fn_update_matov5()
 
 function fn_pro_header_30min()
 {
-    PARTS=s fn_prop > ${chao}.prop
+    PARTS=s fn_prop $1 > ${chao}.prop
     PROP0=`fn_carbon get prop0`
     PROP5=`fn_carbon get prop5`
     hhmmss=${iTime:-${date_T}}
@@ -192,7 +192,7 @@ function fn_pro_spacer()
             $TURNOV as tov, t5.tov as tov5,
             ROUND(${pwr_dy5},1) as PWR5,
 --          ROUND((${pwr_t10}-1)*t5.tov,1) as TP10,
-            ROUND(-${pwr_nmc}, 1) as _NMC,
+--          ROUND(-${pwr_nmc}, 1) as _NMC,
             concat(ROUND(${nmc0}*(1-top10)/100,2), '_', top10, '_', ROUND(${REALIZED2}, 2)) as nmc_tp10_rliz,
             CONCAT(LEAST(9.99,ROUND(100*d.volume*c.close/c.nmc/t5.tov, 2)), '_',ROUND(${BOOST},1) ) as prop5BOO,
             $HIRI as hiri,
@@ -212,7 +212,7 @@ function fn_pro_spacer()
             d.date = '${END}' && ${iCOND:-1} && ${cCOND:-1} 
             HAVING ${HAV:-1} && ${kCOND:-1} ${COND} ORDER BY ${FIELD:-rise} ${ASC:-desc} limit ${LIMIT:-36}
     "
-    #echo "${sqls}"; exit
+    #echo "${sqls}" >/dev/stderr; exit
 }
 
 function fn_lsdh() { is_hammer=1 fn_lsd ${@} ;}
@@ -330,7 +330,7 @@ function fn_lsd()
                 && d.date = '${END}' && ${iCOND:-1} && ${cCOND:-1}
                 HAVING ${HAV:-1} ${COND} ORDER BY ${FIELD:-rise} ${ASC:-desc} limit ${LIMIT:-36}
         "
-        #echo "${sqls}"; exit
+        #echo "${sqls}" > /dev/stderr; exit
     }
 
     fn_sql $@
@@ -1883,7 +1883,7 @@ function fn_prop()
     TRUNCATE tov8;
     INSERT INTO tov8
     SELECT code,tov,shou FROM (
-      SELECT code, sum(tov)/${CNT} as tov, sum(shou)/${CNT} as shou, SUM(tov>=${DOOR:-7}) as num, name 
+      SELECT code, sum(tov)/${CNT} as tov, sum(shou)/${CNT} as shou, SUM(tov>=${propDOOR:-5}) as num, name 
         FROM dde WHERE date>='${PREV4}' and date<='${PREV}' 
         GROUP by code
         HAVING num=${CNT} ORDER by code ASC
@@ -2280,7 +2280,7 @@ function fn_blk_delta()
         ROUND(100*(x.close-x.close2)/yesc, 3) as ride,
         ROUND(100*(x.close-amount/volume)/yesc, 2) as earn
         FROM blk_name as n, blk_memb as m, x0 as x
-        WHERE n.blk=m.blk AND n.blk NOT in ${EXCLUDE_BLK//,0x40/} AND m.code=x.code;
+        WHERE n.blk=m.blk AND n.blk NOT in ${EXCLUDE_BLK} AND m.code=x.code;
 
     INSERT INTO delta8
     SELECT * from deltaN a
@@ -2396,6 +2396,7 @@ function fn_blk_wolf_inter()
 function fn_blk()
 {
     EXCLUDE_BLK="(
+    0xD813,  -- 875 | 深港通
     0xCE54,  -- 898 | 融资融券
     0xDAE8,  -- 574 | 沪港通概念
     0xDBD4,  -- 316 | 股东增持
@@ -2838,6 +2839,16 @@ function fn_notice()
 function fn_ddd()
 {
     case $1 in
+    d3)
+        PREV3=`fn_get_date 3`
+        echo "
+        SELECT t1.code FROM
+        (SELECT * FROM day WHERE date='${END}')   t1,
+        (SELECT * FROM day WHERE date='${PREV}')  t2,
+        (SELECT * FROM day WHERE date='${PREV3}') t3
+        WHERE t1.code=t2.code && t1.code=t3.code and t1.volume<t2.volume && t2.volume<t3.volume && t1.close<t3.close;
+        " | mysql -N kts > /tmp/kts/chao.d3
+        ;;
     bang)
         fn_echo_succ "上午封板@${END}"
         PARTS=f chao2='lsd' CHAO=1 COND="rise>9.93" iASC=DESC HMS=12:00:00 vDOOR=3 SELECT lsd 1
@@ -2908,6 +2919,7 @@ function fn_ddd()
     *)
         echo "
         XBB=1 SELECT ddd <para> # XBB=1使能xbb列
+        d3                      # 连续3天缩量
         bang                    # 上午封板显实力，下午开板显套利空间
         000                     # iEND=3 连续缩量[STEP=2]天
         110                     # 2阳1阴--打板小白收割机.rise前30分坚决下跌无诱多.high不创新高
@@ -2924,7 +2936,7 @@ function fn_seat_rank()
     SELECT code, name, count(code) as num, sum(month) as mon, sum(amount) as eWan
         FROM seat_rank GROUP by code HAVING num>${NUM:-0} ORDER by eWan DESC
     "
-    mysql -t kts <<< "${sqls}"
+    fn_imysql_sqls
 }
 
 function fn_seat_detail()
@@ -3063,23 +3075,28 @@ function fn_volvo()
         fn_isF2 $F2 || { fn_echo_warn "${F2} no-F2"; return 1 ;} 
         SCREENER volvo c
         mysql -N kts <<< "SELECT code FROM volvo WHERE volvo<gate" > ${chao}.gate.volvo
-        rThrd=`LIMIT=36 YIST=${chao}.gate.volvo OPT=-N FIELD=eYi PPLUS=G COND="rise>0" SELECT lsd $2 |
+        rThrd=`HAV= LIMIT=36 YIST=${chao}.gate.volvo OPT=-N FIELD=eYi PPLUS=G COND="rise>0" SELECT lsd $2 |
             awk 'BEGIN{total=0}{total+=$10}END{print total/48}'`
         #                        YIST=${chao}.gate.volvo PPLUS=G FIELD=eYi COND="rise>3" SELECT lsd $2; exit
-        eThrd=`OPT=-N LIMIT=35,1 YIST=${chao}.gate.volvo PPLUS=G FIELD=eYi COND="rise>${rThrd}&&eYi<20" SELECT lsd $2 2>/dev/null| awk '{print $12}'`
+        eThrd=`HAV= OPT=-N LIMIT=35,1 YIST=${chao}.gate.volvo PPLUS=G FIELD=eYi COND="rise>${rThrd}&&eYi<20" SELECT lsd $2 2>/dev/null |
+            awk '{print $12}'`
         fn_echo_blue "rThrd:${rThrd}% eThrd:${eThrd}Yi"
 
         [ -z "${eThrd}" ] && fn_echo_fail "Null eThrd" && exit
+        echo "${eThrd}" > ${chao}.eThrd
+
+        PROP0=`fn_carbon get prop0`
 
         if [ -z "${CHK_RANK}" ]; then
-            COND="${bCOND} AND (hiri>${DOOR:-3.8}&&rise>=3.5) && eYi>${eThrd}" \
+            kCOND="(eYi>${eThrd} || (eYi>.6*${eThrd} && prop5BOO>4*$PROP0))" \
+            COND="             AND (hiri>${lowDOOR:-3.8}&&rise>=3.5) " \
             YIST=${chao}.gate.volvo PPLUS=G FIELD=${FIELD:-rise} fn_lsds $2 > ${cache}.bang
             cat ${cache}.bang
             [ `wc -l<${cache}.bang` = 0 ] && fn_echo_fail "no big money@${END}"
         else
-            bCOND="&& rise<=6.2"
-            COND="${bCOND} AND (hiri>${DOOR:-3.8}&&rise>=3.5) && eYi>${eThrd}" \
-            YIST=${chao}.gate.volvo PPLUS=G FIELD=${FIELD:-rise} fn_lsds $2 > ${cache}.bang 2>/dev/pts/0
+            kCOND="(eYi>${eThrd} || (eYi>.6*${eThrd} && prop5BOO>4*$PROP0))" \
+            COND="&& rise<=7 AND (hiri>${lowDOOR:-3.8}&&rise>=3.5) " \
+            HAV= YIST=${chao}.gate.volvo PPLUS=G FIELD=${FIELD:-rise} fn_lsds $2 > ${cache}.bang 2>/dev/pts/0
         fi
         return 0
         ;;
@@ -3149,6 +3166,22 @@ function fn_volvo()
     exit
 }
 
+function fn_seat_zhao()
+{
+    PREV5=`fn_get_date ${NUM:-8}`
+
+    sqls="
+    SELECT 
+    seat,date,code,
+    ROUND(buy/10000) as buy,
+    ROUND(sell/10000) as sell,
+    name,cause
+    FROM seat_zhao WHERE date>='${PREV5}' && date<='${END}'
+    ORDER by date DESC, seat DESC LIMIT ${LIMIT:-24}
+    "
+    fn_imysql_sqls | fn_hew_tail
+}
+
 function fn_main()
 {
     cmdlist=(
@@ -3207,7 +3240,8 @@ function fn_main()
     "seq                                      # 涨停顺序"
     "ddd                                      # 连续缩量后放量"
     "seat_rank                                # 总排名，上榜次数num>#NUM"
-    "seat_detail                              # seat-blk"
+    "seat_detail                              # 临幸板块seat-blk"
+    "seat_zhao                                # 赵一万"
     )
 
     fn_set_END

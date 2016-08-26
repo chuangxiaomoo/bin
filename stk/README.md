@@ -21,6 +21,7 @@
 # 决定论          .doc/model.md                 -- 打造自己的交易模型
 # 鸿观            .doc/hongguan.md
 # 牛猫            .doc/gushequ.md
+# 神农陈宇        .doc/shennong.md
 
 > 构建体系
 
@@ -77,6 +78,6 @@
 # 物理            .doc/physics.md
 # Equation        .doc/Methodology.md
 # 愚形            .src/ugly.10.u
-# 套路            .doc/tao.md
 # 参数            .doc/args.md
+# 套路            .doc/tao.md
 # ERRORs          .doc/error.md
