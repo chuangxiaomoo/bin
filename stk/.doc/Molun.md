@@ -10,8 +10,8 @@
 
 * list
 
-. phys.1: 牛顿加速度定律&求导         macd
-          重力加速度&第一宇宙速度
+. phys.1: 牛顿加速度定律&求导         [](+/价格密码.均线.波的叠加原理.区间套定理 .doc/position.md)
+          重力加速度&第一宇宙速度     [](+/Move-Average-Con-Dif .doc/position.md)
 . phys.2: 能量守恒定律                资金推动
 . phys.3: 动量守恒.费雪公式           mv=pq, 换手是极其重要的指标
 . phys.4: 熵增定律                    聚集&消息&概念(eWolf＞.3便可造势) [](+/熵的量化 .doc/physics.md)
