@@ -113,7 +113,6 @@ function fn_pro_hammer()
             $RISE as rise,
             ROUND( t5.tov*$pwr_t10 +${pwr_dy5} -100*${REALIZED2} 
                    -${pwr_nmc} +${pwr_vax} +${BOOST}, 1) as space,
-            ${_VAX} as vax,
             ${sql_ma20},
             round(d.amount/10000, 2) as eYi,
             ${nmcYi}, c.name
@@ -152,7 +151,7 @@ function fn_pro_wolves()
             ROUND(${pwr_dy5},1) as PWR5,
 --          ROUND((${pwr_t10}-1)*t5.tov,1) as TP10,    # _line_for_wolf_
 --          ROUND(-${pwr_nmc}, 1) as _NMC,
-            concat(ROUND(${nmc0}*(1-top10)/100,2), '_', top10, '_', ROUND(${REALIZED2}, 2)) as nmc_tp10_rliz,
+            concat(${_VAX}, '_', top10, '_', ROUND(${REALIZED2}, 2)) as v_tp10_rliz,
             CONCAT(LEAST(9.99,ROUND(${VBI3},2)), '_',LEAST(9.9,ROUND(${VBI3}*2/(${PROP0}+${PROP5}),1))) as vbi3BOO,
             $RISE as rise,
             ROUND( t5.tov*${pwr_t10} +${pwr_dy5} -100*${REALIZED2} 
@@ -177,24 +176,21 @@ function fn_pro_spacer()
 {
     [ -z "${is_spacer}" ] && return 1
 
+    V3='(c.nmc/c.close*vax3)'
     sqls="
     SELECT  $columns,
             ${RIFLE} as i_wk,
             ${ROCKET} as i_dy,
             $TURNOV as tov, t5.tov as tov5,
             ROUND(${pwr_dy5},1) as PWR5,
---          ROUND((${pwr_t10}-1)*t5.tov,1) as TP10,
---          ROUND(-${pwr_nmc}, 1) as _NMC,
-            concat(ROUND(${nmc0}*(1-top10)/100,2), '_', top10, '_', ROUND(${REALIZED2}, 2)) as nmc_tp10_rliz,
+            concat(${_VAX}, '_', top10, '_', ROUND(${REALIZED2}, 2)) as v_tp10_rliz,
             CONCAT(LEAST(9.99,ROUND(${VBI3},2)), '_',LEAST(9.9,ROUND(${VBI3}*2/(${PROP0}+${PROP5}),1))) as vbi3BOO,
+            ROUND(${V3}*.06/10000,2) as dot6,
             $HIRI as hiri,
             $RISE as rise,
             ROUND( t5.tov*${pwr_t10} +${pwr_dy5} -100*${REALIZED2} 
                    -${pwr_nmc} +${pwr_vax} +${BOOST}, 1) as space,
             ${sql_ma20},
-         -- d.close,ma60,
-         -- ROUND(100*(m.trade/ma5-1), 1) as ma5,
-            ${_VAX} as vax,
             round(d.amount/10000, 1) as eYi,
             ROUND(${nmc0}*(1-top10)/100,2) as nmc,
             c.name
