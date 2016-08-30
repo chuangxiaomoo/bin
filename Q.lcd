@@ -3,6 +3,6 @@
 # 命令输出到副屏
 
 {
-    echo
+    echo "# $@"
     eval $@
 } >& /dev/pts/0
