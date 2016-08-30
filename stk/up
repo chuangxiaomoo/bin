@@ -803,66 +803,24 @@ function fn_dorat()
     fn_chk_rank
 }
 
-function fn_chk_rank()
+function fn_break_in()
 {
-    # OUTPUT__DZH__
-    [ -z "${icurr:=$1}" ] && icurr=`fn_get_nr_time`
-    hhmm=${hhmm:-$(date +%H%M --date="`fn_get_time $icurr`")}
-
-    if [ "${hhmm}" -lt 920 ]; then              # 复牌检查
-        return
-    elif [ "${hhmm}" -lt 930 ]; then
-        mysql kts <<< "DELETE FROM dorat WHERE date='${END}' and time<'09:24:00'";
-        ./blk 10jqka
-        fn_echo_blue "昨日涨停->自选股3.BLK"
-        WIT=3 END= iEND=2 COND="rise>=9.93" PARTS=f PPLUS=G SELECT lsds || fn_bell
-        fn_bell; return
-    fi
-
-    CHK_RANK=1 FIELD=rise lowDOOR=4 OP= SELECT volvo bang $1 && {               # gen ${cache}.bang
-        eThrd=`cat ${chao}.eThrd`
-        awk '/^[036]/ {print $1}' /tmp/kts/chao.u> ${patt}.1
-        cat ${cache}.bang | grep -v -f ${patt}.1 > ${buffer}.bang
-        awk '{print $4}' ${buffer}.bang | grep '^[036]' > ${buffer}.bang.c
-        grep -f ${buffer}.bang.c .codelist > /tmp/kts/chao.raw
-        if [ `wc -l <${buffer}.bang` -gt 4 ]; then
-            cat ${buffer}.bang > /dev/pts/0
-            fn_echo_fail `grep -f /tmp/kts/chao.d3 --color /tmp/kts/chao.raw` >& /dev/pts/0
-            MSG=f4_is_Rocking fn_bell online.wav
-        fi
-    }
-
     # 刷新DZH
     WIT=2 PARTS=f YIST=/tmp/kts/chao.120 PPLUS=G SELECT lsds ${icurr} || exit
     WIT=1 PARTS=f PPLUS=K kCOND="rise+space>5"   SELECT lsds ${icurr} || exit
 
-    # 设置阈值、上限、下限，!取反
-    thrx=-5
-    invt=
-    left=18
-    right=25
-    sqls="WHERE date='${END}' ORDER by rise ASC"
-    sqls="(SELECT code, ROUND(100*(d.close-d.yesc)/d.yesc, 2) as rise FROM day d ${sqls})"
-    dive=`mysql -N kts <<< "SELECT SUM(rise<${thrx}) FROM ${sqls} as t"`
-
-    fn_issqltrue "${invt}(${dive}>${left} && ${dive}<${right})" && fn_bell duang.wav
-
-    # 涨停计算
-    fn_echo_succ "ceilings=rise>=9.93..."
-    ceilings=`OPT='-N' CHAO=0 WIT= PARTS= COND="rise>=9.93" PPLUS=G SELECT lsd $1 | wc -l`
-
-    [ ${ceilings} -ge 12 ] && [ ${ceilings} -le 18 ] && MSG=Top10s_touch_${ceilings} fn_bell system.wav 
-    if [ "${ceilings}" -ge 18 ]; then
-        SUFFIX="Tops[${ceilings}]Dive[${thrx}% ${dive}].{${invt}$left~$right} eThrd:${eThrd}" \
+    # 
+    if [ "${bans}" -ge 18 ]; then
+        SUFFIX="Tops[${bans}]Dive[${thrx}% ${dive}].{${invt}$left~$right} eThrd:${eThrd}" \
         fn_beep "__More_than_16_birds__\n"; return
     fi
 
-    let layer1s=ceilings+3                  # 6=3+3 提供1防护
-    let layer2s=ceilings+6                  # 6=3+3 提供2防护
+    let layer1s=bans+3                  # 6=3+3 提供1防护
+    let layer2s=bans+6                  # 6=3+3 提供2防护
 
     # process
     let iprev=icurr-1
-    fn_echo_succ "layer2s=ceilings+6=${ceilings}+6..."
+    fn_echo_succ "layer2s=bans+6=${bans}+6..."
     CHAO=1 PPLUS=K kCOND="rise+space>5" LIMIT=${layer2s} chao2='L2.prev' SELECT lsds ${iprev}
     xt_ret $? "$BLK $YIST:  CHAO=1 PPLUS=V LIMIT=${layer2s} chao2='L2.prev' SELECT lsd ${iprev}" || return $?
 
@@ -886,7 +844,65 @@ function fn_chk_rank()
     [ "${match:-0}" -eq 0 ] && BEEPS=0
     [ -z "${birds2}" ] && iNL="\n"
 
-    SUFFIX="Tops[${ceilings}]Dive[${thrx}% ${dive}].${invt}{$left~$right} eThrd:${eThrd}" \
+    SUFFIX="Tops[${bans}]Dive[${thrx}% ${dive}].${invt}{$left~$right} eThrd:${eThrd}" \
+    BEEPS=${BEEPS} fn_beep "L1:${birds1}L2:${birds2}${iNL}"
+    
+    return $?
+}
+
+function fn_chk_rank()
+{
+    # OUTPUT__DZH__
+    [ -z "${icurr:=$1}" ] && icurr=`fn_get_nr_time`
+    hhmm=${hhmm:-$(date +%H%M --date="`fn_get_time $icurr`")}
+
+    if [ "${hhmm}" -lt 920 ]; then              # 复牌检查
+        return
+    elif [ "${hhmm}" -lt 930 ]; then
+        mysql kts <<< "DELETE FROM dorat WHERE date='${END}' and time<'09:24:00'";
+        ./blk 10jqka
+        fn_echo_blue "昨日涨停->自选股3.BLK"
+        WIT=3 END= iEND=2 COND="rise>=9.93" PARTS=f PPLUS=G SELECT lsds || fn_bell
+        fn_bell; return
+    fi
+
+    # 设置阈值、上限、下限，!取反
+    vbi3=.48
+    thrx=-5
+    invt=!
+    left=15
+    right=35
+    sqls="WHERE date='${END}' ORDER by rise ASC"
+    sqls="(SELECT code, ROUND(100*(d.close-d.yesc)/d.yesc, 2) as rise FROM day d ${sqls})"
+    dive=`mysql -N kts <<< "SELECT SUM(rise<${thrx}) FROM ${sqls} as t"`
+
+    fn_issqltrue "${invt}(${dive}>${left} && ${dive}<${right})" && fn_bell duang.wav
+
+    # 兔子筛选
+    CHK_RANK=1 FIELD=rise lowDOOR=4 OP= vbi3=${vbi3} SELECT volvo bang $1 && {  # gen ${cache}.bang
+        eThrd=`cat ${chao}.eThrd`
+        awk '/^[036]/ {print $1}' /tmp/kts/chao.u> ${patt}.1
+        cat ${cache}.bang | grep -v -f ${patt}.1 > ${buffer}.bang
+        awk '{print $4}' ${buffer}.bang | grep '^[036]' > ${buffer}.bang.c
+        grep -f ${buffer}.bang.c .codelist > /tmp/kts/chao.raw
+        if [ `wc -l <${buffer}.bang` -gt 4 ]; then
+            cat ${buffer}.bang > /dev/pts/0
+            fn_echo_fail `grep -f /tmp/kts/chao.d3 --color /tmp/kts/chao.raw` >& /dev/pts/0
+            MSG=f4_is_Rocking fn_bell online.wav
+        fi
+    }
+
+
+    # 涨停计算
+    fn_echo_succ "bans=rise>=9.93..."
+    bans=`OPT='-N' CHAO=0 WIT= PARTS= COND="rise>=9.93" PPLUS=G SELECT lsd $1 | wc -l`
+    lower=18
+    upper=20
+    fn_issqltrue "${bans}>=${lower}&&${bans}<=${upper}" && MSG=bans.${bans} fn_bell system.wav 
+
+    #
+    [ -z "${birds2}" ] && iNL="\n"
+    SUFFIX="Tops[${bans}]Dive[${thrx}% ${dive}].${invt}{$left~$right} eThrd:${eThrd}" \
     BEEPS=${BEEPS} fn_beep "L1:${birds1}L2:${birds2}${iNL}"
 }
 

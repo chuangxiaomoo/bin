@@ -60,6 +60,18 @@ function fn_update_matov5()
             __FAST__=1 END=${PREV} SCREENER matov5 1; xCol=date fn_xCol matov5 t_matov5 ${PREV} 
         }
         xt_ret $? "To avoid this WARNING: END=${PREV} SCREENER matov5 1" || exit $?
+
+        # 30日=20+10，10是可能存在的ma5级别
+        PREV30=`fn_get_date 29`
+        echo "
+        ALTER TABLE t_matov5 ADD dma20 DECIMAL(6,2) NOT NULL DEFAULT 0;
+        UPDATE t_matov5 t, (
+            SELECT code, date, trade, ROUND(max(ma20)/min(ma20)-1,2)*IF(max(ma20)>trade,-1,1) as dma20 FROM 
+                (SELECT code,date,trade,ma20 FROM mat_ma1020 WHERE date>='${PREV30}'&&date<='${PREV}' ORDER by date DESC) t1
+                GROUP by code
+            ) t2
+            SET t.dma20=t2.dma20 WHERE t.code=t2.code
+        " | mysql kts
     fi
 }
 
@@ -94,7 +106,7 @@ function fn_pro_hammer()
     pwr_t10="IF(top10<.1, 1, .95/(1-top10))"
     pwr_nmc="IF(${nmc0}/${pwr_t10}-30<100, ${nmc0}/${pwr_t10}-30, 100)/12"
 
-    sql_ma20="ROUND(100*(d.close/ma20-1), 1) as ma20"
+    sql_ma20="dma20"
     columns="d.code"
 
     fn_pro_spacer || \
@@ -157,7 +169,6 @@ function fn_pro_wolves()
             ROUND( t5.tov*${pwr_t10} +${pwr_dy5} -100*${REALIZED2} 
                    -${pwr_nmc} +${pwr_vax} +${BOOST}, 1) as space,
             ${_VAX} as vbi3,
---          ${sql_ma20},
 --          CONCAT(IF(net>0,'+','-'), round(abs(net)/w.tov, 2),'_',ROUND((pbuy+nbuy)/w.tov, 2)) as wolf,
             ROUND((pbuy+nbuy)/w.tov, 2) as wolf, ROUND(net/w.tov, 2) as pet,
             round(d.amount/10000, 1) as eYi,
@@ -1995,7 +2006,7 @@ function fn_stat()
             c.name
             FROM day d , cap c 
             $WHERE d.code=c.code AND d.date>='${PREV5}' AND d.date<='${END}' 
-            GROUP by code HAVING cnt>=${DOOR:=1} && ${HAV:-'cnt>yiz'} ${COND}
+            GROUP by code HAVING cnt>=${DOOR:=1} ${COND} && ${HAV:-cnt>yiz} 
             ORDER by ${FIELD:-cnt} DESC LIMIT ${LIMIT:-36}
         "
         fn_imysql_sqls | fn_hew_tail
@@ -2057,8 +2068,8 @@ function fn_stat()
     *)
         echo "
         SELECT stat <param>:
-        hot                     # 涨停板收益统计
-        flat                    # 一字板收益统计
+        hot                     # 涨停板&连板统计
+        flat                    # 价格平整个股输出
         b|born tp10             # NUM=2，当天复牌股
         m|mid                   # 指标中值状态 middle of 1160
         t|realtimetov           # 统计各时段成交额
@@ -2825,7 +2836,7 @@ function fn_notice()
 function fn_ddd()
 {
     case $1 in
-    d3)
+    d3) # vol.3连降
         PREV3=`fn_get_date 3`
         echo "
         SELECT t1.code FROM
@@ -3054,7 +3065,7 @@ function fn_volvo()
         grep -v -f ${chao}.xin ${chao}.lsd > ${chao}.yiz
 
         [ -s ${chao}.yiz ] || { fn_echo_fail "chao.yiz is EMPTY [大盘振荡&新股大开板]"; exit ;}
-        HAV="yiz>0" DOOR=0 FIELD=live YIST=/tmp/kts/chao.yiz fn_stat hot
+        HAV="yiz>0 && live>4" DOOR=0 FIELD=live YIST=/tmp/kts/chao.yiz fn_stat hot
         ;;
 #bang)  eThrd=`OPT=-N LIMIT=35,1 FIELD=eYi OP=1+ fn_volvo 2>/dev/null| awk '{print $14}'`
    b*)  F2=`fn_get_time ${2}`
@@ -3074,14 +3085,14 @@ function fn_volvo()
         PROP0=`fn_carbon get prop0`
 
         if [ -z "${CHK_RANK}" ]; then
-            kCOND="(eYi>${eThrd} || (eYi>.6*${eThrd} && prop5BOO>4*$PROP0))" \
+            kCOND="(eYi>${eThrd} || (eYi>.6*${eThrd} && vbi3BOO>4*$PROP0))" \
             COND="             AND (hiri>${lowDOOR:-3.8}&&rise>=3.5) " \
             YIST=${chao}.gate.volvo PPLUS=G FIELD=${FIELD:-rise} fn_lsds $2 > ${cache}.bang
             cat ${cache}.bang
             [ `wc -l<${cache}.bang` = 0 ] && fn_echo_fail "no big money@${END}"
         else
-            kCOND="(eYi>${eThrd} || (eYi>.6*${eThrd} && prop5BOO>4*$PROP0))" \
-            COND="&& rise<=7 AND (hiri>${lowDOOR:-3.8}&&rise>=3.5) " \
+            kCOND="(eYi>${eThrd} || (eYi>.6*${eThrd} && vbi3BOO>4*$PROP0))" \
+            COND="&& vbi3BOO>${vbi3:-.38} && rise<=7 AND (hiri>${lowDOOR:-3.8}&&rise>=3.5)" \
             HAV= YIST=${chao}.gate.volvo PPLUS=G FIELD=${FIELD:-rise} fn_lsds $2 > ${cache}.bang 2>/dev/pts/0
         fi
         return 0
