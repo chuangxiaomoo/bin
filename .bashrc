@@ -63,6 +63,7 @@ alias    .s='cd ~/bin/stk'
 alias   .ss='cd ~/bin/stk/sql'
 alias   .rc='. /root/.bashrc'
 alias  .irc='vi /root/.bashrc; . /root/.bashrc'
+alias    .u='vi /tmp/kts/chao.u'
 alias   .ps='PS1="[\w]\n\u-> \[\033[0m\]"'
 
 alias .de_beep="echo 0 >/tmp/kts/chao.beep"
