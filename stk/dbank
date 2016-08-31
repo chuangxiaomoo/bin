@@ -30,6 +30,7 @@ export PATH=.:~/bin:$PATH
 SUBOUT='/dev/stdout' || SUBOUT='/dev/null'
 
 # mySql
+PTS0="/dev/pts/0"
 XTBL="${XTBL:+and code not in (SELECT code FROM $XTBL)}"
 COND="${COND:+and ($COND) }${XTBL}"
 DROP="DROP TABLE IF EXISTS "
@@ -731,7 +732,9 @@ function fn_bell()
     # route -p GW 即是host的IP
     # 同样接受{xRD|wolf}等作为命令
     timeout 3 nc 10.0.2.2 1234 <<<"${*:-msg.wav}"
-    echo "${date_T}.${MSG:-Belling}@ ${BASH_SOURCE[1]##*/}|${BASH_LINENO[0]}| ${FUNCNAME[1]}" > /dev/pts/0
+   #echo "${date_T}.${MSG:-Belling}@ ${BASH_SOURCE[1]##*/}|${BASH_LINENO[0]}| ${FUNCNAME[1]}" > /dev/pts/0
+    echo "${date_T}@ ${BASH_SOURCE[1]##*/}|${BASH_LINENO[0]}|.${FUNCNAME[1]}: ${MSG:-Belling}" > /dev/pts/0
+   # -ne "${date_T}@${BASH_SOURCE[1]##*/}|${BASH_LINENO[0]}|: ${MSG:-nomsg}" > /dev/pts/0
 }
 
 function fn_beep()

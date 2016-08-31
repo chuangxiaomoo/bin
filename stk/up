@@ -803,53 +803,6 @@ function fn_dorat()
     fn_chk_rank
 }
 
-function fn_break_in()
-{
-    # 刷新DZH
-    WIT=2 PARTS=f YIST=/tmp/kts/chao.120 PPLUS=G SELECT lsds ${icurr} || exit
-    WIT=1 PARTS=f PPLUS=K kCOND="rise+space>5"   SELECT lsds ${icurr} || exit
-
-    # 
-    if [ "${bans}" -ge 18 ]; then
-        SUFFIX="Tops[${bans}]Dive[${thrx}% ${dive}].{${invt}$left~$right} eThrd:${eThrd}" \
-        fn_beep "__More_than_16_birds__\n"; return
-    fi
-
-    let layer1s=bans+3                  # 6=3+3 提供1防护
-    let layer2s=bans+6                  # 6=3+3 提供2防护
-
-    # process
-    let iprev=icurr-1
-    fn_echo_succ "layer2s=bans+6=${bans}+6..."
-    CHAO=1 PPLUS=K kCOND="rise+space>5" LIMIT=${layer2s} chao2='L2.prev' SELECT lsds ${iprev}
-    xt_ret $? "$BLK $YIST:  CHAO=1 PPLUS=V LIMIT=${layer2s} chao2='L2.prev' SELECT lsd ${iprev}" || return $?
-
-    head -${layer2s} /tmp/kts/chao.lsd      > /tmp/kts/chao.L2.curr
-    head -${layer1s} /tmp/kts/chao.lsd      > /tmp/kts/chao.L1.curr
-    head -${layer1s} /tmp/kts/chao.L2.prev  > /tmp/kts/chao.L1.prev
-
-    # 防护=layer+1，有新手闯入
-    union=`head  -${layer1s} -q /tmp/kts/chao.L1.* | sort -u | wc -l`
-    [ "${union}" -ne ${layer1s} ] && { match=1; BEEPS=5 ;}  && \
-    birds1=$(fn_name `grep -v -f /tmp/kts/chao.L1.prev /tmp/kts/chao.L1.curr` 2>&1)
-
-    # 防护=layer+2，有新手闯入
-    union=`head  -${layer2s} -q /tmp/kts/chao.L2.* | sort -u | wc -l`
-    [ "${union}" -ne ${layer2s} ] && { match=1 ;}           && \
-    birds2=$(fn_name `grep -v -f /tmp/kts/chao.L2.prev /tmp/kts/chao.L2.curr` 2>&1)
-
-    #echo L2:${layer2s} m:${match} B1:${birds1} B2:${birds2} # ;exit
-    # 检查是否禁用beep，有闯入者，告警
-    [ "`cat /tmp/kts/chao.beep`" = 0 ] && BEEPS=0
-    [ "${match:-0}" -eq 0 ] && BEEPS=0
-    [ -z "${birds2}" ] && iNL="\n"
-
-    SUFFIX="Tops[${bans}]Dive[${thrx}% ${dive}].${invt}{$left~$right} eThrd:${eThrd}" \
-    BEEPS=${BEEPS} fn_beep "L1:${birds1}L2:${birds2}${iNL}"
-    
-    return $?
-}
-
 function fn_chk_rank()
 {
     # OUTPUT__DZH__
@@ -860,6 +813,7 @@ function fn_chk_rank()
         return
     elif [ "${hhmm}" -lt 930 ]; then
         mysql kts <<< "DELETE FROM dorat WHERE date='${END}' and time<'09:24:00'";
+        PARTS=f COND="dma20<=-.08" PPLUS=G SELECT lsdh; YIST=/tmp/kts/chao.lsd BLK= SELECT blk l >& ${PTS0}
         ./blk 10jqka
         fn_echo_blue "昨日涨停->自选股3.BLK"
         WIT=3 END= iEND=2 COND="rise>=9.93" PARTS=f PPLUS=G SELECT lsds || fn_bell
@@ -867,16 +821,14 @@ function fn_chk_rank()
     fi
 
     # 设置阈值、上限、下限，!取反
-    vbi3=.48
+    vbi3=.3
     thrx=-5
-    invt=!
-    left=15
-    right=35
+    invt=
+    left=5
+    right=15
     sqls="WHERE date='${END}' ORDER by rise ASC"
     sqls="(SELECT code, ROUND(100*(d.close-d.yesc)/d.yesc, 2) as rise FROM day d ${sqls})"
     dive=`mysql -N kts <<< "SELECT SUM(rise<${thrx}) FROM ${sqls} as t"`
-
-    fn_issqltrue "${invt}(${dive}>${left} && ${dive}<${right})" && fn_bell duang.wav
 
     # 兔子筛选
     CHK_RANK=1 FIELD=rise lowDOOR=4 OP= vbi3=${vbi3} SELECT volvo bang $1 && {  # gen ${cache}.bang
@@ -884,14 +836,15 @@ function fn_chk_rank()
         awk '/^[036]/ {print $1}' /tmp/kts/chao.u> ${patt}.1
         cat ${cache}.bang | grep -v -f ${patt}.1 > ${buffer}.bang
         awk '{print $4}' ${buffer}.bang | grep '^[036]' > ${buffer}.bang.c
-        grep -f ${buffer}.bang.c .codelist > /tmp/kts/chao.raw
+        grep -f ${buffer}.bang.c .codelist | tee -a /tmp/kts/chao.u > /tmp/kts/chao.raw
         if [ `wc -l <${buffer}.bang` -gt 4 ]; then
             cat ${buffer}.bang > /dev/pts/0
-            fn_echo_fail `grep -f /tmp/kts/chao.d3 --color /tmp/kts/chao.raw` >& /dev/pts/0
-            MSG=f4_is_Rocking fn_bell online.wav
+            d3_list="d3-list: `grep -f /tmp/kts/chao.d3 --color /tmp/kts/chao.raw`"
+            MSG="d3_list" fn_bell online.wav
         fi
     }
-
+    # BLK "SELECT (${hhmm}+1)%10<=1"
+    fn_issqltrue "(${hhmm}+1)%10<=1" && { LIMIT=10 COND="score>=6"  BLK= SELECT blk sample $1 >& ${PTS0}; fn_bell tweet.wav ;}
 
     # 涨停计算
     fn_echo_succ "bans=rise>=9.93..."
@@ -901,9 +854,8 @@ function fn_chk_rank()
     fn_issqltrue "${bans}>=${lower}&&${bans}<=${upper}" && MSG=bans.${bans} fn_bell system.wav 
 
     #
-    [ -z "${birds2}" ] && iNL="\n"
-    SUFFIX="Tops[${bans}]Dive[${thrx}% ${dive}].${invt}{$left~$right} eThrd:${eThrd}" \
-    BEEPS=${BEEPS} fn_beep "L1:${birds1}L2:${birds2}${iNL}"
+    fn_issqltrue "${invt}(${dive}>${left} && ${dive}<${right})" && MSG="Dive" fn_bell duang.wav
+    SUFFIX="Tops[${bans}]Dive[${thrx}% ${dive}].${invt}{$left~$right} eThrd:${eThrd}" BEEPS=0 fn_beep
 }
 
 function fn_ma20f15()

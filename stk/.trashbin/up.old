@@ -1,0 +1,49 @@
+#! /bin/bash
+
+function fn_break_in()
+{
+    # 刷新DZH
+    WIT=2 PARTS=f YIST=/tmp/kts/chao.120 PPLUS=G SELECT lsds ${icurr} || exit
+    WIT=1 PARTS=f PPLUS=K kCOND="rise+space>5"   SELECT lsds ${icurr} || exit
+
+    # 
+    if [ "${bans}" -ge 18 ]; then
+        SUFFIX="Tops[${bans}]Dive[${thrx}% ${dive}].{${invt}$left~$right} eThrd:${eThrd}" \
+        fn_beep "__More_than_16_birds__\n"; return
+    fi
+
+    let layer1s=bans+3                  # 6=3+3 提供1防护
+    let layer2s=bans+6                  # 6=3+3 提供2防护
+
+    # process
+    let iprev=icurr-1
+    fn_echo_succ "layer2s=bans+6=${bans}+6..."
+    CHAO=1 PPLUS=K kCOND="rise+space>5" LIMIT=${layer2s} chao2='L2.prev' SELECT lsds ${iprev}
+    xt_ret $? "$BLK $YIST:  CHAO=1 PPLUS=V LIMIT=${layer2s} chao2='L2.prev' SELECT lsd ${iprev}" || return $?
+
+    head -${layer2s} /tmp/kts/chao.lsd      > /tmp/kts/chao.L2.curr
+    head -${layer1s} /tmp/kts/chao.lsd      > /tmp/kts/chao.L1.curr
+    head -${layer1s} /tmp/kts/chao.L2.prev  > /tmp/kts/chao.L1.prev
+
+    # 防护=layer+1，有新手闯入
+    union=`head  -${layer1s} -q /tmp/kts/chao.L1.* | sort -u | wc -l`
+    [ "${union}" -ne ${layer1s} ] && { match=1; BEEPS=5 ;}  && \
+    birds1=$(fn_name `grep -v -f /tmp/kts/chao.L1.prev /tmp/kts/chao.L1.curr` 2>&1)
+
+    # 防护=layer+2，有新手闯入
+    union=`head  -${layer2s} -q /tmp/kts/chao.L2.* | sort -u | wc -l`
+    [ "${union}" -ne ${layer2s} ] && { match=1 ;}           && \
+    birds2=$(fn_name `grep -v -f /tmp/kts/chao.L2.prev /tmp/kts/chao.L2.curr` 2>&1)
+
+    #echo L2:${layer2s} m:${match} B1:${birds1} B2:${birds2} # ;exit
+    # 检查是否禁用beep，有闯入者，告警
+    [ "`cat /tmp/kts/chao.beep`" = 0 ] && BEEPS=0
+    [ "${match:-0}" -eq 0 ] && BEEPS=0
+    [ -z "${birds2}" ] && iNL="\n"
+
+    SUFFIX="Tops[${bans}]Dive[${thrx}% ${dive}].${invt}{$left~$right} eThrd:${eThrd}" \
+    BEEPS=${BEEPS} fn_beep "L1:${birds1}L2:${birds2}${iNL}"
+    
+    return $?
+}
+

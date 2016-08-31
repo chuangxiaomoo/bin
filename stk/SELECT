@@ -2113,7 +2113,6 @@ function fn_sample()
 {
     fn_yist && xWHERE=${WHERE}
 
-    echo BLK is ${BLK}
     HMS=`fn_get_time $1`
     # 非一字板 && ＞-1.5%的个股
     iCOND="(high!=low||d.close/yesc<1.093) && d.close/yesc<1.15 && d.close/yesc>=.985 ${cond5}" \
@@ -2175,7 +2174,7 @@ function fn_sample()
     mysql -t kts <<< "${sqls}"
     xt_ret $? "" || return $?
 
-    fn_echo_succ "END:${END}.${HMS} SAMPLES:${SAMPLES} TEN:${TEN:=9.93} FIELD:${FIELD}"
+    fn_echo_succ "END:${END}.${HMS} SAMPLES:${SAMPLES} TEN:${TEN:=9.93} FIELD:${FIELD} BLK:${BLK}"
 
     [ -z "${BLK}" ] && return
 
