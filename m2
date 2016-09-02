@@ -288,6 +288,7 @@ function fn_08_novel()                  { cat artical_08_novel ;}
 function fn_40_学习批判性思考()         { cat artical_40_学习批判性思考 ;}
 
 function fn_100_人际关系痛苦的根源()    { cat artical_100_人际关系痛苦的根源 ;}
+function fn_101_分享与慷他人之慨()      { cat artical_101_分享与慷他人之慨 ;}
 
     local opts=(
         01_高铁陆权战略
@@ -300,6 +301,7 @@ function fn_100_人际关系痛苦的根源()    { cat artical_100_人际关系�
         08_novel
         40_学习批判性思考
         100_人际关系痛苦的根源          # 缺乏界限感
+        101_分享与慷他人之慨
     )
     fn_print $@
 }
@@ -855,14 +857,14 @@ function fn_Freud()                     { cat psychology_Freud ;}
     )
     fn_print $@
 }
-function fn_guo() { 
+function fn_guo() {                     # guo
 function fn_term()                      { cat guo_term ;}
 function fn_rhymeA()                    { cat guo_rhymeA ;}
 function fn_rhyme3()                    { cat guo_rhyme3 ;}
 function fn_rhyme10()                   { cat guo_rhyme10 ;}
 function fn_rhyme50()                   { cat guo_rhyme50 ;}
 function fn_rhyme200()                  { cat guo_rhyme200 ;}
-    local opts=(                        # guo
+    local opts=(
         rhymeA                          # 凡遇要处总诀
         rhyme3                          # 三字经
         rhyme10                         # 围棋十诀
