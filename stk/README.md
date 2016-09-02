@@ -74,6 +74,7 @@
 # 公告概念        .doc/notice.md
 # -----------------------------
 # 魔论            .doc/Molun.md
+# 期货            .doc/Future.md
 # 博弈论          .doc/gametheory.md
 # 物理            .doc/physics.md
 # Equation        .doc/Methodology.md

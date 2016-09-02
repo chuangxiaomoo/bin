@@ -817,6 +817,8 @@ function fn_chk_rank()
         ./blk 10jqka
         fn_echo_blue "昨日涨停->自选股3.BLK"
         WIT=3 END= iEND=2 COND="rise>=9.93" PARTS=f PPLUS=G SELECT lsds || fn_bell
+        fn_echo_blue ".931通达信自选股导入"
+        PARTS=f LIMIT=3000 PPLUS=G SELECT lsd
         fn_bell; return
     fi
 
@@ -824,27 +826,44 @@ function fn_chk_rank()
     vbi3=.3
     thrx=-5
     invt=
-    left=5
-    right=15
+    left=25
+    right=40
+    hiDOOR=4.5
     sqls="WHERE date='${END}' ORDER by rise ASC"
     sqls="(SELECT code, ROUND(100*(d.close-d.yesc)/d.yesc, 2) as rise FROM day d ${sqls})"
     dive=`mysql -N kts <<< "SELECT SUM(rise<${thrx}) FROM ${sqls} as t"`
 
     # 兔子筛选
-    CHK_RANK=1 FIELD=rise lowDOOR=4 OP= vbi3=${vbi3} SELECT volvo bang $1 && {  # gen ${cache}.bang
+    fn_issqltrue "${hhmm}<=1405" && \
+    CHK_RANK=1 FIELD=rise hiDOOR=$hiDOOR OP= vbi3=${vbi3} SELECT volvo bang $1 && {  # gen ${cache}.bang
+        # bang
         eThrd=`cat ${chao}.eThrd`
         awk '/^[036]/ {print $1}' /tmp/kts/chao.u> ${patt}.1
         cat ${cache}.bang | grep -v -f ${patt}.1 > ${buffer}.bang
         awk '{print $4}' ${buffer}.bang | grep '^[036]' > ${buffer}.bang.c
+        [ -s ${buffer}.bang.c ] && echo "# bang" >> /tmp/kts/chao.u
         grep -f ${buffer}.bang.c .codelist | tee -a /tmp/kts/chao.u > /tmp/kts/chao.raw
-        if [ `wc -l <${buffer}.bang` -gt 4 ]; then
+        # king
+        COND="(tov5>3.5||dma20<-.08) &&vbi3BOO>$vbi3 &&rise>3.8&&hiri>${hiDOOR}&&hiri<=8 &&eYi>${eThrd:-.6}/2" \
+        chao2=king PARTS=f PPLUS=G SELECT lsds $1 2>/dev/null
+        awk '/^[036]/ {print $1}' /tmp/kts/chao.u> ${patt}.2
+        cat ${chao}.king | grep -v -f ${patt}.2 > ${chao}.king2
+        [ -s ${chao}.king2 ] && echo "# king" >> /tmp/kts/chao.u
+        grep -f ${chao}.king2 .codelist >> /tmp/kts/chao.u
+
+        if [ `wc -l <${buffer}.bang` -gt 4 ]; then # bang
             cat ${buffer}.bang > /dev/pts/0
             d3_list="d3-list: `grep -f /tmp/kts/chao.d3 --color /tmp/kts/chao.raw`"
-            MSG="d3_list" fn_bell online.wav
         fi
+
+        if [ `wc -l<${chao}.king2` -gt 0 ]; then   # king
+            YIST='/tmp/kts/chao.king2' PPLUS=G SELECT lsds $1 >${PTS0} 2>/dev/null
+        fi
+        ([ `wc -l <${buffer}.bang` -gt 4 ] || [ `wc -l<${chao}.king2` -gt 0 ]) && MSG="Ring" fn_bell online.wav
     }
     # BLK "SELECT (${hhmm}+1)%10<=1"
-    fn_issqltrue "(${hhmm}+1)%10<=1" && { LIMIT=10 COND="score>=6"  BLK= SELECT blk sample $1 >& ${PTS0}; fn_bell tweet.wav ;}
+    fn_issqltrue "(${hhmm}+1)%10<=1 && ${hhmm}<=1405" && { 
+    LIMIT=10 COND="score>=6"  BLK= SELECT blk sample $1 >& ${PTS0}; fn_bell tweet.wav ;}
 
     # 涨停计算
     fn_echo_succ "bans=rise>=9.93..."

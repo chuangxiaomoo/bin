@@ -3085,13 +3085,13 @@ function fn_volvo()
 
         if [ -z "${CHK_RANK}" ]; then
             kCOND="(eYi>${eThrd} || (eYi>.6*${eThrd} && vbi3BOO>4*$PROP0))" \
-            COND="             AND (hiri>${lowDOOR:-3.8}&&rise>=3.5) " \
+            COND="             AND (hiri>=${hiDOOR:-5}&&rise>=3.8) " \
             YIST=${chao}.gate.volvo PPLUS=G FIELD=${FIELD:-rise} fn_lsds $2 > ${cache}.bang
             cat ${cache}.bang
             [ `wc -l<${cache}.bang` = 0 ] && fn_echo_fail "no big money@${END}"
         else
             kCOND="(eYi>${eThrd} || (eYi>.6*${eThrd} && vbi3BOO>4*$PROP0))" \
-            COND="&& vbi3BOO>${vbi3:-.38} && rise<=7 AND (hiri>${lowDOOR:-3.8}&&rise>=3.5)" \
+            COND="&& vbi3BOO>${vbi3:-.38} && rise<=7 AND (hiri>${hiDOOR:-5}&&rise>=3.8)" \
             HAV= YIST=${chao}.gate.volvo PPLUS=G FIELD=${FIELD:-rise} fn_lsds $2 > ${cache}.bang 2>/dev/pts/0
         fi
         return 0
