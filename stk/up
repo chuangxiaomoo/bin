@@ -813,6 +813,7 @@ function fn_chk_rank()
         return
     elif [ "${hhmm}" -lt 930 ]; then
         mysql kts <<< "DELETE FROM dorat WHERE date='${END}' and time<'09:24:00'";
+        # 高开的反弹板块
         PARTS=f COND="dma20<=-.08" PPLUS=G SELECT lsdh; YIST=/tmp/kts/chao.lsd BLK= SELECT blk l >& ${PTS0}
         ./blk 10jqka
         fn_echo_blue "昨日涨停->自选股3.BLK"
