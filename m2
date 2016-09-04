@@ -289,6 +289,7 @@ function fn_40_学习批判性思考()         { cat artical_40_学习批判性�
 
 function fn_100_人际关系痛苦的根源()    { cat artical_100_人际关系痛苦的根源 ;}
 function fn_101_分享与慷他人之慨()      { cat artical_101_分享与慷他人之慨 ;}
+function fn_102_同事是你共享生命的战友(){ cat artical_102_同事是你共享生命的战友 ;}
 
     local opts=(
         01_高铁陆权战略
@@ -302,6 +303,7 @@ function fn_101_分享与慷他人之慨()      { cat artical_101_分享与慷�
         40_学习批判性思考
         100_人际关系痛苦的根源          # 缺乏界限感
         101_分享与慷他人之慨
+        102_同事是你共享生命的战友
     )
     fn_print $@
 }
@@ -424,6 +426,7 @@ function fn_formal()                    { cat logic_formal ;}
 function fn_informal()                  { cat logic_informal ;}
 function fn_fallacy()                   { cat logic_fallacy ;}
 function fn_language()                  { cat logic_language ;}
+function fn_BeingLogical()              { cat logic_BeingLogical ;}
     local opts=(
         cept
         training500
@@ -432,6 +435,7 @@ function fn_language()                  { cat logic_language ;}
         informal                        # 非形式逻辑
         fallacy
         language                        # 英语逻辑实现
+        BeingLogical                    # 简单逻辑学
     )
     fn_print $@
 }
@@ -858,6 +862,7 @@ function fn_Freud()                     { cat psychology_Freud ;}
     fn_print $@
 }
 function fn_guo() {                     # guo
+function fn_analogy()                   { cat guo_analogy ;}
 function fn_term()                      { cat guo_term ;}
 function fn_rhymeA()                    { cat guo_rhymeA ;}
 function fn_rhyme3()                    { cat guo_rhyme3 ;}
@@ -872,6 +877,7 @@ function fn_rhyme200()                  { cat guo_rhyme200 ;}
         rhyme50                         # 围棋七字精选50
         rhyme200                        # 围棋七字口诀200
         term
+        analogy                         # vs. 羽毛球.期货
     )
     fn_print $@
 }
