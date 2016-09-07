@@ -1729,6 +1729,8 @@ function fn_wolf_sqls()
 
 function fn_wolf()
 {
+     [ "${1}" = st ] && fn_list_wolf_times
+
     sql_maxdate="SELECT max(date) FROM dde"
     max_dt=`mysql -N kts <<< "${sql_maxdate}"`
     sql_mindate="SELECT min(date) FROM dde"
@@ -1742,7 +1744,6 @@ function fn_wolf()
 
     case $1 in
     l)  fn_list_wolf_dates $2   ;;
-    st) fn_list_wolf_times      ;;
     top)fn_wolf_top50           ;;
     c)  fn_wolf_code $1 $2      ;;
     cf) fn_wolf_code $1 $2      ;;

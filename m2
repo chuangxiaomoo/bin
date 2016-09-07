@@ -152,6 +152,7 @@ function fn_202_苏黎世投机定律()        { cat book_202_苏黎世投机定
 function fn_899_权力的游戏()            { cat book_899_权力的游戏 ;}
 function fn_900_平凡的世界()            { cat book_900_平凡的世界 ;}
 function fn_901_人类简史()              { cat book_901_人类简史 ;}
+function fn_902_人类简史读书笔记()      { cat book_902_人类简史读书笔记 ;}
 function fn_tiandao()                   { cat book_tiandao book_遥远的救世主;}
     local opts=(
         cept
@@ -196,6 +197,7 @@ function fn_tiandao()                   { cat book_tiandao book_遥远的救世�
         899_权力的游戏              # A_Song_of_Ice_and_Fire
         900_平凡的世界
         901_人类简史
+        902_人类简史读书笔记
     )
     fn_print $@
 }
@@ -862,6 +864,7 @@ function fn_Freud()                     { cat psychology_Freud ;}
     fn_print $@
 }
 function fn_guo() {                     # guo
+function fn_Question()                  { cat guo_Question ;}
 function fn_analogy()                   { cat guo_analogy ;}
 function fn_term()                      { cat guo_term ;}
 function fn_rhymeA()                    { cat guo_rhymeA ;}
@@ -878,6 +881,7 @@ function fn_rhyme200()                  { cat guo_rhyme200 ;}
         rhyme200                        # 围棋七字口诀200
         term
         analogy                         # vs. 羽毛球.期货
+        Question
     )
     fn_print $@
 }
