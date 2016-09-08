@@ -823,6 +823,8 @@ function fn_chk_rank()
         fn_bell; return
     fi
 
+    return
+
     # 设置阈值、上限、下限，!取反
     vbi3=.3
     thrx=-5
