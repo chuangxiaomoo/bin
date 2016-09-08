@@ -278,20 +278,20 @@ function fn_郭敬明的电影《小时代》？()  { cat zhihu_郭敬明的电�
     fn_print $@
 }
 
-function fn_artical()                   {
-function fn_01_高铁陆权战略()           { cat artical_01_高铁陆权战略 ;}
-function fn_03_教育的意义()             { cat artical_03_教育的意义 ;}
-function fn_04_周国平：交往的质量()     { cat artical_04_周国平：交往的质量 ;}
-function fn_05_whatsfriend()            { cat artical_05_whatsfriend ;}
-function fn_06_哪些知识会让你变蠢？()   { cat artical_06_哪些知识会让你变蠢？ ;}
-function fn_07_如何构建经济学思维方式() { cat artical_07_如何构建经济学思维方式 ;}
-function fn_08_novel()                  { cat artical_08_novel ;}
+function fn_article()                   {
+function fn_01_高铁陆权战略()           { cat article_01_高铁陆权战略 ;}
+function fn_03_教育的意义()             { cat article_03_教育的意义 ;}
+function fn_04_周国平：交往的质量()     { cat article_04_周国平：交往的质量 ;}
+function fn_05_whatsfriend()            { cat article_05_whatsfriend ;}
+function fn_06_哪些知识会让你变蠢？()   { cat article_06_哪些知识会让你变蠢？ ;}
+function fn_07_如何构建经济学思维方式() { cat article_07_如何构建经济学思维方式 ;}
+function fn_08_novel()                  { cat article_08_novel ;}
 
-function fn_40_学习批判性思考()         { cat artical_40_学习批判性思考 ;}
+function fn_40_学习批判性思考()         { cat article_40_学习批判性思考 ;}
 
-function fn_100_人际关系痛苦的根源()    { cat artical_100_人际关系痛苦的根源 ;}
-function fn_101_分享与慷他人之慨()      { cat artical_101_分享与慷他人之慨 ;}
-function fn_102_同事是你共享生命的战友(){ cat artical_102_同事是你共享生命的战友 ;}
+function fn_100_人际关系痛苦的根源()    { cat article_100_人际关系痛苦的根源 ;}
+function fn_101_分享与慷他人之慨()      { cat article_101_分享与慷他人之慨 ;}
+function fn_102_同事是你共享生命的战友(){ cat article_102_同事是你共享生命的战友 ;}
 
     local opts=(
         01_高铁陆权战略
@@ -929,7 +929,7 @@ function fn_main() {
         logic
         xuexi                           #
         annual
-        artical
+        article
         book
         debate_competition
         super_speech
