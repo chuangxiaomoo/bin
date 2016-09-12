@@ -288,6 +288,7 @@ function fn_07_如何构建经济学思维方式() { cat article_07_如何构建
 function fn_08_novel()                  { cat article_08_novel ;}
 
 function fn_40_学习批判性思考()         { cat article_40_学习批判性思考 ;}
+function fn_41_如何成为高品质的勤奋者() { cat article_41_如何成为高品质的勤奋者 ;}
 
 function fn_100_人际关系痛苦的根源()    { cat article_100_人际关系痛苦的根源 ;}
 function fn_101_分享与慷他人之慨()      { cat article_101_分享与慷他人之慨 ;}
@@ -302,7 +303,8 @@ function fn_102_同事是你共享生命的战友(){ cat article_102_同事是�
         06_哪些知识会让你变蠢？
         07_如何构建经济学思维方式
         08_novel
-        40_学习批判性思考
+        40_学习批判性思考               # 用以致学、阅读本质=填补信息缺口
+        41_如何成为高品质的勤奋者
         100_人际关系痛苦的根源          # 缺乏界限感
         101_分享与慷他人之慨
         102_同事是你共享生命的战友
