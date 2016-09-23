@@ -154,6 +154,7 @@ function fn_900_平凡的世界()            { cat book_900_平凡的世界 ;}
 function fn_901_人类简史()              { cat book_901_人类简史 ;}
 function fn_902_人类简史读书笔记()      { cat book_902_人类简史读书笔记 ;}
 function fn_tiandao()                   { cat book_tiandao book_遥远的救世主;}
+function fn_xiaolai()                   { cat book_xiaolai ;}
     local opts=(
         cept
         wanna                   # 想读的书
@@ -164,6 +165,7 @@ function fn_tiandao()                   { cat book_tiandao book_遥远的救世�
         lunyu                   # 论语
         shenglvqimeng           # 声律启蒙
         tiandao                 # 天道.遥远的救世主
+        xiaolai                 # 李笑来<读书经验>分享
         01_商君书
         02_韩非子
         aq_如何提问             # reading
@@ -294,6 +296,8 @@ function fn_100_人际关系痛苦的根源()    { cat article_100_人际关系�
 function fn_101_分享与慷他人之慨()      { cat article_101_分享与慷他人之慨 ;}
 function fn_102_同事是你共享生命的战友(){ cat article_102_同事是你共享生命的战友 ;}
 
+function fn_gsq_房价什么情况下会崩()    { cat article_gsq_房价什么情况下会崩 ;}
+
     local opts=(
         01_高铁陆权战略
         02_铁道部取消
@@ -303,11 +307,14 @@ function fn_102_同事是你共享生命的战友(){ cat article_102_同事是�
         06_哪些知识会让你变蠢？
         07_如何构建经济学思维方式
         08_novel
+
         40_学习批判性思考               # 用以致学、阅读本质=填补信息缺口
         41_如何成为高品质的勤奋者
         100_人际关系痛苦的根源          # 缺乏界限感
         101_分享与慷他人之慨
         102_同事是你共享生命的战友
+
+        gsq_房价什么情况下会崩          # 股社区
     )
     fn_print $@
 }
@@ -431,15 +438,17 @@ function fn_informal()                  { cat logic_informal ;}
 function fn_fallacy()                   { cat logic_fallacy ;}
 function fn_language()                  { cat logic_language ;}
 function fn_BeingLogical()              { cat logic_BeingLogical ;}
+function fn_CognitiveBiases()           { cat logic_CognitiveBiases ;}
     local opts=(
         cept
         training500
         puzzle                          # 我理解的一些谜
         formal                          #   形式逻辑(普通逻辑)
         informal                        # 非形式逻辑
-        fallacy
+        fallacy                         #                      二十四条逻辑谬误
         language                        # 英语逻辑实现
         BeingLogical                    # 简单逻辑学
+        CognitiveBiases                 # 认知偏差
     )
     fn_print $@
 }
@@ -551,7 +560,7 @@ function fn_ref()                       { cat ref ;}
 function fn_brain()                     { cat xuexi_brain ;}
     local opts=(
         ref
-        brain                           # 人脑与电脑的比对 xiaolei
+        brain                           # 人脑与电脑的比对 xiaolai
     )
     fn_print $@
 }
@@ -866,9 +875,10 @@ function fn_Freud()                     { cat psychology_Freud ;}
     fn_print $@
 }
 function fn_guo() {                     # guo
-function fn_Question()                  { cat guo_Question ;}
-function fn_analogy()                   { cat guo_analogy ;}
 function fn_term()                      { cat guo_term ;}
+function fn_analogy()                   { cat guo_analogy ;}
+function fn_Question()                  { cat guo_Question ;}
+function fn_lesson()                    { cat guo_lesson ;}
 function fn_rhymeA()                    { cat guo_rhymeA ;}
 function fn_rhyme3()                    { cat guo_rhyme3 ;}
 function fn_rhyme10()                   { cat guo_rhyme10 ;}
@@ -884,6 +894,7 @@ function fn_rhyme200()                  { cat guo_rhyme200 ;}
         rhyme200                        # 围棋七字口诀200
         term
         analogy                         # vs. 羽毛球.期货
+        lesson
         Question
     )
     fn_print $@
@@ -994,6 +1005,7 @@ function fn_main() {
         practice_cept                   # 直接成一个文本
         science_cept                    # 科学之哲学
         xiaolai_cept
+        fertile_cept                    # 有繁殖能力的知识
         misc_cept
         Arts_cept
     )

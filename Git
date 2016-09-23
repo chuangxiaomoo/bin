@@ -85,8 +85,12 @@ function fn_main()
         #echo -e "\n#       ---------- ? for Usage ---------\n"
         git status
         ;;
+    etc)
+        ~/bin/bell
+        cp /etc/crontab \
+           /etc/mysql/my.cnf    ~/bin/.etc/
+        ;;
     esac
-
 }
 
 fn_main $@
