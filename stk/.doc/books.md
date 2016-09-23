@@ -14,6 +14,7 @@
   滚雪球
   金融市场&新金融秩序         [](http://open.163.com/special/financialmarkets/)
   超越金融                    [google](George Soros, CEU Lecture Series) -- 英文听说急待提升
+  超预测
   登高四书                    李善友
   幽默
   致命的自负                  哈耶克

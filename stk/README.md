@@ -62,7 +62,6 @@
 # 莫大仙岳居      .doc/sulon.md
 # 洪粉家人        .doc/hongrong.md
 # 花家军          .doc/huajiajun.md
-# 期货            .doc/futures.md
 # 瑞鹤仙          .doc/yxkrrhx.md         -- 桃谷
 # 逻辑            .doc/logic.md
 # 仓位管理        .doc/position.md        -- 核心理论: 价.量.macd.势.攻.防
@@ -72,6 +71,7 @@
 # 龙虎榜          .doc/lhb.md
 # 股票们          .doc/codes.md
 # 公告概念        .doc/notice.md
+# 期货.基础       .doc/futures.md
 # -----------------------------
 # 魔论            .doc/Molun.md
 # 期货            .doc/Future.md

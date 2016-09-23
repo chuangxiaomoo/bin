@@ -733,6 +733,7 @@ function fn_am925_bell()
     /root/bin/bell am925
 }
 
+# 09:17:00 取消
 function fn_am925()
 {
     #fn_echo_succ "test"; exit
@@ -1757,6 +1758,34 @@ function fn_am10o_task()
     return $?
 }
 
+
+function fn_future()
+{
+    echo "
+    DROP TABLE IF EXISTS fuf1;
+    CREATE TABLE fuf1 (
+        id      int(6) ZEROFILL PRIMARY key AUTO_INCREMENT NOT NULL,
+        date    DATE NOT NULL,
+        time    int(6) NOT NULL,
+        open    int(6) NOT NULL,
+        high    int(6) NOT NULL,
+        low     int(6) NOT NULL,
+        close   int(6) NOT NULL,
+        volume  int(12) NOT NULL,
+        position int(12) NOT NULL,
+        INDEX(date)
+    );
+    LOAD DATA LOCAL INFILE '${chao}.fuf1' INTO TABLE fuf1(date,time,open,high,low,close,volume,position);
+    SELECT date, max(position), min(position), max(close), min(close),
+        (max(position)-min(position))/(max(close)-min(close)) as rate
+        FROM fuf1 
+        WHERE date>'2016-08-15' && time<2000 
+        GROUP by date 
+        ORDER by rate DESC;
+    " | mysql kts
+    return $?
+}
+
 function fn_main()
 {
     cmdlist=(
@@ -1805,6 +1834,7 @@ function fn_main()
     "hwork                              # 每日功课"
     "chk_rank [iF5]                     # 有新进成员，[up dorat]定期调用"
     "chk_day                            # day vs. dde"
+    "future                             # 期货1分钟"
     )
 
     # 存储过程函数文件的最后5行都是注释
