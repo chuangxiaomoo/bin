@@ -1,0 +1,81 @@
+#! /bin/bash
+. `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
+. /etc/common.rc
+
+
+function fn_d0()
+{
+    sed -e "s/tag0/${1:0:1}/" \
+        -e "s/tag1/${1:1:1}/" \
+        -e "s/tag2/${1:2:1}/" .src/futures_d1.q > /10jqka/xRD.q
+    xt_ret $? "" || return $?
+
+    fn_bell xRD
+    timeout 8 nc -l 2911
+    xt_ret $? "xRD@${1} fail!" || return $?
+
+    
+    return $?
+}
+
+function fn_d1()
+{
+    fchao='/tmp/kts/chao.futures_d1'
+    tag_blank='--'
+
+    iconv -f cp936 -t utf8 ${fchao} > ${cache}
+    cat ${cache} | 
+        sed -e 's///g' -e '/名称/d' -e "/${tag_blank}/d" -e '/^$/d' |
+        sed -e '/连续/d' -e '/主连/d' -e '/指数/d' > ${buffer}
+    return
+
+    > ${fchao} 
+    for i in 714 715 716; do
+        fn_d0 $i
+        xt_ret $? "fn_d0" || return $?
+        cat /Export/Table.txt >> ${fchao}
+        sleep .2
+    done
+}
+
+function fn_c0()
+{
+    
+    return $?
+}
+
+function fn_c1()
+{
+    
+    return $?
+}
+
+function fn_f0()
+{
+    
+    return $?
+}
+
+function fn_f5()
+{
+    
+    return $?
+}
+
+function fn_main()
+{
+    cmdlist=(
+    "d1                                         # 1日数据，可筛选出主力合约"
+    "c1                                         # 1份合约日线"
+    "f5                                         # 赵一万"
+    )
+
+    fn_set_END
+    fn_execute "$@"
+}
+
+fn_main "$@"
+
+# http://www.cnblogs.com/zhenjing/archive/2011/07/15/process_mutex_race.html
+# 获取最大ID的记录
+
