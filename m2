@@ -165,7 +165,7 @@ function fn_xiaolai()                   { cat book_xiaolai ;}
         lunyu                   # 论语
         shenglvqimeng           # 声律启蒙
         tiandao                 # 天道.遥远的救世主
-        xiaolai                 # 李笑来<读书经验>分享
+        xiaolai                 # 李笑来<读书经验>分享.学习
         01_商君书
         02_韩非子
         aq_如何提问             # reading
@@ -503,7 +503,7 @@ function fn_valuetheory()               { cat phi_valuetheory ;}
 
     local opts=(
         phi_cept                        # 哲学 = 形而上学+伦理学+认识论
-        epistemology                    # 知识论 theory of knowledge
+        epistemology                    # 知识论 学习 theory of knowledge
         valuetheory
 
         flowers12                       # 哲学12钗
