@@ -39,7 +39,8 @@ KeyPress "tag3", 1
 KeyPress "tag4", 1
 KeyPress "tag5", 1
 KeyPress "Enter", 1
-KeyPress "d", 1
+KeyPress "m", 1
+KeyPress "5", 1
 Delay 100
 KeyPress "Enter", 1
 KeyPress "F1", 1
@@ -47,8 +48,10 @@ MoveTo 771, 194
 LeftClick 1
 KeyPress "PageUp", 1
 Delay 100
-KeyPress "PageUp", 1
-Delay 266
+KeyPress "PageUp", 2
+Delay 100
+KeyPress "PageUp", 3
+Delay 366
 RightClick 1
 Delay 100
 KeyPress "Down", 3
@@ -65,7 +68,7 @@ KeyPress 78, 1
 KeyUp 18, 1
 Delay 200
 LeftClick 1
-For 10
+For 20
 Delay 700
 IfColor 926,577,"0",0 Then
 Delay 300

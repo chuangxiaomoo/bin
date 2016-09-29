@@ -1786,6 +1786,22 @@ function fn_future()
     return $?
 }
 
+
+function fn_distinct()
+{
+    echo "
+    DROP TABLE IF EXISTS tbl_cp;
+    CREATE TABLE tbl_cp LIKE $1;
+    INSERT INTO tbl_cp SELECT DISTINCT * FROM $1;
+    DELETE FROM $1;
+    INSERT INTO $1 SELECT DISTINCT * FROM tbl_cp;
+    " | mysql kts
+
+    xt_ret $? "" || return $?
+
+    fn_echo_succ "DISTINCT $1 succ!"
+}
+
 function fn_main()
 {
     cmdlist=(
@@ -1835,6 +1851,7 @@ function fn_main()
     "chk_rank [iF5]                     # 有新进成员，[up dorat]定期调用"
     "chk_day                            # day vs. dde"
     "future                             # 期货1分钟"
+    "distinct                           # 删除重复"
     )
 
     # 存储过程函数文件的最后5行都是注释

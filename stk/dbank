@@ -117,6 +117,26 @@ function fn_txttbl()
     fi
 }
 
+fn_gen_utures()
+{
+    rowx1=`bc <<< "obase=16;${rows}%256"`
+    rowx2=`bc <<< "obase=16;${rows}/256"`
+
+    [ "${rows}" -eq 10 ] && fn_echo_fail "10 lines is not supported!" && exit 1
+    [ "${rows}" -eq 0 ]  && fn_echo_fail "BLK shouldn't be NULL" && exit 1
+#   grep -f ${chao}.714 ${PLAIN} ; echo
+#   grep -f ${chao}.715 ${PLAIN} ; echo
+#   grep -f ${chao}.716 ${PLAIN} ; echo
+    grep -w -f ${chao}.714 ${PLAIN} | sed 's/^/ /' | sed  -e 's# #A#g' >  ${buffer}
+    grep -w -f ${chao}.715 ${PLAIN} | sed 's/^/ /' | sed  -e 's# #B#g' >> ${buffer}
+    grep -w -f ${chao}.716 ${PLAIN} | sed 's/^/ /' | sed  -e 's# #C#g' >> ${buffer}
+
+    # 0xA即'\n'，会被tr干掉
+    echo -ne "\x${rowx1}\x${rowx2}`cat ${buffer} | tr -d '\n'`" > /winc/zxg/自选股.sel
+    cp ${PLAIN} /winc/zxg/chao.txt
+    fn_echo_warn "$rows rows to /winc/zxg/{自选股.sel,chao.txt}"
+}
+
 fn_gen_10jqka_sel()
 {
     rowx1=`bc <<< "obase=16;${rows}%256"`
@@ -178,6 +198,16 @@ function fn_imysql_sqls()
     ${sqls_pro}
     SELECT $IDX t.* FROM ${ITB} ($sqls) as t
     " | mysql ${OPT:--t} kts
+}
+
+function fn_utao()
+{
+    [ -z "${sqls}" ] && fn_echo_warn "sqls is empty" && exit
+    PLAIN=${1:-$chao}
+    sql_chao="${PREFIX}SELECT code FROM (${sqls//;/}) as t"
+    mysql -N kts <<<"${sql_chao}" | tee ${TEE} ${PLAIN} > /dev/null
+    rows=`wc -l < ${PLAIN}`
+    fn_gen_utures
 }
 
 function fn_chao()
