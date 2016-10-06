@@ -45,12 +45,8 @@ Delay 100
 KeyPress "Enter", 1
 KeyPress "F1", 1
 MoveTo 771, 194
+Delay 100
 LeftClick 1
-KeyPress "PageUp", 1
-Delay 100
-KeyPress "PageUp", 2
-Delay 100
-KeyPress "PageUp", 3
 Delay 366
 RightClick 1
 Delay 100
@@ -58,6 +54,7 @@ KeyPress "Down", 3
 Delay 100
 KeyPress "Down", 2
 KeyPress "Right", 1
+KeyPress "Down", 1
 KeyPress "Enter", 1
 KeyDown 18, 1
 KeyPress 78, 1
@@ -68,10 +65,10 @@ KeyPress 78, 1
 KeyUp 18, 1
 Delay 200
 LeftClick 1
-For 20
-Delay 700
-IfColor 926,577,"0",0 Then
+For 10
 Delay 300
+IfColor 926,577,"0",0 Then
+Delay 200
 IfColor 921,580,"0",0 Then
 Goto green
 End If

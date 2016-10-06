@@ -2,6 +2,23 @@
 . `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
 . /etc/common.rc
 
+function fn_set_uEND()
+{
+    END=`mysql -N kts <<<"SELECT max(date) FROM ${TBL:-futures_ls}"`
+}
+
+function fn_get_udate()
+{
+    # Usage: fn_get_date offset size
+    local sta=${1:-1}
+    [ "${sta}" -eq 0 ] && fn_echo_fail "fn_get_date sta could not be 0" && exit
+    let sta--           #sta=offset-1
+    sqls="
+    SELECT DISTINCT date from ${TBL:-futures_ls} WHERE date<='$END' ORDER by date DESC LIMIT ${sta},${2:-1}"
+    #echo ${sqls}; exit
+    mysql -N kts <<< "${sqls}"
+}
+
 function fn_ls_0()
 {
     sed -e "s/tag0/${1:0:1}/" \
@@ -10,7 +27,7 @@ function fn_ls_0()
     xt_ret $? "" || return $?
 
     fn_bell xRD
-    timeout 8 nc -l 2911
+    timeout 8 nc -l 2911 > /dev/null    # Dont echo   _xRD_done_
     xt_ret $? "xRD@${1} fail!" || return $?
 }
 
@@ -31,14 +48,14 @@ function fn_d1_0()
     
     > /Export/Table.txt
     fn_bell xRD
-    timeout 8 nc -l 2911
+    timeout 8 nc -l 2911 > /dev/null    # Dont echo   _xRD_done_
     xt_ret $? "xRD@${1} fail!"  # Dont return _but_ try again below
 
     if [ `wc -l< /Export/Table.txt` -lt 125 ]; then
         fn_echo_fail "try $1 again"
         sed -i 's/266/1066/' /10jqka/xRD.q
         fn_bell xRD
-        timeout 8 nc -l 2911
+        timeout 8 nc -l 2911 > /dev/null    # Dont echo   _xRD_done_
         xt_ret $? "xRD@${1} fail!" || return $?
     fi
 
@@ -82,38 +99,40 @@ function fn_d1_0()
     fn_echo_succ "update db@${1} succ!"
 }
 
-function fn_f5_0()
+function fn_q5_0()
 {
-    sed -e "s/tag0/${1:0:1}/" \
-        -e "s/tag1/${1:1:1}/" \
-        -e "s/tag2/${1:2:1}/" \
-        -e "s/tag3/${1:3:1}/" \
-        -e "s/tag4/${1:4:1}/" .src/futures_f5.q > /10jqka/xRD.q
-    xt_ret $? "" || return $?
+    f5_list=
+    for (( i=$_ij; i<${pages}; i+=1 )); do
+        sed -e "s/tag0/${1:0:1}/" \
+            -e "s/tag1/${1:1:1}/" \
+            -e "s/tag2/${1:2:1}/" \
+            -e "s/tag3/${1:3:1}/" \
+            -e "s/tag4/${1:4:1}/" .src/futures_f5.q > /10jqka/xRD.q
+        xt_ret $? "" || return $?
 
-    if [ "${#1}" -eq 6 ]; then
-        sed -i "s/tag5/${1:5:1}/" /10jqka/xRD.q
-    else
-        sed -i "/tag5/d" /10jqka/xRD.q
-    fi
-    
-    > /Export/Table.txt
-    fn_bell xRD
-    timeout 15 nc -l 2911
-    xt_ret $? "xRD@${1} fail!"  # Dont return _but_ try again below
-
-    # 4 16 64 256
-    if [ `wc -l< /Export/Table.txt` -lt 280 ]; then
-        fn_echo_fail "try $1 again"
-        sed -i 's/366/2066/' /10jqka/xRD.q
+        if [ "${#1}" -eq 6 ]; then
+            sed -i "s/tag5/${1:5:1}/" /10jqka/xRD.q
+        else
+            sed -i "/tag5/d" /10jqka/xRD.q
+        fi
+        for (( j=$_ij; j<$i; j+=1 )); do
+            sed -i -e '/RightClick/i\
+                KeyPress "PageUp", 1\
+                Delay 100' /10jqka/xRD.q
+        done
         fn_bell xRD
-        timeout 15 nc -l 2911
-        xt_ret $? "xRD@${1} fail!" || return $?
-    fi
+        timeout 8 nc -l 2911 > /dev/null    # Dont echo   _xRD_done_
+        xt_ret $? "xRD@${1} fail!"          # Dont return _but_ try again below
+        cp /Export/Table.txt ${chao}.f5.${i}
+        f5_list="${chao}.f5.${i} ${f5_list}"
+    done
 
     # iconv & add yesc
-    iconv -f cp936 -t utf8 /Export/Table.txt    |
-    tail -300                                   |
+    cat ${f5_list} > ${chao}.f5
+    fn_issqltrue "`wc -l<${chao}.f5`>=30*($i-${_ij})"    #
+    xt_ret $? "up $1@$i fail: ${f5_list}" || return $?
+
+    iconv -f cp936 -t utf8 ${chao}.f5           |
     sed -e '/时间/d'                            \
         -e 's/[,一二三四五]//g'                 \
         -e 's/  */\t/g'                         \
@@ -132,8 +151,8 @@ function fn_f5_0()
     }' > ${fchao}
 
     echo "
---  DROP TABLE IF EXISTS futures_f5;
-    CREATE TABLE IF NOT EXISTS futures_f5 (
+--  DROP TABLE IF EXISTS futures_q5;
+    CREATE TABLE IF NOT EXISTS futures_q5 (
         id      int(6) ZEROFILL PRIMARY key AUTO_INCREMENT NOT NULL,
         code    CHAR(8),
         date    DATE,
@@ -148,7 +167,8 @@ function fn_f5_0()
         amount  DECIMAL(12,2) DEFAULT 0,
         INDEX(code,date)
     );
-    LOAD DATA LOCAL INFILE '${fchao}' INTO TABLE futures_f5(code,date,time,open,high,low,close,rise,chng,shou,amount);
+    DELETE FROM futures_q5 WHERE code='${1}';
+    LOAD DATA LOCAL INFILE '${fchao}' INTO TABLE futures_q5(code,date,time,open,high,low,close,rise,chng,shou,amount);
     " | mysql kts
     xt_ret $? "" || return $?
 
@@ -157,10 +177,6 @@ function fn_f5_0()
 
 function fn_up_ls()
 {
-   #if [ "${1}" != 'force' ] && ([ "${date_T//:/}" -lt 150000 ] || [ "${date_T//:/}" -gt 204500 ]); then
-   #    read -p "Warning: Update at Trade Hours [Yes]?"
-   #fi
-
     if [ "${date_T//:/}" -gt 203000 ]; then
         HMS='23:00:00'
     else
@@ -211,10 +227,10 @@ function fn_up_ls()
 
 function fn_up_d1()
 {
-    tag_blank='--'
-
-    sqls="SELECT code FROM futures_ls WHERE date='${END}' && time='15:00:00'" 
-    sqls="${sqls} ORDER by ${FIELD:-amount} DESC LIMIT ${LIMIT:-12}"
+    sqls="SELECT max(date) FROM futures_ls INTO @END;
+          SELECT code FROM futures_ls WHERE date=@END && time='15:00:00' && 
+          (code not like 'ru%' && amount/shou<15) || (code like 'ru%' && amount>5000000)    # 橡胶特殊处理
+                  ORDER by ${FIELD:-amount} DESC LIMIT ${LIMIT:-24}"
     codes=`mysql -N kts <<<"${sqls}"`
 
     mysql kts <<<"DROP TABLE IF EXISTS futures_d1"
@@ -230,18 +246,67 @@ function fn_up_d1()
 
 function fn_up_f5()
 {
-    tag_blank='--'
+    Taolu="
+    0 UTURES的时间系统
+      futures_ls是系统的起点，时间来源股票系统
+      futures_q5,futures_f5...等则带有自己时间
+    1 创建f5
+      将q5的pages=6，下载两天的数据，成功后进行重命名
+      如果下午3点后更新，i=j=_ij=1，可以少下载一页数据
+      RENAME TABLE futures_q5 TO futures_f5
+    2 更新q5
+      将一天分成3段，分别对应pages=1,2,3，并删除与f5的重复数据
+    3 更新f5
+      在交易日早晨9:00前执行q5，因沪铜等会交易到凌晨1点。
+      设置pages=3，一天的数据量(沪铜的records为94，在此忽略缺失数1)
+      q5删除沪铜等跨夜数据
+      q5.push到f5(通过f5.max(date))
+    "
+    pages=3
+    fn_up_q5
+    echo "
+    SELECT max(date) FROM futures_f5 INTO @END;
+    DELETE FROM futures_q5 WHERE date<=@END or date>='${date_F}';
+    INSERT INTO futures_f5(code,date,time,open,high,low,close,rise,chng,shou,amount)
+                    SELECT code,date,time,open,high,low,close,rise,chng,shou,amount FROM futures_q5;
+    " | mysql kts
+}
 
-    sqls="SELECT code FROM futures_ls WHERE date='${END}' && time='15:00:00'" 
-    sqls="${sqls} ORDER by ${FIELD:-amount} DESC LIMIT ${LIMIT:-12}"
+function fn_up_q5()
+{
+    sqls="SELECT max(date) FROM futures_ls INTO @END;
+          SELECT code FROM futures_ls WHERE date=@END && time='15:00:00' && 
+          (code not like 'ru%' && amount/shou<15) || (code like 'ru%' && amount>5000000)    # 橡胶特殊处理
+                  ORDER by ${FIELD:-amount} DESC LIMIT ${LIMIT:-24}"
     codes=`mysql -N kts <<<"${sqls}"`
 
-    mysql kts <<<"DROP TABLE IF EXISTS futures_f5"
+    mysql kts <<<"DROP TABLE IF EXISTS futures_q5"
     xt_ret $? "" || return $?
 
-    for i in ${codes}; do
-        fn_f5_0 $i
-        xt_ret $? "fn_f5_0" || return $?
+    #uncomment when 创建futures_f5
+    #codes=ag1612
+    #pages=6
+    _ij=0
+
+    if [ -z "${pages}" ]; then
+        if [ "${date_T//:/}" -lt 133000 ]; then
+            pages=1
+        elif [ "${date_T//:/}" -lt 210000 ]; then
+            pages=2
+        else
+            pages=3
+        fi
+    fi
+
+    for code in ${codes}; do
+        if grep -q "^ag" <<<"${code}"; then
+            let peg=pages+1
+            pages=$peg fn_q5_0 $code
+        else
+            fn_q5_0 $code
+        fi
+
+        xt_ret $? "Warning: try $code fail"
         sleep .2
     done
     fn_echo_succ "up all succ!"
@@ -254,34 +319,77 @@ function fn_up()
     ls) fn_up_ls ;;
     d1) fn_up_d1 ;;
     f5) fn_up_f5 ;;
-    *)  echo "Usage: UTURES up {ls|d1|f5}"
+    q5) fn_up_q5 ;;
+    *)  echo "Usage: UTURES up {ls|d1|f5|q5}"
     esac
-}
-
-function fn_se()
-{
-    sqls="SELECT *,ROUND(100*(close-yesc)/yesc, 2) as rise"
-    sqls="${sqls} FROM futures_ls WHERE 1 ${COND} ORDER by ${FIELD:-amount} DESC LIMIT ${LIMIT:-24}" 
-    fn_imysql_sqls
-    fn_utao
 }
 
 function fn_nr()
 {
+    ORDER="GROUP by code ORDER by cnt DESC LIMIT 36"
     case $1 in
-    ls) sqls="SELECT *,count(code) as cnt FROM futures_ls GROUP by code"; fn_imysql_sqls ;;
-    d1) sqls="SELECT *,count(code) as cnt FROM futures_d1 GROUP by code"; fn_imysql_sqls ;;
-    f5) sqls="SELECT *,count(code) as cnt FROM futures_f5 GROUP by code"; fn_imysql_sqls ;;
-    *)  echo "Usage: UTURES nr {ls|d1|f5}" ;;
+    ls) sqls="SELECT *,count(code) as cnt FROM futures_ls ${ORDER}"; fn_imysql_sqls ;;
+    d1) sqls="SELECT *,count(code) as cnt FROM futures_d1 ${ORDER}"; fn_imysql_sqls ;;
+    f5) sqls="SELECT *,count(code) as cnt FROM futures_f5 ${ORDER}"; fn_imysql_sqls ;;
+    q5) sqls="SELECT *,count(code) as cnt FROM futures_q5 ${ORDER}"; fn_imysql_sqls ;;
+    *)  echo "Usage: UTURES nr {ls|d1|f5|q5}" ;;
+    esac
+}
+
+function fn_sel()
+{
+    sqls="
+        SELECT *, ROUND(100*(close-yesc)/yesc, 2) as rise,
+        ROUND(amount/shou, 2) as Yeps
+        FROM futures_ls HAVING 1 ${COND} ORDER by ${FIELD:-amount} DESC LIMIT ${LIMIT:-24}" 
+    fn_imysql_sqls
+    fn_utao
+}
+
+function fn_pro()
+{
+    # 查询系统：不同合约records数不同，缺省i时取最新，指定i时以最新为0往后数
+    case $1 in
+    d1)
+        TBL=futures_d1
+        fn_set_uEND
+        END=`fn_get_udate ${iEND:-1}`
+        STA=`fn_get_date ${NUM:-3}`
+        echo "
+        SELECT *, COUNT(*) as cnt, 
+            ROUND(SUM(100*GREATEST(high-low, high-yesc, yesc-low)/yesc)/COUNT(*), 2) as ATR,
+            ROUND(SUM(abs(close-yesc)/GREATEST(high-low, high-yesc, yesc-low))/COUNT(*), 2) as MEF
+            FROM futures_d1 WHERE date>='${STA}' and date<='${END}' 
+            GROUP by code ORDER by ${FIELD:-ATR} DESC;
+        " | mysql -t kts
+        fn_echo_succ "iEND:${iEND:-1} NUM:${NUM:-3} END:${END} FIELD:${FIELD:-ATR}"
+        ;;
+    q5)
+        mysql kts < sql/UTURES.sql
+        echo "
+        SELECT code,date,time,close,
+        ma4,ma16,ma64,ma256,
+        ROUND((ABS(close-a1)+ABS(ma4-a1)+ABS(ma16-a1))/a1*100   ,2) as cv_f1,
+        ROUND((ABS(ma4-a2)+ABS(ma16-a2)+ABS(ma64 -a2))/a2*100   ,2) as cv_f4,
+        ROUND((ABS(ma16-a3) +ABS(ma64-a3)+ABS(ma256-a3))/a3*100 ,2) as cv_ff,
+        sd_d1,sd_d2,pk_d1,pk_d2
+        FROM pro_q5
+        ORDER by ${FIELD:-cv_f4} DESC
+        " | mysql -t kts
+        ;;
+
+    *)  echo "Usage: UTURES pro {d1|q5}"
+        ;;
     esac
 }
 
 function fn_main()
 {
     cmdlist=(
-    "up {ls|d1|f5}                              # 数据更新"
-    "nr {ls|d1|f5}                              # 记录统计"
-    "se                                         # SELECT list"
+    "up     {ls|d1|f5|q5}                       # 数据更新"
+    "nr     {ls|d1|f5|q5}                       # 记录统计"
+    "pro    {d1|q5}                             # Process"
+    "sel                                        # SELECT list"
     )
 
     fn_set_END
