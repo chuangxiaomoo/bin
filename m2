@@ -152,7 +152,7 @@ function fn_202_苏黎世投机定律()        { cat book_202_苏黎世投机定
 function fn_899_权力的游戏()            { cat book_899_权力的游戏 ;}
 function fn_900_平凡的世界()            { cat book_900_平凡的世界 ;}
 function fn_901_人类简史()              { cat book_901_人类简史 ;}
-function fn_902_人类简史读书笔记()      { cat book_902_人类简史读书笔记 ;}
+function fn_902_人类简史读书笔记()      { cat book_902_人类简史读书笔记 ;}  # 理解植物
 function fn_tiandao()                   { cat book_tiandao book_遥远的救世主;}
 function fn_xiaolai()                   { cat book_xiaolai ;}
     local opts=(
@@ -291,6 +291,8 @@ function fn_08_novel()                  { cat article_08_novel ;}
 
 function fn_40_学习批判性思考()         { cat article_40_学习批判性思考 ;}
 function fn_41_如何成为高品质的勤奋者() { cat article_41_如何成为高品质的勤奋者 ;}
+                                          cat article_41_如何成为高品质的勤奋者2 ;}
+function fn_42_思考工具及框架()         { cat article_42_思考工具及框架 ;}
 
 function fn_100_人际关系痛苦的根源()    { cat article_100_人际关系痛苦的根源 ;}
 function fn_101_分享与慷他人之慨()      { cat article_101_分享与慷他人之慨 ;}
@@ -310,6 +312,8 @@ function fn_gsq_房价什么情况下会崩()    { cat article_gsq_房价什么�
 
         40_学习批判性思考               # 用以致学、阅读本质=填补信息缺口
         41_如何成为高品质的勤奋者
+        42_思考工具及框架
+
         100_人际关系痛苦的根源          # 缺乏界限感
         101_分享与慷他人之慨
         102_同事是你共享生命的战友
@@ -375,6 +379,7 @@ function fn_jc_Golf智慧_快就是慢()      { cat stk_jc_Golf智慧_快就是�
         07_牛眼投资法                   # bulleye
 
         tdx                             # 通达信 同花顺(ths 10jqka)
+        wenhua                          # 文华财经
         10_dazhihui                     # dzh 大智慧
         11_N_XD_XR_DR                   # 除权除息
         13_除权后的股票难以上涨
@@ -439,6 +444,7 @@ function fn_fallacy()                   { cat logic_fallacy ;}
 function fn_language()                  { cat logic_language ;}
 function fn_BeingLogical()              { cat logic_BeingLogical ;}
 function fn_CognitiveBiases()           { cat logic_CognitiveBiases ;}
+function fn_TrapsPitfalls()             { cat logic_TrapsPitfalls ;}
     local opts=(
         cept
         training500
@@ -446,6 +452,7 @@ function fn_CognitiveBiases()           { cat logic_CognitiveBiases ;}
         formal                          #   形式逻辑(普通逻辑)
         informal                        # 非形式逻辑
         fallacy                         #                      二十四条逻辑谬误
+        TrapsPitfalls                   # 逻辑坑
         language                        # 英语逻辑实现
         BeingLogical                    # 简单逻辑学
         CognitiveBiases                 # 认知偏差
@@ -876,6 +883,7 @@ function fn_Freud()                     { cat psychology_Freud ;}
 }
 function fn_guo() {                     # guo
 function fn_term()                      { cat guo_term ;}
+function fn_think()                     { cat guo_think ;}
 function fn_analogy()                   { cat guo_analogy ;}
 function fn_Question()                  { cat guo_Question ;}
 function fn_lesson()                    { cat guo_lesson ;}
@@ -890,7 +898,7 @@ function fn_rhyme200()                  { cat guo_rhyme200 ;}
         rhyme3                          # 三字经
         rhyme10                         # 围棋十诀
         rhyme30                         # 入段须知格言三十条
-        rhyme50                         # 围棋七字精选50
+        rhyme50                         # 围棋七字精选50 & 实战布局用语50条
         rhyme200                        # 围棋七字口诀200
         term
         analogy                         # vs. 羽毛球.期货
