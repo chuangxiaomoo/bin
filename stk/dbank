@@ -317,7 +317,7 @@ function fn_yist()
 
 function fn_get_export_file()
 {
-    epath='/Export/'
+    epath='/Export'
     efile=${epath}/`ls -t ${epath} | head -1`
     ctime=`ls -lt --time-style=+%s ${efile} | awk '{print $6}'`
     fresh=600

@@ -227,11 +227,12 @@ function fn_up_ls()
 
 function fn_up_d1()
 {
-    sqls="SELECT max(date) FROM futures_ls INTO @END;
-          SELECT code FROM futures_ls WHERE date=@END && time='15:00:00' && 
-          (code not like 'ru%' && amount/shou<15) || (code like 'ru%' && amount>5000000)    # 橡胶特殊处理
-                  ORDER by ${FIELD:-amount} DESC LIMIT ${LIMIT:-24}"
-    codes=`mysql -N kts <<<"${sqls}"`
+    COND="Margin<25000" UTURES ls 
+    xt_ret $? "" || return $?
+
+    codes=`cat ${chao}`
+
+    echo ${codes};exit
 
     mysql kts <<<"DROP TABLE IF EXISTS futures_d1"
     xt_ret $? "" || return $?
@@ -266,7 +267,7 @@ function fn_up_f5()
     fn_up_q5
     echo "
     SELECT max(date) FROM futures_f5 INTO @END;
-    DELETE FROM futures_q5 WHERE date<=@END or date>='${date_F}';
+    DELETE FROM futures_q5 WHERE date<=${MAXDT:-@END} or date>='${date_F}';
     INSERT INTO futures_f5(code,date,time,open,high,low,close,rise,chng,shou,amount)
                     SELECT code,date,time,open,high,low,close,rise,chng,shou,amount FROM futures_q5;
     " | mysql kts
@@ -274,19 +275,19 @@ function fn_up_f5()
 
 function fn_up_q5()
 {
-    sqls="SELECT max(date) FROM futures_ls INTO @END;
-          SELECT code FROM futures_ls WHERE date=@END && time='15:00:00' && 
-          (code not like 'ru%' && amount/shou<15) || (code like 'ru%' && amount>5000000)    # 橡胶特殊处理
-                  ORDER by ${FIELD:-amount} DESC LIMIT ${LIMIT:-24}"
-    codes=`mysql -N kts <<<"${sqls}"`
+    COND="Margin<25000" UTURES ls 
+    xt_ret $? "" || return $?
+
+    codes=`cat ${chao}`
 
     mysql kts <<<"DROP TABLE IF EXISTS futures_q5"
     xt_ret $? "" || return $?
 
-    #uncomment when 创建futures_f5
-    #codes=ag1612
-    #pages=6
     _ij=0
+    #uncomment when 创建futures_f5  OR  单个code失败
+    #pages=6
+    #codes=p1701
+    #MAXDT="'`mysql -N kts <<<"SELECT max(date) FROM futures_f5 WHERE code='${codes}'"`'"
 
     if [ -z "${pages}" ]; then
         if [ "${date_T//:/}" -lt 133000 ]; then
@@ -312,14 +313,50 @@ function fn_up_q5()
     fn_echo_succ "up all succ!"
 }
 
+function fn_up_domi()
+{
+    #
+    # 通达信期货 -- 拉横向滚动条显示‘每手剩数’
+    # -- 34 -- 导出全部 -- 导出目录为Export
+    #
+    fn_get_export_file
+    xt_ret $? "" || return $?
+
+    echo ${efile}
+    iconv -f cp936 -t utf8 ${efile} | grep '_' | 
+    awk '{printf "%s\t%s\t%s\n", $1,$2,$(NF-1)}' | sed 's/_.*//g' > ${cache}
+
+    nr=`wc -l<${cache}`
+
+    [ "${nr}" -gt 45 ]
+    xt_ret $? "nr:${nr} -lt 40" || return $?
+    
+    echo "
+    DROP TABLE IF EXISTS futures_domi;
+    CREATE TABLE IF NOT EXISTS futures_domi (
+        code    CHAR(8),
+        name    CHAR(16),
+        mult    INT(6),
+        INDEX(code)
+    );
+    LOAD DATA LOCAL INFILE '${cache}' INTO TABLE futures_domi;
+    " | mysql kts
+    xt_ret $? "" || return $?
+
+    mysql -N kts <<< "SELECT code FROM futures_domi" > ${chao}.domi
+
+    fn_echo_succ "up domi succ"
+}
+
 function fn_up()
 {
     fchao='/tmp/kts/chao.utures'
     case $1 in
-    ls) fn_up_ls ;;
-    d1) fn_up_d1 ;;
-    f5) fn_up_f5 ;;
-    q5) fn_up_q5 ;;
+    ls) fn_up_ls    ;;
+    d1) fn_up_d1    ;;
+    f5) fn_up_f5    ;;
+    q5) fn_up_q5    ;;
+  domi) fn_up_domi  ;;
     *)  echo "Usage: UTURES up {ls|d1|f5|q5}"
     esac
 }
@@ -331,17 +368,47 @@ function fn_nr()
     ls) sqls="SELECT *,count(code) as cnt FROM futures_ls ${ORDER}"; fn_imysql_sqls ;;
     d1) sqls="SELECT *,count(code) as cnt FROM futures_d1 ${ORDER}"; fn_imysql_sqls ;;
     f5) sqls="SELECT *,count(code) as cnt FROM futures_f5 ${ORDER}"; fn_imysql_sqls ;;
+   f51) sqls_pro="SELECT max(date) FROM futures_f5 INTO @maxd;"
+        sqls="SELECT *,count(code) as cnt FROM futures_f5 
+                                         WHERE date=@maxd ${ORDER}"; fn_imysql_sqls ;;
     q5) sqls="SELECT *,count(code) as cnt FROM futures_q5 ${ORDER}"; fn_imysql_sqls ;;
-    *)  echo "Usage: UTURES nr {ls|d1|f5|q5}" ;;
+    *)  echo "Usage: UTURES nr {ls|d1|f5|f51|q5}" ;;
     esac
 }
 
-function fn_sel()
+function fn_ls()
 {
+    EXCLUDE_CO="(
+    'zn1611',  -- 非主力铜
+    'cu1611',  -- 非主力铜
+    'RU1607'   -- 测试
+    )"
+
+    echo "
+    SELECT code FROM futures_ls
+    WHERE code not in ${EXCLUDE_CO}
+    ORDER by amount DESC LIMIT 23
+    " | mysql -N kts > ${chao}.domi0
+    grep -w -i -f ${chao}.domi0 ${chao}.domi > ${chao}.domi2
+
+    nr=`grep -w -i -f ${chao}.domi0 ${chao}.domi | wc -l`
+    if [ "${nr}" -ne 23 ]; then
+        grep -w -i -v -f ${chao}.domi2 ${chao}.domi0
+        fn_echo_fail "nr:${nr} -ne 24" 
+        exit 1
+    fi
+
     sqls="
-        SELECT *, ROUND(100*(close-yesc)/yesc, 2) as rise,
-        ROUND(amount/shou, 2) as Yeps
-        FROM futures_ls HAVING 1 ${COND} ORDER by ${FIELD:-amount} DESC LIMIT ${LIMIT:-24}" 
+        SELECT ls.*,
+        ROUND(100*(close-yesc)/yesc, 2) as rise,
+        ROUND(close*shou*mult/(10000*10000), 2) as eYi,
+        ROUND(close*mult, 2) as Yeps,
+        ROUND(close*mult*.15) as Margin
+        FROM futures_ls as ls, futures_domi as do
+        WHERE ls.code=do.code
+        HAVING 1 ${COND} ORDER by ${FIELD:-eYi} DESC LIMIT ${LIMIT:-24}
+    " 
+    #   echo ${sqls}; exit
     fn_imysql_sqls
     fn_utao
 }
@@ -386,10 +453,10 @@ function fn_pro()
 function fn_main()
 {
     cmdlist=(
-    "up     {ls|d1|f5|q5}                       # 数据更新"
+    "up     {ls|d1|f5|q5|domi}                  # 数据更新"
     "nr     {ls|d1|f5|q5}                       # 记录统计"
     "pro    {d1|q5}                             # Process"
-    "sel                                        # SELECT list"
+    "ls                                         # SELECT list"
     )
 
     fn_set_END

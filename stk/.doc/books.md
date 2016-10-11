@@ -25,6 +25,7 @@
   精英特速读训练              [从scale的双线程开始](https://www.zhihu.com/question/23085383)
   澄衷蒙学堂字课图说          日本早稻田大學圖書館掃描民國時期出版本，可免費下載
                               [](http://archive.wul.waseda.ac.jp/kosho/ho05/ho05_01134/)
+  尼采解忧书                  真理.是懒于思索的惰性
   知识论(金岳霖)              [](http://spu.jd.com/10075804.html)
   形式逻辑(金岳霖)
   简单的逻辑学
