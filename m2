@@ -507,12 +507,14 @@ function fn_0a_Miltonfriedman()         { cat phi_0a_Miltonfriedman ;}
 function fn_emotion()                   { cat phi_emotion ;}
 function fn_relationship()              { cat phi_relationship ;}
 
-function fn_epistemology()              { cat phi_epistemology ;}
+function fn_epistemology()              { cat phi_epistemology;
+                                          cat phi_brain;
+                                          cat phi_ref ;}
 function fn_valuetheory()               { cat phi_valuetheory ;}
 
     local opts=(
         phi_cept                        # 哲学 = 形而上学+伦理学+认识论
-        epistemology                    # 知识论 学习 theory of knowledge
+        epistemology                    # 认识论+学习+计算机类比+脑科学+theory of knowledge
         valuetheory
 
         flowers12                       # 哲学12钗
@@ -560,16 +562,6 @@ function fn_valuetheory()               { cat phi_valuetheory ;}
         wdf_26_未言语前已心领神会
         wdf_27_人必有一死               # 海伦凯勒 & 乔布斯 & 雷锋 & 保尔柯察金
         wdf_28_终极关怀                 # 宗教之必然
-    )
-    fn_print $@
-}
-
-function fn_xuexi() {
-function fn_ref()                       { cat ref ;}
-function fn_brain()                     { cat xuexi_brain ;}
-    local opts=(
-        ref
-        brain                           # 人脑与电脑的比对 xiaolai
     )
     fn_print $@
 }
@@ -950,7 +942,6 @@ function fn_main() {
         estate                          # 房地产
         phi                             # philosophy
         logic
-        xuexi                           #
         annual
         article
         book
