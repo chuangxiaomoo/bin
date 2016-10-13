@@ -71,6 +71,7 @@
 # 龙虎榜          .doc/lhb.md
 # 股票们          .doc/codes.md
 # 公告概念        .doc/notice.md
+# 博弈清理        .doc/GameClean.md
 # -----------------------------
 # 魔论            .doc/Molun.md
 # 期基            .doc/Gutures.md

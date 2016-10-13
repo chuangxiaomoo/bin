@@ -19,7 +19,7 @@ function fn_get_udate()
     mysql -N kts <<< "${sqls}"
 }
 
-function fn_ls_0()
+function fn_up_ls_0()
 {
     sed -e "s/tag0/${1:0:1}/" \
         -e "s/tag1/${1:1:1}/" \
@@ -102,7 +102,7 @@ function fn_d1_0()
 function fn_q5_0()
 {
     f5_list=
-    for (( i=$_ij; i<${pages}; i+=1 )); do
+    for (( i=$_ij; i<${pages}+${peg:-0}; i+=1 )); do
         sed -e "s/tag0/${1:0:1}/" \
             -e "s/tag1/${1:1:1}/" \
             -e "s/tag2/${1:2:1}/" \
@@ -187,8 +187,8 @@ function fn_up_ls()
 
     > ${fchao} 
     for i in 714 715 716; do
-        fn_ls_0 $i
-        xt_ret $? "fn_ls_0" || return $?
+        fn_up_ls_0 $i
+        xt_ret $? "fn_up_ls_0" || return $?
         cat /Export/Table.txt >> ${fchao}
         iconv -f cp936 -t utf8 /Export/Table.txt | sed -e 's///g' -e '/名称/d' -e '/^$/d' | awk '{print $2}' > ${chao}.$i
         sleep .2
@@ -266,11 +266,16 @@ function fn_up_f5()
     pages=3
     fn_up_q5
     echo "
+    DELETE FROM futures_f5 WHERE date='${date_F}';
     SELECT max(date) FROM futures_f5 INTO @END;
+
     DELETE FROM futures_q5 WHERE date<=${MAXDT:-@END} or date>='${date_F}';
     INSERT INTO futures_f5(code,date,time,open,high,low,close,rise,chng,shou,amount)
                     SELECT code,date,time,open,high,low,close,rise,chng,shou,amount FROM futures_q5;
     " | mysql kts
+    xt_ret $? "" || return $?
+
+    UTURES nr f51
 }
 
 function fn_up_q5()
@@ -285,8 +290,8 @@ function fn_up_q5()
 
     _ij=0
     #uncomment when 创建futures_f5  OR  单个code失败
-    #pages=6
-    #codes=p1701
+    #pages=4
+    #codes=rb1701
     #MAXDT="'`mysql -N kts <<<"SELECT max(date) FROM futures_f5 WHERE code='${codes}'"`'"
 
     if [ -z "${pages}" ]; then
@@ -300,12 +305,8 @@ function fn_up_q5()
     fi
 
     for code in ${codes}; do
-        if grep -q "^ag" <<<"${code}"; then
-            let peg=pages+1
-            pages=$peg fn_q5_0 $code
-        else
-            fn_q5_0 $code
-        fi
+        grep -q "^ag" <<<"${code}" && peg=1
+        fn_q5_0 $code
 
         xt_ret $? "Warning: try $code fail"
         sleep .2
@@ -367,7 +368,8 @@ function fn_nr()
     case $1 in
     ls) sqls="SELECT *,count(code) as cnt FROM futures_ls ${ORDER}"; fn_imysql_sqls ;;
     d1) sqls="SELECT *,count(code) as cnt FROM futures_d1 ${ORDER}"; fn_imysql_sqls ;;
-    f5) sqls="SELECT *,count(code) as cnt FROM futures_f5 ${ORDER}"; fn_imysql_sqls ;;
+    f5) sqls="SELECT *,count(code) as cnt FROM futures_f5 
+                                          WHERE 1 ${COND} ${ORDER}"; fn_imysql_sqls ;;
    f51) sqls_pro="SELECT max(date) FROM futures_f5 INTO @maxd;"
         sqls="SELECT *,count(code) as cnt FROM futures_f5 
                                          WHERE date=@maxd ${ORDER}"; fn_imysql_sqls ;;
@@ -410,6 +412,7 @@ function fn_ls()
     " 
     #   echo ${sqls}; exit
     fn_imysql_sqls
+    fn_echo_succ "FIELD:${FIELD:-eYi}"
     fn_utao
 }
 
@@ -454,7 +457,7 @@ function fn_main()
 {
     cmdlist=(
     "up     {ls|d1|f5|q5|domi}                  # 数据更新"
-    "nr     {ls|d1|f5|q5}                       # 记录统计"
+    "nr     {ls|d1|f5|q5|f51}                   # 记录统计"
     "pro    {d1|q5}                             # Process"
     "ls                                         # SELECT list"
     )
