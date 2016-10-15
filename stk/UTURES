@@ -2,22 +2,28 @@
 . `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
 . /etc/common.rc
 
-function fn_set_uEND()
-{
-    END=`mysql -N kts <<<"SELECT max(date) FROM ${TBL:-futures_ls}"`
-}
-
 function fn_get_udate()
 {
     # Usage: fn_get_date offset size
-    local sta=${1:-1}
-    [ "${sta}" -eq 0 ] && fn_echo_fail "fn_get_date sta could not be 0" && exit
-    let sta--           #sta=offset-1
+    local sta=${1:-0}
+    if [ "${sta}" -eq 0 ]; then
+        mysql -N kts <<<"SELECT max(date) FROM ${uTBL:-futures_f5}"
+        return
+    fi 
+
+    let sta--           #sta=offset-1 保证 futures_ls 是最新的
     sqls="
-    SELECT DISTINCT date from ${TBL:-futures_ls} WHERE date<='$END' ORDER by date DESC LIMIT ${sta},${2:-1}"
+    SELECT DISTINCT date from ${uTBL:-futures_f5} ORDER by date DESC LIMIT ${sta},${2:-1}"
     #echo ${sqls}; exit
     mysql -N kts <<< "${sqls}"
 }
+
+function fn_set_uEND()
+{
+    uEND=`mysql -N kts <<<"SELECT max(date) FROM ${TBL:-futures_ls}"`
+    uEND=`fn_get_udate ${iEND:-1}`
+}
+
 
 function fn_up_ls_0()
 {
@@ -118,10 +124,10 @@ function fn_q5_0()
         for (( j=$_ij; j<$i; j+=1 )); do
             sed -i -e '/RightClick/i\
                 KeyPress "PageUp", 1\
-                Delay 100' /10jqka/xRD.q
+                Delay 200' /10jqka/xRD.q
         done
         fn_bell xRD
-        timeout 8 nc -l 2911 > /dev/null    # Dont echo   _xRD_done_
+        timeout 12 nc -l 2911 > /dev/null   # Dont echo   _xRD_done_
         xt_ret $? "xRD@${1} fail!"          # Dont return _but_ try again below
         cp /Export/Table.txt ${chao}.f5.${i}
         f5_list="${chao}.f5.${i} ${f5_list}"
@@ -267,9 +273,9 @@ function fn_up_f5()
     fn_up_q5
     echo "
     DELETE FROM futures_f5 WHERE date='${date_F}';
-    SELECT max(date) FROM futures_f5 INTO @END;
+    SELECT max(date) FROM futures_f5 INTO @maxd;
 
-    DELETE FROM futures_q5 WHERE date<=${MAXDT:-@END} or date>='${date_F}';
+    DELETE FROM futures_q5 WHERE date<=${MAXDT:-@maxd} or date>='${date_F}';
     INSERT INTO futures_f5(code,date,time,open,high,low,close,rise,chng,shou,amount)
                     SELECT code,date,time,open,high,low,close,rise,chng,shou,amount FROM futures_q5;
     " | mysql kts
@@ -291,7 +297,7 @@ function fn_up_q5()
     _ij=0
     #uncomment when 创建futures_f5  OR  单个code失败
     #pages=4
-    #codes=rb1701
+    #codes=${LEAK}
     #MAXDT="'`mysql -N kts <<<"SELECT max(date) FROM futures_f5 WHERE code='${codes}'"`'"
 
     if [ -z "${pages}" ]; then
@@ -370,9 +376,9 @@ function fn_nr()
     d1) sqls="SELECT *,count(code) as cnt FROM futures_d1 ${ORDER}"; fn_imysql_sqls ;;
     f5) sqls="SELECT *,count(code) as cnt FROM futures_f5 
                                           WHERE 1 ${COND} ${ORDER}"; fn_imysql_sqls ;;
-   f51) sqls_pro="SELECT max(date) FROM futures_f5 INTO @maxd;"
+   f51) fn_set_uEND
         sqls="SELECT *,count(code) as cnt FROM futures_f5 
-                                         WHERE date=@maxd ${ORDER}"; fn_imysql_sqls ;;
+                                     WHERE date='${uEND}' ${ORDER}"; fn_imysql_sqls ;;
     q5) sqls="SELECT *,count(code) as cnt FROM futures_q5 ${ORDER}"; fn_imysql_sqls ;;
     *)  echo "Usage: UTURES nr {ls|d1|f5|f51|q5}" ;;
     esac
@@ -421,18 +427,16 @@ function fn_pro()
     # 查询系统：不同合约records数不同，缺省i时取最新，指定i时以最新为0往后数
     case $1 in
     d1)
-        TBL=futures_d1
-        fn_set_uEND
-        END=`fn_get_udate ${iEND:-1}`
+        uTBL=futures_d1 fn_set_uEND
         STA=`fn_get_date ${NUM:-3}`
         echo "
         SELECT *, COUNT(*) as cnt, 
             ROUND(SUM(100*GREATEST(high-low, high-yesc, yesc-low)/yesc)/COUNT(*), 2) as ATR,
             ROUND(SUM(abs(close-yesc)/GREATEST(high-low, high-yesc, yesc-low))/COUNT(*), 2) as MEF
-            FROM futures_d1 WHERE date>='${STA}' and date<='${END}' 
+            FROM futures_d1 WHERE date>='${STA}' and date<='${uEND}' 
             GROUP by code ORDER by ${FIELD:-ATR} DESC;
         " | mysql -t kts
-        fn_echo_succ "iEND:${iEND:-1} NUM:${NUM:-3} END:${END} FIELD:${FIELD:-ATR}"
+        fn_echo_succ "iEND:${iEND:-1} NUM:${NUM:-3} uEND:${uEND} FIELD:${FIELD:-ATR}"
         ;;
     q5)
         mysql kts < sql/UTURES.sql

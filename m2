@@ -294,6 +294,7 @@ function fn_41_如何成为高品质的勤奋者() { cat article_41_如何成为
                                           cat article_41_如何成为高品质的勤奋者2 ;}
 function fn_42_思考工具及框架()         { cat article_42_思考工具及框架 ;}
 function fn_43_如何科学的思考()         { cat article_43_如何科学的思考 ;}
+function fn_44_学得太慢是一种罪()       { cat article_44_学得太慢是一种罪 ;}
 
 function fn_100_人际关系痛苦的根源()    { cat article_100_人际关系痛苦的根源 ;}
 function fn_101_分享与慷他人之慨()      { cat article_101_分享与慷他人之慨 ;}
@@ -315,6 +316,7 @@ function fn_gsq_房价什么情况下会崩()    { cat article_gsq_房价什么�
         41_如何成为高品质的勤奋者
         42_思考工具及框架
         43_如何科学的思考
+        44_学得太慢是一种罪
 
         100_人际关系痛苦的根源          # 缺乏界限感
         101_分享与慷他人之慨
@@ -878,7 +880,7 @@ function fn_Freud()                     { cat psychology_Freud ;}
 function fn_guo() {                     # guo
 function fn_term()                      { cat guo_term ;}
 function fn_think()                     { cat guo_think ;}
-function fn_analogy()                   { cat guo_analogy ;}
+function fn_compare()                   { cat guo_compare ;}
 function fn_Question()                  { cat guo_Question ;}
 function fn_lesson()                    { cat guo_lesson ;}
 function fn_rhymeA()                    { cat guo_rhymeA ;}
@@ -895,7 +897,7 @@ function fn_rhyme200()                  { cat guo_rhyme200 ;}
         rhyme50                         # 围棋七字精选50 & 实战布局用语50条
         rhyme200                        # 围棋七字口诀200
         term
-        analogy                         # vs. 羽毛球.期货
+        compare                         # vs. 羽毛球.期货
         lesson
         Question
     )
