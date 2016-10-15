@@ -289,6 +289,7 @@ function fn_06_哪些知识会让你变蠢？()   { cat article_06_哪些知识�
 function fn_07_如何构建经济学思维方式() { cat article_07_如何构建经济学思维方式 ;}
 function fn_08_novel()                  { cat article_08_novel ;}
 
+function fn_39_给你把万能钥匙你要不要() { cat article_39_给你把万能钥匙你要不要 ;}
 function fn_40_学习批判性思考()         { cat article_40_学习批判性思考 ;}
 function fn_41_如何成为高品质的勤奋者() { cat article_41_如何成为高品质的勤奋者;
                                           cat article_41_如何成为高品质的勤奋者2 ;}
@@ -312,6 +313,7 @@ function fn_gsq_房价什么情况下会崩()    { cat article_gsq_房价什么�
         07_如何构建经济学思维方式
         08_novel
 
+        39_给你把万能钥匙你要不要
         40_学习批判性思考               # 用以致学、阅读本质=填补信息缺口
         41_如何成为高品质的勤奋者
         42_思考工具及框架
@@ -1009,6 +1011,7 @@ function fn_main() {
         science_cept                    # 科学之哲学
         xiaolai_cept
         fertile_cept                    # 有繁殖能力的知识
+        analogy_cept
         misc_cept
         Arts_cept
     )
