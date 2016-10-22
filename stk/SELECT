@@ -1717,7 +1717,7 @@ function fn_wolf_sqls()
         round((w.shou/h.volume), 2) as prop, h.scale,
         round((w.tov*h.mavol5/w.shou), 1) as tov5,
         round(w.amount/10000, 1) as eYi,
-        ROUND(nmc, 1) as nmcYi
+        ROUND(nmc, 1) as nmc
         ${col_name}
         FROM xdde as w, ${t_tov5:-t_mavol5} as h ${tbl_temp}
         ${WHERE} w.code=h.code ${sql_cond} && net/tov>${DOOR} ${sql_pplus}

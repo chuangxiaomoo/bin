@@ -22,8 +22,9 @@ function fn_set_uEND()
 {
     uEND=`mysql -N kts <<<"SELECT max(date) FROM ${TBL:-futures_ls}"`
     uEND=`fn_get_udate ${iEND:-1}`
+    let iPREV=${iEND:-1}+1
+    uPREV=`fn_get_udate ${iPREV}`
 }
-
 
 function fn_up_ls_0()
 {
@@ -226,8 +227,9 @@ function fn_up_ls()
     DELETE FROM futures_ls WHERE date='${END}' && time='${HMS}';
     LOAD DATA LOCAL INFILE '${buffer}' INTO TABLE futures_ls;
     " | mysql kts
+    xt_ret $? "" || return $?
 
-    fn_se
+    fn_ls
     BEEPS=3 fn_beep
 }
 
@@ -236,7 +238,7 @@ function fn_up_d1()
     COND="Margin<25000" UTURES ls 
     xt_ret $? "" || return $?
 
-    codes=`cat ${chao}`
+    codes=`cat ${chao}.ls`
 
     echo ${codes};exit
 
@@ -271,6 +273,7 @@ function fn_up_f5()
     "
     pages=3
     fn_up_q5
+
     echo "
     DELETE FROM futures_f5 WHERE date='${date_F}';
     SELECT max(date) FROM futures_f5 INTO @maxd;
@@ -281,7 +284,7 @@ function fn_up_f5()
     " | mysql kts
     xt_ret $? "" || return $?
 
-    UTURES nr f51
+    CHAR=1 UTURES nr f51
 }
 
 function fn_up_q5()
@@ -289,16 +292,21 @@ function fn_up_q5()
     COND="Margin<25000" UTURES ls 
     xt_ret $? "" || return $?
 
-    codes=`cat ${chao}`
+    codes=`cat ${chao}.ls`
+    # echo ${codes} | wc -w ; exit
 
     mysql kts <<<"DROP TABLE IF EXISTS futures_q5"
     xt_ret $? "" || return $?
 
     _ij=0
     #uncomment when 创建futures_f5  OR  单个code失败
-    #pages=4
-    #codes=${LEAK}
-    #MAXDT="'`mysql -N kts <<<"SELECT max(date) FROM futures_f5 WHERE code='${codes}'"`'"
+
+    if [ -n "${LEAK}" ]; then
+        pages=3
+        codes=${LEAK}
+        MAXDT="'`mysql -N kts <<<"SELECT max(date) FROM futures_f5 WHERE code='${codes}'" |sed "s/NULL/$uPREV/g"`'"
+        #echo $uPREV $MAXDT; exit
+    fi
 
     if [ -z "${pages}" ]; then
         if [ "${date_T//:/}" -lt 133000 ]; then
@@ -357,6 +365,8 @@ function fn_up_domi()
 
 function fn_up()
 {
+    [ -z "${LEAK}" ] && read -p "Are u sure to up [$1], Ctrl-C to break"
+
     fchao='/tmp/kts/chao.utures'
     case $1 in
     ls) fn_up_ls    ;;
@@ -364,7 +374,7 @@ function fn_up()
     f5) fn_up_f5    ;;
     q5) fn_up_q5    ;;
   domi) fn_up_domi  ;;
-    *)  echo "Usage: UTURES up {ls|d1|f5|q5}"
+    *)  echo "Usage: UTURES up {ls|d1|f5|q5|domi}"
     esac
 }
 
@@ -378,7 +388,8 @@ function fn_nr()
                                           WHERE 1 ${COND} ${ORDER}"; fn_imysql_sqls ;;
    f51) fn_set_uEND
         sqls="SELECT *,count(code) as cnt FROM futures_f5 
-                                     WHERE date='${uEND}' ${ORDER}"; fn_imysql_sqls ;;
+                                     WHERE date='${uEND}' ${ORDER}"; fn_imysql_sqls 
+                                                                fn_utao ${chao}.f51 ;;
     q5) sqls="SELECT *,count(code) as cnt FROM futures_q5 ${ORDER}"; fn_imysql_sqls ;;
     *)  echo "Usage: UTURES nr {ls|d1|f5|f51|q5}" ;;
     esac
@@ -387,7 +398,7 @@ function fn_nr()
 function fn_ls()
 {
     EXCLUDE_CO="(
-    'zn1611',  -- 非主力铜
+    'zn1611',  -- 非主力锌
     'cu1611',  -- 非主力铜
     'RU1607'   -- 测试
     )"
@@ -395,14 +406,15 @@ function fn_ls()
     echo "
     SELECT code FROM futures_ls
     WHERE code not in ${EXCLUDE_CO}
-    ORDER by amount DESC LIMIT 23
+    ORDER by amount DESC LIMIT 20
     " | mysql -N kts > ${chao}.domi0
     grep -w -i -f ${chao}.domi0 ${chao}.domi > ${chao}.domi2
 
     nr=`grep -w -i -f ${chao}.domi0 ${chao}.domi | wc -l`
-    if [ "${nr}" -ne 23 ]; then
+    if [ "${nr}" -ne 20 ]; then
         grep -w -i -v -f ${chao}.domi2 ${chao}.domi0
-        fn_echo_fail "nr:${nr} -ne 24" 
+        fn_echo_fail "nr:${nr} -ne 20, to update [UTURES up domi]" 2>&1 | tee /dev/pts/0
+        fn_bell
         exit 1
     fi
 
@@ -419,7 +431,7 @@ function fn_ls()
     #   echo ${sqls}; exit
     fn_imysql_sqls
     fn_echo_succ "FIELD:${FIELD:-eYi}"
-    fn_utao
+    CHAO=1 fn_utao ${chao}.ls
 }
 
 function fn_pro()
@@ -457,6 +469,31 @@ function fn_pro()
     esac
 }
 
+
+function fn_isucode()
+{
+    grep -q -w -E '[a-zA-Z]{1,2}[0-9]{4}' <<< "$1"
+    return $?
+}
+
+function fn_leak()
+{
+    grep -v -f ${chao}.f51 ${chao}.ls
+    read -p "Are u sure to leak, Ctrl-C to break"
+
+    fn_set_uEND
+    export uEND uPREV
+
+    local i=
+    for i in $@; do
+        fn_isucode $i
+        xt_ret $? "[$i] not u-code" || continue
+        echo "DELETE FROM futures_f5 WHERE code='$i' and date='${uEND}'" | mysql -t kts
+        LEAK=$i UTURES up f5
+        xt_ret $? "" || return $?
+    done
+}
+
 function fn_main()
 {
     cmdlist=(
@@ -464,6 +501,7 @@ function fn_main()
     "nr     {ls|d1|f5|q5|f51}                   # 记录统计"
     "pro    {d1|q5}                             # Process"
     "ls                                         # SELECT list"
+    "leak   code                                # 补漏"
     )
 
     fn_set_END

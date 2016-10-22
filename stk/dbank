@@ -50,9 +50,9 @@ OPRI='ROUND(100*(d.open-d.yesc)/d.yesc, 2)'
 RISE='ROUND(100*(d.close-d.yesc)/d.yesc, 2)'
 APPLE='ROUND(100*(x.close-x.yesc)/x.yesc, 1)'
 nmcTp='ROUND(c.nmc/10000*(1-top10), 1)'
-nmcYi='ROUND(c.nmc/10000, 1) as nmcYi'
+nmcYi='ROUND(c.nmc/10000, 1) as nmc'
 # ${nmcYi0%as*} 去as
-nmcYi0='ROUND(nmc*d.close/c.close/10000, 1) as nmcYi'
+nmcYi0='ROUND(nmc*d.close/c.close/10000, 1) as nmc'
 nmc0='(c.nmc*d.close/c.close/10000)'
 TROUGH='ROUND(100*(d.close-d.low)/yesc, 2)'
 TURNOV='ROUND(100*d.volume*c.close/c.nmc, 2)'
@@ -202,6 +202,7 @@ function fn_imysql_sqls()
 
 function fn_utao()
 {
+    [ -z "${CHAO}" ] && return 
     [ -z "${sqls}" ] && fn_echo_warn "sqls is empty" && exit
     PLAIN=${1:-$chao}
     sql_chao="${PREFIX}SELECT code FROM (${sqls//;/}) as t"

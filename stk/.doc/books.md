@@ -33,7 +33,7 @@
   科学发现的逻辑              [波普尔.强烈推荐](https://book.douban.com/subject/3349509/)
   科学与逻辑方法论            [](http://wenku.baidu.com/view/b9a51a1aa8114431b90dd8af.html?re=view)
   美感奥妙和需求进化          [](http://survivor99.com/lcg/books/beauty/index.htm)
-  科学与方法                  (昂利·彭加勒)
+  科学与方法                  (昂利·彭加勒 即：庞加莱)
   科学之哲学                  [](https://book.douban.com/review/5027580/)
                               [科学哲学](https://book.douban.com/subject/3550249/) <许哲>强烈建议大家去看科学哲学那本书，你会有收获的。
   小说课(许荣哲)

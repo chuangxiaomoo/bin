@@ -76,6 +76,7 @@ End If
 Next
 Rem green
 LeftClick 1
+
 KeyDown "Win", 1
 KeyPress "3", 1
 KeyUp "Win", 1
