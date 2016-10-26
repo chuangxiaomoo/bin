@@ -365,7 +365,7 @@ function fn_up_domi()
 
 function fn_up()
 {
-    [ -z "${LEAK}" ] && read -p "Are u sure to up [$1], Ctrl-C to break"
+    [ -z "${LEAK}" ] && read -p "Up [$1], Ctrl-C to break for KeySprit restart"
 
     fchao='/tmp/kts/chao.utures'
     case $1 in
