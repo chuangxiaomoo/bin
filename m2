@@ -154,7 +154,8 @@ function fn_900_平凡的世界()            { cat book_900_平凡的世界 ;}
 function fn_901_人类简史()              { cat book_901_人类简史 ;}
 function fn_902_人类简史读书笔记()      { cat book_902_人类简史读书笔记 ;}  # 理解植物
 function fn_tiandao()                   { cat book_tiandao book_遥远的救世主;}
-function fn_xiaolai()                   { cat book_xiaolai ;}
+function fn_xiaolai()                   { cat book_xiaolai; 
+                                          cat book_xiaolai_1019 ;}
     local opts=(
         cept
         wanna                   # 想读的书
@@ -296,6 +297,7 @@ function fn_41_如何成为高品质的勤奋者() { cat article_41_如何成为
 function fn_42_思考工具及框架()         { cat article_42_思考工具及框架 ;}
 function fn_43_如何科学的思考()         { cat article_43_如何科学的思考 ;}
 function fn_44_学得太慢是一种罪()       { cat article_44_学得太慢是一种罪 ;}
+function fn_45_拷问知识正确和增长遮蔽() { cat article_45_拷问知识正确和增长遮蔽 ;}
 
 function fn_100_人际关系痛苦的根源()    { cat article_100_人际关系痛苦的根源 ;}
 function fn_101_分享与慷他人之慨()      { cat article_101_分享与慷他人之慨 ;}
@@ -319,6 +321,7 @@ function fn_gsq_房价什么情况下会崩()    { cat article_gsq_房价什么�
         42_思考工具及框架
         43_如何科学的思考
         44_学得太慢是一种罪
+        45_拷问知识正确和增长遮蔽
 
         100_人际关系痛苦的根源          # 缺乏界限感
         101_分享与慷他人之慨
@@ -386,6 +389,7 @@ function fn_jc_Golf智慧_快就是慢()      { cat stk_jc_Golf智慧_快就是�
 
         tdx                             # 通达信 同花顺(ths 10jqka)
         wenhua                          # 文华财经
+        TradeBlazer                     # TB
         10_dazhihui                     # dzh 大智慧
         11_N_XD_XR_DR                   # 除权除息
         13_除权后的股票难以上涨
@@ -429,13 +433,11 @@ function fn_02_一朝天子一朝臣()         { cat why_02_一朝天子一朝�
 }
 
 function fn_movie()                     {
-function fn_videos()                    { cat movie_videos ;}
 function fn_100films()                  { cat movie_100films ;}
-function fn_01_Akkila与拼字大赛()       { cat movie_01_Akkila与拼字大赛 ;}
+function fn_videos()                    { cat movie_videos ;}
     local opts=(
-        videos                          # 论语300讲 中国好禅师
+        videos                          # 论语300讲 中国好禅师 连续剧集
         100films
-        01_Akkila与拼字大赛
     )
     fn_print $@
 }
@@ -1003,6 +1005,7 @@ function fn_main() {
         psychology                      # 心理学
         kindle
         writing
+        chaos
         literature                      # 文学
         meditation_cept
         psychology_cept

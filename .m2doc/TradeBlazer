@@ -1,0 +1,64 @@
+# TradeBlazer
+
+导读：
+
+# 快捷键
+
+<F2>            桌面
+<F3>           <工作区=功能模板+TB公式>
+<F6>            账户
+<Shift-E>       公式应用设置
+<Shift-S>      <商品设置=4分钟线>
+
+<Right-模板>    选择 F5.24 or F1.30 公式应用
+
+<Ctrl-T>        竖分屏
+<Ctrl-L>        横分屏
+
+# DataType
+
+0. Bar数据
+
+在介绍Bar数据之前，首先，我们需要讨论一下TB公式的计算方法，针对上面介绍的各种公式类型，
+包含公式应用，在公式进行计算时，都是建立在<基本数据源(Bar数据)>之上，我们这里所谓的Bar数据，
+是指商品在不同周期下形成的序列数据，在单独的每个Bar上面包含开盘价、收盘价、最高价、最低价、
+成交量及时间。期货等品种还有持仓量等数据。
+
+所有的Bar按照不同周期组合，并按照时间从先到后进行排列，由此形成为序列数据，整个序列称之为Bar数据。
+
+1. basic
+
+布尔型: 即Bool，BoolRef，BoolSeries三种数据类型。
+数值型: 即Numeric，NumericRef，NumericSeries三种数据类型。
+字符串: 即String，StringRef，StringSeries三种数据类型。
+
+Bool            布尔型。 
+BoolRef         布尔型引用。 
+BoolSeries      和周期长度一致的Bool型序列值。 
+
+Numeric         数值型。 
+NumericRef      数值型引用。
+NumericSeries   和周期长度一致的Numeric型序列值。
+
+String          字符串。
+StringRef       字符串引用。
+StringSeries    和周期长度一致的String型序列值。
+
+2. 数组
+
+BoolArray       布尔型数组
+NumericArray    数值型数组
+StringArray     字符串数组
+
+BoolArrayRef    布尔型引用数组
+
+# Series和Array的区别
+
+Series定长为和周期一致，[](进行回溯) 
+Array 变长            ，[](下标访问) 
+
+# 函数
+
+系统函数：数学函数 颜色函数 时间函数
+用户函数：highest lowest
+
