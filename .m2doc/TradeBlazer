@@ -62,3 +62,36 @@ Array 变长            ，[](下标访问)
 系统函数：数学函数 颜色函数 时间函数
 用户函数：highest lowest
 
+# 自动添加sym
+`
+Params
+  Numeric thrd(2000);
+  Numeric num(80);
+  Numeric off(0);
+Vars
+  Numeric sec;
+  NumericSeries Line2;
+  NumericArray  sta[20];
+Begin 
+  //PlotNumeric("Upper",Highest(C,num));
+  //PlotNumeric("Lower",LowestFC(C,num)); 
+  //PlotString ("code",RelativeSymbol(),close,-1,off); 
+
+  if (Data0.BarStatus == 0) SetGlobalVar(0, Data0.c); 
+  if (Data1.BarStatus == 0) SetGlobalVar(1, Data1.c); 
+  if (Data2.BarStatus == 0) SetGlobalVar(2, Data2.c); 
+    
+  if (BarStatus == 2) {
+    Unplot("sy0",1); PlotString ("sy0",Data0.RelativeSymbol(), Data0.close                            ,Data0.DefaultColor(),0); 
+    Unplot("sy1",1); PlotString ("sy1",Data1.RelativeSymbol(), Data0.close*Data1.close/GetGlobalVar(1),Data1.DefaultColor(),0); 
+    Unplot("sy2",1); PlotString ("sy2",Data2.RelativeSymbol(), Data0.close*Data2.close/GetGlobalVar(2),Data2.DefaultColor(),0); 
+  }
+
+  if ( CurrentTime()*1000000 %100%30 <1 ) { 
+    if (C[1]>thrd) {
+      Alert("mygod"+ Text(thrd));
+    } 
+  }
+End
+`
+
