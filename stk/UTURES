@@ -365,7 +365,7 @@ function fn_up_domi()
 
 function fn_up()
 {
-    [ -z "${LEAK}" ] && read -p "Up [$1], Ctrl-C to break for KeySprit restart"
+    [ -z "${LEAK}" ] && [ "$1" != ls ] && read -p "Up [$1], Ctrl-C to break for KeySprit restart"
 
     fchao='/tmp/kts/chao.utures'
     case $1 in
@@ -400,6 +400,7 @@ function fn_ls()
     EXCLUDE_CO="(
     'zn1611',  -- 非主力锌
     'cu1611',  -- 非主力铜
+    'cu1701',  -- 非主力铜
     'RU1607'   -- 测试
     )"
 
@@ -411,7 +412,7 @@ function fn_ls()
     grep -w -i -f ${chao}.domi0 ${chao}.domi > ${chao}.domi2
 
     nr=`grep -w -i -f ${chao}.domi0 ${chao}.domi | wc -l`
-    if [ "${nr}" -ne 20 ]; then
+    if [ "${nr}" -le 18 ]; then
         grep -w -i -v -f ${chao}.domi2 ${chao}.domi0
         fn_echo_fail "nr:${nr} -ne 20, to update [UTURES up domi]" 2>&1 | tee /dev/pts/0
         fn_bell
