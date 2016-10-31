@@ -149,6 +149,7 @@ function fn_104_罗永浩天生骄傲()        { cat book_104_罗永浩天生骄
 function fn_200_逃不开的经济周期()      { cat book_200_逃不开的经济周期 ;}
 function fn_201_经济学通识()            { cat book_201_经济学通识 ;}
 function fn_202_苏黎世投机定律()        { cat book_202_苏黎世投机定律 ;}
+function fn_303_论证是一门学问()        { cat book_303_论证是一门学问 ;}
 function fn_899_权力的游戏()            { cat book_899_权力的游戏 ;}
 function fn_900_平凡的世界()            { cat book_900_平凡的世界 ;}
 function fn_901_人类简史()              { cat book_901_人类简史 ;}
@@ -196,6 +197,7 @@ function fn_xiaolai()                   { cat book_xiaolai;
         201_经济学通识              # xuezhaofeng
         202_苏黎世投机定律
 
+        303_论证是一门学问
 
         899_权力的游戏              # A_Song_of_Ice_and_Fire
         900_平凡的世界
@@ -450,6 +452,7 @@ function fn_training500()               { cat logic_training500 ;}
 function fn_puzzle()                    { cat logic_puzzle ;}
 function fn_formal()                    { cat logic_formal ;}
 function fn_informal()                  { cat logic_informal ;}
+function fn_informal_wiki()             { cat logic_informal_wiki ;}
 function fn_fallacy()                   { cat logic_fallacy ;}
 function fn_language()                  { cat logic_language ;}
 function fn_BeingLogical()              { cat logic_BeingLogical ;}
@@ -461,6 +464,7 @@ function fn_TrapsPitfalls()             { cat logic_TrapsPitfalls ;}
         puzzle                          # 我理解的一些谜
         formal                          #   形式逻辑(普通逻辑)
         informal                        # 非形式逻辑
+        informal_wiki                   # 非形式逻辑
         fallacy                         #                      二十四条逻辑谬误
         TrapsPitfalls                   # 逻辑坑
         language                        # 英语逻辑实现
