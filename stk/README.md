@@ -73,9 +73,10 @@
 # 公告概念        .doc/notice.md
 # 博弈清理        .doc/GameClean.md
 # -----------------------------
-# 魔论            .doc/Molun.md
+                  .doc/Tutures.md
 # 期基            .doc/Gutures.md
 # 期货            .doc/Futures.md
+# 魔论            .doc/Molun.md
 # 博弈论          .doc/gametheory.md
 # 物理            .doc/physics.md
 # Equation        .doc/Methodology.md
