@@ -149,7 +149,10 @@ function fn_104_罗永浩天生骄傲()        { cat book_104_罗永浩天生骄
 function fn_200_逃不开的经济周期()      { cat book_200_逃不开的经济周期 ;}
 function fn_201_经济学通识()            { cat book_201_经济学通识 ;}
 function fn_202_苏黎世投机定律()        { cat book_202_苏黎世投机定律 ;}
+
 function fn_303_论证是一门学问()        { cat book_303_论证是一门学问 ;}
+function fn_310_人类简史()              { cat book_310_人类简史 ;}
+
 function fn_899_权力的游戏()            { cat book_899_权力的游戏 ;}
 function fn_900_平凡的世界()            { cat book_900_平凡的世界 ;}
 function fn_901_人类简史()              { cat book_901_人类简史 ;}
@@ -198,6 +201,8 @@ function fn_xiaolai()                   { cat book_xiaolai;
         202_苏黎世投机定律
 
         303_论证是一门学问
+        304_金字塔原理
+        310_人类简史
 
         899_权力的游戏              # A_Song_of_Ice_and_Fire
         900_平凡的世界
@@ -301,6 +306,7 @@ function fn_42_思考工具及框架()         { cat article_42_思考工具及�
 function fn_43_如何科学的思考()         { cat article_43_如何科学的思考 ;}
 function fn_44_学得太慢是一种罪()       { cat article_44_学得太慢是一种罪 ;}
 function fn_45_拷问知识正确和增长遮蔽() { cat article_45_拷问知识正确和增长遮蔽 ;}
+function fn_50_十种好的学习方式()       { cat article_50_十种好的学习方式 ;}
 
 function fn_100_人际关系痛苦的根源()    { cat article_100_人际关系痛苦的根源 ;}
 function fn_101_分享与慷他人之慨()      { cat article_101_分享与慷他人之慨 ;}
@@ -326,6 +332,7 @@ function fn_gsq_房价什么情况下会崩()    { cat article_gsq_房价什么�
         43_如何科学的思考
         44_学得太慢是一种罪
         45_拷问知识正确和增长遮蔽
+        50_十种好的学习方式
 
         100_人际关系痛苦的根源          # 缺乏界限感
         101_分享与慷他人之慨
@@ -453,6 +460,7 @@ function fn_puzzle()                    { cat logic_puzzle ;}
 function fn_formal()                    { cat logic_formal ;}
 function fn_informal()                  { cat logic_informal ;}
 function fn_informal_wiki()             { cat logic_informal_wiki ;}
+function fn_informal_struct()           { cat logic_informal_struct ;}
 function fn_fallacy()                   { cat logic_fallacy ;}
 function fn_language()                  { cat logic_language ;}
 function fn_BeingLogical()              { cat logic_BeingLogical ;}
@@ -464,7 +472,8 @@ function fn_TrapsPitfalls()             { cat logic_TrapsPitfalls ;}
         puzzle                          # 我理解的一些谜
         formal                          #   形式逻辑(普通逻辑)
         informal                        # 非形式逻辑
-        informal_wiki                   # 非形式逻辑
+        informal_wiki                   # 定义
+        informal_struct                 # 数据结构
         fallacy                         #                      二十四条逻辑谬误
         TrapsPitfalls                   # 逻辑坑
         language                        # 英语逻辑实现
@@ -656,10 +665,12 @@ function fn_WiMax_1st_meeting()         { cat huawei_WiMax_1st_meeting ;}
 }
 
 function fn_humor()                     {
+function fn_Joe()                       { cat humor_Joe ;}
 function fn_misc()                      { cat humor_misc ;}
 function fn_animals()                   { cat humor_animals ;}
 function fn_duanzi()                    { cat humor_duanzi ;}
     local opts=(
+        Joe
         misc
         animals
         duanzi
@@ -1023,6 +1034,7 @@ function fn_main() {
         analogy_cept
         misc_cept
         Arts_cept
+        TAO                             # 存在的属性
     )
     fn_print $@
 }
