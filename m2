@@ -627,9 +627,9 @@ function fn_Zhu_雄辩()                  { cat huawei_Zhu_雄辩 ;}
 function fn_Qi_领导管理人才()           { cat huawei_Qi_领导管理人才 ;}
 function fn_Qi_疾病()                   { cat huawei_Qi_疾病 ;}
 
-function fn_WiMax_1st_meeting()         { cat huawei_WiMax_1st_meeting ;}
+function fn_WiMax_meeting()             { cat huawei_WiMax_meeting ;}
     local opts=(
-        WiMax_1st_meeting               # 唯一一次大会
+        WiMax_meeting                   # 唯一一次大会
         cultural
         misc                            # 一些哲学、师道
         to_sort                         # 未整理的 ruby python valgrind 等
@@ -863,7 +863,7 @@ function fn_life()                      { cat texaspoker_life ;}
 function fn_xiuxing()                   { cat texaspoker_xiuxing ;}
 function fn_emotion_management()        { cat texaspoker_emotion_management ;}
 function fn_loser()                     { cat texaspoker_loser ;}
-function fn_sng_master_1st()            { cat texaspoker_sng_master_1st ;}
+function fn_sng_master()                { cat texaspoker_sng_master ;}
 function fn_discipline()                { cat texaspoker_discipline ;}
 function fn_trader()                    { cat texaspoker_trader ;}
 function fn_goldrules()                 { cat texaspoker_goldrules ;}
@@ -876,7 +876,7 @@ function fn_Small_Stakes_Hold_em()      { cat texaspoker_Small_Stakes_Hold_em ;}
         xiuxing                         # 修行 意志力 如何稳定盈利？
         emotion_management              # 情绪管理
         loser
-        sng_master_1st
+        sng_master
         discipline                      # 观察 纪律
         life                            # 生活
         goldrules
