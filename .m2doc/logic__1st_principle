@@ -1,0 +1,26 @@
+# _1st_principle
+
+# 什么是第一性原理？
+
+这个词常常当作形容词来用，因为它是描述一个理论的特性的词。它也不具体跟什么量子力学相关，它是一个一般性的逻辑概念。
+
+Wikipedia 有词条 First principle，第一句话就很清楚：
+
+  A first principle is a basic, foundational, self-evident proposition or assumption that _cannot be deduced_ from any other proposition or assumption.
+
+  In philosophy, first principles are taught by Aristotelians and a nuanced version of first principles are referred to as postulates by Kantians.
+
+  In mathematics, first principles are referred to as axioms and postulates.
+
+  In physics and other sciences, theoretical work is said to be from first principles, or ab initio, 
+  if it starts directly at the level of established science and does not make assumptions such as empirical model and fitting parameters.
+
+
+
+# In formal logic
+
+In a formal logical system, that is, a set of propositions that are consistent with one another, it is probable that some of the statements can be deduced from one another. For example, in the syllogism, "All men are mortal; Socrates is a man; Socrates is mortal" the last claim can be deduced from the first two.
+
+A first principle is one that cannot be deduced from any other. The classic example is that of Euclid's (see Euclid's Elements) geometry; its hundreds of propositions can be deduced from a set of definitions, postulates, and common notions: all three types constitute first principles.
+
+

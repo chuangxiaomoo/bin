@@ -455,12 +455,14 @@ function fn_videos()                    { cat movie_videos ;}
 
 function fn_logic()                     {
 function fn_cept()                      { cat logic_cept ;}
+function fn__definition()               { cat logic__definition ;}
+function fn__1st_principle()            { cat logic__1st_principle ;}
+function fn__struct()                   { cat logic__struct ;}
 function fn_training500()               { cat logic_training500 ;}
 function fn_puzzle()                    { cat logic_puzzle ;}
 function fn_formal()                    { cat logic_formal ;}
 function fn_informal()                  { cat logic_informal ;}
 function fn_informal_wiki()             { cat logic_informal_wiki ;}
-function fn_informal_struct()           { cat logic_informal_struct ;}
 function fn_fallacy()                   { cat logic_fallacy ;}
 function fn_language()                  { cat logic_language ;}
 function fn_BeingLogical()              { cat logic_BeingLogical ;}
@@ -473,7 +475,9 @@ function fn_TrapsPitfalls()             { cat logic_TrapsPitfalls ;}
         formal                          #   形式逻辑(普通逻辑)
         informal                        # 非形式逻辑
         informal_wiki                   # 定义
-        informal_struct                 # 数据结构
+        _definition                     # 本质
+        _struct                         # 结构
+        _1st_principle                  # 第一原则
         fallacy                         #                      二十四条逻辑谬误
         TrapsPitfalls                   # 逻辑坑
         language                        # 英语逻辑实现
@@ -638,7 +642,7 @@ function fn_WiMax_1st_meeting()         { cat huawei_WiMax_1st_meeting ;}
 
         Du_DIY与戴明                    # Master Du
         Du_提升C代码质量                # 壁垒，根本不在于是否采用OO
-        Du_模块中慎用vmalloc            # 多用__get_free_pages
+        Du_模块中慎用vmalloc            # 多用 _get_free_pages
         Du_企业和军队
         Du_乱弹几点感悟
         Du_关于哲学
