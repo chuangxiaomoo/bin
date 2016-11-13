@@ -151,6 +151,7 @@ function fn_201_经济学通识()            { cat book_201_经济学通识 ;}
 function fn_202_苏黎世投机定律()        { cat book_202_苏黎世投机定律 ;}
 
 function fn_303_论证是一门学问()        { cat book_303_论证是一门学问 ;}
+function fn_304_金字塔原理()            { cat book_304_金字塔原理 ;}
 function fn_310_人类简史()              { cat book_310_人类简史 ;}
 
 function fn_899_权力的游戏()            { cat book_899_权力的游戏 ;}
@@ -455,9 +456,9 @@ function fn_videos()                    { cat movie_videos ;}
 
 function fn_logic()                     {
 function fn_cept()                      { cat logic_cept ;}
-function fn__definition()               { cat logic__definition ;}
-function fn__1st_principle()            { cat logic__1st_principle ;}
+function fn__essence()                  { cat logic__essence ;}
 function fn__struct()                   { cat logic__struct ;}
+function fn__1st_principle()            { cat logic__1st_principle ;}
 function fn_training500()               { cat logic_training500 ;}
 function fn_puzzle()                    { cat logic_puzzle ;}
 function fn_formal()                    { cat logic_formal ;}
@@ -475,7 +476,7 @@ function fn_TrapsPitfalls()             { cat logic_TrapsPitfalls ;}
         formal                          #   形式逻辑(普通逻辑)
         informal                        # 非形式逻辑
         informal_wiki                   # 定义
-        _definition                     # 本质
+        _essence                        # 本质
         _struct                         # 结构
         _1st_principle                  # 第一原则
         fallacy                         #                      二十四条逻辑谬误
@@ -544,7 +545,7 @@ function fn_valuetheory()               { cat phi_valuetheory ;}
 
         flowers12                       # 哲学12钗
         00_Plato                        # 柏拉图
-        01_KarlMarx                     # pelple's essence
+        01_KarlMarx                     # pelple's本质
         02_Kant                         # Immanuel 康德
         03_Popper                       # 证伪主义 Karl.波普尔
         04_Hume                         # 大卫.休谟
