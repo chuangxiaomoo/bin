@@ -131,7 +131,6 @@ function fn_tf_把时间当作朋友()         { cat book_tf_把时间当作朋�
 function fn_yl_你的灯亮着吗()           { cat book_yl_你的灯亮着吗
                                           cat read_yl_你的灯亮着吗 ;}
 function fn_lf_雷锋日记()               { cat book_lf_雷锋日记 ;}
-function fn_py_金字塔原理()             { cat book_py_金字塔原理 ;}
 function fn_economic_naturalist()       { cat book_economic_naturalist
                                           cat read_economic_naturalist ;}
 function fn_10years()                   { cat book_10years ;}
@@ -141,49 +140,54 @@ function fn_f1_富同学穷同学()           { cat book_f1_富同学穷同学 ;
 function fn_f2_海底捞你学不会()         { cat book_f2_海底捞你学不会 ;}
 function fn_f3_教父()                   { cat book_f3_教父 ;}
 function fn_66_佛语()                   { cat book_66_佛语 ;}
+
+function fn_000_黄晓捷谈在校学习()      { cat book_000_黄晓捷谈在校学习 ;}
+function fn_010_李笑来谈读书经验()      { cat book_010_李笑来谈读书经验 ;}
+function fn_011_李笑来谈阅读操作系统()  { cat book_011_李笑来谈阅读操作系统 ;}
+
 function fn_100_周鸿祎自述()            { cat book_100_周鸿祎自述 ;}
 function fn_101_livermore()             { cat book_101_livermore ;}
-function fn_102_谈我对在校学习的看法()  { cat book_102_谈我对在校学习的看法 ;}
 function fn_103_雷军的第二个四年()      { cat book_103_雷军的第二个四年 ;}
 function fn_104_罗永浩天生骄傲()        { cat book_104_罗永浩天生骄傲 ;}
+
 function fn_200_逃不开的经济周期()      { cat book_200_逃不开的经济周期 ;}
 function fn_201_经济学通识()            { cat book_201_经济学通识 ;}
 function fn_202_苏黎世投机定律()        { cat book_202_苏黎世投机定律 ;}
 
 function fn_303_论证是一门学问()        { cat book_303_论证是一门学问 ;}
-function fn_304_金字塔原理()            { cat book_304_金字塔原理 ;}
-function fn_310_人类简史()              { cat book_310_人类简史 ;}
+function fn_304_金字塔原理()            { cat book_304_金字塔原理 book_py_金字塔原理 ;}
+
+function fn_310_人类简史()              { cat book_310_人类简史 read_310_人类简史 ;}
+function fn_311_信息简史()              { cat book_311_信息简史 read_311_信息简史 ;}
+function fn_320_失控()                  { cat book_320_失控 ;}
 
 function fn_899_权力的游戏()            { cat book_899_权力的游戏 ;}
 function fn_900_平凡的世界()            { cat book_900_平凡的世界 ;}
-function fn_901_人类简史()              { cat book_901_人类简史 ;}
-function fn_902_人类简史读书笔记()      { cat book_902_人类简史读书笔记 ;}  # 理解植物
 function fn_tiandao()                   { cat book_tiandao book_遥远的救世主;}
 function fn_xiaolai()                   { cat book_xiaolai; 
                                           cat book_xiaolai_1019 ;}
     local opts=(
         cept
-        wanna                   # 想读的书
-        sunzi                   # 孙子兵法
-        laozi                   # 道德经 daodejing
-        liutao                  # 六韬.太公兵法
-        36ji                    # 36计
-        lunyu                   # 论语
-        shenglvqimeng           # 声律启蒙
-        tiandao                 # 天道.遥远的救世主
-        xiaolai                 # 李笑来<读书经验>分享.学习
+        wanna                           # 想读的书
+        sunzi                           # 孙子兵法
+        laozi                           # 道德经 daodejing
+        liutao                          # 六韬.太公兵法
+        36ji                            # 36计
+        lunyu                           # 论语
+        shenglvqimeng                   # 声律启蒙
+        tiandao                         # 天道.遥远的救世主
+        xiaolai                         # 李笑来<读书经验>分享.学习
         01_商君书
         02_韩非子
-        aq_如何提问             # reading
-        dt_暗时间               # darktime
+        aq_如何提问                     # reading
+        dt_暗时间                       # darktime
         lf_雷锋日记
-        tf_把时间当作朋友       # make time a FRIEND
-        yl_你的灯亮着吗         # light question
-        py_金字塔原理           # reading
-        PPT演示之道             # to read
-        economic_naturalist     # 牛奶可乐
-        10years                 # 我的职场十年：修炼
-        conservatism            # 保守主义
+        tf_把时间当作朋友               # make time a FRIEND
+        yl_你的灯亮着吗                 # light question
+        PPT演示之道                     # to read
+        economic_naturalist             # 牛奶可乐
+        10years                         # 我的职场十年：修炼
+        conservatism                    # 保守主义
         think_fast_n_slow
 
         f2_海底捞你学不会
@@ -191,24 +195,30 @@ function fn_xiaolai()                   { cat book_xiaolai;
         f3_教父
         66_佛语
 
+        000_黄晓捷谈在校学习
+        010_李笑来谈读书经验
+        011_李笑来谈阅读操作系统
+
         100_周鸿祎自述
         101_livermore
-        102_谈我对在校学习的看法    # 黄晓捷 huangxiaojie
         103_雷军的第二个四年
-        104_罗永浩天生骄傲          # kaiwu
+        104_罗永浩天生骄傲              # kaiwu
 
         200_逃不开的经济周期
-        201_经济学通识              # xuezhaofeng
+        201_经济学通识                  # xuezhaofeng
         202_苏黎世投机定律
 
         303_论证是一门学问
         304_金字塔原理
-        310_人类简史
 
-        899_权力的游戏              # A_Song_of_Ice_and_Fire
+        310_人类简史
+        311_信息简史                    # 理解植物
+        312_万物简史
+        320_失控
+        321_混沌：开创新科学
+
+        899_权力的游戏                  # A_Song_of_Ice_and_Fire
         900_平凡的世界
-        901_人类简史
-        902_人类简史读书笔记
     )
     fn_print $@
 }
@@ -308,10 +318,18 @@ function fn_43_如何科学的思考()         { cat article_43_如何科学的�
 function fn_44_学得太慢是一种罪()       { cat article_44_学得太慢是一种罪 ;}
 function fn_45_拷问知识正确和增长遮蔽() { cat article_45_拷问知识正确和增长遮蔽 ;}
 function fn_50_十种好的学习方式()       { cat article_50_十种好的学习方式 ;}
+function fn_61_计算思维()               { cat article_61_计算思维 ;}
 
 function fn_100_人际关系痛苦的根源()    { cat article_100_人际关系痛苦的根源 ;}
 function fn_101_分享与慷他人之慨()      { cat article_101_分享与慷他人之慨 ;}
 function fn_102_同事是你共享生命的战友(){ cat article_102_同事是你共享生命的战友 ;}
+function fn_103_协作跟进？如何跟进？()  { cat article_103_协作跟进？如何跟进？ ;}
+
+function fn_110_中国哲学体系的困惑？()  { cat article_110_中国哲学体系的困惑？ ;}
+function fn_111_喜欢有之或喜欢用之？()  { cat article_111_喜欢有之或喜欢用之？ ;}
+function fn_112_我们何需抱怨被误解()    { cat article_112_我们何需抱怨被误解 ;}
+
+function fn_201_“非上帝投机者”的自赎()  { cat article_201_“非上帝投机者”的自赎 ;}
 
 function fn_gsq_房价什么情况下会崩()    { cat article_gsq_房价什么情况下会崩 ;}
 
@@ -334,10 +352,18 @@ function fn_gsq_房价什么情况下会崩()    { cat article_gsq_房价什么�
         44_学得太慢是一种罪
         45_拷问知识正确和增长遮蔽
         50_十种好的学习方式
+        61_计算思维
 
         100_人际关系痛苦的根源          # 缺乏界限感
         101_分享与慷他人之慨
         102_同事是你共享生命的战友
+        103_协作跟进？如何跟进？
+
+        110_中国哲学体系的困惑？
+        111_喜欢有之或喜欢用之？
+        112_我们何需抱怨被误解
+
+        201_“非上帝投机者”的自赎
 
         gsq_房价什么情况下会崩          # 股社区
     )
@@ -633,7 +659,7 @@ function fn_WiMax_meeting()             { cat huawei_WiMax_meeting ;}
         WiMax_meeting                   # 唯一一次大会
         cultural
         misc                            # 一些哲学、师道
-        to_sort                         # 未整理的 ruby python valgrind 等
+        to_sort                         # 未整理的 ruby valgrind 等
         account_临行                    # 最后一次上传到csdn评论的账号 cu.h
         forum                           # 论坛里的小伙伴
         C语言的限定词
@@ -806,10 +832,8 @@ function fn_04_责任与中年危机()         { cat family_04_责任与中年�
 function fn_ideas()                     { cat ideas ;}
 function fn_idealism()                  { cat idealism ;}
 function fn_sanxing三省()               { cat sanxing三省 ;}
-function fn_yufen()                     { cat yufen ;}
 function fn_rose()                      { cat rose ;}
-function fn_50_interview_faq()          { cat 50_interview_faq ;}
-function fn_traffic()                   { cat traffic ;}
+function fn_interview()                 { cat 50_faq interview ;}
 
 function fn_influence()                 {
 function fn_cept()                      { cat influence_cept ;}
@@ -893,7 +917,7 @@ function fn_Small_Stakes_Hold_em()      { cat texaspoker_Small_Stakes_Hold_em ;}
 function fn_psychology() {
 function fn_misc()                      { cat psychology_misc ;}
 function fn_xiaoxiaoxinxin()            { cat psychology_xiaoxiaoxinxin ;}
-function fn_sxmm()                      { cat psychology_Dongpoyeben ;}
+function fn_Dongpoyeben()               { cat psychology_Dongpoyeben ;}
 function fn_Freud()                     { cat psychology_Freud ;}
     local opts=(
         misc
@@ -960,7 +984,7 @@ function fn_literature()                { cat literature ;}
 # 一砂一极乐，一方一净土，一笑一尘缘，一念一清静
 function fn_main() {
     local opts=(
-        50_interview_faq                # 想想自己的价值？
+        interview                       # 想想自己的价值？
         01_囧_jiong                     # sleep
         cold                            # 感冒 牙痛 智齿 sick
         architecture                    # 建筑
@@ -1010,11 +1034,9 @@ function fn_main() {
         futures                         # futures trading 期货
         texaspoker                      # texas_hold_em
         tick
-        traffic
         value                           # 价值
         why
         words
-        yufen
         rose                            #
         zhihu
         zhenhuan                        # 甄嬛体
@@ -1029,6 +1051,7 @@ function fn_main() {
         writing
         chaos
         literature                      # 文学
+
         meditation_cept
         psychology_cept
         education_cept                  # 教育
@@ -1039,6 +1062,7 @@ function fn_main() {
         analogy_cept
         misc_cept
         Arts_cept
+        meta_cept                       # 元认知
         TAO                             # 存在的属性
     )
     fn_print $@
