@@ -1,3 +1,9 @@
+# 图形分析基础
+
+  1 包含pro     向上则high=max(high) low=max(low)，向下low=min(low),high=min(high) <有效突破=处理后，high三连高尾阳||low三连低尾阴>
+  2 笔          5plus根K线连接=1顶+1底+1中
+  3 ma30下      严格包含pro + 5plus + <线下=3连阴low新低||3连阳high新高>，即长阴且最低K时严格包含处理为阴。允许不连续cross-ma30的K线。
+
 # 回到缠论的魔化(本土化)
 
   a 有效下破ma30后得线段high，上破ma30后得low。
