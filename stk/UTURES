@@ -240,7 +240,7 @@ function fn_up_d1()
 
     codes=`cat ${chao}.ls`
 
-    echo ${codes};exit
+    # echo ${codes};exit
 
     mysql kts <<<"DROP TABLE IF EXISTS futures_d1"
     xt_ret $? "" || return $?
@@ -333,11 +333,11 @@ function fn_up_domi()
     #
     # 通达信期货 -- 拉横向滚动条显示‘每手剩数’
     # -- 34 -- 导出全部 -- 导出目录为Export
-    #
+    # _ 代表乘数 ‘200_元/手’
     fn_get_export_file
     xt_ret $? "" || return $?
 
-    echo ${efile}
+    cp ${efile} ${info}
     iconv -f cp936 -t utf8 ${efile} | grep '_' | 
     awk '{printf "%s\t%s\t%s\n", $1,$2,$(NF-1)}' | sed 's/_.*//g' > ${cache}
 
@@ -412,15 +412,18 @@ function fn_ls()
     grep -w -i -f ${chao}.domi0 ${chao}.domi > ${chao}.domi2
 
     nr=`grep -w -i -f ${chao}.domi0 ${chao}.domi | wc -l`
-    if [ "${nr}" -le 18 ]; then
+    if [ "${nr}" -le 14 ]; then
         grep -w -i -v -f ${chao}.domi2 ${chao}.domi0
         fn_echo_fail "nr:${nr} -ne 20, to update [UTURES up domi]" 2>&1 | tee /dev/pts/0
         fn_bell
         exit 1
     fi
 
+    columns='date,name,code,shou,amount,posi,yesc,close,chng'
+    columns=ls.${columns//,/,ls.}
+
     sqls="
-        SELECT ls.*,
+        SELECT ${columns},
         ROUND(100*(close-yesc)/yesc, 2) as rise,
         ROUND(close*shou*mult/(10000*10000), 2) as eYi,
         ROUND(close*mult, 2) as Yeps,
@@ -495,6 +498,218 @@ function fn_leak()
     done
 }
 
+function fn_like()
+{
+    [ -n "${1}" ]
+    xt_ret $? "Usage: UTURES like sym" || return $?
+
+    columns='date,name,code,shou,amount,posi,yesc,close,chng'
+    columns=ls.${columns//,/,ls.}
+
+    # %代表任意多个字符  _代表一个字符 在 MySQL中，SQL的模式缺省是忽略大小写的
+    sqls="
+        SELECT ${columns},
+        ROUND(100*(close-yesc)/yesc, 2) as rise
+        FROM futures_ls as ls
+        WHERE ls.code like '${1}%'
+        HAVING 1 ${COND} ORDER by ${FIELD:-shou} DESC LIMIT ${LIMIT:-24}
+    " 
+    #   echo ${sqls}; exit
+    fn_imysql_sqls
+    fn_echo_succ "FIELD:${FIELD:-eYi}"
+    CHAO=1 fn_utao ${chao}.ls
+}
+
+
+function fn_vega_up()
+{
+    fn_get_export_file
+    xt_ret $? "" || return $?
+    echo ${efile}
+    cat ${efile} | sed -e 's#[/:]##g' | \
+        awk  '/^[0-9]/ {printf "%s\t%s\t%s\t%s\t%s\t%s\n", $1, $2, $3, $4, $5, $6}' > ${info}
+
+    echo "
+    DROP TABLE IF EXISTS futures_${1};
+    CREATE TABLE IF NOT EXISTS futures_${1} (
+        id      int(6) ZEROFILL PRIMARY key AUTO_INCREMENT NOT NULL,
+        time    INT(10),
+        open    INT(6),
+        high    INT(6),
+        low     INT(6),
+        close   INT(6),
+        shou    INT(10) DEFAULT 0,
+        INDEX(time)
+    );
+    LOAD DATA LOCAL INFILE '${info}' INTO TABLE futures_${1}(time,open,high,low,close,shou);
+    " | mysql kts
+    xt_ret $? "" || return $?
+    
+    return $?
+}
+
+function fn_vega_dif()
+{
+    echo "
+delimiter //
+DROP PROCEDURE IF EXISTS sp_diz //
+CREATE PROCEDURE sp_diz() BEGIN
+
+    DROP TABLE IF EXISTS futures_${1};
+    CREATE TABLE IF NOT EXISTS futures_${1} (
+        id      int(6) ZEROFILL PRIMARY key AUTO_INCREMENT NOT NULL,
+        time    INT(10),
+        open    INT(6),
+        high    INT(6),
+        low     INT(6),
+        close   INT(6),
+        close2  INT(6),
+        dif     INT(6),
+        absd    INT(6),
+        mean    DECIMAL(8,2) DEFAULT 0,
+        std     DECIMAL(8,2) DEFAULT 0,
+        INDEX(time)
+    );
+
+    INSERT INTO futures_dif(time,open,high,low,close,close2,dif,absd)
+    SELECT n.time,n.open,n.high,n.low,n.close,f.close,n.close-f.close, abs(n.close-f.close)
+        FROM futures_near n, futures_far f
+        WHERE n.time=f.time;
+
+    SET @id = 1;
+#   SET @len = 10000;
+    SELECT max(id) FROM futures_dif INTO @len; 
+
+    WHILE @id <= @len DO
+        SELECT avg(dif),STD(dif) 
+            FROM futures_dif WHERE (time%100)=0 AND id<=@id AND id>(@id-12*180)
+            INTO @avg, @std;
+        UPDATE futures_dif SET mean=@avg, std=@std WHERE id<=@id AND id>@id-12;
+        SET @id = @id + 12;
+    END WHILE;
+END //
+
+call sp_diz();
+
+    " | mysql kts
+    xt_ret $? "" || return $?
+    
+    return $?
+}
+
+function fn_vega_day()
+{
+    echo "
+    DROP TABLE IF EXISTS futures_${1};
+    CREATE TABLE IF NOT EXISTS futures_${1} (
+        id      int(6) ZEROFILL PRIMARY key AUTO_INCREMENT NOT NULL,
+        day     INT(10),
+        open    INT(6),
+        close   INT(6),
+      p_high    INT(6),
+      p_low     INT(6),
+      p_space   INT(6),
+      t_p0      INT(6),
+      t_p1      INT(6),
+      n_high    INT(6),
+      n_low     INT(6),
+      n_space   INT(6),
+      t_n0      INT(6),
+      t_n1      INT(6),
+        INDEX(day)
+    );
+    " | mysql kts
+    xt_ret $? "" || return $?
+
+    days=`mysql -N kts <<< "SELECT DISTINCT ROUND(time/1000000) FROM futures_dif"`
+    [ -n "${days}" ]
+    xt_ret $? "" || return $?
+
+    
+    #days=1118
+    local i=
+    for i in $days; do
+        echo "
+delimiter //
+DROP PROCEDURE IF EXISTS sp_diz //
+CREATE PROCEDURE sp_diz() BEGIN
+
+    SET @day = ${i};
+
+    SET @s_min = ${i}*1000000;
+    SET @s_max = ${i}*1000000+999999;
+    SET @s_end = ${i}*1000000 + 150000;
+    SELECT time FROM futures_dif WHERE time=@s_min+210005 INTO @t_open;
+
+    SET @t_open = IF (@t_open IS NOT NULL, @t_open, @s_min+090000);
+
+    SELECT dif FROM futures_dif WHERE time=@t_open INTO @open;
+    SELECT dif FROM futures_dif WHERE time=@s_end  INTO @close;
+
+    SELECT max(dif) FROM futures_dif WHERE dif>=0 AND time>=@s_min AND time<=@s_max INTO @p_high;
+    SELECT min(dif) FROM futures_dif WHERE dif>=0 AND time>=@s_min AND time<=@s_max INTO @p_low;
+
+    SELECT max(dif) FROM futures_dif WHERE dif<0  AND time>=@s_min AND time<=@s_max INTO @n_low;
+    SELECT min(dif) FROM futures_dif WHERE dif<0  AND time>=@s_min AND time<=@s_max INTO @n_high;
+
+    IF (@p_high IS NOT NULL) AND (@p_low IS NOT NULL) THEN
+        SELECT time%1000000 FROM futures_dif WHERE dif>=0 AND time>=@s_min AND time<=@s_max AND dif=@p_high LIMIT 1 INTO @t_p0;
+        SELECT time%1000000 FROM futures_dif WHERE dif>=0 AND time>=@s_min AND time<=@s_max AND dif=@p_low  LIMIT 1 INTO @t_p1;
+        SET @p_space = @p_high-@p_low;
+    END IF;
+
+    IF (@n_high IS NOT NULL) AND (@n_low IS NOT NULL) THEN
+        SELECT time%1000000 FROM futures_dif WHERE dif<=0 AND time>=@s_min AND time<=@s_max AND dif=@n_high LIMIT 1 INTO @t_n0;
+        SELECT time%1000000 FROM futures_dif WHERE dif<=0 AND time>=@s_min AND time<=@s_max AND dif=@n_low  LIMIT 1 INTO @t_n1;
+        SET @n_space = @n_low-@n_high;
+    END IF;
+
+    INSERT INTO futures_day(day,open,close,p_high,p_low,n_high,n_low,t_p0,t_p1, t_n0,t_n1,p_space,n_space)
+        VALUES (@day,@open,@close,@p_high,@p_low,@n_high,@n_low,@t_p0,@t_p1 ,@t_n0,@t_n1,@p_space,@n_space);
+END //
+
+call sp_diz();
+
+        " > ${chao}.0.sql 
+        mysql kts < ${chao}.0.sql
+    done
+
+    UTURES vega sel day
+    return $?
+}
+
+
+function fn_vega_sel()
+{
+    case $1 in
+    dif) 
+        sqls="SELECT * FROM futures_dif ORDER by ${FIELD:-dif} ${iASC:-DESC} LIMIT ${LIMIT:-100}" 
+        mysql -t kts <<< "${sqls}"
+        ;;
+    day) 
+        sqls="SELECT * FROM futures_day"
+        mysql -t kts <<< "${sqls}"
+        ;;
+    *)  echo "Usage: UTURES vega sel {day|dif}"
+
+    esac
+    xt_ret $? "" || return $?
+}
+
+function fn_vega()
+{
+    case $1 in
+   near) fn_vega_up  $1     ;;
+    far) fn_vega_up  $1     ;;
+    dif) fn_vega_dif $1     ;;
+    sel) fn_vega_sel $2     ;;
+    day) fn_vega_day $1     ;;
+    *)  echo "Usage: UTURES up {near|far|dif|sel|day}"
+    esac
+    
+    return $?
+}
+
 function fn_main()
 {
     cmdlist=(
@@ -502,7 +717,9 @@ function fn_main()
     "nr     {ls|d1|f5|q5|f51}                   # 记录统计"
     "pro    {d1|q5}                             # Process"
     "ls                                         # SELECT list"
+    "like   sym                                 # SELECT straddle"
     "leak   code                                # 补漏"
+    "vega   {near|far|dif}                    # 补漏"
     )
 
     fn_set_END
