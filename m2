@@ -144,6 +144,8 @@ function fn_66_佛语()                   { cat book_66_佛语 ;}
 function fn_000_黄晓捷谈在校学习()      { cat book_000_黄晓捷谈在校学习 ;}
 function fn_010_李笑来谈读书经验()      { cat book_010_李笑来谈读书经验 ;}
 function fn_011_李笑来谈阅读操作系统()  { cat book_011_李笑来谈阅读操作系统 ;}
+function fn_012_李笑来人人都能用英语()  { cat book_012_李笑来人人都能用英语 ;}
+function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从筷子到开挂人生 ;}
 
 function fn_100_周鸿祎自述()            { cat book_100_周鸿祎自述 ;}
 function fn_101_livermore()             { cat book_101_livermore ;}
@@ -164,8 +166,6 @@ function fn_320_失控()                  { cat book_320_失控 ;}
 function fn_899_权力的游戏()            { cat book_899_权力的游戏 ;}
 function fn_900_平凡的世界()            { cat book_900_平凡的世界 ;}
 function fn_tiandao()                   { cat book_tiandao book_遥远的救世主;}
-function fn_xiaolai()                   { cat book_xiaolai; 
-                                          cat book_xiaolai_1019 ;}
     local opts=(
         cept
         wanna                           # 想读的书
@@ -176,7 +176,6 @@ function fn_xiaolai()                   { cat book_xiaolai;
         lunyu                           # 论语
         shenglvqimeng                   # 声律启蒙
         tiandao                         # 天道.遥远的救世主
-        xiaolai                         # 李笑来<读书经验>分享.学习
         01_商君书
         02_韩非子
         aq_如何提问                     # reading
@@ -196,8 +195,10 @@ function fn_xiaolai()                   { cat book_xiaolai;
         66_佛语
 
         000_黄晓捷谈在校学习
-        010_李笑来谈读书经验
+        010_李笑来谈读书经验            # xiaolai<读书经验>分享.学习
         011_李笑来谈阅读操作系统
+        012_李笑来人人都能用英语
+        013_李笑来从筷子到开挂人生
 
         100_周鸿祎自述
         101_livermore
@@ -833,7 +834,7 @@ function fn_ideas()                     { cat ideas ;}
 function fn_idealism()                  { cat idealism ;}
 function fn_sanxing三省()               { cat sanxing三省 ;}
 function fn_rose()                      { cat rose ;}
-function fn_interview()                 { cat 50_faq interview ;}
+function fn_interview()                 { cat career 50_faq tek interview ;}
 
 function fn_influence()                 {
 function fn_cept()                      { cat influence_cept ;}
