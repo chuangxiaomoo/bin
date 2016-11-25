@@ -241,7 +241,6 @@ function fn_poet()    	                { cat poet ;}
 function fn_personage()                 { cat personage ;}
 function fn_meeting()                   { cat meeting ;}
 function fn_01_囧_jiong()               { cat 01_囧_jiong ;}
-function fn_02_如何解题()               { cat 02_如何解题 ;}
 
 function fn_howto()                     {
 function fn_01_提高逻辑思维能力()       { cat howto_01_提高逻辑思维能力 ;}
@@ -255,6 +254,20 @@ function fn_05_挑选西瓜()               { cat howto_05_挑选西瓜 ;}
         03_沟通_communication
         04_屌丝如何逆袭
         05_挑选西瓜
+    )
+    fn_print $@
+}
+
+function fn_problem()                   {
+function fn_X-Y()                       { cat problem_X-Y ;}
+function fn_solving()                   { cat problem_solving ;}
+function fn_ask_question()              { cat problem_ask_question ;}
+function fn_present()                   { cat problem_present ;}
+    local opts=(
+        X-Y                             # 问题分类
+        solving                         # Howto
+        ask_question                    # sometimes，问题产生源自问问题的方式
+        present                         # 回归问题本身
     )
     fn_print $@
 }
@@ -989,7 +1002,6 @@ function fn_main() {
         01_囧_jiong                     # sleep
         cold                            # 感冒 牙痛 智齿 sick
         architecture                    # 建筑
-        02_如何解题                     # how to solve it, problem_solving
         advertisement
         aesthetics                      # i:s`θetic 美学
         estate                          # 房地产
@@ -1028,6 +1040,7 @@ function fn_main() {
         movie
         music
         personage
+        problem                         # 问题
         prof                            # professionalism 专业主义 职业化
         stevejobs
         socrates                        # Socrates 苏格拉底 诘问

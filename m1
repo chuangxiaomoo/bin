@@ -1033,7 +1033,6 @@ function fn_cxx()                       { cat codingstyle_cxx ;}
     fn_print $@
 }
 
-function fn_question()                  { cat question ;}
 function fn_tips_4_reading_code()       { cat tips_4_reading_code ;}
 
 function fn_codetool()                  {
@@ -1237,18 +1236,6 @@ function fn_02_tobe_狼or狐狸or老鼠()    { cat team_02_tobe_狼or狐狸or老
 }
 function fn_rdm()                       { cat rdm ;}
 
-function fn_problem()                   { 
-function fn_X-Y_problem()               { cat problem_X-Y_problem ;}
-function fn_solving()                   { cat problem_solving ;}
-function fn_ask_question()              { cat problem_ask_question ;}
-    local opts=(
-        X-Y_problem                     # 问题分类
-        solving                         # Howto ../.m2doc/02_如何解题
-        ask_question                    # sometimes，问题产生源自问问题的方式
-    )
-    fn_print $@
-}
-
 function fn_jimxl()                     {
 function fn_base()                      { cat jimxl_base ;}
 function fn_nvr()                       { cat jimxl_nvr ;}
@@ -1432,12 +1419,10 @@ function fn_main() {
         opera
         perl
         pinfo
-        problem                 # question 
         software
         puTTY
         ruby
         python
-        question
         regex
         refactoring
         report
