@@ -74,7 +74,8 @@
             statements
         UNTIL expression END REPEAT [label] ;
 
-    4.  leave iterate
+    4. leave    (类似C-break)
+    5. iterate  (类似C-continue)
 
 . 用户变量
 

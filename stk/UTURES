@@ -561,14 +561,15 @@ CREATE PROCEDURE sp_diz() BEGIN
     CREATE TABLE IF NOT EXISTS futures_${1} (
         id      int(6) ZEROFILL PRIMARY key AUTO_INCREMENT NOT NULL,
         time    INT(10),
-        open    INT(6),
-        high    INT(6),
-        low     INT(6),
-        close   INT(6),
-        close2  INT(6),
-        dif     INT(6),
-        absd    INT(6),
+        open    DECIMAL(6,2),
+        high    DECIMAL(6,2),
+        low     DECIMAL(6,2),
+        close   DECIMAL(6,2),
+        close2  DECIMAL(6,2),
+        dif     DECIMAL(6,2),
+        absd    DECIMAL(6,2),
         mid     DECIMAL(8,2) DEFAULT 0,
+        m480    DECIMAL(8,2) DEFAULT 0,
         top     DECIMAL(8,2) DEFAULT 0,
         bot     DECIMAL(8,2) DEFAULT 0,
         std     DECIMAL(8,2) DEFAULT 0,
@@ -588,9 +589,8 @@ CREATE PROCEDURE sp_diz() BEGIN
         SELECT avg(dif),STD(dif) 
             FROM futures_dif WHERE (time%100)=0 AND id<=@id AND id>(@id-12*${N})
             INTO @avg, @std;
-        IF @avg<0 THEN
-            SET @std=-@std;
-        END IF;
+        SELECT avg(dif) FROM futures_dif WHERE (time%100)=0 AND id<=@id AND id>(@id-12*480)
+            INTO @m480;
         SET @top=@avg+${K}*@std;
         SET @bot=@avg-${K}*@std;
         UPDATE futures_dif SET mid=@avg, top=@top, bot=@bot, std=abs(@std) WHERE id<=@id AND id>@id-12;
@@ -722,6 +722,7 @@ function fn_vega_trd_tbl()
         high    INT(6),
         low     INT(6),
         dif     INT(6),
+        std     DECIMAL(6,2),
         INDEX(SNR)
     );
     " | mysql kts
@@ -736,56 +737,7 @@ function fn_vega_test()
     fn_vega_trd_tbl posi 
     xt_ret $? "" || return $?
 
-    echo "
-delimiter //
-DROP PROCEDURE IF EXISTS sp_diz //
-CREATE PROCEDURE sp_diz() tag_proc:BEGIN
-    SET @id = 30*12;
-    SELECT max(id) FROM futures_dif INTO @len; 
-    SET @len = 100000;
-
-    WHILE @id <= @len DO
-        SELECT count(*) FROM futures_posi INTO @len_posi;
-        IF @len_posi>1 THEN
-            SELECT 'error len_posi:', @len_posi; LEAVE tag_proc;
-        END IF;
-
-        SELECT dif,mid,top,std FROM futures_dif WHERE id=@id INTO @_dif,@mid,@top,@std;
-
-        IF @len_posi=0 THEN     # open
-            IF ( abs(@_dif)>=abs(@top) AND @std>=2.25 ) || 
-                ( abs(@_dif)>=abs(@top) AND @std<2.25 AND abs(@_dif)-abs(@mid)+@std>8) THEN
-
-               SELECT count(*) FROM futures_open INTO @len_open;
-               INSERT INTO futures_posi(type,SNR,tid,time,posi,high,low,dif)
-                   SELECT 'O',@len_open+1,@id,time,1,GREATEST(close,close2),LEAST(close,close2),abs(dif) FROM futures_dif WHERE id=@id;
-
-               INSERT INTO futures_open(type,SNR,tid,time,posi,high,low,dif)
-                   SELECT 'O',@len_open+1,@id,time,1,GREATEST(close,close2),LEAST(close,close2),abs(dif) FROM futures_dif WHERE id=@id;
-            END IF;
-        ELSE                    # shut
-            SELECT dif FROM futures_open ORDER by SNR DESC LIMIT 1 INTO @open;
-            IF @open-abs(@_dif)>=4
-                # ( abs(@_dif)<=abs(@bot) AND @std>=2.25 ) # || 
-               # ( abs(@_dif)<=abs(@bot) AND @std<2.25 AND @open-abs(@_dif)>=4) 
-               THEN
-
-               SELECT MAX(SNR) FROM futures_open INTO @SNR;
-               INSERT INTO futures_shut(type,SNR,tid,time,posi,high,low,dif)
-                   SELECT 'S',@SNR,@id,time,1,GREATEST(close,close2),LEAST(close,close2),abs(dif) FROM futures_dif WHERE id=@id;
-
-               DELETE FROM futures_posi;
-            END IF;
-        END IF;
-
-        SET @id = @id + 1;
-    END WHILE;
-END tag_proc //
-
-call sp_diz();
-
-    " > ${chao}.sql
-
+    cp sql/vega.test.sql ${chao}.sql
     mysql kts <${chao}.sql
     xt_ret $? "" || return $?
 
@@ -797,8 +749,19 @@ call sp_diz();
     mysql -t kts <<< "SELECT a.*,b.mid,b.top,b.bot,b.std FROM futures_shut a, futures_dif b WHERE a.time=b.time"
     xt_ret $? "" || return $?
 
+    fn_echo_succ "posi"
     mysql -t kts <<< "SELECT a.*,b.mid,b.top,b.bot,b.std FROM futures_posi a, futures_dif b WHERE a.time=b.time"
     xt_ret $? "" || return $?
+
+    fn_echo_succ "dif"
+
+    mysql -t kts <<< "SELECT a.SNR, ROUND((b.tid-a.tid)/12) as min, 
+        a.time,a.high,a.low, a.dif,a.std,
+        b.time,b.high,b.low, b.dif,b.std,
+            (a.dif-b.dif) as benifit FROM futures_open a, futures_shut b WHERE a.SNR=b.SNR"  
+
+        mysql -t kts <<< "SELECT max(a.SNR), SUM(a.dif-b.dif-5) as beni_all FROM futures_open a, futures_shut b WHERE a.SNR=b.SNR"  
+
 }
 
 function fn_vega()

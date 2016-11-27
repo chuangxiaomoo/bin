@@ -484,15 +484,7 @@ function fn_02_一朝天子一朝臣()         { cat why_02_一朝天子一朝�
     fn_print $@
 }
 
-function fn_movie()                     {
-function fn_100films()                  { cat movie_100films ;}
-function fn_videos()                    { cat movie_videos ;}
-    local opts=(
-        videos                          # 论语300讲 中国好禅师 连续剧集
-        100films
-    )
-    fn_print $@
-}
+function fn_films()                     { cat videos movies ;}
 
 function fn_logic()                     {
 function fn_cept()                      { cat logic_cept ;}
@@ -847,7 +839,7 @@ function fn_ideas()                     { cat ideas ;}
 function fn_idealism()                  { cat idealism ;}
 function fn_sanxing三省()               { cat sanxing三省 ;}
 function fn_rose()                      { cat rose ;}
-function fn_interview()                 { cat career 50_faq tek interview ;}
+function fn_interview()                 { cat career 50_faq tek jd interview ;}
 
 function fn_influence()                 {
 function fn_cept()                      { cat influence_cept ;}
@@ -1037,7 +1029,6 @@ function fn_main() {
         mindhacks
         ljsw                            # 罗辑思维
         sbfm                            # 上兵伐谋
-        movie
         music
         personage
         problem                         # 问题
