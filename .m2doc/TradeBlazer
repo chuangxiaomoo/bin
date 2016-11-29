@@ -95,3 +95,19 @@ Begin
 End
 `
 
+# TBplus PlotString make System crashed
+
+Crashed示例：
+
+    PlotString("wave","一", Mean, Yellow);
+
+解决方案1：
+
+    if (maxbarsback() > 480) { 
+      PlotString("wave","一", Mean, Yellow);
+    }
+
+解决方案2：
+
+    PlotBool("Deal",True, Dif+4, Red);
+

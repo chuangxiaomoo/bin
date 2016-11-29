@@ -76,8 +76,8 @@ function fn_d1_0()
         -e 's///g'                            \
         -e '/^$/d'                              |
     awk -v code=$1 '{
-        printf "%s\t%s\t%d\t%d\t%d\t%d\t%d\t%.2f\t%.2f\t%.2f\t%.2f\n",
-        code,$1, yesc,$2,$3,$4,$5,$6,$7, $8/10000,$9/10000;
+        printf "%s\t%s\t%d\t%d\t%d\t%d\t%d\t%.2f\t%.2f\t%.2f\t%.2f\t%.1f\n",
+              code, $1,yesc,$2,$3, $4,  $5,$6,   $7,$8/10000,$9/10000, ($9/$8/10);
         yesc=$5
     }' |
     sed '1d' > ${fchao}
@@ -94,12 +94,13 @@ function fn_d1_0()
         low     INT(6),
         close   INT(6),
         rise    DECIMAL(12,2) DEFAULT 0,
-        chng    DECIMAL(12,2) DEFAULT 0,
+        hhll    DECIMAL(12,2) DEFAULT 0,
         shou    DECIMAL(12,2) DEFAULT 0,
         amount  DECIMAL(12,2) DEFAULT 0,
+        settle  DECIMAL(12,1) DEFAULT 0,
         INDEX(code,date)
     );
-    LOAD DATA LOCAL INFILE '${fchao}' INTO TABLE futures_d1(code,date,yesc,open,high,low,close,rise,chng,shou,amount);
+    LOAD DATA LOCAL INFILE '${fchao}' INTO TABLE futures_d1(code,date,yesc,open,high,low,close,rise,hhll,shou,amount,settle);
     " | mysql kts
     xt_ret $? "" || return $?
 
@@ -238,7 +239,8 @@ function fn_up_d1()
     COND="Margin<25000" UTURES ls 
     xt_ret $? "" || return $?
 
-    codes=`cat ${chao}.ls`
+   #codes=`cat ${chao}.ls`
+    codes="rb1701 rb1705"
 
     # echo ${codes};exit
 
@@ -593,7 +595,7 @@ CREATE PROCEDURE sp_diz() BEGIN
             INTO @m480;
         SET @top=@avg+${K}*@std;
         SET @bot=@avg-${K}*@std;
-        UPDATE futures_dif SET mid=@avg, top=@top, bot=@bot, std=abs(@std) WHERE id<=@id AND id>@id-12;
+        UPDATE futures_dif SET mid=@avg, m480=@m480, top=@top, bot=@bot, std=@std WHERE id<=@id AND id>@id-12;
         SET @id = @id + 12;
     END WHILE;
 END //
@@ -714,7 +716,7 @@ function fn_vega_trd_tbl()
     DROP TABLE IF EXISTS futures_${1};
     CREATE TABLE IF NOT EXISTS futures_${1} (
         id      int(6) ZEROFILL PRIMARY key AUTO_INCREMENT NOT NULL,
-        type    CHAR(2),
+        type    INT,
         SNR     INT(8),
         tid     INT(10),
         time    INT(10),
@@ -737,8 +739,7 @@ function fn_vega_test()
     fn_vega_trd_tbl posi 
     xt_ret $? "" || return $?
 
-    cp sql/vega.test.sql ${chao}.sql
-    mysql kts <${chao}.sql
+    mysql kts < sql/vega.test.sql
     xt_ret $? "" || return $?
 
     fn_echo_succ "open"
@@ -755,12 +756,12 @@ function fn_vega_test()
 
     fn_echo_succ "dif"
 
-    mysql -t kts <<< "SELECT a.SNR, ROUND((b.tid-a.tid)/12) as min, 
+    mysql -t kts <<< "SELECT a.SNR,a.type, ROUND((b.tid-a.tid)/12) as min, 
         a.time,a.high,a.low, a.dif,a.std,
         b.time,b.high,b.low, b.dif,b.std,
-            (a.dif-b.dif) as benifit FROM futures_open a, futures_shut b WHERE a.SNR=b.SNR"  
+            (b.dif-a.dif)*a.type as benifit FROM futures_open a, futures_shut b WHERE a.SNR=b.SNR"  
 
-        mysql -t kts <<< "SELECT max(a.SNR), SUM(a.dif-b.dif-5) as beni_all FROM futures_open a, futures_shut b WHERE a.SNR=b.SNR"  
+    mysql -t kts <<< "SELECT a.type,max(a.SNR), SUM((b.dif-a.dif)*a.type-5) as beni_all FROM futures_open a, futures_shut b WHERE a.SNR=b.SNR"  
 
 }
 
@@ -779,16 +780,30 @@ function fn_vega()
     return $?
 }
 
+function fn_d1()
+{
+    [ -n "${1}" ]
+    xt_ret $? "" || return $?
+
+    columns="date,yesc,open,high,low,close,rise,hhll,shou,amount,settle"
+    echo "
+    SELECT ${columns} FROM futures_d1 WHERE code='${1}' ORDER by date DESC LIMIT ${LIMIT:-24};
+    " | mysql -t kts
+    
+    return $?
+}
+
 function fn_main()
 {
     cmdlist=(
     "up     {ls|d1|f5|q5|domi}                  # 数据更新"
     "nr     {ls|d1|f5|q5|f51}                   # 记录统计"
     "pro    {d1|q5}                             # Process"
-    "ls                                         # SELECT list"
+    "d1     sym                                 # 结算价查询"
+    "ls                                         # 714.715.716-list"
     "like   sym                                 # SELECT straddle"
     "leak   code                                # 补漏"
-    "vega   {near|far|dif}                    # 补漏"
+    "vega   ...                               # 补漏"
     )
 
     fn_set_END

@@ -1,0 +1,10 @@
+# reclaim_space
+
+回缩不用的空间。
+
+[](https://www.percona.com/blog/2013/09/25/how-to-reclaim-space-in-innodb-when-innodb_file_per_table-is-on/)
+
+1. optimize table tbl_name;
+
+2. ALTER TABLE tbl_name ENGINE=INNODB 
+

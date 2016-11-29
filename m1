@@ -1138,6 +1138,7 @@ function fn_where_in()                  { cat sql_where_in sql_like ;}
 function fn_limit()                     { cat sql_limit ;}
 function fn_variable()                  { cat sql_variable ;}
 function fn_truncate()                  { cat sql_truncate ;}
+function fn_reclaim_space()             { cat sql_reclaim_space ;}
     local opts=(
         kts
         min
@@ -1175,6 +1176,7 @@ function fn_truncate()                  { cat sql_truncate ;}
         array
         tbl_create          # 以表为操作
         tbl_temp            # 临时表 内存表(HEAP) 
+        reclaim_space       # InnoDB
     )
     fn_print $@
 }
