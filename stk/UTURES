@@ -100,6 +100,7 @@ function fn_d1_0()
         settle  DECIMAL(12,1) DEFAULT 0,
         INDEX(code,date)
     );
+    DELETE FROM futures_d1 WHERE code='${1}';
     LOAD DATA LOCAL INFILE '${fchao}' INTO TABLE futures_d1(code,date,yesc,open,high,low,close,rise,hhll,shou,amount,settle);
     " | mysql kts
     xt_ret $? "" || return $?
@@ -236,16 +237,16 @@ function fn_up_ls()
 
 function fn_up_d1()
 {
-    COND="Margin<25000" UTURES ls 
+    LIMIT=20 COND="Margin<25000" UTURES ls 
     xt_ret $? "" || return $?
 
-   #codes=`cat ${chao}.ls`
-    codes="rb1701 rb1705"
+   codes=`cat ${chao}.ls`
+   codes="p1705 al1705"
 
     # echo ${codes};exit
 
-    mysql kts <<<"DROP TABLE IF EXISTS futures_d1"
-    xt_ret $? "" || return $?
+    # mysql kts <<<"DROP TABLE IF EXISTS futures_d1"
+    # xt_ret $? "" || return $?
 
     for i in ${codes}; do
         fn_d1_0 $i
@@ -448,7 +449,7 @@ function fn_pro()
         uTBL=futures_d1 fn_set_uEND
         STA=`fn_get_date ${NUM:-3}`
         echo "
-        SELECT *, COUNT(*) as cnt, 
+        SELECT *, COUNT(*) as NUM, 
             ROUND(SUM(100*GREATEST(high-low, high-yesc, yesc-low)/yesc)/COUNT(*), 2) as ATR,
             ROUND(SUM(abs(close-yesc)/GREATEST(high-low, high-yesc, yesc-low))/COUNT(*), 2) as MEF
             FROM futures_d1 WHERE date>='${STA}' and date<='${uEND}' 
@@ -759,10 +760,15 @@ function fn_vega_test()
     mysql -t kts <<< "SELECT a.SNR,a.type, ROUND((b.tid-a.tid)/12) as min, 
         a.time,a.high,a.low, a.dif,a.std,
         b.time,b.high,b.low, b.dif,b.std,
-            (b.dif-a.dif)*a.type as benifit FROM futures_open a, futures_shut b WHERE a.SNR=b.SNR"  
+        (b.dif-a.dif)*(a.type%2) as benifit FROM futures_open a, futures_shut b WHERE a.SNR=b.SNR"  
 
-    mysql -t kts <<< "SELECT a.type,max(a.SNR), SUM((b.dif-a.dif)*a.type-5) as beni_all FROM futures_open a, futures_shut b WHERE a.SNR=b.SNR"  
+        mysql -t kts <<< "SELECT a.type,max(a.SNR), 
+        SUM((b.dif-a.dif)*(a.type%2)-5) as beni_all FROM futures_open a, futures_shut b WHERE a.SNR=b.SNR"  
 
+mysql -t kts <<< "
+SELECT a.type,max(a.SNR), SUM((b.dif-a.dif)*(a.type%2)-5) as beni_all 
+FROM futures_open a, futures_shut b WHERE a.SNR=b.SNR and abs(a.type)>1
+"  
 }
 
 function fn_vega()

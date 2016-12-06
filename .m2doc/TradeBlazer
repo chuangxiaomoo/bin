@@ -95,7 +95,7 @@ Begin
 End
 `
 
-# TBplus PlotString make System crashed
+# Trouble.1: TBplus PlotString make System crashed
 
 Crashed示例：
 
@@ -110,4 +110,14 @@ Crashed示例：
 解决方案2：
 
     PlotBool("Deal",True, Dif+4, Red);
+
+# Trouble.2: 不能获取Data1.Vol
+
+1 每天固定传递参数
+2 使用Data0为主力合约
+3 使用Q_LowerLimit() Q_UpperLimit()
+
+# 处理包含关系.全局变量
+
+NumericSeries 即是全局的，可以用来做标记。
 

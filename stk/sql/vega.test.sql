@@ -4,8 +4,9 @@ DROP PROCEDURE IF EXISTS sp_diz //
 CREATE PROCEDURE sp_diz() tag_proc:BEGIN
     SET @id = 480*12; # +80000;
     SELECT max(id) FROM futures_dif INTO @len; 
-    SET @len = 10000;
+   #SET @len = 10000;
     SET @ymd_now = 0;
+    SET @climit=6;
 
     tag_loop: WHILE @id <= @len DO
         SELECT count(*) FROM futures_posi INTO @len_posi;
@@ -14,13 +15,19 @@ CREATE PROCEDURE sp_diz() tag_proc:BEGIN
         END IF;
 
         SELECT 2016*10000+ROUND(time/1000000),
-               time%1000000,dif,mid,m480,top,bot,std FROM futures_dif WHERE id=@id 
-        INTO    @ymd,@hms,@_dif,@mid,@m480,@top,@bot,@std;
+               time%1000000,dif,mid,m480,top,bot,std,close,close2 FROM futures_dif WHERE id=@id 
+        INTO    @ymd,@hms,@_dif,@mid,@m480,@top,@bot,@std,@close1,@close2;
 
         IF @ymd!=@ymd_now THEN     # open
-            SELECT settle FROM futures_d1 WHERE code='rb1701' and date=@ymd INTO @settle;
-            IF @settle is NULL THEN SELECT 'NULL ymd';LEAVE tag_proc; END IF;
+            SELECT settle FROM futures_d1 WHERE code='rb1701' and date<@ymd ORDER by date DESC LIMIT 1 INTO @settle1;
+            SELECT settle FROM futures_d1 WHERE code='rb1705' and date<@ymd ORDER by date DESC LIMIT 1 INTO @settle2;
+            SET @ymd_now=@ymd;
         END IF;
+        
+       #IF @settle is NULL THEN SELECT 'NULL ymd';LEAVE tag_proc; END IF;
+
+        SET @rise= GREATEST(abs(100*(@close1-@settle1)/@settle1), abs(100*(@close2-@settle2)/@settle2));
+        SET @rise= ROUND(@rise,3);
 
         IF @len_posi=0 THEN     # open
             # 白场&夜场，开场前5分钟&闭场前5分钟，不开单
@@ -38,23 +45,33 @@ CREATE PROCEDURE sp_diz() tag_proc:BEGIN
             IF ( @std>3    && @std<=3.5 ) THEN SET @off=-1;                      END IF;
             IF ( @std>3.5               ) THEN SET @off=-1.5;                    END IF;
 
+            IF (@mid>=@m480 && @rise<=@climit*.58)  THEN SET @type=1;       END IF;  # 做多
+            IF (@mid<@m480  && @rise>@climit*.58 )  THEN SET @type=3;       END IF;  # 超跌做多
+            IF (@mid<@m480  && @rise<@climit*.58 )  THEN SET @type=-1;      END IF;  # 做空
+            IF (@mid>@m480  && @rise>@climit*.58)   THEN SET @type=-3;      END IF;   # 超涨做空
+
             # 开单
             SELECT count(*) FROM futures_open INTO @len_open;
-            IF ( @mid>=@m480  ) THEN        # 做多
+            IF @type%2=1 THEN      # 做多
+
+            #SELECT @rise,@type;
+
                 IF @_dif<=ROUND(@bot-@off-.2) THEN
+
+
                    INSERT INTO futures_posi(type,SNR,tid,time,posi,high,low,dif,std)
-                       SELECT 1,@len_open+1,@id,time,1,GREATEST(close,close2),LEAST(close,close2),dif,std FROM futures_dif WHERE id=@id;
+                       SELECT @type,@len_open+1,@id,time,1,GREATEST(close,close2),LEAST(close,close2),dif,std FROM futures_dif WHERE id=@id;
 
                    INSERT INTO futures_open(type,SNR,tid,time,posi,high,low,dif,std)
-                       SELECT 1,@len_open+1,@id,time,1,GREATEST(close,close2),LEAST(close,close2),dif,std FROM futures_dif WHERE id=@id;
+                       SELECT @type,@len_open+1,@id,time,1,GREATEST(close,close2),LEAST(close,close2),dif,std FROM futures_dif WHERE id=@id;
                 END IF;
-            ELSE                            # 做空
+            ELSE                   # 做空
                 IF @_dif>=ROUND(@top+@off) THEN
                    INSERT INTO futures_posi(type,SNR,tid,time,posi,high,low,dif,std)
-                       SELECT -1,@len_open+1,@id,time,1,GREATEST(close,close2),LEAST(close,close2),dif,std FROM futures_dif WHERE id=@id;
+                       SELECT @type,@len_open+1,@id,time,1,GREATEST(close,close2),LEAST(close,close2),dif,std FROM futures_dif WHERE id=@id;
 
                    INSERT INTO futures_open(type,SNR,tid,time,posi,high,low,dif,std)
-                       SELECT -1,@len_open+1,@id,time,1,GREATEST(close,close2),LEAST(close,close2),dif,std FROM futures_dif WHERE id=@id;
+                       SELECT @type,@len_open+1,@id,time,1,GREATEST(close,close2),LEAST(close,close2),dif,std FROM futures_dif WHERE id=@id;
                 END IF;
             END IF;
         ELSE                    # shut
@@ -75,15 +92,27 @@ CREATE PROCEDURE sp_diz() tag_proc:BEGIN
             END IF;
 
 
-            IF ( @type=1 ) THEN     # 平多
-                IF @mid<@m480 THEN SET @revert=@revert*@std*2; ELSE SET @revert=0; END IF;
+            IF ( @type=1 ) THEN         # 平多
+                IF @mid+2<@m480 THEN SET @revert=@revert*@std*2; ELSE SET @revert=0; END IF;
                 IF @_dif>=ROUND(@top+@off-@revert) || @_dif-@open>=16 THEN
                    INSERT INTO futures_shut(type,SNR,tid,time,posi,high,low,dif,std)
                        SELECT 1,@SNR,@id,time,1,GREATEST(close,close2),LEAST(close,close2),dif,std FROM futures_dif WHERE id=@id;
                        DELETE FROM futures_posi;
                 END IF;
-            ELSE                    # 平空
-                IF @mid>@m480 THEN SET @revert=@revert*@std*2; ELSE SET @revert=0; END If;
+            ELSEIF ( @type=3 ) THEN         # 平超跌多
+                IF @_dif>=ROUND(@top+@off-@revert) || @_dif-@open>=16 THEN
+                   INSERT INTO futures_shut(type,SNR,tid,time,posi,high,low,dif,std)
+                       SELECT 1,@SNR,@id,time,1,GREATEST(close,close2),LEAST(close,close2),dif,std FROM futures_dif WHERE id=@id;
+                       DELETE FROM futures_posi;
+                END IF;
+            ELSEIF (@type=-1) THEN      # 平空
+                IF @mid-2>@m480 THEN SET @revert=@revert*@std*2; ELSE SET @revert=0; END If;
+                IF @_dif<=ROUND(@bot-@off+@revert-.2) || @open-@_dif>=16 THEN
+                   INSERT INTO futures_shut(type,SNR,tid,time,posi,high,low,dif,std)
+                       SELECT -1,@SNR,@id,time,1,GREATEST(close,close2),LEAST(close,close2),dif,std FROM futures_dif WHERE id=@id;
+                       DELETE FROM futures_posi;
+                END IF;
+            ELSE
                 IF @_dif<=ROUND(@bot-@off+@revert-.2) || @open-@_dif>=16 THEN
                    INSERT INTO futures_shut(type,SNR,tid,time,posi,high,low,dif,std)
                        SELECT -1,@SNR,@id,time,1,GREATEST(close,close2),LEAST(close,close2),dif,std FROM futures_dif WHERE id=@id;
