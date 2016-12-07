@@ -1447,6 +1447,7 @@ function fn_main() {
         test
         tmux
         uboot
+        ubuntu
         url
         vim
         vlc
