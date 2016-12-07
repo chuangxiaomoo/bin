@@ -1,0 +1,40 @@
+# ubuntu
+
+# 12.04 root登陆
+
+    [](http://os.51cto.com/art/201208/351611.htm)
+    # echo "greeter-show-manual-login=true" >> /etc/lightdm/lightdm.conf 
+    # restart
+
+# 12.04关闭图形界面
+
+* 法1
+
+vi /boot/grub/grub.cfg 
+改 "splash" ===＞  "splash text"
+reboot
+
+* 法2
+
+vi /etc/default/grub
+改 "splash" ===＞  "splash text"
+update-grub
+reboot
+
+# 12.04下字符界面启动图形界面
+
+startx
+
+# login-so-slow with motd
+
+* 法1
+
+cd /etc/update-motd.d/
+chmod 600 *
+
+* 法2 修改/etc/pam.d/sshd和/etc/pam.d/login文件中的有pam_motd.so的行注释掉
+`
+#session    optional     pam_motd.so  motd=/run/motd.dynamic noupdate
+#session    optional     pam_motd.so # [1]
+`
+

@@ -43,8 +43,9 @@
 
   有时，我们不仅是重启服务sshd，必要时还要重启系统，如在华为时日本问题
 
-    rm motd
-    -d "/etc/update-motd.d" && run-parts
+    # disable motd: -d "/etc/update-motd.d" && run-parts
+    cd /etc/update-motd.d/
+    chmod 600 *
 
 ## Permission denied
   ───────────────────────────────────────────────────────────────────────
