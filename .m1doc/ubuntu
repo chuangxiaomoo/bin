@@ -38,3 +38,22 @@ chmod 600 *
 #session    optional     pam_motd.so # [1]
 `
 
+# 服务启动管理
+
+[](cmd_rcconf)
+
+# 修改 /bin/sh [dash] -＞ [bash]
+
+
+先用命令ls -l /bin/sh 看看
+结果是： /bin/sh -> dash
+
+sudo dpkg-reconfigure dash
+然后选择【否】
+
+成功后再执行ls -l /bin/sh 看看
+结果是： /bin/sh -> bash
+
+修改成功！
+
+
