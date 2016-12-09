@@ -25,17 +25,23 @@ reboot
 
 startx
 
-# login-so-slow with motd
+# login-so-slow with motd sshd
 
 * 法1
 
-cd /etc/update-motd.d/
+mv /etc/update-motd.d /etc/update-motd.d.disable
 chmod 600 *
 
 * 法2 修改/etc/pam.d/sshd和/etc/pam.d/login文件中的有pam_motd.so的行注释掉
 `
 #session    optional     pam_motd.so  motd=/run/motd.dynamic noupdate
 #session    optional     pam_motd.so # [1]
+`
+
+* 法3 "/etc/ssh/sshd_config"
+`
+UseDNS no                 # set /etc/hosts
+PrintLastLog no
 `
 
 # 服务启动管理

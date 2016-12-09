@@ -38,7 +38,7 @@
 ## ssh login slowly
 
     "/etc/ssh/sshd_config"
-    UseDNS no
+    UseDNS no                 # set /etc/hosts
     PrintLastLog no
 
   有时，我们不仅是重启服务sshd，必要时还要重启系统，如在华为时日本问题

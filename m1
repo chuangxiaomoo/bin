@@ -745,7 +745,7 @@ function fn_install()                   { cat cmd_install ;}
         nc                      # netcat
         patch
         rar
-        rcconf                  # ubuntu 默认启动方式 /etc/init/*.conf
+        rcconf                  # 默认启动方式 /etc/init/*.conf
         sysv-rc-conf
         route
         sort
