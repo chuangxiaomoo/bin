@@ -61,46 +61,29 @@ function fn_plan_what()                 { cat annual_plan_what ;}
 function fn_report_what()               { cat annual_report_what ;}
 function fn_seminar_what()              { cat annual_seminar_what ;}
 function fn_2011_investment_report()    { cat annual_2011_investment_report ;}
-function fn_2012_report()               { cat annual_2012_report ;}
-function fn_2012_seminar()              { cat annual_2012_seminar ;}
-function fn_2013_seminar()              { cat annual_2013_seminar ;}
-function fn_2013_report()               { cat annual_2013_report ;}
-function fn_2013_life()                 { cat annual_2013_life ;}
-function fn_2014_plan()                 { cat annual_2014_plan ;}
-function fn_2014_spring_festival()      { cat annual_2014_spring_festival ;}
 function fn_2014_jco()                  { cat annual_2014_jco ;}
-function fn_2014_life()                 { cat annual_2014_life ;}
+function fn_2014_spring_festival()      { cat annual_2014_spring_festival ;}
 function fn_2014_grandpa_inlaw()        { cat annual_2014_grandpa_inlaw ;}
-function fn_2014_report()               { cat annual_2014_report ;}
 function fn_2014_national_day()         { cat annual_2014_national_day ;}
-function fn_2015_plan()                 { cat annual_2015_plan ;}
-function fn_2015_event()                { cat annual_2015_event ;}
-function fn_2015_report()               { cat annual_2015_report ;}
-function fn_2016_plan()                 { cat annual_2016_plan ;}
-function fn_2016_event()                { cat annual_2016_event ;}
+function fn_2012_plan()                 { cat annual_2012_plan                   annual_2012_report;}
+function fn_2013_plan()                 { cat annual_2013_plan annual_2013_event annual_2013_report;}
+function fn_2014_plan()                 { cat annual_2014_plan annual_2014_event annual_2014_report;}
+function fn_2015_plan()                 { cat annual_2015_plan annual_2015_event annual_2015_report;}
+function fn_2016_plan()                 { cat annual_2016_plan annual_2016_event annual_2016_report;}
     local opts=(
         plan_what                       # 基于`以终为始`的理念
         report_what
         seminar_what
         2011_investment_report
-        2012_report
-        2012_seminar
-        2013_seminar
-        2013_plan
-        2013_report
-        2013_life                       # 财务报表
-        2014_plan                       # `多算胜，少算不胜`
         2014_spring_festival
         2014_jco
-        2014_life
         2014_grandpa_inlaw
-        2014_report
         2014_national_day               # NationalDay
+        2012_plan
+        2013_plan
+        2014_plan                       # `多算胜，少算不胜`
         2015_plan
-        2015_event
-        2015_report
         2016_plan
-        2016_event
     )
     fn_print $@
 }
