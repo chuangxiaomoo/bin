@@ -11,10 +11,13 @@ function fn_usage()
         D   {?|M}
         d   diff. [hd:horizontal-split-diff]
         dp  diff -r 'PREV'
+        h   help
         q   -q status
         r   revert -R {file|dir}
         s   status
         u   update
+
+        svn help _____more.info_____
     "
 }
 
@@ -64,7 +67,7 @@ function fn_main()
         svn up $filelist
         ;;
     h)
-        fn_usage
+        svn help $filelist
         ;;
     *)
         fn_usage

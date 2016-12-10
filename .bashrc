@@ -29,8 +29,8 @@ alias    HAVING=''
 alias      PREV=''
 alias      YIST=''
 alias     YRISE=''
-alias      STEP=''
-alias     SCALE=''      # 通放大倍数 
+#lias      STEP=''
+#lias     SCALE=''      # 通放大倍数 
 alias       WIT=''      # 大智慧
 alias     LIMIT=''
 alias      iDDE=''
@@ -59,8 +59,9 @@ alias     .5="let 'TOV5=++TOV5%3'; echo \$TOV5; export TOV5"
 alias  .SINA="let 'SINA=!SINA'; echo \$SINA; export SINA"
 alias .DEBUG="let 'DEBUG=!DEBUG'; echo \$DEBUG; export DEBUG"
 #lias    .n='. /opt/nxpbash'
-alias    .s='cd ~/bin/stk'
-alias   .ss='cd ~/bin/stk/sql'
+alias    .s='cd ~/bin'
+alias   .ss='cd ~/bin/stk'
+alias   .sr='cd /opt/src'
 alias   .rc='. /root/.bashrc'
 alias  .irc='vi /root/.bashrc; . /root/.bashrc'
 alias  .mor='/root/bin/stk/up morningcall'
@@ -97,11 +98,14 @@ alias     x='chmod 777 '
 alias    xt='chmod 777 /tftpboot/*'
 alias    xx='tar -zxvf'
 alias    ct='cd ~/sh/t'
-alias   cwd='pwd >> ~/.env;vi ~/.env; .rc'
+
+alias   cwd='pwd >> ~/.env;vi ~/.env; .rc'          # curr-pwd
+alias   awd='cp ~/.awd /dev/shm/.awd && pwd>~/.awd 
+                && cat /dev/shm/.awd >> ~/.awd'     # mult-pwd, work with [lwd]
+alias   iwd='vi /root/.awd'                         #
 alias   swd='pwd > ~/.swd'                          # save pwd, [pushd .]
-alias   awd='cp ~/.awd /dev/shm/.awd && pwd > ~/.awd && cat /dev/shm/.awd >> ~/.awd'   
-alias   iwd='vi /root/.awd'   
 alias   gwd='cd `cat ~/.swd`'                       # save pwd  [popd]
+
 alias    cs='cscope -Rbq *'
 alias vboxr='/etc/init.d/vboxadd-service restart'   # ;umount -a 2>/dev/null; mount -a
 alias  8cat='iconv -f cp936 -t utf8'

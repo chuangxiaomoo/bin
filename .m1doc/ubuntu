@@ -50,7 +50,6 @@ PrintLastLog no
 
 # 修改 /bin/sh [dash] -＞ [bash]
 
-
 先用命令ls -l /bin/sh 看看
 结果是： /bin/sh -> dash
 
@@ -61,5 +60,18 @@ sudo dpkg-reconfigure dash
 结果是： /bin/sh -> bash
 
 修改成功！
+
+# static networking
+
+[/etc/network/interfaces](
+auto  eth1
+iface eth1 inet static
+address 192.168.2.45
+netmask 255.255.255.0
+gateway 192.168.2.1
+)
+
+/etc/init.d/networking stop
+/etc/init.d/networking start
 
 
