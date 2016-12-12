@@ -1,20 +1,10 @@
 # tcl.expect
 
+[mini-reference](http://inguza.com/document/expect-and-tcl-mini-reference-manual)
+
 # string.compare
 
-There are 2 strings:
-string1: "Apple a day"
-string2: "Apple a day keeps doctor away"
-
-    1) puts [string equal $string2 *$string1*] : Output: 0
-    2) puts [string match $string2 *$string1*] : Output: 0
-    3) puts [string compare $string2 *$string1*] : Output: 1
-
-string equal tests if the strings are equal
-
-string match looks to see if the first string is a substring of the second (it's the other way round in your case, so you got 0)
-
-string compare checks which string comes first and which comes second if you sort them, and retruns -1, 0 or 1.
-
-There's also regexp for you to look at
+`
+{ [string match *elogin $argv0] == 1 } 
+`
 

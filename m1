@@ -220,7 +220,7 @@ function fn_export()                    { cat bash_export ;}
         echo_last_cmd
         getopts
         kill_trap
-        tcpip                           # netcat nc
+        tcpip
         readline                        # shortcut 快捷键 -- putty下最好用
         redirection                     # stdout stderr
         string
@@ -239,7 +239,6 @@ function fn_export()                    { cat bash_export ;}
 #
 function fn_case() {
 function fn_fundamental()               { cat case_fundamental ;}
-function fn_00_网络故障排查()           { cat case_00_网络故障排查 ;}
 function fn_s1_SSL_CTX_free段错误()     { cat case_s1_SSL_CTX_free段错误 ;}
 function fn_s2_ZXW修改ipcam_cfg段错误() { cat case_s2_ZXW修改ipcam_cfg段错误 ;}
 
@@ -302,7 +301,6 @@ function fn_56_ini写入时间耗时3秒()     { cat case_56_ini写入时间耗�
 
     local opts=(
         fundamental
-        00_网络故障排查                 # ethernet mac ip
         s1_SSL_CTX_free段错误
         s2_ZXW修改ipcam_cfg段错误
         02_文件不能删除升级失败         # also busybox SegmentFault
@@ -674,7 +672,6 @@ function fn_quickfix()                  { cat vim_quickfix ;}
         install
         plugin
         quickfix
-        netrw               # networking r&w, e.g. vim scp://hostname/
         NERDtree
     )
     fn_print $@
@@ -721,7 +718,6 @@ function fn_hexdump()                   { cat cmd_hexdump ;}
 function fn_cpio()                      { cat cmd_cpio ;}
 function fn_head()                      { cat cmd_tail ;}
 function fn_tail()                      { cat cmd_tail ;}
-function fn_nc()                        { cat cmd_nc ;}
 function fn_mktemp()                    { cat cmd_mktemp ;}
 function fn_kill()                      { cat cmd_kill ;}
 function fn_install()                   { cat cmd_install ;}
@@ -742,7 +738,6 @@ function fn_install()                   { cat cmd_install ;}
         mount
         mktemp                  # mount_as_tmpfs : 将一个目录mount为tmpfs
         kill                    # kill -0
-        nc                      # netcat
         patch
         rar
         rcconf                  # 默认启动方式 /etc/init/*.conf
@@ -889,7 +884,6 @@ function fn_samba()                     { cat services_samba ;}
 function fn_ftpd()                      { cat services_ftpd ;}
 function fn_vsftpd()                    { cat services_vsftpd ;}
 function fn_ntp()                       { cat services_ntp ;}
-function fn_xinetd()                    { cat services_xinetd ;}
 function fn_syslogd()                   { cat services_syslogd ;}
     local opts=(                        # etc
         nfs
@@ -897,7 +891,6 @@ function fn_syslogd()                   { cat services_syslogd ;}
         samba
         ftpd                            # in.ftpd
         vsftpd
-        xinetd                          # inetd
         syslogd
     )
     fn_print $@
@@ -1346,6 +1339,19 @@ function fn_coffee()                    { cat web_coffee ;}
     fn_print $@
 }
 
+function fn_network()                   { 
+function fn_00_故障排查()               { cat network_00_故障排查 ;}
+function fn_netcat()                    { cat network_netcat ;}
+function fn_xinetd()                    { cat network_xinetd ;}
+    local opts=(
+        00_故障排查                     # ether mac ip
+        netrw                           # vim-NET-r&w, e.g. vim scp://hostname/
+        netcat                          # nc
+        xinetd                          # 服务
+    )
+    fn_print $@
+}
+
 function fn_main() {
     local ARGC=${#}
     local LASTARG=${!#}
@@ -1416,7 +1422,7 @@ function fn_main() {
         hisi                    # nvr
         nxp
         make
-        pandoc                  # johnmacfarlane.net/pandoc/try/
+        pandoc
         markdown                # README.md xianglei
         opera
         perl
