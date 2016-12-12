@@ -18,7 +18,7 @@ function fn_26_hints()                  { cat agile_26_hints ;}
 function fn_adobepdf()                  { cat adobepdf ;}
 function fn_asm()                       { cat asm ;}
 function fn_awk()                       { cat awk ;}
-function fn_sed()                       { cat sed ;}
+function fn_sed()                       { cat sed expect ;}
 function fn_elf()                       { cat elf ;}
 function fn_gprof()                     { cat gprof ;}
 function fn_oprofile()                  { cat oprofile ;}
