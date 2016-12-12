@@ -1,2 +1,18 @@
 #! /bin/sh
+
+Usage="
+    配置vimdiff
+    git config --global diff.tool vimdiff
+    git config --global difftool.prompt No
+
+    使用vimdiff
+    git difftool filelist
+
+    原始命令包装: function git_diff()
+    [git-vimdiff](https://technotales.wordpress.com/2009/05/17/git-diff-with-vimdiff/)
+
+    配置清除：
+    git config --unset
+"
+
 vimdiff "$2" "$5"

@@ -61,7 +61,7 @@ function fn_main()
         ;;
 
     ds)
-        find -name '.*.swp' -exec rm -f {} \;
+        find -name '.*.sw[op]' -exec rm -f {} \;
         ;;
 
     p*|pull)

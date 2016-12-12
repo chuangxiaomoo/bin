@@ -259,6 +259,10 @@ lsgcc()
     "
 }
 
+function git_diff() {
+    git diff --no-ext-diff -w "$@" | vim -R –
+}
+
 #orgpath() { export PATH=$ORGPATH; }
 #monpath() { export PATH=$MONPATH; }
 
