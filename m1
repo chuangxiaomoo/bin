@@ -1339,7 +1339,8 @@ function fn_coffee()                    { cat web_coffee ;}
     fn_print $@
 }
 
-function fn_network()                   { 
+function fn_network()                   { cat network_OSI七层与TCP.IP五层网络架构详解
+                                              network_集线器、交换机、路由器、网桥、网关之间的区别 ;
 function fn_00_故障排查()               { cat network_00_故障排查 ;}
 function fn_netcat()                    { cat network_netcat ;}
 function fn_xinetd()                    { cat network_xinetd ;}
