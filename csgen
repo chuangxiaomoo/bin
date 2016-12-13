@@ -21,10 +21,11 @@ function fn_usage()
         -r, --remove        remove ${reffile}* b4 cscope -Rbq
         -i, --interactive   vi ${cspathes} of project b4 cscope -Rbq
         -f, --filelist      rebuild ${reffile} from ${csfiles}
-        -U,                 rebuild both ${reffile} and ${csfiles} from ${cspathes}
+        -u,                 rebuild both ${reffile} and ${csfiles} from ${cspathes}
 
     Configuration:
-        .cscope.pathes, include path or exclude path(head with -)
+        .cscope.pathes, include path or exclude pathes
+        head with -, support all kinds of pathes like: '' '/' './' '../'
 	HERE
 
     exit 0
@@ -62,21 +63,17 @@ function fn_main()
     fi
 
     case "$1" in
-        -h|--help)
-            fn_usage                        ;;
+        -h|--help|h)        fn_usage                            ;;
+        -i|--interactive)   vi ${cspathes}                      ;;
+        -u) force=$1                                            ;;
+        -f) cscope ${incpath} -u -bq -i $csfiles -f${reffile}
+            exit 0                                              ;;
         -r|--remove)
-            echo "
-            Clean ${reffile%%.out}* exclue ${cspathes}...
-            "
+            echo "------------------------------------"
+            echo "RM ${reffile%%.out}.* but keep ${cspathes}"
             ls ${reffile%%.out}* | grep -v pathes | xargs rm -rf
             exit 0                                              ;;
-        -i|--interactive)
-            vi ${cspathes}                                      ;;
-        -f|--filelist)
-            cscope ${incpath} -u -bq -i $csfiles -f${reffile} 
-            exit 0                                              ;;
-        *)
-            ;;
+        *)  ;;
     esac
 
     local idx
@@ -122,9 +119,7 @@ function fn_main()
     done < $cspathes
 
     sort -u $csfiles -o $csfiles
-
-    # force=-u # Unconditionally  build the cross-reference file
-    [ "-U" == "$1" ] && force=$1
+    echo "building cscope db."
     cscope ${incpath} ${force} -bq -i $csfiles -f${reffile} 
 }
 

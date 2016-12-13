@@ -1341,6 +1341,8 @@ function fn_coffee()                    { cat web_coffee ;}
 
 function fn_network()                   { cat network_OSI七层与TCP.IP五层网络架构详解
                                               network_集线器、交换机、路由器、网桥、网关之间的区别 ;
+function fn_bonding()                   { cat network_bonding ;}
+function fn_WiFi()                      { cat network_WiFi ;}
 function fn_00_故障排查()               { cat network_00_故障排查 ;}
 function fn_netcat()                    { cat network_netcat ;}
 function fn_xinetd()                    { cat network_xinetd ;}
@@ -1349,6 +1351,8 @@ function fn_xinetd()                    { cat network_xinetd ;}
         netrw                           # vim-NET-r&w, e.g. vim scp://hostname/
         netcat                          # nc
         xinetd                          # 服务
+        bonding                         # 负载均衡
+        WiFi
     )
     fn_print $@
 }
