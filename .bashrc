@@ -100,7 +100,7 @@ alias    xx='tar -zxvf'
 alias    ct='cd ~/sh/t'
 
 alias   cwd='pwd >> ~/.env;vi ~/.env; .rc'          # curr-pwd
-alias   awd='cp ~/.awd /dev/shm/.awd && pwd>~/.awd 
+alias   awd='cp ~/.awd /dev/shm/.awd && pwd>~/.awd \
                 && cat /dev/shm/.awd >> ~/.awd'     # mult-pwd, work with [lwd]
 alias   iwd='vi /root/.awd'                         #
 alias   swd='pwd > ~/.swd'                          # save pwd, [pushd .]
