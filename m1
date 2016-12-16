@@ -662,6 +662,7 @@ function fn_clang_complete()            { cat vim_clang_complete ;}
 function fn_NERDtree()                  { cat vim_NERDtree ;}
 function fn_diff()                      { cat vim_diff ;}
 function fn_quickfix()                  { cat vim_quickfix ;}
+function fn_hilight()                   { cat vim_hilight ;}
 
     local opts=(
         fundamental
@@ -673,6 +674,7 @@ function fn_quickfix()                  { cat vim_quickfix ;}
         plugin
         quickfix
         NERDtree
+        hilight
     )
     fn_print $@
 }

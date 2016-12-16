@@ -1,0 +1,16 @@
+# hilight
+
+# 修改gvim搜索结果=红色fg
+
+default.vim
+
+highlight Search     ctermfg=Black  ctermbg=Red cterm=NONE
+
+
+# 修改markdown强调=反色
+
+default.vim
+
+hi htmlItalic           term=reverse cterm=reverse gui=reverse
+hi htmlBold             term=bold,reverse cterm=bold,reverse gui=bold,reverse
+
