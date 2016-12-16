@@ -822,7 +822,7 @@ function fn_config()                    { cat cygwin_config ;}
     fn_print $@
 }
 
-function fn_curl()                       {
+function fn_curl()                      {
 function fn_manual()                    { cat curl_manual ;}
 function fn_examples()                  { cat curl_examples ;}
     local opts=(

@@ -1,5 +1,8 @@
 #! /bin/bash
 
+# ip & mask
+ifconfig eth0 192.168.2.44 [netmask 255.255.255.0]
+
 # 修改MAC地址, 其不能以非 00: 打头
 ifconfig eth0 hw ether 00:AB:AC:C2:AB:02
 

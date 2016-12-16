@@ -1,6 +1,5 @@
 # arping
 
-
 ARP request 是IP--->MAC的查询，因此会在一个广播域中进行广播查询，目的MAC地址
 是FFFFFF，每一台主机都会接收并将该帧传给网络层处理，如果目的（即查询）IP地址
 是自己的IP，才会返回一个ARP REPLY,否则就丢弃该包!
@@ -12,12 +11,23 @@ arping命令是以广播地址发送arp packets，以太网内所有的主机都
 
 arping -c3 -I eth7 192.168.0.49
 
-# iputils
-
-
 # arp-scan
 
  [linux系统使用arp-scan检查是否存在IP地址冲突](http://www.ming4.com/news/3131.html)
  2009  apt-get install libpcap0.8 libpcap0.8-dev
  2010  apt-get install arp-scan 
 
+
+# 清理arp缓存
+
+* Linux
+`
+ip neigh flush  dev eth0
+arp -n | awk '/^[1-9]/{system("arp -d "$1)}'
+`
+
+* Windows
+`
+arp -a        # display
+arp -d [$ip]  # 不指定IP地址时清除所有arp缓存
+`

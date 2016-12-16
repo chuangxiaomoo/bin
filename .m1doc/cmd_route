@@ -1,26 +1,25 @@
 # route 
+  route add 192.168.86.21 gw 192.168.1.24
+  双网卡，可以通过单点转发
 
 # Linux add
-
-    route add 192.168.86.21 gw 192.168.1.24
-    route add -net 192.57.66.0 netmask 255.255.255.0 gw ipx4
-    route add default gw 192.168.2.1
+  route add -net 192.57.66.0 netmask 255.255.255.0 gw ipx4
+  route add default gw 192.168.2.1
 
 # Linux del
-    route del -net 192.168.70.0 gw 0.0.0.0 netmask 255.255.255.0
-    > netmask is needed when del
+  route del -net 192.168.70.0 gw 0.0.0.0 netmask 255.255.255.0
+  > netmask is needed when del
 
 # xp
+  net: 
+  route -p add 10.41.0.0 mask 255.255.0.0 10.27.0.1
+                      ^                    ^
+                      |                    |
+                      destination          next hop(getway)
 
-    net: 
-    route -p add 10.41.0.0 mask 255.255.0.0 10.27.0.1
-                        ^                    ^
-                        |                    |
-                        destination          next hop(getway)
-
-    host:
-    route -p add 192.168.1.25 mask 255.255.255.255 192.168.1.24
-          ^        ^                                ^
-          |        |                                |
-     persitent    destination                    next hop(getway)
+  host:
+  route -p add 192.168.1.25 mask 255.255.255.255 192.168.1.24
+        ^        ^                                ^
+        |        |                                |
+   persitent    destination                    next hop(getway)
 

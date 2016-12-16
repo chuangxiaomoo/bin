@@ -15,8 +15,23 @@
 
 function fn_main()
 {
-    pids=`ps -ef  | grep expect | grep -v grep | awk '{print $2}'`
-    [ -n "$pids" ] && kill -9 $pids
+
+    case $1 in
+    a|all)
+        pids=`ps -ef  | grep [e]xpect | awk '{print $2}'`
+        [ -n "$pids" ] && kill -9 $pids
+        ;;
+    l|list)
+        ps -ef  | grep --color [e]xpect
+        ;;
+    [0-9][0-9]*)
+        pids=`ps -ef  | grep "[e]xpect.*$1" | awk '{print $2}'`
+        [ -n "$pids" ] && kill -9 $pids
+        ;;
+    *)
+        echo "Usage: $1 {all|list|<ip>}"
+        ;;
+    esac
 }
 
 fn_main $@
