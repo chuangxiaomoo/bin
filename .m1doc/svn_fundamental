@@ -106,3 +106,8 @@
    (2) 在linux上svn checkout update, 不会自动添加可执行权限。
    (3) 只有在linux上svn add 时，才可保持权限
 
+. samba上显示绿色√
+
+    http://stackoverflow.com/questions/1057734/tortoisesvn-icons-not-showing-up-under-windows-7
+    http://stackoverflow.com/questions/5034755/svn-folder-does-not-have-green-icon-in-windows7
+

@@ -9,8 +9,9 @@ highlight Search     ctermfg=Black  ctermbg=Red cterm=NONE
 
 # 修改markdown强调=反色
 
-default.vim
+vim73/colors/default.vim
 
-hi htmlItalic           term=reverse cterm=reverse gui=reverse
-hi htmlBold             term=bold,reverse cterm=bold,reverse gui=bold,reverse
+hi PreProc          cterm=NONE ctermfg=DarkMagenta gui=NONE guifg=magenta3
+hi htmlItalic       term=reverse cterm=reverse gui=reverse
+hi htmlBold         term=bold,reverse cterm=bold,reverse gui=bold,reverse
 

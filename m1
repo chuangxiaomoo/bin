@@ -1479,7 +1479,9 @@ function fn_main() {
         rdm                     # 技术管理
         team                    # 团队 老板 同事 下属
         cloud
+        mindmap
         blockchain
+
     )
     fn_print $@
 }
