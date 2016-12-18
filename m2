@@ -127,7 +127,9 @@ function fn_66_佛语()                   { cat book_66_佛语 ;}
 function fn_000_黄晓捷谈在校学习()      { cat book_000_黄晓捷谈在校学习 ;}
 function fn_010_李笑来谈读书经验()      { cat book_010_李笑来谈读书经验 ;}
 function fn_011_李笑来谈阅读操作系统()  { cat book_011_李笑来谈阅读操作系统 ;}
-function fn_012_李笑来人人都能用英语()  { cat book_012_李笑来人人都能用英语 ;}
+function fn_012_李笑来人人都能用英语()  { cat book_012_李笑来人人都能用英语 
+                                              book_012_李笑来反复通读至少一本语法书 
+                                              book_012_中文英语非一一对应之处 ;}
 function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从筷子到开挂人生 ;}
 
 function fn_100_周鸿祎自述()            { cat book_100_周鸿祎自述 ;}
