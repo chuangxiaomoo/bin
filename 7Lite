@@ -693,7 +693,7 @@ function fn_main()
     "sloc2html <path>       # sloc <path>, output to /winc/result.html"
     "dec2hex <dec>          # xslt dec2hex 2 hex, dec list are seperated by ' '"  # 10
     "hex2dec <hex>          # xslt hex 2 decimal, hex list are seperated by ' '"
-    "conv from to <data>    # use mysql to conv between binary decimal heximal"
+    "conv from to <data>    # use mysql CONV(N,from_base,to_base) among 2 10 16..."
     "dec2bin decimal_data   # "
     "cp_as_tar f src dst    # login.asp web_jssj/ /1/svn/filesys.t/app/vs/web_nu"
     "cp_for_in f to...      # cp less filesys.*/dir"

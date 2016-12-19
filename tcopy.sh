@@ -23,12 +23,16 @@ function fn_tcopy() {
         return
     fi
 
-    cp $1 /tftpboot/
+    case "${1##*/}" in
+    main.exe) 
+        arm-linux-strip -S $1 ;;
+    jco_server)
+        echo ;;
+    esac
 
-    if [ "${1##*/}" != "jco_server" ] ; then
-        echo "$tftp"
-        return
-    fi
+    echo "$tftp"
+    cp $1 /tftpboot/
+    exit
 
     gopath="cd /app/vs;" 
     rmfile="rm -f jco_server*; killall auto_run.sh; killall jco_server;"
