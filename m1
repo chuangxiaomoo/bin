@@ -711,7 +711,6 @@ function fn_zip()                       { cat cmd_tar ;}
 function fn_xargs()                     { cat cmd_xargs ;}
 function fn_sysv-rc-conf()              { cat cmd_rcconf ;}
 function fn_rcconf()                    { cat cmd_rcconf ;}
-function fn_tftp()                      { cat cmd_tftp ;}
 function fn_top()                       { cat cmd_top;}
 function fn_lsof()                      { cat cmd_lsof ;}
 function fn_tr()                        { cat cmd_tr ;}
@@ -754,7 +753,6 @@ function fn_install()                   { cat cmd_install ;}
         tee
         tr
         tar
-        tftp
         top
         xargs
         zip
@@ -887,11 +885,13 @@ function fn_ftpd()                      { cat services_ftpd ;}
 function fn_vsftpd()                    { cat services_vsftpd ;}
 function fn_ntp()                       { cat services_ntp ;}
 function fn_syslogd()                   { cat services_syslogd ;}
+function fn_tftpd()                     { cat services_tftpd ;}
     local opts=(                        # etc
         nfs
         ntp
         samba
         ftpd                            # in.ftpd
+        tftpd
         vsftpd
         syslogd
     )

@@ -1,6 +1,6 @@
 #! /bin/bash
 
-ubt=192.168.2.41
+ubt=192.168.2.45
 ARCHIVE=~/bin/.m2doc/
  . ${ARCHIVE}.pri.bashrc
 cd ${ARCHIVE}

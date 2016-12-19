@@ -213,13 +213,13 @@ lwd()
 
 activate_eth5() 
 {
-    local ethip="192.168.2.41"
+    local ethip="192.168.2.45"
     ifconfig | grep -q -w "$ethip" || ifconfig eth6 $ethip 
     return
 
     local ip=`ifconfig eth5 | grep "inet addr" | 
                 cut -d : -f 2 | cut -d ' ' -f 1`
-    local eth5ip="192.168.2.41"
+    local eth5ip="192.168.2.45"
     if [ "$ip" != "$eth5ip" ] ; then
         echo "$ip is different with $eth5ip"
         /etc/init.d/networking restart

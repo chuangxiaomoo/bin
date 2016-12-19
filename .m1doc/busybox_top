@@ -34,7 +34,7 @@
 
     dev:
         cd /
-        tftp -r terminfo.tgz -g 192.168.2.41; chmod +x terminfo.tgz;
+        tftp -r terminfo.tgz -g 192.168.2.45; chmod +x terminfo.tgz;
         cd 
         ./top -n 1
 

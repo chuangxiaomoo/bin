@@ -5,7 +5,7 @@
 # 3. subcommand
 #
 
-export ubt=192.168.2.41
+export ubt=192.168.2.45
 
 function fn_accuracy_help() {
     local sub=${FUNCNAME[2]##fn_}

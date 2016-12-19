@@ -21,7 +21,7 @@
         }
 
         // inet_addr() 有相同的功能，但 inet_aton()的返回值意义更加明确
-        // addr.sin_addr.s_addr = inet_addr("192.168.2.41");
+        // addr.sin_addr.s_addr = inet_addr("192.168.2.45");
         if (inet_aton(argv[1], &addr) == 0) {
             perror("inet_aton");
             exit(EXIT_FAILURE);

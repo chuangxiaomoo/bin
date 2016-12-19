@@ -21,7 +21,7 @@ function fn_main()
     if echo ${lnxpath} | grep -q "winc" ; then
         echo E:${lnxpath}
     else
-        echo '\\192.168.2.41'${lnxpath}
+        echo '\\192.168.2.45'${lnxpath}
     fi
 }
 

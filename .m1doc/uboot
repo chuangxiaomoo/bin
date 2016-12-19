@@ -49,7 +49,7 @@ Example:
 
   拔掉外网网线，保证下列命令运行成功
 
-    se serverip 192.168.2.41;se ipaddr 192.168.2.44
+    se serverip 192.168.2.45;se ipaddr 192.168.2.44
     set bootargs 从nfs启动
 
     tftp 0x80700000 uImage
@@ -69,7 +69,7 @@ Example:
 
   进入uboot重烧设备文件系统
 
-    se serverip 192.168.2.41;se ipaddr 192.168.2.44;downi;re
+    se serverip 192.168.2.45;se ipaddr 192.168.2.44;downi;re
 
 
 ## mtd

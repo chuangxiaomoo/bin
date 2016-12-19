@@ -12,7 +12,7 @@
     SAMBA:
         smbclient -N -L 127.0.0.1
 
-        //192.168.2.41/home
+        //192.168.2.45/home
         user: root
         pass: xxxx
 

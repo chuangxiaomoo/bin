@@ -13,7 +13,7 @@
     取、查询信息。这两者在地址栏中的区别，使用post方法时数据是不会在地址栏中显示
     的，而get方法则会显示。
 
-    curl -d 'name=123&hello=345' http://192.168.2.41/cgi-bin/hello.cgi
+    curl -d 'name=123&hello=345' http://192.168.2.45/cgi-bin/hello.cgi
 
     
 ## CGI
