@@ -319,6 +319,9 @@ function fn_45_拷问知识正确和增长遮蔽() { cat article_45_拷问知识
 function fn_50_十种好的学习方式()       { cat article_50_十种好的学习方式 ;}
 function fn_61_计算思维()               { cat article_61_计算思维 ;}
 
+function fn_71_不自律何自由？()         { cat article_71_不自律何自由？ ;}
+function fn_72_唯有自律方得自由()       { cat article_72_唯有自律方得自由 ;}
+
 function fn_100_人际关系痛苦的根源()    { cat article_100_人际关系痛苦的根源 ;}
 function fn_101_分享与慷他人之慨()      { cat article_101_分享与慷他人之慨 ;}
 function fn_102_同事是你共享生命的战友(){ cat article_102_同事是你共享生命的战友 ;}
@@ -352,6 +355,9 @@ function fn_gsq_房价什么情况下会崩()    { cat article_gsq_房价什么�
         45_拷问知识正确和增长遮蔽
         50_十种好的学习方式
         61_计算思维
+
+        71_不自律何自由？
+        72_唯有自律方得自由
 
         100_人际关系痛苦的根源          # 缺乏界限感
         101_分享与慷他人之慨
