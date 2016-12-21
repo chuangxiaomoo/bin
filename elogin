@@ -2,14 +2,19 @@
 #
 # spacial [] {} etc. can't be put after telnet
 #
-if { $argc != 1 } { 
-    puts "Usage: $argv0 ip" 
+if { $argc == 0 } {
+    puts "Usage: $argv0 ip port"
     exit -1
 } else {
-    set ip   [lrange $argv 0 0 ]
-    #et prot [lrange $argv 1 1 ]
+    set ip   [ lrange $argv 0 0 ]
+    set port 24
+
+    if { $argc == 2 } {
+        set port [ lrange $argv 1 1 ]
+    }
+
     if { [string match *elogin $argv0] == 1 } {      # ipc as default
-        spawn telnet $ip 24
+        spawn telnet $ip $port
         expect  "grain-media login:"
         send    "root\n"
         expect  "Password:"
@@ -19,7 +24,7 @@ if { $argc != 1 } {
             timeout 30 { send "" }
         }
     } elseif { [string match *nlogin $argv0] == 1 } {
-        spawn telnet $ip 24
+        spawn telnet $ip $port
         expect  "login:"
         send    "root\n"
         expect  "Password:"
