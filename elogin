@@ -13,9 +13,9 @@ if { $argc == 0 } {
         set port [ lrange $argv 1 1 ]
     }
 
-    if { [string match *elogin $argv0] == 1 } {      # ipc as default
+    if { [string match *elogin $argv0] == 1 } {         # ipc as default
         spawn telnet $ip $port
-        expect  "grain-media login:"
+        expect  "login:"
         send    "root\n"
         expect  "Password:"
         send    "jabsco668\n"
@@ -23,7 +23,7 @@ if { $argc == 0 } {
         interact {
             timeout 30 { send "" }
         }
-    } elseif { [string match *nlogin $argv0] == 1 } {
+    } elseif { [string match *nlogin $argv0] == 1 } {   # nvr
         spawn telnet $ip $port
         expect  "login:"
         send    "root\n"
