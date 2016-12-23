@@ -87,7 +87,7 @@ function fn_regex()                     { cat regex ;}
 function fn_grep()                      { cat grep ;}
 function fn_find()                      { cat find ;}
 
-function fn_google()                    { cat google ;}
+function fn_google()                    { cat google google_keywords ;}
 function fn_chrome()                    { cat chrome ;}
 
 function fn_software()                   {

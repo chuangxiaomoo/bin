@@ -20,10 +20,14 @@
 
   [google prettify.js](http://google-code-prettify.googlecode.com/svn/trunk/README.html) 
 
+# 语法.流程图
 
-# 语法之序列
+定义元素：`tag=>type: content:>url`，类似C语言定义变量：`int count = 0;`，url可省略。
+连接元素：`tag1->tag2->tag3`
 
-  
+# 语法.序列
+
+
     4 spaces, if above not blank line, it's normal
 
     abcd
