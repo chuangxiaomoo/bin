@@ -1,0 +1,96 @@
+Programmer-Competency-Matrix 
+    #Computer-Science
+            data-structures     
+                heap
+                stack
+                queue
+                list
+                B-tree
+                Hash-Table
+            algorithms
+                qsort
+            systems-programming
+                Little-endian&Big-endian
+                a.out传说
+                Linux内存布局
+                static and dynamic linking
+    #Linux          
+        ##Linux/Gnu
+            binutils
+                readelf
+                ar
+                nm
+                ldd
+                objdump
+            coreutils
+                cd
+                ls
+                cat
+            GNU-toolchain
+                make
+                gcc
+                gdb
+                gcov
+                gprof
+        ##Linux-shell
+            Linux启动过程
+                u-boot
+                kernel
+                initrc
+                rcS
+                profile
+            awk
+            sed
+            find
+                Pathname Expansion
+            grep
+                正则表达式
+            bash
+                if
+                for
+                case
+        ##Linux-Device-Dev
+            Kernel定制
+            Busybox定制
+            设备驱动编写
+    #Networking
+        ISO协议(5层)
+        TCP/IP(7层)
+        WireShark抓包
+        FTP、TFTP、TELNET、DHCP、SMTP、NTP
+        Bridge,Nat,Hostonly
+        socket
+    #WEB
+        javascript
+        xml/json
+        html
+        markdown
+    #R&D
+        ##Language
+            编程风格(BodingStyle)
+                code readability
+            C/C++
+                code organization within a file 
+                code organization across files  
+                defensive coding/error handling
+            Python/Ruby
+        ##IDE
+            SoureInsight+Samba
+            Vim+Taglist+Cscope
+        ##版本控制
+            SVN
+            Git
+        ##软件工程
+            敏捷开发
+            结对编程
+            测试驱动开发
+    #认知
+        ##problem decomposition
+            环境与应用+抽象与分解
+            树型结构+关键路径
+            自上而下+自下而上
+        ##communication/express
+            金字塔原理
+        ##books/Blogs
+            APUE
+

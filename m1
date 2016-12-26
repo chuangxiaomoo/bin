@@ -1484,7 +1484,7 @@ function fn_main() {
         cloud
         mindmap
         blockchain
-
+        Programmer-Competency-Matrix.md
     )
     fn_print $@
 }
