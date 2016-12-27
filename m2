@@ -317,6 +317,11 @@ function fn_43_如何科学的思考()         { cat article_43_如何科学的�
 function fn_44_学得太慢是一种罪()       { cat article_44_学得太慢是一种罪 ;}
 function fn_45_拷问知识正确和增长遮蔽() { cat article_45_拷问知识正确和增长遮蔽 ;}
 function fn_50_十种好的学习方式()       { cat article_50_十种好的学习方式 ;}
+
+function fn_51_怎样成为一个高手()       { cat article_51_怎样成为一个高手 ;}
+function fn_52_成为高手之人性弱点()     { cat article_52_成为高手之人性弱点 ;}
+function fn_53_成为高手之缺乏耐心()     { cat article_53_成为高手之缺乏耐心 ;}
+
 function fn_61_计算思维()               { cat article_61_计算思维 ;}
 
 function fn_71_不自律何自由？()         { cat article_71_不自律何自由？ ;}
@@ -354,6 +359,11 @@ function fn_gsq_房价什么情况下会崩()    { cat article_gsq_房价什么�
         44_学得太慢是一种罪
         45_拷问知识正确和增长遮蔽
         50_十种好的学习方式
+
+        51_怎样成为一个高手
+        52_人性弱点
+        53_成为高手之缺乏耐心
+
         61_计算思维
 
         71_不自律何自由？
