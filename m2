@@ -318,9 +318,10 @@ function fn_44_学得太慢是一种罪()       { cat article_44_学得太慢是
 function fn_45_拷问知识正确和增长遮蔽() { cat article_45_拷问知识正确和增长遮蔽 ;}
 function fn_50_十种好的学习方式()       { cat article_50_十种好的学习方式 ;}
 
-function fn_51_怎样成为一个高手()       { cat article_51_怎样成为一个高手 ;}
-function fn_52_成为高手之人性弱点()     { cat article_52_成为高手之人性弱点 ;}
-function fn_53_成为高手之缺乏耐心()     { cat article_53_成为高手之缺乏耐心 ;}
+function fn_51_怎样成为一个高手()       { cat article_51_怎样成为一个高手 ;
+                                          cat article_52_怎样炼成世界级高手;
+                                          cat article_52_成为高手之进入高水平反馈 ;
+                                          cat article_53_成为高手之缺乏耐心 ;}
 
 function fn_61_计算思维()               { cat article_61_计算思维 ;}
 
@@ -361,8 +362,6 @@ function fn_gsq_房价什么情况下会崩()    { cat article_gsq_房价什么�
         50_十种好的学习方式
 
         51_怎样成为一个高手
-        52_人性弱点
-        53_成为高手之缺乏耐心
 
         61_计算思维
 
@@ -718,7 +717,7 @@ function fn_duanzi()                    { cat humor_duanzi ;}
 
 function fn_girl()                      {
 function fn_misc()                      { cat girl_misc ;}
-function fn_loveletter()                { cat girl_loveletter ;}
+function fn_letters()                   { cat girl_letters ;}
 function fn_00_jiebao()                 { cat girl_00_jiebao ;}
 function fn_01_tingbao()                { cat girl_01_tingbao ;}
 function fn_11_2013相亲记()             { cat girl_11_2013相亲记 ;}
@@ -726,7 +725,7 @@ function fn_12_wife()                   { cat girl_12_wife ;}
 function fn_100_手把手教你泡妞()        { cat girl_100_手把手教你泡妞 ;}
     local opts=(
         misc
-        loveletter
+        letters
         11_2013相亲记                   # xiangqin 爱情观
         00_jiebao
         01_tingbao
