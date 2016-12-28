@@ -29,7 +29,12 @@ function fn_main()
         [ -n "$pids" ] && kill -9 $pids
         ;;
     *)
-        echo "Usage: $1 {all|list|<ip>}"
+        echo "
+        Usage: $0 {all|<ip>}
+
+        Lists:\
+        " | sed 's/^  *//g'
+        fn_main list
         ;;
     esac
 }

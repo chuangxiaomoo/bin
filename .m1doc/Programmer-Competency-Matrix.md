@@ -91,6 +91,7 @@ Programmer-Competency-Matrix
 			自上而下+自下而上
 		##communication/express
 			金字塔原理
+			聪明地提问？
 		##books/Blogs
 			APUE
 			深入理解计算机系统
