@@ -1,0 +1,37 @@
+# minigui
+
+`
+    createGuiMainWindow
+        createSkinMainWindow
+            CreateWarningWindow
+                createSkinMainWindowExt
+                    skin_init(skin, event_cb, msg_cb)               // true-customer
+
+    while(GetMessage(&msg, hMain) && (MSG_QUIT != msg.message)) {   // producer-is-mouseclick
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }   
+`
+
+# 创建对话框
+
+createSkinMainWindow
+
+# 窗口
+
+• 窗口一般组织为层次体系结构的形式（或者说，树的形式）。
+• 根窗口（root window）是所有窗口的祖先，占满整个屏幕的表面，也称为桌面窗口。
+• 除了根窗口以外的所有窗口都有父窗口，每一个窗口都可能有子窗口、兄弟窗口、祖先窗口和子孙窗口等。
+
+MiniGUI中有三种窗口类型：主窗口、<对话框>和<控件窗口>（子窗口）。每一个MiniGUI应用程序一般都要创建一个主窗口，作为应用程序的主界面或开始界面。主窗口通常<包括>一些子窗口，这些子窗口通常是控件窗口，也可以是自定义窗口类。应用程序还会创建其它类型的窗口，例如对话框和消息框。
+
+<对话框>本质上就是主窗口，应用程序一般通过对话框提示用户进行输入操作。消息框是用于给用户一些提示或警告的主窗口，属于内建的对话框类型。
+
+# 控件
+
+我们将 MiniGUI 中的所有子窗口均称为控件。
+
+# resource
+
+china.xml
+

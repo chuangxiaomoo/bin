@@ -36,7 +36,7 @@ Programmer-Competency-Matrix
 			Linux启动过程
 				u-boot
 				kernel
-				initrc
+				inittab
 				rcS
 				profile
 			awk
