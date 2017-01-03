@@ -309,7 +309,7 @@ function fn_08_novel()                  { cat article_08_novel ;}
 
 function fn_20_学习学习再学习()         { cat article_20_学习学习再学习 
                                           cat article_21_快速学习的几个基本原则
-                                        ;}
+                                          ;}
 function fn_38_我是如何摆脱哑巴英语的() { cat article_38_我是如何摆脱哑巴英语的 ;}
 function fn_39_给你把万能钥匙你要不要() { cat article_39_给你把万能钥匙你要不要 ;}
 function fn_40_学习批判性思考()         { cat article_40_学习批判性思考 ;}
@@ -494,7 +494,9 @@ function fn_logic()                     {
 function fn_cept()                      { cat logic_cept ;}
 function fn__essence()                  { cat logic__essence ;}
 function fn__struct()                   { cat logic__struct ;}
-function fn__1st_principle()            { cat logic__1st_principle ;}
+function fn__1st_principle()            { cat logic__1st_principle 
+                                          cat book_The_Principle
+                                          ;}
 function fn_training500()               { cat logic_training500 ;}
 function fn_puzzle()                    { cat logic_puzzle ;}
 function fn_formal()                    { cat logic_formal ;}

@@ -1,8 +1,10 @@
 # netcat nc
 
-1. listen 
+1. listen
 
-  nc -l -p 1234
+  _所有的communication都是不对等的，有一个主动请求方(ResponsibitlityParty)_
+  nc -l    1234     # Linux
+  nc -l -p 1234     # Busybox
 
 2. connect.as.telnetc
 
@@ -20,14 +22,17 @@
   `
 5. ipctool
 ` 
+  # 加入组播的socket依然可以接收单播的request
   echo "SEARCH * HDS/1.0 nLOCALIP=172.25.100.44#LOCALPORT=8788#i_am_from_nc#" > txt
-  nc -u -s 172.25.100.44 -p8788 172.25.100.2    8002 < txt    # 单播成功
-  nc -u -s 172.25.100.44 -p8788 230.230.230.230 8002 <txt     # 组播失败
+  nc -u -s 172.25.100.44 -p8788 172.25.100.2    8002 < txt
 `
 6. 组播模拟 -- 只可模拟多播发送
 ` 
-  nc创建socket_fd，并通过之发送package，
-  其后，便在此socket_fd上侦听(通过netstat查看，State=ESTABLISHED)
+  nc -w0 -s172.25.100.44 -p8002 -u ${grp} ${port} <<< "$key" # 组播时必须指定源地址[-s172.25.100.44]
+
+  nc创建socket_fd，connect(dest=230.230.230.230)，并通过send(package)，而非sendto()，
+  其后，在此socket_fd上只能收到dest的包。(通过netstat查看，State=ESTABLISHED，原因是用了connect)
+  因此，不能再收到IPC回的单播包
   lzybox
 `
 

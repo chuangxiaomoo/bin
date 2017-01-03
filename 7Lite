@@ -3,18 +3,8 @@
 # a single tool is easy to be forgotten
 #
 
-CWD=${PWD}
-
-shopt -s gnu_errfmt 
-. /etc/common.rc
-
+.  /etc/common.rc
 cd ${CWD}
-
-function fn_main()
-{
-    DELM=${1:-':'}    
-    awk -F${DELM} '{print $1}' < /dev/stdin
-}
 
 function fn_roll_file()
 {
