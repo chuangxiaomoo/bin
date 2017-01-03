@@ -17,6 +17,7 @@
 function fn_tcopy() {
 
     tftp="\
+    tftp -r ${1##*/} -g 192.168.1.44;  chmod +x ${1##*/};
     tftp -r ${1##*/} -g 192.168.2.45;  chmod +x ${1##*/};
     tftp -r ${1##*/} -g 172.25.100.44; chmod +x ${1##*/};
     "

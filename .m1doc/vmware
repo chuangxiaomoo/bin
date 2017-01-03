@@ -1,12 +1,30 @@
-
+# repair
 
 *5.1* repair
-/* to repair the vmware, [it depend on snapshot, no permission]
- * this is a problem of filesystem, you need to do as below:
- * a. del the .lck files and directories;
- * b. if the attr of the .vmdk and .vmx are readonly, please change it to rd/wr
- */
+ to repair the vmware, <it depend on snapshot, no permission>
+ this is a problem of filesystem, you need to do as below:
+ a. del the .lck files and directories;
+ b. if the attr of the .vmdk and .vmx are readonly, please change it to rd/wr
 
 *5.2* repair 2
 copy a vmware from other's PC, you need to del the lock files of vm;
+
+# NAT模式 
+
+0. network -> de-forbid services.msc to start the service 
+1. network to start vmnet1 & vmnet8 
+2.  ethernet -> Nat -> vmnet8 
+3.  -> Virtrul network setting Nat service (start) DHCP -> vmnet8 (Start) 
+
+首先在host中查看VMnet8的IP(e.g. 192.168.255.1). 
+启动VMware,点Edit下Virtual Network Setting… ,弹出Virtual network Editor对话框； 
+查看NAT选项卡,记录NAT的Gateway IP address:192.168.255.2 
+
+在config中,填写: 
+  ip:192.168.255.5(与192.168.255.1在同一个网段的不同地址) 
+  netmask:255.255.255.0(与192.168.255.1的隐码相同) 
+  Gateway IP:填写VMware中的NAT网关192.168.255.2 
+  Primary nameserver: 填写与主机中一样的网关192.168.39.252,这样就可以上网冲浪了. 
+                      如果填写192.168.255.1,则不能连上外网.这里也可以不填,总之不能写错误的地址 
+
 

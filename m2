@@ -141,7 +141,7 @@ function fn_200_逃不开的经济周期()      { cat book_200_逃不开的经�
 function fn_201_经济学通识()            { cat book_201_经济学通识 ;}
 function fn_202_苏黎世投机定律()        { cat book_202_苏黎世投机定律 ;}
 
-function fn_303_论证是一门学问()        { cat book_303_论证是一门学问 ;}
+function fn_303_论证是一门学问()        { cat book_303_论证是一门学问 howto_argument ;}
 function fn_304_金字塔原理()            { cat book_304_金字塔原理 book_py_金字塔原理 ;}
 
 function fn_310_人类简史()              { cat book_310_人类简史 read_310_人类简史 ;}
@@ -307,6 +307,9 @@ function fn_06_哪些知识会让你变蠢？()   { cat article_06_哪些知识�
 function fn_07_如何构建经济学思维方式() { cat article_07_如何构建经济学思维方式 ;}
 function fn_08_novel()                  { cat article_08_novel ;}
 
+function fn_20_学习学习再学习()         { cat article_20_学习学习再学习 
+                                          cat article_21_快速学习的几个基本原则
+                                        ;}
 function fn_38_我是如何摆脱哑巴英语的() { cat article_38_我是如何摆脱哑巴英语的 ;}
 function fn_39_给你把万能钥匙你要不要() { cat article_39_给你把万能钥匙你要不要 ;}
 function fn_40_学习批判性思考()         { cat article_40_学习批判性思考 ;}
@@ -320,8 +323,9 @@ function fn_50_十种好的学习方式()       { cat article_50_十种好的学
 
 function fn_51_怎样成为一个高手()       { cat article_51_怎样成为一个高手 ;
                                           cat article_52_怎样炼成世界级高手;
-                                          cat article_52_成为高手之进入高水平反馈 ;
-                                          cat article_53_成为高手之缺乏耐心 ;}
+                                          cat article_55_成为高手之进入高水平反馈 ;
+                                          cat article_56_成为高手之缺乏耐心 
+                                          ;}
 
 function fn_61_计算思维()               { cat article_61_计算思维 ;}
 

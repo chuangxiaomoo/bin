@@ -1,0 +1,47 @@
+#!/bin/bash - 
+#---------------------------------------------------------------------------
+#          FILE: 
+#         USAGE: if down eth2
+#   DESCRIPTION: 
+#        AUTHOR: moo (God helps those who help themselves) 
+#  ORGANIZATION: 
+#       CREATED: 2016-12-31 09:44:50
+#      REVISION: 1.0 
+#---------------------------------------------------------------------------
+
+function xt_ret() {
+    [ $? -eq 0 ] && return 0
+    printf "${BASH_SOURCE[1]##*/}%-6s %s\n" "|${BASH_LINENO[0]}|" "$*"
+    return 1
+}
+
+function fn_main()
+{
+    case $1 in
+    all)
+        /etc/init.d/networking stop
+        /etc/init.d/networking start
+        ifconfig
+        ;;
+    bri)
+        # win7 use below
+        # 192.168.1.43
+        # 192.168.1.211
+        # 172.25.100.43
+        # 172.25.123.43
+        ifconfig eth2 down
+        ifconfig eth2 up
+        ifconfig eth2:0 192.168.01.44
+        ifconfig eth2:1 172.25.100.44
+        ifconfig eth2:2 172.25.123.44
+        ifconfig
+        ;;
+    *)
+        echo "
+        Usage: ifreset {all|bri|help}
+        "
+        ;;
+    esac
+}
+
+fn_main $@

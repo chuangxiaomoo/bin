@@ -123,7 +123,7 @@ function fn_ec_闭包()                   { cat gcc_ec_闭包 ;}
     fn_print $@
 }
 
-function fn_virtualbox()                { cat virtualbox ;}
+function fn_virtualbox()                { cat virtualbox vmware ;}
 
 function fn_linux()                     { 
 function fn_cron()                      { cat linux_cron ;}
@@ -1348,12 +1348,14 @@ function fn_bonding()                   { cat network_bonding ;}
 function fn_WiFi()                      { cat network_WiFi ;}
 function fn_00_故障排查()               { cat network_00_故障排查 ;}
 function fn_netcat()                    { cat network_netcat ;}
+function fn_nc()                        { cat network_netcat ;}
 function fn_xinetd()                    { cat network_xinetd ;}
     local opts=(
         00_故障排查                     # ether mac ip
         tcp.ip
         netrw                           # vim-NET-r&w, e.g. vim scp://hostname/
-        netcat                          # nc
+        netcat
+        nc
         xinetd                          # 服务
         bonding                         # 负载均衡
         WiFi

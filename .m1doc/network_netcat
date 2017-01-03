@@ -4,26 +4,30 @@
 
   nc -l -p 1234
 
-2. connect
+2. connect.as.telnetc
 
-  nc 127.0.0.1 1234
+  nc 172.25.100.2 24
 
-3. 设备间文件
+3. 传送文件
   `
   nc -l -p 1234 > file.out
   nc 127.0.0.1 1234 < file.in
   `
-
 4. 模拟升级 -- imitate HTTP update 
   `
   cd /home/n/release/tar;
   nc 192.168.2.44 8006 < normal.nxp.tgz
   `
-
-5. 组播模拟 -- 只可模拟多播发送
-
-  > 发送组播信息可以不指定本地端口，但一定要指定本地发送地址
-  > 收时使用 INADDR_ANY bind(); 发送时使用eth0的IP bind()，但不能是127.0.0.1
-
-  nc -u  -s 192.168.2.45  236.236.236.236 10000
+5. ipctool
+` 
+  echo "SEARCH * HDS/1.0 nLOCALIP=172.25.100.44#LOCALPORT=8788#i_am_from_nc#" > txt
+  nc -u -s 172.25.100.44 -p8788 172.25.100.2    8002 < txt    # 单播成功
+  nc -u -s 172.25.100.44 -p8788 230.230.230.230 8002 <txt     # 组播失败
+`
+6. 组播模拟 -- 只可模拟多播发送
+` 
+  nc创建socket_fd，并通过之发送package，
+  其后，便在此socket_fd上侦听(通过netstat查看，State=ESTABLISHED)
+  lzybox
+`
 
