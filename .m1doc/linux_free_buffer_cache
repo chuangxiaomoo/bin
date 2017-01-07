@@ -15,6 +15,7 @@
   > arm-linux
 
   在arm上，没有下列的行，cache的值需要用 top 或 cat /proc/meminfo 来查看。
+               total       used       free     shared    buffers
   -/+ buffers/cache:     187320    `837728`
 
 # Buffer（缓冲）和Cache（缓存）的区别

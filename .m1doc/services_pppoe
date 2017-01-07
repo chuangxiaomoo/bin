@@ -1,0 +1,9 @@
+# ppp
+
+[](https://ppp.samba.org/pppd.html)
+
+# Files
+
+/var/run/pppd2.tdb
+/var/run/pppn.pid
+

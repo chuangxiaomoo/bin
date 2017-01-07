@@ -8,3 +8,8 @@ dd if=/dev/zero of=FILE_U_WANT bs=512K count=40
 
 # 创建4G的文件
 dd if=/dev/zero of=FILE_U_WANT bs=4K count=1M
+
+# 追加文件:[count=1]不能省
+dd if=/dev/zero of=FILE_U_WANT bs=1M count=20 oflag=append conv=notrunc
+dd if=/dev/zero                bs=1G count=1  >>FILE_U_WANT
+

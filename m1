@@ -880,7 +880,8 @@ function fn_figlet()                    { cat figlet ;}
 
 function fn_services()                  {
 function fn_nfs()                       { cat services_nfs ;}
-function fn_samba()                     { cat services_samba ;}
+function fn_samba()                     { cat services_samba 
+                                          cat services_pppoe ;}
 function fn_ftpd()                      { cat services_ftpd ;}
 function fn_vsftpd()                    { cat services_vsftpd ;}
 function fn_ntp()                       { cat services_ntp ;}
