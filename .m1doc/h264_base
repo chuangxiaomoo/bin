@@ -1,50 +1,104 @@
-#! /bin/bash
+# 视频播放器.原理
 
-H264()
+视频播放器播放一个互联网上的视频文件，需要经过以下几个步骤：
+解协议，解封装，解码视音频，视音频同步。
+如果播放本地文件则不需要解协议。
 
-    所谓的H264，只是对从前端出来的数据进行一种有损压缩。
+# H264()
 
-    新一代视频压缩编码标准。
+  所谓的H264，只是对从前端出来的数据进行一种有损压缩。
 
-    码率、帧率和I B P帧
-    http://bbs.chinaunix.net/thread-1619779-1-1.html
+  新一代视频压缩编码标准。
 
-    一帧1080P数据大小：
-    RAW:     每个像素1个字节(插值法, 取邻近)
-    YUV-422: 每个像素2个字节(插值法)
-    YUV-420: 每个像素1.5个字节(插值法)
+  码率、帧率和I B P帧
+  http://bbs.chinaunix.net/thread-1619779-1-1.html
 
-COUNT_DATARATE()
+  一帧1080P数据大小：
+  RAW:     每个像素1个字节(插值法, 取邻近)
+  YUV-422: 每个像素2个字节(插值法)
+  YUV-420: 每个像素1.5个字节(插值法)
 
-    http://stackoverflow.com/questions/5024114/suggested-compression-ratio-with-h-264
+# COUNT_DATARATE()
 
-    In a quite interesting document called H.264 Primer, a simple formula is given
-    as an hint to compute the `ideal' output file bitrate, based on the video's
-    characteristics:
-  ┌─────────────────────────────────────────────────────────────────────────────┐
-  │ [width] x [height] x [framerate] x [motion rank] x 0.07 = [desired bitrate] │
-  └─────────────────────────────────────────────────────────────────────────────┘
-    where the image width and height is expressed in pixels, and the motion rank
-    is an integer between 1 and 4, 1 being low motion, 2 being medium motion, and
-    4 being high motion (motion being the amount of image data that is changing
-    between frames, see the linked document for more information).
+  http://stackoverflow.com/questions/5024114/suggested-compression-ratio-with-h-264
 
-    So for instance, if we take a 1280x720 video at 24 FPS, with medium motion
-    (movie with slow camera movements, not many scene changes...), the expected
-    ideal bitrate would be:
-  ┌─────────────────────────────────────────────────────────────────────────────┐
-  │ 1280 x 720 x 24 x 2 x 0.07 = 3,096,576 bps => approximatively 3000 kbps     │
-  └─────────────────────────────────────────────────────────────────────────────┘
-    This is purely a hint, and in my opinion, the only way to accurately find the
-    ideal bitrate is trial by error :)
+  In a quite interesting document called H.264 Primer, a simple formula is given
+  as an hint to compute the _ideal_ output file bitrate, based on the video's
+  characteristics:
 
-COUNT_DATARATE_EXAMPLE()
+    [width] x [height] x [framerate] x [motion rank] x 0.07 = [desired bitrate]  
 
-    1920 * 1080 * 24 * 2 *  31 s = 3085,516,800 b (realsize: 24,553,239 Byte)
+  where the image width and height is expressed in pixels, and the motion rank
+  is an integer between 1 and 4, 1 being low motion, 2 being medium motion, and
+  4 being high motion (motion being the amount of image data that is changing
+  between frames, see the linked document for more information).
+
+  So for instance, if we take a 1280x720 video at 24 FPS, with medium motion
+  (movie with slow camera movements, not many scene changes...), the expected
+  ideal bitrate would be:
+
+    1280 x 720 x 24 x 2 x 0.07 = 3,096,576 bps => approximatively 3000 kbps
+
+  This is purely a hint, and in my opinion, the only way to accurately find the
+  ideal bitrate is trial by error :)
+
+# COUNT_DATARATE_EXAMPLE()
+
+    1920 * 1080 * 24 * 2 * 31 s = 3085,516,800 b (realsize: 24,553,239 Byte)
     rate = 
         24 * 8 /3085
         .0622366288
 
-    最大I帧 266635 Byte
+  最大I帧 266635 Byte
 
+# 13.5M sampling rate 的由來
+
+[13.5 MHz 的由来](http://digitalfactbook.tv/0-9/13-5-mhz/)
+为了便于国际间交流,亮度信号采样频率的选择还必须兼顾国际上不同的扫描格式.现行的扫描格式主要有
+PAL和SECAM的625行/50场和NTSC的525行/60场两种.它们的行频率分别为15625Hz和15734.265Hz,
+The line frequency of the 625/50 system is    simply: 625 x 25 = 15,625 Hz
+The line frequency of the 525/60 NTSC is complicated: 525 x 30 x 1000/1001 = 15,734.265 Hz.
+这两个行频的最小公倍数约为2.25MHz,也就是说采样频率应是2.25MHz的整数倍,即
+    `fs=m*2.25MHz  (其中,m为整数)`
+对于625行/50场扫描格式的亮度信号来说,每行的采样点数为 13.5* 10^6/15625=864,
+对于525行/60场扫描格式的亮度信号来说,每行的采样点数为 13.5* 10^6/15734.265=858
+
+# 视频编码基本原理
+
+视频信号的冗余信息
+以记录数字视频的YUV分量格式为例，YUV分别代表亮度与两个色差信号。例如对于现有的PAL制电视系统，其亮度信号采样频率为13.5MHz；色度信号的频带通常为亮度信号的一半或更少，为6.75MHz或3.375MHz。以4：2：2的采样频率为例，Y信号采用13.5MHz，色度信号U和V采用6.75MHz采样，采样信号以_8bit量化_，则可以计算出数字视频的码率为：
+`13.5*8 + 6.75*8 + 6.75*8= 216Mbit/s`
+如此大的数据量如果直接进行存储或传输将会遇到很大困难，因此必须采用压缩技术以减少码率。数字化后的视频信号能进行压缩主要依据两个基本条件：
+
+1 数据冗余。例如如空间冗余、时间冗余、结构冗余、信息熵冗余等，即图像的各像素之间存在着很强的相关性。消除这些冗余并不会导致信息损失，属于无损压缩。
+2 视觉冗余。人眼的一些特性比如亮度辨别阈值，视觉阈值，对亮度和色度的敏感度不同，使得在编码的时候引入适量的误差，也不会被察觉出来。可以利用人眼的视觉特性，以一定的客观失真换取数据压缩。这种压缩属于有损压缩。
+
+数字视频信号的压缩正是基于上述两种条件，使得视频数据量得以极大的压缩，有利于传输和存储。一般的数字视频压缩编码方法都是<混合编码，即将变换编码，运动估计和运动补偿，以及熵编码>三种方式相结合来进行压缩编码。通常使用变换编码来消去除图像的帧内冗余，用运动估计和运动补偿来去除图像的帧间冗余，用熵编码来进一步提高压缩的效率。
+
+# CD 16 bit 44.1kHz 的由來
+
+人的聆聽範圍約在20-20kHz, 根據Nyquist theorem，樣本必須為兩倍，即40kHz以上。最初數碼媒介不多，磁帶成為最佳選擇。
+磁帶有兩種標準：525 lines @60Hz 及 625 lines @50Hz。要滿足此兩種標準便要找出其公倍數。
+最後的結果是44.1kHz。這樣525/60及625/50磁帶均可用來錄音了。
+
+60Hz磁帶有35條line不能用，可用的為490條line/frame or 245 line/field
+sample rate of 44.1kHz=60 x 245 x 3
+
+50Hz磁帶有37條line不能用，可用的為588條line/frame or 294 line/field
+sample rate of 44.1kHz=50 x 294 x 3
+
+# 音频编码基本原理
+
+音频信号的冗余信息
+数字音频信号如果不加压缩地直接进行传送，将会占用极大的带宽。例如，一套双声道数字音频若取样频率为44.1KHz，每样值按16bit量化，则其码率为：
+`2*44.1kHz*16bit=1.411Mbit/s`
+
+人耳听觉的掩蔽效应，主要表现在频谱掩蔽效应和时域掩蔽效应。
+
+# 钢琴键为什么有88个键
+
+19世纪晚期现代钢琴的雏形产生，钢琴音域又开始突飞猛进，大多数品牌的三角钢琴都达到了7个八度从A到A，85键。
+现代钢琴的88键从A到C，7又1/4个八度。88键以标准的十二平均律调音。
+常用的88键钢琴频率范围为27.5-18500Hz，人耳可感的在20-20000Hz之间，88键已经基本涵盖了人类可感音域，
+虽然可以更高或者更低，对于钢琴来说，再低更高的音，音准较难分辨，音色不好，意义不大。
 

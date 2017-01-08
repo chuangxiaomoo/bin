@@ -321,10 +321,11 @@ function fn_44_学得太慢是一种罪()       { cat article_44_学得太慢是
 function fn_45_拷问知识正确和增长遮蔽() { cat article_45_拷问知识正确和增长遮蔽 ;}
 function fn_50_十种好的学习方式()       { cat article_50_十种好的学习方式 ;}
 
-function fn_51_怎样成为一个高手()       { cat article_51_怎样成为一个高手 ;
-                                          cat article_52_怎样炼成世界级高手;
-                                          cat article_55_成为高手之进入高水平反馈 ;
-                                          cat article_56_成为高手之缺乏耐心 
+function fn_51_怎样成为一个高手()       { cat article_51_怎样成为一个高手       # 心得+举例
+                                          cat article_52_怎样炼成世界级高手
+                                          cat article_55_成为高手之进入高水平反馈
+                                          cat article_56_成为高手之缺乏耐心
+                                          cat article_57_十分钟读完刻意练习
                                           ;}
 
 function fn_61_计算思维()               { cat article_61_计算思维 ;}
@@ -496,7 +497,8 @@ function fn__essence()                  { cat logic__essence ;}
 function fn__struct()                   { cat logic__struct ;}
 function fn__1st_principle()            { cat logic__1st_principle 
                                           cat book_The_Principle
-                                          ;}
+                                          cat read_The_Principle    #古严：我对《原则》的践行心得
+                                          ;
 function fn_training500()               { cat logic_training500 ;}
 function fn_puzzle()                    { cat logic_puzzle ;}
 function fn_formal()                    { cat logic_formal ;}
