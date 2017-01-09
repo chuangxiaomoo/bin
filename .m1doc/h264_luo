@@ -1,0 +1,14 @@
+/* stream.api.desc */
+
+
+    int shm_cache_read_frame(int idx, int *serial, char *bufptr, int buflen, int *framesize, int* frametype, double* timestamp);
+
+    /* api return value define */
+    enum {
+        CACHE_RET_SUCESS            = 0,
+        CACHE_RET_NOT_INIT          = -1,
+        CACHE_RET_DATA_TOO_LONG     = -2,
+        CACHE_RET_BUF_TOO_SMALL     = -3,       // buflen太小，容不下一帧
+        CACHE_RET_NOT_READY         = -4,       // 取得太快
+        CACHE_RET_OVER_WRITE        = -5        // 取得太慢
+    };

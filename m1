@@ -920,7 +920,11 @@ function fn_term()                      { cat surveil_term ;}
 }
 
 function fn_h264()                      { 
-function fn_base()                      { cat h264_base ;}
+function fn_base()                      { cat h264_base
+                                          cat h264_luo
+                                          cat h264_codec
+                                          cat h264_assess
+                                        }
 function fn_profile()                   { cat h264_profile ;}
     local opts=(
         base

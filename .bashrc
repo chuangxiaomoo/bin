@@ -71,6 +71,10 @@ alias   .ps='PS1="[\w]\n\u-> \[\033[0m\]"'
 alias .de_beep="echo 0 >/tmp/kts/chao.beep"
 alias .en_beep="echo 1 >/tmp/kts/chao.beep"
 
+# nc
+alias  iinc='vim ~/.inc'
+alias  .inc='cat ~/.inc'
+
 alias     f='find'
 alias     l='ls -CF'
 alias    ls='ls --color=auto'
