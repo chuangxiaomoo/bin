@@ -919,19 +919,14 @@ function fn_term()                      { cat surveil_term ;}
     fn_print $@
 }
 
-function fn_h264()                      { 
-function fn_base()                      { cat h264_base
+function fn_h264()                      { cat h264_base
+                                          cat h264_profile
                                           cat h264_luo
                                           cat h264_codec
                                           cat h264_assess
+                                          cat h264_rtmp
+                                          cat h264_ffmpeg
                                         }
-function fn_profile()                   { cat h264_profile ;}
-    local opts=(
-        base
-        profile
-    )
-    fn_print $@
-}
 
 function fn_jco()                       { 
 function fn_pcb()                       { cat jco_pcb ;}

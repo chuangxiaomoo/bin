@@ -1,0 +1,11 @@
+# ffmpeg
+
+有不少人不清楚“FFmpeg”应该怎么读。它读作“ef ef em peg”
+
+在“大神”和初学者之间好像有一个不可逾越的鸿沟 -- ffmpeg.
+
+# 背景
+
+使用FFMPEG作为内核视频播放器：
+Mplayer，ffplay，射手播放器，暴风影音，KMPlayer，QQ影音...
+
