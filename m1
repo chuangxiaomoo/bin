@@ -342,7 +342,7 @@ function fn_56_ini写入时间耗时3秒()     { cat case_56_ini写入时间耗�
         a0_vobx_tool_filename           # 虚拟机存储映射后WINDOWS文件系统时，filename不区别大小写
         a1_fork_locked                  # fork()阻塞了
 
-        a2_quote_input_delay            # ------------ 独孤九剑之diff vim 引号延迟 --------------
+        a2_quote_input_delay            # ------------ 独孤九剑之diff VIM 引号延迟 --------------
 
         50_前置条件之重启               # API测试原则：配置文件相关都需要重启
         51_多行OSD出现UNKNOW            # API测试原则：条件分支，五大特性之完整性
@@ -605,7 +605,7 @@ function fn_cat-file()                  { cat git_cat-file ;}
         base                    # 入门
         add
         config                  # ln -sf ~/bin/.m1doc/git_config .gitconfig
-        subconf                 # bin .vim
+        subconf                 # .git/config
         commit
         diff                    # 
         rm
@@ -795,7 +795,7 @@ function fn_qmacro()                    { cat win_qmacro ;}
         02_清晰显示
         03_看雪                 # encrypt 加密解密
         win7                    # 快捷键
-        rightclick              # 添加右键编辑 gvim bc3
+        rightclick              # 添加右键编辑 GVIM bc3
         excel
         word                    # office
         visio
@@ -920,6 +920,8 @@ function fn_term()                      { cat surveil_term ;}
 }
 
 function fn_h264()                      { cat h264_base
+                                          cat h264_case
+                                          cat h264_frame_sps_pps_I_B_P_IDR
                                           cat h264_profile
                                           cat h264_luo
                                           cat h264_codec
@@ -1239,7 +1241,7 @@ function fn_nvr()                       { cat jimxl_nvr ;}
 function fn_goyo()                      { cat jimxl_goyo;}
     local opts=(
         base
-        goyo                            # goyo.vim
+        goyo
         nvr                             # nvr 交接
     )
     fn_print $@
@@ -1353,7 +1355,6 @@ function fn_xinetd()                    { cat network_xinetd ;}
     local opts=(
         00_故障排查                     # ether mac ip
         tcp.ip
-        netrw                           # vim-NET-r&w, e.g. vim scp://hostname/
         netcat
         nc
         xinetd                          # 服务
