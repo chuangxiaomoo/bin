@@ -1,12 +1,18 @@
-#! /bin/bash
+# 跟踪.vimrc加载过程
+strace -o vim_strace vim
 
-手把手教你把Vim改装成一个IDE编程环境(图文)
-http://blog.csdn.net/wooin/article/details/1858917
+# 不加载.vimrc
 
+vim --noplugin
+vim -u NONE
 
-reloading
+# 手把手教你把Vim改装成一个IDE编程环境(图文)
+[](http://blog.csdn.net/wooin/article/details/1858917)
+
+# reloading
 :edit!
 
+# Refresh
+:redraw!
+<C-L>
 
-# bash 
-<C-X><C-E> 可以轻松执行多行语句
