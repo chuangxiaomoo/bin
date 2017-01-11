@@ -1200,8 +1200,8 @@ function fn_json()                      { cat json ;}
 
 function fn_markdown()                  { cat markdown ;}
 
-function fn_alg()                       {
-function fn_tree()                      { cat alg_tree ;}
+function fn_algo()                      {
+function fn_tree()                      { cat algo_tree ;}
     local opts=(
         tree
         link
@@ -1381,7 +1381,7 @@ function fn_main() {
         busybox
         clang
         cxx
-        alg                     # link queue tree
+        algo                    # algorithm: link queue tree
         case
         circuit
         cmd
