@@ -11,6 +11,8 @@
 
    bt     Backtrace: display the program stack.
 
+   info frame
+
    print expr
            Display the value of an expression.
 
@@ -30,11 +32,9 @@
    step   Execute  next  program  line (after stopping); step into any
           function calls in the line.
 
-   make
    shell  run a shell command
+
    help [name]
    quit   Exit from GDB.
 
-   For  full details on GDB, see Using GDB: A Guide to the GNU Source-
-   Level Debugger, by Richard M. Stallman and Roland  H.  Pesch.   The
-   same text is available online as the gdb entry in the info program.
+   For  full details on GDB, see [man gdb]

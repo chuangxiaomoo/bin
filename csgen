@@ -66,9 +66,9 @@ function fn_main()
         -h|--help|h)        fn_usage                            ;;
         -i|--interactive)   vi ${cspathes}                      ;;
         -u) force=$1                                            ;;
-        -f) cscope ${incpath} -bqk -i$csfiles -f${reffile}
+        -f) cscope ${incpath} -bq -i$csfiles -f${reffile}
             exit 0                                              ;;
-            # -k & [!-u] to accelerate
+            # -k turns off the use of [/usr/include]
         -r|--remove)
             echo "------------------------------------"
             echo "RM ${reffile%%.out}.* but keep ${cspathes}"
