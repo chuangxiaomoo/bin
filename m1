@@ -1417,7 +1417,6 @@ function fn_main() {
         http                    # boa GET POST
         hudson
         mp4                     # GOOGLE `mp4 sample` to get sample file
-        h264
         hotspot                 # wifi便携热点设置
         ideas                   # innovate 创新
         info
