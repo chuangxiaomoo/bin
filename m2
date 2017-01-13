@@ -125,7 +125,8 @@ function fn_f3_教父()                   { cat book_f3_教父 ;}
 function fn_66_佛语()                   { cat book_66_佛语 ;}
 
 function fn_000_黄晓捷谈在校学习()      { cat book_000_黄晓捷谈在校学习 ;}
-function fn_010_李笑来谈读书经验()      { cat book_010_李笑来谈读书经验 ;}
+function fn_010_李笑来谈读书经验()      { cat book_010_李笑来谈读书经验 
+                                              book_010_读书的低水平勤奋陷阱 ;}
 function fn_011_李笑来谈阅读操作系统()  { cat book_011_李笑来谈阅读操作系统 ;}
 function fn_012_李笑来人人都能用英语()  { cat book_012_李笑来人人都能用英语 
                                               book_012_李笑来反复通读至少一本语法书 
