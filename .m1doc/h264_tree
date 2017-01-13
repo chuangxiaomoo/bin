@@ -30,7 +30,7 @@ IDR: 在H.264中，图像以序列为单位进行组织。一个序列的第一�
 
 [H.264码流结构解析](http://www.61ic.com/code/attachment.php?aid=65610)
 
-H.264 的<功能>分为两层，即视频编码层（VCL，Video Coding Layer）和网络提取层（NAL，Network Abstraction Layer）。VCL 数据即编码处理的输出，它表示被压缩编码后的视频数据序列。在 VCL 数据传输或存储之前，这些编码的 VCL 数据，先被<映射或封装>进 NAL 单元中。每个NAL 单元包括：一组对应于视频编码数据的 NAL 头信息和一个原始字节序列负荷（RBSP）。 
+H.264 的<功能>分为两层，即视频编码层（VCL，Video Coding Layer）和网络提取层（NAL，Network Abstraction Layer）。VCL 数据即编码处理的输出，它表示被压缩编码后的视频数据序列。在 VCL 数据_传输_或存储之前，这些编码的 VCL 数据，先被<映射或封装>进 NAL 单元中。
 
 ` NAL Unit   = NAL header + RBSP
   NAL Header = forbidden_bit(1 bit) + nal_reference_idc.优先级(2 bit) + nal_unit_type.类型(5 bit)。
@@ -39,11 +39,42 @@ H.264 的<功能>分为两层，即视频编码层（VCL，Video Coding Layer）
 
 forbidden_bit             = NAL头信息的隐藏比特位，在H.264编码器中默认为0，当网络识别到单元中存在比特错误时，可将其置为1。
                             隐藏比特位主要用于适应不同种类的网络环境（比如有线无线相结合的环境）。
-nal_referrence_idc（NRI） = 用于在重建过程中标记一个NAL单元的重要性，值为0表示这个NAL单元没有用预测，因此可以被解码器抛弃而不会有错误扩散；
-                            值高于0表示NAL单元要用于无漂移重构，且值越高，对此NAL单元丢失的影响越大。
-nal_unit_type
+nal_referrence_idc（NRI） = 用于重建过程中标记一个NAL单元的重要性，
+                            值=0表示这个NAL单元没有用预测，因此可被解码器抛弃而不会有错误扩散；   如：B slice、SEI等
+                            值>0表示NAL单元要用于无漂移重构，且值越高，对此NAL单元丢失的影响越大。如：SPS、PPS、I Slice、P Slice等
+nal_unit_type             0：未规定
+                          1：非IDR图像中不采用数据划分的片段
+                          2：非IDR图像中A类数据划分片段
+                          3：非IDR图像中B类数据划分片段
+                          4：非IDR图像中C类数据划分片段
+                          5：IDR图像的片段
+                          6：补充增强信息（SEI）
+                          7：序列参数集（SPS）
+                          8：图像参数集（PPS）
+                          9：分割符
+                          10：序列结束符
+                          11：流结束符
+                          12：填充数据
+                          13：序列参数集扩展
+                          14：带前缀的NAL单元
+                          15：子序列参数集
+                          16 – 18：保留
+                          19：不采用数据划分的辅助编码图像片段
+                          20：编码片段扩展
+                          21 – 23：保留
+                          24 – 31：未规定
 
-NAL单元的<解码流程>：首先从NAL单元中提取出RBSP语法结构，然后按照nal_unit_type进入各解码子过程。输入的是NAL单元，输出结果是经过解码的当前图像的样值点。
+
+NAL单元的<解码流程>：首先根据NAL.Header从NAL.Unit中提取出RBSP语法结构，然后按照nal_unit_type进入各解码子过程。
+输入的是NAL单元，输出结果是经过解码的当前图像的样值点。
+判断I帧的算法为：NAL.Header & 0001 1111 = NAL.nal_unit_type = 5 <==> 如0x65 & 0x1F = 5
+                          0x67: SPS 
+                          0x68: PPS 
+                          0x65: IDR
+                          0x61: non-IDR Slice
+                          0x01: B Slice
+                          0x06: SEI
+                          0x09: AU Delimiter
 
 NAL单元中分别包含了序列参数集和图像参数集。图像参数集和序列参数集在其他NAL单元传输过程中作为参考使用，在这些数据NAL单元的片头中，通过语法元素pic_parameter_set_id设置它们所使用的图像参数集编号；而相应的每个图像参数集中，通过语法元素seq_paramter_set_id设置他们使用的序列参数集编号。
 
