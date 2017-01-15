@@ -1031,7 +1031,23 @@ function fn_cxx()                       { cat codingstyle_cxx ;}
     fn_print $@
 }
 
-function fn_tips_4_reading_code()       { cat tips_4_reading_code ;}
+
+function fn_coolshell()                 {
+    coolshell_什么样分工才是好的
+    return $?
+}
+
+function fn_Principle()                 {
+    cat Priciple_coding
+    cat Priciple_howto_assess
+    cat Priciple_系统架构
+    cat Priciple_RnD_efficiency
+}
+
+function fn_tips_4_reading_code()       {
+    cat tips_4_reading_code
+    cat tips_4_reading_cxx
+}
 
 function fn_codetool()                  {
 function fn_splint()                    { cat codetool_splint ;}

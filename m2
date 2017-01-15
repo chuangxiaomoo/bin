@@ -69,7 +69,7 @@ function fn_2012_plan()                 { cat annual_2012_plan                  
 function fn_2013_plan()                 { cat annual_2013_plan annual_2013_event annual_2013_report;}
 function fn_2014_plan()                 { cat annual_2014_plan annual_2014_event annual_2014_report;}
 function fn_2015_plan()                 { cat annual_2015_plan annual_2015_event annual_2015_report;}
-function fn_2016_plan()                 { cat annual_2016_plan annual_2016_event annual_2016_report;}
+function fn_2016_plan()                 { cat annual_2016_plan annual_2016_event annual_2016_report annual_2016_xiaolai ;}
     local opts=(
         plan_what                       # 基于`以终为始`的理念
         report_what
@@ -310,6 +310,8 @@ function fn_08_novel()                  { cat article_08_novel ;}
 
 function fn_20_学习学习再学习()         { cat article_20_学习学习再学习 
                                           cat article_21_快速学习的几个基本原则
+                                          cat article_22_把虚拟变成现实的觉悟
+                                          cat article_23_从自我出发做选择的能力 # joc-needed
                                           ;}
 function fn_38_我是如何摆脱哑巴英语的() { cat article_38_我是如何摆脱哑巴英语的 ;}
 function fn_39_给你把万能钥匙你要不要() { cat article_39_给你把万能钥匙你要不要 ;}
