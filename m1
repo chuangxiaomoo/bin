@@ -722,9 +722,11 @@ function fn_tail()                      { cat cmd_tail ;}
 function fn_mktemp()                    { cat cmd_mktemp ;}
 function fn_kill()                      { cat cmd_kill ;}
 function fn_install()                   { cat cmd_install ;}
+function fn_calltree()                  { cat cmd_calltree ;}
     local opts=(
         01_方便之门
         arping                  # arp -D 检测IP冲突 iputils
+        calltree
         date
         dd
         dialog
