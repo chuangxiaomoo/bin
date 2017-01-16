@@ -374,6 +374,17 @@ function fn_multicast多播()             { cat socket_multicast多播 ;}
     fn_print $@
 }
 
+
+function fn_cstd()                      {
+function fn_scanf()                     { cat cstd_scanf ;}
+function fn_printf()                    { cat cstd_printf ;}
+    local opts=(
+        scanf
+        printf
+    )
+    fn_print $@
+}
+
 function fn_clang() {
 function fn_C调用C++链接库()            { cat clang_C调用C++链接库 ;}
 function fn_cdecl()                     { cat clang_cdecl ;}
@@ -404,7 +415,6 @@ function fn_coredump()                  { cat clang_signal ;}
 function fn_tty()                       { cat clang_tty ;}
 function fn_iconv()                     { cat clang_iconv ;}
 function fn_md5()                       { cat clang_md5 ;}
-function fn_printf()                    { cat clang_printf ;}
 function fn_bit()                       { cat clang_bit ;}
 function fn_strncpy()                   { cat clang_strncpy ;}
 function fn_snprintf()                  { cat clang_snprintf ;}
@@ -448,7 +458,6 @@ function fn_nonblock()                  { cat clang_nonblock ;}
         open
         sync                    # blocking
         fwrite                  # fprintf fsync fflush
-        printf                  # sscanf() scanf() format
         signal
         strncpy                 # string serial
         strtok_r
@@ -1399,6 +1408,7 @@ function fn_main() {
         bc
         binutils
         busybox
+        cstd
         clang
         cxx
         algo                    # algorithm: link queue tree
