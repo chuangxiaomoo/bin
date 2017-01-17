@@ -938,6 +938,7 @@ function fn_h264()                      { cat h264_tree
                                           cat h264_luo
                                           cat h264_codec
                                           cat h264_assess
+                                          cat h264_rtp
                                           cat h264_rtmp
                                           cat h264_ffmpeg
                                         }
