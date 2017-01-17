@@ -1043,13 +1043,13 @@ function fn_cxx()                       { cat codingstyle_cxx ;}
     fn_print $@
 }
 
-
 function fn_coolshell()                 {
     coolshell_什么样分工才是好的
     return $?
 }
 
 function fn_Principle()                 {
+    cat Priciple_jco
     cat Priciple_coding
     cat Priciple_howto_assess
     cat Priciple_系统架构
