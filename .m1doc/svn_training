@@ -1,0 +1,97 @@
+# RDM + SVN + Coding-style
+
+  思路：如果你是主讲，你将如何来做这场培训？（程序员式的培训）
+
+  What + Why + How
+
+  What?
+
+  在最终的分析中，所有知识皆为历史。
+  在抽象的意义下，所有科学皆为数学。
+  在理性的世界里，所有判断皆为统计。
+
+  树：整体与部分
+  核心原则：你不是一个人在干活
+  核心概念：定义 = 属 + 种差
+            程序 = 数据结构 + 算法
+
+  Why?
+
+  需求(不确定性&复杂性)
+  任何事物存在的一个原因：连接
+
+  How?
+
+  树的遍历(第一原则：广度优先)
+
+# RDM
+
+  研发管理（Research & Development Management，即RDM）
+  p5  过程
+  p14 立会
+
+  一条工作建议：知道自己要做什么？你如何证明你已经完成？
+
+# SVN
+
+  SVN是Subversion的简称，是一个开放源代码的版本控制系统，相较于RCS、CVS，它采用了分支管理系统，它的设计目标就是取代CVS。
+  互联网上很多版本控制服务已从CVS迁移到Subversion。说得简单一点SVN就是用于多个人共同开发同一个项目，共用资源的目的。
+
+  checkout(co), update
+      add
+      del
+      lock
+          vi,SourceInsight
+          revert
+      unlock,cleanup
+      ls,cat
+      stat,diff
+  log
+  update, commit(ci)
+
+  1 commit前先update
+  2 处理冲突
+
+svn co https://192.168.2.250/svn/grainPro/fisheyePro/appSrc/main/danale@r5533
+vim danale_scan_mp4.c
+svn up
+
+    Conflict discovered in '/opt/src/danale/danale_scan_mp4.c'.
+    Select: (p) postpone, (df) diff-full, (e) edit,
+            (mc) mine-conflict, (tc) theirs-conflict,
+            (s) show all options: p
+svn stat
+
+    ?       danale_scan_mp4.c.mine
+    C       danale_scan_mp4.c
+    ?       danale_scan_mp4.c.r5533
+    ?       danale_scan_mp4.c.r5537
+    Summary of conflicts:
+      Text conflicts: 1
+
+svn resolve --accept <type> danale_scan_mp4.c
+    base                    .r5533
+    working                 >>>>>>>>>
+    mine-conflict
+    theirs-conflict
+    mine-full               .mine
+    theirs-full             .r5537
+
+Steps:
+    1 diff .mine .r5537
+    2 cp .mine .working
+    3 svn resolve --accept .working
+
+  3 可执行bin，一定要在Linux下commit，Windows没有权限的概念
+  4 Windows.diff -- Settings -- External Programs
+  5 Windows.stat -- Check for modification
+  6 Samba.tick   -- Settings -- Icon Overlays -- Network drives
+
+# Coding-style
+
+Coding-style类似于自然语言的语法。本质上来看，其并不是“规定你应该怎么写”，而是“尽量”“系统地”解释“人们为什么普遍这么写”。
+
+1 内容
+2 注释
+3 排版
+
