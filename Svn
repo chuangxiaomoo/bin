@@ -59,10 +59,11 @@ function fn_main()
         [ -z "$filelist" ] && echo "Error: file... must be dedicated" && exit
         svn --depth=infinity revert $filelist
         ;;
-    s)  svn status $filelist                ;;
-    S)  for i in ${@:-2}; do svn status | \
-        grep --color "$i" ; done            ;;
-    q)  svn -q status                       ;;
+    s)  svn status $filelist                                ;;
+    S)  for i in ${filelist//clang/\.c$ \.h$ \.cpp$}; do
+            svn status | grep -i --color "$i"
+        done                                                ;;
+    q)  svn -q status                                       ;;
     u|up)
         svn up $filelist
         ;;

@@ -155,14 +155,14 @@ lwd()
     }
 
     local path_index
-    while read -p "     Select a path you wanna goto [1]: " path_index; do
+    while read -p "        Select a path you wanna goto [1]: " path_index; do
         local path_goto=`sed -n ${path_index:-1}p /root/.awd 2>/dev/null | awk '{print $1}'`
         
         if [ -d "$path_goto" ] ; then
             cd $path_goto
             break
         else
-            echo "     invalid path[$path_index]: ${path_goto}"
+            echo  "        invalid path[$path_index]: ${path_goto}"
         fi
     done
 }

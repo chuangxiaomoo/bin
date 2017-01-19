@@ -1,0 +1,4 @@
+/* bsearch */
+
+    got = bsearch(&key, reclist, num /* MAX_NR_REC_PER_DAY > num will get SegmFault */, 
+            sizeof(recinfo_t), compmi);

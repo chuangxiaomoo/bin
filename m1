@@ -378,9 +378,12 @@ function fn_multicast多播()             { cat socket_multicast多播 ;}
 function fn_cstd()                      {
 function fn_scanf()                     { cat cstd_scanf ;}
 function fn_printf()                    { cat cstd_printf ;}
+function fn_bsearch()                   { cat cstd_bsearch ;}
     local opts=(
         scanf
         printf
+        bsearch
+        qsort
     )
     fn_print $@
 }
