@@ -313,6 +313,7 @@ function fn_20_学习学习再学习()         { cat article_20_学习学习再�
                                           cat article_22_把虚拟变成现实的觉悟
                                           cat article_23_从自我出发做选择的能力 # joc-needed
                                           ;}
+
 function fn_38_我是如何摆脱哑巴英语的() { cat article_38_我是如何摆脱哑巴英语的 ;}
 function fn_39_给你把万能钥匙你要不要() { cat article_39_给你把万能钥匙你要不要 ;}
 function fn_40_学习批判性思考()         { cat article_40_学习批判性思考 ;}
@@ -329,6 +330,7 @@ function fn_51_怎样成为一个高手()       { cat article_51_怎样成为一
                                           cat article_55_成为高手之进入高水平反馈
                                           cat article_56_成为高手之缺乏耐心
                                           cat article_57_十分钟读完刻意练习
+                                          cat article_58_十分钟读完元认知
                                           ;}
 
 function fn_61_计算思维()               { cat article_61_计算思维 ;}
