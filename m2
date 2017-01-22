@@ -979,6 +979,15 @@ function fn_format_XiaoLai()            { cat writing_format_XiaoLai ;}
     local opts=(                        # writing
         format_XiaoLai
     )
+}
+
+function fn_betterExplained()           {
+function fn_feelgood.list()             { cat betterExplained_feelgood.list ;}
+function fn_ideas.list()                { cat betterExplained_ideas.list ;}
+    local opts=(
+        feelgood.list
+        ideas.list
+    )
     
     return $?
 }
@@ -1071,6 +1080,7 @@ function fn_main() {
         chaos
         literature                      # 文学
 
+        betterExplained
         meditation_cept
         psychology_cept
         education_cept                  # 教育
