@@ -125,11 +125,11 @@ function fn_f3_教父()                   { cat book_f3_教父 ;}
 function fn_66_佛语()                   { cat book_66_佛语 ;}
 
 function fn_000_黄晓捷谈在校学习()      { cat book_000_黄晓捷谈在校学习 ;}
-function fn_010_李笑来谈读书经验()      { cat book_010_李笑来谈读书经验 
+function fn_010_李笑来谈读书经验()      { cat book_010_李笑来谈读书经验
                                               book_010_读书的低水平勤奋陷阱 ;}
 function fn_011_李笑来谈阅读操作系统()  { cat book_011_李笑来谈阅读操作系统 ;}
-function fn_012_李笑来人人都能用英语()  { cat book_012_李笑来人人都能用英语 
-                                              book_012_李笑来反复通读至少一本语法书 
+function fn_012_李笑来人人都能用英语()  { cat book_012_李笑来人人都能用英语
+                                              book_012_李笑来反复通读至少一本语法书
                                               book_012_中文英语非一一对应之处 ;}
 function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从筷子到开挂人生 ;}
 
@@ -308,7 +308,7 @@ function fn_06_哪些知识会让你变蠢？()   { cat article_06_哪些知识�
 function fn_07_如何构建经济学思维方式() { cat article_07_如何构建经济学思维方式 ;}
 function fn_08_novel()                  { cat article_08_novel ;}
 
-function fn_20_学习学习再学习()         { cat article_20_学习学习再学习 
+function fn_20_学习学习再学习()         { cat article_20_学习学习再学习
                                           cat article_21_快速学习的几个基本原则
                                           cat article_22_把虚拟变成现实的觉悟
                                           cat article_23_从自我出发做选择的能力 # joc-needed
@@ -335,8 +335,10 @@ function fn_51_怎样成为一个高手()       { cat article_51_怎样成为一
 
 function fn_61_计算思维()               { cat article_61_计算思维 ;}
 
-function fn_71_不自律何自由？()         { cat article_71_不自律何自由？ ;}
-function fn_72_唯有自律方得自由()       { cat article_72_唯有自律方得自由 ;}
+function fn_71_不自律何自由？()         { cat article_71_不自律何自由？
+                                          cat article_72_唯有自律方得自由
+                                          cat article_73_尊重事实是自律的第一原则
+                                          ;}
 
 function fn_100_人际关系痛苦的根源()    { cat article_100_人际关系痛苦的根源 ;}
 function fn_101_分享与慷他人之慨()      { cat article_101_分享与慷他人之慨 ;}
@@ -500,7 +502,7 @@ function fn_logic()                     {
 function fn_cept()                      { cat logic_cept ;}
 function fn__essence()                  { cat logic__essence ;}
 function fn__struct()                   { cat logic__struct ;}
-function fn__1st_principle()            { cat logic__1st_principle 
+function fn__1st_principle()            { cat logic__1st_principle
                                           cat book_The_Principle
                                           cat read_The_Principle    #古严：我对《原则》的践行心得
                                           ;
@@ -982,13 +984,15 @@ function fn_format_XiaoLai()            { cat writing_format_XiaoLai ;}
 }
 
 function fn_betterExplained()           {
+function fn_ADEPT()                     { cat betterExplained_ADEPT ;}
 function fn_feelgood.list()             { cat betterExplained_feelgood.list ;}
 function fn_ideas.list()                { cat betterExplained_ideas.list ;}
     local opts=(
+        ADEPT
         feelgood.list
         ideas.list
     )
-    
+
     return $?
 }
 

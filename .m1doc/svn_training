@@ -12,8 +12,8 @@
   在抽象的意义下，所有科学皆为数学。
   在理性的世界里，所有判断皆为统计。
 
-  树：整体与部分
-  核心原则：你不是一个人在干活
+  树：整体与部分，不是一个人在干活
+  第一原则：广度优先                      -- 与betterExplained不谋而合
   核心概念：定义 = 属 + 种差              -- 问题 = 期望 - 现状
             程序 = 数据结构 + 算法(方法)
                  = 消息 + 服务 
@@ -26,6 +26,31 @@
   How?
 
   树的遍历(第一原则：广度优先)
+
+# ADEPT.example
+
+  1. 广度优先
+  2. 属加种差 (学习过程中的2nd加工线程)
+
+  一切皆文件 + 一切可连接| + 数据库系统
+
+  /
+    disc
+      dd df du 
+    dir
+      stat: dirname dir chgrp chmod chown chroot
+    file
+      ls touch cp mv rm
+      cat tac cut head tail tee
+      _char_ checksum md5sum wc tr
+    file-special
+      link: ln unlink
+      pipe: mkfifo
+    logic
+      yes
+      true
+      false
+      test
 
 # RDM
 
