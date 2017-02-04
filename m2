@@ -222,7 +222,6 @@ cat music ;
 
 function fn_mindhacks()                 { cat mindhacks ;}
 function fn_guang()    	                { cat guang ;}
-function fn_words()    	                { cat words ;}      # juzi
 function fn_poet()    	                { cat poet ;}
 function fn_personage()                 { cat personage ;}
 function fn_meeting()                   { cat meeting ;}
@@ -732,7 +731,7 @@ function fn_duanzi()                    { cat humor_duanzi ;}
 
 function fn_girl()                      {
 function fn_misc()                      { cat girl_misc ;}
-function fn_letters()                   { cat girl_letters ;}
+function fn_letters()                   { cat girl_letters juzi ;}
 function fn_00_jiebao()                 { cat girl_00_jiebao ;}
 function fn_01_tingbao()                { cat girl_01_tingbao ;}
 function fn_11_2013相亲记()             { cat girl_11_2013相亲记 ;}
@@ -1068,7 +1067,6 @@ function fn_main() {
         tick
         value                           # 价值
         why
-        words
         rose                            #
         zhihu
         zhenhuan                        # 甄嬛体
