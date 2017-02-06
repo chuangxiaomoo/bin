@@ -71,6 +71,7 @@ function fn_2014_plan()                 { cat annual_2014_plan annual_2014_event
 function fn_2015_plan()                 { cat annual_2015_plan annual_2015_event annual_2015_report;}
 function fn_2016_plan()                 { cat annual_2016_plan annual_2016_event annual_2016_report 
                                               annual_2016_ljsw annual_2016_xiaolai ;}
+function fn_2017_plan()                 { cat annual_2017_plan ;}
     local opts=(
         plan_what                       # 基于`以终为始`的理念
         report_what
@@ -85,6 +86,7 @@ function fn_2016_plan()                 { cat annual_2016_plan annual_2016_event
         2014_plan                       # `多算胜，少算不胜`
         2015_plan
         2016_plan
+        2017_plan
     )
     fn_print $@
 }
@@ -312,6 +314,7 @@ function fn_20_学习学习再学习()         { cat article_20_学习学习再�
                                           cat article_21_快速学习的几个基本原则
                                           cat article_22_把虚拟变成现实的觉悟
                                           cat article_23_从自我出发做选择的能力 # joc-needed
+                                          cat article_24_永葆热情的上瘾式学习法
                                           ;}
 
 function fn_38_我是如何摆脱哑巴英语的() { cat article_38_我是如何摆脱哑巴英语的 ;}
@@ -505,6 +508,7 @@ function fn__struct()                   { cat logic__struct ;}
 function fn__1st_principle()            { cat logic__1st_principle
                                           cat book_The_Principle
                                           cat read_The_Principle    #古严：我对《原则》的践行心得
+                                          cat love_36_questions
                                           ;
 function fn_training500()               { cat logic_training500 ;}
 function fn_puzzle()                    { cat logic_puzzle ;}
