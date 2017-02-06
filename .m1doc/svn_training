@@ -126,3 +126,9 @@ Coding-style类似于自然语言的语法。本质上来看，其并不是“�
 4 会说话的代码(feedback)
 5 maintain.coding.debug 20/80
 
+# Coding-style Application
+
+1 自己、他人、机器看得懂
+2 namespace: lib.moudle file 函数 staic_func block
+3 跟coreutils学命名
+

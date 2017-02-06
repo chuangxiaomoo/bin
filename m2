@@ -69,7 +69,8 @@ function fn_2012_plan()                 { cat annual_2012_plan                  
 function fn_2013_plan()                 { cat annual_2013_plan annual_2013_event annual_2013_report;}
 function fn_2014_plan()                 { cat annual_2014_plan annual_2014_event annual_2014_report;}
 function fn_2015_plan()                 { cat annual_2015_plan annual_2015_event annual_2015_report;}
-function fn_2016_plan()                 { cat annual_2016_plan annual_2016_event annual_2016_report annual_2016_xiaolai ;}
+function fn_2016_plan()                 { cat annual_2016_plan annual_2016_event annual_2016_report 
+                                              annual_2016_ljsw annual_2016_xiaolai ;}
     local opts=(
         plan_what                       # 基于`以终为始`的理念
         report_what
@@ -997,7 +998,7 @@ function fn_ideas.list()                { cat betterExplained_ideas.list ;}
 
 function fn_game_theory()               { cat game_theory ;}
 function fn_debate_competition()        { cat debate_competition ;}
-function fn_super_speech()              { cat super_speech ;}
+function fn_super_speech()              { cat super_speech luoyonghao ;}
 function fn_advertisement()             { cat advertisement ;}
 function fn_architecture()              { cat architecture ;}
 function fn_estate()                    { cat estate ;}
