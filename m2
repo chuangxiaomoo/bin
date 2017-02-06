@@ -507,7 +507,7 @@ function fn__essence()                  { cat logic__essence ;}
 function fn__struct()                   { cat logic__struct ;}
 function fn__1st_principle()            { cat logic__1st_principle
                                           cat book_The_Principle
-                                          cat read_The_Principle    #古严：我对《原则》的践行心得
+                                          cat test_The_Principle    #古严：我对《原则》的践行心得
                                           cat love_36_questions
                                           ;
 function fn_training500()               { cat logic_training500 ;}
@@ -1094,6 +1094,7 @@ function fn_main() {
         practice_cept                   # 直接成一个文本
         science_cept                    # 科学之哲学
         xiaolai_cept
+        wangzeq_cept
         fertile_cept                    # 有繁殖能力的知识
         analogy_cept
         misc_cept
