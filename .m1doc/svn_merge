@@ -1,32 +1,55 @@
-/* merge */
+# 对于merge的惧怕
 
-. 对于merge的惧怕
-    
-    弄清楚4个文件的定义，你就知道手动merge其实也很容易。
+弄清楚4个文件的定义，你就知道手动merge其实也很容易。我是否已经不愿意再接受新事物了？
 
-    我是否已经不愿意再接受新事物了。
+svn stat
 
-. 关于svn merge部分的详细说明－－－带详图
+    ?       danale_scan_mp4.c.mine
+    C       danale_scan_mp4.c
+    ?       danale_scan_mp4.c.r5533
+    ?       danale_scan_mp4.c.r5537
+    Summary of conflicts:
+      Text conflicts: 1
+
+svn resolve --accept <type> danale_scan_mp4.c
+    base                    .r5533
+    working                 >>>>>>>>>
+    mine-conflict
+    theirs-conflict
+    mine-full               .mine
+    theirs-full             .r5537
+
+# 关于svn merge部分的详细说明－－－带详图
     http://ylq365.iteye.com/blog/1763856
 
 
-. 一次Merge经历 -- 不应该所有分支都共用最新的 qpack.sh
-    // 对于增删文件，特别需要注意，从此，各用各的qpack.sh，互不相干
+# 一次Merge经历 -- 不应该所有分支都共用最新的 qpack.sh
 
-    自7月以来的版本共8个，package内主要变化有：
+  // 对于增删文件，特别需要注意，从此，各用各的qpack.sh，互不相干
 
-        1. 新增文件只有3g 4g相关的3个文件
-            reset_3gmoudle 这个文件已经处理过
-            cdc_eem.ko inno_com.ko 这两个ko是8月9日添加进文件系统的
+  自7月以来的版本共8个，package内主要变化有：
 
-        2. 7月的版本全部同步到 trunk 1329，标志性特性是：support local_package
+      1. 新增文件只有3g 4g相关的3个文件
+          reset_3gmoudle 这个文件已经处理过
+          cdc_eem.ko inno_com.ko 这两个ko是8月9日添加进文件系统的
 
-        3. 8月ZXW版本在文件系统中新增 jco_zxw.cfg.bak 
+      2. 7月的版本全部同步到 trunk 1329，标志性特性是：support local_package
 
-        4. 在normal平台下对bin/common/osdfont进行定制，但已经在qpack.sh中做了区分。
+      3. 8月ZXW版本在文件系统中新增 jco_zxw.cfg.bak 
 
-    对现有打包，如果没有文件增删(打包时会对package中文件与文件系统中文件进行diff)，
-    打包是统一的。所以，对现有几个分支，全部可以同步到truck中的package. 
+      4. 在normal平台下对bin/common/osdfont进行定制，但已经在qpack.sh中做了区分。
 
-    8月9日前的版本做一下处理：在文件系统中删除两个.ko即可，否则打包不过。
+  对现有打包，如果没有文件增删(打包时会对package中文件与文件系统中文件进行diff)，
+  打包是统一的。所以，对现有几个分支，全部可以同步到truck中的package. 
+
+  8月9日前的版本做一下处理：在文件系统中删除两个.ko即可，否则打包不过。
+
+# Merge分支
+
+svn log -q
+tac log.dif | grep -v guoxg | grep -v zouy | grep -v zhangh | grep '^r' | awk '{print $1}' | sed 's/r//g' | tr '\n' ,
+
+5492,5493,5504,5505,5506,5507,5510,5520,5530,5531,5532,5533,5534,5535,5536,5549,5552,5553,5557
+
+svn merge ^/fisheyePro -c5492,5493,5504,5505,5506,5507,5510,5520,5530,5531,5532,5533,5534,5535,5536,5549,5552,5553,5557
 
