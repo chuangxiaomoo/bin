@@ -9,8 +9,8 @@ function fn_usage()
         c   ci [files...]
         cf  conflict
         D   {?|M}
-        d   diff. [dh:horizontal-split-diff]
-        dp  diff -r 'PREV'
+        d   diff  dh:[horizontal-split-diff]
+        dp  diff -r 'PREV' check.change:[svn diff -c REV]
         h   svn help cmd
         q   -q status
         r   revert -R {file|dir}
@@ -53,8 +53,6 @@ function fn_main()
     dh) HORI=-o \
         svn diff $filelist ;;
     dp) svn diff -r 'PREV' $filelist ;;
-    dc) svn diff -c        $filelist ;;
-    dr) svn diff -r        $filelist ;;
     r)
         [ -z "$filelist" ] && echo "Error: file... must be dedicated" && exit
         svn --depth=infinity revert $filelist
@@ -67,10 +65,7 @@ function fn_main()
     u|up)
         svn up $filelist
         ;;
-    h)
-        svn help $filelist
-        ;;
-    *)
+    h|*)
         fn_usage
         svn status | sed 's/^/\t/g'
         ;;
