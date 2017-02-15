@@ -61,10 +61,9 @@ alias .DEBUG="let 'DEBUG=!DEBUG'; echo \$DEBUG; export DEBUG"
 #lias    .n='. /opt/nxpbash'
 alias    .s='cd ~/bin'
 alias   .ss='cd ~/bin/stk'
-alias   .sr='cd /opt/src'
-alias   .rc='. /root/.bashrc'
-alias  .irc='vi /root/.bashrc; . /root/.bashrc'
-alias  .mor='/root/bin/stk/up morningcall'
+alias   .rc='.  ~/.bashrc'
+alias  .irc='vi ~/.bashrc; . ~/.bashrc'
+alias  .mor='~/bin/stk/up morningcall'
 alias    .u='vi /tmp/kts/chao.u'
 alias   .ps='PS1="[\w]\n\u-> \[\033[0m\]"'
 
@@ -103,25 +102,24 @@ alias    xt='chmod 777 /tftpboot/*'
 alias    xx='tar -zxvf'
 alias    ct='cd ~/sh/t'
 
-alias   cwd='pwd >> ~/.env;vi ~/.env; .rc'          # curr-pwd
-alias   awd='cp ~/.awd /dev/shm/.awd && pwd>~/.awd \
-                && cat /dev/shm/.awd >> ~/.awd'     # mult-pwd, work with [lwd]
-alias   iwd='vi /root/.awd'                         #
-alias   swd='pwd > ~/.swd'                          # save pwd, [pushd .]
+alias   cwd='pwd >>  ~/.env;vi ~/.env; .rc'         # curr-pwd
+alias   awd='pwd >>  ~/.awd'                        # echo -e "$PWD\n`cat ~/.awd`" > ~/.awd
+alias   iwd='vi      ~/.awd'                        #
+alias   swd='pwd >   ~/.swd'                        # save pwd, [pushd .]
 alias   gwd='cd `cat ~/.swd`'                       # save pwd  [popd]
 
 alias    cs='cscope -Rbq *'
 alias vboxr='/etc/init.d/vboxadd-service restart'   # ;umount -a 2>/dev/null; mount -a
 alias  8cat='iconv -f cp936 -t utf8'
 
-alias    v1='vi -R /root/bin/m1'
-alias    v2='vi -R /root/bin/m2'
-alias    v7='vi    /root/bin/7Lite'
-alias    vj='vi    /root/bin/j2box'
+alias    v1='vi -R ~/bin/m1'
+alias    v2='vi -R ~/bin/m2'
+alias    v7='vi    ~/bin/7Lite'
+alias    vj='vi    ~/bin/j2box'
 alias    vn='vi --noplugin'
 alias    vr='vi -R'
 alias    vR='vi -R README*'
-alias    vt='vi /root/bin/.m2doc/tick.md'
+alias    vt='vi ~/bin/.m2doc/tick.md'
 
 alias sdiff='svn diff -r PREV'
 
@@ -149,14 +147,14 @@ function M()    { m1 $@ | tail -18; } # M() { m1 $@ | nl -w 3 -s' ' | less -i ;}
 
 lwd() 
 {
-    cat -n /root/.awd 2>/dev/null | grep '[0-9]' || {
+    cat -n ~/.awd 2>/dev/null | grep '[0-9]' || {
         echo "Usage: lwd" &&
         echo "  run awd first" && return
     }
 
     local path_index
     while read -p "        Select a path you wanna goto [1]: " path_index; do
-        local path_goto=`sed -n ${path_index:-1}p /root/.awd 2>/dev/null | awk '{print $1}'`
+        local path_goto=`sed -n ${path_index:-1}p ~/.awd 2>/dev/null | awk '{print $1}'`
         
         if [ -d "$path_goto" ] ; then
             cd $path_goto
