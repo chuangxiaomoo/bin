@@ -26,9 +26,12 @@ how to test?
 
 1 mi: 一块钢板的旅行 
   [全新SD卡全过程](plug-in mount format write unmount plug-out)
+  _开启双线程：广度框架 + 深度当前task_
+
 2 高投入产出比
 
 3 树形结构，广度优先
+
 4 自上而下，红外voltage
 
 # 成为高手(code & debug)？
