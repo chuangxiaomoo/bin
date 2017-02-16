@@ -18,11 +18,32 @@ test的第二心法是提问差别
 
 如何识人？
 如何组织？
-如何测试interviewee？
 
 # 如何面试.interview
 
-需要什么人才？
+需要什么人才？(性价比高的人)
   价值观
+    爱上编程
   能力
-  技能
+    最得意的作品
+    找球坏1/12，像证明题一样板书过程
+  技能.如何测试interviewee？
+    指针
+    多线程(事件)
+    [Socket](TCP网络编程中connect、listen和accept三者之间的关系)
+      listen().man
+        To accept connections, the following steps are performed:
+        1 A socket is created with _socket_(2).
+        2 The  socket  is  bound to a local address using _bind_(2), so that other sockets may be _connect_(2)ed to it.
+        3 A _willingness_ to accept incoming connections and  a  queue  limit  for incoming connections are specified with _listen_().
+        4 Connections are accepted with _accept_(2).
+      connect()函数
+        该函数的功能为客户端主动连接服务器，建立连接是通过三次握手，而这个连接的过程是由内核完成，不是这个函数完成的，
+        这个函数的作用仅仅是通知 Linux 内核，让 Linux 内核自动完成 TCP 三次握手连接。
+      accepte(sock, backlog)函数
+        为了更好的理解 backlog 参数，我们必须认识到内核为任何一个给定的监听套接口维护两个队列：
+        1.未完成连接队列（incomplete connection queue），每个这样的 SYN 分节对应其中一项_(backlog满时)_：SYN_RECV 状态。
+        2.已完成连接队列（completed  connection queue），每个已完成 TCP 三次握手过程的客户对应其中一项。ESTABLISHED 状态。
+        _accept_只是pop一个链接而已
+      多路复用
+
