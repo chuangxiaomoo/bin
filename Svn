@@ -62,11 +62,8 @@ function fn_main()
             svn status | grep -i --color "$i"
         done                                                ;;
     q)  svn -q status                                       ;;
-    u|up)
-        svn up $filelist
-        ;;
-    h|*)
-        fn_usage
+    u)  svn up $filelist                                    ;;
+  h|*)  fn_usage
         svn status | sed 's/^/\t/g'
         ;;
     esac
