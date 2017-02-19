@@ -131,10 +131,16 @@ function fn_000_黄晓捷谈在校学习()      { cat book_000_黄晓捷谈在�
 function fn_010_李笑来谈读书经验()      { cat book_010_李笑来谈读书经验
                                               book_010_读书的低水平勤奋陷阱 ;}
 function fn_011_李笑来谈阅读操作系统()  { cat book_011_李笑来谈阅读操作系统 ;}
+
 function fn_012_李笑来人人都能用英语()  { cat book_012_李笑来人人都能用英语
                                               book_012_李笑来反复通读至少一本语法书
                                               book_012_中文英语非一一对应之处 ;}
-function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从筷子到开挂人生 ;}
+
+function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从筷子到开挂人生
+                                              xiaolai_cept
+                                              xiaolai_Execution_vs_Implementation
+                                              FeynmanTechnique
+                                        ;}
 
 function fn_100_周鸿祎自述()            { cat book_100_周鸿祎自述 ;}
 function fn_101_livermore()             { cat book_101_livermore ;}
@@ -184,7 +190,7 @@ function fn_tiandao()                   { cat book_tiandao book_遥远的救世�
         66_佛语
 
         000_黄晓捷谈在校学习
-        010_李笑来谈读书经验            # xiaolai<读书经验>分享.学习
+        010_李笑来谈读书经验
         011_李笑来谈阅读操作系统
         012_李笑来人人都能用英语
         013_李笑来从筷子到开挂人生
@@ -509,6 +515,7 @@ function fn__1st_principle()            { cat logic__1st_principle
                                           cat book_The_Principle
                                           cat test_The_Principle    #古严：我对《原则》的践行心得
                                           cat love_36_questions
+                                          cat 
                                           ;
 function fn_training500()               { cat logic_training500 ;}
 function fn_puzzle()                    { cat logic_puzzle ;}
@@ -1093,7 +1100,6 @@ function fn_main() {
         education_cept                  # 教育
         practice_cept                   # 直接成一个文本
         science_cept                    # 科学之哲学
-        xiaolai_cept
         wangzeq_cept
         fertile_cept                    # 有繁殖能力的知识
         analogy_cept

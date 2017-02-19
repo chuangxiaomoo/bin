@@ -25,6 +25,30 @@
 定义元素：`tag=>type: content:>url`，类似C语言定义变量：`int count = 0;`，url可省略。
 连接元素：`tag1->tag2->tag3`
 
+# 执行力.flow
+
+`flow
+star=>start: 任务感知
+fail=>end: 不了了之 
+succ=>end: 搞定！
+
+c_can=>condition: 会做吗？
+c_doit=>condition: 做了吗？
+c_consist=>condition: 坚持了吗？
+
+c_learnit=>condition: 学吗？
+c_gotit=>condition: 学会了？
+
+star->c_can(yes)->c_doit(yes)->c_consist(yes)->succ
+
+c_can(no)->c_learnit(yes)->c_gotit(yes,right)->c_doit(yes)
+c_doit(no)->fail
+c_consist(no)->fail
+
+c_learnit(no)->fail
+c_gotit(no)->fail
+`
+
 # 语法.序列
 
 
