@@ -1,0 +1,72 @@
+# cid & serial
+
+root@grain-media:~# cat /sys/block/mmcblk0/device/cid
+12345653440000000000000703010100
+root@grain-media:~# cat /sys/block/mmcblk0/device/serial
+0x00000703
+
+[32字节cid详细意义](http://www.cameramemoryspeed.com/sd-memory-card-faq/reading-sd-card-cid-serial-psn-internal-numbers/)
+serial是cid的一部分。
+
+# MBR分区结构
+
+MBR磁盘分区是一种使用最为广泛的分区结构，它也被称为DOS分区结构，但它并不仅仅应用于Windows系统平台，
+也应用于Linux，基于X86的UNIX等系统平台。它位于磁盘的_0号扇区_（一扇区等于512字节），是一个重要的扇区（简称MBR扇区）。
+
+MBR扇区由以下四部分组成：
+引导代码：引导代码占MBR分区的前_440字节_，负责整个系统启动。如果引导代码被破坏，系统将无法启动。
+Windows磁盘签名：占引导代码后面的_4字节_，是Windows初始化磁盘写入的磁盘标签，如果此标签被破坏，则系统会提示“初始化磁盘”。
+MBR分区表：占Windows磁盘标签后面的_64个字节_，是整个硬盘的分区表。
+MBR结束标志：占MBR扇区最后_2个字节_，一直为“55 AA”。
+
+440 + 4 + 64 + 2 = 510
+还有[2个字节](0x1BC 0x1BD)可自己写
+
+[结构.1](http://www.writeblocked.org/resources/MBR_GPT_cheatsheet.pdf)
+[结构.2](http://thestarman.pcministry.com/asm/mbr/STDMBR.htm)
+
+
+`( mbr_reserv.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+
+# define RESERVE_COL    0x1B0                    
+# define RESERVE_ROW1   0xC
+# define RESERVE_ROW2   0xD                      
+
+int main(int argc, char *argv[])
+{   
+    char buf[32] = {0};
+    FILE *f = NULL;
+
+    f = fopen("myfile", "r+");
+
+    if (NULL == f) {
+        printf(
+                "fopen fail\n"
+                "dd if=/dev/mmcblk0 bs=512 count=1 | hexdump\n"
+                "Usage: %s sdcard_path\n", argv[1]);
+        return -1;
+    }
+
+    printf("open.pos is %ld\n", ftell(f));       
+    printf("pos go 0x%x\n", RESERVE_COL);
+
+    fseek(f, RESERVE_COL, SEEK_CUR);             
+    printf("pos is 0x%lx\n", ftell(f));                                                                                                                                                      
+
+    fread(buf, 0x10, 1, f);
+    buf[RESERVE_ROW1] = 0x10;
+    buf[RESERVE_ROW2] = 0x80;
+    fseek(f, -0x10, SEEK_CUR);                   
+    fwrite(buf, 1, 0x10, f);
+
+    fclose(f);
+    sync();
+
+    return 0;
+}                                                
+)`
+

@@ -961,11 +961,12 @@ function fn_h264()                      { cat h264_tree
 function fn_jco()                       { 
 function fn_pcb()                       { cat jco_pcb ;}
 function fn_delay_service()             { cat jco_delay_service ;}
-function fn_msg()                       { cat jco_msg ;}
+function fn_msg()                       { cat jco_msg 
+                                              jco_event ;}
 function fn_platform()                  { cat jco_platform ;}
 function fn_alarm_design()              { cat jco_alarm_design ;}
 function fn_alarm_software()            { cat jco_alarm_software ;}
-function fn_alarm_hardware()            { cat jco_alarm_hardware ;}
+function fn_alarm_hardware()            { cat jco_alarm_hardware sdcard_mbr ;}
 function fn_alarm_motion_detc()         { cat jco_alarm_motion_detc ;}
 function fn_capture()                   { cat jco_capture ;}
 function fn_jcp()                       { cat jco_jcp ;}
@@ -984,7 +985,6 @@ function fn_pioneer()                   { cat jco_pioneer ;}
 function fn_dome()                      { cat jco_dome ;}
 
     local opts=(
-        pcb                 # hardware
         alarm_design
         alarm_hardware
         alarm_software

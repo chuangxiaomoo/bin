@@ -15,8 +15,9 @@ how to test?
 
 # 建议
 
-一条工作建议：知道自己要做什么？你如何证明你已经完成？
+_一条建议_：知道自己要做什么？你如何证明你已经完成？
 复利式成长：一次只做一件事，并把之做好。<把经历总结成套路>
+_终极目标_：侦察兵、多面手、[全栈工程师](开发、测试、需求、设计、项目管理、grep.产品经理.更多惊喜)
 
 # 看代码的心法？
 
@@ -24,8 +25,8 @@ how to test?
 
 # 做Task的心法？
 
-1 mi: 一块钢板的旅行 
-  [全新SD卡全过程](plug-in mount format write unmount plug-out)
+1 小米一块钢板的旅行 vs. 公司的生产模式
+  [全新SD卡使用过程](plug-in mount format write unmount plug-out)
   _开启双线程：广度框架 + 深度当前task_
 
 2 高投入产出比
@@ -36,4 +37,6 @@ how to test?
 
 # 成为高手(code & debug)？
 
+一条命令足矣: ccli toggle -act set
 
+# 一次与
