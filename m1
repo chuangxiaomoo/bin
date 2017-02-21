@@ -961,8 +961,8 @@ function fn_h264()                      { cat h264_tree
 function fn_jco()                       { 
 function fn_pcb()                       { cat jco_pcb ;}
 function fn_delay_service()             { cat jco_delay_service ;}
-function fn_msg()                       { cat jco_msg 
-                                              jco_event ;}
+function fn_msg()                       { cat jco_msg
+                                              jco_event_task ;}
 function fn_platform()                  { cat jco_platform ;}
 function fn_alarm_design()              { cat jco_alarm_design ;}
 function fn_alarm_software()            { cat jco_alarm_software ;}

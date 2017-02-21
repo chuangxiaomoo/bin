@@ -1,4 +1,7 @@
-# 任务.异步IO
+# 设计
+
+微观：程序 = 数据 + 算法
+宏观：系统 = 消息 + 服务
 
 # Server端处理高并发网络请求主要方法
 
@@ -12,12 +15,23 @@ socket IO复用：这是对循环方法的改进，它用一个结构保存要�
 
 1. timer.定时任务
 2. delay.延时任务
-3. bgread.网络
-4
+3. bgread.网络套按字
+4. loop().消息消费者(处理任务.可扩展为thread_pool处理)
+5. shmbuf().取流
 
 create_BGread_schedule()
 create_time_engine()
 
 delay_ctrl_exec(DELAY_CMD_SETETHMAC, outer.mac, sizeof(outer.mac));
 eventNotify(JEvent_EthMacCfgChg);
+
+Task的特点如下：
+1 机器的本质是人意志的延伸，响应人的req(请求、命令、消息)
+2 机器本身是一个横向分层，纵向分解结构。
+  req通过层层传导+分解，直到被处理。
+  人机交互的过程，[生产者-消费者模型](人生产消息，机器消费) 
+3 单核CPU，基本时间分片来完成多任务实现，context切换成本。
+  消息服务，以提供[服务](callback)的形式，并行任务串行化，减少context切换损耗，以提高系统效率。
+  依赖倒置
+4 实现上，每个类别都有一个线程，内部使用静态变量在第一次执行时初始化。如此便不用 init() 函数。
 
