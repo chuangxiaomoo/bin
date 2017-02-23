@@ -10,16 +10,18 @@
   route del -net 192.168.70.0 gw 0.0.0.0 netmask 255.255.255.0
   > netmask is needed when del
 
-# xp
+# win7 add
   net: 
   route -p add 10.41.0.0 mask 255.255.0.0 10.27.0.1
                       ^                    ^
-                      |                    |
                       destination          next hop(getway)
 
   host:
   route -p add 192.168.1.25 mask 255.255.255.255 192.168.1.24
         ^        ^                                ^
-        |        |                                |
    persitent    destination                    next hop(getway)
 
+  del:
+  route 192.168.1.0
+                  ^
+                  网段

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+touch       ~/.backup/flowchar.2.tgz
+touch       ~/.backup/flowchar.1.tgz
+
+cp          ~/.backup/flowchar.2.tgz  ~/.backup/flowchar.3.tgz
+cp          ~/.backup/flowchar.1.tgz  ~/.backup/flowchar.2.tgz
+tar -zcvf   ~/.backup/flowchar.1.tgz  ~/.flowchar/ 
