@@ -233,7 +233,7 @@ function fn_mindhacks()                 { cat mindhacks ;}
 function fn_guang()    	                { cat guang ;}
 function fn_poet()    	                { cat poet ;}
 function fn_personage()                 { cat personage ;}
-function fn_meeting()                   { cat meeting ;}
+function fn_meeting()                   { cat ;}
 function fn_01_囧_jiong()               { cat 01_囧_jiong ;}
 
 function fn_howto()                     {
@@ -686,7 +686,7 @@ function fn_Zhu_雄辩()                  { cat huawei_Zhu_雄辩 ;}
 function fn_Qi_领导管理人才()           { cat huawei_Qi_领导管理人才 ;}
 function fn_Qi_疾病()                   { cat huawei_Qi_疾病 ;}
 
-function fn_WiMax_meeting()             { cat huawei_WiMax_meeting ;}
+function fn_WiMax_meeting()             { cat huawei_WiMax_meeting jco_meeting ;}
     local opts=(
         WiMax_meeting                   # 唯一一次大会
         cultural
@@ -1061,7 +1061,6 @@ function fn_main() {
         influence                       # 三十而立 影响力 30
         poet
         math                            # 数
-        meeting
         mng
         mindhacks
         ljsw                            # 罗辑思维
