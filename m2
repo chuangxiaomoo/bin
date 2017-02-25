@@ -331,7 +331,9 @@ function fn_41_如何成为高品质的勤奋者() { cat article_41_如何成为
 function fn_42_思考工具及框架()         { cat article_42_思考工具及框架 ;}
 function fn_43_如何科学的思考()         { cat article_43_如何科学的思考 ;}
 function fn_44_学得太慢是一种罪()       { cat article_44_学得太慢是一种罪 ;}
-function fn_45_拷问知识正确和增长遮蔽() { cat article_45_拷问知识正确和增长遮蔽 ;}
+function fn_45_拷问知识正确和增长遮蔽() { cat article_45_拷问知识正确和增长遮蔽 
+                                          cat article_46_学习金字塔的知识留存率
+                                          ;}
 function fn_50_十种好的学习方式()       { cat article_50_十种好的学习方式 ;}
 
 function fn_51_怎样成为一个高手()       { cat article_51_怎样成为一个高手       # 心得+举例
