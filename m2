@@ -233,7 +233,6 @@ function fn_mindhacks()                 { cat mindhacks ;}
 function fn_guang()    	                { cat guang ;}
 function fn_poet()    	                { cat poet ;}
 function fn_personage()                 { cat personage ;}
-function fn_meeting()                   { cat ;}
 function fn_01_囧_jiong()               { cat 01_囧_jiong ;}
 
 function fn_howto()                     {
