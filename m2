@@ -353,7 +353,9 @@ function fn_71_不自律何自由？()         { cat article_71_不自律何自�
 function fn_100_人际关系痛苦的根源()    { cat article_100_人际关系痛苦的根源 ;}
 function fn_101_分享与慷他人之慨()      { cat article_101_分享与慷他人之慨 ;}
 function fn_102_同事是你共享生命的战友(){ cat article_102_同事是你共享生命的战友 ;}
-function fn_103_协作跟进？如何跟进？()  { cat article_103_协作跟进？如何跟进？ ;}
+function fn_103_协作跟进？如何跟进？()  { cat article_103_协作跟进？如何跟进？
+                                          cat article_104_节奏：论工作中的博弈
+                                          ;}
 
 function fn_110_中国哲学体系的困惑？()  { cat article_110_中国哲学体系的困惑？ ;}
 function fn_111_喜欢有之或喜欢用之？()  { cat article_111_喜欢有之或喜欢用之？ ;}
