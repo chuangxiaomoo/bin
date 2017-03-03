@@ -4,6 +4,7 @@
 
     debian通过/etc/rc*下的链接来处理开机启动，类似SuSE
     ls /etc/rc*
+    rm /etc/rc2.d/K80xinetd "/etc/init.d/xinetd 的一个链接"
 
 . rcconf们也无能为力
 

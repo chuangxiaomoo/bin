@@ -1,21 +1,18 @@
-# general
+# 通用
 
-  # del all Desk_top_.ini in the disc e without interaction;
+# 强删文件
   del e:\Desk_top_.ini /f/s/q/a
 
-  # copy dir
+# copy目录
   xcopy /s /e /i /y svnmodification 123 
 
-  # force the PC shutdown without warnning!
-  shutdown -s -f -t secs
+# services.msc
 
-  services.msc
+#  msconfig
 
-  msconfig
-
-  “运行” -> “dxdiag” -> “Directx诊断工具”->
-          “显示” -> “当前显示模式” -> 1024 x 768 (32bit)
-          “系统” -> CPU 内存等系统信息
+    运行 -> "dxdiag" -> "Directx诊断工具" ->
+            显示 -> 当前显示模式 -> 1024 x 768 (32bit)
+            系统 -> CPU 内存等系统信息
 
 # 没有usb弹出图标
   RunDll32.exe shell32.dll,Control_RunDLL hotplug.dll
@@ -30,6 +27,11 @@
   (maybe you can download it on the server) -> IP -> OK
 
 # 待机
-
   rundll32.exe powrprof.dll SetSuspendState
 
+# 关机
+  shutdown -s -f -t secs
+
+# 日志
+  eventvwr.msc
+  错误 - tcpip - ip冲突

@@ -1,5 +1,12 @@
 #! /bin/bash
 
+# 润月
+    if (year/被100整除); then
+        return 0 == year%400
+    else
+        return 0 == year%4
+    fi
+
 # 手册
     pinfo date 查不到 date, 先 pinfo 进入手册，再搜索进入
     info coreutils 'date invocation'
@@ -37,7 +44,7 @@
 	date -s "18:00:00 2008-10-09"
 	hwclock -w
 
-# $touch改变文件的创建时间 
+# touch改变文件的创建时间 
     touch --date=180910 w.c
     -rwxr-xr-x 1 root  root     0 Sep 10  2018 w.c
 	

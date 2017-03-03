@@ -1,0 +1,34 @@
+1. 真正原因
+    /* True causes */
+
+static int is_cmd_desirable(const char *ip, const char *cmd)
+{
+    static struct cmd_info infos[8] = {{0}};
+
+    int i;
+    int got = FALSE;
+    time_t epoch = time(NULL);
+
+    for (i = 0; i < ARRAY_SIZE(infos); i++) {
+        if (0 == strncmp(ip, infos[i].ip, sizeof(infos[i].ip)) &&
+            0 == strncmp(cmd, infos[i].cmd, sizeof(infos[i].cmd))) {
+            got = TRUE;         /* 不能用 got = i; 第一个会匹配上 */
+            break;
+        }
+    }
+}
+
+2. 问题描述
+    /* from R&D or Tester */
+
+3. 现象分析
+    /* log or details */    "ATTENTION: err or fail"
+
+4. 原因分析
+    /* 原因猜想，目标分解，process to true causes */
+
+5. 解决方案
+    /* 包括对未来的防御 */
+
+    考虑最简单的情况，
+    第0个会匹配的情况。

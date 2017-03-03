@@ -1,5 +1,7 @@
 /* pointer */
 
+0. "数组指针"参见: clang_cdecl
+
 1. 函数定义时，数组名即指针 
 
     int func(char *p)

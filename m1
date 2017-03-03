@@ -37,6 +37,7 @@ function fn_uboot()                     { cat uboot ;}
 function fn_vmware()                    { cat vmware ;}
 function fn_yum()                       { cat yum ;}
 function fn_tcpdump()                   { cat tcpdump ;}
+
 function fn_wireshark()                 {
 function fn_base()                      { cat wireshark_base ;}
 function fn_filter()                    { cat wireshark_filter ;}
@@ -238,7 +239,8 @@ function fn_export()                    { cat bash_export ;}
 # ATTENTION: Mark time in every case
 #
 function fn_case() {
-function fn_fundamental()               { cat case_fundamental ;}
+function fn_fundamental()               { cat case_fundamental 
+                                          cat case_100_搜索过滤 ;}
 function fn_s1_SSL_CTX_free段错误()     { cat case_s1_SSL_CTX_free段错误 ;}
 function fn_s2_ZXW修改ipcam_cfg段错误() { cat case_s2_ZXW修改ipcam_cfg段错误 ;}
 
@@ -804,7 +806,7 @@ function fn_fundamental()               { cat bat_fundamental ;}
 
 function fn_win()                       {
 function fn_win7()                      { cat windows_win7 ;}
-function fn_01()                        { cat windows_syscmd ;}
+function fn_syscmd()                    { cat windows_syscmd ;}
 function fn_02_清晰显示()               { cat windows_02_清晰显示 ;}
 function fn_03_看雪()                   { cat windows_03_看雪 ;}
 function fn_excel()                     { cat windows_excel ;}
@@ -962,7 +964,7 @@ function fn_jco()                       {
 function fn_pcb()                       { cat jco_pcb ;}
 function fn_delay_service()             { cat jco_delay_service ;}
 function fn_msg()                       { cat jco_msg
-                                              jco_event_task ;}
+                                              jco_event_task.i ;}
 function fn_platform()                  { cat jco_platform ;}
 function fn_alarm_design()              { cat jco_alarm_design ;}
 function fn_alarm_software()            { cat jco_alarm_software ;}

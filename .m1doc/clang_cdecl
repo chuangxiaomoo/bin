@@ -3,7 +3,7 @@
 (1) 声明解析步骤   
     A. 找identifier
     B. ()中内容看成一个整体
-       根据操作符优先级结合(参见 fn_operator_precedence) 
+       根据操作符优先级结合(参见 clang_operator_predcedence) 
     C. const & volatile 等qualifier
 
     Example:
@@ -14,7 +14,7 @@
 
 (2)                
 
-    指令数组
+    指针数组
     int *p1[10];
     
     数组指针
