@@ -110,10 +110,6 @@ function fn_think_fast_n_slow()         { cat book_think_fast_n_slow ;}
 function fn_01_商君书()                 { cat book_01_商君书 ;}
 function fn_02_韩非子()                 { cat book_02_韩非子 ;}
 function fn_aq_如何提问()               { cat book_aq_如何提问 ;}
-function fn_dt_暗时间()                 { cat book_dt_暗时间 ;}
-function fn_tf_把时间当作朋友()         { cat book_tf_把时间当作朋友;
-                                          cat ref_lai ;
-                                          cat TIME; }
 function fn_yl_你的灯亮着吗()           { cat book_yl_你的灯亮着吗
                                           cat read_yl_你的灯亮着吗 ;}
 function fn_lf_雷锋日记()               { cat book_lf_雷锋日记 ;}
@@ -137,6 +133,9 @@ function fn_012_李笑来人人都能用英语()  { cat book_012_李笑来人人
                                               book_012_中文英语非一一对应之处 ;}
 
 function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从筷子到开挂人生
+                                              book_dt_暗时间
+                                              book_tf_把时间当作朋友
+                                              TIME
                                               xiaolai_cept
                                               xiaolai_Execution_vs_Implementation
                                               FeynmanTechnique
@@ -174,9 +173,7 @@ function fn_tiandao()                   { cat book_tiandao book_遥远的救世�
         01_商君书
         02_韩非子
         aq_如何提问                     # reading
-        dt_暗时间                       # darktime
         lf_雷锋日记
-        tf_把时间当作朋友               # make time a FRIEND
         yl_你的灯亮着吗                 # light question
         PPT演示之道                     # to read
         economic_naturalist             # 牛奶可乐
