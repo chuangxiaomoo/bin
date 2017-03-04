@@ -103,6 +103,11 @@ BY 四种组合。这种矩阵组合可以让我们从不同的角度思考问�
 
 1. PDCA 循环
 
+The concept of PDCA is based on the scientific method, as developed from the work 
+of Francis Bacon (Novum Organum, 1620). The _scientific method_ can be written as 
+"hypothesis"–"experiment"–"evaluation" or plan, do and check. Shewhart described 
+manufacture under "control"—under statistical control—as a three-step process of 
+specification, production, and inspection.
 
 对于改善产品质量，PDCA 循环框架就非常好用。PDCA 循环由美国学者爱德华兹·戴明提出，
 一般用来提高产品品质和改善产品生产过程。其中 P 代表 Plan，也即计划；D 代表 Do，即
