@@ -392,7 +392,8 @@ function fn_bsearch()                   { cat cstd_bsearch ;}
 
 function fn_clang() {
 function fn_C调用C++链接库()            { cat clang_C调用C++链接库 ;}
-function fn_cdecl()                     { cat clang_cdecl ;}
+function fn_cdecl()                     { cat clang_cdecl
+                                          cat clang_array ;}
 function fn_const()                     { cat clang_const ;}
 function fn_extern()                    { cat clang_extern ;}
 function fn_operator_predcedence()      { cat clang_operator_predcedence ;}
@@ -1044,20 +1045,13 @@ function fn_11_测试工程师如何提BUG()    { cat test_11_测试工程师如
 }
 
 
-function fn_codingstyle()               { 
-function fn_base()                      { cat codingstyle_base ;}
-function fn_kernel()                    { cat codingstyle_kernel ;}
-function fn_qt()                        { cat codingstyle_qt ;}
-function fn_rule()                      { cat codingstyle_rule ;}
-function fn_cxx()                       { cat codingstyle_cxx ;}
-    local opts=(
-        base
-        kernel                          # 内核风格
-        qt
-        rule                            # 关键在映射规则
-        cxx
-    )
-    fn_print $@
+function fn_codingstyle()               { cat codingstyle_base
+                                          cat codingstyle_kernel 
+                                          cat codingstyle_qt
+                                          cat codingstyle_rule      # 关键在映射规则
+                                          cat codingstyle_cxx
+                                          cat tips_4_reading_code
+                                          cat tips_4_reading_cxx
 }
 
 function fn_coolshell()                 {
@@ -1071,11 +1065,6 @@ function fn_Principle()                 {
     cat Priciple_howto_assess
     cat Priciple_系统架构
     cat Priciple_RnD_efficiency
-}
-
-function fn_tips_4_reading_code()       {
-    cat tips_4_reading_code
-    cat tips_4_reading_cxx
 }
 
 function fn_codetool()                  {
@@ -1435,7 +1424,6 @@ function fn_main() {
         cmd
         codetool
         CC
-        tips_4_reading_code     # how to read code
         codingstyle
         google
         chrome                  # vpn

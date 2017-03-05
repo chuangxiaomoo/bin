@@ -324,6 +324,7 @@ function fn_40_学习批判性思考()         { cat article_40_学习批判性�
 function fn_41_如何成为高品质的勤奋者() { cat article_41_如何成为高品质的勤奋者;
                                           cat article_41_如何成为高品质的勤奋者2 
                                               article_41_读书的低水平勤奋陷阱 
+                                              article_41_你的阅读造就了你
                                           ;}
 function fn_42_思考工具及框架()         { cat article_42_思考工具及框架 ;}
 function fn_43_如何科学的思考()         { cat article_43_如何科学的思考 ;}
@@ -789,7 +790,6 @@ function fn_144_什么是好的经济学()      { cat ljsw_144_什么是好的�
 function fn_210_右派为什么这么横()      { cat ljsw_210_右派为什么这么横 ;}
 function fn_215_发现你的太平洋()        { cat ljsw_215_发现你的太平洋 ;}
 
-function fn_x1_你的阅读造就了你()       { cat ljsw_x1_你的阅读造就了你 ;}
 function fn_0802_他拯救了美国？()       { cat ljsw_0802_他拯救了美国？ ;}
 function fn_0809_改变世界的箱子()       { cat ljsw_0809_改变世界的箱子 ;}
 function fn_0815_费马大定理()           { cat ljsw_0815_费马大定理 ;}
@@ -813,7 +813,6 @@ function fn_0521_物种战争()             { cat ljsw_0521_物种战争 ;}
         07_大数据                       # 大国不可不识数
         08_大家都有拖延症
         51_右派为什么那么横             # 保守派的3个特性
-        x1_你的阅读造就了你             # you are what u read
         L0_孤独寂寞朋友                 #
 
         144_什么是好的经济学

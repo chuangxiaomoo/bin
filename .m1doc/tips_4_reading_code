@@ -10,6 +10,9 @@
 
 # Build and Run the Program
 
+  Task性质：
+  积极任务：分解步骤，checklist，检测每步<异常>，最终返回正确结果。
+  防御任务：分解状态，statmachine，返回每步<正常>，最终修复异常。
 
 # 我不要看你的程序，让我看一看你的数据结构！
 
@@ -41,7 +44,7 @@
   [如何阅读他人的程序代码](http://blog.csdn.net/huangxinfeng/article/details/5374611)
 
   如何阅读别人的代码---c、c++程序学习
-  http://blog.csdn.net/guoxiaojie_415/article/details/7376365
+  [](http://blog.csdn.net/guoxiaojie_415/article/details/7376365)
 
 # 走读mxml
 
