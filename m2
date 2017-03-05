@@ -125,8 +125,7 @@ function fn_66_佛语()                   { cat book_66_佛语 ;}
 
 function fn_000_黄晓捷谈在校学习()      { cat book_000_黄晓捷谈在校学习 ;}
 function fn_010_李笑来谈读书经验()      { cat book_010_李笑来谈读书经验
-                                              book_010_读书的低水平勤奋陷阱 ;}
-function fn_011_李笑来谈阅读操作系统()  { cat book_011_李笑来谈阅读操作系统 ;}
+                                          cat book_011_李笑来谈阅读操作系统 ;}
 
 function fn_012_李笑来人人都能用英语()  { cat book_012_李笑来人人都能用英语
                                               book_012_李笑来反复通读至少一本语法书
@@ -323,7 +322,9 @@ function fn_38_我是如何摆脱哑巴英语的() { cat article_38_我是如何
 function fn_39_给你把万能钥匙你要不要() { cat article_39_给你把万能钥匙你要不要 ;}
 function fn_40_学习批判性思考()         { cat article_40_学习批判性思考 ;}
 function fn_41_如何成为高品质的勤奋者() { cat article_41_如何成为高品质的勤奋者;
-                                          cat article_41_如何成为高品质的勤奋者2 ;}
+                                          cat article_41_如何成为高品质的勤奋者2 
+                                              article_41_读书的低水平勤奋陷阱 
+                                          ;}
 function fn_42_思考工具及框架()         { cat article_42_思考工具及框架 ;}
 function fn_43_如何科学的思考()         { cat article_43_如何科学的思考 ;}
 function fn_44_学得太慢是一种罪()       { cat article_44_学得太慢是一种罪 ;}
