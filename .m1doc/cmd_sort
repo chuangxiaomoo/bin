@@ -1,27 +1,29 @@
 #! /bin/bash
 
-# -k, --key=POS1[,POS2]
-#        start a key at POS1 (origin 1), end it at POS2 (default end of line)
+-k, --key=POS1[,POS2]
+      start a key at POS1 (origin 1), end it at POS2 (default end of line)
 
-# -b, --ignore-leading-blanks
-#        ignore leading blanks
+-b, --ignore-leading-blanks
+      ignore leading blanks
 
-# -g, --general-numeric-sort
-#        compare according to general numerical value
+-g, --general-numeric-sort
+      compare according to general numerical value
 
-# -z, --zero-terminated
-#        end lines with 0 byte, not newline
+-z, --zero-terminated
+      end lines with 0 byte, not newline
 
-# --sort=WORD
-#        sort according to WORD: 
-#         general-numeric -g, 
-#         human-numeric -h, 
-#         month -M, 
-#         numeric -n, 
-#         random -R, 
-#         version -V
+--sort=WORD
+      sort according to WORD: 
+        general-numeric -g, 
+        human-numeric -h, 
+        month -M, 
+        numeric -n, 
+        random -R, 
+        version -V
 
-# -u, --unique
+-u, --unique
 
-# -r, --reverse
+-r, --reverse
+
+-t, --field-separator=SEP
 

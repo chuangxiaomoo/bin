@@ -58,7 +58,7 @@ function fn_main()
         svn --depth=infinity revert $filelist
         ;;
     s)  svn status $filelist                                ;;
-    S)  for i in ${filelist//clang/\.c$ \.h$ \.cpp$}; do
+    S)  for i in ${filelist//clang/'\.c$ \.h$ \.cpp$'}; do
             svn status | grep -i --color "$i"
         done                                                ;;
     q)  svn -q status                                       ;;

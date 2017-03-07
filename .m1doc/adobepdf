@@ -1,19 +1,21 @@
-/* adobe */
+# adobe
 
 . window
     F4 is for the bookmark
     F8 is for the hide of toolbar
-    
+
 . zoom
+
     [Ctrl -- +] zoom in
     [Ctrl -- -] zoom out
     [Ctrl -- Mouse] zoom as you want
 
 . Note tools
+
     [Shift -- *] is for when you want a straight line or a fold line.
 
 . pdf2word
-    
+
     // 最完美的解决方案
     http://www.pdftoword.com/
 
@@ -22,4 +24,16 @@
 
     // pdf 转 txt
     http://www.piaodown.com/soft/31997.htm
+
+# 背景色彩
+
+1. 文本书
+
+Adobe Acrobat 7.0 专业版可以更改背景颜色
+主菜单--编辑--首选项--辅助工具--自定义颜色--页面背景 设置
+
+2. 图片书
+
+从BAIDU网盘中下载完整版
+文档--添加水印和背景    *需要注意：部分文档被加密了，不可更改，而不是版本的问题*
 
