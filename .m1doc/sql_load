@@ -1,5 +1,9 @@
+# 使能Load
 
-. 从文本装入数据库表中（例如D:/mysql.txt）
+    "ERROR 1148 (42000) at line 1: The used command is not allowed with this MySQL version"
+    mysql --local-infile -u root kts
+
+# 从文本装入数据库表中（例如D:/mysql.txt）
 
     ERROR 1085 (HY000): The file 'xxx' must be in the database directory or be readable by all
     chmod 777 xxx
@@ -13,13 +17,13 @@
         LINES TERMINATED BY '\n'
         ;
 
-. 定制列 
+# 定制列 
 
     -- SET子句可以被用于提供不是来源于输入文件的值。把column3设置为当前日期和时间
     LOAD DATA LOCAL INFILE 'file.txt' INTO TABLE t1 (column1, column2)
         SET column3 = CURRENT_TIMESTAMP;
 
-. 丢弃列
+# 丢弃列
 
     LOAD DATA LOCAL INFILE 'file.txt' INTO TABLE t1 
         (column1, @dummy, column2, @dummy, column3);
