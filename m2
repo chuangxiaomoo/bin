@@ -132,6 +132,7 @@ function fn_012_李笑来人人都能用英语()  { cat book_012_李笑来人人
                                               book_012_中文英语非一一对应之处 ;}
 
 function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从筷子到开挂人生
+                                              book_hh_好好学习
                                               book_dt_暗时间
                                               book_tf_把时间当作朋友
                                               TIME
