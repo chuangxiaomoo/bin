@@ -11,6 +11,7 @@ function fn_usage()
         D   {?|M}
         d   diff  dh:[horizontal-split-diff]
         dp  diff -r 'PREV' check.change:[svn diff -c REV]
+        f   ln -sf ~/.flowchar/main.i .flowchar.i
         h   svn help cmd
         q   -q status
         r   revert -R {file|dir}
@@ -52,7 +53,8 @@ function fn_main()
     d)  svn diff $filelist ;;
     dh) HORI=-o \
         svn diff $filelist ;;
-    dp) svn diff -r 'PREV' $filelist ;;
+    f)  ln -sf ~/.flowchar/main.i .flowchar.i   ;;
+    dp) svn diff -r 'PREV' $filelist            ;;
     r)
         [ -z "$filelist" ] && echo "Error: file... must be dedicated" && exit
         svn --depth=infinity revert $filelist

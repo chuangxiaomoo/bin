@@ -3,6 +3,12 @@
     "ERROR 1148 (42000) at line 1: The used command is not allowed with this MySQL version"
     mysql --local-infile -u root kts
 
+    "/etc/mysql/my.cnf" Then both add:
+    [mysqld]
+    local-infile 
+    [mysql]
+    local-infile 
+
 # 从文本装入数据库表中（例如D:/mysql.txt）
 
     ERROR 1085 (HY000): The file 'xxx' must be in the database directory or be readable by all
