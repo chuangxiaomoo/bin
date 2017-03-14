@@ -1,11 +1,15 @@
 # link
 
-  1 -L指定搜索路径，包括 
+1 -L指定搜索路径，包括 
 
-    .a .so
+  .a .so
 
 
-  2 最基础的库，放在最后面，如 libmxml 依赖 libpthread
+2 最基础的库，放在最后面，如 libmxml 依赖 libpthread
 
-    LDFLAGS := -lrt -ldl -lmxml -lpthread 
+  LDFLAGS := -lrt -ldl -lmxml -lpthread 
+
+3 如果C文件中没有声明接口，.a文件应放在.c的后面
+  g++时也是一样，.a库应尽量放在最后再链接。
+
 
