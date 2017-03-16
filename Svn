@@ -51,6 +51,7 @@ function fn_main()
         } 2>&1 | sed 's/^/\t/g'
         ;;
     d)  svn diff $filelist ;;
+    dc) svn diff `Svn S clang | awk '{print $2}'` ;;
     dh) HORI=-o \
         svn diff $filelist ;;
     f)  ln -sf ~/.flowchar/main.i .flowchar.i   ;;
