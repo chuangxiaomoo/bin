@@ -669,6 +669,8 @@ function fn_rgrep()
     return $?
 }
 
+function fn_flowchar() { ln -sf /root/.flowchar/main.i .flowchar.i ;}
+
 function fn_main() 
 {
     cmdlist=(
@@ -700,6 +702,7 @@ function fn_main()
     "count_frame            # 计算帧"
     "grep   regExp file     # 换行grep"
     "rgrep  regExp          # 换行grep -r <regExp> *"
+    "flowchar               # create .flowchar"
     )
 
     fn_execute "$@"

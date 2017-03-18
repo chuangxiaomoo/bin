@@ -123,6 +123,35 @@ function fn_ec_闭包()                   { cat gcc_ec_闭包 ;}
     )
     fn_print $@
 }
+function fn_make() {
+function fn_link()                      { cat make_link ;}
+function fn_base()                      { cat make_base ;}
+function fn_func()                      { cat make_func ;}
+function fn_skeleton()                  { cat make_skeleton ;}
+function fn_var_cmdline()               { cat make_var_cmdline ;}
+function fn_var_debug()                 { cat make_var_debug ;}
+function fn_var_inner()                 { cat make_var_inner ;}
+function fn_lib_dynamic()               { cat make_lib_dynamic ;}
+function fn_lib_static()                { cat make_lib_static ;}
+function fn_shell()                     { cat make_shell ;}
+function fn_make-C()                    { cat make_make-C ;}
+
+    local opts=(
+        base
+        func
+        skeleton
+        shell
+        make-C
+
+        lib_dynamic
+        lib_static
+
+        var_cmdline
+        var_debug
+        var_inner
+    )
+    fn_print $@
+}
 
 function fn_virtualbox()                { cat virtualbox vmware ;}
 
@@ -583,37 +612,6 @@ function fn_source()                    { cat gdb_source ;}
     fn_print $@
 }
 
-function fn_make() {
-function fn_link()                      { cat make_link ;}
-function fn_base()                      { cat make_base ;}
-function fn_func()                      { cat make_func ;}
-function fn_skeleton()                  { cat make_skeleton ;}
-function fn_var_cmdline()               { cat make_var_cmdline ;}
-function fn_var_debug()                 { cat make_var_debug ;}
-function fn_var_inner()                 { cat make_var_inner ;}
-function fn_lib_dynamic()               { cat make_lib_dynamic ;}
-function fn_lib_static()                { cat make_lib_static ;}
-function fn_shell()                     { cat make_shell ;}
-function fn_make-C()                    { cat make_make-C ;}
-
-    local opts=(
-        compile
-        link                            # 链接
-        base
-        func
-        skeleton
-        shell
-        make-C
-
-        lib_dynamic
-        lib_static
-
-        var_cmdline
-        var_debug
-        var_inner
-    )
-    fn_print $@
-}
 
 function fn_git()                       { 
 function fn_base()                      { cat git_base ;}
