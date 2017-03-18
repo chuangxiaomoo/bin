@@ -223,7 +223,7 @@ function fn_theory()                    { cat music_theory ;}
         misc
         theory
     )
-cat music ;
+    fn_print $@
 }
 
 function fn_mindhacks()                 { cat mindhacks ;}
