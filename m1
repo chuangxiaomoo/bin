@@ -678,6 +678,7 @@ function fn_relocate()                  { cat svn_relocate ;}
 }
 
 function fn_vim() {
+function fn_hex()                       { cat vim_hex ;}
 function fn_fundamental()               { cat vim_fundamental ;}
 function fn_align()                     { cat vim_align ;}
 function fn_hotkey()                    { cat vim_hotkey ;}
@@ -691,6 +692,7 @@ function fn_hilight()                   { cat vim_hilight ;}
 
     local opts=(
         fundamental
+        hex
         diff
         align
         clang_complete
