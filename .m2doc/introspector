@@ -1,0 +1,45 @@
+# introspector
+
+1 以终为始
+2 积极主动
+3 要事第一
+4 双赢思维
+5 先理解别人，再争取别人的理解
+6 协作增效 -- 第三种选择
+7 刻意练习，不断更新
+8 请教达人，知识迁移(google)
+
+# 2017-03-14 双赢思维
+
+chenyl调节声音
+写封邮件，单独做一个包，最后包还有问题(搜索不到有线IP)
+把人拉过来一起调，有问题则改。
+
+# 2017-03-16 以终为始 自上而下(Bottom to top)
+
+放慢速度，先把脉络理清楚，而后下手。
+1 写出所有interface，db.h
+2 写好测试用例 producer.c customer.c 
+3 进行实现：db.c
+
+# 2017-03-18 感知差异 感知不爽 请教达人
+
+    noremap ttp     mA:r!cat /dev/shm/xm<CR>
+    vmap    tty     "yy:!> /dev/shm/xm<CR><CR>:vs /dev/shm/xm<CR>"yp:wq!<CR>
+
+突然之间，感觉tty好慢，有点不爽(not elegant)。
+google后，发现:w可以直接写文件。几年来的心头之痛，就这么解了。
+
+# 2017-03-20 考虑到所有的因素
+
+结构体跨平台：char short
+
+# 2017-03-21 假设验证: 缘起被其它应用调用
+
+在底层调用之中加行打印DBG()即可
+`
+    clean_light_ctrl(LED_BLUE_ON); break;
+        led_ctrl(g_led_blue_addr,LEN_ON); 
+            DBG("level\n")
+`
+
