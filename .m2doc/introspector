@@ -30,13 +30,29 @@ chenyl调节声音
 突然之间，感觉tty好慢，有点不爽(not elegant)。
 google后，发现:w可以直接写文件。几年来的心头之痛，就这么解了。
 
-# 2017-03-20 考虑到所有的因素
+# 2017-03-20 考虑到所有的因素 vs 有罪推定
 
-结构体跨平台：char short
+* 串口打印 = DB9串口线 + 调试板 + 4pin连接线
 
-# 2017-03-21 假设验证: 缘起被其它应用调用
+原始假设："DB9串口线"不会坏
+人证物证：一一进行举证
+事实真相："DB9串口线"坏了
+过程耗时：3 hour
 
-在底层调用之中加行打印DBG()即可
+* id加解密 = win7加密 + win7写记录 + linux读记录 + linux解密
+
+原始假设："win7解密"OK，即"linux解密"OK
+人证物证：一一进行举证
+事实真相："linux解密"interface因为char short 因alignment致sizeof()有差异
+过程耗时：3 hour
+
+结构体跨平台: "win7解密" != "linux解密"
+
+# 2017-03-21 假设验证 vs 一面之词 vs 人证物证
+
+原始假设：一面之词：假设设计的clean_light_ctrl()是唯一的控制接口，其实只是一厢情愿。
+人证物证：计算机不会说假话。在最底层进行把控。
+是否被其它应用调用？在底层调用之中加行打印DBG()即可。
 `
     clean_light_ctrl(LED_BLUE_ON); break;
         led_ctrl(g_led_blue_addr,LEN_ON); 
