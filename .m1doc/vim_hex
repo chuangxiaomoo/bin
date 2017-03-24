@@ -1,0 +1,16 @@
+# 使用bin模式才能正确edit二进制
+
+* hex-linux 
+
+vi -b id.db
+:%!xxd          // execute hexdump, then u can edit it
+:%!xxd -r       // revert the hex to char
+:set wrap       // many lines to display
+
+* hex-win7
+
+:e ++bin id.db  // id.db通过<C-R>%来获取路径
+:%!xxd          // execute hexdump, then u can edit it
+:%!xxd -r       // revert the hex to char
+:set wrap       // many lines to display
+

@@ -113,6 +113,7 @@ function fn_01_preprocess()             { cat gcc_01_preprocess ;}
 function fn_02_header_file_include()    { cat gcc_02_header_file_include ;}
 function fn_03_ld_wrap()                { cat gcc_03_ld_wrap ;}
 function fn_ec_闭包()                   { cat gcc_ec_闭包 ;}
+function fn_macro()                     { cat gcc_macro ;}
 
     local opts=(
         fundamental
@@ -120,6 +121,7 @@ function fn_ec_闭包()                   { cat gcc_ec_闭包 ;}
         02_header_file_include          # 包含顺序及头文件依赖
         03_ld_wrap
         ec_闭包
+        macro                           # 宏.
     )
     fn_print $@
 }
@@ -678,6 +680,7 @@ function fn_relocate()                  { cat svn_relocate ;}
 }
 
 function fn_vim() {
+function fn_hex()                       { cat vim_hex ;}
 function fn_fundamental()               { cat vim_fundamental ;}
 function fn_align()                     { cat vim_align ;}
 function fn_hotkey()                    { cat vim_hotkey ;}
@@ -691,6 +694,7 @@ function fn_hilight()                   { cat vim_hilight ;}
 
     local opts=(
         fundamental
+        hex
         diff
         align
         clang_complete

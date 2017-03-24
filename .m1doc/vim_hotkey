@@ -24,11 +24,3 @@
       :X    if you wanna cancel the key, input a <CR> directly.
       :set key=
 
-*4.1* edit-bin() {
-    "--attention-- vim ga ascii head 3 char of .tgz wrong"
-    :set display=uhex   // 
-    :%!xxd          // execute hexdump, then u can edit it
-    :%!xxd -r       // revert the hex to char
-    :set wrap       // many lines to display
-}
-
