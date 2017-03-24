@@ -217,8 +217,10 @@ function fn_tiandao()                   { cat book_tiandao book_遥远的救世�
 }
 
 function fn_music()    	                {
-function fn_misc()                      { cat music_misc ;}
-function fn_theory()                    { cat music_theory ;}
+function fn_misc()                      { cat music_misc
+                                          cat music_theory
+                                          cat erhu
+                                          ;}
     local opts=(
         misc
         theory
