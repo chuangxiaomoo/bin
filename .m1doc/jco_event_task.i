@@ -36,3 +36,16 @@ eventNotify(JEvent_EthMacCfgChg);
   依赖倒置
 4 实现上，每个类别都有一个线程，内部使用静态变量在第一次执行时初始化。如此便不用 init() 函数。
 
+# define 消息生命过程 event-producer-attach-customer
+
+_生:
+int cbCentreInit()
+    event_manager_register_event_type(p_em, confCmd[i].id_param);
+_住:    
+    attach_config(JEvent_EthcfgChg, test_attach_config_ethcfg, NULL);
+    if !exists(event_manager_register_event_type) printf("This event manager doesn't know about '106' events")
+_坏:    
+    eventNotify(JEvent_EthcfgChg);
+_灭:
+    test_attach_config_ethcfg_cb();
+
