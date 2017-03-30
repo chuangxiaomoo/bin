@@ -10,6 +10,16 @@
       control userpasswords2
       preference -> manage passwd
 
+# 指定的网络密码不正确
+
+  1 直接网络同步时间，共享会检查时间
+
+  2 /etc/samba/smb.conf中设置多个目录，看其它目录是否可以访问
+    192.168.2.44/flowchar
+    192.168.2.44/opt
+
+  3 重命名或更改目录深度重试
+
 # 添加用户并设置密码共享
 
   > when no '-a', prompt: Failed to find entry for user root
