@@ -69,8 +69,7 @@ function fn_2012_plan()                 { cat annual_2012_plan                  
 function fn_2013_plan()                 { cat annual_2013_plan annual_2013_event annual_2013_report;}
 function fn_2014_plan()                 { cat annual_2014_plan annual_2014_event annual_2014_report;}
 function fn_2015_plan()                 { cat annual_2015_plan annual_2015_event annual_2015_report;}
-function fn_2016_plan()                 { cat annual_2016_plan annual_2016_event annual_2016_report 
-                                              annual_2016_ljsw annual_2016_xiaolai ;}
+function fn_2016_plan()                 { cat annual_2016_plan annual_2016_event annual_2016_report annual_2016_ljsw  ;}
 function fn_2017_plan()                 { cat annual_2017_plan ;}
     local opts=(
         plan_what                       # 基于`以终为始`的理念
@@ -136,9 +135,12 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               book_dt_暗时间
                                               book_tf_把时间当作朋友
                                               TIME
-                                              xiaolai_cept
-                                              xiaolai_Execution_vs_Implementation
                                               FeynmanTechnique
+                                              xiaolai_cept
+                                              xiaolai_2016_annual
+                                              xiaolai_Execution_vs_Implementation
+                                              xiaolai_听听闭门会分享
+                                              xiaolai_为什么要学会写作
                                         ;}
 
 function fn_100_周鸿祎自述()            { cat book_100_周鸿祎自述 ;}
