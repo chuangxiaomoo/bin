@@ -138,6 +138,7 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               FeynmanTechnique
                                               xiaolai_cept
                                               xiaolai_2016_annual
+                                              xiaolai_Metacognition
                                               xiaolai_Execution_vs_Implementation
                                               xiaolai_听听闭门会分享
                                               xiaolai_为什么要学会写作
@@ -1110,7 +1111,6 @@ function fn_main() {
         analogy_cept
         misc_cept
         Arts_cept
-        meta_cept                       # 元认知
         TAO                             # 存在的属性
     )
     fn_print $@
