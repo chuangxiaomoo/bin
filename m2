@@ -142,6 +142,7 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               xiaolai_Execution_vs_Implementation
                                               xiaolai_听听闭门会分享
                                               xiaolai_为什么要学会写作
+                                              xiaolai_59个思维和践行点
                                         ;}
 
 function fn_100_周鸿祎自述()            { cat book_100_周鸿祎自述 ;}

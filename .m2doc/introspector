@@ -129,3 +129,54 @@ applog分解：
 
 结论：不正常工作，分解后，在每一层_关键点_都加上打印，是最快的方法。
 
+# 2017-03-29 我们所使用的语言限制了我们的思维
+
+目标：只mount磁盘的第一个分区。
+
+clang:    strrch(path, '/'), strstr(popen("grep mmblk"))
+shell:    basename path | grep /proc/partion
+english:  当前路径是否是第一个分区，如果是，即mount，否则umount
+
+你必须首先熟悉你的工具(language)，才能有效地使用它。上面的例子，_自己硬生生实现了一遍basename()_ 
+
+    char *basename(char *path);
+
+(“name a statue of someone standing with a raised arm while looking into the distance”)
+
+* 使用C++的第一原则是什么？
+
+将你的（pongba按：与语言无关的）设计理念（_概念_）直接映射为C++中的类或模板。
+
+也即是我前一阵子文章中建议的“_脱离语言思考，使用语言实现_”。脱离语言思考的好处是显而易见的：
+可以避免受到语言细节作为既有框架的干扰，_避免过早被实现细节缠住_，于是便容易找到最直观的解决方案，
+即便后来发现语言成了绊脚石，也可以选择换语言或者明确地知道自己做了什么折衷。
+
+* High to Low
+
+1 先使用高级语言，如自然语言，将目标与需求写下来。
+2 Shell思考，再使用clang的库，最后才考虑用Clang自己实现细节。
+
+    RunCmdRusult(const char *cmd, char *buf, int len)
+
+是popen()的封装，这是连接Shell和Clang的重要工具。
+
+# 2017-03-30 黄金思维圈(why).世界是基本元素的组合
+
+bootargs=feature=1
+
+所有鱼眼产品统一使用一个包。为什么？
+站在全产业链(link = 研发 + 生产 = code + npack.sh + tool.jcpcmd)的角度，在[工厂侧](tool.jcpcmd)确定特性，
+极大简化了整个流程。系统思考者，想到了一幅完整的生产图，而孤立思考者，只想到了一个单点。
+
+# 2017-04-04 你不知道并不可怕，可怕的是你不知道你不知道
+
+* 不知道系统的缺陷，你会在这些缺陷上不断耗费时间
+
+1 svn(192.168.2.250)  必须直连
+2 google              直连|路由
+3 danale              必须路由
+
+一根网线，同时满足(1)和(3)，是不可能的事，必须要放弃一个。放弃"不常用的svn"是更好的选择。
+一根网线，只是假设而已，可以用路由通过无线连接到Bobo的路由，实现两条硬件链路解决。
+
+* 
