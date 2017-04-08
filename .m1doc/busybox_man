@@ -1,0 +1,35 @@
+# man
+
+# syslogd
+
+[](https://lists.debian.org/debian-boot/2008/11/msg00313.html)
+
+
+Package: busybox
+Version: 1:1.10.2-2
+Severity: minor
+
+>From the man page:
+
+@begin=cpp@
+     syslogd
+         syslogd    [OPTION]...
+
+         System logging utility.  Note that this version of syslogd ignores
+         /etc/syslog.conf.
+
+         Options:
+
+                 -n              Run in foreground
+                 -O FILE         Log to given file (default=/var/log/messages)
+                 -l n            Set local log level
+                 -S              Smaller logging output
+                 -s SIZE         Max size (KB) before rotate (default=200KB, 0=off)
+                 -b NUM          Number of rotated logs to keep (default=1, max=99, 0=purge)
+                 -R HOST[:PORT]  Log to IP or hostname on PORT (default PORT=514/UDP)
+                 -L              Log locally and via network (default is network only if -R)
+                 -D              Drop duplicates
+                 -C[size(KiB)]   Log to shared mem buffer (read it using logread)        /* NB: -Csize shouldn't have space (because size is optional) */
+@end=cpp@
+
+
