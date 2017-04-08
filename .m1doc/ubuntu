@@ -63,6 +63,8 @@ sudo dpkg-reconfigure dash
 
 # static networking
 
+查看eth.x: /etc/udev/rules.d/70-persistent-net.rules
+
 [/etc/network/interfaces](
 auto  eth1
 iface eth1 inet static
