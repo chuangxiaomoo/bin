@@ -32,6 +32,9 @@
 
   <Ctrl-N> rtsp://192.168.2.44/1/d1
 
+  <Ctrl-N> rtsp://192.168.2.44/stream1
+  <Ctrl-N> rtsp://192.168.2.44/stream2
+
 # 自动弹出vlc
 
   nc 192.168.100.100 1234 <<< "ooh my god"
