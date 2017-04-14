@@ -6,6 +6,10 @@
     # echo "greeter-show-manual-login=true" >> /etc/lightdm/lightdm.conf 
     # restart
 
+# 下载源码
+
+apt-get source linux-image-$(uname -r)
+
 # 12.04关闭图形界面
 
 * 法1
