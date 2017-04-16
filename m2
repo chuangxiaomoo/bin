@@ -696,7 +696,7 @@ function fn_Zhu_雄辩()                  { cat huawei_Zhu_雄辩 ;}
 function fn_Qi_领导管理人才()           { cat huawei_Qi_领导管理人才 ;}
 function fn_Qi_疾病()                   { cat huawei_Qi_疾病 ;}
 
-function fn_WiMax_meeting()             { cat huawei_WiMax_meeting meeting introspector ;}
+function fn_WiMax_meeting()             { cat huawei_WiMax_meeting meeting 7habit introspector ;}
     local opts=(
         WiMax_meeting                   # 唯一一次大会
         cultural
