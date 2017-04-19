@@ -20,7 +20,7 @@ function fn_main()
     case $1 in
     all)
         /etc/init.d/networking stop
-        /etc/init.d/networking start
+        /etc/init.d/networking restart
         ifconfig
         ;;
     bri)
