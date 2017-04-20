@@ -108,7 +108,7 @@ ircut-algorithem
 
 # 2017-03-23 x-y-问题 需求本质
 
-理解挖掘<根本需求>，延时处理，No hasty conclusion.
+理解挖掘<根本&深层需求=全系列管理方便>，延时处理，No hasty conclusion.
 多个产品，使用多个包，且不能互升(*此need是干扰项*)。
 
 需求的本质是*特性化*，而不是多个包，
@@ -117,6 +117,21 @@ ircut-algorithem
   1 uboot
   2 config
   3 sensor-auto-recoganize
+
+# 2017-04-19 “基于表象的思考” “基于实质的思考” [v2](关键词“表象”)
+
+表象(产品经理需求)：
+1 TF卡要能自动识别NTFS格式的64G与128G储存卡，不需到电脑格式化成FAT32模式
+2 要求内核直接支持NTFS格式
+
+事实(现实应用场景)：
+1 对于＞64G的flash，win7只支持vxFat(默认)与NTFS
+2 设备只格式化已挂载的flash
+3 如若flash是vxFat，还是需要再格式化为NTFS
+
+实质
+1
+2
 
 # 2017-03-24 How to talk with boss(salary)？
 
@@ -267,3 +282,4 @@ EV与Lux并不线性的，直接因果的。
 现实：
   1 不crop，MD正常工作(*假设已经不成立，则不要过早优化*)
   2 crop后，全选亦正常工作
+
