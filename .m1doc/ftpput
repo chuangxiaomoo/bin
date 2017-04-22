@@ -1,0 +1,21 @@
+# ftp put
+
+# server on Android
+
+
+# client on Win7
+
+ftp
+
+open 192.168.2.101 2121
+    user: ftp
+    pass: 123
+
+binary
+
+cd /
+cd sdcard1
+cd Download
+
+put E:\winc\DL\apk\Danale-v5.5.8.20170418-beta.apk dana0418.apk
+
