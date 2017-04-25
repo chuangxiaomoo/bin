@@ -74,7 +74,7 @@ alias .en_beep="echo 1 >/tmp/kts/chao.beep"
 alias  iinc='vim ~/.inc'
 alias  .inc='cat ~/.inc'
 
-alias     f='find'
+alias     f='find -name'
 alias     l='ls -CF'
 alias    ls='ls --color=auto'
 alias    ll='ls -AlF'
