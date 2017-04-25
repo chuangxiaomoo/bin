@@ -62,7 +62,7 @@ alias .DEBUG="let 'DEBUG=!DEBUG'; echo \$DEBUG; export DEBUG"
 alias    .s='cd ~/bin'
 alias   .ss='cd ~/bin/stk'
 alias   .rc='.  ~/.bashrc'
-alias  .irc='vi ~/.bashrc; . ~/.bashrc'
+alias  .irc='vi ~/.bashrc +; . ~/.bashrc'
 alias  .mor='~/bin/stk/up morningcall'
 alias    .u='vi /tmp/kts/chao.u'
 alias   .ps='PS1="[\w]\n\u-> \[\033[0m\]"'
