@@ -1,3 +1,5 @@
+#! /bin/bash
+
 # kill
 
   信号是进程间通信机制中唯一的异步通信机制，可以看作是异步通知
@@ -11,11 +13,20 @@
 
   signal 0 is just used to check process is exists or not.
 
-
 # pppoe
 
   在与zengy调试pppoe时，
   若是使用默认信号，会导致其它进程退出。
   kill -9则不会。
 
+# USR1 打印状态 
+
+  $ dd if=/dev/zero of=/dev/null& pid=$!
+  $ kill -USR1 $pid; sleep 1; kill $pid
+
+# STOP COND 控制速度
+
+  time dd if=/dev/zero  bs=1M count=100 | nc 192.168.2.248 1234&      \
+  pid=`ps | awk '/[d]d if/{printf "%s" $1}'`  i=0;                    \ 
+  while :; do kill -0 $pid || { echo no-exist; break ;} ;  let i=i+1; echo $i; kill -STOP $pid;  sleep 1; kill -CONT $pid; sleep 1; done
 

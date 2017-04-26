@@ -3,13 +3,22 @@
 # dd 创建空文件, bs可以有单位，count也可以有单位
 
 # 创建20M的文件
-dd if=/dev/zero of=FILE_U_WANT bs=1M count=20
-dd if=/dev/zero of=FILE_U_WANT bs=512K count=40
+dd if=/dev/zero of=FILE_U_WANT bs=1M    count=20
+dd if=/dev/zero of=FILE_U_WANT bs=512K  count=40
 
 # 创建4G的文件
-dd if=/dev/zero of=FILE_U_WANT bs=4K count=1M
+dd if=/dev/zero of=FILE_U_WANT bs=4K    count=1M
 
 # 追加文件:[count=1]不能省
-dd if=/dev/zero of=FILE_U_WANT bs=1M count=20 oflag=append conv=notrunc
-dd if=/dev/zero                bs=1G count=1  >>FILE_U_WANT
+dd if=/dev/zero of=FILE_U_WANT bs=1M    count=20 oflag=append conv=notrunc
+dd if=/dev/zero                bs=1G    count=1  >>FILE_U_WANT
 
+# 测试网速
+nc -l 1234 > /dev/null
+HOST=192.168.2.248
+time dd if=/dev/zero  bs=1M count=10 | nc ${HOST} 1234 &        \
+pid=`ps | awk '/[d]d if/{printf "%s" $1}'`                      \
+i=0;                                                            \
+while :; do kill -0 $pid || { echo no-exist; break ;};          \
+    let i=i+1; echo $i;                                         \
+    sleep 1; kill -USR1 $pid;  done

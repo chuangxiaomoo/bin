@@ -1,10 +1,21 @@
 #! /bin/bash
 
+# readline = & 可一行执行多个
+    var1=1 var2=2 var3=3
+    dd if=/dev/zero of=/dev/null& pid=$!
+
+# readline \ 在命令行上会将<CR>去掉
+    while :; do     \
+        echo $i     \
+        let i=i+1   \
+    done
+
 # cross-compile
     
     Usage: $0 [OPTION]... [VAR=VALUE]...
 
     CC=arm-linux-gcc ./configure --host=arm-linux
+    一般来说，指定--host就可以了，CC会自动查找
 
 # 写出健壮的 Bash 脚本
     http://www.oschina.net/news/26744/build-robust-bash-script
