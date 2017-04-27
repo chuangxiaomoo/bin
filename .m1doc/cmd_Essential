@@ -1,0 +1,25 @@
+# bash
+
+1. subshells
+
+在bash 脚本中，subshells (写在圆括号里的) 可以很方便的方式来组合一些命令
+
+一个常用的例子是临时地到另一个目录中
+    pwd
+    (cd /opt/; pwd)
+    pwd
+
+2. BASH有变量展开的功能
+
+echo  ls{1..10}     # 注意，不能把{}引起来
+
+3. debug Web
+
+试试curl 和 curl -I 或是 wget 。我觉得debug Web的利器是firebug，curl和
+wget是用来抓网页的，呵呵。
+
+# windows cmd
+
+安装clink
+https://softpedia-secure-download.com/dl/1bd86aef2ed93b0da23c33b459ba001e/59018b49/100239046/software/os_enhance/clink_0.4.8_setup.exe
+

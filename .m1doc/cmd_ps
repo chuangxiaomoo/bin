@@ -1,0 +1,8 @@
+# ps busybox
+
+
+# ps ubuntu
+
+awk '{print $1}' 取pid 不打印user，与busybox行为类似
+
+$ ps ax

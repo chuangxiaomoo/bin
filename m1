@@ -722,7 +722,7 @@ function fn_hotkey()                    { cat w3m_hotkey ;}
 }
 
 function fn_cmd()                       {
-function fn_01_方便之门()               { cat cmd_01_方便之门 ;}
+function fn_Essential()                 { cat cmd_Essential ;}
 function fn_arping()                    { cat cmd_arping ;}
 function fn_tee()                       { cat cmd_tee ;}
 function fn_fdisk()                     { cat cmd_fdisk ;}
@@ -754,8 +754,10 @@ function fn_mktemp()                    { cat cmd_mktemp ;}
 function fn_kill()                      { cat cmd_kill ;}
 function fn_install()                   { cat cmd_install ;}
 function fn_calltree()                  { cat cmd_calltree ;}
+function fn_nc()                        { cat cmd_nc ;}
+function fn_ps()                        { cat cmd_ps ;}
     local opts=(
-        01_方便之门
+        Essential
         arping                  # arp -D 检测IP冲突 iputils
         calltree
         date
@@ -791,6 +793,8 @@ function fn_calltree()                  { cat cmd_calltree ;}
         zip
         cpio                    # 与tar类似的打包格式cpio，结合压缩命令gzip zcat
         usb-creator-gtk         # startup-disk-creator 制作启动盘
+        nc
+        ps
     )
     # 每天一个linux命令，还有其它非常有价值的东西
     # www.cnblogs.com/peida/tag/linux命令

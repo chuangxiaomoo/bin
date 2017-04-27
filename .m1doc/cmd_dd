@@ -15,10 +15,15 @@ dd if=/dev/zero                bs=1G    count=1  >>FILE_U_WANT
 
 # 测试网速
 nc -l 1234 > /dev/null
-HOST=192.168.2.248
-time dd if=/dev/zero  bs=1M count=10 | nc ${HOST} 1234 &        \
-pid=`ps | awk '/[d]d if/{printf "%s" $1}'`                      \
-i=0;                                                            \
-while :; do kill -0 $pid || { echo no-exist; break ;};          \
-    let i=i+1; echo $i;                                         \
-    sleep 1; kill -USR1 $pid;  done
+
+NR=10 IF=/dev/zero HOST=192.168.2.249
+
+ps -ef > /dev/null && export OPT=ax
+
+dd if=$IF  bs=1M count=$NR | nc ${HOST} 1234 &              \
+pid=`ps $OPT | awk '/[d]d if/{printf ("%s", $1); exit}'`;   \
+i=0; test -n "$pid" &&                                      \
+while :; do kill -0 $pid || { echo __done__; break; };      \
+    let i=i+1; echo $i;                                     \
+    sleep 1; kill -USR1 $pid;                               \
+done
