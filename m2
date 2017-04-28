@@ -523,7 +523,8 @@ function fn__1st_principle()            { cat logic__1st_principle
                                           cat book_The_Principle
                                           cat test_The_Principle    #古严：我对《原则》的践行心得
                                           cat love_36_questions
-                                          cat 
+                                          cat experiment.u
+                                          cat experiment_eg.u
                                           ;
 function fn_training500()               { cat logic_training500 ;}
 function fn_puzzle()                    { cat logic_puzzle ;}
