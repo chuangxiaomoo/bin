@@ -60,6 +60,7 @@ function fn_annual()                    {
 function fn_plan_what()                 { cat annual_plan_what ;}
 function fn_report_what()               { cat annual_report_what ;}
 function fn_seminar_what()              { cat annual_seminar_what ;}
+function fn_2009_grandstream()          { cat annual_2009_grandstraem ;}
 function fn_2011_investment_report()    { cat annual_2011_investment_report ;}
 function fn_2014_jco()                  { cat annual_2014_jco ;}
 function fn_2014_spring_festival()      { cat annual_2014_spring_festival ;}
@@ -695,7 +696,9 @@ function fn_Zhu_雄辩()                  { cat huawei_Zhu_雄辩 ;}
 function fn_Qi_领导管理人才()           { cat huawei_Qi_领导管理人才 ;}
 function fn_Qi_疾病()                   { cat huawei_Qi_疾病 ;}
 
-function fn_WiMax_meeting()             { cat huawei_WiMax_meeting meeting 7habit introspector ;}
+function fn_WiMax_meeting()             { cat huawei_WiMax_meeting meeting 
+                                              7habit 8s_habit
+                                              introspector ;}
     local opts=(
         WiMax_meeting                   # 唯一一次大会
         cultural
@@ -993,30 +996,8 @@ function fn_rhyme200()                  { cat guo_rhyme200 ;}
     fn_print $@
 }
 
-
-function fn_writing() {
-function fn_format_XiaoLai()            { cat writing_format_XiaoLai ;}
-    local opts=(                        # writing
-        format_XiaoLai
-    )
-}
-
-function fn_betterExplained()           {
-function fn_ADEPT()                     { cat betterExplained_ADEPT ;}
-function fn_feelgood.list()             { cat betterExplained_feelgood.list ;}
-function fn_ideas.list()                { cat betterExplained_ideas.list ;}
-    local opts=(
-        ADEPT
-        feelgood.list
-        ideas.list
-    )
-
-    return $?
-}
-
 function fn_game_theory()               { cat game_theory ;}
 function fn_debate_competition()        { cat debate_competition ;}
-function fn_super_speech()              { cat super_speech luoyonghao ;}
 function fn_advertisement()             { cat advertisement ;}
 function fn_architecture()              { cat architecture ;}
 function fn_estate()                    { cat estate ;}
@@ -1048,7 +1029,6 @@ function fn_main() {
         article
         book
         debate_competition
-        super_speech
         dream
         driver
         english
@@ -1092,11 +1072,10 @@ function fn_main() {
         life_is_a_bus                   # 公交车
         game_theory
         redwine
-        stupid_things                   # 哪些年做过的蠢事 habit
+        stupid_things                   # 哪些年做过的蠢事
         subtitle
         psychology                      # 心理学
         kindle
-        writing
         chaos
         literature                      # 文学
 

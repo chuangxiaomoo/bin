@@ -114,6 +114,7 @@ alias  8cat='iconv -f cp936 -t utf8'
 
 alias    v1='vi -R ~/bin/m1'
 alias    v2='vi -R ~/bin/m2'
+alias    v3='vi -R ~/bin/m3'
 alias    v7='vi    ~/bin/7Lite'
 alias    vj='vi    ~/bin/j2box'
 alias    vn='vi --noplugin'
