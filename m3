@@ -1,9 +1,16 @@
 # brain-circle
 
+outlooks
+
 # speech
 
 super_speech 
 luoyonghao
+
+# lesson
+
+xsdx_lesson_1
+xsdx_lesson_2
 
 # write
 

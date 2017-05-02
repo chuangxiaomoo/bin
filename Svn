@@ -15,6 +15,7 @@ function fn_usage()
         dp  diff -r 'PREV' check.change:[svn diff -c REV]
         f   ln -sf ~/.flowchar/main.i .flowchar.i
         h   svn help cmd
+        ps  svn ps svn:execute on __files_to_add_x__
         q   -q status
         r   revert -R {file|dir}
         s   status
@@ -63,12 +64,13 @@ function fn_main()
         [ -z "$filelist" ] && echo "Error: file... must be dedicated" && exit
         svn --depth=infinity revert $filelist
         ;;
-    s)  svn status $filelist                                ;;
+    s)  svn status $filelist                                            ;;
     S)  for i in ${filelist//clang/'\.c$ \.h$ \.cpp$'}; do
             svn status | grep -i --color "$i"
-        done                                                ;;
-    q)  svn -q status                                       ;;
-    u)  svn up $filelist                                    ;;
+        done                                                            ;;
+    ps) svn ps svn:executable on $filelist; ls -l --color $filelist     ;;
+    q)  svn -q status                                                   ;;
+    u)  svn up $filelist                                                ;;
   h|*)  fn_usage
         svn status | sed 's/^/\t/g'
         ;;

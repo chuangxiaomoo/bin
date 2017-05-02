@@ -257,6 +257,7 @@ lsgcc()
     nxp     arm-linux-
     ti      arm_v5t_le-
     grain   arm-unknown-linux-uclibcgnueabi-
+    anyka   arm-anykav200-linux-uclibcgnueabi-
 
     /home/n/rc.d/mksquashfs
     "

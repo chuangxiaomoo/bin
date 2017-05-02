@@ -23,6 +23,16 @@ if { $argc == 0 } {
         interact {
             timeout 30 { send "" }
         }
+    } elseif { [string match *alogin $argv0] == 1 } {   # nvr
+        spawn telnet $ip $port
+        expect  "login:"
+        send    "root\n"
+        expect  "Password:"
+        send    "jabsco168\n"
+
+        interact {
+            timeout 30 { send "" }
+        }
     } elseif { [string match *nlogin $argv0] == 1 } {   # nvr
         spawn telnet $ip $port
         expect  "login:"
