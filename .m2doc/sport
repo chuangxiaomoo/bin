@@ -205,8 +205,9 @@ c 双打.接球.蹬地以抢制高点
 角度不大于30°{{{
 #include <math.h>
 #define PI 3.1415926
-#define HALF 2.59       // single
-// #define HALF 3.05       // double
+#define HALF_width1   2.59        // single
+#define HALF_width2   3.05        // double
+#define HALF_lenght   (13.4/2)    // 1.98 + 3.96 + 0.76
 
 int main()
 {
@@ -215,17 +216,33 @@ int main()
     float tail=.76 ;
 
     printf("arc 30°    %f\n", atan2(1, 1.732) *180/PI);
-    printf("外角打中线 %f\n", atan2(HALF  , (head+body+tail)*2) *180/PI);
-    printf("内角打中线 %f\n", atan2(HALF  , (head+body     )*2) *180/PI);      
+    printf("外角打中线 %f\n", atan2(HALF_width1  , (head+body+tail)*2) *180/PI);
+    printf("内角打中线 %f\n", atan2(HALF_width1  , (head+body     )*2) *180/PI);
 
-    printf("外角打外角 %f\n", atan2(HALF*2, (head+body+tail)*2) *180/PI);
-    printf("内角打内角 %f\n", atan2(HALF*2, (head+body     )*2) *180/PI);
+    printf("外角打外角 %f\n", atan2(HALF_width1*2, (head+body+tail)*2) *180/PI);
+    printf("内角打内角 %f\n", atan2(HALF_width1*2, (head+body     )*2) *180/PI);
 
-    printf("前角打外角 %f\n", atan2(HALF*2, (2*head+body+tail)) *180/PI);
-    printf("前角打内角 %f\n", atan2(HALF*2, (2*head+body     )) *180/PI);
+    printf("前角打外角 %f\n", atan2(HALF_width1*2, (2*head+body+tail)) *180/PI);
+    printf("前角打内角 %f\n", atan2(HALF_width1*2, (2*head+body     )) *180/PI);
 
     return 0;
 }
+
+    +------------J------------K            A - J    10.93
+    |            |            |            A - H    12.29
+    +------------H------------I
+    |            |            |            A - K    21.13
+    |            |            |            B - I    23.55
+    +------------+------------+
+    |            |            |            C - K    30.80
+    +------------+------------+            C - I    33.18
+    |            |            |
+    C------------+------------+
+    |            |            |
+    |            |            |
+    B------------D------------+
+    |            |            |
+    A------------+------------+
 }}}
 
 # 高杀吊.后场球有共同的基本动作框架
