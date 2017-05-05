@@ -50,8 +50,11 @@ function fn_main()
         git commit -m "$REPLY" ${filelist}
         ;;
 
-    d|diff)
-        git diff ${filelist}
+    d)  git diff ${filelist}
+        ;;
+    dl) list=`git status | awk '/modified:/{print $3}'`
+        [ -z "${list}" ] && echo "no modified" && return
+        git diff ${list}
         ;;
     log|l)
         git log -p ${filelist}
