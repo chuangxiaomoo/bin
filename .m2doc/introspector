@@ -388,7 +388,7 @@ chmod = svn ps svn.executable on FILES...
 & <音频现象>                                        <真相>
 0 在手机and电脑上，完全没有声音。                   成谜，一直没有复现
 1 两设备，Mic采样在手机and电脑上，声音一大一小。    交换Mic后解决，是Mic头的问题，
-2 手机有啸叫声                                      使用耳机听亦有杂声，是LIV过大超范围，调小LIV
+2 手机有啸叫声                                      使用*耳机*听亦有杂声，是LIV过大超范围，调小LIV
 3 chenyl手机完全没有声音                            zj手机有声音，非<问题1>，APP重启后解决
 4 zhangsq电脑在会议室双向时听不到设备声音           电脑使用耳机有小量声音，换电脑后确定是电脑问题
 5 chenyl说Android还是双向，是否feature没上传        双向语音feature正确
@@ -404,4 +404,25 @@ chmod = svn ps svn.executable on FILES...
 1 初步界定问题 = {App + 驱动 + 硬件}，换Mic等不影响
 2 To improve is to change; to be perfect is to change often. - Winston Churchill
   预则立：在重要的节点插入<楔子取证>，是比不重启
+
+& &&&&&&&&&&&&&&&&&&&&&&&DEBUG方法论&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+0 DEBUG的大神是GDB，插入冗余代码“取证据”，并进行条件捕捉
+1 对系统进行分解
+2 明确破冰点，并在这个打下套，捕捉信息
+3 2017-05-05 狗屎运
+  a 测试部单纯重启接近第50次，感动地捕捉到了无声音
+  b 使用手机和电脑听都只是背景电流声
+  c 使用耳机听也没有声音
+  d [toggle stat 2^19](强制打开语音播报)，使用耳机听到了“获取IP成功”的提示声
+  e 后续测试：回消芯片正常工作时，听不到“获取IP成功”的提示声
+  f d+e=＞回消芯片没有工作
+
+# 2017-05-06 语音提示再论 + “心法” is a good tag
+1 [逻辑清晰的心法](~/fc/.flowchar/codingstyle.i)
+  a 定好属性
+  b 对属性进行排序实现
+    无条件执行
+    条件执行
+    不执行
+2 实际案例：语音提示+ircut控制+station状态检测
 

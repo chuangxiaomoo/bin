@@ -322,9 +322,13 @@ function fn_08_novel()                  { cat article_08_novel ;}
 function fn_20_学习学习再学习()         { cat article_20_学习学习再学习
                                           cat article_21_快速学习的几个基本原则
                                           cat article_22_把虚拟变成现实的觉悟
-                                          cat article_23_从自我出发做选择的能力 # joc-needed
                                           cat article_24_永葆热情的上瘾式学习法
+                                          cat article_30_从自我出发做选择的能力 # joc-needed
+                                          cat article_31_割断旧的社会关系式成长
                                           ;}
+function fn_tingting()                  {
+                                          cat tingting_01_运营——成为能成事的人
+}
 
 function fn_38_我是如何摆脱哑巴英语的() { cat article_38_我是如何摆脱哑巴英语的 ;}
 function fn_39_给你把万能钥匙你要不要() { cat article_39_给你把万能钥匙你要不要 ;}
