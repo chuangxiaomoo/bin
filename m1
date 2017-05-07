@@ -6,7 +6,7 @@ cd ${ARCHIVE}
 
 function fn_agile()                     { 
 function fn_manifesto()                 { cat agile_manifesto ;}
-function fn_base()                      { cat agile_base ;}
+function fn_base()                      { cat agile_base rdm ;}
 function fn_26_hints()                  { cat agile_26_hints ;}
     local opts=(
         manifesto           # 应运而生
@@ -1266,19 +1266,6 @@ function fn_可观可控可溯设计()          { cat report_可观可控可溯�
     fn_print $@
 }
 
-function fn_team()                      {
-function fn_base()                      { cat team_base ;}
-function fn_01_员工对什么不满意()       { cat team_01_员工对什么不满意 ;}
-function fn_02_tobe_狼or狐狸or老鼠()    { cat team_02_tobe_狼or狐狸or老鼠 ;}
-    local opts=(
-        base
-        01_员工对什么不满意
-        02_tobe_狼or狐狸or老鼠
-    )
-    fn_print $@
-}
-function fn_rdm()                       { cat rdm ;}
-
 function fn_jimxl()                     {
 function fn_base()                      { cat jimxl_base ;}
 function fn_nvr()                       { cat jimxl_nvr ;}
@@ -1326,7 +1313,6 @@ function fn_log()                       { cat nxp_log ;}
 function fn_config()                    { cat nxp_config ;}
 function fn_upgrade()                   { cat nxp_upgrade ;}
 function fn_testing()                   { cat nxp_testing ;}
-function fn_story()                     { cat nxp_story ;}
 
 function fn_alarm_link()                { cat nxp_alarm_link ;}
 
@@ -1354,7 +1340,6 @@ function fn_svc()                       { cat nxp_svc ;}
         protocol                        # client与server的通信协议
         client                          # browser
         testing
-        story                           # 迭代总结
         time
         # ----- web func delimeter ----
         alarm_link
@@ -1532,8 +1517,6 @@ function fn_main() {
         json
         yum
         wbs                     # WBS任务分解，与 RDM 协同办公
-        rdm                     # 技术管理
-        team                    # 团队 老板 同事 下属
         cloud
         mindmap
         blockchain

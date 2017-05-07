@@ -143,7 +143,7 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               xiaolai_Execution_vs_Implementation
                                               xiaolai_听听闭门会分享
                                               xiaolai_为什么要学会写作
-                                              xiaolai_59个思维和践行点
+                                              xiaolai_教给我的59件事
                                         ;}
 
 function fn_014_心法系列()              { cat xinfa_01_知识付费应该怎么做？
@@ -317,7 +317,6 @@ function fn_article()                   {
 function fn_01_高铁陆权战略()           { cat article_01_高铁陆权战略 ;}
 function fn_03_教育的意义()             { cat article_03_教育的意义 ;}
 function fn_04_周国平：交往的质量()     { cat article_04_周国平：交往的质量 ;}
-function fn_05_whatsfriend()            { cat article_05_whatsfriend ;}
 function fn_06_哪些知识会让你变蠢？()   { cat article_06_哪些知识会让你变蠢？ ;}
 function fn_07_如何构建经济学思维方式() { cat article_07_如何构建经济学思维方式 ;}
 function fn_08_novel()                  { cat article_08_novel ;}
@@ -326,8 +325,10 @@ function fn_20_学习学习再学习()         { cat article_20_学习学习再�
                                           cat article_21_快速学习的几个基本原则
                                           cat article_22_把虚拟变成现实的觉悟
                                           cat article_24_永葆热情的上瘾式学习法
+
                                           cat article_30_从自我出发做选择的能力 # joc-needed
                                           cat article_31_割断旧的社会关系式成长
+                                          cat article_32_什么是朋友？
                                           ;}
 function fn_tingting()                  {
                                           cat tingting_01_运营——成为能成事的人
@@ -385,7 +386,6 @@ function fn_gsq_房价什么情况下会崩()    { cat article_gsq_房价什么�
         02_铁道部取消
         03_教育的意义
         04_周国平：交往的质量
-        05_whatsfriend
         06_哪些知识会让你变蠢？
         07_如何构建经济学思维方式
         08_novel
@@ -530,6 +530,7 @@ function fn__struct()                   { cat logic__struct ;}
 function fn__1st_principle()            { cat logic__1st_principle
                                           cat book_The_Principle
                                           cat test_The_Principle    #古严：我对《原则》的践行心得
+                                          cat test_People
                                           cat love_36_questions
                                           cat experiment.u
                                           cat experiment_eg.u
@@ -705,7 +706,11 @@ function fn_Qi_疾病()                   { cat huawei_Qi_疾病 ;}
 
 function fn_WiMax_meeting()             { cat huawei_WiMax_meeting meeting 
                                               7habit 8s_habit
-                                              introspector ;}
+                                              sanxing_2013
+                                              sanxing_2013.team
+                                              sanxing_2014.nxp
+                                              introspector 
+                                        ;}
     local opts=(
         WiMax_meeting                   # 唯一一次大会
         cultural
@@ -880,7 +885,6 @@ function fn_04_责任与中年危机()         { cat family_04_责任与中年�
 
 function fn_ideas()                     { cat ideas ;}
 function fn_idealism()                  { cat idealism ;}
-function fn_sanxing三省()               { cat sanxing三省 ;}
 function fn_rose()                      { cat rose ;}
 function fn_interview()                 { cat career 50_faq tek jd interview ;}
 
@@ -1075,7 +1079,6 @@ function fn_main() {
         rose                            #
         zhihu
         zhenhuan                        # 甄嬛体
-        sanxing三省
         life_is_a_bus                   # 公交车
         game_theory
         redwine
