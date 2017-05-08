@@ -296,6 +296,10 @@ function git_diff() {
     echo "${nb_2015}" > /tmp/kts/2015
 }
 
+cpcom() { mkdir -p /winc/Export/com/; rm -rf   /winc/Export/com/*;
+             cp -a release/com/*               /winc/Export/com/ ;}
+cptar() { mkdir -p /winc/Export/com/; cp -a $1 /winc/Export/com/ ;}
+nctar() { file=`ls release/tar/GM8135*.tgz`;  nc $1 8006 < $file ;}
 
 # manpage color
 export LESS_TERMCAP_mb=$'\E[01;31m'
