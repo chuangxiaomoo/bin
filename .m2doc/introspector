@@ -441,8 +441,9 @@ chmod = svn ps svn.executable on FILES...
     不执行
       goto ____skip;
     条件执行
-      if () {}
-      if () {}
+      if () { goto ____play; } goto ____skip;
+      if () { goto ____play; } goto ____skip;
+      ____dufault:
       ____paly:
       ____skip:
   c 核心思想是状态机

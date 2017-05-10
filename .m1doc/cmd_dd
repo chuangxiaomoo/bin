@@ -16,7 +16,7 @@ dd if=/dev/zero                bs=1G    count=1  >>FILE_U_WANT
 # 测试网速
 nc -l 1234 > /dev/null
 
-NR=10 IF=/dev/zero HOST=192.168.2.249
+NR=10 IF=/dev/zero HOST=192.168.2.248
 
 ps -ef > /dev/null && export OPT=ax
 

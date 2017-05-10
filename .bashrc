@@ -148,7 +148,7 @@ function M()    { m1 $@ | tail -18; } # M() { m1 $@ | nl -w 3 -s' ' | less -i ;}
 
 lwd() 
 {
-    cat -n ~/.awd 2>/dev/null | grep '[0-9]' || {
+    cat -n ~/.awd 2>/dev/null | grep -E "([0-9]|Export)" || {
         echo "Usage: lwd" &&
         echo "  run awd first" && return
     }
@@ -296,8 +296,9 @@ function git_diff() {
     echo "${nb_2015}" > /tmp/kts/2015
 }
 
-cpcom() { mkdir -p /winc/Export/com/; rm -rf   /winc/Export/com/*;       cp -a release/com/* /winc/Export/com/ ;}
-cptar() { mkdir -p /winc/Export/com/; file=`ls release/tar/GM8135*.tgz`; cp -a $file         /winc/Export/com/ ;}
+cpcom() { mkdir -p /winc/Export/com/; rm -rf /winc/Export/com/*;     cp -a release/com/* /winc/Export/com/ ;}
+cptar() { file=`ls release/tar/GM8135*.tgz`; 
+          mkdir -p /winc/Export/com/; rm -rf /winc/Export/com/*.tgz; cp -a $file         /winc/Export/com/ ;}
 nctar() { file=`ls release/tar/GM8135*.tgz`;  nc $1 8006 < $file ;}
 
 # manpage color

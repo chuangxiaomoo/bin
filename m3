@@ -20,3 +20,10 @@ writing
 betterExplained_ADEPT
 betterExplained_feelgood.list
 betterExplained_ideas.list
+
+# 0001_什么是聪明？
+
+清晰的概念
+IC的应用
+设计模式 “一个人可以思考的深度取决于他用于思考的语言掌握的词汇量。”
+

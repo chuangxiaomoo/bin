@@ -3,7 +3,21 @@
  * readonly is more catchy
  **/
 
-在C中最常用的是, 以const限定函数的形参(formal parameter)
+(0) 在C中最常用的是, 以const限定函数的形参(formal parameter)
+
+    int test(const char *buf, const int *len)       //   编译错误
+    {
+        buf[0]= 0;
+        *len = 5;
+        return 0;
+    }
+
+    int test(const char *buf, const int *len)       // 无“编译错误”
+    {
+        buf = NULL;
+        len = NULL;
+        return 0;
+    }
 
 (1) const修饰是属于编译层面的限制.
     只有直接对const变量进行修改，编译时才会报错, 间接写memset操作是可以的.
