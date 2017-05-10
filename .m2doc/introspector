@@ -486,3 +486,8 @@ D4 293.66
 A4 440
 相差一个8度的音符，f是2倍关系，钢琴最高音 4186.009，人声的最高音。
 
+vim search pattern but without appointed word
+
+http://stackoverflow.com/questions/96826/vim-how-do-i-exclude-an-entire-word-from-my-search
+
+
