@@ -297,9 +297,9 @@ function git_diff() {
 }
 
 cpcom() { mkdir -p /winc/Export/com/; rm -rf /winc/Export/com/*;     cp -a release/com/* /winc/Export/com/ ;}
-cptar() { file=`ls release/tar/GM8135*.tgz`; 
+cptar() { file=`ls release/tar/*.tgz`; 
           mkdir -p /winc/Export/com/; rm -rf /winc/Export/com/*.tgz; cp -a $file         /winc/Export/com/ ;}
-nctar() { file=`ls release/tar/GM8135*.tgz`;  nc $1 8006 < $file ;}
+nctar() { file=`ls release/tar/*.tgz`;  nc $1 8006 < $file ;}
 
 # manpage color
 export LESS_TERMCAP_mb=$'\E[01;31m'

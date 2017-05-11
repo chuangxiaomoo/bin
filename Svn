@@ -9,10 +9,11 @@ function fn_usage()
         c   ci [files...]
         cf  conflict
         D   {?|M}
-        d   diff  dh:[horizontal-split-diff]
-        dc  svn diff -rBASE:\${filelist}
+        d   diff            : equal -c BASE:WORKING
+        dc  diff -c r9527   : equal -c r9526:r9527
+        dp  diff -r 'PREV'  : 提交有误时diff上上个版本
+        dh  horizontal-split-diff
         dl  equal [Svn S clang]
-        dp  diff -r 'PREV' check.change:[svn diff -c REV]
         f   ln -sf ~/.flowchar/main.i .flowchar.i
         h   svn help cmd
         ps  svn ps svn:execute on __files_to_add_x__
@@ -54,7 +55,7 @@ function fn_main()
         } 2>&1 | sed 's/^/\t/g'
         ;;
     d)  svn diff $filelist ;;
-    dc) svn diff -rBASE:${filelist} ;;
+    dc) svn diff -c${filelist} ;;
     dl) svn diff `Svn S clang | awk '{print $2}'` ;;
     dh) HORI=-o \
         svn diff $filelist ;;
