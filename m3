@@ -14,6 +14,7 @@ xsdx_lesson_2
 
 # write
 
+writing_1st_principle
 writing_format_XiaoLai
 writing
 
