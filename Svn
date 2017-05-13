@@ -56,7 +56,7 @@ function fn_main()
         ;;
     d)  svn diff $filelist ;;
     dc) svn diff -c${filelist} ;;
-    dl) svn diff `Svn S clang | awk '{print $2}'` ;;
+    dl) svn diff `Svn sc | awk '{print $2}'` ;;
     dh) HORI=-o \
         svn diff $filelist ;;
     f)  ln -sf ~/.flowchar/main.i .flowchar.i   ;;

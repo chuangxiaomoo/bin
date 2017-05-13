@@ -498,6 +498,17 @@ ircut 切换，被指导只要测试挂在天花板上就OK。                  
 测试一次绿帧，需要30分钟。与Grain沟通两次邮件，一天就过了大半。
 对于用户体验，黑白切换之际，晃动摄像机，几乎不会友好使用。价值观上的冲突，是一件非常痛苦的事情。
 
+# 2017-05-13 最快速的学习方法，来自高水平反馈
+
+@begin=cpp@
+static int insertList(Node **pNode, int flag, elemType elemInserted, unsigned int fsize)
+warning: ‘pLast’ may be used uninitialized in this function
+@end=cpp@
+
+1 明白目标的行为：链表的 insert() { prev, curr, next }
+2 进行激励与反馈：可以用 `toggle code 1000` 来进行实时反馈，而不是读代码
+3 最后连接新旧知识：把 { prev, curr, next } 与小董的代码进行配对 { pTemp = curr, pLast = prev }
+
 # todo
 
 1 音频是学习流的一个入口，一定要好好把握
