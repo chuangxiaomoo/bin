@@ -44,10 +44,15 @@ chenyl调节声音
 2 写好测试用例 producer.c customer.c 
 3 进行实现：db.c
 
-事实：在协作中的两条黄金法则：
+事实：在协作中的黄金法则：
 0 [举证责任](在人类活动中，利益与责任往往是破冰之点)
 1 保证自己的屁股是干净的
 2 能够向搭档证明自己的屁股是干净的
+3 不乱吃，就不会乱拉。分解，找出最新的改变，即是问题之所在。
+  No change no improve, No change no degeneracy. No zuo no die. (zuo即想当然可以随便吃, take too much for granted)
+4 彻底解决乱拉：吃东西的正确姿势。明白后面的“背景知识”，找 manual.
+
+5 No hasty conclusion. When zhanghui chenkai ask help, pause them.
 
 # 2017-03-18 感知差异 感知不爽 请教达人
 
