@@ -7,7 +7,7 @@ function fn_main()
     TTY=$(tty)
     TTY=${TTY##/dev/}
     PTS=(`ps -ef | grep -w -E "([v]i|[v]imdiff)" | /usr/bin/awk '{print $6}'`)
-    PID=(`ps -ef | grep -w -E "([v]i|[v]imdiff)" | grep "$TTY" | /usr/bin/awk '{print $2}'`)
+    PID=(`ps -ef | grep -w -E "([v]i|[v]imdiff)" | grep "${TTY}\>" | /usr/bin/awk '{print $2}'`)
 
     [ -z "${PTS[*]}" ] && echo -e "\n No vim --Running--! \n" && exit 0
 

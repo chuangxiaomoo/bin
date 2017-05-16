@@ -35,30 +35,3 @@ function fn_main()
 }
 
 fn_main "$@"
-
-function fn_main()
-{
-    stat=1
-    case $1 in
-    +) 
-        sum=`echo ${@:2} | xargs -n1 | awk '{sum+=(2^$1)} END{ print sum }'`
-        let stat=stat+sum 
-        ;;
-    -) 
-        sum=`echo ${@:2} | xargs -n1 | awk '{sum+=(2^$1)} END{ print sum }'`
-        let stat=stat-sum
-        ;;
-
-    [0-9]*)
-        sum=`echo ${@:1} | xargs -n1 | awk '{sum+=(2^$1)} END{ print sum }'`
-        let stat=sum
-        ;;
-    esac
-
-    echo $stat
-
-    
-}
-
-fn_main + 1 2 3
-

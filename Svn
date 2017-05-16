@@ -66,7 +66,7 @@ function fn_main()
         svn --depth=infinity revert $filelist
         ;;
     s)  svn status $filelist                                            ;;
-    sc) svn status | grep -i --color -E '(\.c$|\.h$|\.cpp$)'            ;;
+ sc|Sc) svn status | grep -i --color -E '(\.c$|\.h$|\.cpp$)'            ;;
     S)  for i in ${filelist}; do svn stat | grep -i --color "$i"; done  ;;
     ps) svn ps svn:executable on $filelist; ls -l --color $filelist     ;;
     q)  svn -q status                                                   ;;

@@ -74,7 +74,7 @@ alias .en_beep="echo 1 >/tmp/kts/chao.beep"
 alias  iinc='vim ~/.inc'
 alias  .inc='cat ~/.inc'
 
-alias     f='find -name'
+alias     f='find . -name'
 alias     l='ls -CF'
 alias    ls='ls --color=auto'
 alias    ll='ls -AlF'
@@ -101,12 +101,6 @@ alias     x='chmod 777 '
 alias    xt='chmod 777 /tftpboot/*'
 alias    xx='tar -zxvf'
 alias    ct='cd ~/sh/t'
-
-alias   cwd='pwd >>  ~/.env;vi ~/.env; .rc'         # curr-pwd
-alias   awd='pwd >>  ~/.awd'                        # echo -e "$PWD\n`cat ~/.awd`" > ~/.awd
-alias   iwd='vi      ~/.awd'                        #
-alias   swd='pwd >   ~/.swd'                        # save pwd, [pushd .]
-alias   gwd='cd `cat ~/.swd`'                       # save pwd  [popd]
 
 alias    cs='cscope -Rbq *'
 alias vboxr='/etc/init.d/vboxadd-service restart'   # ;umount -a 2>/dev/null; mount -a
@@ -140,23 +134,28 @@ alias  clrnfs="Svn | grep nfs | awk '{print $2}' | xargs rm -f"
 alias fbcache="sync; echo 3 > /proc/sys/vm/drop_caches"
 alias    Calc='set -f; fn_calc'
 
-fn_calc()       
-{ 
-    expr0="scale=${SCALE:-3};$@"; bc -l <<< "${expr0}"; set +f; 
-}
-
+fn_calc()       { expr0="scale=${SCALE:-3};$@"; bc -l <<< "${expr0}"; set +f; }
 function M()    { m1 $@ | tail -18; } # M() { m1 $@ | nl -w 3 -s' ' | less -i ;}
 
-lwd() 
-{
-    cat -n ~/.awd 2>/dev/null | grep -E "([0-9]|Export)" || {
-        echo "Usage: lwd" &&
-        echo "  run awd first" && return
+alias   cwd='pwd >>  ~/.env;vi ~/.env; .rc'         # curr-pwd
+alias   swd='pwd >   ~/.swd'                        # save pwd, [pushd .]
+alias   gwd='cd `cat ~/.swd`'                       # save pwd  [popd]
+
+alias  | grep -w -q awd && unalias awd
+alias  | grep -w -q iwd && unalias iwd
+
+awd() { pwd >>  ~/.awd${1}; }
+iwd() { vi      ~/.awd${1}; }
+lwd() { wd_file=~/.awd${1}
+    [ "${1}" = 'l' ] && (cd ~; ls .awd* | grep --color awd) && return
+    cat -n $wd_file 2>/dev/null | grep -E "([0-9]|Export)" || {
+        echo "Usage: lwd ${1}" &&
+        echo "  run awd${1} first" && return
     }
 
     local path_index
     while read -p "        Select a path you wanna goto [1]: " path_index; do
-        local path_goto=`sed -n ${path_index:-1}p ~/.awd 2>/dev/null | awk '{print $1}'`
+        local path_goto=`sed -n ${path_index:-1}p ${wd_file} 2>/dev/null | awk '{print $1}'`
         
         if [ -d "$path_goto" ] ; then
             cd $path_goto
