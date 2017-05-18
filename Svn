@@ -16,6 +16,7 @@ function fn_usage()
         dl  equal [Svn S clang]
         f   ln -sf ~/.flowchar/main.i .flowchar.i
         h   svn help cmd
+        l   svn log
         ps  svn ps svn:executable __chmod +x__
         q   -q status
         r   revert -R {file|dir}
@@ -32,12 +33,9 @@ function fn_main()
     filelist="${@:2}"
 
     case $1 in
-    a)
-        /usr/bin/find ! -name '.' -a -name '*' | xargs -I{} svn add --force {}  | cat -n
-        ;;
-    c|ci)
-        svn ci $filelist
-        ;;
+    a)  /usr/bin/find ! -name '.' -a -name '*' | xargs -I{} svn add --force {}  | cat -n ;;
+    c)  svn ci $filelist                        ;;
+    l)  svn log -v -l${filelist:-5}             ;;
     cf|conflict)
         echo "
         1 svn update {df|edit|resolved}
