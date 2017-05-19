@@ -60,7 +60,7 @@ alias  .SINA="let 'SINA=!SINA'; echo \$SINA; export SINA"
 alias .DEBUG="let 'DEBUG=!DEBUG'; echo \$DEBUG; export DEBUG"
 #lias    .n='. /opt/nxpbash'
 alias    .s='cd ~/bin'
-alias   .ss='cd ~/bin/stk'
+alias    .k='cd ~/bin/stk'
 alias   .rc='.  ~/.bashrc'
 alias  .irc='vi ~/.bashrc +; . ~/.bashrc'
 alias  .mor='~/bin/stk/up morningcall'

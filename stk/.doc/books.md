@@ -11,6 +11,9 @@
   围城                        李笑来
   Beyond feelings
   动物庄园
+《领导梯队》                  The Leadership Pipeline.是三本社群成员必读书籍之一
+《新生 —— 七年就是一辈子》    在新生大学里
+《原则 —— Principles》        Ray Dalio
 
   通向金融王国的自由之路      期货
   萬曆十五年
@@ -22,9 +25,6 @@
   登高四书                    李善友
   幽默
   致命的自负                  哈耶克
-《领导梯队》                  The Leadership Pipeline.是三本社群成员必读书籍之一
-《新生 —— 七年就是一辈子》    在新生大学里
-《原则 —— Principles》        Ray Dalio
 
   精英特速读训练              [从scale的双线程开始](https://www.zhihu.com/question/23085383)
   澄衷蒙学堂字课图说          日本早稻田大學圖書館掃描民國時期出版本，可免費下載
