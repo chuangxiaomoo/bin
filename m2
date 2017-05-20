@@ -327,6 +327,7 @@ function fn_20_学习学习再学习()         { cat article_20_学习学习再�
                                           cat article_22_把虚拟变成现实的觉悟
                                           cat article_24_永葆热情的上瘾式学习法
 
+                                          cat article_29_帮孩子做出决定
                                           cat article_30_从自我出发做选择的能力 # joc-needed
                                           cat article_31_割断旧的社会关系式成长
                                           cat article_32_什么是朋友？
