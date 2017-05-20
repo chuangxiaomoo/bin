@@ -35,7 +35,8 @@ function fn_main()
     case $1 in
     a)  /usr/bin/find ! -name '.' -a -name '*' | xargs -I{} svn add --force {}  | cat -n ;;
     c)  svn ci $filelist                        ;;
-    l)  svn log -v -l${filelist:-5}             ;;
+   cc)  fl=`Svn Sc | awk '{print $2}'` ;svn ci $fl      ;;
+    l)  svn log -v -l${filelist:-5}                     ;;
     cf|conflict)
         echo "
         1 svn update {df|edit|resolved}
@@ -63,7 +64,7 @@ function fn_main()
         [ -z "$filelist" ] && echo "Error: file... must be dedicated" && exit
         svn --depth=infinity revert $filelist
         ;;
-    s)  svn status $filelist                                            ;;
+ st|s)  svn status $filelist                                            ;;
  sc|Sc) svn status | grep -i --color -E '(\.c$|\.h$|\.cpp$)'            ;;
     S)  for i in ${filelist}; do svn stat | grep -i --color "$i"; done  ;;
     ps) svn ps svn:executable on $filelist; ls -l --color $filelist     ;;

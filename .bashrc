@@ -299,6 +299,8 @@ function git_diff() {
 cpcom() { mkdir -p /winc/Export/com/; rm -rf /winc/Export/com/*;     cp -a release/com/* /winc/Export/com/ ;}
 cptar() { file=`ls release/tar/*.tgz`; 
           mkdir -p /winc/Export/com/; rm -rf /winc/Export/com/*.tgz; cp -a $file         /winc/Export/com/ ;}
+cpffw() { file=`ls release/tar/*.ffw`; 
+          mkdir -p /winc/Export/com/; rm -rf /winc/Export/com/*.ffw; cp -a $file         /winc/Export/com/ ;}
 nctar() { file=`ls release/tar/*.tgz`;  nc $1 8006 < $file ;}
 
 # manpage color
