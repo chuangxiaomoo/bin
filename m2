@@ -23,21 +23,20 @@ function fn_honor()    	                { cat mng_honor ;}
 function fn_promotion()                 { cat mng_promotion ;}
 function fn_01_审时度势见机行事()       { cat mng_01_审时度势见机行事 ;}
 function fn_02_行不言之教()             { cat mng_02_行不言之教 ;}
-function fn_03_培养新人()               { cat mng_03_培养新人 ;}
+function fn_03_培养新人()               { cat mng_03_培养新人
+                                              mng_recruiting_招聘 # should prior cultivate
+                                              mng_newbie 
+                                              almanack_newbie
 function fn_04_一次失败的项目经理招聘() { cat mng_04_一次失败的项目经理招聘 ;}
 function fn_11_王熙凤()                 { cat mng_11_王熙凤 ;}
 function fn_talk()                      { cat mng_talk ;}
-function fn_recruiting_招聘()           { cat mng_recruiting_招聘 ;}
-function fn_newbie()                    { cat mng_newbie ;}
 function fn_error_11()                  { cat mng_error_11 ;}
 function fn_p_你会泡员工吗()            { cat mng_p_你会泡员工吗 ;}
 function fn_00_官僚及管理的本质()       { cat mng_00_官僚及管理的本质 ;}
 function fn_21_莱茵河为何总是清的()     { cat mng_21_莱茵河为何总是清的 ;}
 function fn_22_莱茵河如何跨国治污()     { cat mng_22_莱茵河如何跨国治污 ;}
     local opts=(
-        recruiting_招聘                 # recruiting 先于 cultivate
         error_11
-        newbie
         honor
         talk
         promotion                       # 晋升以来
@@ -45,7 +44,7 @@ function fn_22_莱茵河如何跨国治污()     { cat mng_22_莱茵河如何跨
         00_官僚及管理的本质             # 对于自我意识的延伸
         01_审时度势见机行事             # 作一个有能力的人是获得 honor 的基础
         02_行不言之教
-        03_培养新人                     # cultivate
+        03_培养新人
         04_一次失败的项目经理招聘       # 产品经理
 
         11_王熙凤                       # 天下大事，必作于细

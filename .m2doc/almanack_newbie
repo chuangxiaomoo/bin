@@ -1,4 +1,32 @@
-# 新人成长指南
+# fish之所以是fish
+
+定义：
+1 远见
+2 自制力
+3 so selfish(自我)
+  过度关注自己，而忽略听众。或者是自负。
+  zhiming 验兵(成功|失败) (请假|离职)验兵，
+                    公司收益    个人收益
+    请假 + 成功     失员工      OK转身
+    请假 + 失败     OK员工      OK工作        请假整体收益75%
+    离职 + 成功     失员工      OK转身
+    离职 + 失败     失员工      失工作        离职整体收益25%
+
+  即使如此计算后，zhiming 同样会选择离职。
+
+# 我的烦恼
+
+Zhangjian-usage-manual
+新进员工的烦恼
+
+陈浩：懂需求之人
+如何解决问题？
+netcat的udhcpc.hook回调法
+  GET 需要回调
+  PUT 不需要回调
+学习算法[algirthm](sort+search)
+
+# 提点心法 -- 诘问法 vs 说教
 
 how to ask question?
 how to do task?
@@ -39,4 +67,3 @@ _终极目标_：侦察兵、多面手、[全栈工程师](开发、测试、需
 
 一条命令足矣: ccli toggle -act set
 
-# 一次与
