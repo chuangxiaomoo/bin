@@ -18,3 +18,11 @@
 # proxy-switch 配置
 
   http://www.huluboke.com/proxy-switchy/
+
+# ss-proxy.com
+
+  Shadowsocks 2.5.2 
+    启用系统代理
+    PAC模式/使用本地PAC
+  Chrome
+    SwitchOmega/系统代理
