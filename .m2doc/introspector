@@ -632,6 +632,20 @@ Be observant = 5 senses + thinking + filter_process
 
 Too often people are unobservant because they are too absorbed in themselves -- their own thoughts and feelings.
 
+# 2017-05-23 抵抗抽风式管理
+
+    feature_list[len++] = DANAVIDEO_FEATURE_HAVE_MODET_SETTING_STAYTIME  ;        // chen强制深度
+    feature_list[len++] = DANAVIDEO_FEATURE_HAVE_MODET_SETTING_PLAN_ONE  ;
+    feature_list[len++]=  DANAVIDEO_FEATURE_HAVE_MODET_SETTING_PLAN_MULTI;
+
+    feature_list[len++]= SUPPORT_DETECTION_MOTION;                                // 戴给出的feature
+
+1 第一部分上传失败，而在APP端还原出普通枪，使能了移动侦测。
+2 20日(周六)的邮件，23(周二)还没有回复。24h内不处理就应该提交到上级处理，本应该在周一下班前确认的。
+  君子守时，维持一份列表:
+  todo
+  doing
+  done
 
 # todo
 
