@@ -14,7 +14,7 @@ open 192.168.2.101 2121
 binary
 
 cd /
-cd sdcard1
+cd sdcard0
 cd Download
 
 put E:\winc\DL\apk\Danale-v5.5.8.20170418-beta.apk dana0418.apk

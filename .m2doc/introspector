@@ -66,6 +66,7 @@ chenyl调节声音
             s4 流传输
 2 toggle stat 2000 接管s4流传输源，清晰听到电子提示音，传输没有问题 <自上而下的检查路线>
 3 以示波器测量s2的输出，果然是有问题的，问题一下子明朗了
+4 最后，再次查看Grain的ANR(Audio Noise Reduction|Suppression)原理，知来龙去脉
 
 过程心理总结：
 0 勿尝以言语改变对方也。小张声音在我让其学检测命令的过程中变大了。
@@ -76,7 +77,7 @@ chenyl调节声音
   b Anyka之fd无 fcntl(fd, F_SETFD, FD_CLOEXEC);
   c 重启退出or对码退出？
 3 熬鹰式对待同事取信任，<族长不是官，而是亲人>。做事，最终做的是人心。
-  2011年与官其同下班，因与徐凯相互责难找安慰，而官说“日后会感谢徐”，并聊起官以前的一个老鸟偷偷为官的code加了保护。
+  2011年与官其同下班，因与徐凯相互责难找安慰，而官说“日后你会感谢徐”，并聊起官以前的一个老鸟偷偷为官的code加了保护。
 
 # 2017-03-18 感知差异 感知不爽 请教达人
 
@@ -652,18 +653,34 @@ Too often people are unobservant because they are too absorbed in themselves -- 
 
 # 2017-05-23 抵抗抽风式管理
 
-    feature_list[len++] = DANAVIDEO_FEATURE_HAVE_MODET_SETTING_STAYTIME  ;        // chen强制深度
+    feature_list[len++] = DANAVIDEO_FEATURE_HAVE_MODET_SETTING_STAYTIME  ;        // chen的野路子
     feature_list[len++] = DANAVIDEO_FEATURE_HAVE_MODET_SETTING_PLAN_ONE  ;
     feature_list[len++]=  DANAVIDEO_FEATURE_HAVE_MODET_SETTING_PLAN_MULTI;
 
-    feature_list[len++]= SUPPORT_DETECTION_MOTION;                                // 戴给出的feature
+    feature_list[len++]= SUPPORT_DETECTION_MOTION;                                // 戴的方法
 
-1 第一部分上传失败，而在APP端还原出普通枪，使能了移动侦测。
+1 chen的野路子，在APP端还原出普通枪，使能了移动侦测。
+  戴的方法，上午即发布，再次测试非常耗时。
 2 20日(周六)的邮件，23(周二)还没有回复。24h内不处理就应该提交到上级处理，本应该在周一下班前确认的。
   君子守时，维持一份列表:
   todo
   doing
   done
+
+总结：
+1 chen的野路子，粗暴有时是有用的，但在“戴的方法”给出明确时间的情况下，又是没有必要的。
+2 功能需要与最新的APP配合，而我们假设了：APP及服务已经OK，这种假设 is so unobservant.
+3 沟通要立意未来：<不仅是解决当前的疑惑，更是要彻底地'在给定时间'解决问题 = 何时提供APP，上午or下午>
+
+# 2017-05-24 内核恐慌
+
+    "nolinked power save enter"       // 现象
+    #ifdef CONFIG_IPS                 // 解决方案
+
+总结：
+1 求人不如求己(木门、自动门，铁门分别需要不同的方法)
+2 沟通的过程中一定要有预期(目标节点)————解决问题的时间点。
+3 luo's advice: AK更专业，其实不然
 
 # todo
 
@@ -676,3 +693,4 @@ Too often people are unobservant because they are too absorbed in themselves -- 
 3 newbie整理
 4 黑山四书
 5 成为一个什么样的人？但绝对不是好为人师xujb
+6 about someone resign, keep silence.
