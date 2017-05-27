@@ -360,7 +360,11 @@ function fn_51_怎样成为一个高手()       { cat article_51_怎样成为一
                                           cat article_57_十分钟读完刻意练习
                                           cat article_58_十分钟读完元认知
                                           cat article_59_理性与情绪控制
+<<<<<<< HEAD
                                           cat article_60_不花心方成事
+=======
+                                          cat article_60_刻意练习清单
+>>>>>>> 84289e6d4bf2043dd9b89853190efb702e3b547d
                                           ;}
 
 function fn_71_不自律何自由？()         { cat article_71_不自律何自由？
