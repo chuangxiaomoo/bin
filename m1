@@ -553,9 +553,6 @@ function fn_const_char()                { cat cxx_const_char ;}
     fn_print $@
 }
 
-    cat annual_2017
-        annual_2017_新人成长指南
-    
 function fn_design() {
 function fn_Designing_Design()          { cat design_Designing_Design ;}
 function fn_pm()                        { cat design_pm ;}
@@ -631,7 +628,6 @@ function fn_cat-file()                  { cat git_cat-file ;}
         rm
         svndiff                 # 与svn比较
         github                  # create 或 pull 一个项目 from github.com 
-        init                    # 按遇到的先后顺序
         log
         cat-file
     )
