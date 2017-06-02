@@ -559,6 +559,7 @@ ircut 切换，被指导只要测试挂在天花板上就OK。                  
 我一直认为：
 
     离开成本谈品质，就是耍流氓。
+    这是一个妥协的世界，进化过程中的最大法则不是完美，而是可用。
 
 测试一次绿帧，需要30分钟。与Grain沟通两次邮件，一天就过了大半。
 对于用户体验，黑白切换之际，晃动摄像机，几乎不会友好使用。价值观上的冲突，是一件非常痛苦的事情。
@@ -697,6 +698,17 @@ Too often people are unobservant because they are too absorbed in themselves -- 
 1 求人不如求己(木门、自动门，铁门分别需要不同的方法)
 2 沟通的过程中一定要有预期(目标节点)————解决问题的时间点。
 3 luo's advice: AK更专业，其实不然
+
+    _____________ this is from /opt/src/anyka/3918wifiPro/drives/rt8188/rtl8188EUS_linux_v4.3.0.9_15178.20150907/core/rtw_mlme.c : 1676 ________
+    _____________ this is from /opt/src/anyka/3918wifiPro/drives/rt8188/rtl8188EUS_linux_v4.3.0.9_15178.20150907/os_dep/linux/mlme_linux.c : 253 ________
+    RTL871X: indicate disassoc
+    br0: port 1(wlan0) entered disabled state
+
+总结：
+1 两天跟踪没有搞定，0527下午向luo要了V2的kernel源码。同时tianj切入
+2 Dong and tianj: 能复现的问题好解决
+3 3天后终搞定，因为AK内核中的 CONFIG_CFG80211 可能会有事件通知
+4 最重要的是<逻辑要清晰>：相同的ko源码得不同的运行结果，<当然是再找不同点>，一一排除。
 
 # todo
 
