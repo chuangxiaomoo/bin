@@ -13,7 +13,7 @@ if { $argc == 0 } {
         set port [ lrange $argv 1 1 ]
     }
 
-    if { [string match *elogin $argv0] == 1 } {         # ipc as default
+    if { [string match *elogin $argv0] == 1 } {         # Grain + Nxp
         spawn telnet $ip $port
         expect  "login:"
         send    "root\n"
@@ -23,12 +23,22 @@ if { $argc == 0 } {
         interact {
             timeout 30 { send "" }
         }
-    } elseif { [string match *alogin $argv0] == 1 } {   # nvr
+    } elseif { [string match *alogin $argv0] == 1 } {   # Anyka
         spawn telnet $ip $port
         expect  "login:"
         send    "root\n"
         expect  "Password:"
         send    "jabsco168\n"
+
+        interact {
+            timeout 30 { send "" }
+        }
+    } elseif { [string match *jlogin $argv0] == 1 } {   # Junzheng
+        spawn telnet $ip $port
+        expect  "login:"
+        send    "root\n"
+        expect  "Password:"
+        send    "jco666888\n"
 
         interact {
             timeout 30 { send "" }

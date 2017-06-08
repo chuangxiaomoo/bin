@@ -9,14 +9,14 @@ function fn_usage()
         c   ci [files...]
         cf  conflict
         D   {?|M}
-        d   diff            : equal -c BASE:WORKING
+        d   [-r r9527 path] : equal -c BASE:WORKING
         dc  diff -c r9527   : equal -c r9526:r9527
         dp  diff -r 'PREV'  : 提交有误时diff上上个版本
         dh  horizontal-split-diff
         dl  equal [Svn S clang]
         f   ln -sf ~/.flowchar/main.i .flowchar.i
         h   svn help cmd
-        l   svn log
+        l   {5|5 filelist}  : svn log
         ps  svn ps svn:executable __chmod +x__
         q   -q status
         r   revert -R {file|dir}

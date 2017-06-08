@@ -24,9 +24,16 @@
 
 
 # 静态库链接顺序
-    http://haoxg.spaces.live.com/blog/cns!667714E7CE1BE835!260.entry 
-    在链接静态库时，如果多个静态库之间存在依赖关系，
-    原理：符号的搜索从当前.o或.a往后搜索，而不是全部.o .a .so
-    所以，如果main.o依赖lib1.a，lib1.a 依赖于 lib2.a，那么，编译命令如下：
-        cc main.o lib1.a lib2.a -o main
 
+  http://haoxg.spaces.live.com/blog/cns!667714E7CE1BE835!260.entry 
+  在链接静态库时，如果多个静态库之间存在依赖关系，
+  原理：符号的搜索从当前.o或.a往后搜索，而不是全部.o .a .so
+  所以，如果main.o依赖lib1.a，lib1.a 依赖于 lib2.a，那么，编译命令如下：
+      cc main.o lib1.a lib2.a -o main
+
+  如果有交叉依赖，则需要使用到选项 -Xlinker
+
+    $(CXX) $(LINKFLAGS) $(OBJS) -Xlinker "-(" $(LIBS) -Xlinker "-)" -o $@
+
+  通过将所有需要被链接的静态库放入 `-Xlinker "-("` 与 `-Xlinker "-)"` 之间，
+  自动循环链接所有静态库，从而解决了原本的链接顺序问题。

@@ -168,7 +168,12 @@ function fn_320_失控()                  { cat book_320_失控 ;}
 function fn_899_权力的游戏()            { cat book_899_权力的游戏 ;}
 function fn_900_平凡的世界()            { cat book_900_平凡的世界 ;}
 function fn_tiandao()                   { cat book_tiandao book_遥远的救世主;}
+
+
+function fn_list()                      { cat book_400_PoorCharliesAlmanack_穷查理宝典
+}
     local opts=(
+        list
         cept
         wanna                           # 想读的书
         sunzi                           # 孙子兵法
@@ -367,6 +372,8 @@ function fn_51_怎样成为一个高手()       { cat article_51_怎样成为一
 function fn_71_不自律何自由？()         { cat article_71_不自律何自由？
                                           cat article_72_唯有自律方得自由
                                           cat article_73_尊重事实是自律的第一原则
+                                          cat article_74_自我驱动力是个嘛玩意儿？
+                                          cat article_75_为什么要远离那些不深度思考且拼命勤奋的人？
                                           ;}
 
 function fn_100_人际关系痛苦的根源()    { cat article_100_人际关系痛苦的根源 ;}
