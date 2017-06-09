@@ -20,8 +20,8 @@ function fn_usage()
         -h, --help          show usage
         -r, --remove        remove ${reffile}* b4 cscope -Rbq
         -i, --interactive   vi ${cspathes} of project b4 cscope -Rbq
-        -f, --filelist      rebuild ${reffile} from ${csfiles}
-        -u,                 rebuild both ${reffile} and ${csfiles} from ${cspathes}
+        -f, --filelist      rebuild ${reffile} __without__ update ${csfiles}
+        -u,                 Unconditionally rebuild ${reffile} and __update__ ${csfiles} FROM ${cspathes}
 
     Configuration:
         .cscope.pathes, include path or exclude pathes
