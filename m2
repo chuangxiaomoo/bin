@@ -364,10 +364,16 @@ function fn_51_怎样成为一个高手()       { cat article_51_怎样成为一
                                           cat article_56_成为高手之缺乏耐心
                                           cat article_57_十分钟读完刻意练习
                                           cat article_58_十分钟读完元认知
-                                          cat article_59_理性与情绪控制
                                           cat article_60_刻意练习清单
                                           cat article_61_不花心方成事
                                           ;}
+
+function fn_80_emotion_情绪()           { 
+                                          cat article_80_情绪list
+                                          cat article_81_负面情绪管理
+                                          cat article_82_有目标你就可以忍受一切
+                                          cat article_83_情绪管理misc
+                                          cat article_84_理性与情绪控制
 
 function fn_71_不自律何自由？()         { cat article_71_不自律何自由？
                                           cat article_72_唯有自律方得自由
@@ -616,7 +622,6 @@ function fn_08_Freud()                  { cat phi_08_Freud ;}
 function fn_09_Socrates()               { cat phi_09_Socrates ;}
 function fn_0a_Miltonfriedman()         { cat phi_0a_Miltonfriedman ;}
 
-function fn_emotion()                   { cat phi_emotion ;}
 function fn_relationship()              { cat phi_relationship ;}
 
 function fn_epistemology()              { cat phi_epistemology;
@@ -643,7 +648,6 @@ function fn_valuetheory()               { cat phi_valuetheory ;}
 
         0a_Miltonfriedman               # 米尔顿·弗里德曼
 
-        emotion                         # 人是情绪的动物.Anger.七情六欲
         relationship
 
         wdf_01_心安之窄门
@@ -949,7 +953,6 @@ function fn_texaspoker()                {
 function fn_philosophy()                { cat texaspoker_philosophy ;}
 function fn_life()                      { cat texaspoker_life ;}
 function fn_xiuxing()                   { cat texaspoker_xiuxing ;}
-function fn_emotion_management()        { cat texaspoker_emotion_management ;}
 function fn_loser()                     { cat texaspoker_loser ;}
 function fn_sng_master()                { cat texaspoker_sng_master ;}
 function fn_discipline()                { cat texaspoker_discipline ;}
@@ -962,7 +965,6 @@ function fn_Small_Stakes_Hold_em()      { cat texaspoker_Small_Stakes_Hold_em ;}
     local opts=(
         philosophy                      # 哲理
         xiuxing                         # 修行 意志力 如何稳定盈利？
-        emotion_management              # 情绪管理
         loser
         sng_master
         discipline                      # 观察 纪律
