@@ -698,7 +698,7 @@ Too often people are unobservant because they are too absorbed in themselves -- 
     "nolinked power save enter"       // 现象
     #ifdef CONFIG_IPS                 // 解决方案
 
-总结：
+总结1：
 1 求人不如求己(木门、自动门，铁门分别需要不同的方法)
 2 沟通的过程中一定要有预期(目标节点)————解决问题的时间点。
 3 luo's advice: AK更专业，其实不然
@@ -708,11 +708,26 @@ Too often people are unobservant because they are too absorbed in themselves -- 
     RTL871X: indicate disassoc
     br0: port 1(wlan0) entered disabled state
 
-总结：
+总结2：
 1 两天跟踪没有搞定，0527下午向luo要了V2的kernel源码。同时tianj切入
 2 Dong and tianj: 能复现的问题好解决
 3 3天后终搞定，因为AK内核中的 CONFIG_CFG80211 可能会有事件通知
 4 最重要的是<逻辑要清晰>：相同的ko源码得不同的运行结果，<当然是再找不同点>，一一排除。
+
+总结3：
+1 从技术角度讲，不能建立连接，唯一的区别只是把 wlan0 变成 br0
+
+http://docs.fortinet.com/uploaded/files/2713/fortigate-fortiwifi-and-fortiap-configuration-guide-54.pdf
+CAPWAP Protected Management Frames (PMF) support
+
+https://github.com/lwfinger/rtl8188eu/issues/20
+lower the MTU to around 1000 might help but I don't know why.
+USB power saving issue? modprobe 8188eu rtw_power_mgnt=0 modprobe会自动读取 /lib/modules/<kernel-version>/modules.dep 查找依赖
+
+https://github.com/lwfinger/rtl8188eu/commit/67b05876aff0758d787f61e6aa0f55b21ea8e8ad
+This latest commit (Enabled AP and P2P modes) seems to have fixed the issue.
+Ubuntu 13.10 x86_64, kernel 3.11.0-14
+
 
 # 2017-05-28 所谓任督二脉.与廖哥谈
 
