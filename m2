@@ -232,6 +232,7 @@ function fn_list()                      { cat book_400_PoorCharliesAlmanack_穷�
 function fn_music()    	                {
 function fn_misc()                      { cat music_misc
                                           cat music_theory
+                                          cat piano
                                           cat erhu
                                           ;}
     local opts=(
@@ -360,6 +361,7 @@ function fn_50_十种好的学习方式()       { cat article_50_十种好的学
 
 function fn_51_怎样成为一个高手()       { cat article_51_怎样成为一个高手       # 心得+举例
                                           cat article_52_怎样炼成世界级高手
+                                          cat article_53_关于掌握顶级高手思考方法的清单
                                           cat article_55_成为高手之进入高水平反馈
                                           cat article_56_成为高手之缺乏耐心
                                           cat article_57_十分钟读完刻意练习
