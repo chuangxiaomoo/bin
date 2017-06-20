@@ -1,3 +1,4 @@
+title __ring__
 D:
 cd tools\VLC 
 @echo off
