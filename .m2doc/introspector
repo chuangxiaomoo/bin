@@ -667,7 +667,7 @@ Too often people are unobservant because they are too absorbed in themselves -- 
   张子    zengy(prev.领导) tianj
   张总    huangshengwu wangbinzhang
   张工    zhangsenqiang(prev.张总) team.fishes
-  张j     linchen xujiangbo chebiyou(prev.j哥) gaobao
+  张j     linchen xujiangbo cheby(prev.j哥) gaobao
   张jj    zhanghui2
   j哥     huangansen guoxiaguang
   师傅
@@ -848,6 +848,18 @@ RESULT:  不间断播放语音，会影响升级
   Markdown.here css 引用模板与“学习学习再学习”差一个hori滚动条，一搞就是4个小时到凌晨2点
 
 * 完美主义 简单问题复杂化
+
+# 存在必有原因 to be or not to be
+
+因为安全问题，zhao 直接下令将 xkcd <一刀切式>删除，
+因测试已经习惯 xkcd，telnet 经常忘记关闭，从而调试问题效率大大降低。
+
+lzbox 1 的执行，并不能上通下达。ceo 低估了整个系统的执行力。
+使用 #define TEST_VER 来区分让 xkcd 条件存在，是更好的解决方案。
+
+# 打造一个可以多线程工作的大脑
+
+cheby 也同时进行多个任务，但效率很高。
 
 # todo
 
