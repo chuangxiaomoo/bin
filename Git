@@ -8,7 +8,7 @@ function fn_main()
     '?'|h*)
         echo "
         ----------- Usage --------------
-        A   commit  [all changed file]
+        A   commit  [all changed] and conflict to [commit -a]
         c   commit  [ci . to local]
         d   diff    [file] 
         dp  dprev   file 'PREV'
