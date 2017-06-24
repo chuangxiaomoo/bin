@@ -397,7 +397,9 @@ function fn_112_我们何需抱怨被误解()    { cat article_112_我们何需�
 
 function fn_201_“非上帝投机者”的自赎()  { cat article_201_“非上帝投机者”的自赎 ;}
 
-function fn_gsq_房价什么情况下会崩()    { cat article_gsq_房价什么情况下会崩 ;}
+function fn_gsq_房价什么情况下会崩()    { cat article_gsq_房价什么情况下会崩 
+                                          cat article_301_财富公式之亿万钱财
+                                          ;}
 
     local opts=(
         01_高铁陆权战略
