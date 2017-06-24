@@ -1382,7 +1382,6 @@ function fn_xinetd()                    { cat network_xinetd ;}
 
 function fn_tools() {
     local opts=(
-        iperf
         SVN WBS RDM Valgrind SourceMonitor
     )
 }
@@ -1424,7 +1423,7 @@ function fn_main() {
         framework
         find
         begin
-        figlet                  # text logo
+        figlet                  # text logo The name FIG is an acronym for "Frank (Sheeran), Ian (Chai), and Glenn (Chappell) who collaborated in the development of the FIGlet
         firebug
         firefox
         gcc

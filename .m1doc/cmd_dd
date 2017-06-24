@@ -18,13 +18,15 @@ dd if=/dev/zero                bs=1G    count=1  >>FILE_U_WANT
 
 # 测试网速.listen
 
-nc -l 1234 > /dev/null
+nc -l  1234 > /dev/null
+nc -lp 1234 > /dev/null
 
 # 测试网速.send NR Mbits
 
+NR=10 IF=/dev/zero HOST=192.168.2.101
 NR=10 IF=/dev/zero HOST=192.168.2.248
 
-ps -ef > /dev/null && export OPT=ax
+ps -ef >& /dev/null && export OPT=ax
 
 dd if=$IF  bs=1M count=$NR | nc ${HOST} 1234 &              \
 pid=`ps $OPT | awk '/[d]d if/{printf ("%s", $1); exit}'`;   \

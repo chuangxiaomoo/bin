@@ -116,6 +116,7 @@ alias    vr='vi -R'
 alias    vR='vi -R README*'
 alias    vt='vi ~/bin/.m2doc/tick.md'
 alias    vz='vi -R ~/bin/stk/.account.md'
+alias  v.fc='vi -R ~/.flowchar/main.i'
 
 alias sdiff='svn diff -r PREV'
 
