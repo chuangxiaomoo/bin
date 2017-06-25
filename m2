@@ -804,21 +804,15 @@ function fn_100_手把手教你泡妞()        { cat girl_100_手把手教你泡
     fn_print $@
 }
 
-function fn_prof()                      {
-function fn_01_思考一()                 { cat prof_01_思考一 ;}
-function fn_11_Geek与产品机器()         { cat prof_11_Geek与产品机器 
+function fn_prof()                      { cat prof_01_职业化并不是真相
+                                          cat prof_11_Geek与产品机器 
                                           cat prof_12_高管不必高专业水平
                                           cat prof_13_关于如何得体跳槽的清单
                                           cat prof_14_越早知道越好的职场规则清单
                                           cat prof_15_关于如何准备一份制胜简历的清单
                                           cat prof_16_拿下目标职位的16个必杀技
-
-                                        ;}
-    local opts=(
-        01_思考一
-        11_Geek与产品机器
-    )
-    fn_print $@
+                                          cat prof_23_职业收入高低决定论
+                                          cat prof_24_补偿性工资差异
 }
 
 function fn_sbfm()                      { cat sbfm ;}
