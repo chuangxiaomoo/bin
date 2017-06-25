@@ -643,6 +643,8 @@ warning: ‘pLast’ may be used uninitialized in this function
 
 # 2017-05-19 [新人成长宝典](+/定义 almanack_newbie)
 
+0 [新手的特征](fish之所以是fish)
+
 1 [新人的定义](+/远见和自制力 article_29_帮孩子做出决定)：
   喜欢和正确从来不是正相关的关系，甚至大多数时候，完全相反。
 
@@ -869,12 +871,12 @@ RESULT:  不间断播放语音，会影响升级
 
 # 焦虑(过多地关注自己不能解决的事务)
 
-    God grant me the serenity to accept the things I cannot change, 
-    the courage to change the things I can, and the wisdom to know the difference.
+> God grant me the serenity to accept the things I cannot change, 
+  the courage to change the things I can, and the wisdom to know the difference.
 
-    愿我能从容接受我不能改变的，敢于去改变我能改变的，也愿我有智慧分辨清楚这之间的区别。
-    事实上，“接受不能改变的”比“改变能改变的”需要更多的勇气。因为只有做到接受不能改变的——
-    比如，已经发生的就是不可逆转的——才能接受积累的本质：漫长。
+  愿我能从容接受我不能改变的，敢于去改变我能改变的，也愿我有智慧分辨清楚这之间的区别。
+  事实上，“接受不能改变的”比“改变能改变的”需要更多的勇气。因为只有做到接受不能改变的——
+  比如，已经发生的就是不可逆转的——才能接受积累的本质：漫长。
 
 * stick by 不可改变的 + 不擅长的
 
@@ -899,7 +901,7 @@ lzbox 1 的执行，并不能上通下达。ceo 低估了整个系统的执行�
 
 cheby 也同时进行多个任务，但效率很高。
 
-# 反馈问题 and 沟通原则
+# 2017-06-25 反馈问题 and 沟通原则
 
 > Dear大拿
   门口摄像机，启动了SD卡录像及移动侦测功能，在录像回放中，有看到鞋子位置变化和垃圾袋消失，但在SD卡录像中没有看到物体移动过程。
@@ -915,7 +917,7 @@ cheby 也同时进行多个任务，但效率很高。
 
 2 描述不清，没有量化
 
-  a 网络状态不好    --  吞吐量多少，smartphone+fisheye PC+fisheye
+  a 网络状态不好    --  吞吐量多少，smartphone+设备 PC+设备
   b 延时累加        --  多长时间，累加延时到多少
 
 问题分析：
@@ -932,6 +934,10 @@ cheby 也同时进行多个任务，但效率很高。
 
 1 独立完成任务 != 独自完成任务，而是尽最大努力集结能够集结的资源去完成任务。
 2
+
+# 2017-06-24 睡眠拐点
+
+晚上10点，躺在阳台上的钢琴凳子上睡着了。这么多年，应该是第一次了。
 
 # todo
 

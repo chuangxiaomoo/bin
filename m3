@@ -16,7 +16,7 @@ xsdx_lesson_2
 
 writing_1st_principle
 writing_format_XiaoLai
-writing
+writing_万能句式
 
 betterExplained_ADEPT
 betterExplained_feelgood.list
