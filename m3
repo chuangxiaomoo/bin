@@ -6,6 +6,7 @@ outlooks
 
 super_speech 
 luoyonghao
+article_001_关于如何准备一场演讲的清单
 
 # lesson
 
@@ -25,6 +26,7 @@ betterExplained_ideas.list
 # 0001_抉择
 # 0002_也谈读书
 # 0003_价值相对论
+  [](+/不可替代性 ~/bin/.m2doc/value_03_徐小平关于人生格局的问题清单)
 
 
 # 0001_什么是聪明？

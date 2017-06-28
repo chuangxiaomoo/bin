@@ -443,7 +443,9 @@ function fn_gsq_房价什么情况下会崩()    { cat article_gsq_房价什么�
 
 function fn_value()                     {
 function fn_01_传统()                   { cat value_01_传统 ;}
-function fn_02_当代()                   { cat value_02_当代 ;}
+function fn_02_当代()                   { cat value_02_当代 
+                                          cat value_03_徐小平关于人生格局的问题清单
+                                          ;}
     local opts=(
         01_传统
         02_当代
