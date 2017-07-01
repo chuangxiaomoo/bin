@@ -217,6 +217,7 @@ function fn_udhcpc()                    { cat busybox_udhcpc ;}
 # bash首先，计算$name的值，并用它的值来替换中括号里面的值，再作一次变量替换。
 function fn_bash() {
 function fn_fundamental()               { cat bash_fundamental ;}
+function fn_cross_compile()             { cat bash_cross_compile ;}
 function fn_00_函数bg时main挂住了()     { cat bash_00_函数bg时main挂住了 ;}
 function fn_01_PIPE会使变量为空()       { cat bash_01_PIPE会使变量为空 ;}
 function fn_02_unquoted_star将被扩展()  { cat bash_02_unquoted_star将被扩展 ;}
@@ -240,7 +241,8 @@ function fn_array()                     { cat bash_array ;}
 function fn_PIPESTATUS()                { cat bash_PIPESTATUS ;}
 function fn_export()                    { cat bash_export ;}
     local opts=(
-        fundamental                     # 交叉编译 cross-compile
+        fundamental
+        cross_compile
         00_函数bg时main挂住了
         01_PIPE会使变量为空
         02_unquoted_star将被扩展        # 不引起来的 * 会被 扩展

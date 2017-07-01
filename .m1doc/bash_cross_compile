@@ -1,0 +1,13 @@
+# cross_compile
+
+    Usage: $0 [OPTION]... [VAR=VALUE]...
+    CC=arm-linux-gcc ./configure --host=arm-linux
+    一般来说，指定--host就可以了，CC会自动查找
+
+# e.g.
+
+## netcat 
+
+./configure CC=mips-linux-uclibc-gnu-gcc --host=mips
+
+
