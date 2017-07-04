@@ -1,0 +1,20 @@
+# mail 要点
+
+# 不要使用 list，用 ## 替代
+
+1. element 1
+2. element 2
+
+# 强调
+
+星号与下划线都可以，单是斜体，**双是粗体**，符号可跨行，符号可加空格
+
+# 颜色
+
+<font color=gray>gray</font>
+
+# 引用 + strong + color
+
+> <font color=blue>**黑体**</font>
+> <font color=blue>黑体</font>
+
