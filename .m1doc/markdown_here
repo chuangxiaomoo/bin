@@ -5,9 +5,13 @@
 1. element 1
 2. element 2
 
-# 强调
+# 强调:因为已经有css，双*即可以加红加粗
 
 星号与下划线都可以，单是斜体，**双是粗体**，符号可跨行，符号可加空格
+
+<strong style="color: rgb(191, 54, 12);">恐惧是最折损人生幸福感的情绪</strong>
+<strong style="color: #BF360C;">恐惧是最折损人生幸福感的情绪</strong>
+<strong>恐惧是最折损人生幸福感的情绪</strong>
 
 # 颜色
 
@@ -15,6 +19,6 @@
 
 # 引用 + strong + color
 
-> <font color=blue>**黑体**</font>
-> <font color=blue>黑体</font>
+<font color=blue>**黑体**</font>
+<font color=blue>黑体</font>
 

@@ -399,6 +399,7 @@ function fn_201_“非上帝投机者”的自赎()  { cat article_201_“非上
 
 function fn_gsq_房价什么情况下会崩()    { cat article_gsq_房价什么情况下会崩 
                                           cat article_301_财富公式之亿万钱财
+                                          cat article_302_史上最中肯的投资建议
                                           ;}
 
     local opts=(
@@ -791,6 +792,7 @@ function fn_misc()                      { cat girl_misc ;}
 function fn_letters()                   { cat girl_letters juzi ;}
 function fn_00_jiebao()                 { cat girl_00_jiebao ;}
 function fn_01_tingbao()                { cat girl_01_tingbao ;}
+function fn_02_angelina()               { cat girl_02_angelina ;}
 function fn_11_2013相亲记()             { cat girl_11_2013相亲记 ;}
 function fn_12_wife()                   { cat girl_12_wife ;}
 function fn_100_手把手教你泡妞()        { cat girl_100_手把手教你泡妞 ;}
