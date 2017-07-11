@@ -11,9 +11,6 @@
   `837728` = 725112 +  28248 +  84368
   `837728` 是真正可用的内存
 
-  > sync; echo 3 > /proc/sys/vm/drop_caches
-  > arm-linux
-
   在arm上，没有下列的行，cache的值需要用 top 或 cat /proc/meminfo 来查看。
                total       used       free     shared    buffers
   -/+ buffers/cache:     187320    `837728`
@@ -38,4 +35,22 @@
   page cache。文件的逻辑层需要映射到实际的物理磁盘，这种映射关系由文件系统来
   完成。当page cache的数据需要刷新时，page cache中的数据交给`buffer cache`，
   但是这种处理在2.6版本的内核之后就变的很简单了，没有真正意义上的cache操作。
+
+# Drop|禁用cache，更多请参考[man proc]
+
+  > sync; echo 3 > /proc/sys/vm/drop_caches
+  > arm-linux
+
+@begin=sh@
+  echo 100 > /proc/sys/vm/dirty_expire_centisecs
+  echo 100 > /proc/sys/vm/dirty_writeback_centisecs   # this reduce to 1 second the flush from the RAM to disk
+
+  use echo 1 > /proc/sys/vm/drop_caches;              # to free pagecache, 
+  use echo 2 > /proc/sys/vm/drop_caches;              # to free dentries and inodes, 
+  use echo 3 > /proc/sys/vm/drop_caches;              # to free pagecache, dentries and inodes, 
+@end=sh@
+
+# sd卡 cache
+
+[](https://unix.stackexchange.com/questions/152066/what-is-being-cached)
 
