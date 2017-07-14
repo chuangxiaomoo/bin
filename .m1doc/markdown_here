@@ -1,5 +1,25 @@
 # mail 要点
 
+# CSS style <Botton to up>
+
+* 1 xiaolai center.原版
+
+* 2 xiaolai **text-align: left**
+
+* 3 github + Strong + blockquote.color.#555
+
+strong, b{
+  color: #BF360C;
+}
+
+blockquote, q {
+  border-left: 2px solid #009688;
+  padding: 0 10px;
+  color: #555;
+  quotes: none;
+  margin-left: 1em;
+}
+
 # 不要使用 list，用 ## 替代
 
 1. element 1

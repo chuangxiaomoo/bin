@@ -259,7 +259,7 @@ lsgcc()
     ti      arm_v5t_le-
     grain   arm-unknown-linux-uclibcgnueabi-
     anyka   arm-anykav200-linux-uclibcgnueabi-
-    jzheng  mips-linux-uclibc-gnu-
+    jzzz    mips-linux-uclibc-gnu-
 
     /home/n/rc.d/mksquashfs
     "
