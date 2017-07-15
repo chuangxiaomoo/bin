@@ -1199,4 +1199,5 @@ chenyl: 此问题非常严重，设备在正常环境使用，如果有干扰或
 0 感知差异的能力：quick start guide for starting soft-ap or station in bridge mode
 1 程序员熬夜的原因
 2 以search服务来组织一个心跳网络，并考虑以**去中心化**的形式组网
+3 记录darkest，在频切时.快速切换及阈值切换中 multipler dark_x
 5 重读 Beyond-Feelings，并写作笔记
