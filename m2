@@ -124,7 +124,9 @@ function fn_66_佛语()                   { cat book_66_佛语 ;}
 
 function fn_000_黄晓捷谈在校学习()      { cat book_000_黄晓捷谈在校学习 ;}
 function fn_010_李笑来谈读书经验()      { cat book_010_李笑来谈读书经验
-                                          cat book_011_李笑来谈阅读操作系统 ;}
+                                          cat book_011_李笑来谈阅读操作系统 
+                                          cat book_020_如何选书
+                                          ;}
 
 function fn_012_李笑来人人都能用英语()  { cat book_012_李笑来人人都能用英语
                                               book_012_李笑来反复通读至少一本语法书
@@ -919,11 +921,15 @@ function fn_cept()                      { cat influence_cept ;}
 function fn_agile()                     { cat influence_agile ;}
 function fn_sxmm()                      { cat influence_sxmm ;}
 function fn_stock()                     { cat influence_stock ;}
+function fn_app()                       { cat influence_01_推销自己 
+                                          cat influence_02_
+                                        ;}
     local opts=(
-        cept
+        cept                            # 影响力 
         agile
         sxmm
-        stock                           #
+        stock
+        app
     )
     fn_print $@
 }
@@ -1043,6 +1049,10 @@ function fn_stupid_things()             { cat stupid_things ;}
 function fn_subtitle()                  { cat subtitle ;}
 function fn_kindle()                    { cat kindle ;}
 function fn_literature()                { cat literature ;}
+function fn_btc()                       { cat btc_cept
+                                          cat btc_01_螺旋形通缩     # deflatoin_spiral
+                                          cat btc_02_反人类
+                                        ;}
 
 
 # 新教与天主教。信则得救，不信则下地狱 vs 助人行善
@@ -1080,7 +1090,7 @@ function fn_main() {
         howto
         ideas
         idealism                        # 理想主义
-        influence                       # 三十而立 影响力 30
+        influence                       # 三十而立 30
         poet
         math                            # 数
         mng
@@ -1101,6 +1111,7 @@ function fn_main() {
         value                           # 价值
         why
         rose                            #
+        btc                             # bitcoin
         zhihu
         zhenhuan                        # 甄嬛体
         life_is_a_bus                   # 公交车
