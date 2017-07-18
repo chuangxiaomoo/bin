@@ -265,13 +265,10 @@ function fn_hex2dec()
 {
     # if u want to translate more, use xargs
     hex=$1
-    echo $hex | grep --color '[g-zG-Z]' && echo "invalid input" && exit
-
-    # 00:FF or 00-FF is valid
-    hex=`echo ${hex} | sed 's/[^a-zA-Z0-9]//g'`
-
     hex=${hex/0x/}
     hex=${hex/0X/}
+    echo $hex | grep --color '[g-zG-Z]' && echo "invalid input" && exit
+
     echo "ibase=16; `echo $hex | tr '[:lower:]' '[:upper:]'`" | bc -l
 }
 

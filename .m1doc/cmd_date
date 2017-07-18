@@ -38,6 +38,7 @@
 	date [-u|--utc|--universal] [MMDDhhmm[[CC]YY][.ss]]
 	date -s "010820132013.33"
 	        [MMDDhhmm[[CC]YY][.ss]]
+    date    @`date +%s`
 
 # 可分别设置日期、时间
 	date -s 2008-10-9; date -s 18:22:40

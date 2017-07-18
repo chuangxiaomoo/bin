@@ -53,6 +53,14 @@ if { $argc == 0 } {
         interact {
             timeout 30 { send "" }
         }
+    } elseif { [string match *Rlogin $argv0] == 1 } {   # No password
+        spawn telnet $ip $port
+        expect  "login:"
+        send    "root\n"
+
+        interact {
+            timeout 30 { send "" }
+        }
     } else { 
         puts "$argv0"
         puts "Usage: {elogin|nlogin} ip"

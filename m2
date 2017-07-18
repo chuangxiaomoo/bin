@@ -137,6 +137,7 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               book_dt_暗时间
                                               book_tf_把时间当作朋友
                                               Multitask
+                                              problem_solving
                                               TIME
                                               FeynmanTechnique
                                               xiaolai_cept
