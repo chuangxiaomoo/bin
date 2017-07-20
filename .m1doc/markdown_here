@@ -1,3 +1,24 @@
+# css
+
+* 基本渲染CSS
+
+>
+/* customized by zhangxiaomoo */
+strong, b{
+  color: #BF360C;
+}
+blockquote, q {
+  border-left: 2px solid #009688;
+  padding: 0 10px;
+  color: #555;
+  quotes: none;
+  /* margin-left: 1em; */    /* margin look ugly */
+}
+
+* 语法高亮CSS
+
+> 选择列表中第4个
+
 # mail 要点
 
 # CSS style <Botton to up>
@@ -8,17 +29,6 @@
 
 * 3 github + Strong + blockquote.color.#555
 
-strong, b{
-  color: #BF360C;
-}
-
-blockquote, q {
-  border-left: 2px solid #009688;
-  padding: 0 10px;
-  color: #555;
-  quotes: none;
-  margin-left: 1em;
-}
 
 # 不要使用 list，用 ## 替代
 
