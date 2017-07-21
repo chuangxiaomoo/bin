@@ -53,3 +53,16 @@ tac log.dif | grep -v guoxg | grep -v zouy | grep -v zhangh | grep '^r' | awk '{
 
 svn merge ^/fisheyePro -c5492,5493,5504,5505,5506,5507,5510,5520,5530,5531,5532,5533,5534,5535,5536,5549,5552,5553,5557
 
+# Merge跨仓库
+
+root@moo:/opt/src/jzzz/t20fisheyePro/**appSrc**# svn merge https://192.168.2.250/svn/grainPro/fisheyePro/**appSrc** -c 6499
+
+# 使用merge命令回滚代码
+
+> svn merge -r new:old SOURCE WCPATH
+> e.g. 
+  svn merge -rBASE:r5663 8188eu.ko
+
+其中new是当前最新版本，old是要回滚到的版本，SOURCE为要回滚的svn路径，WCPATH为当前工作路径。
+
+

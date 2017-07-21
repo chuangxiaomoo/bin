@@ -37,6 +37,9 @@ function fn_main()
     c)  svn ci $filelist                        ;;
    cc)  fl=`Svn Sc | awk '{print $2}'` ;svn ci $fl      ;;
  -l|l)  svn log -v -l${filelist:-5}                     ;;
+   lu)  for u in ${filelist:-zhangj}; do regex="-e '/${u}/,/--$/p' ${regex}"; done
+        eval "sed -n ${regex} < /dev/stdin"
+        ;;
     cf|conflict)
         echo "
         1 svn update {df|edit|resolved}

@@ -57,6 +57,12 @@
   //          模式匹配到的行，对于地址的概念，大多命令都通用
   falg:i      不区分大小写（montaVista中sad不区别大小写）
 
+  [](https://stackoverflow.com/questions/28825450/how-do-i-match-multiple-addresses-in-sed)
+  > s 逻辑-and
+    sed '50,70{/abc/d;}'
+  > s 逻辑-or
+    sed -e 'cond1' -e 'cond2'
+
 ## 4.2 d
   > [address1[ ,address2]] d
 
