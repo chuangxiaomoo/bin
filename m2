@@ -1051,7 +1051,9 @@ function fn_subtitle()                  { cat subtitle ;}
 function fn_kindle()                    { cat kindle ;}
 function fn_literature()                { cat literature ;}
 function fn_btc()                       { cat btc_cept
+                                          cat btc_00_此物一出天下反
                                           cat btc_01_螺旋形通缩     # deflatoin_spiral
+                                          cat btc_02_反人类
                                           cat btc_02_反人类
                                         ;}
 

@@ -1,10 +1,44 @@
 # guru
 
-  测试，最重要的是`发现问题`。
+# 测试的本质
 
-  发现问题，最快捷的方法，是集成测试法。单点功能的交叉通常是工程师
-  功能自测时的盲点。
+测试的本质，即**科学方法**的本质。
 
-  解决问题，最重要的是`对问题端到端负责`，跟进以完成交付。
+The concept of PDCA is based on the scientific method, as developed from the work 
+of Francis Bacon (Novum Organum, 1620). The _scientific method_ can be written as 
+"hypothesis"–"experiment"–"evaluation" or plan, do and check. Shewhart described 
+manufacture under "control"—under statistical control—as a three-step process of 
+specification, production, and inspection.
 
-  一次和3次绝对是不一样的结果（获取alarm日志）
+对于改善产品质量，PDCA 循环框架就非常好用。PDCA 循环由美国学者爱德华兹·戴明提出，
+一般用来提高产品品质和改善产品生产过程。其中 
+  P 代表 Plan， 即计划；
+  D 代表 Do，   即执行计划，并在过程中收集信息；
+  C 代表 Check，即研究上一步收集到的信息，和预期设计进行比较，
+                  并提出修改方案，包括执行后的改善和计划的完善使得计划的可执行性提高；
+  A 代表 Act，  即根据 Check 的结果进行改善，有时候也用Adjust来解释这个 A，
+                  更准确地表达修正改善的意思。
+
+# 测试的第一原则
+
+**单一变量原则**。
+
+success = f(x, y, z...)
+最重要的是`对问题端到端负责`，跟进以完成交付。
+
+测试，最重要的是**发现问题，解决问题**，权威、全面、及时的报告，对系统状态运筹帷幄。
+
+# 测试的结构
+
+单元测试：特性工程师编写说明。
+          界定范围并提供边界参数。
+
+集成测试：单点功能的交叉通常是工程师功能自测时的盲点。
+          发现问题，最快捷的方法，是集成测试法。
+
+
+# 测试工程师
+
+测试的价值不在于体现测试工程师的厉害，也不在于通过发现缺陷寻求满足感。
+在我看来，测试的价值就和其他所有组织内的岗位一样，是看你能否为组织产生可见的价值。
+
