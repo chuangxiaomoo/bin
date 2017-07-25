@@ -13,5 +13,5 @@ svn: E175002: Server sent unexpected return value (423 Locked) in response to PU
 # Linux
 
 svn lock --force
-
+svn unlock
 
