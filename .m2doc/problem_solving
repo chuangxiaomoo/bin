@@ -55,6 +55,8 @@ Try and error 是最古老却有效的方法
 
 ## 求助.比对.2017-07-25
 
+> jzzz AEC 调试采样集成后无声音，调试模式有声音。
+
 1 jzzz AEC 调试采样没有声音。
 2 /ipc/app/jco_server 无声音
   /tmp/jco_server 有声音

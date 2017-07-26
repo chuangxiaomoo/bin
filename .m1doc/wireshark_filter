@@ -1,19 +1,27 @@
+# wireshark_filter
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 http://www.derekblog.com/2010/05/17/wireshark-filters/
 
-. 捕捉过滤器
+# 捕捉过滤器
 
-  注意事项：
+  当使用关键字作为值时，需使用反斜杠“\”。
 
-    当使用关键字作为值时，需使用反斜杠“\”。
+  “ether proto \ip” (与关键字”ip”相同).这样写将会以IP协议作为目标。
+  “ip proto \icmp” (与关键字”icmp”相同).这样写将会以ping工具常用的icmp作为目标。
 
-    “ether proto \ip” (与关键字”ip”相同).这样写将会以IP协议作为目标。
-    “ip proto \icmp” (与关键字”icmp”相同).这样写将会以ping工具常用的icmp作为目标。
+  可以在”ip”或”ether”后面使用”multicast”及”broadcast”关键字。
+  当您想排除广播请求时，”no broadcast”就会非常有用。
 
-    可以在”ip”或”ether”后面使用”multicast”及”broadcast”关键字。
-    当您想排除广播请求时，”no broadcast”就会非常有用。
+# 开启方法
+
+  1 主界面上方有 **应用显示过滤器...<Ctrl-/>**
+  2 Body区有**捕捉**，选中网卡*本地链接*后，输入框内表达式才可生效
+
+# Expression
 
 Comparison operators （比较运算符 x 6）:
+
     ┌──────────┬───────────┬────────┐
     │eq        │==         │等于    │
     │ne        │!=         │不等于  │
@@ -38,6 +46,7 @@ Logical expressions（逻辑运算符 x 4）:
 │例子 │tcp     │dst      │10.1.1.1 80  │ and            │ tcp dst 10.2.2.2       │
 │：   │        │         │             │                │ 3128                   │
 └─────┴────────┴─────────┴─────────────┴────────────────┴────────────────────────┘
+
 Protocol（协议）:
     可能的值: ether, fddi, ip, arp, rarp, decnet, lat, sca, moprc, mopdl, tcp and udp.
     如果没有特别指明是什么协议，则默认使用所有支持的协议。
