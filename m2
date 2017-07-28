@@ -125,6 +125,7 @@ function fn_66_佛语()                   { cat book_66_佛语 ;}
 function fn_000_黄晓捷谈在校学习()      { cat book_000_黄晓捷谈在校学习 ;}
 function fn_010_李笑来谈读书经验()      { cat book_010_李笑来谈读书经验
                                           cat book_011_李笑来谈阅读操作系统 
+                                          cat book_012_张五常谈读书和思考
                                           cat book_020_如何选书
                                           ;}
 
