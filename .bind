@@ -1,0 +1,10 @@
+#
+# https://blog.libthomas.org/calendar/2015/01/19/22.html
+# read 可以读输入组合
+# ^[ = PuTTy.Alt = SecureCRT.Esc
+# \C = Ctrl
+# 
+
+bind '"\ei": "192.168.2."'          # 
+bind '"\ee": "\C-asudo \C-e"'       # Alt-e 自动输入 sudo
+
