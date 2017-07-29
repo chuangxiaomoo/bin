@@ -12,6 +12,10 @@ article_001_关于如何准备一场演讲的清单
 
 xsdx_lesson_1
 xsdx_lesson_2
+xiaolai_写作课文字实录01
+xiaolai_写作课文字实录02
+xiaolai_写作课文字实录03
+xiaolai_写作课文字实录04
 
 # write
 
