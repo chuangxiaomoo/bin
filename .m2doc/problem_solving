@@ -57,10 +57,35 @@
 
 将**正常与异常**的启动打印用diff工具比对。
 
-## 思考方法
+## 思考方法0.超越语言思考
 
 相比解决问题(节流)，思考更核心，因为正确思考不会制造问题(开源)。
-超越语言思考
+
+[](+/脱离语言思考，使用语言实现 ~/bin/.m2doc/book_dt_暗时间)
+当然，完全不可否认，联想本身也是极其重要的思维方法，甚至可以说是人类思维最重要的特征。很多时候我们并不知道问题的本质是什么，就需要靠联想、类比来领路探索。只不过，**养成优先从问题的本质入手进行考察的好习惯绝对是有更大的好处的**。
+
+    2017-07-15 ~ 2017-07-30
+    if (clock_gettime(CLOCK_MONOTONIC/*ntp-access*/|CLOCK_MONOTONIC_RAW) - timestamp > record_time/*900*/+50) {
+        stop_record();
+    }
+    
+上面这个代码片段会在 `clock_gettime(CLOCK_PROCESS_CPUTIME_ID) > 900+50` 时不断重启record服务。
+这个bug出现有两个周之久，最终是在解决大拿云服务时间戳时发现 clock_gettime(CLOCK_MONOTONIC) 的单调性才明白以上片段是错误性。
+
+整个过程中的几个未知知识点让我不能清晰的思考：
+1. clock_gettime(CLOCK_MONOTONIC)
+2. delay(0, func_self)
+3. watch
+
+如果用自然语言思考，record服务无非就完成以下几件事：
+1. 控制接口 {start|stop|restart}
+2. while() 写录像文件
+   900s后roll新文件
+3. 响应event事件 {start|stop|record_time|devvecfg}
+
+天下程序就2招：
+1. {start|stop|restart}   // restart=stop+config.event+start
+2. if + while + sequence
 
 ## 要善于利用逆境
 
