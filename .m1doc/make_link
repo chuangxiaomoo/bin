@@ -14,3 +14,27 @@
 
 4 交叉依赖
   [](+/静态库链接顺序 gcc_fundamental)
+
+  通过将所有需要被链接的静态库放入 `-Xlinker "-("` 与 `-Xlinker "-)"` 之间，
+  自动循环链接所有静态库，从而解决了原本的链接顺序问题。
+
+5 undefined reference
+
+  nm 和 $(CROSS)-nm 的行为是完全一样的，是你进行判断的可靠依据
+  gcc -E xx.cpp -o xx.ii 也是可靠的
+  多半是因为宏隔离的原因导致代码**预处理时被删**
+
+```cpp
+  main/record/record_rec.cpp|145| undefined reference to `CMP4Repair::CMP4Repair()'
+  main/record/record_rec.cpp|146| undefined reference to `CMP4Repair::Open(char const*)'
+  main/record/record_rec.cpp|147| undefined reference to `CMP4Repair::GetMP4FileStatus()'
+  main/record/record_rec.cpp|151| undefined reference to `CMP4Repair::Repair()'
+  main/record/record_rec.cpp|154| undefined reference to `CMP4Repair::GetMP4FileStatus()'
+
+  root@moo:~/cpp/repair# nm libmp4.a | grep -i repair
+              Symble                                  Declare
+  00000224 T _ZN10CMP4Repair16GetMP4FileStatusEv      GetMP4FileStatus [CMP4Repair]
+  00001448 T _ZN10CMP4Repair4OpenEPKc                 Open [CMP4Repair]
+  000003d8 T _ZN10CMP4Repair5CloseEv                  Close [CMP4Repair]
+  00008870 T _ZN10CMP4Repair6RepairEv                 Repair [CMP4Repair]
+```
