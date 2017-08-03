@@ -1,13 +1,44 @@
-# cross_compile
+# ./configure --build --host --target
+
+--build=`set | awk  -F'=' '/MACHTYPE/{print $2}'`   # PC  执行
+--host=`set | awk  -F'=' '/MACHTYPE/{print $2}'`    # 设备执行，host !=build 是交叉编译
+--target=                                           # 一般与--host一样
+
+1 通过--host 来猜测交叉编译器
+2 --host --build 都以 `linux-gnu` 结尾，否则不被识别
+  MACHTYPE=mips-unknown-linux-gnu
+  MACHTYPE=i686-pc-linux-gnu
+3 可以通过 `ln -sf mips-linux-uclibc-gnu-gcc mips-linux-gnu-gcc` 来使gcc命名规范
+
+# 最简单的 cross_compile
 
     Usage: $0 [OPTION]... [VAR=VALUE]...
     CC=arm-linux-gcc ./configure --host=arm-linux
     一般来说，指定--host就可以了，CC会自动查找
 
-# e.g.
-
 ## netcat 
 
-./configure CC=mips-linux-uclibc-gnu-gcc --host=mips
 
+## gdb
 
+CFLAGS=-static    \
+
+./configure       \
+--host=mips-linux-gnu       \
+--build=`set | awk  -F'=' '/MACHTYPE/{print $2}'` \
+CC=mips-linux-uclibc-gnu-gcc  \
+AR=mips-linux-uclibc-gnu-ar   \
+AR=mips-linux-uclibc-gnu-ar   \
+AS=mips-linux-uclibc-gnu-as   \
+LD=mips-linux-uclibc-gnu-ld   \
+NM=mips-linux-uclibc-gnu-nm   \
+STRIP=mips-linux-uclibc-gnu-nm-strip \
+--libdir=/winc/Export/so2/termcap-1.3.1 \
+--includedir=/winc/Export/so2/termcap-1.3.1 \
+--without-x --disable-gdbtk --disable-tui --without-included-regex --without-included-gettext --disable-option-checking 
+
+## gdb 依赖
+
+编译termcap-1.3.1   `apt-get install texinfo`
+./bfd/Makefile 去掉 `-Werror`
+Makefile:370        `CFLAGS = -g -O2 -I/opt/src/Tools/termcap-1.3.1 -L/opt/src/Tools/termcap-1.3.1`
