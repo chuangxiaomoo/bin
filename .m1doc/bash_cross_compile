@@ -42,3 +42,9 @@ STRIP=mips-linux-uclibc-gnu-nm-strip \
 编译termcap-1.3.1   `apt-get install texinfo`
 ./bfd/Makefile 去掉 `-Werror`
 Makefile:370        `CFLAGS = -g -O2 -I/opt/src/Tools/termcap-1.3.1 -L/opt/src/Tools/termcap-1.3.1`
+
+## gdb multi-threaded
+**unable to find libthread_db matching inferior's thread library**
+[](https://stackoverflow.com/questions/11585472/unable-to-debug-multi-threaded-application-with-gdb)
+[](https://groups.google.com/forum/#!topic/beagleboard/X1qnTEGxL7o)
+如果要调试线程，不要构建 static 原生 gdb 
