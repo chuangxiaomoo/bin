@@ -23,12 +23,12 @@ nc -lp 1234 > /dev/null
 
 # 测试网速.send NR Mbits
 
-NR=10 IF=/dev/zero HOST=192.168.2.101
-NR=10 IF=/dev/zero HOST=192.168.2.248
+NR=100 IF=/dev/zero HOST=192.168.2.102       # Send on IPC
+NR=100 IF=/dev/zero HOST=192.168.2.248       # Send to Ubt
 
 ps -ef >& /dev/null && export OPT=ax
 
-dd if=$IF  bs=1M count=$NR | nc ${HOST} 1234 &              \
+dd if=$IF  bs=100K count=$NR | nc ${HOST} 1234 &            \
 pid=`ps $OPT | awk '/[d]d if/{printf ("%s", $1); exit}'`;   \
 i=0; test -n "$pid" &&                                      \
 while :; do kill -0 $pid || { echo __done__; break; };      \
