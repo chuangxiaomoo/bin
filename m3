@@ -17,6 +17,11 @@ xiaolai_写作课文字实录02
 xiaolai_写作课文字实录03
 xiaolai_写作课文字实录04
 
+# collect
+
+collect_theory_理论
+collect_analog_类比
+
 # write.技巧
 
 writing_analog.类比
