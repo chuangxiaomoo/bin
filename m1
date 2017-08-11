@@ -718,6 +718,7 @@ function fn_tee()                       { cat cmd_tee ;}
 function fn_fdisk()                     { cat cmd_fdisk ;}
 function fn_date()                      { cat cmd_date ;}
 function fn_dd()                        { cat cmd_dd ;}
+function fn_iperf()                     { cat cmd_iperf ;}
 function fn_himm()                      { cat cmd_himm ;}
 function fn_ifconfig()                  { cat cmd_ifconfig ;}
 function fn_ln()                        { cat cmd_ln ;}
@@ -760,6 +761,7 @@ function fn_timeout()                   { cat cmd_timeout ;}
         hexdump                 # xxd od
         ifconfig
         install
+        iperf
         ln
         lsof
         mount
