@@ -1261,6 +1261,30 @@ markdown-here code style + 使用163预览 + 如何改 highlight
 [](+/超越语言思考 problem_solving)
 [](+/UNKNOW-UNKNOW problem_solving)
 
+# 2017-08-13 证据(数据)搜集 & 处理流程 & 可重复性
+
+2016.5.2 河北科大副教授韩春雨，在《自然·生物技术》(Nature Biotechnology)上发表论文《NgAgo DNA单链引导的基因编辑工具》
+1年多里，国内外多个实验室声明韩春雨论文无法重复。
+2017.8.3 韩春雨主动撤回论文《NgAgo DNA单链引导的基因编辑工具》。
+
+xiaolai给王秒的建议：
+
+> 第一个，一切你没有证据的陈述，都给我去掉；
+> 第二个，不喊冤，不诉苦，这些都没有必要；
+> 第三个，只写去哪儿网到底哪做的不对。
+
+最近，与大拿语音方面的沟通也得益于证据的搜集。
+
+> netstat -nat | grep 12345，1条链接与两条链接
+> 语音延时堆积，语音卡顿
+> 内核发送buffer.API ioctl() getsocketopt()
+
+**常用的收集证据方法**：
+1 消费索要发票
+2 口头谈判时进行录音(如工资谈判)
+3 操作流程
+4 条件判断依据(决策的set)
+
 # todo
 
 必须接受这个现实：未知永远存在。而后只能开始不断地尝试着去适应“在未知中不断前行”。
@@ -1283,3 +1307,5 @@ markdown-here code style + 使用163预览 + 如何改 highlight
 5 重读 Beyond-Feelings，并写作笔记
   所谓“批判性思考”，即“评估想法”的过程(process of evaluating ideas)，想法多牵及价值观。
   “批判性思考”的误解，是过程而非结果，过程即机制、机器、算法、流程。
+6 [庄子.齐物论.讲演录.牟宗三](http://www.360doc.com/content/12/1116/02/1720781_248203359.shtml)
+  [台大.公开课.金嘉锡](http://open.sina.com.cn/course/id_502/lesson_5174/)

@@ -12,19 +12,22 @@ article_001_关于如何准备一场演讲的清单
 
 xsdx_lesson_1
 xsdx_lesson_2
+
 xiaolai_写作课文字实录01
 xiaolai_写作课文字实录02
 xiaolai_写作课文字实录03
 xiaolai_写作课文字实录04
+xiaolai_ask50
 
 # collect
 
 collect_theory_理论
-collect_analog_类比
+collect_analogy_类比
+collect_metaphor_暗喻
 
 # write.技巧
 
-writing_analog.类比
+writing_analogy.类比
 writing_1st_principle
 writing_format_XiaoLai
 writing_万能句式
