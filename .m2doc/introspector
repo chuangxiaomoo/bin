@@ -1278,6 +1278,10 @@ xiaolai给王秒的建议：
 > netstat -nat | grep 12345，1条链接与两条链接
 > 语音延时堆积，语音卡顿
 > 内核发送buffer.API ioctl() getsocketopt()
+  ```cpp
+  getsockopt(sock_fd, SOL_SOCKET, SO_SNDBUF, (void*)&sendbuflen, &len);   // 缓冲总大小
+  ioctl(sock_fd, SIOCOUTQ, &pending);                                     // pending 即 Send-Q 的大小，未发出数据
+  ```
 
 **常用的收集证据方法**：
 1 消费索要发票

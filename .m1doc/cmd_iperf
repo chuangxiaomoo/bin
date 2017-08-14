@@ -1,6 +1,6 @@
 **Recv** -D to bg
-iperf -s -i1 -t60 -b1000M -D
+iperf -i1 -b1000M -s -D
 
-**Send**
-iperf -c 192.168.2.248 -i1 -t10 -b1000M
+**Send** default -t10 
+iperf -i1 -b1000M -c 192.168.2.248 
 
