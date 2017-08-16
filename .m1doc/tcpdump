@@ -3,6 +3,14 @@
 tcpdump用法例子 
 http://blog.chinaunix.net/uid-21768364-id-186124.html
 
+# 选项
+
+tcpdump -s0 获取全部数据包
+
+默认的话 tcpdump 只显示部分数据包
+参数 -s snaplen 就是控制这个的
+默认是  68 字节
+设成0的话 就是显示全部数据包
 
 # 保存
 tcpdump -i eth5  host 192.168.2.45 and tcp port 80  -w a.cap
