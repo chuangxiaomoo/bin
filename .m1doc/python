@@ -1,0 +1,94 @@
+# 编码.Unicode.UTF-8
+
+[](https://www.zhihu.com/question/23374078)
+
+unicode是**定长编码**方案。
+早期的Unicode确实是只有16位（最多能表示65536个字符）；之后出现了Universal Character Set（UST），采用31位编码，能表示20多亿个字符。
+
+unicode在很长一段时间内无法推广，直到互联网的出现，为解决unicode如何在网络上传输的问题，于是面向传输的众多 UTF（UCS Transfer Format）标准出现了，
+顾名思义，**UTF-8就是每次8个位传输数据**，而UTF-16就是每次16个位。**UTF-8就是在互联网上使用最广的一种unicode的实现方式**，
+这是为传输而设计的编码，并使编码无国界，这样就可以显示全世界上所有文化的字符了。
+
+UTF-8最大的一个特点，就是它是一种**变长**的编码方式。它可以使用1~4个字节表示一个符号，根据不同的符号而变化字节长度，当字符在ASCII
+码的范围时，就用一个字节表示，保留了ASCII字符一个字节的编码做为它的一部分，注意的是unicode一个中文字符占2个字节，而UTF-8一个中
+文字符占3个字节）。**从unicode到uft-8并不是直接的对应，而是要过一些算法和规则来转换**。
+
+Unicode符号范围 | UTF-8编码方式
+(十六进制)      | （二进制）
+
+# 编码.Python
+
+由于Python的字符串类型是`str`，在内存中以Unicode表示，一个字符对应若干个字节。
+如果要在网络上传输，或者保存到磁盘上，就需要把str变为以字节为单位的`bytes`。
+
+Python对bytes类型的数据用`带b前缀`的单引号或双引号表示：
+
+> x = b'ABC'
+
+**str转bytes**
+'ABC'.encode('ascii')
+'中文'.encode('utf-8')
+
+**bytes转str**
+b'ABC'.decode('ascii')
+b'\xe4\xb8\xad\xe6\x96\x87'.decode('utf-8')
+
+**len()**
+len('中文') == 2
+len('中文'.encode('utf-8')) == 6
+
+# list & tuple
+```python
+classmates = ['Michael', 'Bob', 'Tracy']        # list
+add         append(val), insert(i, val)
+del         pop(i)
+mod         =
+select      list[i]
+
+classmates = ('Michael', 'Bob', 'Tracy')        # tuple, 一旦创建，指向不可修改，更安全
+t = (1,)                                        # 只有1个元素的tuple定义时必须加一个逗号,，来消除歧义：
+>>> t = ('a', 'b', ['A', 'B'])                  # 
+>>> t[2][0] = 'X'                               # tuple"指向不可修改"，但元素是非常量时可修改，相当于C的 `const type* p`
+>>> t[2][1] = 'Y'
+```
+
+# dict & set
+
+**dict特点**：
+查找和插入的速度极快，不会随着key的增加而变慢；
+需要占用大量的内存，内存浪费多。
+
+```python
+>>> d = {'Michael': 95, 'Bob': 75, 'Tracy': 85}
+>>> d['Michael']
+95
+```
+
+**要创建一个set**，需要提供一个list作为输入集合，重复元素在set中自动被过滤：
+
+```python
+>>> s = set([1, 1, 2, 2, 3, 3])
+>>> s
+{1, 2, 3}
+```
+
+# slice
+
+取一个list或tuple的部分元素是非常常见的操作。比如，一个list如下：
+```python
+>>> L = ['Michael', 'Sarah', 'Tracy', 'Bob', 'Jack']
+>>> L[0:3]
+['Michael', 'Sarah', 'Tracy']
+
+>>> L[-2:]                                      # 倒数切片
+['Bob', 'Jack']
+>>> L[-2:-1]
+['Bob']
+```
+
+# 高阶函数.map & reduce
+
+# 高阶函数.filter
+# 高阶函数.sorted
+# 高阶函数.lambda.anonymous_function
+
