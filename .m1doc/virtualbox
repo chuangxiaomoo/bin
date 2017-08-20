@@ -1,5 +1,9 @@
 # virtualbox
 
+  选择win7稳定的版本(4.3.20 r96996)：
+  Oracle_VM_VirtualBox_Extension_Pack-4.3.20-96996.vbox-extpack
+  [下载地址](http://download.virtualbox.org/virtualbox/4.3.20/)
+
 ## nat
 
   > virtualbox的网关是 x.x.x.2
