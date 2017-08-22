@@ -59,7 +59,7 @@ t = (1,)                                        # 只有1个元素的tuple定义
 需要占用大量的内存，内存浪费多。
 
 ```python
->>> d = {'Michael': 95, 'Bob': 75, 'Tracy': 85}
+>>> d = {'Michael': 95, 'Bob': 75, 'Tracy': 85} # tips: json是字典，用的也是{}
 >>> d['Michael']
 95
 ```
@@ -89,6 +89,212 @@ t = (1,)                                        # 只有1个元素的tuple定义
 # 高阶函数.map & reduce
 
 # 高阶函数.filter
+
 # 高阶函数.sorted
+
 # 高阶函数.lambda.anonymous_function
+
+>>> list(map(lambda x: x * x, [1, 2, 3, 4, 5, 6, 7, 8, 9]))
+[1, 4, 9, 16, 25, 36, 49, 64, 81]
+
+通过对比可以看出，匿名函数lambda x: x * x实际上就是：
+```python
+def f(x):
+    return x * x
+```
+关键字lambda表示匿名函数，冒号前面的x表示函数参数。
+匿名函数有个限制，就是只能有一个表达式，不用写return，返回值就是该表达式的结果。
+
+# 高阶函数.装饰器
+
+```python
+@log
+def now():
+    print('2015-3-25')
+```
+把@log放到now()函数的定义处，相当于执行了语句：
+now = log(now)
+
+装饰器的重要使用场景：**打印调用栈**
+
+# 高阶函数.偏函数
+
+>>> import functools
+>>> int2 = functools.partial(int, base=2)
+>>> int2('1000000')
+64
+
+简单总结functools.partial的作用就是，把一个函数的某些参数给固定住（也就是设置默认值），返回一个新的函数，调用这个新函数会更简单。
+当函数的参数个数太多，需要简化时，使用functools.partial可以创建一个新的函数，这个新函数可以固定住原函数的部分参数，从而在调用时更简单。
+
+# 模块 module & 包 package
+
+你也许还想到，如果不同的人编写的模块名相同怎么办？为了避免模块名冲突，Python又引入了按目录来组织模块的方法，称为包（Package）。
+
+请注意，每一个包目录下面都会有一个__init__.py的文件，这个文件是必须存在的，否则，Python就把这个目录当成普通目录，而不是一个包。__init__.py可以是空文件，也可以有Python代码，因为__init__.py本身就是一个模块，而它的模块名就是其父文件夹名。
+
+```python
+import helloworld                     # import 类似 bash source，不仅导入函数，也会执行可执行语句
+if __name__=='__main__':              # __name__ 类似 BASH_SOURCE[0]
+    print("argv0: ", sys.argv[0])
+        test()
+```
+
+**安装模块**
+which pip pip3
+md5sum pip pip3                       *md5sum完全相同*
+pip install pymysql
+
+# OO.面向对象编程
+
+```python
+class Student(object):
+
+    def __init__(self, name, score):
+        self.name = name
+        self.score = score
+
+    def print_score(self):
+        print('%s: %s' % (self.name, self.score))
+
+bart = Student('Bart Simpson', 59)
+lisa = Student('Lisa Simpson', 87)
+bart.print_score()
+lisa.print_score()
+```
+
+数据封装、继承和多态是面向对象的三大特点，我们后面会详细讲解。
+
+# OO.封装
+
+```python
+class Student(object):
+    def __init__(self, name, score):
+        self.__name = name                  # __ 打头，系统将其改名为 _Student__name，则不能从外部以 __name 访问
+        self.__score = score                # print(__name) 会报错，__name = val 会新增新的变量
+
+    def print_score(self):
+        print('%s: %s' % (self.__name, self.__score))
+
+```
+
+所谓封装，即可只允许内部方法进行访问
+
+# OO.继承 & OO.多态
+
+```python
+class Animal(object):
+    def run(self):
+        print('Animal is running...')
+
+class Dog(Animal):                          # 继承：倒立的树一般，无限延升
+    def run(self):                          # 多态：对父类的run()进行覆盖
+        print('Dog is running...')
+
+    def eat(self):
+        print('Eating meat...')
+
+dog = Dog()
+dog.run()
+
+print('result: ', isinstance(dog, Dog))
+print('result: ', isinstance(dog, Animal))
+
+def run_twice(animal):                      # 参数只要有方法 .run 就行，不一定要是 Animal instance
+    animal.run()
+    animal.run()
+
+run_twice(Dog())                            # 
+```
+
+# OO.获取对象信息
+
+```python
+type()
+isinstance()
+dir()                                       # 获得一个对象的所有属性和方法
+dir('ABC')                                  # len('ABC') <==> 'ABC'.__len__()
+```
+
+# OO.__slots__
+
+限制实例的属性
+```python
+class Student(object):
+    __slots__ = ('name', 'age')             # 用tuple定义允许绑定的属性名称
+
+s = Student()                               # 创建新的实例
+s.score = 99                                # 绑定属性'score', AttributeError: 'Student' object has no attribute 'score'
+```
+
+# OO.@property
+
+`@property`广泛应用在类的定义中，可以让调用者写出简短的代码，同时保证对参数进行必要的检查，这样，程序运行时就减少了出错的可能性。
+
+```python
+class Student(object):
+
+    def get_score(self):
+         return self._score
+
+    def set_score(self, value):
+        if not isinstance(value, int):
+            raise ValueError('score must be an integer!')
+        if value < 0 or value > 100:
+            raise ValueError('score must between 0 ~ 100!')
+        self._score = value
+
+
+class Student(object):
+
+    @property
+    def score(self):                                          # <==> get_score()
+        return self._score
+
+    @score.setter
+    def score(self, value):                                   # <==> set_score()
+        if not isinstance(value, int):
+            raise ValueError('score must be an integer!')
+        if value < 0 or value > 100:
+            raise ValueError('score must between 0 ~ 100!')
+        self._score = value
+
+>>> s = Student()
+>>> s.score = 60                                              # OK，实际转化为s.score(self, 60)
+>>> s.score                                                   # OK，实际转化为s.score(self)
+```
+
+# OO.__xxx__.Basic_customization
+
+[](https://docs.python.org/3/reference/datamodel.html#special-method-names)
+
+```python
+__str__
+__iter__
+__getitem__
+__call__                                                      # 对实例进行直接调用就好比对一个函数进行调用一样，
+                                                              # 所以你完全可以把对象看成函数，把函数看成对象，因为这两者之间本来就没啥根本的区别。
+```
+
+# Error & Exception
+
+try...except...finally
+raise
+[exception hierarchy](https://docs.python.org/3/library/exceptions.html#exception-hierarchy)
+
+
+# json
+
+```python
+import json
+import sys
+
+f = open("btc.json", 'r')
+mydata = json.loads(f.read())
+print(type(mydata))
+print(mydata["uid"])
+print(mydata["nameauth"])
+print(float(mydata["moflag"]))
+print(float(mydata["asset"]))
+```
 
