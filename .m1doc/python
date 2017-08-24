@@ -86,6 +86,23 @@ t = (1,)                                        # 只有1个元素的tuple定义
 ['Bob']
 ```
 
+# 函数.args.kwargs
+
+```python
+#  *args 表示任何多个无名参数，它是一个tuple；
+# **kwargs 表示关键字参数，它是一个dict。
+def test(a, *args, **kwargs):
+    print(a)
+    print(args)
+    print(kwargs)
+
+test(1,2,3,d='4',e=5)
+>>> 1
+>>> (2, 3)
+>>> {'e': 5, 'd': '4'}
+```
+
+
 # 高阶函数.map & reduce
 
 # 高阶函数.filter
@@ -303,4 +320,4 @@ with open('btc.json', 'w') as f:
     s = json.dumps(data)                # dumps()       返回 string
 ```
 
-
+# 
