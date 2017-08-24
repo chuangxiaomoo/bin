@@ -229,7 +229,7 @@ s.score = 99                                # 绑定属性'score', AttributeErro
 
 # OO.@property
 
-`@property`广泛应用在类的定义中，可以让调用者写出简短的代码，同时保证对参数进行必要的检查，这样，程序运行时就减少了出错的可能性。
+@property广泛应用在类的定义中，可以让调用者写出简短的代码，同时保证对参数进行必要的检查，这样，程序运行时就减少了出错的可能性。
 
 ```python
 class Student(object):
@@ -269,10 +269,10 @@ class Student(object):
 [](https://docs.python.org/3/reference/datamodel.html#special-method-names)
 
 ```python
-__str__
-__iter__
-__getitem__
-__call__                                                      # 对实例进行直接调用就好比对一个函数进行调用一样，
+__str__=
+__iter__=
+__getitem__=
+__call__=                                                     # 对实例进行直接调用就好比对一个函数进行调用一样，
                                                               # 所以你完全可以把对象看成函数，把函数看成对象，因为这两者之间本来就没啥根本的区别。
 ```
 
@@ -289,12 +289,18 @@ raise
 import json
 import sys
 
-f = open("btc.json", 'r')
-mydata = json.loads(f.read())
-print(type(mydata))
-print(mydata["uid"])
-print(mydata["nameauth"])
-print(float(mydata["moflag"]))
+with open("btc.json", 'r') as f:
+    mydata = json.loads(f.read())       # loads(string) 转换为python的数据结构
 print(float(mydata["asset"]))
+
+with open("btc.json", 'r') as f:
+    mydata = json.load(f)               # load(fd)      转换为python的数据结构
+print(mydata["uid"])
+
+data = ['aa', 'bb', 'cc']
+with open('btc.json', 'w') as f:
+    json.dump(data, f)                  # dump()        写入文件
+    s = json.dumps(data)                # dumps()       返回 string
 ```
+
 
