@@ -39,6 +39,17 @@
                 printf("\n")
     }' filename
 
+# bit and or 
+
+function fn_calc()
+{
+    case $1 in
+    and) echo ${@:2}   | awk '{ ret=$1; for (i = 2; i <= NF; i++) { ret=and(ret,$i) }; print ret; }'  ;;
+     or) echo ${@:2}   | awk '{ ret=$1; for (i = 2; i <= NF; i++) { ret=or(ret,$i) }; print ret; }'   ;;
+      *) cmdline="echo | awk '{printf \"%d\n\", ${*} }'"; eval $cmdline                               ;;
+    esac
+}
+
 # array 数组 (http://www.cnblogs.com/chengmo/archive/2010/10/08/1846190.html)
 
     Tarray[1]=“cheng mo”
