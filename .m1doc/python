@@ -1,5 +1,18 @@
+#! /usr/bin/python
+
 # 编码.Unicode.UTF-8
 
+# Windows 安装
+
+# Linux 安装
+
+[在 Ubuntu 14.04.3 上安装 Python 3.5](https://plumz.me/archives/2333/)
+pip install numpy
+pip install matplotlib
+
+# unicode
+
+```markdown
 [](https://www.zhihu.com/question/23374078)
 
 unicode是**定长编码**方案。
@@ -15,6 +28,7 @@ UTF-8最大的一个特点，就是它是一种**变长**的编码方式。它�
 
 Unicode符号范围 | UTF-8编码方式
 (十六进制)      | （二进制）
+```
 
 # 编码.Python
 
@@ -320,4 +334,10 @@ with open('btc.json', 'w') as f:
     s = json.dumps(data)                # dumps()       返回 string
 ```
 
-# 
+# matplotlib.subplot(x, y, nr)
+
+canvas分成(x * y)部分，nr ∈ {1 ... x * y}
+
+plt.show()
+plt.savefig('/winc/out.png')            # 支持的格式: eps, pdf, pgf, png, ps, raw, rgba, svg, svgz（注意不支持jpg格式）： 
+                                        # [matplotlib绘图总结](http://whuhan2013.github.io/blog/2016/09/16/python-matplotlib-learn/)

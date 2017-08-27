@@ -33,6 +33,7 @@ function fn_talk()                      { cat mng_talk ;}
 function fn_error_11()                  { cat mng_error_11 ;}
 function fn_p_你会泡员工吗()            { cat mng_p_你会泡员工吗 ;}
 function fn_00_官僚及管理的本质()       { cat mng_00_官僚及管理的本质 ;}
+function fn_20_都江堰深淘滩低作堰()     { cat mng_20_都江堰深淘滩低作堰 ;}
 function fn_21_莱茵河为何总是清的()     { cat mng_21_莱茵河为何总是清的 ;}
 function fn_22_莱茵河如何跨国治污()     { cat mng_22_莱茵河如何跨国治污 ;}
     local opts=(
@@ -49,6 +50,7 @@ function fn_22_莱茵河如何跨国治污()     { cat mng_22_莱茵河如何跨
 
         11_王熙凤                       # 天下大事，必作于细
 
+        20_都江堰深淘滩低作堰
         21_莱茵河为何总是清的
         22_莱茵河如何跨国治污
     )
@@ -398,6 +400,7 @@ function fn_101_分享与慷他人之慨()      { cat article_101_分享与慷�
 function fn_102_同事是你共享生命的战友(){ cat article_102_同事是你共享生命的战友 ;}
 function fn_103_协作跟进？如何跟进？()  { cat article_103_协作跟进？如何跟进？
                                           cat article_104_节奏：论工作中的博弈
+                                          cat article_105_你的话语权从哪里来？
                                           ;}
 
 function fn_110_中国哲学体系的困惑？()  { cat article_110_中国哲学体系的困惑？ ;}
