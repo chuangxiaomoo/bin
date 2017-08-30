@@ -305,6 +305,7 @@ cpffw() { file=`ls release/tar/*.ffw`;
           mkdir -p /winc/Export/com/; rm -rf /winc/Export/com/*.ffw; cp -a $file         /winc/Export/com/ 
           echo ${file##*/} > /winc/Export/com/ffw.txt                                                      ;}
 nctar() { file=`ls release/tar/*.tgz`;  nc $1 8006 < $file ;}
+nc1234(){ make i;  nc $1 1234 < main/jco_server ;}
 
 # manpage color
 export LESS_TERMCAP_mb=$'\E[01;31m'
