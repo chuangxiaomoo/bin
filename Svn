@@ -9,8 +9,8 @@ function fn_usage()
         c   ci [files...]
         cf  conflict
         D   {?|M}
-        d   [-r r9527 path] : equal -c BASE:WORKING
-        dc  diff -c r9527   : equal -c r9526:r9527
+        d   [-r r9527 path] : equal diff -c BASE:WORKING
+        dc  r9527 filepath  : equal diff -c r9526:r9527 filepath
         dp  diff -r 'PREV'  : 提交有误时diff上上个版本
         dh  horizontal-split-diff
         dl  equal [Svn S clang]
