@@ -51,7 +51,7 @@ b'\xe4\xb8\xad\xe6\x96\x87'.decode('utf-8')
 len('中文') == 2
 len('中文'.encode('utf-8')) == 6
 
-# list & tuple
+# list(array) & tuple
 ```python
 classmates = ['Michael', 'Bob', 'Tracy']        # list
 add         append(val), insert(i, val)
@@ -88,8 +88,11 @@ t = (1,)                                        # 只有1个元素的tuple定义
 
 # slice
 
-取一个list或tuple的部分元素是非常常见的操作。比如，一个list如下：
-```python
+#
+# array[start:end:step]     # 从start，总计 (end-start)/step 个元素
+#
+# 取一个list或tuple的部分元素是非常常见的操作。比如，一个list如下：
+
 >>> L = ['Michael', 'Sarah', 'Tracy', 'Bob', 'Jack']
 >>> L[0:3]
 ['Michael', 'Sarah', 'Tracy']
@@ -98,11 +101,9 @@ t = (1,)                                        # 只有1个元素的tuple定义
 ['Bob', 'Jack']
 >>> L[-2:-1]
 ['Bob']
-```
 
 # 函数.args.kwargs
 
-```python
 #  *args 表示任何多个无名参数，它是一个tuple；
 # **kwargs 表示关键字参数，它是一个dict。
 def test(a, *args, **kwargs):
@@ -114,8 +115,6 @@ test(1,2,3,d='4',e=5)
 >>> 1
 >>> (2, 3)
 >>> {'e': 5, 'd': '4'}
-```
-
 
 # 高阶函数.map & reduce
 
@@ -341,3 +340,56 @@ canvas分成(x * y)部分，nr ∈ {1 ... x * y}
 plt.show()
 plt.savefig('/winc/out.png')            # 支持的格式: eps, pdf, pgf, png, ps, raw, rgba, svg, svgz（注意不支持jpg格式）： 
                                         # [matplotlib绘图总结](http://whuhan2013.github.io/blog/2016/09/16/python-matplotlib-learn/)
+
+# pandas.DataFrame (create, select, add, del)
+
+```markdown
+[创建，索引，增添，删除](http://blog.csdn.net/maliang_1993/article/details/50907983)
+pd.DataFrame 实现类似数据库的功能
+
+[](https://stackoverflow.com/questions/36723684/purpose-of-columndatasource-in-bokeh)
+bokeh.ColumnDataSource()
+```
+
+import pandas as pd
+
+aa={'one':[1,2,3],'two':[2,3,4],'three':[3,4,5]}
+bb=pd.DataFrame(aa)                                 # 创建表 bb
+
+print(bb.three)                                     # SELECT id,three FROM bb
+print("_________")
+print(bb.three[bb.one>2])                           # SELECT id,three FROM bb WHERE one>2;
+
+0    3
+1    4
+2    5
+Name: three, dtype: int64
+_________
+2    5
+Name: three, dtype: int64
+
+# pandas.DataFrame index.SELECT.UPDATE (最重要的功能，没有之一)
+
+# 1. faster
+
+df.get_value(0, 'close') 
+df.set_value(0, 'close', val) 
+
+# 2. slower
+
+print(df.xs(0)['close'])                            # .160 - .153
+print(df.iloc[:1,1:2])
+
+# 3. 多条件联合查询
+# SELECT * FROM df WHERE column1 = 'a' OR column2 = 'b' OR column3 = 'c' etc...
+foo = df.ix[(df['column1']==value) | (df['columns2'] == 'b') | (df['column3'] == 'c')]
+
+# 4. http://pandas-docs.github.io/pandas-docs-travis/indexing.html#multiindex-query-syntax
+df.query('(a < b) & (b < c)')
+df.query('a in b and c < d')
+df[df.b.isin(df.a) & (df.c < df.d)]
+
+# 5. 切片后reset_index
+df_fb=df[3:7].reset_index(drop=1)                   # drop=1 删除原有index
+print(df_fb)
+
