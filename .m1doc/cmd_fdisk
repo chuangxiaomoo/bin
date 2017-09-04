@@ -10,14 +10,18 @@ mount_path="/b_disc"
 
 fdisk $dev_disc
 
+# p print the partition table
+# d del specific partition
+#
 # n to add a new logical disk
 # p to primay partition
-# Partition number (1-4): 1
-# First cylinder (1-2610, default 1): 1
-# Last cylinder or +size or +sizeM or +sizeK (1-2610, default 2610):
+#   Partition number (1-4): 1
+#   First cylinder (1-2610, default 1): 1
+#   Last cylinder or +size or +sizeM or +sizeK (1-2610, default 2610):
 # w to write it in!
 
 mkfs.ext4 ${dev_disc}1
+sync                        # sync will send event[0p1] to kenerl.hotplug
 
 fdisk -l | grep "$dev_disc"
 

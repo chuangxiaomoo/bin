@@ -7,3 +7,10 @@
   svn log app -r {2012-12-18}                 # log on   {2012-12-18}
   svn log app -r {2012-12-18}:{2038-01-01}    # log from {2012-12-18}
 
+# specific user
+
+  As suggested by @bahrep, subversion 1.8 comes with a --search option.
+
+  Before 1.8
+  > svn log | sed -n '/USERNAME/,/-----$/ p' 
+
