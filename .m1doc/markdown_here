@@ -19,6 +19,29 @@ blockquote, q {
 
 > 选择列表中第4个
 
+# em 非 italic 
+
+em {
+  font-style: normal;
+  font-weight: bold;
+  color: #000000;
+}
+
+# 等宽空格+字符
+
+[](http://www.webjx.com/css/divcss-7202.html)
+**方案1**
+font-family: '宋体', Simsun;
+white-space: pre;
+
+**方案2**
+.half-word {width: .5em;}
+.two-word{width:2em;}
+
+第一种方法，虽然依赖具体的等宽字体，但没有添加其他额外的结构，对于以后的维护会更加的方便；
+第二种方法，则更多的考虑了实际的应用情况（同时也不用依赖具体的等宽字体），但是也添加了额外的结构。
+
+
 # mail 要点
 
 # CSS style <Botton to up>
