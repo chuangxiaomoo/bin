@@ -25,3 +25,4 @@
 ## 维护-瘦身
 
 [](https://git-scm.com/book/zh/v1/Git-内部原理-维护及数据恢复)
+git gc --auto
