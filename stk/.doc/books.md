@@ -8,6 +8,7 @@
 
 # books
 
+  用生活常识就能看懂财务报表  林明樟.MJ
   围城                        李笑来
   Beyond feelings
   动物庄园
