@@ -18,7 +18,7 @@ function fn_main()
     [ -z "$1" ] && echo "Usage __fullpath.sh filename" && exit
     find $PWD -name `basename $1`
     echo
-    echo ${PWD}/${1#./} | grep --color `basename $1`
+    echo ${PWD}/${1#./} | grep --color `basename $1` > /dev/stderr
 }
 
 fn_main $@

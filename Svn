@@ -73,11 +73,9 @@ function fn_main()
     ps) svn ps svn:executable on $filelist; ls -l --color $filelist     ;;
     q)  svn -q status                                                   ;;
     u)  svn up $filelist                                                ;;
-  h|*)  fn_usage
-        svn status | sed 's/^/\t/g'
-        ;;
+-?|h|?) fn_usage                                                        ;;
+    *)  svn status | sed 's/^/\t/g'                                     ;;
     esac
-
 }
 
 fn_main $@
