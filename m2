@@ -568,6 +568,7 @@ function fn__1st_principle()            { cat logic__1st_principle
                                           cat test_People
                                           cat love_36_questions
                                           cat list_to_be_taken
+                                          cat list_of_compound_time
                                           cat experiment.u
                                           cat experiment_eg.u
                                           ;
