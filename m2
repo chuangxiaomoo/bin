@@ -567,6 +567,7 @@ function fn__1st_principle()            { cat logic__1st_principle
                                           cat test_The_Principle    #古严：我对《原则》的践行心得
                                           cat test_People
                                           cat love_36_questions
+                                          cat list_to_be_taken
                                           cat experiment.u
                                           cat experiment_eg.u
                                           ;

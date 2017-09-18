@@ -678,6 +678,7 @@ function fn_align()                     { cat vim_align ;}
 function fn_hotkey()                    { cat vim_hotkey ;}
 function fn_install()                   { cat vim_install ;}
 function fn_plugin()                    { cat vim_plugin ;}
+function fn_drawit()                    { cat vim_drawit ;}
 function fn_clang_complete()            { cat vim_clang_complete ;}
 function fn_NERDtree()                  { cat vim_NERDtree ;}
 function fn_diff()                      { cat vim_diff ;}
@@ -696,6 +697,7 @@ function fn_hilight()                   { cat vim_hilight ;}
         quickfix
         NERDtree
         hilight
+        drawit
     )
     fn_print $@
 }

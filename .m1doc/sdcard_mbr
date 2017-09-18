@@ -25,6 +25,10 @@ MBR结束标志：占MBR扇区最后_2个字节_，一直为“55 AA”。
 [结构.1](http://www.writeblocked.org/resources/MBR_GPT_cheatsheet.pdf)
 [结构.2](http://thestarman.pcministry.com/asm/mbr/STDMBR.htm)
 
+# 读写文件系统类型
+
+head -c16 /dev/mmcblk0p1 | grep fat
+
 # 读写MBR
 
 dd if=/dev/mmcblk0 bs=512 count=1 | hexdump

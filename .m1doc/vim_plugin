@@ -1,16 +1,9 @@
 /* vim plugins */
 
-. drawit
-    http://www.vim.org/scripts/script.php?script_id=40
-    // do below to use <Home> <End> as \ and / 
-    export TERM=linux
-
-    ~/.vim/doc/DrawIt.txt|101|
-    
-
 . perl-support
     http://www.thegeekstuff.com/2009/01/make-vim-as-your-perl-ide-using-perl-supportvim-plugin/
 
+    ~/.vim/plugin/DrawItPlugin.vim
 
 . nerdcommentor   # commentor plugin
 

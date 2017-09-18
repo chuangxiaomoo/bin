@@ -1,0 +1,16 @@
+# drawit
+
+drawit配合markdown使用，下载最新的版本，工作非常好。
+
+# 下载
+
+[](http://www.vim.org/scripts/script.php?script_id=40)
+
+# Putty use <Home> <End> as \ and / 
+
+export TERM=linux
+
+# %s/Leader/LocalLeader/gc
+
+~/.vim/plugin/DrawItPlugin.vim
+
