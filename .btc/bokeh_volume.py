@@ -9,68 +9,96 @@ from bokeh.plotting import figure, show, output_file
 from bokeh.sampledata.stocks import MSFT, AAPL
 from sys import exit
 
-t_sta = time.time()
-
-def plot_k(df):
+def fn_plot_volume(df, p_v):
+    w = 16*60*60*1000 # half day in ms
     i_src = ColumnDataSource(df[df.open <  df.close])
     d_src = ColumnDataSource(df[df.open >= df.close])
+
+    p_v.vbar('date', w, top='volume', source=i_src, name="volumn", fill_color="red", line_color="red")
+    p_v.vbar('date', w, top='volume', source=d_src, name="volumn", fill_color="green", line_color="green")
+
+    p_v.toolbar.active_scroll = "auto"
+    p_v.xaxis.major_label_orientation = pi/4
+    p_v.grid.grid_line_alpha=0.3
+    p_v.background_fill_color = "black"
+    p_v.sizing_mode = 'stretch_both'
+
+    hover_tool = p_v.add_tools(HoverTool(tooltips=[
+                ("date","@ToolTipDates"),
+                ("volume","@volume{0,0.00}"),
+                ("diff","@diff{0,0.00}"),
+                ("macd","@macd{0,0.00}"),
+                ("dea","@dea{0,0.00}")], names= ["volumn","macd"], mode="mouse", point_policy="follow_mouse"))
+    pass
+
+def fn_ma(df, col, N):
+    sum = 0
+    for i in range(len(df)):
+        if i>=20:
+            sum -= df.get_value(i-20, 'close')
+            sum += df.get_value(i, 'close')
+            df.set_value(i, col, sum/20)
+        elif i==19:
+            sum += df.get_value(i, 'close')
+            df.set_value(i, col, sum/20)
+        else:
+            sum += df.get_value(i, 'close')
+    pass
+
+def fn_plot_kline(df, p_k, all_source):
     w = 16*60*60*1000 # half day in ms
+    i_src = ColumnDataSource(df[df.open <  df.close])
+    d_src = ColumnDataSource(df[df.open >= df.close])
 
-    #TOOLS = "pan,crosshair,xwheel_zoom,ywheel_zoom,box_zoom,reset,save"
-    TOOLS = "pan,xwheel_zoom,ywheel_zoom,box_zoom,reset"
+    p_k.toolbar.active_scroll = "auto"
+    p_k.xaxis.major_label_orientation = pi/4
+    p_k.grid.grid_line_alpha=0.3
+    p_k.background_fill_color = "black"
 
-    pv = figure(x_axis_type="datetime", tools=TOOLS, plot_width=1500, plot_height=160, )    # title="volume"
-    pv.vbar('date', w, top='volume', source=i_src, name="kline", fill_color="red", line_color="red")
-    pv.vbar('date', w, top='volume', source=d_src, name="kline", fill_color="green", line_color="green")
+    p_k.segment('date', 'high', 'date', 'low', source=i_src, name="kline", color="red")
+    p_k.segment('date', 'high', 'date', 'low', source=d_src, name="kline", color="green")
 
-    pv.toolbar.active_scroll = "auto"
-    pv.xaxis.major_label_orientation = pi/4
-    pv.grid.grid_line_alpha=0.3
-    pv.background_fill_color = "black"
+    p_k.vbar('date', w, 'open', 'close', source=i_src, name="kbar", fill_color="red", line_color="red")
+    p_k.vbar('date', w, 'open', 'close', source=d_src, name="kbar", fill_color="green", line_color="green")
 
-    #pv.xaxis.major_label_overrides = {
-    #    i: date.strftime('%m%d') for i, date in enumerate(pd.to_datetime(df["date"]))
-    #}
+    p_k.line('date', 'ma20', source=all_source, name='ma20', line_color="purple")
 
-    pv.add_tools(HoverTool(tooltips= [("date","@ToolTipDates"),
-                                     ("volume","@volume{0,0.00}")], names= ["volume",], ))
-    pv.add_tools(CrosshairTool(line_color='#999999'))
+    hover_tool = p_k.add_tools(HoverTool(tooltips= [
+                ("date","@ToolTipDates"),
+                ("close","@close{0,0.00}"),
+                ("high","@high{0,0.00}"),
+                ("low","@low{0,0.00}"),
+                ("ma20","@ma20{0,0.00}"),
+                ], names=["kline","kbar"], mode="mouse")) # vline doesn't work
+    p_k.sizing_mode = 'stretch_both'
 
-    p = figure(x_axis_type="datetime", tools=TOOLS, plot_width=1500, plot_height=640, title = "MSFT Candlestick") # hei 880
-    p.x_range = pv.x_range
-    p.toolbar.active_scroll = "auto"
-    p.xaxis.major_label_orientation = pi/4
-    p.grid.grid_line_alpha=0.3
-    p.background_fill_color = "black"
-    p.xaxis.visible = False
+def fn_ema(df, src, dst, N):
+    for i in range(len(df)):
+        if i>0:
+            df.set_value(i, dst, (2*df.get_value(i, src)+(N-1)*df.get_value(i-1,dst))/(N+1))
+        else:
+            df.set_value(i, dst, df.get_value(0, src))
+    return df[dst]
 
-    p.segment('date', 'high', 'date', 'low', source=i_src, color="red")
-    p.segment('date', 'high', 'date', 'low', source=d_src, color="green")
+def fn_plot_macd(df, p_m, all_source):
+    w = 16*60*60*1000 # half day in ms
+    i_macd = ColumnDataSource(df[df.macd >= 0])
+    d_macd = ColumnDataSource(df[df.macd <  0])
+    # plot
+    p_m.toolbar.active_scroll = "auto"
+    p_m.xaxis.major_label_orientation = pi/4
+    p_m.grid.grid_line_alpha=0.1
+    p_m.background_fill_color = "black"
+    p_m.vbar('date', w/4, top='macd', source=i_macd, name='macd', fill_color="red", line_color="red")
+    p_m.vbar('date', w/4, top=0, bottom='macd', source=d_macd, name='macd', fill_color="green", line_color="green")
+    p_m.line('date', 'diff', source=all_source, name='macd', line_color="white")
+    p_m.line('date', 'dea',  source=all_source, name='macd', line_color="yellow")
+    pass
 
-    p.vbar('date', w, 'open', 'close', source=i_src, name="kline", fill_color="red", line_color="red")
-    p.vbar('date', w, 'open', 'close', source=d_src, name="kline", fill_color="green", line_color="green")
-
-    hover_tool = p.add_tools(HoverTool(tooltips= [("date","@ToolTipDates"),
-                                     ("close","@close{0,0.00}"),
-                                     ("high","@high{0,0.00}"),
-                                     ("low","@low{0,0.00}")], names= ["kline",], ))
-    crosshair_tool = p.add_tools(CrosshairTool(line_color='#999999'))
-
-    # p.toolbar.active_inspect = [hover_tool, crosshair_tool]
-
-    inc_process(df, p)
-
-    output_file("candlestick.html", title="candlestick.py example", mode='inline')
-    grid = gridplot([[p], [pv]], sizing_mode="scale_width", merge_tools=False, responsive = True)
-    #show(pv)  # open a browser
-    #show(column(p, pv))
-    show(grid)
-
-def uni_process(df, asc, sta, end):
+def fn_uni_process(df, asc, sta, end):
     asc_bi = asc
     hi = 0
     lo = 1
-
 
     k1 = [df.get_value(sta, 'high'), df.get_value(sta, 'low')]
     for i in range(sta+1, end-1):
@@ -93,21 +121,19 @@ def uni_process(df, asc, sta, end):
             asc_bi = False
             k1 = k2
 
-def inc_process(df, p):
+def fn_plot_fenbi(df, p_k):
     df_len = len(df)
     df_fb = df[0:9]
     id_max_hi=df_fb.high.idxmax()
     id_min_lo=df_fb.low.idxmin()
 
     df['uni'] = [0 for i in range(len(df))]
-    uni_process(df, id_max_hi>id_min_lo, max(id_max_hi,id_min_lo), df_len)
+    fn_uni_process(df, id_max_hi>id_min_lo, max(id_max_hi,id_min_lo), df_len)
 
     i_bi = 0
     tbl_bi = pd.DataFrame(columns=('date', 'price'))
-
-    print(id_min_lo, id_max_hi)
-
     asc = False
+    # print(id_min_lo, id_max_hi)
 
     if id_max_hi - id_min_lo >= 4:
         tbl_bi.loc[i_bi] = [df.get_value(id_min_lo, 'date'), df.get_value(id_min_lo, 'low')]
@@ -138,7 +164,7 @@ def inc_process(df, p):
         end = sta+offset+5<=df_len-1 and sta+offset+5 or df_len-1
         df_fb = df[sta:end]
 
-        print(sta, end, offset)
+        # print(sta, end, offset)       # useful info
         id_max_hi=df_fb.high.idxmax()
         id_min_lo=df_fb.low.idxmin()
 
@@ -176,35 +202,64 @@ def inc_process(df, p):
                 offset = 0
                 id_max_hi0 = id_max_hi
                 continue
-            else:                                   #
+            else:
                 offset += 5
                 pass
 
-    # tbl_bi.loc[i_bi] = [df.get_value(id_min_lo, 'date'), df.get_value(id_min_lo, 'low')]
-    # i_bi+=1
-    print(tbl_bi.date)
-
-    p.line(tbl_bi.date, tbl_bi.price, line_width=1, color="#3060a0")
-    p.circle(df.date[df.uni ==  1], df.high[df.uni ==  1]*1.03, size=3, color="red", alpha=0.5)
-    p.circle(df.date[df.uni == -1], df.low [df.uni == -1]*0.97, size=3, color="green", alpha=0.5)
-
-    # print(df_fb)
+    p_k.line(tbl_bi.date, tbl_bi.price, line_width=1, color="#3060a0")
+    p_k.triangle(df.date[df.uni ==  1], df.high[df.uni ==  1]*1.03, size=5, color="red", alpha=0.5)
+    p_k.triangle(df.date[df.uni == -1], df.low [df.uni == -1]*0.97, size=5, color="green", alpha=0.5)
     print('_____')
     pass
 
-print(time.time())
-df = pd.DataFrame(AAPL)[:2000]
-df["date"] = pd.to_datetime(df["date"])
-df['ToolTipDates'] = df.date.map(lambda x: x.strftime("%y-%m-%d")) # Saves work with the tooltip later
+def fn_main():
+    df = pd.DataFrame(AAPL)[:2000]
+    df["date"] = pd.to_datetime(df["date"])
+    df['ToolTipDates'] = df.date.map(lambda x: x.strftime("%y-%m-%d")) # Saves work with the tooltip later
 
-print(df.head(3))
-# print(df[df.open >= df.close])
-# sys.exit(0)
+    # print(df.head(3))
 
-plot_k(df)
+    TOOL_k = "pan,xwheel_zoom,ywheel_zoom,box_zoom,reset"
+    TOOL_v = "pan,ywheel_zoom"
+    TOOL_m = "pan,ywheel_zoom"
 
-# inc_process(df)
+    p_k = figure(x_axis_type="datetime", tools=TOOL_k, plot_width=1500, plot_height=640, title = "MSFT Candlestick") # hei 880
+    p_v = figure(x_axis_type="datetime", tools=TOOL_v, plot_width=1500, plot_height=160)     # title="volume"
+    p_m = figure(x_axis_type="datetime", tools=TOOL_m, plot_width=1500, plot_height=200)     # hei 880
 
+    p_k.add_tools(CrosshairTool(line_color='#999999'))
+    p_m.add_tools(CrosshairTool(line_color='#999999'))
+    p_v.add_tools(CrosshairTool(line_color='#999999'))
+
+    p_k.x_range = p_v.x_range      # link
+    p_k.x_range = p_m.x_range      # link
+    p_k.xaxis.visible = False
+    p_v.yaxis.visible = False
+    p_v.xaxis.visible = False
+
+    df['ma20'] = [0.0 for i in range(len(df))]
+    fn_ma(df, 'ma20', 20)
+
+    df['long'] = [0.0 for i in range(len(df))]
+    df['short'] = [0.0 for i in range(len(df))]
+    df['diff'] = fn_ema(df, 'close', 'short', 12) - fn_ema(df, 'close', 'long', 26)
+    df['dea'] = fn_ema(df, 'diff', 'dea', 9)
+    df['macd'] = 2*(df['diff']-df['dea'])
+
+    all_source = ColumnDataSource(df)
+
+    fn_plot_kline(df, p_k, all_source)
+    fn_plot_fenbi(df, p_k)
+    fn_plot_volume(df, p_v)
+    fn_plot_macd(df, p_m, all_source)
+
+    output_file("candlestick.html", title="candlestick.py example", mode='inline')
+    grid = gridplot([[p_k], [p_v], [p_m]], merge_tools=False, responsive=True)
+    grid.sizing_mode = 'stretch_both'
+    show(grid)
+    pass
+
+t_sta = time.time()
+fn_main()
 print("Spend total:", time.time() - t_sta)
-
 
