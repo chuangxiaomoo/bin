@@ -320,6 +320,6 @@ export LESS_TERMCAP_us=$'\E[01;32m'
 export TOV5=0
 
 # 
-export PATH=.:~/bin:$PATH
-export CDPATH=.:~:/home:/1
+export PATH=~/bin:$PATH
+export CDPATH=.:~:/home
 export SVN_EDITOR=vim
