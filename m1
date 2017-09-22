@@ -19,7 +19,6 @@ function fn_adobepdf()                  { cat adobepdf ;}
 function fn_asm()                       { cat asm ;}
 function fn_awk()                       { cat awk ;}
 function fn_sed()                       { cat sed expect ;}
-function fn_elf()                       { cat elf ;}
 function fn_gprof()                     { cat gprof ;}
 function fn_oprofile()                  { cat oprofile ;}
 function fn_gcov()                      { cat gcov ;}
@@ -515,11 +514,12 @@ function fn_nonblock()                  { cat clang_nonblock ;}
 }
 
 function fn_binutils()                  { 
+function fn_layoutelf()                 { cat binutils_layoutelf ;}
 function fn_readelf()                   { cat binutils_readelf ;}
 function fn_objdump()                   { cat binutils_objdump ;}
 function fn_strip()                     { cat binutils_strip ;}
     local opts=(
-        elf                     # info elf & man elf
+        layoutelf               # info elf & man elf
         ar
         nm
         readelf                 # -h|--file-header | grep Mach 查看CPU架构
@@ -1239,7 +1239,7 @@ function fn_mxml()                      { fn_xml $@ ;}
 
 function fn_json()                      { cat json ;}
 
-function fn_markdown()                  { cat markdown markdown_here ;}
+function fn_markdown()                  { cat markdown markdown_here reStructuredText ;}
 
 function fn_algo()                      {
 function fn_tree()                      { cat algo_tree ;}
@@ -1426,7 +1426,6 @@ function fn_main() {
         cygwin
         msys
         design
-        elf
         framework
         find
         begin

@@ -1,16 +1,22 @@
-/* strace */
+# strace
 
-    strace - trace system calls and signals
+  strace - trace system calls and signals
 
-一、option
+# DESCRIPTION
 
-    strace -f -t -T -s 1024 -p yourpid  2>&1 | tee /tmp/sshd_debug 
+  strace -f -t -T -s 1024 command
+  strace -f -t -T -s 1024 -e trace=mmap2,munmap,mremap,brk,sbrk command
+  strace -f -t -T -s 1024 -p yourpid  2>&1 | tee /tmp/sshd_debug 
     -f Trace child processes from fork()
     -T Show the time spent in system calls.
     -t Prefix each line of the trace with the time of day.
     -s strsize  Specify the maximum string size to print (default is 32).
 
 
-二、EXAMPLE
-    使用strace踪端口bind()失败，setsockopt(REUSE)是否被调用。
+# EXAMPLE
+
+1 使用strace踪端口bind()失败，setsockopt(REUSE)是否被调用。
+
+2 内存分配跟踪
+  -e trace=mmap2,munmap,mremap command
 
