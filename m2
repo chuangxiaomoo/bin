@@ -23,9 +23,9 @@ function fn_honor()    	                { cat mng_honor ;}
 function fn_promotion()                 { cat mng_promotion ;}
 function fn_01_审时度势见机行事()       { cat mng_01_审时度势见机行事 ;}
 function fn_02_行不言之教()             { cat mng_02_行不言之教 ;}
-function fn_03_培养新人()               { cat mng_03_培养新人
-                                              mng_recruiting_招聘 # should prior cultivate
-                                              mng_newbie 
+function fn_03_培养新人()               { cat mng_goal_使命
+                                              mng_jc_招募承诺
+                                              mng_rule_制定规则
                                               almanack_newbie
 function fn_04_一次失败的项目经理招聘() { cat mng_04_一次失败的项目经理招聘 ;}
 function fn_11_王熙凤()                 { cat mng_11_王熙凤 ;}
