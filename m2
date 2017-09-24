@@ -180,6 +180,8 @@ function fn_tiandao()                   { cat book_tiandao book_遥远的救世�
 
 
 function fn_list()                      { cat book_400_PoorCharliesAlmanack_穷查理宝典
+                                              book_401_Antifragile lunyu.full.edition
+                                              book_
 }
     local opts=(
         list
