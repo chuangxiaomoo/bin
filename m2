@@ -102,7 +102,7 @@ function fn_laozi()                     { cat book_laozi ;}
 function fn_sunzi()                     { cat book_sunzi;
                                           cat arch_sunzi ;}
 function fn_liutao()                    { cat book_liutao ;}
-function fn_lunyu()                     { cat book_lunyu ;}
+function fn_lunyu()                     { cat book_lunyu book_lunyu.full.edition ;}
 function fn_36ji()                      { cat book_36ji ;}
 
 function fn_shenglvqimeng()             { cat book_shenglvqimeng ;}
@@ -180,7 +180,7 @@ function fn_tiandao()                   { cat book_tiandao book_遥远的救世�
 
 
 function fn_list()                      { cat book_400_PoorCharliesAlmanack_穷查理宝典
-                                              book_401_Antifragile lunyu.full.edition
+                                              book_401_Antifragile 
                                               book_
 }
     local opts=(
