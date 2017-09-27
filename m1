@@ -1239,7 +1239,10 @@ function fn_mxml()                      { fn_xml $@ ;}
 
 function fn_json()                      { cat json ;}
 
-function fn_markdown()                  { cat markdown markdown_here reStructuredText ;}
+function fn_markdown()                  { cat markdown 
+                                          cat markdown_here 
+                                          cat typora
+                                          cat reStructuredText ;}
 
 function fn_algo()                      {
 function fn_tree()                      { cat algo_tree ;}
