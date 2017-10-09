@@ -23,6 +23,7 @@ function fn_usage()
         s   status
         S   status | grep PAT
         u   update
+        U   Svn l 20 | Svn U zhangj
 
         svn help _____more.info_____
     "
@@ -37,7 +38,7 @@ function fn_main()
     c)  svn ci $filelist                        ;;
    cc)  fl=`Svn Sc | awk '{print $2}'` ;svn ci $fl      ;;
  -l|l)  svn log -v -l${filelist:-5}                     ;;
-   lu)  for u in ${filelist:-zhangj}; do regex="-e '/${u}/,/--$/p' ${regex}"; done
+    U)  for U in ${filelist:-zhangj}; do regex="-e '/${U}/,/--$/p' ${regex}"; done
         eval "sed -n ${regex} < /dev/stdin"
         ;;
     cf|conflict)
