@@ -5144,23 +5144,49 @@ ALL RIGHTS RESERVED
 
 # 打造一个反脆弱的系统
 
-首先知道反脆弱的本质是什么？
-第一原则是什么？
-其组成部分有哪些？或基本属性有哪些？
+**首先知道反脆弱的本质是什么**？
+What do we have left once we abandon the lie?
+Chaos.
+A gaping pit waiting to swallow us all.
+Chaos isn't a pit.
+Chaos is a ladder.
+Many who try to climb it fail and never get to try again. The fall breaks them.
+And some are given a chance to climb, but they refuse. They cling to the realm or the gods or love.
+Illusions.
+Only the ladder is real.
+The climb is all there is.
+-Lord Petyr Baelish
 
-遇到什么问题？
-界定问题？
-解决问题？
-
-方法论：
+**第一原则是什么**？
+0 生存能力 + 识别非线性(非对称性+不可预测性) + 选择(绕过+加杠杆)
 1 option 
-  AlphaGo的程序本质在于：每一步的计算都是为了下一步棋留更多的后手，能使自己不至于走几步就没有棋走。面对人生的选择，也要选择哪种能够带给自己更多option的选择，所谓路越走越宽才算走对路了。
   Option = Asymmetry + Rationality，也就是“结果的不对称性”+“选择有利自身的结果的能力”。 
   其实这就是天使投资和孵化器的逻辑。
   Payoff：明星经理赢大钱，输小钱；其他的经理赢小钱，输大钱。
+  AlphaGo的程序本质在于：每一步的计算都是为了下一步棋留更多的后手，能使自己不至于走几步就没有棋走。
+  面对人生的选择，也要选择哪种能够带给自己更多option的选择，所谓路越走越宽才算走对路了。
 2 negative
   不要亏钱
   VC不要老是去想着：“我怎么才能找到好项目？”而是首先要想：“我怎么才能不投坏项目？”第二个问题要回答的优先级远远高于第一个问题。
 
+**有哪些组成部分？有哪些基本属性**？
+
+纵向多层次，横向冗余备份
+对内打磨升级class理念，对外快速转化为instance
+
+发现问题？界定问题？解决问题？
+
+方法论：
 现代教育大骗局，让人对知识的迷信。
 BTC一刀切事件。
+
+## 交易策略
+
+1 完备性
+2 严谨性
+3 未来不可预测，但是，请注意**我要的不是精确的预测，而是最终的获利**。
+  如何控制程度不可预测的突变，从头疼天天盼望别遭遇黑天鹅的问题，变成了不是问题的问题（**不是简单止损就能解决的**）。
+  如果一个问题没法解决，唯一的办法是**绕过**这个问题，不是无视问题，而是新的解决框架里不需要处理。
+  最简单的方式是做**期权的纯多头方**。比如在某资产泡沫时期，**定投买入**看跌期权。
+  [我们配置如下投资组合](卖出高升水股指期货，买入略多期货体量的股票，买入虚值的股指看跌期权)
+  升水率是客观的，将来必回归0%
