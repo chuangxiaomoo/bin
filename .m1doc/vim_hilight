@@ -21,6 +21,5 @@ hi htmlBold         term=bold,reverse cterm=bold,reverse ctermfg=DarkCyan
 
 # highlight.vim
 
-hi htmlBold         ctermfg=DarkGreen gui=bold guifg=DarkGreen
-
+highlight htmlBold  ctermfg=Green gui=bold guifg=#00B800
 
