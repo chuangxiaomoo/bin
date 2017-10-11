@@ -1057,6 +1057,12 @@ RESULT:  不间断播放语音，会影响升级
   经验：
   此问题zouy同学前前后后查了两个周有余，这是怎么了？
 
+## 临证案例3.cpu.usage过高
+  uboot + kernel + 应用
+  **我的不足** (1)软件上没有对可用状态打tag (2) 硬件上没有对可用状态打tag (3) 只有打好tag，比对才有效率
+  **关键节点** (1)硬件无id时可用 (2) 有id时不可用 (3) uboot内存从19M提高至22M可用 (4) 摇头机encode可用 
+  **根本原因** 最终原因是更新库没有同步代码 skipType = IMP_Encoder_STYPE_N1X;
+
 # 焦虑(过多地关注自己不能解决的事务)
 
 > God grant me the serenity to accept the things I cannot change, 
