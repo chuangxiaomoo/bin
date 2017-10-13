@@ -102,7 +102,11 @@ function fn_laozi()                     { cat book_laozi ;}
 function fn_sunzi()                     { cat book_sunzi;
                                           cat arch_sunzi ;}
 function fn_liutao()                    { cat book_liutao ;}
-function fn_lunyu()                     { cat book_lunyu book_lunyu.full.edition ;}
+function fn_lunyu()                     { cat book_lunyu 
+                                          cat book_lunyu.full.edition 
+                                          cat book_mengzi
+                                          cat book_mengzi.full.edition
+                                          ;}
 function fn_36ji()                      { cat book_36ji ;}
 
 function fn_shenglvqimeng()             { cat book_shenglvqimeng ;}
