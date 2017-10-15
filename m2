@@ -245,13 +245,12 @@ function fn_list()                      { cat book_400_PoorCharliesAlmanack_ç©·æ
 }
 
 function fn_music()    	                {
-function fn_misc()                      { cat music_misc
+function fn_misc()                      { cat music_list
                                           cat music_theory
                                           cat piano
                                           cat erhu
                                           ;}
     local opts=(
-        misc
         theory
     )
     fn_print $@
