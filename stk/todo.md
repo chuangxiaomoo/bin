@@ -8,3 +8,5 @@
 怎么进？怎么出？
 
 # ircut vs. trade
+o       ircut         trade
+sample  2.5sx3
