@@ -810,7 +810,9 @@ function fn_fundamental()               { cat bat_fundamental ;}
 
 function fn_win()                       {
 function fn_win7()                      { cat windows_win7 
-                                          cat foxmail ;}
+                                          cat foxmail 
+                                          cat cooledit
+                                          ;}
 function fn_syscmd()                    { cat windows_syscmd ;}
 function fn_02_清晰显示()               { cat windows_02_清晰显示 ;}
 function fn_03_看雪()                   { cat windows_03_看雪 ;}
