@@ -26,6 +26,7 @@ function fn_02_行不言之教()             { cat mng_02_行不言之教 ;}
 function fn_03_培养新人()               { cat mng_goal_使命
                                               mng_jc_招募承诺
                                               mng_rule_制定规则
+                                              mng_31_从朋友里选出做大事儿的人
                                               almanack_newbie
 function fn_04_一次失败的项目经理招聘() { cat mng_04_一次失败的项目经理招聘 ;}
 function fn_11_王熙凤()                 { cat mng_11_王熙凤 ;}

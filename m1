@@ -518,6 +518,7 @@ function fn_layoutelf()                 { cat binutils_layoutelf ;}
 function fn_readelf()                   { cat binutils_readelf ;}
 function fn_objdump()                   { cat binutils_objdump ;}
 function fn_strip()                     { cat binutils_strip ;}
+function fn_nm()                        { cat binutils_nm ;}
     local opts=(
         layoutelf               # info elf & man elf
         ar
@@ -811,8 +812,7 @@ function fn_fundamental()               { cat bat_fundamental ;}
 function fn_win()                       {
 function fn_win7()                      { cat windows_win7 
                                           cat foxmail 
-                                          cat cooledit
-                                          ;}
+                                          cat cooledit ;}
 function fn_syscmd()                    { cat windows_syscmd ;}
 function fn_02_清晰显示()               { cat windows_02_清晰显示 ;}
 function fn_03_看雪()                   { cat windows_03_看雪 ;}

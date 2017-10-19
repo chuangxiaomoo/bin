@@ -1,0 +1,14 @@
+# nm
+
+# 静态static
+
+nm ./usr/lib/libc.a
+
+# 动态dynamic
+
+nm -D libuClibc-0.9.33.2.so
+
+# man res_init
+
+Link with -lresolv，但实际上 res_init() 组的定义是在 libc中定义的
+
