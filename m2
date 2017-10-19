@@ -185,7 +185,7 @@ function fn_tiandao()                   { cat book_tiandao book_遥远的救世�
 
 
 function fn_list()                      { cat book_400_PoorCharliesAlmanack_穷查理宝典
-                                              book_401_Antifragile 
+                                              book_401_Antifragile
                                               book_
 }
     local opts=(
@@ -652,7 +652,7 @@ function fn_0a_Miltonfriedman()         { cat phi_0a_Miltonfriedman ;}
 function fn_relationship()              { cat phi_relationship ;}
 
 function fn_epistemology()              { cat phi_epistemology;
-                                          cat phi_brain;
+                                          cat phi_brain triunebrain.md
                                           cat phi_ref ;}
 function fn_valuetheory()               { cat phi_valuetheory ;}
 
