@@ -17,7 +17,7 @@
     :: ---------- binutils  -----------
                 cat         type 
                 clear       cls
-                grep        find
+                grep        findstr     :: 正规匹配 . * [class]
     :: ---------- builtin var  --------
                 $PWD        %CD% 
     :: --------------------------------
@@ -30,6 +30,8 @@
     argv[0]     $0          %0          :: 命令本身 %[1-9] 表示第1-9个参数
                 $?          %ERRORLEVEL%:: [ $? -eq 0 ] && echo succ 
                                         :: if ERRORLEVEL 0 @echo succ
+    重定义      /dev/null   nul         ::
+
 (4) 变量 AND SET
     ::
     :: basic
@@ -83,11 +85,21 @@
         help %%c >> help.txt
     )
 
-    :: Output black line
+    :: Output blank line
     echo.
+
+    :: 不打印\r\n
+    echo|set /p="xkcd %devkey%" | netcat.exe %ipcip% 9999
 
     :: Display TIME, whithout a <CR>
     ECHO.|TIME
+
+    :: 判断输入为空 "%var%" 引号不能省
+    set /p cnum="anykey to exit, Enter to continue: "
+    if "%cnum%" EQU "" (
+        goto :start_o_f
+    )
+
 
 (6) 流程控制 IF :: 详见help if
     IF [NOT] ERRORLEVEL number command  :: 

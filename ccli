@@ -5,7 +5,7 @@ IPC=${IPC:-127.0.0.1}
 if [ -z "$1" ]; then
     echo "list" | nc ${IPC} 9999 | sed -e 's/;/\n/g' -e 's/.*ccess]/____:\n/g' | sort
     echo "
-    Usage: ccli cmd...
+    Usage: IPC=xxx ccli cmd...
     "
 else
     timeout 5 nc  ${IPC} 9999 <<< "$*" | sed -e 's/;/\n/g' -e 's/ccess]/&\n/g' 
