@@ -14,6 +14,8 @@ pre, code {
 code {
   white-space: pre-wrap;
   border-radius: 2px;
+  color: #000000;
+  background-color: #FFCCFF;        /* zhangxiaomoo pink */
   display: inline;
 }
 
@@ -36,7 +38,9 @@ strong, b{
 }
 
 em, i {
-  color: #009688;
+  font-style: normal;
+  font-weight: bold;
+  color: #000000;
 }
 
 hr {
