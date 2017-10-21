@@ -46,31 +46,35 @@ int to_support_dst()
 }
 
 /*  
- * localtime() and gmtime() return the same value, it make the time_page
- * broken down. but the truth is :
+ * localtime() and gmtime() return the same pointer. 内部返回同一个指针。
+ *
  * 1.the pointer of a struct which gmtime() and localtime() return are the 
  *   same. so when you call localtime() after gmtime(), the result of 
  *   gmtime() will be covered. So, to Understand the Linux kernel is good
  *   choice.
  *
- * 2.anther discovery is the /etc/TZ not only change the behavior of 
- *   localtime(), but change mktime() also. it make the mktime() change
- *   local time in the struct tm into gmtime as the format of time_t.
- *
- *   about the "dst part" in the /etc/TZ, mktime() support GMT time, but
- *   not support dst time. but localtime() support GMT time and dst time.
- *
- *
- *   so the time I set in the hardware clock is not gmtime, but the local 
- *   time, but what we need is only the right operation time. and with 
- *   /etc/TZ, we can do it easily. It's so skillfully.
- *
- * 3.p = asctime(gmtime(&var));     
+ * 2.p = asctime(gmtime(&var));     
  *   q = asctime(localtime(&var));
  *   to check which is wrong, it's so unsafe, if you want ot check, please
  *   do one step once, e.g. get a consonant to pass to the func, it will 
  *   save you a lot of time as a matter of fact.
  */
+
+# define 以下来自 `man mktime` 被chenkai气得不行 => 起因正确 结果不正确 必是过程错了
+
+time_t mktime(struct tm *tm);
+
+1 参数tm指代本地时间
+2 tm.tm_isdst 
+    1       dst
+    0       not dst
+   -1       自动探测
+3 mktime()会改变tm内部的值
+    tm_isdst
+    tm_yday
+    tm_wday
+
+# define example
 
 int main() {
         char *p;
