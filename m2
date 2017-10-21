@@ -146,7 +146,7 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               book_tf_把时间当作朋友
                                               book_mao
                                               Multitask
-                                              problem_solving
+                                              problem_solving problem_Formula
                                               TIME
                                               FeynmanTechnique
                                               xiaolai_cept
@@ -283,12 +283,10 @@ function fn_05_挑选西瓜()               { cat howto_05_挑选西瓜 ;}
 
 function fn_problem()                   {
 function fn_X-Y()                       { cat problem_X-Y ;}
-function fn_solving()                   { cat problem_solving ;}
 function fn_ask_question()              { cat problem_ask_question ;}
 function fn_present()                   { cat problem_present ;}
     local opts=(
         X-Y                             # 问题分类
-        solving                         # Howto
         ask_question                    # sometimes，问题产生源自问问题的方式
         present                         # 回归问题本身
     )
