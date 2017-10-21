@@ -1,8 +1,0 @@
-# time
-
-# nxp
-
-  硬件时钟 本地时钟 保存的都是localtime，而不是utctime。
-
-#
-

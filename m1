@@ -162,7 +162,6 @@ function fn_fundamental()               { cat linux_fundamental ;}
 function fn_kernel()                    { cat linux_kernel ;}
 function fn_ldd3()                      { cat linux_ldd3 ;}
 function fn_boot()                      { cat linux_boot ;}
-function fn_time管理()                  { cat linux_time管理 ;}
 function fn_IPC()                       { cat linux_IPC ;}
 function fn_proc()                      { cat linux_proc ;}
 function fn_free_buffer_cache()         { cat linux_free_buffer_cache ;}
@@ -187,7 +186,6 @@ function fn_aout()                      { cat linux_aout ;}
         lockfile                        # lockfile-progs and flock
         proc                            # sys/vm
         free_buffer_cache               # 
-        time管理
     )
     fn_print $@
 }
@@ -270,7 +268,7 @@ function fn_export()                    { cat bash_export ;}
 }
 
 #
-# ATTENTION: Mark time in every case
+# ATTENTION: Mark TIME in every case
 #
 function fn_case() {
 function fn_fundamental()               { cat case_fundamental 
@@ -447,7 +445,7 @@ function fn_error()                     { cat clang_error ;}
 function fn_errno()                     { cat clang_errno ;}
 function fn_open()                      { cat clang_open ;}
 function fn_syslog()                    { cat clang_syslog ;}
-function fn_time()                      { cat clang_time ;}
+function fn_time()                      { cat clang_time linux_time管理 jco_time ;}
 function fn_non_block_func()            { cat clang_non_block_func ;}
 function fn_non_sig_select()            { cat clang_non_sig_select ;}
 function fn_signal()                    { cat clang_signal ;}
@@ -503,7 +501,6 @@ function fn_nonblock()                  { cat clang_nonblock ;}
         strtok_r
         snprintf                # more safe vs strncpy()
         coredump
-        time                    # posix TZ
         tty                     # serial port
         non_block_func
         non_sig_select
@@ -719,7 +716,7 @@ function fn_Essential()                 { cat cmd_Essential ;}
 function fn_arping()                    { cat cmd_arping ;}
 function fn_tee()                       { cat cmd_tee ;}
 function fn_fdisk()                     { cat cmd_fdisk ;}
-function fn_date()                      { cat cmd_date ;}
+function fn_date()                      { cat cmd_date cmd_timeout ;}
 function fn_dd()                        { cat cmd_dd ;}
 function fn_iperf()                     { cat cmd_iperf ;}
 function fn_himm()                      { cat cmd_himm ;}
@@ -750,7 +747,6 @@ function fn_install()                   { cat cmd_install ;}
 function fn_calltree()                  { cat cmd_calltree ;}
 function fn_nc()                        { cat cmd_nc ;}
 function fn_ps()                        { cat cmd_ps ;}
-function fn_timeout()                   { cat cmd_timeout ;}
     local opts=(
         Essential
         arping                  # arp -D 检测IP冲突 iputils
@@ -985,7 +981,6 @@ function fn_prerecord()                 { cat jco_prerecord ;}
 function fn_password()                  { cat jco_password ;}
 function fn_zxw()                       { cat jco_zxw ;}
 function fn_3g()                        { cat jco_3g ;}
-function fn_time()                      { cat jco_time ;}
 function fn_httpd_n_onvif()             { cat jco_httpd_n_onvif ;}
 function fn_ptz20()                     { cat jco_ptz20 ;}
 function fn_ir()                        { cat jco_ir ;}
@@ -1015,7 +1010,6 @@ function fn_dome()                      { cat jco_dome ;}
         prerecord
         3g
         ir                  # infrared
-        time                # data ntp timecfg related
     )
     fn_print $@
 }
@@ -1115,7 +1109,6 @@ function fn_ssh()                       { cat ssh ;}
 function fn_libevent()                  { cat libevent ;}
 function fn_in_event()                  { cat in_event ;}
 function fn_live555()                   { cat live555 ;}
-function fn_time_call_engine()          { cat time_call_engine ;}
 function fn_hudson()                    { cat hudson ;}
 function fn_vlc()                       { cat vlc ;}
 function fn_framework()                 { cat framework ;}
@@ -1181,7 +1174,7 @@ function fn_reclaim_space()             { cat sql_reclaim_space ;}
         kts
         min
         base
-        datatype            # int char data time
+        datatype            # int char date
         # ----- BASE
         create
         describe
@@ -1298,7 +1291,6 @@ function fn_task()                      { cat begin_task ;}
 #
 function fn_nxp()                       { 
 function fn_requirement_analysis()      { cat nxp_requirement_analysis ;}
-function fn_time()                      { cat nxp_time ;}
 function fn_hold()                      { cat nxp_hold ;}
 function fn_heartbeat()                 { cat nxp_heartbeat ;}
 function fn_base()                      { cat nxp_base ;}
@@ -1340,7 +1332,6 @@ function fn_svc()                       { cat nxp_svc ;}
         protocol                        # client与server的通信协议
         client                          # browser
         testing
-        time
         # ----- web func delimeter ----
         alarm_link
         # ----- function delimeter ----
@@ -1462,7 +1453,6 @@ function fn_main() {
         live555                 # 
         minigui
         in_event                # 基于进程内的事件通知
-        time_call_engine
         linux
         hisi                    # nvr
         nxp
