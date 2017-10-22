@@ -1,5 +1,4 @@
-Linux Time
-
+/* Linux Time */
 
 一、HZ / USER 
 
@@ -36,5 +35,3 @@ Linux Time
 
     linux中定时器和时间管理的探究
     http://hi.baidu.com/xdyang1986/item/2d55ef1f24872cf865eabfc6
-
-

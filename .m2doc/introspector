@@ -1583,8 +1583,11 @@ mt7601驱动及内核在2017-09-20就已经支持。
 
 # 2017-10-21 解决问题方程式
 
+不要只看到我口中的苹果，要看到我工作的成果。
 因为DaylightSavingTime(DST)问题，被chenkai气得老毛病又犯了，气喘不上来。
-因此，重新整理了一下[解决问题的思路](problem_Formula)
+Don't know what is stupid or lazy chenkai doing now? 我花了一个晚上重新整理了如下两点：
+1 [解决问题的思路](problem_Formula)
+2 [程序员的自我修养](http://blog.csdn.net/horizon_line/article/details/52015399)
 
 # todo
 
