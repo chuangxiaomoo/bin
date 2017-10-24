@@ -1063,6 +1063,13 @@ RESULT:  不间断播放语音，会影响升级
   **关键节点** (1)硬件无id时可用 (2) 有id时不可用 (3) uboot内存从19M提高至22M可用 (4) 摇头机encode可用 
   **根本原因** 最终原因是更新库没有同步代码 skipType = IMP_Encoder_STYPE_N1X;
 
+## 临证案例4.工厂第一次添加无声音
+  **thread.1**: encode重启
+  **thread.2**
+    SYSLOG("audio param change\n");
+    usleep(2000*1000); // 50*1000 概率出现serial重新获取后才encode才RESET
+    serial = 0; // RESTART, after a STOP will got CACHE_RET_NOT_READY
+
 # 焦虑(过多地关注自己不能解决的事务)
 
 > God grant me the serenity to accept the things I cannot change, 
