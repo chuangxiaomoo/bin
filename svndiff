@@ -4,4 +4,4 @@ DIFF="vimdiff"
 LEFT=${6}
 RIGHT=${7}
 # 拼接成diff命令所需要的命令格式
-$DIFF $HORI $LEFT $RIGHT
+$DIFF "+call Diff_enter()" $HORI $LEFT $RIGHT

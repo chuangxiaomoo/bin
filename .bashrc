@@ -118,7 +118,7 @@ alias    vt='vi ~/bin/.m2doc/tick.md'
 alias    vz='vi -R ~/bin/stk/.account.md'
 alias  v.fc='vi -R ~/.flowchar/main.i'
 
-alias sdiff='svn diff -r PREV'
+alias vimdiff='vimdiff "+call Diff_enter()"'
 
 alias w3mdump='/usr/bin/w3m -dump -cols 10000'      # 82时的实际宽度是80
 

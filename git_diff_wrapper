@@ -15,4 +15,4 @@ Usage="
     git config --unset
 "
 
-vimdiff "$2" "$5"
+vimdiff "+call Diff_enter()" "$2" "$5"
