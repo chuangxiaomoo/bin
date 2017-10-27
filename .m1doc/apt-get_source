@@ -1,14 +1,33 @@
 # apt-get
 
-# 更新源
+  [楚版本](https://en.wikipedia.org/wiki/Ubuntu_version_history)
+  2.15  Ubuntu 11.10 (Oneiric Ocelot)
+  2.16  Ubuntu 12.04 LTS (Precise Pangolin)
+  2.17  Ubuntu 12.10 (Quantal Quetzal)
+  2.18  Ubuntu 13.04 (Raring Ringtail)
+  2.19  Ubuntu 13.10 (Saucy Salamander)
+  2.20  Ubuntu 14.04 LTS (Trusty Tahr)
 
-  http://qlqllu.iteye.com/blog/1808089
+# 更新源  /etc/apt/sources.list
 
   使用apt-get安装软件时，可能发生not found，404错误，修改更新源可能可以解决问题。
-
   1. vi /etc/apt/sources.list, 把下面内容copy到sources.list中
   2. apt-get update
-   
+
+  [阿里云的源14.04-trusty](https://t.goodrain.com/t/topic/236)
+
+  deb http://mirrors.aliyun.com/ubuntu/ trusty main restricted universe multiverse
+  deb http://mirrors.aliyun.com/ubuntu/ trusty-security main restricted universe multiverse
+  deb http://mirrors.aliyun.com/ubuntu/ trusty-updates main restricted universe multiverse
+  deb http://mirrors.aliyun.com/ubuntu/ trusty-proposed main restricted universe multiverse
+  deb http://mirrors.aliyun.com/ubuntu/ trusty-backports main restricted universe multiverse
+  deb-src http://mirrors.aliyun.com/ubuntu/ trusty main restricted universe multiverse
+  deb-src http://mirrors.aliyun.com/ubuntu/ trusty-security main restricted universe multiverse
+  deb-src http://mirrors.aliyun.com/ubuntu/ trusty-updates main restricted universe multiverse
+  deb-src http://mirrors.aliyun.com/ubuntu/ trusty-proposed main restricted universe multiverse
+  deb-src http://mirrors.aliyun.com/ubuntu/ trusty-backports main restricted universe multiverse
+
+  [网易11.10-oneiric](http://qlqllu.iteye.com/blog/1808089)
   deb http://mirrors.163.com/ubuntu/ oneiric main universe restricted multiverse 
   deb-src http://mirrors.163.com/ubuntu/ oneiric main universe restricted multiverse 
   deb http://mirrors.163.com/ubuntu/ oneiric-security universe main multiverse restricted 
@@ -103,4 +122,3 @@
   }
 
   fn_main $@
-
