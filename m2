@@ -153,6 +153,7 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               xiaolai_2016_annual
                                               xiaolai_Metacognition
                                               xiaolai_Execution_vs_Implementation
+                                              xiaolai_Execution_full_edition
                                               xiaolai_听听闭门会分享
                                               xiaolai_为什么要学会写作
                                               xiaolai_教给我的59件事
@@ -750,6 +751,7 @@ function fn_WiMax_meeting()             { cat huawei_WiMax_meeting meeting
                                               sanxing_2014.nxp
                                               sanxing_2017.fisheye
                                               introspector 
+                                              qipashuo
                                         ;}
     local opts=(
         WiMax_meeting                   # 唯一一次大会

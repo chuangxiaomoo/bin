@@ -24,6 +24,7 @@ xiaolai_ask50
 collect_theory_理论
 collect_analogy_类比
 collect_metaphor_暗喻
+collect_structure_结构
 collect_algorithme_算法
 
 # write.技巧
