@@ -269,6 +269,8 @@ function fn_01_提高逻辑思维能力()       { cat howto_01_提高逻辑思�
 function fn_02_训练思维的深度和缜密度() { cat howto_02_训练思维的深度和缜密度 ;}
 function fn_03_沟通_communication()     { cat howto_03_沟通_communication 
                                           cat article_800_沟通技巧
+                                          cat article_801_温和的强硬
+                                          cat commu_zz01_AI攻略
                                           ;}
 function fn_04_屌丝如何逆袭()           { cat howto_04_屌丝如何逆袭 ;}
 function fn_05_挑选西瓜()               { cat howto_05_挑选西瓜 ;}
