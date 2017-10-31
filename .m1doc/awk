@@ -8,6 +8,11 @@
     echo "1{2[3,4]5|6" | awk -F'[{|,[\]]' '{ print $1,$2,$3,$4,$5}'
     echo "1{2[3,4]5|6" | awk 'BEGIN{ FS="[|,]" } { print $1,$2,$3,$4,$5}'
 
+# 取[]中的内容
+
+   #sed -e 's/].*//g'  -e 's/^.*\[//g'      # 弯路解决
+    awk -F'[[\\]]'                          # 只能在x86上使用
+
 # codingstyle
     format_of_awk() {
         awk 'BEGIN { cnt=0 } 
