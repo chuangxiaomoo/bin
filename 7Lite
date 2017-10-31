@@ -560,10 +560,11 @@ function fn_svncat()
     url=$1
     pattern="${2:-osdstyle}"
     revt="${3}"
+    CTX=${CTX:-"$2"}    # 支持多行搜索-C2
 
     [ -z "$url" ] && echo "Error: url is null" && exit
 
-    function fn_if_found() { svn cat $url -r$1 | grep -i -q "$pattern" ;}
+    function fn_if_found() { svn cat $url -r$1 | grep -i -C2 "${CTX}" | grep -i -q "$pattern" ;}
 
     # svn log -l 50 最近的50条，版本号最大在第一条
     # start_v
@@ -693,7 +694,7 @@ function fn_main()
     "cp_for_in f to...      # cp less filesys.*/dir"
     "genheader <.h file>    # define MACRO in header file"                        # 16
     "split2files            # split a file to files accord to delim_expression"
-    "svncat <url> <pat> [!] # svn cat <url> | grep #{3//!/-v} <pattern>"
+    "svncat <url> <pat> [!] # CTX=上下文 svn cat <url> | grep #{3//!/-v} <pattern>"
     "insert_blankline FILE  # 为小于78字符的行换行" 
     "78cols_text      FILE  # 为大于78字符的行换行"
     "bbox_cmdlist           # all cmd link to busybox"
