@@ -499,7 +499,7 @@ function fn_15_逐笔_分笔_分时_逐单()    { cat stk_15_逐笔_分笔_分�
 
 function fn_20_fenbi()                  { cat stk_20_fenbi ;}
 function fn_10_dazhihui()               { cat stk_10_dazhihui ;}
-function fn_tdx()                       { cat stk_tdx ;}
+function fn_tdx()                       { cat stk_tdx stk_ths_10jqka ;}
 
 function fn_jc_这不是独家买卖()         { cat stk_jc_这不是独家买卖 ;}
 function fn_jc_Golf智慧_快就是慢()      { cat stk_jc_Golf智慧_快就是慢 ;}
@@ -518,7 +518,7 @@ function fn_jc_Golf智慧_快就是慢()      { cat stk_jc_Golf智慧_快就是�
         03_大数据                       # macro data
         07_牛眼投资法                   # bulleye
 
-        tdx                             # 通达信 同花顺(ths 10jqka)
+        tdx                             # 通达信 同花顺(10jqka)
         wenhua                          # 文华财经
         TradeBlazer                     # TB
         10_dazhihui                     # dzh 大智慧
