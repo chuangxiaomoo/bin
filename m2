@@ -300,7 +300,7 @@ function fn_english()                   {
 function fn_US_TV_series()              { cat english_US_TV_series ;}
 function fn_vocabulary()                { cat english_vocabulary ;}
 function fn_sentence()                  { cat english_sentence ;}
-function fn_speaking()                  { cat english_speaking ;}
+function fn_speaking()                  { cat english_speaking english_liyang_crazy ;}
 function fn_listening_layers()          { cat english_listening_layers ;}
 function fn_reading()                   { cat english_reading ;}
 function fn_interprete()                { cat english_interprete ;}

@@ -2,9 +2,12 @@
 
 # 12.04 root登陆
 
-    [](http://os.51cto.com/art/201208/351611.htm)
-    # echo "greeter-show-manual-login=true" >> /etc/lightdm/lightdm.conf 
-    # restart
+  [](http://os.51cto.com/art/201208/351611.htm)
+
+  sudo passwd -u root
+  sudo -s
+  echo "greeter-show-manual-login=true" >> /etc/lightdm/lightdm.conf 
+  restart
 
 # 下载源码
 

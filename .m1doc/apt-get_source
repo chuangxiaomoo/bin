@@ -15,6 +15,7 @@
   2. apt-get update
 
   [阿里云的源14.04-trusty](https://t.goodrain.com/t/topic/236)
+  [deb url lsb_release -a](http://www.cnblogs.com/ccdc/p/4428555.html)
 
   deb http://mirrors.aliyun.com/ubuntu/ trusty main restricted universe multiverse
   deb http://mirrors.aliyun.com/ubuntu/ trusty-security main restricted universe multiverse

@@ -261,6 +261,12 @@ lsgcc()
     anyka   arm-anykav200-linux-uclibcgnueabi-
     jzzz    mips-linux-uclibc-gnu-
 
+    arm-linux-gcc
+    arm-buildroot-linux-uclibcgnueabi-gcc
+    aarch64-none-elf-gcc
+    arm-none-eabi-gcc
+    arm-none-linux-gnueabi-gcc
+
     /home/n/rc.d/mksquashfs
     "
 }
