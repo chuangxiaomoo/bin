@@ -26,6 +26,7 @@ function fn_02_行不言之教()             { cat mng_02_行不言之教 ;}
 function fn_03_培养新人()               { cat mng_goal_使命
                                               mng_jc_招募承诺
                                               mng_rule_制定规则
+                                              mng_rule_阿里招聘权
                                               relation_4_从朋友里选出做大事儿的人
                                               almanack_newbie
 function fn_04_一次失败的项目经理招聘() { cat mng_04_一次失败的项目经理招聘 ;}
@@ -74,6 +75,7 @@ function fn_2014_plan()                 { cat annual_2014_plan annual_2014_event
 function fn_2015_plan()                 { cat annual_2015_plan annual_2015_event annual_2015_report;}
 function fn_2016_plan()                 { cat annual_2016_plan annual_2016_event annual_2016_report annual_2016_ljsw  ;}
 function fn_2017_plan()                 { cat annual_2017_plan annual_2017_event ;}
+function fn_2018_plan()                 { cat annual_2018_plan ;}
     local opts=(
         plan_what                       # 基于`以终为始`的理念
         report_what
@@ -89,6 +91,7 @@ function fn_2017_plan()                 { cat annual_2017_plan annual_2017_event
         2015_plan
         2016_plan
         2017_plan
+        2018_plan
     )
     fn_print $@
 }
