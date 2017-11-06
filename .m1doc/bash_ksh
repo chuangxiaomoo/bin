@@ -1,0 +1,5 @@
+# ksh
+
+            ksh                     bash            
+function    无()                    兼容ksh，可有可无
+array       set -A list m1 m2 m3    list=(m1 m2 m3)

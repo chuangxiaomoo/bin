@@ -1,5 +1,19 @@
 # ubuntu
 
+# gcc
+
+apt-get  install  build-essential
+
+# 解决ubuntu 64位系统 无法运行32位程序的问题
+
+[](http://blog.csdn.net/mtofum/article/details/50296085)
+
+**对于ubuntu 12.04**
+apt-get install ia32-libs
+
+**对于ubuntu 13.04以后的版本**
+apt-get install libc6-i386
+
 # 12.04 root登陆
 
   [](http://os.51cto.com/art/201208/351611.htm)
