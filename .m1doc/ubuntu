@@ -14,6 +14,12 @@ apt-get install ia32-libs
 **对于ubuntu 13.04以后的版本**
 apt-get install libc6-i386
 
+# version and bit
+
+getconf LONG_BIT
+uname -a
+lsb_release -a
+
 # 12.04 root登陆
 
   [](http://os.51cto.com/art/201208/351611.htm)

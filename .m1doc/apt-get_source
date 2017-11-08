@@ -14,7 +14,21 @@
   1. vi /etc/apt/sources.list, 把下面内容copy到sources.list中
   2. apt-get update
 
+  [阿里云的源12.04-Precise]()
+
+  deb http://mirrors.aliyun.com/ubuntu/ precise main restricted universe multiverse
+  deb http://mirrors.aliyun.com/ubuntu/ precise-security main restricted universe multiverse
+  deb http://mirrors.aliyun.com/ubuntu/ precise-updates main restricted universe multiverse
+  deb http://mirrors.aliyun.com/ubuntu/ precise-proposed main restricted universe multiverse
+  deb http://mirrors.aliyun.com/ubuntu/ precise-backports main restricted universe multiverse
+  deb-src http://mirrors.aliyun.com/ubuntu/ precise main restricted universe multiverse
+  deb-src http://mirrors.aliyun.com/ubuntu/ precise-security main restricted universe multiverse
+  deb-src http://mirrors.aliyun.com/ubuntu/ precise-updates main restricted universe multiverse
+  deb-src http://mirrors.aliyun.com/ubuntu/ precise-proposed main restricted universe multiverse
+  deb-src http://mirrors.aliyun.com/ubuntu/ precise-backports main restricted universe multiverse
+
   [阿里云的源14.04-trusty](https://t.goodrain.com/t/topic/236)
+
   [deb url lsb_release -a](http://www.cnblogs.com/ccdc/p/4428555.html)
 
   deb http://mirrors.aliyun.com/ubuntu/ trusty main restricted universe multiverse

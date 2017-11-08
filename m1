@@ -705,6 +705,7 @@ function fn_dump()                      { cat w3m_dump ;}
 function fn_hotkey()                    { cat w3m_hotkey ;}
 
     local opts=(
+        lamp apache
         dump
         hotkey
     )
@@ -1098,6 +1099,7 @@ function fn_apt-get()                   {
 function fn_source()                    { cat apt-get_source ;}
 function fn_command()                   { cat apt-get_command ;}
     local opts=(
+        ubuntu
         source
         command
     )
@@ -1118,13 +1120,11 @@ function fn_postgresql()                { cat postgresql ;}
 
 function fn_mysql()                     { 
 function fn_base()                      { cat mysql_base ;}
-function fn_extend()                    { cat mysql_extend ;}
 function fn_complete()                  { cat mysql_complete ;}
-function fn_troubleshooting()           { cat mysql_troubleshooting ;}
 function fn_migrate()                   { cat mysql_migrate ;}
+function fn_troubleshooting()           { cat mysql_troubleshooting ;}
     local opts=(
         base                # 安装及startup on Linux
-        extend              # sql 的扩展及命令行shell
         complete            # 语句大全
         migrate             # 
         troubleshooting
@@ -1489,7 +1489,6 @@ function fn_main() {
         test
         tmux
         uboot
-        ubuntu
         url
         vim
         vlc

@@ -1,0 +1,12 @@
+#! /bin/bash
+
+function fn_main()
+{
+    cd ~/bin/.etc/
+    cp /usr/local/apache/conf/httpd.conf                httpd.conf
+    cp /data/www/default/phpmyadmin/config.inc.php      config.inc.php
+
+    echo "backup succ"
+}
+
+fn_main $@

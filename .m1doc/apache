@@ -1,0 +1,66 @@
+# 实战
+
+[](http://bluesky2.blog.51cto.com/7264879/1289481)
+
+# phpmyadmin
+
+安装目录: /data/www/default/phpmyadmin/
+配置:     /data/www/default/phpmyadmin/config.inc.php
+
+# mysql
+
+apt-get install mysql-server mysql-client
+apt-get install php5-mysql
+
+# php 
+
+apt-get install php5
+
+# apache2
+
+[](https://github.com/teddysun/lamp)
+
+>   git clone https://github.com/teddysun/lamp.git
+>   cd lamp
+>   chmod +x *.sh
+>   screen -S lamp
+>   ./lamp.sh
+
+apt-get install liblua5.1-0-dev
+
+## service
+
+/etc/init.d/httpd start
+
+## log
+
+/var/log/apache2/error.log
+
+## conf
+
+[](https://lamp.sh/faq.html)
+**Q5：如何更改网站的默认目录？修改 DocmentRoot 目录以及下面的 Directory ，再重启 Apache 即可。**
+/usr/local/apache/conf/extra/httpd-vhosts.conf
+/usr/local/apache/conf/httpd.conf
+
+## cgi
+
+**参考**
+[](http://xpleaf.blog.51cto.com/9315560/1740221)
+[](http://man.chinaunix.net/newsoft/ApacheManual/howto/cgi.html)
+
+**配置**
+[1](+/LoadModule.cgi_module /usr/local/apache/conf/httpd.conf)
+[2](+/ScriptAlias..cgi-bin  /usr/local/apache/conf/httpd.conf)
+[3](+/AddHandler.cgi-script /usr/local/apache/conf/httpd.conf)
+	
+**权限**
+chmod 755 usr/
+chmod 755 usr/local/
+chmod 755 usr/local/apache/
+chmod 755 usr/local/apache/cgi-bin/
+
+**一定要空行**
+> #!/usr/bin/perl
+> print "Content-type: text/html\n\n";
+> print "Hello, World.";

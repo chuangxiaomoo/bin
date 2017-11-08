@@ -19,3 +19,7 @@
 
 . 查看索引
     show INDEX from tbl_name;
+
+. 查看变量
+    SHOW VARIABLES LIKE '%size%';
+    SHOW VARIABLES WHERE VALUE > 0;

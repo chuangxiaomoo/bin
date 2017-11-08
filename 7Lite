@@ -670,6 +670,13 @@ function fn_rgrep()
 function fn_flowchar() { ln -sf /root/.flowchar/main.i .flowchar.i ;}
 function fn_epoch_2_ymdhms() { date -u -d  @${1:-0} +"%F %T %z" ;}
 
+
+function fn_etc()
+{
+    /root/bin/.etc/etc
+    return $?
+}
+
 function fn_main() 
 {
     cmdlist=(
@@ -703,6 +710,7 @@ function fn_main()
     "rgrep  regExp          # 换行grep -r <regExp> *"
     "epoch_2_ymdhms         # 换行时间格式"
     "flowchar               # create .flowchar"
+    "etc                    # backup etc"
     )
 
     fn_execute "$@"
