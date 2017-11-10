@@ -7,6 +7,7 @@ run:
     size 8, 4
 
 理解二维数组的下标？    
-根据"clang_cdecl"  clang_operator_predcedence.[]自左向右结合，则
-arr[4][8]的数组长度，即ARRAY_SIZE(arr)是第一个下标 = 4。
+
+一维数组只有一行多列
+二维数组只有二行多列，/* 第一个下标是行, 2nd是列 */
 
