@@ -257,6 +257,7 @@ pskill()
 lsgcc()
 {
     echo "
+    ____________________ipc____________________
     hisi    arm-hisiv100nptl-linux-
     nxp     arm-linux-
     ti      arm_v5t_le-
@@ -264,11 +265,12 @@ lsgcc()
     anyka   arm-anykav200-linux-uclibcgnueabi-
     jzzz    mips-linux-uclibc-gnu-
 
-    arm-linux-gcc
-    arm-buildroot-linux-uclibcgnueabi-gcc
-    aarch64-none-elf-gcc
-    arm-none-eabi-gcc
-    arm-none-linux-gnueabi-gcc
+    ____________________nvr.265________________
+    arm-linux-   
+    aarch64-none-elf-   
+    arm-buildroot-linux-uclibcgnueabi-          # app
+    arm-none-eabi-                              # 2011.03 Mboot
+    arm-none-linux-gnueabi-                     # 2012.09 Mboot
 
     /home/n/rc.d/mksquashfs
     "
