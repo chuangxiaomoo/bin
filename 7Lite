@@ -677,6 +677,12 @@ function fn_etc()
     return $?
 }
 
+function fn_sortf()
+{
+    find -type f | xargs ls -l > ${SHMPATH}/cache
+    cat ${SHMPATH}/cache | sort -k5 -g ${1}
+}
+
 function fn_main() 
 {
     cmdlist=(
@@ -701,6 +707,7 @@ function fn_main()
     "cp_for_in f to...      # cp less filesys.*/dir"
     "genheader <.h file>    # define MACRO in header file"                        # 16
     "split2files            # split a file to files accord to delim_expression"
+    "sortf {r}              # sort file"
     "svncat <url> <pat> [!] # CTX=上下文 svn cat <url> | grep #{3//!/-v} <pattern>"
     "insert_blankline FILE  # 为小于78字符的行换行" 
     "78cols_text      FILE  # 为大于78字符的行换行"

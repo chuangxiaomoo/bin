@@ -14,7 +14,7 @@ _backslash='\'         # backslash
 _2backslash='\\'        # double backslash
 
 CWD=${PWD}
-SHMPATH=/dev/shm/${0##*/}/$$
+SHMPATH=/dev/shm/${0##*/}
 mkdir -p $SHMPATH
 
 # for multi instance

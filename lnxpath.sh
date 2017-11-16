@@ -21,7 +21,10 @@ function fn_main()
     if echo ${lnxpath} | grep -q "winc" ; then
         echo E:${lnxpath}
     else
-        echo '\\192.168.2.248'${lnxpath}
+        ips=`ifconfig | grep "inet addr" | cut -d : -f 2 | cut -d ' ' -f 1 | grep 192.168`
+        for ip in ${ips}; do
+            echo '\\'${ip}${lnxpath}
+        done
     fi
 }
 

@@ -31,7 +31,6 @@ alias      YIST=''
 alias     YRISE=''
 #lias      STEP=''
 #lias     SCALE=''      # 通放大倍数 
-alias       WIT=''      # 大智慧
 alias     LIMIT=''
 alias      iDDE=''
 alias      iEND=''
@@ -133,9 +132,7 @@ alias   xgrep="find . -name '*' -type f |grep -v '\.git' | xargs grep --color"
 alias  upconf="rm -f /home/s/fs/opt/conf/config.*; svn up /home/s/fs/opt/conf/config.org;" 
 alias  clrnfs="Svn | grep nfs | awk '{print $2}' | xargs rm -f"
 alias fbcache="sync; echo 3 > /proc/sys/vm/drop_caches"
-alias    Calc='set -f; fn_calc'
 
-fn_calc()       { expr0="scale=${SCALE:-3};$@"; bc -l <<< "${expr0}"; set +f; }
 function M()    { m1 $@ | tail -18; } # M() { m1 $@ | nl -w 3 -s' ' | less -i ;}
 
 alias   cwd='pwd >>  ~/.env;vi ~/.env; .rc'         # curr-pwd
