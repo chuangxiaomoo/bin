@@ -9,6 +9,7 @@
   echo len ${len}
 
   echo ${array[@]:3:1}
+  echo ${array[@]:3}
 
 # 二维数组
 

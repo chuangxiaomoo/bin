@@ -54,3 +54,12 @@
 
 [](https://unix.stackexchange.com/questions/152066/what-is-being-cached)
 
+# sd卡 buffer 保证数据的 原子性 一致性 可靠性
+
+-o sync
+两次rename
+delay 2s 写入
+fdatasync 不写 metadata 提高速度
+[](http://www.lxway.com/920109562.htm)
+[](http://blog.httrack.com/blog/2013/11/15/everything-you-always-wanted-to-know-about-fsync/)
+
