@@ -16,6 +16,21 @@
     CC=arm-linux-gcc ./configure --host=arm-linux
     一般来说，指定--host就可以了，CC会自动查找
 
+# 最小 ksh cross_compile
+
+CC=arm-buildroot-linux-uclibcgnueabi-gcc ./configure \
+    --host=arm-linux --disable-emacs --enable-posixly-correct
+
+**使用vi解决历史搜索&命令补全**
+0 `history文件 $HOME/.sh_history 即被视为一个文件`
+1 history 上下翻页 
+2 history 搜索
+3 命令补全
+4 文件补全
+
+**Bug: [sleep 1&]**
+[patch](https://github.com/pld-linux/pdksh/blob/master/pdksh-debian.patch)
+
 ## netcat 
 
 ## strace

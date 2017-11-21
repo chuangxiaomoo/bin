@@ -1,5 +1,9 @@
 # ksh
 
             ksh                     bash            
-function    无()                    兼容ksh，可有可无
+function    function fn_main        兼容ksh，可有可无
+                     fn_main()
+
 array       set -A list m1 m2 m3    list=(m1 m2 m3)
+
+
