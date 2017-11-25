@@ -1,4 +1,15 @@
+# vim 编辑器的本质
+
+[vim 的模式](http://vimzijun.net/2016/07/16/vim-mode/)
+
+移动光标
+增(输入)
+删
+改(替换 = 删除 + 输入)
+宏(自动化重复工作)
+
 # 跟踪.vimrc加载过程
+
 strace -o vim_strace vim
 
 # 不加载.vimrc

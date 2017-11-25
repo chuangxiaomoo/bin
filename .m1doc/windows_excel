@@ -1,29 +1,61 @@
-/* excel */
-. 提供下拉列表
+# excel
 
-    以DI值为例：
+> EXCEL ~= Vim + Markdown + Dataprocess
+         = 编辑器 + 标记语言 + 数据处理
 
-        点击cell上的A-Z选中一列 
+EXCEL 与 WPS 兼容，但是，要使用 **Google** 找相应的资源或是问题，还是 EXCEL 方便。
 
-        -> 数据 -> 有效性 -> 设置 -> 有效性条件 -> 允许：序列 -> 来源 
+相较于 vim 这个纯编辑器，EXCEL有如下几个特点：
 
-        输入以下序列，以,隔开
-        10,3,1,0.1
+1 较于markdown纯文本**树形结构**，EXCEL提供 row, col, sheet 三层叠加，
+  对于复杂结构的板书，已然是一个**森林**。
+2 更多的格式选择，和媒体素材(图片，URL)
+  在组织间跳转
+3 数据的生成、筛选
+  直接生成报告
 
+# Cell [Alt-H]
 
-. 通过下拉列表过滤
-    
-    选中有数据有效性的列 -> 点击开始 -> 自动筛选图标
+基本操作单元是Cell，框架是Table
 
-    选中列会生成一个过滤下拉按键，点击之进行过滤
+**Cell操作**
+插入/Normal     F2/Esc
+行首尾          {Home|End}
+Cell首尾        Ctrl+{Home|End}
+全选            Ctrl+Shift+End
+Merge           Alt->H->{M|MC|U}
+删除            Menu->D->{R|C|U|L}
+插入            Menu->I->{R|C|U|L}
 
-. cell内容自动换行 [Ctrl-1]
+**Table移动**
+上下左右        {arrow}
+行列首尾        Ctrl+{arrow}
+翻页            Ctrl+{PageUp|PageDown}
+link间跳转      Ctrl-G 
 
-    选中cell -> 右键 -> 单元格格式 -> 对齐 -> 自动换行
+# 格式.Markdown [Ctrl-1]
 
+自动换行        选中cell -> 对齐 -> 自动换行
+Ctrl-B          **Bold**
+Ctrl-I          *Italy*
+Underline       Ctrl-U
+格式刷          选中cell -> {Click|双击} -> 点击其它Cell
+超链接          Ctrl-K
+Highlight       Alt->H->{H|FC}
 
-. 自适应高度、宽度
+# 数据.[Alt-A]
 
-    选中 -> 鼠标形状变成双钩 -> 双击即可自适应
+**提供下拉列表**
 
+以DI值为例，点击cell上的A-Z选中一列 
+-> 数据 -> 有效性 -> 设置 -> 有效性条件 -> 允许：序列 -> 来源 
+输入以下序列，以,隔开
+10,3,1,0.1
+
+**通过下拉列表过滤**
+
+选中有数据有效性的列 -> 点击开始 -> 自动筛选图标
+选中列会生成一个过滤下拉按键，点击之进行过滤
+
+**公式**
 
