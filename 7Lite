@@ -683,6 +683,23 @@ function fn_sortf()
     cat ${SHMPATH}/cache | sort -k5 -g ${1}
 }
 
+function fn_txt2markdow()
+{
+    # :%s/^\n//g            删除 table 空行
+
+    [ -e "${book}" ]
+    xt_ret $? "book[$book] not exist" || return $?
+
+    [ -e "${table}" ]
+    xt_ret $? "table[$table] not exist" || return $?
+
+    cp ${book} ${book}.bak
+    while read ; do
+        echo "$REPLY"
+        sed -i "s/^${REPLY}/# &/g" ${book}
+    done < ${table}
+}
+
 function fn_main() 
 {
     cmdlist=(
@@ -718,6 +735,7 @@ function fn_main()
     "epoch_2_ymdhms         # 换行时间格式"
     "flowchar               # create .flowchar"
     "etc                    # backup etc"
+    "txt2markdow            # 给章节打上#"
     )
 
     fn_execute "$@"
