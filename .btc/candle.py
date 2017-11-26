@@ -1,5 +1,3 @@
-#! /usr/bin/python3
-
 import time
 from math import pi
 import pandas as pd
@@ -253,7 +251,7 @@ def fn_main():
     fn_plot_volume(df, p_v)
     fn_plot_macd(df, p_m, all_source)
 
-    output_file("candlestick.html", title="candlestick.py example", mode='inline')
+    output_file("chan.html", title="chan", mode='inline')
     grid = gridplot([[p_k], [p_v], [p_m]], merge_tools=False, responsive=True)
     grid.sizing_mode = 'stretch_both'
     show(grid)
@@ -262,4 +260,3 @@ def fn_main():
 t_sta = time.time()
 fn_main()
 print("Spend total:", time.time() - t_sta)
-
