@@ -119,7 +119,9 @@ irlog:
 audiopaly:
 recordplan: 删除cheby无用的代码，核心逻辑自然显现出来了。
 
-# 7. MVP
+# 7. data + MVP
+
+Tushare 可获取历史及实时行情，可获取历史 F5 F15 F30 F60 的数据。
 
 在按键精灵和多一台PC的配合下，完全可以出一个可行性作品。
 
