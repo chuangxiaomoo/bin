@@ -64,7 +64,8 @@ alias   .rc='.  ~/.bashrc'
 alias  .irc='vi ~/.bashrc +; . ~/.bashrc'
 alias  .mor='~/bin/stk/up morningcall'
 alias    .u='vi /tmp/kts/chao.u'
-alias   .ps='PS1="[\w]\n\u-> \[\033[0m\]"'
+#lias   .ps='PS1="[\w]\n\u-> \[\033[0m\]"'
+alias   .py='cp /pycharm/candle.py ~/bin/.btc/'
 
 alias .de_beep="echo 0 >/tmp/kts/chao.beep"
 alias .en_beep="echo 1 >/tmp/kts/chao.beep"

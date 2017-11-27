@@ -1,0 +1,34 @@
+# pycharm
+
+# customize
+
+1 download ideavim
+2 vimrc
+3 光标
+  Settings -> Editor -> General -> Appearance -> Use Block Caret
+4 quickfix-wrap
+  View -> Active Editor -> Use Soft Wraps
+
+5 pip配置文件
+  %APPDATA%\pip\pip.ini
+  pip list --format=columns
+
+http://www.10tiao.com/html/502/201609/2653283804/1.html
+http://zhibimo.com/read/xiaolai/growth/attribution-fallacy.html
+
+
+# shortcut
+
+F4        定义
+F5        run
+Alt-F5    run...
+
+# 窗口导航
+
+左下角口  toggle导航框，通过相应 Alt-Num toggle细目
+Alt-1     Project/Nerdtree
+Alt-2     收藏夹
+Alt-4     Debug窗/Quickfix
+Alt-7     Structure/Tlist
+Alt-F12   Dos-shell
+

@@ -136,6 +136,7 @@ function fn_000_黄晓捷谈在校学习()      { cat book_000_黄晓捷谈在�
 function fn_010_李笑来谈读书经验()      { cat book_010_李笑来谈读书经验
                                           cat book_011_李笑来谈阅读操作系统 
                                           cat book_012_张五常谈读书和思考
+                                          cat book_013_夜东坡谈读书和思考
                                           cat book_020_如何选书
                                           ;}
 
@@ -147,6 +148,7 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               book_hh_好好学习
                                               book_dt_暗时间
                                               book_tf_把时间当作朋友
+                                              book_xs_reborn-every-7-years.md
                                               book_mao
                                               Multitask
                                               problem_solving problem_Formula
@@ -270,19 +272,21 @@ function fn_01_囧_jiong()               { cat 01_囧_jiong ;}
 function fn_howto()                     {
 function fn_01_提高逻辑思维能力()       { cat howto_01_提高逻辑思维能力 ;}
 function fn_02_训练思维的深度和缜密度() { cat howto_02_训练思维的深度和缜密度 ;}
-function fn_03_沟通_communication()     { cat howto_03_沟通_communication 
-                                          cat article_800_沟通技巧
-                                          cat article_801_温和的强硬
-                                          cat commu_zz01_AI攻略
+function fn_03_沟通_communication()     { cat howto_03_沟通
+                                          cat howto_03_沟通.1
+                                          cat howto_03_沟通.2
+                                          cat howto_04_屌丝如何逆袭 
+                                          cat howto_05_挑选西瓜 
+                                          cat howto_06_从朋友里选出做大事儿的人
+                                          cat howto_07_与AI在职场竞争
+                                          cat howto_08_识别有智慧的人
+                                          cat howto_09_讲故事
+                                          cat howto_09_讲故事.1
                                           ;}
-function fn_04_屌丝如何逆袭()           { cat howto_04_屌丝如何逆袭 ;}
-function fn_05_挑选西瓜()               { cat howto_05_挑选西瓜 ;}
     local opts=(
         01_提高逻辑思维能力
         02_训练思维的深度和缜密度
         03_沟通_communication
-        04_屌丝如何逆袭
-        05_挑选西瓜
     )
     fn_print $@
 }
@@ -1143,6 +1147,7 @@ function fn_main() {
         stupid_things                   # 哪些年做过的蠢事
         subtitle
         psychology                      # 心理学
+        tao_design                      # 设计之道
         kindle
         chaos
         literature                      # 文学
