@@ -679,7 +679,7 @@ function fn_etc()
 
 function fn_sortf()
 {
-    find -type f | xargs ls -l > ${SHMPATH}/cache
+    find -type f | xargs ls -lk > ${SHMPATH}/cache
     cat ${SHMPATH}/cache | sort -k5 -g ${1}
 }
 
