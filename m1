@@ -621,6 +621,7 @@ function fn_config()                    { cat git_config ;}
 function fn_subconf()                   { cat git_subconf ;}
 function fn_log()                       { cat git_log ;}
 function fn_cat-file()                  { cat git_cat-file ;}
+function fn_merge()                     { cat git_merge ;}
     local opts=(
         base                    # 入门
         add
@@ -633,6 +634,7 @@ function fn_cat-file()                  { cat git_cat-file ;}
         github                  # create 或 pull 一个项目 from github.com 
         log
         cat-file
+        merge
     )
     fn_print $@
 }
