@@ -178,7 +178,7 @@ function fn_200_逃不开的经济周期()      { cat book_200_逃不开的经�
 function fn_201_经济学通识()            { cat book_201_经济学通识 ;}
 function fn_202_苏黎世投机定律()        { cat book_202_苏黎世投机定律 ;}
 
-function fn_303_论证是一门学问()        { cat book_303_论证是一门学问 howto_argument ;}
+function fn_303_论证是一门学问()        { cat book_303_论证是一门学问 ;}
 function fn_304_金字塔原理()            { cat book_304_金字塔原理 book_py_金字塔原理 ;}
 
 function fn_310_人类简史()              { cat book_310_人类简史 read_310_人类简史 ;}
@@ -282,6 +282,8 @@ function fn_03_沟通_communication()     { cat howto_03_沟通
                                           cat howto_08_识别有智慧的人
                                           cat howto_09_讲故事
                                           cat howto_09_讲故事.1
+                                          cat howto_10_谈判
+                                          cat howto_11_论证
                                           ;}
     local opts=(
         01_提高逻辑思维能力
@@ -1114,7 +1116,6 @@ function fn_main() {
         huawei
         humor                           # 幽默
         herb                            # 中医
-        howto
         ideas
         idealism                        # 理想主义
         influence                       # 三十而立 30

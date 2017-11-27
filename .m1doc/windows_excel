@@ -4,6 +4,7 @@
          = 编辑器 + 标记语言 + 数据处理
 
 EXCEL 与 WPS 兼容，但是，要使用 **Google** 找相应的资源或是问题，还是 EXCEL 方便。
+比如Freeze功能。
 
 相较于 vim 这个纯编辑器，EXCEL有如下几个特点：
 
@@ -20,28 +21,40 @@ EXCEL 与 WPS 兼容，但是，要使用 **Google** 找相应的资源或是问
 
 **Cell操作**
 插入/Normal     F2/Esc
+批注/Comment    Shift+F2
 行首尾          {Home|End}
 Cell首尾        Ctrl+{Home|End}
 全选            Ctrl+Shift+End
-Merge           Alt->H->{M|MC|U}
-删除            Menu->D->{R|C|U|L}
+Merge           Alt+H->{M|MC|U}
+删除            {Alt+H|Menu}->D->{R|C|U|L}
 插入            Menu->I->{R|C|U|L}
+隐藏/line       Ctrl+9
+隐藏/col        Ctrl+0
+展开/折叠功能区 Ctrl+F1
+重复/撤消       Ctrl+{Y|Z}
+Freeze panes    Alt+W->F{F|C|R}
+Freeze rows     Freeze as many rows or columns as you want,
+Freeze cols     select **the row below the last row** you want frozen and click Freeze Panes.
 
 **Table移动**
 上下左右        {arrow}
 行列首尾        Ctrl+{arrow}
-翻页            Ctrl+{PageUp|PageDown}
+上下翻页        Ctrl+{PageUp|PageDown}
+左右翻页        Alt+{PageUp|PageDown}
 link间跳转      Ctrl-G 
 
 # 格式.Markdown [Ctrl-1]
 
 自动换行        选中cell -> 对齐 -> 自动换行
-Ctrl-B          **Bold**
-Ctrl-I          *Italy*
+**Bold**        Ctrl-B
+*Italy*         Ctrl-I
 Underline       Ctrl-U
+删除线          Ctrl-5
 格式刷          选中cell -> {Click|双击} -> 点击其它Cell
 超链接          Ctrl-K
-Highlight       Alt->H->{H|FC}
+超链接/名称     Menu->定义名称(WPS的名称在公式->名称管理器)
+Highlight       Alt+H->{H|FC}
+Border/边框     Alt+H->B
 
 # 数据.[Alt-A]
 
