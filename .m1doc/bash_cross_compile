@@ -24,6 +24,12 @@ CC=arm-buildroot-linux-uclibcgnueabi-gcc ./configure --host=arm-linux
 
 CC=arm-buildroot-linux-uclibcgnueabi-gcc ./configure --host=arm-linux --disable-device-mapper --without-readline
 
+
+# lsof
+
+[lsof-cross-compile](http://blog.csdn.net/orz415678659/article/details/9427385)
+LSOF_CC=mips-linux-uclibc-gnu-gcc LSOF_HOST=mips-linux ./Configure  -n linux
+
 # 最小 ksh cross_compile
 
 CC=arm-buildroot-linux-uclibcgnueabi-gcc ./configure \

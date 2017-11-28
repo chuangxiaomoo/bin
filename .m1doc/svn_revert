@@ -1,16 +1,20 @@
+# svn up 回以指定版本
+
+  svn up -r revision
+
 # revert    
 
   恢复原始（pristine）的WORKINGCOPY文件：
 
-    使 add del 回退，文件名状态可以通过 svn stat 获得
-    使错误提交的文件回退
-
+  使 add del 回退，文件名状态可以通过 svn stat 获得
+  使错误提交的文件回退
 
   revert 已经 del 过的文件夹时要先 revert 其下的文件
   svn: E155038: Can't revert 'upgrade/updateStep1' without reverting children
   Reverted 'updateStep1/GobiNet3.ko'
 
-    svn revert 文件名
+  svn revert 文件名
+
     svn stat | grep '^A' | awk '{print $2}' | sort -r | xargs -I{} svn revert {}
 
 # remove all changed file
