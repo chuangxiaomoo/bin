@@ -1681,6 +1681,11 @@ Don't know what is stupid or lazy chenkai doing now? 我花了一个晚上重新
 [详见百度赏析]()
 [张若虚以及他的作品《春江花月夜》何以“孤篇盖全唐”？](https://www.zhihu.com/question/24924165)
 
+# 再论先固化再优化
+
+1 dana跨天录像，使用一个大小为2的static结构体数组，比用把static封装在函数里能更快实现。
+2 8M.nvr每1个小时重启跟踪，修改多了扯着蛋，函数重载：overloaded function with no contextual type information
+
 # todo
 
 必须接受这个现实：未知永远存在。而后只能开始不断地尝试着去适应“在未知中不断前行”。
