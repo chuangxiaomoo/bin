@@ -27,7 +27,6 @@ function fn_03_培养新人()               { cat mng_goal_使命
                                               mng_jc_招募承诺
                                               mng_rule_制定规则
                                               mng_rule_阿里招聘权
-                                              relation_4_从朋友里选出做大事儿的人
                                               almanack_newbie
 function fn_04_一次失败的项目经理招聘() { cat mng_04_一次失败的项目经理招聘 ;}
 function fn_11_王熙凤()                 { cat mng_11_王熙凤 ;}
@@ -277,13 +276,18 @@ function fn_03_沟通_communication()     { cat howto_03_沟通
                                           cat howto_03_沟通.2
                                           cat howto_04_屌丝如何逆袭 
                                           cat howto_05_挑选西瓜 
-                                          cat howto_06_从朋友里选出做大事儿的人
                                           cat howto_07_与AI在职场竞争
                                           cat howto_08_识别有智慧的人
                                           cat howto_09_讲故事
                                           cat howto_09_讲故事.1
                                           cat howto_10_谈判
                                           cat howto_11_论证
+                                          cat howto_relation.04.从朋友里选出做大事儿的人
+                                          cat howto_relation.10.在职场核心业务上突破
+                                          cat howto_relation.11.受同事欢迎
+                                          cat howto_relation.20.跨团队协作
+                                          cat howto_relation.21.结交到比你厉害的朋友
+                                          cat howto_relation.22.让别人支持你
                                           ;}
     local opts=(
         01_提高逻辑思维能力
@@ -755,7 +759,7 @@ function fn_Zhu_雄辩()                  { cat huawei_Zhu_雄辩 ;}
 function fn_Qi_领导管理人才()           { cat huawei_Qi_领导管理人才 ;}
 function fn_Qi_疾病()                   { cat huawei_Qi_疾病 ;}
 
-function fn_WiMax_meeting()             { cat huawei_WiMax_meeting meeting 
+function fn_WiMax_meeting()             { cat huawei_WiMax_meeting meeting
                                               7habit 8s_habit
                                               sanxing_2013
                                               sanxing_2013.team
