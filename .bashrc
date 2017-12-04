@@ -313,6 +313,7 @@ cptar() { file=`ls release/tar/*.tgz`;
 cpffw() { file=`ls release/tar/*.ffw`; 
           mkdir -p /winc/Export/com/; rm -rf /winc/Export/com/*.ffw; cp -a $file         /winc/Export/com/ 
           echo ${file##*/} > /winc/Export/com/ffw.txt                                                      ;}
+cpv2()  { mkdir -p /winc/Export/com/v2; cp /winc/Export/com/*.{ffw,tgz} /winc/Export/com/v2 ;}
 nctar() { file=`ls release/tar/*.tgz`;  nc $1 8006 < $file ;}
 nc1234(){ make i;  nc $1 1234 < main/jco_server ;}
 

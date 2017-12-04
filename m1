@@ -240,6 +240,7 @@ function fn_string()                    { cat bash_string ;}
 function fn_array()                     { cat bash_array ;}
 function fn_PIPESTATUS()                { cat bash_PIPESTATUS ;}
 function fn_export()                    { cat bash_export ;}
+function fn_pathname_expansion()        { cat bash_pathname_expansion ;}
     local opts=(
         fundamental
         cross_compile
@@ -266,6 +267,7 @@ function fn_export()                    { cat bash_export ;}
         dialog                          # whiptail
         PIPESTATUS                      # 只可以被提取一次
         export                          # env环境变量
+        pathname_expansion
     )
     fn_print $@
 }
