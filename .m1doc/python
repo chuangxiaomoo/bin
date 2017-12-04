@@ -170,11 +170,6 @@ if __name__=='__main__':              # __name__ 类似 BASH_SOURCE[0]
         test()
 ```
 
-**安装模块**
-which pip pip3
-md5sum pip pip3                       *md5sum完全相同*
-pip install pymysql
-
 # OO.面向对象编程
 
 ```python
@@ -311,6 +306,13 @@ __call__=                                                     # 对实例进行�
 try...except...finally
 raise
 [exception hierarchy](https://docs.python.org/3/library/exceptions.html#exception-hierarchy)
+
+# open.read.write
+
+fd=open('./env.sh', 'w')                # will truncate the file env.sh, be careful 
+fd=open('./env.sh', 'r+')               # will not truncate, and if write will from the begin 
+fd=open('./env.sh', 'a+')               # will not truncate, and if write will append to the end 
+print fd.readline()
 
 
 # json
