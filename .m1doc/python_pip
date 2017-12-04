@@ -17,5 +17,5 @@ pip install pymysql
 pip install lxml
 pip install requests
 pip install bs4
-pip install Tushare
+pip install tushare
 
