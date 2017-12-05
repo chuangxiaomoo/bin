@@ -1,6 +1,56 @@
 # tushare
 
-# install & upgrade
+# bar()
 
-[新接口](http://mp.weixin.qq.com/s?timestamp=1512391478&src=3&ver=1&signature=aP1ikYbtSGzEsytYbN-Yk2NNK5twzbtnAh9m-Apqech8CwZUdfTjSI4hrhjSikXq1VJPjoTI1yZnyVwgxSWbK7pyXSRVlGGv-frPHS-beXlnL3YYvr9eYCue4G37DdbROIKeqS7wMgCD9DOQ7lXtNurZRijD3eBjMK8EhZ8qd5o=)
+bar支持了主要证券品种（沪深股票、基金、期货、期权、港股、中概股等）的各类k线数据，
+包括1分钟、5分钟、15分钟、30分钟和60分钟，以及日线、周线、季度和月线数据。
+而tick接口是以上品种Level1的成交数据。
+
+**1.0版本特点**
+1、数据获取容易
+2、数据格式统一
+3、数据接口稳定
+4、数据质量过硬
+5、数据免费开放
+
+## 示例: tu.py
+
+# get_k_data()
+
+`get_hist_data()` 将成为历史
+
+迎来的是一个集分钟数据、日周月数据，前后复权数据，揽括所有股票、指数和ETF的。未来，还将加入期货期权等品种，
+所以，get_k_data或许将会成为未来一个“著名”的行情数据API。新接口融合了get_hist_data和get_h_data两个接口的功能，
+即能方便获取日周月的低频数据，也可以获取5、15、30和60分钟相对高频的数据。
+
+## 主要参数说明
+
+| param   | desciption                                                                       |
+| :------ | :------                                                                          |
+| code    | 证券代码：支持沪深A、B股支持全部指数支持ETF基金                                  |
+| ktype   | 数据类型：默认为D日线数据D=日k线 W=周 M=月 5=5分钟 15=15分钟 30=30分钟 60=60分钟 |
+| autype  | 复权类型：qfq-前复权 hfq-后复权 None-不复权，默认为qfq                           |
+| index   | 是否为指数：默认为False设定为True时认为code为指数代码                            |
+| start   | 开始日期 format：YYYY-MM-DD 为空时取当前日期                                     |
+| end     | 结束日期：format：YYYY-MM-DD                                                     |
+
+## 数据属性说明
+
+| col     | desciption                                                   |
+| :------ | :------                                                      |
+| date    | 日期和时间低频数据时为：YYYY-MM-DD高频数为：YYYY-MM-DD HH:MM |
+| open    | 开盘价                                                       |
+| close   | 收盘价                                                       |
+| high    | 最高价                                                       |
+| low     | 最低价                                                       |
+| volume  | 成交量                                                       |
+| code    | 证券代码                                                     |
+
+## 几种常见的调用方法
+
+1）获取浦发银行近一年半的前复权日线行情： ts.get_k_data('600000')
+2）获取浦发银行近6年后复权周线行情：      ts.get_k_data('600000', ktype='W', autype='hfq')
+3）获取浦发银行近期5分钟行情：            ts.get_k_data('600000', ktype='5')
+4）获取沪深300指数10月份日线行情：        ts.get_k_data('399300', index=True,start='2016-10-01', end='2016-10-31')
+5）获取鹏华银行分级B的60分钟行情：        ts.get_k_data('150228', ktype='60')
 

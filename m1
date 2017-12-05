@@ -48,7 +48,7 @@ function fn_filter()                    { cat wireshark_filter ;}
 }
 
 function fn_python()                    { 
-                                          cat python_pip tushare
+                                          cat python_pip tushare tu.py
                                           cat python
                                           cat pycharm
 function fn_pydoc()                     { cat python_pydoc ;}

@@ -7,8 +7,6 @@
 # Linux 安装
 
 [在 Ubuntu 14.04.3 上安装 Python 3.5](https://plumz.me/archives/2333/)
-pip install numpy
-pip install matplotlib
 
 # unicode
 

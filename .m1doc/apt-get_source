@@ -1,3 +1,8 @@
+# 查看ubuntu版本
+
+uname -a
+lsb_release -a
+
 # apt-get
 
   [楚版本](https://en.wikipedia.org/wiki/Ubuntu_version_history)

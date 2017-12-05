@@ -1,3 +1,14 @@
+# ubuntu
+
+apt-get install python3
+
+# windows 1行多命令
+
+command1 & command2
+Use to separate multiple commands on one command line. Cmd.exe runs the first command, and then the second command.
+
+command1 && command2
+Use to run the command following && only if the command preceding the symbol is successful.
 
 # pip 配置文件
 
@@ -12,10 +23,15 @@ md5sum pip pip3                       *md5sum完全相同*
 
 **pip list**                          *查看已安装列表*
 
+pip install numpy
+pip install matplotlib
+
 pip install pymysql
 
 pip install lxml
 pip install requests
 pip install bs4
+pip install pandas
 pip install tushare
+pip install bokeh
 
