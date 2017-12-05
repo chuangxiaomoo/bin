@@ -759,7 +759,7 @@ function fn_Zhu_雄辩()                  { cat huawei_Zhu_雄辩 ;}
 function fn_Qi_领导管理人才()           { cat huawei_Qi_领导管理人才 ;}
 function fn_Qi_疾病()                   { cat huawei_Qi_疾病 ;}
 
-function fn_WiMax_meeting()             { cat huawei_WiMax_meeting meeting
+function fn_WiMax_meeting()             { cat meeting huawei_WiMax_meeting 
                                               7habit 8s_habit
                                               sanxing_2013
                                               sanxing_2013.team
