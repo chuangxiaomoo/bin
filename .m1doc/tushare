@@ -15,6 +15,9 @@ bar支持了主要证券品种（沪深股票、基金、期货、期权、港�
 
 ## 示例: tu.py
 
+ts.bar -> defination -> 修改源码：使用升序
+data.sort_index(ascending=True) # zhangj 
+
 # get_k_data()
 
 `get_hist_data()` 将成为历史
