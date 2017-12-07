@@ -1,7 +1,6 @@
 #! /bin/bash
 
-#
-  array=(1 2 3 4)
+  array=(1 2 3 4 5 6)
 
 
   echo ${array[3]}
@@ -17,6 +16,9 @@ a=('1 2 3'  '4 5 6'  '7 8 9')
 
 function fn_array_search()
 {
+  echo ${@:3:1}
+  echo ${@:3:4}
+  echo ${@:3}
   # echo ${array_2d[${j}]}
 
   # 此时b就相当于二维数组里面的一维数组了，然后可以再次遍历
@@ -24,5 +26,5 @@ function fn_array_search()
   # for j in "${b[@]}" ; do
 }
 
-fn_array_search "${a[@]}" 0 0
+fn_array_search "${array[@]}" 0 0
 

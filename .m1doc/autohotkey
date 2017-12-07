@@ -1,0 +1,20 @@
+
+# How to map right Alt to Context-Menu key
+
+You can use [Autohotkey](http://l.autohotkey.net/AutoHotkey_L_Install.exe).
+
+Download and install Autohotkey.
+
+When you Launch Autohotkey, it will asks you the following.
+
+To help you get started, would you like to create a sample script in the My Documents folder? Press YES to create and display the sample script.
+
+This will create a **AutoHotkey.ahk** file in your Documents Folder. Open AutoHotkey.ahk with notepad and add the following to the end of the file.
+
+> RAlt::Appskey
+
+Now run the script by opening the AutoHotkey.ahk file with the Autohotkey application you installed before.
+
+Now when you press the *right Alt key* you will see the ContextMenu
+
+
