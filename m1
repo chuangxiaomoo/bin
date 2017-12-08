@@ -736,6 +736,7 @@ function fn_sort()                      { cat cmd_sort ;}
 function fn_rar()                       { cat cmd_tar ;}
 function fn_tar()                       { cat cmd_tar ;}
 function fn_zip()                       { cat cmd_tar ;}
+function fn_openssl()                   { cat cmd_openssl ;}
 function fn_xargs()                     { cat cmd_xargs ;}
 function fn_sysv-rc-conf()              { cat cmd_rcconf ;}
 function fn_rcconf()                    { cat cmd_rcconf ;}
@@ -786,6 +787,7 @@ function fn_ps()                        { cat cmd_ps ;}
         tee
         tr
         tar
+        openssl
         top
         xargs
         zip

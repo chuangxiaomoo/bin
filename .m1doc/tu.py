@@ -50,6 +50,7 @@ df.head(5)
 df = ts.bar('BABA', conn=cons, asset='X', start_date='2016-01-01', end_date='')
 df.head(5)
 
+# __________________________________________________________________________
 # 1. 股票tick
 # type:买卖方向，0-买入 1-卖出 2-集合竞价成交
 # 数据里没有增加代码一列，如果有需要可以同多df[‘code’] = code实现
@@ -65,4 +66,9 @@ df.head(20)
 df = ts.moneyflow_hsgt()
 df.sort_values('date', ascending=False)
 
+
+# __________________________________________________________________________
+# broker {hb|ok|chbtc} 中国比特币兑换中心
+# ktype {D、W、M、1min、5min、15min、30min、60min}
+ts.coins_tick(broker='ok', code='btc', ktype='D', size='2000')
 

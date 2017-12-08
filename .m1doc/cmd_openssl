@@ -1,0 +1,30 @@
+# openssl enc & dec
+
+# 牢记使用 OpenSSL 的常规方式是：
+
+openssl command command-options arguments
+
+
+# 在 Linux 中加密文件
+
+要加密当前工作目录的内容(根据文件的大小，这可能需要一点时间)：
+
+> tar -P -zcf - _SRC_  | openssl enc -e -aes256 -out _DST_'
+
+
+alias .pyd='vi -d  /pycharm/candle.py ~/py/candle.py'
+
+上述命令的解释：
+enc     - openssl 命令使用加密进行编码
+-e      – 用来加密输入文件的 enc 命令选项，这里是指前一个 tar 命令的输出
+-aes256 – 加密用的算法
+-out    – 用于指定输出文件名的 enc 命令选项，这里文件名是 secured.tar.gz
+
+# 在 Linux 中解密文件
+
+> openssl enc -d -aes256 -in _DST_ | tar zxvfP -'
+
+上述命令的解释：
+-d – 用于解密文件
+-C – 提取内容到 test 子目录
+
