@@ -41,6 +41,7 @@ function fn_main()
         '*.xx'
         # include
         '*.hh'
+        '*.hpp'
         '*.inc'
     )
 
