@@ -310,17 +310,20 @@ function fn_table_to_file()
 
 function fn_xRDdb()
 {
-    if [ "$1" = "--keep.PWR" ] || [ "$1" = "-k" ]; then
-        echo "keep $p_sbin/full.PWR"
-    else
-        echo "ln -sf /dzh2/Download/PWR/full.PWR $p_sbin"
-        ( cd $p_sbin && ln -sf /dzh2/Download/PWR/full.PWR )
-        xt_ret $? "" || return $?
+    if [ "$1" = "--up.PWR" ] || [ "$1" = "-u" ]; then
+        wget http://filedown.gw.com.cn/download/PWR/full_sz.PWR -O /dzh2/Download/PWR/full_sz.PWR
+        wget http://filedown.gw.com.cn/download/PWR/full_sh.PWR -O /dzh2/Download/PWR/full_sh.PWR
     fi
 
     [ ! -f "$p_sbin/xRD" ] && echo "xRD not exist" && exit
+
     cd $p_sbin
-    ./xRD | sort -r -k2 > ${chao}.xRD.list
+    echo ln -sf /dzh2/Download/PWR/full_sh.PWR full.PWR
+         ln -sf /dzh2/Download/PWR/full_sh.PWR full.PWR
+         ./xRD | grep -E "(^6)"    | sort -r -k2 >  ${chao}.xRD.list
+    echo ln -sf /dzh2/Download/PWR/full_sz.PWR full.PWR
+         ln -sf /dzh2/Download/PWR/full_sz.PWR full.PWR
+         ./xRD | grep -E "(^3|^0)" | sort -r -k2 >> ${chao}.xRD.list
 
     echo "
     DROP TABLE IF EXISTS xRD;
@@ -1812,7 +1815,7 @@ function fn_main()
     "del_hexun_day                      # 删除大盘日线，防止冲突"
     "redo_hexun_day                     # 重做大盘日线数据"
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
-    "xRDdb [--keep.PWR -k]              # --- 使用当前除权数据 --keep.PWR"
+    "xRDdb [--up.PWR -u]                # --- wget升级除权数据 ---"
     "file_to_table {code...|file}       # 写file到表{TBL:-zxg}，并......ZXG.BLK...."
     "table_to_file {table:-chao}        # 添加表{table:-chao}到/tmp/zxg"
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------

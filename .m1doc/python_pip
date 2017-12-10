@@ -1,5 +1,11 @@
 # ubuntu
 
+# Windows 安装
+
+# Linux 安装 
+
+**12.04 install 3.5 需要自己找源的**
+[在 Ubuntu 14.04.3 上安装 Python 3.5](https://plumz.me/archives/2333/)
 apt-get install python3
 
 # windows 1行多命令

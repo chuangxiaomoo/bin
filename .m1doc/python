@@ -1,12 +1,8 @@
 #! /usr/bin/python
 
+python 安装参见 python_pip
+
 # 编码.Unicode.UTF-8
-
-# Windows 安装
-
-# Linux 安装
-
-[在 Ubuntu 14.04.3 上安装 Python 3.5](https://plumz.me/archives/2333/)
 
 # unicode
 
@@ -341,55 +337,27 @@ plt.show()
 plt.savefig('/winc/out.png')            # 支持的格式: eps, pdf, pgf, png, ps, raw, rgba, svg, svgz（注意不支持jpg格式）： 
                                         # [matplotlib绘图总结](http://whuhan2013.github.io/blog/2016/09/16/python-matplotlib-learn/)
 
-# pandas.DataFrame (create, select, add, del)
 
-```markdown
-[创建，索引，增添，删除](http://blog.csdn.net/maliang_1993/article/details/50907983)
-pd.DataFrame 实现类似数据库的功能
 
-[](https://stackoverflow.com/questions/36723684/purpose-of-columndatasource-in-bokeh)
-bokeh.ColumnDataSource()
-```
+# type instance compare
 
-import pandas as pd
+use isinstance(v, type_name) or type(v) is type_name or type(v) == type_name,
 
-aa={'one':[1,2,3],'two':[2,3,4],'three':[3,4,5]}
-bb=pd.DataFrame(aa)                                 # 创建表 bb
+where type_name can be one of the following:
 
-print(bb.three)                                     # SELECT id,three FROM bb
-print("_________")
-print(bb.three[bb.one>2])                           # SELECT id,three FROM bb WHERE one>2;
+None
+bool
+int
+float
+complex
+str
+list
+tuple
+set
+dict
 
-0    3
-1    4
-2    5
-Name: three, dtype: int64
-_________
-2    5
-Name: three, dtype: int64
+If you want to print the class use print(v.__class__.__name__)
 
-# pandas.DataFrame index.SELECT.UPDATE (最重要的功能，没有之一)
-
-# 1. faster
-
-df.get_value(0, 'close') 
-df.set_value(0, 'close', val) 
-
-# 2. slower
-
-print(df.xs(0)['close'])                            # .160 - .153
-print(df.iloc[:1,1:2])
-
-# 3. 多条件联合查询
-# SELECT * FROM df WHERE column1 = 'a' OR column2 = 'b' OR column3 = 'c' etc...
-foo = df.ix[(df['column1']==value) | (df['columns2'] == 'b') | (df['column3'] == 'c')]
-
-# 4. http://pandas-docs.github.io/pandas-docs-travis/indexing.html#multiindex-query-syntax
-df.query('(a < b) & (b < c)')
-df.query('a in b and c < d')
-df[df.b.isin(df.a) & (df.c < df.d)]
-
-# 5. 切片后reset_index
-df_fb=df[3:7].reset_index(drop=1)                   # drop=1 删除原有index
-print(df_fb)
+More generally: You can compare if two instances have the same class by using 
+type(v) is type(other_v) or isinstance(v, other_v.__class__).
 

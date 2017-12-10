@@ -1,0 +1,54 @@
+#! /usr/bin/python
+
+# pandas.DataFrame (create, select, add, del)
+
+```markdown
+[创建，索引，增添，删除](http://blog.csdn.net/maliang_1993/article/details/50907983)
+pd.DataFrame 实现类似数据库的功能
+
+[](https://stackoverflow.com/questions/36723684/purpose-of-columndatasource-in-bokeh)
+bokeh.ColumnDataSource()
+```
+
+import pandas as pd
+
+aa={'one':[1,2,3],'two':[2,3,4],'three':[3,4,5]}
+bb=pd.DataFrame(aa)                                 # 创建表 bb
+
+print(bb.three)                                     # SELECT id,three FROM bb
+print("_________")
+print(bb.three[bb.one>2])                           # SELECT id,three FROM bb WHERE one>2;
+
+0    3
+1    4
+2    5
+Name: three, dtype: int64
+_________
+2    5
+Name: three, dtype: int64
+
+# pandas.DataFrame index.SELECT.UPDATE (最重要的功能，没有之一)
+
+# 1. faster
+
+df.get_value(0, 'close') 
+df.set_value(0, 'close', val) 
+
+# 2. slower
+
+print(df.xs(0)['close'])                            # .160 - .153
+print(df.iloc[:1,1:2])
+
+# 3. 多条件联合查询
+# SELECT * FROM df WHERE column1 = 'a' OR column2 = 'b' OR column3 = 'c' etc...
+foo = df.ix[(df['column1']==value) | (df['columns2'] == 'b') | (df['column3'] == 'c')]
+
+# 4. http://pandas-docs.github.io/pandas-docs-travis/indexing.html#multiindex-query-syntax
+df.query('(a < b) & (b < c)')
+df.query('a in b and c < d')
+df[df.b.isin(df.a) & (df.c < df.d)]
+
+# 5. 切片后reset_index
+df_fb=df[3:7].reset_index(drop=1)                   # drop=1 删除原有index
+print(df_fb)
+

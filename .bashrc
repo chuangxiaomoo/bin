@@ -65,7 +65,6 @@ alias  .irc='vi ~/.bashrc +; . ~/.bashrc'
 alias  .mor='~/bin/stk/up morningcall'
 alias    .u='vi /tmp/kts/chao.u'
 #lias   .ps='PS1="[\w]\n\u-> \[\033[0m\]"'
-alias   .py='cp /pycharm/candle.py ~/bin/.btc/'
 
 alias .de_beep="echo 0 >/tmp/kts/chao.beep"
 alias .en_beep="echo 1 >/tmp/kts/chao.beep"
@@ -330,6 +329,6 @@ export LESS_TERMCAP_us=$'\E[01;32m'
 export TOV5=0
 
 # 
-export PATH=~/bin:$PATH
+export PATH=~/bin/stk:~/bin:$PATH
 export CDPATH=.:~:/home
 export SVN_EDITOR=vim
