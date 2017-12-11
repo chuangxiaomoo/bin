@@ -60,6 +60,8 @@ alias .DEBUG="let 'DEBUG=!DEBUG'; echo \$DEBUG; export DEBUG"
 #lias    .n='. /opt/nxpbash'
 alias    .s='cd ~/bin'
 alias    .k='cd ~/bin/stk'
+alias    .ki='grep -q "/root/bin/stk:" <<<"$PATH" || export PATH="/root/bin/stk:$PATH"'
+alias    .ko='grep -q "/root/bin/stk:" <<<"$PATH" && export PATH=`sed "s#/root/bin/stk:##g" <<< "$PATH"`'
 alias   .rc='.  ~/.bashrc'
 alias  .irc='vi ~/.bashrc +; . ~/.bashrc'
 alias  .mor='~/bin/stk/up morningcall'
@@ -329,6 +331,7 @@ export LESS_TERMCAP_us=$'\E[01;32m'
 export TOV5=0
 
 # 
-export PATH=~/bin/stk:~/bin:$PATH
+grep -q "/root/bin:" <<< "${PATH}" || export PATH=/root/bin:$PATH
+
 export CDPATH=.:~:/home
 export SVN_EDITOR=vim
