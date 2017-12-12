@@ -1,6 +1,6 @@
 #! /bin/sh
 
-IPC=${IPC:-127.0.0.1}
+IPC=${IPC:-192.168.2.100}
 
 if [ -z "$1" ]; then
     echo "list" | nc ${IPC} 9999 | sed -e 's/;/\n/g' -e 's/.*ccess]/____:\n/g' | sort
