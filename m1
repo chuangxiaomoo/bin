@@ -431,6 +431,7 @@ function fn_C调用C++链接库()            { cat clang_C调用C++链接库 ;}
 function fn_cdecl()                     { cat clang_cdecl
                                           cat clang_array ;}
 function fn_const()                     { cat clang_const ;}
+function fn_dup2()                      { cat clang_dup2 ;}
 function fn_extern()                    { cat clang_extern ;}
 function fn_operator_predcedence()      { cat clang_operator_predcedence ;}
 function fn_string()                    { cat clang_string ;}
@@ -475,6 +476,7 @@ function fn_nonblock()                  { cat clang_nonblock ;}
         const
         extern
         bit
+        dup2
         operator_predcedence
         pointer                 # 指针 
         callback                # 注册加回调指针实现多态or重载

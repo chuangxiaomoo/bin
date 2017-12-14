@@ -1686,10 +1686,6 @@ Don't know what is stupid or lazy chenkai doing now? 我花了一个晚上重新
 1 dana跨天录像，使用一个大小为2的static结构体数组，比用把static封装在函数里能更快实现。
 2 8M.nvr每1个小时重启跟踪，修改多了扯着蛋，函数重载：overloaded function with no contextual type information
 
-# 2017-12-08 面试只要两个问题就够了？
-1 行走江湖，你有什么作品&手艺？
-2 人生至今，你遇到的最大困难是什么？又是如何克服的？
-
 # 2017-12-12 让客户自己认识到
 
 CLOUD ST DEMO, 客户花了钱，当然要给Demo，如此才让客户有花钱值当。

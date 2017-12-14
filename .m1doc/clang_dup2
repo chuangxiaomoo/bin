@@ -1,0 +1,84 @@
+# dup2
+
+[使用 dup & dup2](~/.flowchar/.warehouse/save_stdout/save_stdout.c)
+
+# C restore stdout to terminal
+
+```cpp
+
+#include <unistd.h>
+
+void toggle_redirect()
+{
+    static int is_stdio = TRUE;
+    static int saved_stdout = -1;
+    static int saved_stderr = -1;
+    static FILE *retp = NULL;
+
+    if (is_stdio) {
+
+        UtilSystemCmd("tar -zcf /tmp/messages.dot.tgz /tmp/messages.dot");
+        saved_stdout = dup(fileno(stdout));
+        retp = freopen("/tmp/messages.dot", "w+", stdout);
+
+        if (!retp) {
+            DBG("fail ret@ %p\n", retp);
+            return;
+        }
+
+        if (-1 == dup2(fileno(stdout), fileno(stderr))) {
+            DBG("errno %d: %s\n", errno, strerror(errno));
+        }
+
+        setvbuf(stdout, (char *)NULL, _IONBF, 0);
+        setvbuf(stderr, (char *)NULL, _IONBF, 0);
+
+        SYSLOG("____________ redirect stdout[%d] err[%d] ___________\n", saved_stdout, saved_stderr);
+        is_stdio = FALSE;
+    } else {
+        FILE *out = stdout;
+        stderr = stdout = fdopen(saved_stdout, "w");  /* fdopen assign twice, and fclose once, 防止fd泄露 */
+
+        SYSLOG("____________ out [%p %p] stdout %p stderr %p ___________\n", out, retp, stdout, stderr);
+
+        fclose(retp);  
+
+        SYSLOG("____________ re-redirect stdout ___________\n");
+        is_stdio = TRUE;
+    }
+}
+
+int main() 
+{
+    ...
+
+    int saved_stdout;
+
+    ...
+
+    /* Save current stdout for use later */
+    saved_stdout = dup(1);
+    dup2(my_temporary_stdout_fd, 1);
+
+    ... do some work on your new stdout ...
+
+    /* Restore stdout */
+    dup2(saved_stdout, 1);
+    close(saved_stdout);
+}
+
+```
+
+# How to redirect output of an already running process [duplicate]
+
+You can also do it using [reredirect ](https://github.com/jerome-pouiller/reredirect/).
+
+reredirect -m FILE PID
+
+# Bobo's method
+
+1 setid
+2 ps | grep bash
+3 ps | grep jco
+4 exec              进行连接
+
