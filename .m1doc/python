@@ -361,3 +361,50 @@ If you want to print the class use print(v.__class__.__name__)
 More generally: You can compare if two instances have the same class by using 
 type(v) is type(other_v) or isinstance(v, other_v.__class__).
 
+# type convert
+
+ 1 函数                    描述
+ 2 int(x [,base ])         将x转换为一个整数
+ 3 long(x [,base ])        将x转换为一个长整数
+ 4 float(x )               将x转换到一个浮点数
+ 5 complex(real [,imag ])  创建一个复数
+ 6 str(x )                 将对象 x 转换为字符串
+ 7 repr(x )                将对象 x 转换为表达式字符串
+ 8 eval(str )              用来计算在字符串中的有效Python表达式,并返回一个对象
+ 9 tuple(s )               将序列 s 转换为一个元组
+10 list(s )                将序列 s 转换为一个列表
+11 chr(x )                 将一个整数转换为一个字符
+12 unichr(x )              将一个整数转换为Unicode字符
+13 ord(x )                 将一个字符转换为它的整数值
+14 hex(x )                 将一个整数转换为一个十六进制字符串
+15 oct(x )                 将一个整数转换为一个八进制字符串
+
+# 数值操作
+
+ 代码
+ 1 x << y                  左移
+ 2 x >> y                  右移
+ 3 x & y                   按位与
+ 4 x | y                   按位或
+ 5 x ^ y                   按位异或 (exclusive or)
+ 6 ~x                      按位翻转
+ 7 x + y                   加
+ 8 x - y                   减
+ 9 x * y                   乘
+10 x / y                   常规除
+11 x // y                  地板除
+12 x ** y                  乘方 (xy )
+13 x % y                   取模 (x mod y )
+14 -x                      改变操作数的符号位
+15 +x                      什么也不做
+16 ~x                      ~x=-(x+1)
+17 abs(x )                 绝对值
+18 divmod(x ,y )           返回 (int(x / y ), x % y )
+19 pow(x ,y [,modulo ])    返回 (x ** y ) x % modulo
+20 round(x ,[n])           四舍五入，n为小数点位数
+21 x < y                   小于
+22 x > y                   大于
+23 x == y                  等于
+24 x != y                  不等于(与<>相同)
+25 x >= y                  大于等于
+26 x <= y                  小于等于

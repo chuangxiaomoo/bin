@@ -52,3 +52,21 @@ df[df.b.isin(df.a) & (df.c < df.d)]
 df_fb=df[3:7].reset_index(drop=1)                   # drop=1 删除原有index
 print(df_fb)
 
+# 初始化指定dtype
+
+[](https://stackoverflow.com/questions/25610592/how-to-set-dtypes-by-column-in-pandas-dataframe)
+
+df = pd.DataFrame({'A':pd.Series([1,2,3], dtype='int'),
+                   'B':pd.Series([7,8,9], dtype='float')})
+
+print (df)
+A  B
+0  1  7.0
+1  2  8.0
+2  3  9.0
+
+print (df.dtypes)
+A     int32
+B    float64
+dtype: object
+
