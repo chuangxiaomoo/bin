@@ -1,0 +1,37 @@
+# 常用句式
+
+what
+why
+how to figure out
+
+# English sentence 的
+
+看不懂英文时使用“的”
+
+# how-to-tell-which-interface-the-socket-received-the-message-from
+
+双网卡dhcpd使用不同网段
+[](http://stackoverflow.com/questions/603577/how-to-tell-which-interface-the-socket-received-the-message-from)
+[识别路由目的IP地址](http://www.cnblogs.com/kissazi2/p/3158603.html)
+
+# how-to Insert a new full-width buffer underneath two vertically split buffers
+
+Start here:
+
+|---|---|
+|   |   |
+|   |   |
+|   |   |
+|---|---|
+
+End up here:
+
+|---|---|
+|   |   |
+|---|---|
+|       |
+|-------|
+
+:bot sp
+
+#
