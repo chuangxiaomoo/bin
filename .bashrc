@@ -120,6 +120,7 @@ alias    vz='vi -R ~/bin/stk/.account.md'
 alias  v.fc='vi -R ~/.flowchar/main.i'
 
 alias vimdiff='vimdiff "+call Diff_enter()"'
+alias      vd='vimdiff "+call Diff_enter()"'
 
 alias w3mdump='/usr/bin/w3m -dump -cols 10000'      # 82时的实际宽度是80
 
