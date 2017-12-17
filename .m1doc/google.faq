@@ -34,4 +34,8 @@ End up here:
 
 :bot sp
 
-#
+# pandas.DataFrame 添加保持数据dtype的新行
+
+how to add one row in a pandas.DataFrame
+append pandas dataframe automatically cast as float but want int
+

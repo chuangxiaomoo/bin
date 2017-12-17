@@ -279,9 +279,6 @@ function git_diff() {
     git diff --no-ext-diff -w "$@" | vim -R –
 }
 
-#orgpath() { export PATH=$ORGPATH; }
-#monpath() { export PATH=$MONPATH; }
-
 .tar() 
 {
     [ "$#" -ne 2 ] && echo "Usage: .tar -zxvf file.tgz" && return
@@ -301,7 +298,6 @@ function git_diff() {
 
 .nb.2015()
 {
-    # alias  .ma60="let 'WMA=!WMA'; echo \$WMA; export WMA"
     nb_2015=`cat /tmp/kts/2015 2>/dev/null`
     let 'nb_2015=!nb_2015'
     echo "${nb_2015} -> /tmp/kts/2015"
@@ -318,20 +314,3 @@ cpv2()  { mkdir -p /winc/Export/com/v2; cp /winc/Export/com/*.{ffw,tgz} /winc/Ex
 nctar() { file=`ls release/tar/*.tgz`;  nc $1 8006 < $file ;}
 nc1234(){ make i;  nc $1 1234 < main/jco_server ;}
 
-# manpage color
-export LESS_TERMCAP_mb=$'\E[01;31m'
-export LESS_TERMCAP_md=$'\E[01;31m'
-export LESS_TERMCAP_me=$'\E[0m'
-export LESS_TERMCAP_se=$'\E[0m'
-export LESS_TERMCAP_so=$'\E[01;44;33m'
-export LESS_TERMCAP_ue=$'\E[0m'
-export LESS_TERMCAP_us=$'\E[01;32m'
-
-# kts variable
-export TOV5=0
-
-# 
-grep -q "/root/bin:" <<< "${PATH}" || export PATH=/root/bin:$PATH
-
-export CDPATH=.:~:/home
-export SVN_EDITOR=vim

@@ -22,6 +22,8 @@ tar
 
     高级应用（可以单独抽取压缩包个的某几个文件）
 
+    tar -zxvf <tar filename> <file you want to extract>
+
     tar [options] a.tar.gz
         filename1 [ filename2, ... filenameN ]
         directory1 [ directory2, ...directoryN ]

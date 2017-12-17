@@ -1,26 +1,33 @@
 bin
 ===
 
-frequently-linux-useful-script
-
-The project include 2 part. 
+Frequently-linux-useful-script, and the project include 2 part. 
 
 ## part 1
 
-  simple geek bash scripts
+Simple geek bash scripts
 
 ## part 2
 
-  Stock system, get free data vai `w3m -dump` and load the data into mysql.
+Stock system of China, get free data vai `w3m -dump` and load the data into mysql.
 
 
 ## Installation
 
-  1. add fullpath(mine is ~/bin) of bin to PATH, and add below in ~/.bashrc
-     `export PATH=$PATH:~/bin`
+1. links 
 
-  2. ln -sf ~/bin/common.rc /etc/common.rc
+ln -sf ~/.vim/.vimrc ~/.vimrc
+ln -sf ~/bin/common.rc /etc/common.rc
+ln -sf ~/bin/.awdr ~/.awdr
 
+2. append below code block ~/.bashrc
+`
+. ~/bin/.bashrc
+. ~/bin/.export
+. ~/bin/.bind
+`
+3. alternative install
 
-## contents
+[](+/Decrypt ~/py/README.md)
+openssl enc -d -aes128 -in Encrypt.bz2 | tar jxvfP - ~/py/README.md
 
