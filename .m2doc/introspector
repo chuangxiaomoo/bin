@@ -19,6 +19,11 @@
 3 WiFi带宽提高3倍
 4 lzbox+toggle调试方法
 
+# 2017-03-01 失败的项目
+
+1 **君正Wifi.Bridge**，感知差异的能力：quick start guide for starting soft-ap or station in bridge mode
+2 以search服务来组织一个心跳网络，并考虑以**去中心化**的形式组网
+
 # 2017-03-08 无光敏IRCUT切换算法
 
 1 目标并不清晰()，时间过长，并没有及时沟通。
@@ -632,6 +637,8 @@ chmod = svn ps svn.executable on FILES...
 > 贺涵听到之后，告诉子君态度要平和，不发泄不指责，她和陈俊生就永远欠你的！这是第三条。
 
 子君冷静下来照做，话也说的非常到位。
+
+about someone resign, keep silence.
 
 # 2017-05-07 权威的重新获得 vs 个人价值观
 
@@ -1690,30 +1697,18 @@ Don't know what is stupid or lazy chenkai doing now? 我花了一个晚上重新
 
 CLOUD ST DEMO, 客户花了钱，当然要给Demo，如此才让客户有花钱值当。
 
-# todo
+# 2017-12-19 情绪
+
+300W Floating point exception，在被投诉时，嘴唇哆嗦，开始语无伦次了。**越是弱小之人越是情绪大波动**
+
+# todo keyword: 影响力 情绪
 
 必须接受这个现实：未知永远存在。而后只能开始不断地尝试着去适应“在未知中不断前行”。
 应对未知的焦虑，一个相对有效的解决策略是：有问题解决不了时，暂时先把它记下来，而后继续前行。
+[小摩基本法](基于区块链接记账方式 + 原则演化方案 + 资本.决策者需要投钱 + idea + 加权算法)
 
-0 Python财经数据接口包TuShare的使用
-  [小摩基本法](基于区块链接记账方式 + 原则演化方案 + 资本.决策者需要投钱 + idea + 加权算法)
-1 音频是学习流的一个入口，一定要好好把握
-  [语音产品测试-宾峥](https://wenku.baidu.com/view/8133ef12a21614791711280b.html)
-  [java.ioctl.FIONREAD](http://bbs.csdn.net/topics/280032003)
-  jzzz.audio.shmcache.8k
-2 提示音很复杂，总结为何反复。模仿，并不丢人。
-3 newbie整理
-5 成为一个什么样的人？判断自己的价值？个人价值的护城河？
-6 about someone resign, keep silence.
-7 ~/fc/stream_降噪与回声消除.u
-8 keyword: 影响力 情绪
-9 [赵思家.科学使用大脑指南](https://sanwen8.cn/p/35cQxOc.html)
-0 感知差异的能力：quick start guide for starting soft-ap or station in bridge mode
-2 以search服务来组织一个心跳网络，并考虑以**去中心化**的形式组网
-3 记录darkest，在频切时.快速切换及阈值切换中 multipler dark_x
-5 重读 Beyond-Feelings，并写作笔记
+1 成为一个什么样的人？判断自己的价值？个人价值的护城河？
+2 [赵思家.科学使用大脑指南](https://sanwen8.cn/p/35cQxOc.html)
+3 重读 Beyond-Feelings，并写作笔记
   所谓“批判性思考”，即“评估想法”的过程(process of evaluating ideas)，想法多牵及价值观。
   “批判性思考”的误解，是过程而非结果，过程即机制、机器、算法、流程。
-6 [庄子.齐物论.讲演录.牟宗三](http://www.360doc.com/content/12/1116/02/1720781_248203359.shtml)
-  [台大.公开课.金嘉锡](http://open.sina.com.cn/course/id_502/lesson_5174/)
-

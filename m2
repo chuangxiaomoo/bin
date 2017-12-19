@@ -101,7 +101,9 @@ function fn_2018_plan()                 { cat annual_2018_plan ;}
 #
 function fn_book()                      {
 function fn_cept()                      { cat book_cept ;}
-function fn_laozi()                     { cat book_laozi ;}
+function fn_laozi()                     { cat book_laozi 
+                                          cat book_zhuangzi;
+                                          ;}
 function fn_sunzi()                     { cat book_sunzi;
                                           cat arch_sunzi ;}
 function fn_liutao()                    { cat book_liutao ;}

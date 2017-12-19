@@ -2,6 +2,12 @@
 
 # Windows 安装
 
+# 源码安装
+
+cd /opt/src/test/
+wget https://www.python.org/ftp/python/3.5.0/Python-3.5.0.tgz
+tar xzvf Python-3.5.0.tgz; cd Python-3.5.0; ./configure --enable-optimizations; make; make install
+
 # Linux 安装 
 
 **12.04 install 3.5 需要自己找源的**
@@ -31,9 +37,7 @@ md5sum pip pip3                       *md5sum完全相同*
 
 pip install numpy
 pip install matplotlib
-
 pip install pymysql
-
 pip install lxml
 pip install requests
 pip install bs4

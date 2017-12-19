@@ -24,6 +24,10 @@
   sudo apt-get remove apache2
   sudo apt-get autoremove
 
+  **remove python3.2**
+  apt-get remove python3
+  apt-get autoremove
+
 # cache
 
   apt-get所缓存的deb安装包,保存在如下目录: 

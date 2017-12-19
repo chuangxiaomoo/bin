@@ -308,6 +308,29 @@ fd=open('./env.sh', 'r+')               # will not truncate, and if write will f
 fd=open('./env.sh', 'a+')               # will not truncate, and if write will append to the end 
 print fd.readline()
 
+# with 清单 1. 读取并分割
+
+with open(r'txt') as f:
+    line=f.readline()
+    print(line.split('(')[1].split(')')[0])
+print(pd.to_datetime("15:30:00") - pd.to_datetime("15:15:00"))
+
+# with 清单 2. 使用 with 语句操作文件对象
+
+with open(r'somefileName') as somefile:
+    for line in somefile:
+        print line
+        # ...more code 使用了 with 语句，不管在处理文件过程中是否发生异常，都能保证 with 语句执行完毕后已经关闭了打开的文件句柄。
+
+# with 清单 3. try/finally 方式操作文件对象
+
+somefile = open(r'somefileName')
+try:
+    for line in somefile:
+        print line
+        # ...more code
+finally:
+    somefile.close()
 
 # json
 
