@@ -89,7 +89,9 @@
     echo.
 
     :: 不打印\r\n
-    echo|set /p="xkcd %devkey%" | netcat.exe %ipcip% 9999
+    :: nc 最短要1s才能退出，可以自己写一个只发一行的小程序 
+    :: [znc](https://eternallybored.org/misc/netcat/netcat-win32-1.11.zip)
+    echo|set /p="xkcd %devkey%" | netcat.exe -w1 %ipcip% 9999
 
     :: Display TIME, whithout a <CR>
     ECHO.|TIME
