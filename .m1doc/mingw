@@ -1,0 +1,9 @@
+# mingw
+
+1 cygwin 中编译的 .exe 不可以脱离 cygwin 环境运行
+ 
+2 mingw 编译的 .exe 完全可以脱离 mingw 运行
+
+3 mingw socket 编程时使用 windows 的 socket 库，winsock 非 posix 兼容
+  [znc.exe](clang_winsock.c)
+	gcc -o znc client.c -L"D:\Mingw\lib" -lws2_32

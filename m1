@@ -853,9 +853,8 @@ function fn_qmacro()                    { cat win_qmacro ;}
     fn_print $@
 }
 
-function fn_msys()                      { cat msys ;}
 function fn_cygwin()                    {
-function fn_install()                   { cat cygwin_install ;}
+function fn_install()                   { cat cygwin_install mingw ;}
 function fn_config()                    { cat cygwin_config ;}
     local opts=(
         install
