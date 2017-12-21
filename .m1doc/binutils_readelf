@@ -22,5 +22,23 @@
     Number of section headers:         41
     Section header string table index: 38
 
-## 
+## 查看交叉编译器gcc信息
+
+> objdump -s --section .comment libdana_video_plus.a:
+
+In archive libdana_video_plus.a:
+
+danale_obj1:     file format elf32-little
+
+Contents of section .comment:
+ 0000 00474343 3a202849 6e67656e 69632072  .GCC: (**Ingenic** r
+ 0010 322e332e 33203230 31362e31 32292034  2.3.3 2016.12) 4
+ 0020 2e372e32 00                          .7.2.
+
+> readelf -p .comment libdana_video_plus.a | head -20
+
+File: libdana_video_plus.a(danale_obj1)
+
+String dump of section '.comment':
+  [     1]()GCC: (Ingenic r2.3.3 2016.12) 4.7.2
 
