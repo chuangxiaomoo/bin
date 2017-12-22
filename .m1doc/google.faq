@@ -48,3 +48,8 @@ Hover ToolTips at fixed position
 Does PY2EXE Compile a Python Code to run Faster?
 
 
+# Windows equivalent to UNIX “time” command 
+
+[](https://superuser.com/questions/228056/windows-equivalent-to-unix-time-command)
+ptime 1.0 - Accurately measure program execution time
+
