@@ -181,3 +181,9 @@
 
     :: 标签 eof 比较特殊，其后的任何命令都不会执行
 
+(9) ^  Escape character 转义特殊字符 相当于Linux‘\’
+    []('https://ss64.com/nt/syntax-esc.html')
+    e.g.  ^\  ^&  ^|  ^>  ^<  ^^
+    e.g.  结尾^可以转义换行符
+
+(a) %% 转义 %

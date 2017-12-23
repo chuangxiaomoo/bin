@@ -1170,6 +1170,7 @@ function fn_main() {
         analogy_cept
         misc_cept
         Arts_cept
+        1111
         TAO                             # 存在的属性
     )
     fn_print $@
