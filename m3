@@ -13,6 +13,8 @@ article_001_关于如何准备一场演讲的清单
 xsdx_lesson_1
 xsdx_lesson_2
 
+writing_1st_principle
+
 xiaolai_写作课文字实录01
 xiaolai_写作课文字实录02
 xiaolai_写作课文字实录03
@@ -30,7 +32,6 @@ collect_algorithme_算法
 # write.技巧
 
 writing_analogy.类比
-writing_1st_principle
 writing_format_XiaoLai
 writing_万能句式
 

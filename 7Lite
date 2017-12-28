@@ -677,6 +677,13 @@ function fn_etc()
     return $?
 }
 
+function fn_pyx()
+{
+    echo "
+    openssl enc -d -aes${1:-128} -in ~/.vim/.ch/candle.pyc | tar ${2:-z}xvfP -'
+    "
+}
+
 function fn_sortf()
 {
     find -type f | xargs ls -lk > ${SHMPATH}/cache
@@ -735,6 +742,7 @@ function fn_main()
     "epoch_2_ymdhms         # 换行时间格式"
     "flowchar               # create .flowchar"
     "etc                    # backup etc"
+    "pyx                    # pyc extract"
     "txt2markdow            # 给章节打上#"
     )
 

@@ -152,7 +152,11 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               book_xs_reborn-every-7-years.md
                                               book_mao
                                               Multitask
-                                              problem_solving problem_Formula
+                                              problem_solving
+                                              problem_Formula
+                                              problem_X-Y           # 问题分类
+                                              problem_ask_question  # sometimes，问题产生源自问问题的方式
+                                              problem_present       # 回归问题本身
                                               TIME
                                               FeynmanTechnique
                                               xiaolai_cept
@@ -295,18 +299,6 @@ function fn_03_沟通_communication()     { cat howto_03_沟通
         01_提高逻辑思维能力
         02_训练思维的深度和缜密度
         03_沟通_communication
-    )
-    fn_print $@
-}
-
-function fn_problem()                   {
-function fn_X-Y()                       { cat problem_X-Y ;}
-function fn_ask_question()              { cat problem_ask_question ;}
-function fn_present()                   { cat problem_present ;}
-    local opts=(
-        X-Y                             # 问题分类
-        ask_question                    # sometimes，问题产生源自问问题的方式
-        present                         # 回归问题本身
     )
     fn_print $@
 }
@@ -1133,7 +1125,6 @@ function fn_main() {
         sbfm                            # 上兵伐谋
         music
         personage
-        problem                         # 问题
         prof                            # professionalism 专业主义 职业化
         stevejobs
         socrates                        # Socrates 苏格拉底 诘问
