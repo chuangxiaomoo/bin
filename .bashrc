@@ -171,6 +171,15 @@ lwd() { wd_file=~/.awd${1}
     done
 }
 
+alias .latest='cd `ls | tail -1`'
+
+.base() 
+{
+    test -e ../filesys/filesys_enhanced && echo "enhanced exit" && return
+    cd ../filesys/ 
+    ln -sf filesys_base filesys_enhanced
+}
+
 .Clang_x86() 
 {
     # when $1 f, force create
