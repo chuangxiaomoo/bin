@@ -79,7 +79,8 @@ int main()
 
 . GDB coredump
 
-    gdb -c corefile elffile     
+    []("https://www.cnblogs.com/banwhui/p/5192592.html")
+    gdb -c corefile elffile
 
     This GDB was configured as "armv5tl-montavista-linux-gnueabi"...
     Using host libthread_db library "/lib/libthread_db.so.1".

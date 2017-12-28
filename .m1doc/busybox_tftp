@@ -6,6 +6,7 @@
     #
 
     get
+        tftp -gr  REMOTE_FILE -l LOCAL_SAVEPATH HOST
         tftp -r   <REMOTE_FILE>  -g ${ubt}
         tftp -r   modi_uboot_env -g ${ubt}
 
@@ -16,5 +17,5 @@
 
     EXAMPLE
 
-        tftp -r feed.sh -g ${ubt}; chmod +x feed.sh; # /root/sh/tools/feed.sh
+        tftp -gr feed.sh -l /tmp/feed.sh ${ubt:-192.168.2.248}
     "
