@@ -73,7 +73,7 @@ function fn_2013_plan()                 { cat annual_2013_plan annual_2013_event
 function fn_2014_plan()                 { cat annual_2014_plan annual_2014_event annual_2014_report;}
 function fn_2015_plan()                 { cat annual_2015_plan annual_2015_event annual_2015_report;}
 function fn_2016_plan()                 { cat annual_2016_plan annual_2016_event annual_2016_report annual_2016_ljsw  ;}
-function fn_2017_plan()                 { cat annual_2017_plan annual_2017_event ;}
+function fn_2017_plan()                 { cat annual_2017_plan annual_2017_event annual_2017_report;}
 function fn_2018_plan()                 { cat annual_2018_plan ;}
     local opts=(
         plan_what                       # 基于`以终为始`的理念

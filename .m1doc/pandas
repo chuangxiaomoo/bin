@@ -1,5 +1,8 @@
 #! /usr/bin/python
 
+df.get_value set_value 比 at iat 快近一倍。
+使用 pip3 list show pandas 安装路径，再用 grep 搜索即可得
+
 # pandas.DataFrame (create, select, add, del)
 
 ```markdown
@@ -28,16 +31,6 @@ _________
 Name: three, dtype: int64
 
 # pandas.DataFrame index.SELECT.UPDATE (最重要的功能，没有之一)
-
-# 1. faster
-
-df.get_value(0, 'close') 
-df.set_value(0, 'close', val) 
-
-# 2. slower
-
-print(df.xs(0)['close'])                            # .160 - .153
-print(df.iloc[:1,1:2])
 
 # 3. 多条件联合查询
 # SELECT * FROM df WHERE column1 = 'a' OR column2 = 'b' OR column3 = 'c' etc...
