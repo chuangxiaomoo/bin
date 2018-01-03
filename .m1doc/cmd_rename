@@ -1,0 +1,8 @@
+# rename
+
+    rename 's/prev/p/' prev*
+
+    rename 's/\.bak$//' *.bak
+
+    rename 'y/A-Z/a-z/' *
+
