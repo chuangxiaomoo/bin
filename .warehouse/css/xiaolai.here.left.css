@@ -14,6 +14,8 @@ pre, code {
 code {
   white-space: pre-wrap;
   border-radius: 2px;
+  color: #000000;
+  background-color: #FFCCFF;        /* zhangxiaomoo pink */
   display: inline;
 }
 
@@ -36,7 +38,9 @@ strong, b{
 }
 
 em, i {
-  color: #009688;
+  font-style: normal;
+  font-weight: bold;
+  color: #000000;
 }
 
 hr {
@@ -101,13 +105,9 @@ blockquote::before, blockquote::after, q::before, q::after {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  margin: 20px 0 10px;
+  margin: 1.3em 0 1em;
   padding: 0;
-  font-style: bold !important;
-  color: #009688 !important;
-  text-align: left !important;
-  margin: 1.5em 5px !important;
-  padding: 0.5em 1em !important;
+  font-weight: bold;
 }
 
 h1 {

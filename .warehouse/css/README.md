@@ -1,12 +1,18 @@
 # README
 
-		I M P O R T A N T
+通过在 github 的WEB链接中 copy and paste
+
+# 基本渲染css
 
 xiaolai.here.git.css            # xiaolai的版本
-xiaolai.here.left.css           # 我的版本
-xiaolai.here.css                # 我的版本，标题距中
+xiaolai.here.mid.css            # 我的版本，标题距中，公众号
+xiaolai.here.left.css           # 我的版本，标题距左，E-mail
 
+typora.css                      # typora版，标题距左，pdf输出
 
+# 语法高亮css
+
+使用方案: Xcode
 
 # xiaolai.脑子缺根弦
 
