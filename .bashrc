@@ -177,7 +177,8 @@ alias .latest='cd `ls | tail -1`'
 {
     test -e ../filesys/filesys_enhanced && echo "enhanced exit" && return
     cd ../filesys/ 
-    ln -sf filesys_base filesys_enhanced
+    rm -rf filesys_enhanced
+    ln -sf filesys_* filesys_enhanced
 }
 
 .Clang_x86() 

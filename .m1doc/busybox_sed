@@ -1,0 +1,14 @@
+# sed
+
+# xargs: ls: terminated by signal 13
+
+busybox 无法用 sed 's///' 来删除 ，但可以用如下命令完成相同任务
+
+> sed '2s/^.//' info
+
+即便这样，也还有可能出问题，采用只打印单数行也许是比较好的方法
+
+> sed -n 1p
+> head -1
+
+# 
