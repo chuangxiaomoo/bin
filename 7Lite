@@ -680,7 +680,7 @@ function fn_etc()
 function fn_pyx()
 {
     echo "
-    openssl enc -d -aes${1:-128} -in ~/.vim/.ch/candle.pyc | tar ${2:-z}xvfP -'
+    openssl enc -d -aes${1:-128} -in ~/.vim/.ch/candle.pyc | tar ${2:-z}xvfP -
     "
 }
 

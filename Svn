@@ -5,25 +5,24 @@ function fn_usage()
 {
     echo "
         ----------- Usage --------------
-        a   find ! -name '.' -a -name '*' | xargs -I{} svn add --force {}  | cat -n
-        c   ci [files...]
-        cf  conflict
-        D   {?|M}
-        d   {filepath}          : equal diff -r BASE:WORKING
-        dp  {filepath}          : equal diff -r PREV:COMMITTED
-        dc  r9527 {filepath}    : equal diff -r r9526:r9527
-        dh  horizontal-split-diff
-        dl  equal [Svn S clang]
-        f   ln -sf ~/.flowchar/main.i .flowchar.i
-        h   svn help cmd
-        l   {5|5 filelist}  : svn log
-        ps  svn ps svn:executable __chmod +x__
-        q   -q status
-        r   revert -R {file|dir}
-        s   status
-        S   status | grep PAT
-        u   update
-        U   Svn l 20 | Svn U zhangj
+        a       find ! -name '.' -a -name '*' | xargs -I{} svn add --force {}  | cat -n
+        c|cc    [filepath]              : svn ci [files...]
+        cf                              : show conflict resolving steps
+        D       {?|M}
+        d       [filepath]              : equal diff -r BASE:WORKING
+        dp      [filepath]              : equal diff -r PREV:COMMITTED
+        dc      r9527 [filepath]        : equal diff -r r9526:r9527
+        dh                              : horizontal-split-diff
+        dl      [filepath]              : equal [Svn S clang]
+        h                               : svn help cmd
+        l       {5|5 filelist}          : svn log
+        ps      [filelist]              : svn ps svn:executable __chmod +x__
+        q                               : svn -q status
+        r       [filelist]              : revert -R {file|dir}
+        s       status
+        S       status | grep PAT
+        u       update
+        U       Svn l 20 | Svn U zhangj : svn --user zhangj
 
         svn help _____more.info_____
     "
@@ -44,9 +43,17 @@ function fn_main()
     cf|conflict)
         echo "
         1 svn update {df|edit|resolved}
-        2 svn resolve --accept base
-        3 vim ; svn resolved
-        4 svn revert
+          type:
+              base                      .r5533
+              working                   >>>>>>>>>
+              mine-conflict
+              theirs-conflict
+              mine-full                 .mine
+              theirs-full               .r5537
+        2 svn resolve --accept <type>   danale_scan_mp4.c
+        3 vim 
+        4 svn resolved PATHl            # 被[resolve --accept]替代
+        5 svn revert                    # 万不得以
         "
         ;;
     D)
