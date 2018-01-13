@@ -760,6 +760,7 @@ function fn_WiMax_meeting()             { cat meeting huawei_WiMax_meeting
                                               sanxing_2014.nxp
                                               sanxing_2017.fisheye
                                               introspector
+                                              introspector.2018
                                               qipashuo
                                         ;}
     local opts=(
