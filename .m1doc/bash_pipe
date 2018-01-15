@@ -1,0 +1,23 @@
+#! /bin/sh
+
+function f2()
+{
+    cde=5
+    return $?
+}
+
+function fn_eeprom()
+{
+    abc=1
+    f2
+}
+
+function fn_main()
+{
+    fn_eeprom 2>&1 | tee -a /tmp/log
+    echo abc is ${abc}                    # abc将不输出任何值，因为 | 将开启一个新的进程处理
+    echo cde is ${cde}
+}
+
+fn_main
+
