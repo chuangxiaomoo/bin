@@ -426,6 +426,7 @@ function fn_201_“非上帝投机者”的自赎()  { cat article_201_“非上
 function fn_gsq_房价什么情况下会崩()    { cat article_gsq_房价什么情况下会崩 
                                           cat article_301_财富公式之亿万钱财
                                           cat article_302_史上最中肯的投资建议
+                                          cat article_303_怎么应付朋友借钱
                                           ;}
 
     local opts=(
