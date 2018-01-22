@@ -27,6 +27,7 @@ function fn_03_培养新人()               { cat mng_goal_使命
                                               mng_jc_招募承诺
                                               mng_rule_制定规则
                                               mng_rule_阿里招聘权
+                                              mng_rule_俞永福.不同阶段的管理三要素
                                               almanack_newbie
 function fn_04_一次失败的项目经理招聘() { cat mng_04_一次失败的项目经理招聘 ;}
 function fn_11_王熙凤()                 { cat mng_11_王熙凤 ;}

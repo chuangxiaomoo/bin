@@ -53,3 +53,7 @@ Does PY2EXE Compile a Python Code to run Faster?
 [](https://superuser.com/questions/228056/windows-equivalent-to-unix-time-command)
 ptime 1.0 - Accurately measure program execution time
 
+# How to prevent gcc optimizing some statements in C? - Stack Overflow
+
+my key: gcc macro not optimize when Os
+
