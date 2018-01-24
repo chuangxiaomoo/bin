@@ -2,7 +2,11 @@
 
 [bridge vs. bonding](http://www.connectify.me/blog/bridging-vs-bonding-explained/)
 
-In short, when you see bonding think of the word _combine.aggregation_ like how Speedify can combine multiple Internet connections into one super-fast connection. And when you see bridging, think of the word _link_ – similar to how Connectify Hotspot acts as a link between the shared network and devices on your Hotspot.
+In short, when you see bonding think of the word **combine.aggregation** like how Speedify can combine multiple Internet connections into one super-fast connection. And when you see bridging, think of the word **link** – similar to how Connectify Hotspot acts as a link between the shared network and devices on your Hotspot.
+
+# bonding on Slackware Linux
+
+[](https://www.linuxquestions.org/questions/slackware-14/setting-up-network-bonding-eth0-wlan0-with-a-recent-kernel-how-4175562859/)
 
 # Linux 双网卡绑定一个IP原理及实现
 
@@ -52,10 +56,8 @@ ifenslave bond0 eth0 eth1
 
 可以用测试时可以通过 nload 或者 iftop 工具进行观察效果；很清晰！！！
 
-说明：miimon是用来进行链路监测的。 比如:miimon=100，那么系统每100ms监测一次链路连接状态，如果有一条线路不通就转入另一条线路；mode的值表示工作模式，他共有0，1,2,3四种模式，常用的为0,1两种
+说明：miimon是用来进行链路监测的。 比如:**miimon=100**，那么系统每100ms监测一次链路连接状态，如果有一条线路不通就转入另一条线路；mode的值表示工作模式，他共有0，1,2,3四种模式，常用的为0,1两种
 。
-mode=0表示load balancing (round-robin)为负载均衡方式，两块网卡都工作。
-mode=1表示fault-tolerance (active-backup)提供冗余功能，工作方式是主备的工作方式,也就是说默认情况下只有一块网卡工作,另一块做备份.
-
-http://www.diybl.com/course/6_system/li ... 50083.html
+mode=0表示 load balancing  (round-robin)为负载均衡方式，两块网卡都工作。
+mode=1表示 fault-tolerance (active-backup)提供冗余功能，工作方式是主备的工作方式,也就是说默认情况下只有一块网卡工作,另一块做备份.
 

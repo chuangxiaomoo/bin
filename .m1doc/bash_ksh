@@ -1,9 +1,12 @@
-# ksh
-
-            ksh                     bash            
-function    function fn_main        兼容ksh，可有可无
+```bash
+            ksh                                       bash            
+function    function fn_main                          兼容ksh，可有可无
                      fn_main()
 
-array       set -A list m1 m2 m3    list=(m1 m2 m3)
+array       set -A list m1 m2 m3                      list=(m1 m2 m3)
 
-
+loop        while [ ${i:=0} -lt ${#list[@]} ]; do     for (( i=0; i<0; i+=1 )); do done
+                echo ${list[$i]}
+                let i++
+            done
+```
