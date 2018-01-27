@@ -41,7 +41,7 @@ SD卡定制功能，计划需要3周时间，包括3部分：基本框架、语�
   2) 使用并列、选择、转折(and or not)
 
 2 不要高估自己，以为自己是上帝，是万能的。其实，在上帝面前，我们只是**虫子**。因此
-  1) 承认我司**处于并将长期处于**模仿阶段，Hicom竞品一定要有
+  1) 承认我司**处于并将长期处于**模仿阶段，Hicom出货量大，用户习惯友好，因此其竞品一定要有。
   2) 当前的发明大都只能解决了目前的问题，未来的问题可能需要用未来的方案来解决。别把问题想得太简单了。
   3) 铁路发明于火车出现之前，而且最开始火车并不比马拉铁轨车快。马鞍发明700年后才有马镫。
   4) 在莱特兄弟发明飞机之前，过去的人总想着模拟鸟儿的翅膀来实现飞行…
@@ -53,4 +53,73 @@ SD卡定制功能，计划需要3周时间，包括3部分：基本框架、语�
 
 这么多年过去了，代码积累了。
 但是，在兄弟和战友的层次，一个也没有积累。only zy and waz.
+
+# 2018-01-27 教是更好的学
+
+
+
+# 2018-01-27 做一个不抱怨的人
+
+**分支trunk**
+
+{{{
+> # Svn l 2 /opt/src/jzzz/trunk/appSrc/libs/shm_buf_grain
+> ------------------------------------------------------------------------
+> r1820 | zhaoxb | 2017-11-29 17:27:50 +0800 (Wed, 29 Nov 2017) | 1 line
+> Changed paths:
+>    M /trunk
+>    M /trunk/appSrc/libs/shm_buf_grain/inc/shm_cache.h
+>    M /trunk/appSrc/main/danale/danale_param_conf.c
+> 
+> Merged /t20fisheyePro:r1813 for 合并1804、1805一定要合并这个
+> ------------------------------------------------------------------------
+> r1805 | luosf | 2017-11-25 15:37:26 +0800 (Sat, 25 Nov 2017) | 1 line
+> Changed paths:
+>    M /trunk/appSrc/libs/encryt/libencryt.a
+>    M /trunk/appSrc/libs/event_cb/libevent_cb.a
+>    M /trunk/appSrc/libs/jlib/libev.a
+>    M /trunk/appSrc/libs/jlib/libjlib.a
+>    M /trunk/appSrc/libs/shm_buf_grain/libshm_buf_grain.a
+>    M /trunk/appSrc/main/lib/qrEncode.oo
+> 
+> ulic 编译库
+> ------------------------------------------------------------------------
+> r72 | tianj | 2017-03-16 11:28:18 +0800 (Thu, 16 Mar 2017) | 1 line
+> Changed paths:
+>    A /trunk/appSrc/libs/encryt/libencryt.a
+>    A /trunk/appSrc/libs/freetype/libfreetype.a
+>    A /trunk/appSrc/libs/openssl/libcrypto.a
+>    A /trunk/appSrc/libs/openssl/libssl.a
+>    A /trunk/appSrc/libs/shm_buf_grain/libshm_buf_grain.a
+> 
+> 添加库
+}}}
+
+**分支t20fisheyePro**
+
+{{{
+> # Svn l 5 /opt/src/jzzz/t20fisheyePro/appSrc/libs/shm_buf_grain
+> ------------------------------------------------------------------------
+> r1813 | zhangj | 2017-11-28 17:23:28 +0800 (Tue, 28 Nov 2017) | 2 lines
+> Changed paths:
+>    M /t20fisheyePro/appSrc/libs/shm_buf_grain/inc/shm_cache.h
+>    M /t20fisheyePro/appSrc/main/danale/danale_param_conf.c
+> 
+> 与JCP CONFIG 同步: CACHE_MEDIA_TYPE_G711_ALAW  = 1;
+> 
+> ------------------------------------------------------------------------
+> r1806 | zhaoxb | 2017-11-27 08:57:31 +0800 (Mon, 27 Nov 2017) | 1 line
+> Changed paths:
+>    M /t20fisheyePro/appSrc/libs/shm_buf_grain/libshm_buf_grain.a
+}}}
+
+0 tianj  trunk添加库(此库与头文件**已经不错乱**)
+1 luosf  trunk更新库
+2 zhaoxb 同步到鱼眼
+3 zhangj 因鱼眼设备不能正常工作，修改**侵入者**头文件
+4 zhaoxb 同步zhangj在鱼眼的修改
+
+1 luosf  提交代码不自己测试
+2 zhangj 没有更高的格局，**.a没改，能改头文件吗？**
+3 zhaoxb {对接代码+NVS客户端}都共用**shm_cache.h**，必须有人全盘统筹
 
