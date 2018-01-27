@@ -23,3 +23,7 @@ hi htmlBold         term=bold,reverse cterm=bold,reverse ctermfg=DarkCyan
 
 highlight htmlBold  ctermfg=Green gui=bold guifg=#00B800
 
+# highlight syntax
+    syntax match Special "\[^.*\]"
+    syntax match Type "->"
+    syntax match Type "&&"
