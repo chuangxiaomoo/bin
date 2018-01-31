@@ -308,14 +308,17 @@ function fn_english()                   {
 function fn_US_TV_series()              { cat english_US_TV_series ;}
 function fn_vocabulary()                { cat english_vocabulary ;}
 function fn_sentence()                  { cat english_sentence ;}
-function fn_speaking()                  { cat english_speaking english_liyang_crazy ;}
+function fn_speaking()                  { cat english_speaking ;}
 function fn_listening_layers()          { cat english_listening_layers ;}
 function fn_reading()                   { cat english_reading ;}
 function fn_interprete()                { cat english_interprete ;}
 function fn_interpreting()              { cat english_interpreting ;}
 function fn_friends()                   { cat english_friends ;}
 function fn_clips()                     { cat english_clips ;}
-function fn_Proverbs_in_Alphabet()      { cat english_Proverbs_in_Alphabet ;}
+function fn_Proverbs_in_Alphabet()      { cat english_Proverbs_in_Alphabet
+                                              english_liyang_crazy
+                                              english_list
+                                              ;}
     local opts=(
         Proverbs_in_Alphabet
         clips                           #
@@ -454,7 +457,7 @@ function fn_gsq_房价什么情况下会崩()    { cat article_gsq_房价什么�
         71_不自律何自由？
         72_唯有自律方得自由
 
-        100_人际关系痛苦的根源          # 缺乏界限感
+        100_人际关系痛苦的根源          # 缺乏边界限感
         101_分享与慷他人之慨
         102_同事是你共享生命的战友
         103_协作跟进？如何跟进？
@@ -763,6 +766,7 @@ function fn_WiMax_meeting()             { cat meeting huawei_WiMax_meeting
                                               sanxing_2017.fisheye
                                               introspector.2018
                                               introspector
+                                              sleeping
                                               qipashuo
                                         ;}
     local opts=(
@@ -827,7 +831,9 @@ function fn_01_tingbao()                { cat girl_01_tingbao ;}
 function fn_02_angelina()               { cat girl_02_angelina ;}
 function fn_11_2013相亲记()             { cat girl_11_2013相亲记 ;}
 function fn_12_wife()                   { cat girl_12_wife ;}
-function fn_100_手把手教你泡妞()        { cat girl_100_手把手教你泡妞 ;}
+function fn_100_手把手教你泡妞()        { cat girl_100_手把手教你泡妞
+                                          cat girl_101_如何用产品思维摆脱单身
+                                              ;}
     local opts=(
         misc
         letters
@@ -1091,7 +1097,7 @@ function fn_btc()                       { cat btc_cept
 function fn_main() {
     local opts=(
         interview                       # 想想自己的价值？
-        01_囧_jiong                     # sleep
+        01_囧_jiong                     #
         cold                            # 感冒 牙痛 智齿 sick
         architecture                    # 建筑
         advertisement
