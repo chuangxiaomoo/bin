@@ -833,6 +833,7 @@ function fn_11_2013相亲记()             { cat girl_11_2013相亲记 ;}
 function fn_12_wife()                   { cat girl_12_wife ;}
 function fn_100_手把手教你泡妞()        { cat girl_100_手把手教你泡妞
                                           cat girl_101_如何用产品思维摆脱单身
+                                          cat girl_102_罗胖的分享
                                               ;}
     local opts=(
         misc
