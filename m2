@@ -385,6 +385,7 @@ function fn_44_学得太慢是一种罪()       { cat article_44_学得太慢是
 function fn_45_拷问知识正确和增长遮蔽() { cat article_45_拷问知识正确和增长遮蔽 
                                           cat article_46_学习金字塔的知识留存率
                                           cat article_47_计算思维
+                                          cat article_48_思维定势.查理的25个人生开关
                                           ;}
 function fn_50_十种好的学习方式()       { cat article_50_十种好的学习方式 ;}
 
@@ -575,7 +576,9 @@ function fn_02_一朝天子一朝臣()         { cat why_02_一朝天子一朝�
     fn_print $@
 }
 
-function fn_films()                     { cat videos movies ;}
+function fn_films()                     { cat videos movies 
+                                          cat subscript.yidaizongshi
+                                          ;}
 
 function fn_logic()                     {
 function fn_cept()                      { cat logic_cept ;}
