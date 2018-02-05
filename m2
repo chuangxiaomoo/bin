@@ -432,6 +432,7 @@ function fn_gsq_房价什么情况下会崩()    { cat article_gsq_房价什么�
                                           cat article_301_财富公式之亿万钱财
                                           cat article_302_史上最中肯的投资建议
                                           cat article_303_怎么应付朋友借钱
+                                          cat article_304_贫困限制想象力
                                           ;}
 
     local opts=(
@@ -770,6 +771,7 @@ function fn_WiMax_meeting()             { cat meeting huawei_WiMax_meeting
                                               introspector.2018
                                               introspector
                                               sleeping
+                                              woop
                                               qipashuo
                                         ;}
     local opts=(
@@ -1078,7 +1080,15 @@ function fn_rhyme200()                  { cat guo_rhyme200 ;}
 function fn_game_theory()               { cat game_theory ;}
 function fn_debate_competition()        { cat debate_competition ;}
 function fn_advertisement()             { cat advertisement ;}
-function fn_architecture()              { cat architecture ;}
+function fn_architecture()              { cat architecture
+                                          cat arch_00_公理.公设.定理
+                                          cat arch_01_心理学四大公理
+                                          cat arch_02_逻辑四大公理
+                                          cat arch_50_框架与系统
+                                          cat arch_51_批判思维发展的9个层次
+                                          cat arch_52_形式逻辑和辩证逻辑
+                                          ;}
+
 function fn_estate()                    { cat estate ;}
 function fn_driver()                    { cat driver ;}
 function fn_cold()                      { cat cold ;}
@@ -1103,7 +1113,6 @@ function fn_main() {
         interview                       # 想想自己的价值？
         01_囧_jiong                     #
         cold                            # 感冒 牙痛 智齿 sick
-        architecture                    # 建筑
         advertisement
         aesthetics                      # i:s`θetic 美学
         estate                          # 房地产
