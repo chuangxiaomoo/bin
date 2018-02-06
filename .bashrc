@@ -69,6 +69,7 @@ alias    .u='vi /tmp/kts/chao.u'
 #lias   .ps='PS1="[\w]\n\u-> \[\033[0m\]"'
 
 alias .danalib="cd /winc/1.danale.大拿/lib.video/release/libdanavideo;SRC='/opt/src/jzzz/t20fisheyePro/appSrc'"
+alias .danalgr="cd /winc/1.danale.大拿/lib.grain/release/libdanavideo;SRC='/opt/src/grainPro/fisheyePro/appSrc'"
 alias .de_beep="echo 0 >/tmp/kts/chao.beep"
 alias .en_beep="echo 1 >/tmp/kts/chao.beep"
 

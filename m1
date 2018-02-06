@@ -340,8 +340,7 @@ function fn_a1_fork_locked()            { cat case_a1_fork_locked ;}
 function fn_a2_quote_input_delay()      { cat case_a2_quote_input_delay ;}
 
 function fn_56_ini写入时间耗时3秒()     { cat case_56_ini写入时间耗时3秒 
-                                          cat case_z1_mac地址绑定后也IP冲突
-                                          ;}
+                                          cat case_z1_mac地址绑定后也IP冲突 ;}
 
     local opts=(
         fundamental

@@ -27,3 +27,6 @@ highlight htmlBold  ctermfg=Green gui=bold guifg=#00B800
     syntax match Special "\[^.*\]"
     syntax match Type "->"
     syntax match Type "&&"
+
+# ~/.vim/syntax/markdown.vim
+HtmlHiLink mkdLink          Operator
