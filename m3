@@ -14,6 +14,7 @@ xsdx_lesson_1
 xsdx_lesson_2
 
 writing_1st_principle
+writing_11_suggestion
 
 xiaolai_写作课文字实录01
 xiaolai_写作课文字实录02

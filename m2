@@ -160,6 +160,7 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               problem_present       # 回归问题本身
                                               TIME
                                               FeynmanTechnique
+                                              xiaolai_ff 1001.q
                                               xiaolai_cept
                                               xiaolai_2016_annual
                                               xiaolai_Metacognition
@@ -198,7 +199,7 @@ function fn_tiandao()                   { cat book_tiandao book_遥远的救世�
 
 function fn_list()                      { cat book_400_PoorCharliesAlmanack_穷查理宝典
                                               book_401_Antifragile
-                                              book_
+                                              book_410_The_Sense_of_Style
 }
     local opts=(
         list
@@ -771,6 +772,7 @@ function fn_WiMax_meeting()             { cat meeting huawei_WiMax_meeting
                                               introspector.2018
                                               introspector
                                               sleeping
+                                              health
                                               woop
                                               qipashuo
                                         ;}
