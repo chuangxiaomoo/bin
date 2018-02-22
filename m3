@@ -24,6 +24,7 @@ xiaolai_ask50
 
 # collect
 
+collect_rhyme_压韵
 collect_theory_理论
 collect_analogy_类比
 collect_metaphor_暗喻
@@ -57,6 +58,7 @@ betterExplained_ideas.list
 0012_Interface
 0013_Exchange
 0014_Product
+0015_给大龄单身的自己说几句
 
 
 # 0001_什么是聪明？

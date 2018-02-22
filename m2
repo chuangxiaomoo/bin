@@ -96,20 +96,33 @@ function fn_2018_plan()                 { cat annual_2018_plan ;}
     fn_print $@
 }
 
+function fn_WiMax_meeting()             { cat meeting huawei_WiMax_meeting
+                                              7habit 8s_habit
+                                              sanxing_2013
+                                              sanxing_2013.team
+                                              sanxing_2014.nxp
+                                              sanxing_2017.fisheye
+                                              introspector.2018
+                                              introspector
+                                              sleeping
+                                              health
+                                              woop
+                                              qipashuo
+                                        ;}
 #
 # Just like BRAIN sort KNOWLEDGE always, we need sort contineuously!
 # a BOOK can append with a reflect
 #
 function fn_book()                      {
 function fn_cept()                      { cat book_cept ;}
-function fn_laozi()                     { cat book_laozi 
+function fn_laozi()                     { cat book_laozi
                                           cat book_zhuangzi;
                                           ;}
 function fn_sunzi()                     { cat book_sunzi;
                                           cat arch_sunzi ;}
 function fn_liutao()                    { cat book_liutao ;}
-function fn_lunyu()                     { cat book_lunyu 
-                                          cat book_lunyu.full.edition 
+function fn_lunyu()                     { cat book_lunyu
+                                          cat book_lunyu.full.edition
                                           cat book_mengzi
                                           cat book_mengzi.full.edition
                                           ;}
@@ -136,7 +149,7 @@ function fn_66_佛语()                   { cat book_66_佛语 ;}
 
 function fn_000_黄晓捷谈在校学习()      { cat book_000_黄晓捷谈在校学习 ;}
 function fn_010_李笑来谈读书经验()      { cat book_010_李笑来谈读书经验
-                                          cat book_011_李笑来谈阅读操作系统 
+                                          cat book_011_李笑来谈阅读操作系统
                                           cat book_012_张五常谈读书和思考
                                           cat book_013_夜东坡谈读书和思考
                                           cat book_020_如何选书
@@ -282,8 +295,8 @@ function fn_02_训练思维的深度和缜密度() { cat howto_02_训练思维�
 function fn_03_沟通_communication()     { cat howto_03_沟通
                                           cat howto_03_沟通.1
                                           cat howto_03_沟通.2
-                                          cat howto_04_屌丝如何逆袭 
-                                          cat howto_05_挑选西瓜 
+                                          cat howto_04_屌丝如何逆袭
+                                          cat howto_05_挑选西瓜
                                           cat howto_07_与AI在职场竞争
                                           cat howto_08_识别有智慧的人
                                           cat howto_09_讲故事
@@ -375,15 +388,15 @@ function fn_38_我是如何摆脱哑巴英语的() { cat article_38_我是如何
 function fn_39_给你把万能钥匙你要不要() { cat article_39_给你把万能钥匙你要不要 ;}
 function fn_40_学习批判性思考()         { cat article_40_学习批判性思考 ;}
 function fn_41_如何成为高品质的勤奋者() { cat article_41_如何成为高品质的勤奋者;
-                                          cat article_41_如何成为高品质的勤奋者2 
-                                              article_41_读书的低水平勤奋陷阱 
+                                          cat article_41_如何成为高品质的勤奋者2
+                                              article_41_读书的低水平勤奋陷阱
                                               article_41_你的阅读造就了你
                                               article_41_如何写好一封邮件
                                           ;}
 function fn_42_思考工具及框架()         { cat article_42_思考工具及框架 ;}
 function fn_43_如何科学的思考()         { cat article_43_如何科学的思考 ;}
 function fn_44_学得太慢是一种罪()       { cat article_44_学得太慢是一种罪 ;}
-function fn_45_拷问知识正确和增长遮蔽() { cat article_45_拷问知识正确和增长遮蔽 
+function fn_45_拷问知识正确和增长遮蔽() { cat article_45_拷问知识正确和增长遮蔽
                                           cat article_46_学习金字塔的知识留存率
                                           cat article_47_计算思维
                                           cat article_48_思维定势.查理的25个人生开关
@@ -401,7 +414,7 @@ function fn_51_怎样成为一个高手()       { cat article_51_怎样成为一
                                           cat article_61_不花心方成事
                                           ;}
 
-function fn_80_emotion_情绪()           { 
+function fn_80_emotion_情绪()           {
                                           cat article_80_情绪list
                                           cat article_81_负面情绪管理
                                           cat article_82_有目标你就可以忍受一切
@@ -429,7 +442,7 @@ function fn_112_我们何需抱怨被误解()    { cat article_112_我们何需�
 
 function fn_201_“非上帝投机者”的自赎()  { cat article_201_“非上帝投机者”的自赎 ;}
 
-function fn_gsq_房价什么情况下会崩()    { cat article_gsq_房价什么情况下会崩 
+function fn_gsq_房价什么情况下会崩()    { cat article_gsq_房价什么情况下会崩
                                           cat article_301_财富公式之亿万钱财
                                           cat article_302_史上最中肯的投资建议
                                           cat article_303_怎么应付朋友借钱
@@ -478,7 +491,7 @@ function fn_gsq_房价什么情况下会崩()    { cat article_gsq_房价什么�
 
 function fn_value()                     {
 function fn_01_传统()                   { cat value_01_传统 ;}
-function fn_02_当代()                   { cat value_02_当代 
+function fn_02_当代()                   { cat value_02_当代
                                           cat value_03_徐小平关于人生格局的问题清单
                                           ;}
     local opts=(
@@ -578,7 +591,7 @@ function fn_02_一朝天子一朝臣()         { cat why_02_一朝天子一朝�
     fn_print $@
 }
 
-function fn_films()                     { cat videos movies 
+function fn_films()                     { cat videos movies
                                           cat subscript.yidaizongshi
                                           ;}
 
@@ -763,19 +776,6 @@ function fn_Zhu_雄辩()                  { cat huawei_Zhu_雄辩 ;}
 function fn_Qi_领导管理人才()           { cat huawei_Qi_领导管理人才 ;}
 function fn_Qi_疾病()                   { cat huawei_Qi_疾病 ;}
 
-function fn_WiMax_meeting()             { cat meeting huawei_WiMax_meeting 
-                                              7habit 8s_habit
-                                              sanxing_2013
-                                              sanxing_2013.team
-                                              sanxing_2014.nxp
-                                              sanxing_2017.fisheye
-                                              introspector.2018
-                                              introspector
-                                              sleeping
-                                              health
-                                              woop
-                                              qipashuo
-                                        ;}
     local opts=(
         WiMax_meeting                   # 唯一一次大会
         cultural
@@ -855,7 +855,7 @@ function fn_100_手把手教你泡妞()        { cat girl_100_手把手教你泡
 }
 
 function fn_prof()                      { cat prof_01_职业化并不是真相
-                                          cat prof_11_Geek与产品机器 
+                                          cat prof_11_Geek与产品机器
                                           cat prof_12_高管不必高专业水平
                                           cat prof_13_关于如何得体跳槽的清单
                                           cat prof_14_越早知道越好的职场规则清单
@@ -963,11 +963,11 @@ function fn_cept()                      { cat influence_cept ;}
 function fn_agile()                     { cat influence_agile ;}
 function fn_sxmm()                      { cat influence_sxmm ;}
 function fn_stock()                     { cat influence_stock ;}
-function fn_app()                       { cat influence_01_推销自己 
+function fn_app()                       { cat influence_01_推销自己
                                           cat influence_02_
                                         ;}
     local opts=(
-        cept                            # 影响力 
+        cept                            # 影响力
         agile
         sxmm
         stock
