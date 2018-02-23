@@ -1496,7 +1496,7 @@ So one of the most important things I learned at Square is the concept of editin
 
 3. 分清主次，是一种格外重要、却又常常不被重视的能力。 ↩
 
-4. 后面还有一个影响行动的类比：《[苍蝇与蜜蜂]（A20.html》 ↩
+4. 后面还有一个影响行动的类比：《[^苍蝇与蜜蜂]（A20.html》 ↩
 
 
 
@@ -3924,7 +3924,7 @@ Smart is the new sexy.
 
 Google Ngram 里暂时都查不到这个词…… 网上能找到的最早的例句来自于 Usenet：
 
-2005 20 October, CatDeville [username], “Re: Struggling with the details”, alt.polyamory, Usenet:
+2005 20 October, CatDeville [^username], “Re: Struggling with the details”, alt.polyamory, Usenet:
 
 You see, for a true geek there's often little difference, because when you engage our brains, which are connected to our genitals, it often turns on our lust response (we're quite often sapiosexuals - people who lust after intellect first), but it's the * brain* you aim for, the intellect, to turn us on, not our genitals.
 
@@ -5535,7 +5535,7 @@ Walter Mischel 教授在他的书中没有提到另外一个跟进实验。2012 
 
 是什么正在改变我们和这个世界的关系呢？科学的进步。
 
-爱因斯坦当年总是笑嘻嘻地说：“上帝才不会跟这个世界扔骰子玩呢……1”那是因为爱因斯坦就是接受不了海森堡（Werner Heisenberg）提出的量子力学中的一个基本原理 —— 不确定性原理[2]。
+爱因斯坦当年总是笑嘻嘻地说：“上帝才不会跟这个世界扔骰子玩呢……1”那是因为爱因斯坦就是接受不了海森堡（Werner Heisenberg）提出的量子力学中的一个基本原理 —— 不确定性原理[^2]。
 
 量子力学后来的发展证明，这一次是爱因斯坦错了。有一篇文章和一本书可以推荐好奇的读者看看
 
@@ -5605,7 +5605,7 @@ A 和 B 两个人拿总金额相同的筹码开始玩一种公平的、1/2 概�
 
 帕斯卡在 1642 年的时候设计了一个计算器 —— 对，你没看错，就是计算器，只不过是机械的。没有这种计算器，他也不可能有那么多成就，因为他的工作需要太多重复的、枯燥的计算了。可即便聪明如帕斯卡，在他的那个年代努力了终生，也没能成功地把这个精巧的发明商业化，原因可能是成本过高、无法实现量产等。当然，帕斯卡这个设计里的重要思想影响了后来的很多人：
 
-重复的、枯燥的工作应该自动化完成。
+> 重复的、枯燥的工作应该自动化完成。
 
 400 年不到的时间里，这世界发生了很多变化。其中之一就是，越来越多的人靠着一点点的小发明的商业化赚到了越来越多的钱。这就是时代的不同。所谓“屌丝逆袭”的故事只有到了现代才开始批量出现，就是因为智力变现、知识变现可能了、容易了。但大量的明证并没有降低人们的普遍认知，所以民间流传甚广的智慧大都是反智的，人们津津乐道的是彰显这样道理的故事 —— 聪明反被聪明误。
 

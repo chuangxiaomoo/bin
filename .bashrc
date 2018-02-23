@@ -319,6 +319,31 @@ function git_diff() {
     echo "${nb_2015}" > /tmp/kts/2015
 }
 
+gg()
+{
+    case $# in
+    2)
+        list0=`find . -name '*' -type f |grep -v '\.git'`
+        [ -z "${list0}" ] && { echo "empty list0"; return ;}
+        list1=`grep -i -l $1 ${list0}`
+        [ -z "${list1}" ] && { echo "empty list1"; return ;}
+        grep -i --color $2 ${list1}
+        ;;
+    3)
+        list0=`find . -name '*' -type f |grep -v '\.git'`
+        [ -z "${list0}" ] && { echo "empty list0"; return ;}
+        list1=`grep -i -l $1 ${list0}`
+        [ -z "${list1}" ] && { echo "empty list1"; return ;}
+        list2=`grep -i -l $2 ${list0}`
+        [ -z "${list2}" ] && { echo "empty list2"; return ;}
+        grep -i --color $3 ${list1}
+        ;;
+    *)
+        echo "Usage: gg key1 key2 [key3]"
+        ;;
+    esac
+}
+
 cpcom() { mkdir -p /winc/Export/com/; rm -rf /winc/Export/com/*;     cp -a release/com/* /winc/Export/com/ ;}
 cptar() { file=`ls release/tar/*.tgz`; 
           mkdir -p /winc/Export/com/; rm -rf /winc/Export/com/*.tgz; cp -a $file         /winc/Export/com/ ;}
