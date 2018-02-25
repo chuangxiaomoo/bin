@@ -13,7 +13,8 @@
 # 橡胶的混沌时段  .doc/wang_oak.md
 # 交易的哲学体系  .doc/wang_trade.md            -- 价值观体系
 # 交易的哲学2     .doc/wang_trade2.md
-# 交易的哲学2     .doc/charlie_munger_invert.md
+# 交易的哲学3     .doc/charlie_munger_invert.md
+# 交易的哲学4     .doc/xiaolai.md
 
 # 量子力学        .doc/quantum_meCHANics.md
 # 行为心理学      .doc/behaviorism.md

@@ -17,6 +17,7 @@
 《新生 —— 七年就是一辈子》    在新生大学里
 《原则 —— Principles》        Ray Dalio
 
+《信号与噪音》                The Signal and the Noise(Nate Silver)
   通向金融王国的自由之路      期货
   萬曆十五年
   神奇圣人王阳明
