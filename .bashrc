@@ -319,6 +319,26 @@ function git_diff() {
     echo "${nb_2015}" > /tmp/kts/2015
 }
 
+.pyvd()
+{
+    CWD=${PWD}
+
+    if [ "${CWD}" = '/pycharm' ]; then
+        dir='/root/pyc'
+    elif [ "${CWD}" = '/pycharm/bin' ]; then
+        dir='/root/pyc/bin'
+    else
+        echo "PWD=${CWD} Usage: .pyd file"
+        return
+    fi
+
+    if [ -f "${1}" ]; then
+        vd ${1} ${dir}/${1}
+    else
+        echo "PWD=${CWD} Usage: .pyd file"
+    fi
+}
+
 gg()
 {
     case $# in
