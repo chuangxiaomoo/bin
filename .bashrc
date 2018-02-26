@@ -174,12 +174,20 @@ lwd() { wd_file=~/.awd${1}
 
 alias .latest='cd `ls | tail -1`'
 
-.base() 
+.lrootfs() 
 {
-    test -e ../filesys/filesys_enhanced && echo "enhanced exit" && return
-    cd ../filesys/ 
-    rm -rf filesys_enhanced
-    ln -sf filesys_* filesys_enhanced
+    test -e ../filesys/.rootfs && echo ".rootfs exist" && cd ../filesys/ && return
+    cd ../filesys/ || return
+    test -L filesys_enhanced && rm -f filesys_enhanced
+
+    nr=`echo  filesys_* | wc -w`
+    if [ "${nr}" -eq 1 ]; then
+        ln -sf filesys_* .rootfs
+        echo "create .rootfs succ!"
+    else
+        echo "more than 1 filesys_"
+        ls filesys_*
+    fi
 }
 
 .Clang_x86() 

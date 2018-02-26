@@ -119,7 +119,7 @@ function fn_laozi()                     { cat book_laozi
                                           cat book_zhuangzi;
                                           ;}
 function fn_sunzi()                     { cat book_sunzi;
-                                          cat arch_sunzi ;}
+                                          cat read_sunzi ;}
 function fn_liutao()                    { cat book_liutao ;}
 function fn_lunyu()                     { cat book_lunyu
                                           cat book_lunyu.full.edition
