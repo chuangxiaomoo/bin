@@ -34,8 +34,8 @@ function fn_main()
 
     case $1 in
     a)  /usr/bin/find ! -name '.' -a -name '*' | xargs -I{} svn add --force {}  | cat -n    ;;
-    c)  svn ci $filelist                                                                    ;;
-   cc)  fl=`Svn Sc | awk '{print $2}'` ;svn ci $fl                                          ;;
+    c)  svn ci $filelist                           && svn up                                ;;
+   cc)  fl=`Svn Sc | awk '{print $2}'` ;svn ci $fl && svn up                                ;;
  -l|l)  [ -f "${2}" ] && filelist="5 ${@:2}"; svn log -v -l${filelist:-5}                   ;;
     U)  for U in ${filelist:-zhangj}; do regex="-e '/${U}/,/--$/p' ${regex}"; done
         eval "sed -n ${regex} < /dev/stdin"
