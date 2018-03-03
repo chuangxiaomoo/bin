@@ -60,7 +60,7 @@ function fn_22_莱茵河如何跨国治污()     { cat mng_22_莱茵河如何跨
 }
 
 function fn_annual()                    {
-function fn_plan_what()                 { cat annual_plan_what ;}
+function fn_plan_what()                 { cat annual_plan_what annual_plan_how annual_plan_why ;}
 function fn_report_what()               { cat annual_report_what ;}
 function fn_seminar_what()              { cat annual_seminar_what ;}
 function fn_2009_grandstream()          { cat annual_2009_grandstraem ;}
