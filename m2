@@ -69,12 +69,12 @@ function fn_2014_jco()                  { cat annual_2014_jco ;}
 function fn_2014_spring_festival()      { cat annual_2014_spring_festival ;}
 function fn_2014_grandpa_inlaw()        { cat annual_2014_grandpa_inlaw ;}
 function fn_2014_national_day()         { cat annual_2014_national_day ;}
-function fn_2012_plan()                 { cat annual_2012_plan                   annual_2012_report;}
-function fn_2013_plan()                 { cat annual_2013_plan annual_2013_event annual_2013_report;}
-function fn_2014_plan()                 { cat annual_2014_plan annual_2014_event annual_2014_report;}
-function fn_2015_plan()                 { cat annual_2015_plan annual_2015_event annual_2015_report;}
+function fn_2012_plan()                 { cat annual_2012_plan                   annual_2012_report ;}
+function fn_2013_plan()                 { cat annual_2013_plan annual_2013_event annual_2013_report ;}
+function fn_2014_plan()                 { cat annual_2014_plan annual_2014_event annual_2014_report ;}
+function fn_2015_plan()                 { cat annual_2015_plan annual_2015_event annual_2015_report ;}
 function fn_2016_plan()                 { cat annual_2016_plan annual_2016_event annual_2016_report annual_2016_ljsw  ;}
-function fn_2017_plan()                 { cat annual_2017_plan annual_2017_event annual_2017_report;}
+function fn_2017_plan()                 { cat annual_2017_plan annual_2017_event annual_2017_report ;}
 function fn_2018_plan()                 { cat annual_2018_plan ;}
     local opts=(
         plan_what                       # 基于`以终为始`的理念
@@ -276,6 +276,7 @@ function fn_misc()                      { cat music_list
                                           cat music_theory
                                           cat piano
                                           cat erhu
+                                          cat image
                                           ;}
     local opts=(
         theory
