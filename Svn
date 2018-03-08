@@ -50,7 +50,8 @@ function fn_main()
               theirs-conflict
               mine-full                 .mine
               theirs-full               .r5537
-        2 svn resolve --accept <type>   danale_scan_mp4.c
+        2 svn resolve --accept=<type>   danale_scan_mp4.c
+          svn resolve --accept=working  file_old.c
         3 vim 
         4 svn resolved PATHl            # 被[resolve --accept]替代
         5 svn revert                    # 万不得以
