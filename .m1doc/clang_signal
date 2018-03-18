@@ -70,10 +70,11 @@ int main()
     ulimit -c                           //可以查看是否打开此选项，若为0则为关闭；
     ulimit -c 0                         //可手动关闭
     ulimit -c 1000                      //为设置core文件大小最大为1000k
-    ulimit -c unlimited                 //设置core文件大小为不限制大小
 
+    ulimit -c unlimited                                                         # //设置core文件大小为不限制大小
     echo 1 > /proc/sys/kernel/core_uses_pid                                     # //文件名加pid扩展，添加则1，否则0
     echo "/opt/media/mmcblk0p1/core-%e-%p-%t" > /proc/sys/kernel/core_pattern   # //core文件保存位置或文件名
+
     kill -s SIGSEGV $$                  //gen core
     kill -s SIGSEGV 931                 //killall didn't gen a core file
     kill -s SEGV    931                 //busybox

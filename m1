@@ -459,7 +459,7 @@ function fn_time()                      { cat clang_time linux_time管理 jco_ti
 function fn_non_block_func()            { cat clang_non_block_func ;}
 function fn_non_sig_select()            { cat clang_non_sig_select ;}
 function fn_signal()                    { cat clang_signal ;}
-function fn_coredump()                  { cat clang_signal ;}
+function fn_coredump()                  { cat clang_cordump ;}
 function fn_tty()                       { cat clang_tty ;}
 function fn_iconv()                     { cat clang_iconv ;}
 function fn_md5()                       { cat clang_md5 ;}
