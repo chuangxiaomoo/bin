@@ -6,6 +6,7 @@ function fn_usage()
     echo "
         ----------- Usage --------------
         a       find ! -name '.' -a -name '*' | xargs -I{} svn add --force {}  | cat -n
+        i                               : svn info .
         c|cc    [filepath]              : svn ci [files...]
         cf                              : show conflict resolving steps
         D       {?|M}
@@ -24,6 +25,7 @@ function fn_usage()
         u       update
         U       Svn l 20 | Svn U zhangj : svn --user zhangj
 
+        svn relocate svn://sub.someaddress.com.tr/project
         svn help _____more.info_____
     "
 }
@@ -37,6 +39,7 @@ function fn_main()
     c)  svn ci $filelist                           && svn up                                ;;
    cc)  fl=`Svn Sc | awk '{print $2}'` ;svn ci $fl && svn up                                ;;
  -l|l)  [ -f "${2}" ] && filelist="5 ${@:2}"; svn log -v -l${filelist:-5}                   ;;
+    i)  svn info . | grep 'URL:' | sed 's/URL: /&\n/g'                                    ;;
     U)  for U in ${filelist:-zhangj}; do regex="-e '/${U}/,/--$/p' ${regex}"; done
         eval "sed -n ${regex} < /dev/stdin"
         ;;
