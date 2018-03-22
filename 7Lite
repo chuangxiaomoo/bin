@@ -715,6 +715,7 @@ function fn_ff()
     sed -i 's/^留言.*/*&*/g' txt
     sed -i 's/^李笑来.*/\n*&*/g' txt
 
+    # cat -s            # squeeze
     # RS='\n\n\n'       # 两行间隔
     # RS='\n\n\n\n'     # 单行间隔
     cat txt | awk -v RS='\n\n\n' '{print $0}' > txt.md
