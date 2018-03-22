@@ -707,6 +707,20 @@ function fn_txt2markdow()
     done < ${table}
 }
 
+function fn_ff()
+{
+    [ "${PWD}" = '/root/txt' ] || { echo "pwd:${PWD} must be ~/txt"; exit ;}
+
+    cp txt txt.org
+    sed -i 's/^留言.*/*&*/g' txt
+    sed -i 's/^李笑来.*/\n*&*/g' txt
+
+    # RS='\n\n\n'       # 两行间隔
+    # RS='\n\n\n\n'     # 单行间隔
+    cat txt | awk -v RS='\n\n\n' '{print $0}' > txt.md
+    echo 'process to txt.md'
+}
+
 function fn_main() 
 {
     cmdlist=(
@@ -744,6 +758,7 @@ function fn_main()
     "etc                    # backup etc"
     "pyx                    # pyc extract"
     "txt2markdow            # 给章节打上#"
+    "ff                     # xiaolai road to forturn free"
     )
 
     fn_execute "$@"
