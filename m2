@@ -307,6 +307,7 @@ function fn_03_沟通_communication()     { cat howto_03_沟通
                                           cat howto_relation.04.从朋友里选出做大事儿的人
                                           cat howto_relation.10.在职场核心业务上突破
                                           cat howto_relation.11.受同事欢迎
+                                          cat howto_relation.12.称赞同事和领导
                                           cat howto_relation.20.跨团队协作
                                           cat howto_relation.21.结交到比你厉害的朋友
                                           cat howto_relation.22.让别人支持你
