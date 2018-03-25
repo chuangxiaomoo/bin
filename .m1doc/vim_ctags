@@ -1,0 +1,10 @@
+# ctags
+
+[ctags小记](https://www.cnblogs.com/napoleon_liu/archive/2011/01/23/1942738.html)
+[ptags.py介绍](https://blog.csdn.net/bluehawksky/article/details/39494833)
+[download.ptags.py](http://svn.python.org/projects/python/trunk/Tools/scripts/ptags.py)
+
+```bash
+find . /usr/local/lib/python3.5/dist-packages/tushare -name '*.py' > .ctfile
+ctags -L .ctfile  -o .tags --language-force=python
+```

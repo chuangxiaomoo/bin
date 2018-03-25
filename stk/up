@@ -342,7 +342,7 @@ function fn_xRDdb()
 
 
     if [ "$?" -eq 0 ] ; then
-        echo "Update TABLE xRD SUCCESS" && return 0
+        echo "Update TABLE xRD SUCCESS, and see also: ${chao}.xRD.list" && return 0
     else
         echo "Update TABLE xRD FAILURE" && return 1
     fi
@@ -1814,8 +1814,8 @@ function fn_main()
     "hexun_day                          # 大盘日线数据 4:00:00 PM"
     "del_hexun_day                      # 删除大盘日线，防止冲突"
     "redo_hexun_day                     # 重做大盘日线数据"
-    # --------------------              ABOVE IS FIXED SEQUENCE --------------------
     "xRDdb [--up.PWR -u]                # --- wget升级除权数据 ---"
+    # --------------------              ABOVE IS FIXED SEQUENCE --------------------
     "file_to_table {code...|file}       # 写file到表{TBL:-zxg}，并......ZXG.BLK...."
     "table_to_file {table:-chao}        # 添加表{table:-chao}到/tmp/zxg"
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
