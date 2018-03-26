@@ -10,7 +10,7 @@ function fn_usage()
         c|cc    [filepath]              : svn ci [files...]
         cf                              : show conflict resolving steps
         D       {?|M}
-        d       [filepath]              : equal diff -r BASE:WORKING
+        d       [-r9527] [filepath]     : equal diff -r BASE:WORKING
         dp      [filepath]              : equal diff -r PREV:COMMITTED
         dc      r9527 [filepath]        : equal diff -r r9526:r9527
         dh                              : horizontal-split-diff
@@ -38,7 +38,8 @@ function fn_main()
     a)  /usr/bin/find ! -name '.' -a -name '*' | xargs -I{} svn add --force {}  | cat -n    ;;
     c)  svn ci $filelist                           && svn up                                ;;
    cc)  fl=`Svn Sc | awk '{print $2}'` ;svn ci $fl && svn up                                ;;
- -l|l)  [ -f "${2}" ] && filelist="5 ${@:2}"; svn log -v -l${filelist:-5}                   ;;
+    l)  [ -f "${2}" ] && filelist="5 ${@:2}"; svn log -v -l${filelist:-5}                   ;;
+   ll)  [ -f "${2}" ] && filelist="5 ${@:2}"; svn log    -l${filelist:-5}                   ;;
     i)  svn info ${2:-.} | grep 'URL:' | sed 's/URL: /&\n/g'                                ;;
     U)  for U in ${filelist:-zhangj}; do regex="-e '/${U}/,/--$/p' ${regex}"; done
         eval "sed -n ${regex} < /dev/stdin"
