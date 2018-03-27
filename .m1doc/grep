@@ -11,6 +11,10 @@
    -m NUM,          --max-count=NUM
       Stop reading a file after NUM matching lines.
 
+## 抑制内容输出
+
+   -l, --files-with-matches
+
 ## filter grep
 
     ps | grep -v [j]co_server

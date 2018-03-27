@@ -1,3 +1,5 @@
+# ksh
+
 ```bash
             ksh                                       bash            
 function    function fn_main                          兼容ksh，可有可无
@@ -10,3 +12,8 @@ loop        while [ ${i:=0} -lt ${#list[@]} ]; do     for (( i=0; i<0; i+=1 )); 
                 let i++
             done
 ```
+
+CPPFLAGS = 
+CFLAGS = -g -O2 -ffunction-sections -fdata-sections
+LDSTATIC = 
+LDFLAGS = -Wl,-gc-sections
