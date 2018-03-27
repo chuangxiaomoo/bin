@@ -713,7 +713,8 @@ function fn_ff()
 
     cp txt txt.org
     sed -i 's/^留言.*/*&*/g' txt
-    sed -i 's/^李笑来.*/\n*&*/g' txt
+
+    [ "${1:-0}" -eq 1 ] && sed -i 's/^李笑来.*/\n*&*/g' txt || sed -i 's/^李笑来.*/*&*/g' txt
 
     # cat -s            # squeeze
     # RS='\n\n\n'       # 两行间隔
@@ -759,7 +760,7 @@ function fn_main()
     "etc                    # backup etc"
     "pyx                    # pyc extract"
     "txt2markdow            # 给章节打上#"
-    "ff                     # xiaolai road to forturn free"
+    "ff {[0]|1}             # xiaolai road to forturn free"
     )
 
     fn_execute "$@"
