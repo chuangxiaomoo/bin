@@ -18,12 +18,16 @@
 
 ## e2fsprogs
 
-CC=arm-buildroot-linux-uclibcgnueabi-gcc ./configure --host=arm-linux
+LDFLAGS="-Wl,-gc-sections" CFLAGS="-g -O2 -ffunction-sections -fdata-sections" CC=arm-buildroot-linux-uclibcgnueabi-gcc ./configure --host=arm-linux
 
 ## parted
 
 CC=arm-buildroot-linux-uclibcgnueabi-gcc ./configure --host=arm-linux --disable-device-mapper --without-readline
 
+LDFLAGS="-Wl,-gc-sections" CFLAGS="-g -O2 -ffunction-sections -fdata-sections" CC=arm-buildroot-linux-uclibcgnueabi-gcc ./configure --host=arm-linux --disable-device-mapper --without-readline --enable-shared=no --disable-nls --enable-pc98=no --enable-debug=no
+
+du -sk parted/parted
+arm-buildroot-linux-uclibcgnueabi-strip parted/parted
 
 # lsof
 
