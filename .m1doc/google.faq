@@ -64,3 +64,14 @@ What does ... mean? [Blow up](爆仓)
 # python mysql select to pandas dataframe
 
 https://stackoverflow.com/questions/12047193/how-to-convert-sql-query-result-to-pandas-data-structure
+
+# How to get a list of all valid IP addresses in a local network? [closed]
+
+https://stackoverflow.com/questions/13669585/how-to-get-a-list-of-all-valid-ip-addresses-in-a-local-network
+[Linux](nmap)
+[Windows](ping 192.168.2.255; arp -a)
+1 把地址分配池限定范围，例如 192.168.2.168 ~ 192.168.2.178
+2 ping -n 4 192.168.2.255
+3 arp -a
+4 对步骤3的结果进行范围过滤，并测试端口，得到相应结果
+
