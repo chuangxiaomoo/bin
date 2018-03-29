@@ -1149,7 +1149,7 @@ function fn_troubleshooting()           { cat mysql_troubleshooting ;}
 }
 
 function fn_sql()                       {
-function fn_kts()                       { cat sql_kts ;}
+function fn_kts()                       { cat sql_kts sql_py ;}
 function fn_min()                       { cat sql_min ;}
 function fn_base()                      { cat sql_base ;}
 function fn_misc()                      { cat sql_misc ;}       # 重要技巧

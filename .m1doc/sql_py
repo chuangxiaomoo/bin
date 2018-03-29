@@ -1,0 +1,25 @@
+# tables
+
+CREATE TABLE d1 (
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    open        DECIMAL(6,2) NOT NULL,
+    high        DECIMAL(6,2) NOT NULL,
+    low         DECIMAL(6,2) NOT NULL,
+    close       DECIMAL(6,2) NOT NULL,
+    p_change    DECIMAL(6,2) NOT NULL,
+    volume      DECIMAL(12,2) NOT NULL,
+    turnover    DECIMAL(12,2) NOT NULL,
+
+    ma5         DECIMAL(6,2) NOT NULL,
+    ma10        DECIMAL(6,2) NOT NULL,
+    ma20        DECIMAL(6,2) NOT NULL,
+
+    hsl20       DECIMAL(12,2) NOT NULL, 
+    vr1_2       DECIMAL(12,2) NOT NULL, 
+    vr3_8       DECIMAL(12,2) NOT NULL,  
+    vr5_20      DECIMAL(12,2) NOT NULL, 
+    vrt_60      DECIMAL(12,2) NOT NULL,
+
+    INDEX(code,date)
+);
