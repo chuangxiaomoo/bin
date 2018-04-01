@@ -1,9 +1,9 @@
 #!/bin/bash -
 #-----------------------------------------------------------------------------
-#          FILE: csgen
-#   DESCRIPTION: Generate ${reffile} for cscope
+#          FILE: pgen
+#   DESCRIPTION: Generate ${reffile} for ctags 
 #        AUTHOR: moo (God helps those who help themselves) 
-#       CREATED: 2012-05-24 11:29:59 HKT
+#       CREATED: 2018-03-31
 #      REVISION: 1.0 
 #-----------------------------------------------------------------------------
 
@@ -20,18 +20,13 @@ function xt_ret()
 function fn_usage()
 {
     cat <<-HERE
-    Usage: ${0##*/} [OPTION]
-    Generate ${reffile} for cscope
+    Usage: 
+        pgen    , rebuild .py.pathes
+        pgen -i , vi .py.pathes, then rebuild
+        pgen -r , remove db files
 
-        -h, --help          show usage
-        -r, --remove        remove ${reffile}* b4 cscope -Rbq
-        -i, --interactive   vi ${cspathes} of project b4 cscope -Rbq
-        -f, --filelist      rebuild ${reffile} __without__ update ${csfiles}
-        -u,                 Unconditionally rebuild ${reffile} and __update__ ${csfiles} FROM ${cspathes}
-
-    Configuration:
-        .cscope.pathes, include path or exclude pathes
-        head with -, support all kinds of pathes like: '' '/' './' '../'
+    Configuration
+        .py.pathes, include path or exclude pathes, line start with '-' is exclude_path
 	HERE
 
     exit 0
@@ -39,24 +34,15 @@ function fn_usage()
 
 function fn_main()
 {
-    cpplang=(
-        # *.c is default
-        '*.h'
-        '*.cpp'
-        '*.cc'
-        '*.xx'
-        # include
-        '*.hh'
-        '*.hpp'
-        '*.inc'
+    pylang=(
+        '*.py'
     )
 
-    reffile=.cscope.out
-    csfiles=.cscope.files
-   cspathes=.cscope.pathes
+    reffile=.py.tags
+    pyfiles=.py.files
+   pypathes=.py.pathes
     exclude='(||)'  # grep -E -v "${exclude}"
-   namepatt="-iname '*.c' -print"
-    incpath='-I/usr/local/include'
+   namepatt="-iname '*.py' -print"
 
     if [ -f ${reffile} ] && lsof ${reffile} >& /dev/null; then
         echo "
@@ -71,28 +57,24 @@ function fn_main()
 
     case "$1" in
         -h|--help|h)        fn_usage                            ;;
-        -i|--interactive)   vi ${cspathes}                      ;;
-        -u) force=$1                                            ;;
-        -f) cscope ${incpath} -bq -i$csfiles -f${reffile}
-            exit 0                                              ;;
-            # -k turns off the use of [/usr/include]
+        -i|--interactive)   vi ${pypathes}                      ;;
         -r|--remove)
             echo "------------------------------------"
-            echo "RM ${reffile%%.out}.* but keep ${cspathes}"
-            ls ${reffile%%.out}* | grep -v pathes | xargs rm -rf
+            echo "RM .py.* but keep ${pypathes}"
+            rm -f ${reffile} ${pyfiles}
             exit 0                                              ;;
         *)  ;;
     esac
 
     local idx
-    for (( idx=0; idx<${#cpplang[@]}; idx+=1 )); do
-        namepatt="${namepatt} -o -iname '${cpplang[$idx]}' -print"
+    for (( idx=0; idx<${#pylang[@]}; idx+=1 )); do
+        namepatt="${namepatt} -o -iname '${pylang[$idx]}' -print"
     done
 
-    [ ! -f "$cspathes" ] && > ${cspathes} && vi ${cspathes}
+    [ ! -f "$pypathes" ] && > ${pypathes} && vi ${pypathes}
 
     # exclude line start with '-'
-    exclude_path=`grep "^-" $cspathes | sed 's/^- *//g'`
+    exclude_path=`grep "^-" $pypathes | sed 's/^- *//g'`
 
     if [ -n "$exclude_path" ]; then
         for x_path in $exclude_path; do
@@ -110,7 +92,7 @@ function fn_main()
 
    #     find [path1] [path2] [path3] -name <name>
    #echo find . $exclude_opt $namepatt 
-    eval find . $exclude_opt $namepatt > $csfiles
+    eval find . $exclude_opt $namepatt > $pyfiles
     xt_ret $? "" || return $?
 
     while read srcpath; do
@@ -120,15 +102,13 @@ function fn_main()
         # 应用于文件夹与文件在同一目录的情况，如 http下 httpd*.c onvif: 
         # Format: pathname -maxdepth 1
         [ ! -d "${srcpath%% *}" ] && echo "$srcpath: No such directory" && exit 0
+        eval find ${srcpath} ${exclude_opt} $namepatt >> $pyfiles
+    done < $pypathes
 
-        # echo \
-        #    find ${srcpath} ${exclude_opt} $namepatt >> $csfiles"
-        eval find ${srcpath} ${exclude_opt} $namepatt >> $csfiles
-    done < $cspathes
+    sort -u $pyfiles -o $pyfiles
+    echo "building ctags db success."
 
-    sort -u $csfiles -o $csfiles
-    echo "building cscope db."
-    cscope ${incpath} ${force} -bq -i $csfiles -f${reffile} 
+    ctags -L ${pyfiles}  -o ${reffile} --language-force=python
 }
 
 fn_main $@

@@ -1,10 +1,33 @@
 # tushare
 
-| 接口            | 支持tov | 描述                       | 优缺点                     |
-| :------         | :------ | :------                    | :------                    |
-| get_hist_data() | yes     | ma5...ma20, v_ma5...v_ma20 | 数据与稳定性达到平衡       |
-| get_k_data()    | no      | 支持567个指数行情          | 无tov                      |
-| bar()           | yes     | tushare的1.0版本           | 使用因子factors=时概率阻塞 |
+| 接口            | 支持tov | 描述                       | 优缺点                     | 稳定性          |
+| :------         | :------ | :------                    | :------                    | :------         |
+| get_hist_data() | yes     | ma5...ma20, v_ma5...v_ma20 | 数据与稳定性达到平衡       | 603999 无法获取 |
+| get_k_data()    | no      | 支持567个指数行情          | 无tov                      | 最快 .3s        |
+| bar()           | yes     | tushare的1.0版本           | 使用因子factors=时概率阻塞 | 时而1s以上      |
+
+```python
+import sys
+import time
+import pandas as pd
+import candle as k
+import tushare as ts
+
+print(ts.__version__)
+#df = ts.get_hist_data('603999') #一次性获取全部日k线数据
+t_bar = time.time()
+df = ts.get_k_data('603999')
+k.__calc_time('t_bar', t_bar)
+
+print(df.head(5), len(df), '_____________')
+
+t_bar = time.time()
+cons = ts.get_apis()
+df = ts.bar('603999', conn=cons)
+k.__calc_time('t_bar', t_bar)
+print(df.head(5), len(df))
+ts.close_apis(cons)
+```
 
 # bar()
 
@@ -58,6 +81,3 @@ data.sort_index(ascending=True) # zhangj
 4）获取沪深300指数10月份日线行情：        ts.get_k_data('399300', index=True,start='2016-10-01', end='2016-10-31')
 5）获取鹏华银行分级B的60分钟行情：        ts.get_k_data('150228', ktype='60')
 
-# get_hist_data() get_h_data()
-
-最初版本，最详尽的数据

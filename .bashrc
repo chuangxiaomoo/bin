@@ -374,6 +374,9 @@ gg()
     esac
 }
 
+scdo()  { [ -f "${1}" ] && scp  $1 cdo:/root/bin || echo not exit file [${1}] ;}
+scmo()  { scp cdo:${1} ~/cdo ;}
+
 cpcom() { mkdir -p /winc/Export/com/; rm -rf /winc/Export/com/*;     cp -a release/com/* /winc/Export/com/ ;}
 cptar() { file=`ls release/tar/*.tgz`; 
           mkdir -p /winc/Export/com/; rm -rf /winc/Export/com/*.tgz; cp -a $file         /winc/Export/com/ ;}

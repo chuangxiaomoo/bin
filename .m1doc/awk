@@ -44,6 +44,22 @@
                 printf("\n")
     }' filename
 
+# continue 
+    BEGIN {
+         for (x = 0; x <= 20; x++) {
+             if (x == 5)
+                 continue
+             printf "%d ", x
+         }
+         print ""
+    }
+
+# next
+    NF != 4 {
+        printf("%s:%d: skipped: NF != 4\n", FILENAME, FNR) > "/dev/stderr"
+        next
+    }
+
 # bit and or 
 
 function fn_calc()
