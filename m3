@@ -10,6 +10,7 @@ article_001_关于如何准备一场演讲的清单
 
 # lesson
 
+The.Sense.of.Style *寫作風格的意識*
 xsdx_lesson_1
 xsdx_lesson_2
 

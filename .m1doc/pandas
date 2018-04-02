@@ -1,7 +1,10 @@
-#! /usr/bin/python
+# df.get_value set_value 比 at iat 快近一倍。
 
-df.get_value set_value 比 at iat 快近一倍。
 使用 pip3 list show pandas 安装路径，再用 grep 搜索即可得
+
+1. pip3 show padas, 
+2. 使用 vim grep 'get_value is deprecated'
+3. 大概4个地方，注释之
 
 # pandas.DataFrame (create, select, add, del)
 

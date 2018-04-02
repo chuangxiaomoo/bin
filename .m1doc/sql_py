@@ -77,7 +77,7 @@ CREATE TABLE udate (
     mtime       time NOT NULL
 );
 
-DROP TABLE top10;
+DROP TABLE IF EXISTS top10;
 CREATE TABLE IF NOT EXISTS top10(
         code            INT(6) ZEROFILL NOT NULL DEFAULT 0,
         top10           DECIMAL(6,2) NOT NULL,

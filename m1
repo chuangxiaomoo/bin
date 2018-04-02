@@ -48,9 +48,9 @@ function fn_filter()                    { cat wireshark_filter ;}
 }
 
 function fn_python()                    { 
-                                          cat python_pip 
-                                          cat pandas tushare tu.py
                                           cat python
+                                          cat python_pip
+                                          cat pandas tushare tu.py
                                           cat pycharm
 function fn_pydoc()                     { cat python_pydoc ;}
 function fn_huawei()                    { cat python_huawei ;}
@@ -1115,7 +1115,7 @@ function fn_apt-get()                   {
 function fn_source()                    { cat apt-get_source ;}
 function fn_command()                   { cat apt-get_command ;}
     local opts=(
-        ubuntu
+        ubuntu centos
         source
         command
     )
