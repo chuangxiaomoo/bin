@@ -77,7 +77,7 @@ alias .en_beep="echo 1 >/tmp/kts/chao.beep"
 alias  iinc='vim ~/.inc'
 alias  .inc='cat ~/.inc'
 
-alias   cdo='ssh 47.94.21.194'  # Dong@123
+alias   cdo='ssh -o ServerAliveInterval=60 47.94.21.194'  # Dong@123
 alias     f='find . -name'
 alias     l='ls -CF'
 alias    ls='ls --color=auto'

@@ -76,4 +76,10 @@ https://stackoverflow.com/questions/13669585/how-to-get-a-list-of-all-valid-ip-a
 4 对步骤3的结果进行范围过滤，并测试端口，得到相应结果
 
 # How to Keep Alive SSH Sessions
-CentOS start sshd service command
+https://stackoverflow.com/questions/25084288/keep-ssh-session-alive
+[ssh client config -- not server](/root/.ssh/config)
+Host examplehost
+Hostname cdo
+ServerAliveInterval 180
+ServerAliveCountMax 2
+
