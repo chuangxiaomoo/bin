@@ -9,3 +9,4 @@ bind '"\ei": "192.168.2."'          #
 bind '"\el": "127.0.0.1"'           # Local Loopback
 bind '"\ee": "\C-asudo \C-e"'       # Alt-e 自动输入 sudo
 
+# ___________ following is SecureCRT bind: .CRT

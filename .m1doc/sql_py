@@ -71,8 +71,10 @@ CREATE TABLE nmcap (
 );
 
 
+DROP TABLE IF EXISTS udate;
 CREATE TABLE udate (
     udate       date NOT NULL, 
+    utime       time NOT NULL, 
     mdate       date NOT NULL, 
     mtime       time NOT NULL
 );
