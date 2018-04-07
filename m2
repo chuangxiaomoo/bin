@@ -1151,6 +1151,7 @@ function fn_main() {
         ljsw                            # 罗辑思维
         sbfm                            # 上兵伐谋
         music
+        name_children
         personage
         prof                            # professionalism 专业主义 职业化
         stevejobs

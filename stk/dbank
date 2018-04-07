@@ -561,6 +561,9 @@ function fn_maxdate()
 
 function fn_get_prev()
 {
+    sqls="SELECT DISTINCT date FROM d1 WHERE code<=10 and date<'${END}' ORDER by date DESC LIMIT 1"
+    mysql -N kts<<<"${sqls}"
+    return
     # 当END不存在时，亦正确
     sqls="SELECT date FROM day WHERE code=${CODE:-900001} and date<'$END'"
     mysql -N kts<<<"${sqls} ORDER by date DESC LIMIT ${1:-0},1"

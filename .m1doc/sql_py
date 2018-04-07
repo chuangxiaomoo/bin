@@ -81,8 +81,29 @@ CREATE TABLE udate (
 
 DROP TABLE IF EXISTS top10;
 CREATE TABLE IF NOT EXISTS top10(
-        code            INT(6) ZEROFILL NOT NULL DEFAULT 0,
-        top10           DECIMAL(6,2) NOT NULL,
-        INDEX(code)
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    top10       DECIMAL(6,2) NOT NULL,
+    INDEX(code)
 );
 LOAD DATA LOCAL INFILE '/root/cdo/top10' INTO TABLE top10;
+
+
+DROP TABLE IF EXISTS uni;
+CREATE TABLE IF NOT EXISTS uni(
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    close       DECIMAL(6,2)  NOT NULL,
+    ma5         DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    ma20        DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    top10       DECIMAL(6,2)  NOT NULL,
+    p_change    DECIMAL(6,2) NOT NULL,
+    tov         DECIMAL(12,2) NOT NULL DEFAULT 0,
+    hsl20       DECIMAL(12,2) NOT NULL DEFAULT 0, 
+    vr1_2       DECIMAL(12,2) NOT NULL DEFAULT 0, 
+    vr3_8       DECIMAL(12,2) NOT NULL DEFAULT 0,  
+    vr5_20      DECIMAL(12,2) NOT NULL DEFAULT 0, 
+    vrt_60      DECIMAL(12,2) NOT NULL DEFAULT 0,
+    amount      DECIMAL(12,2) NOT NULL,
+    nmc         DECIMAL(12,2) NOT NULL,
+    INDEX(code)
+);
