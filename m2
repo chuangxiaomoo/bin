@@ -152,6 +152,8 @@ function fn_010_李笑来谈读书经验()      { cat book_010_李笑来谈读�
                                           cat book_011_李笑来谈阅读操作系统
                                           cat book_012_张五常谈读书和思考
                                           cat book_013_夜东坡谈读书和思考
+                                          cat book_014_夜东坡谈读书和思考
+                                          cat book_015_章亦春抄书的奥秘
                                           cat book_020_如何选书
                                           ;}
 
@@ -213,7 +215,7 @@ function fn_tiandao()                   { cat book_tiandao book_遥远的救世�
 function fn_list()                      { cat book_400_PoorCharliesAlmanack_穷查理宝典
                                               book_401_Antifragile
                                               book_410_The_Sense_of_Style
-}
+                                        }
     local opts=(
         list
         cept
@@ -242,8 +244,6 @@ function fn_list()                      { cat book_400_PoorCharliesAlmanack_穷�
         66_佛语
 
         000_黄晓捷谈在校学习
-        010_李笑来谈读书经验
-        011_李笑来谈阅读操作系统
         012_李笑来人人都能用英语
         013_李笑来从筷子到开挂人生
 
