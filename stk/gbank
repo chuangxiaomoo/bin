@@ -1,0 +1,138 @@
+#! /bin/bash
+
+# _____________________________boundary_of_wolf______________________________
+export PATH=.:~/bin:$PATH
+
+[ "${DEBUG:-0}" = 1 ] &&
+SUBOUT='/dev/stdout' || SUBOUT='/dev/null'
+
+# DL tool
+WGET='timeout 34 /usr/bin/wget'
+W3M='timeout  60 /usr/bin/w3m'
+
+# ____________________temp_files________________________
+info='/tmp/kts/info'
+chao='/tmp/kts/chao'
+error='/tmp/kts/error'
+cache='/tmp/kts/cache'
+
+mkdir -p /tmp/kts
+
+touch $cache ${error} ${chao} ${info}
+
+function fn_date_2_str() { echo ${1//-/} ;}
+function fn_str_2_date() { local dt2=$1; echo ${dt2:0:4}-${dt2:4:2}-${dt2:6:2} ;}
+
+function fn_iscode()
+{
+    local num=`echo -n $1 | wc -c`
+    [[ "${1}" =~ ^[036][0-9]+$ ]] && [ "${1}" -ne 0 ] && [ ${num:-0} -eq 6 ]
+}
+
+function fn_isholiday()
+{
+    RET=`mysql -N kts <<< "SELECT COUNT(date)!=1 FROM d1 WHERE code<=10 and date='${1:-2038-01-01}'"`
+    return $RET
+}
+
+function fn_isdate() { echo -n $1 | grep -q -E '^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$' ;}
+function fn_isdatetime() { test ${#1} -eq 14 ;}
+function fn_issqltrue()  { RET=`mysql -N kts <<< "SELECT IF(${*}, 0, 1)"`; return $RET ;}
+
+function fn_timestamp_market()
+{
+    DATETIME=(`$W3M -dump ${url_sh000001} | awk -F',' '{print $(NF-2), $(NF-1)}'`)
+    OPENDATE=${DATETIME[0]}
+    OPENTIME=${DATETIME[1]}
+    if [ -z "$OPENDATE" ]; then
+        fn_echo_fail "
+        FINA UNREACHABLE!
+        "
+        return 1
+    fi
+
+    export DATE=`date +%Y-%m-%d`
+
+    if [ "$unarm_close_forbid" = 'true' ] ; then
+        export DATE=${OPENDATE}
+        return 0
+    fi
+
+    if [ "$DATE" != "$OPENDATE" ]; then
+        echo "
+        Error: market is close
+        " && return 1
+    fi
+
+    MAXDATE=`fn_maxdate`
+    if [ "$MAXDATE" = "${OPENDATE}" ]; then
+        if [ "${is_del_routine}" != 'true' ]; then
+            echo "
+            WARNING: $MAXDATE data exist, try up redo_hexun_day
+            " && return 1
+        fi
+    fi
+}
+
+function fn_maxdate()
+{
+    mysql -N kts <<< "SELECT max(date) from d1 WHERE code<=10"
+}
+
+function fn_get_prev()
+{
+    sqls="SELECT DISTINCT date FROM d1 WHERE code<=10 and date<'${END}' ORDER by date DESC LIMIT 1"
+    mysql -N kts<<<"${sqls}"
+    return
+}
+
+function fn_get_next()
+{
+    sqls="SELECT DISTINCT date FROM d1 WHERE code>=10 and date>'$END'"
+    mysql -N kts<<<"${sqls} ORDER by date ASC LIMIT 1"
+}
+
+function fn_get_date()
+{
+    # Usage: fn_get_date offset size
+    local sta=${1:-1}
+    [ "${sta}" -eq 0 ] && fn_echo_fail "fn_get_date sta could not be 0" && exit
+    let sta--           #sta=offset-1
+    sqls="
+        SELECT DISTINCT date from d1
+        WHERE code<=10 and date<='${END}'
+        ORDER by date DESC LIMIT ${sta},${2:-1}
+    "
+    #echo ${sqls}; exit
+    mysql -N kts <<< "${sqls}"
+}
+
+function fn_set_END()
+{
+    CURR=`fn_maxdate`
+
+    if [ -n "${END}" ]; then
+        END=${END//END/${CURR}}                         # 指定为END
+        PREV=`END=${END//PREV/${CURR}} fn_get_prev`     # 指定为PREV
+        END=${END//PREV/${PREV}}                        # echo P:${PREV} E:${END}; exit
+    elif [ -n "${iEND}" ]; then
+        END=`END=${CURR} fn_get_date ${iEND} 1`         # 使用iEND时，必是从CURR倒数起
+    else
+        END=${END:-${CURR}}                             # 指定为CURR
+    fi
+
+    PREV=`fn_get_prev ${iPASS:-0}`                      # 指定PREV，通常用作比对日期
+
+    #echo iEND:${iEND} END:${END} PREV:${PREV}; exit
+}
+
+function fn_list_date()
+{
+    fn_get_date 1 ${1:-10} | cat -n
+}
+
+date_F=`date +%F`
+date_T=`date +%T`
+echo "${date_F}.${date_T} ${BASH_SOURCE[1]} ${@}" >> /var/dbank.trace
+
+[ "${BASH_SOURCE##*/}" != "${0##*/}" ] && return 0
