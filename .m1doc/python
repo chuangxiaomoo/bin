@@ -101,6 +101,13 @@ t = (1,)                                        # 只有1个元素的tuple定义
 >>> L[-2:-1]
 ['Bob']
 
+# 字符串格式化
+
+def print_hex_without_0x():
+    s = "123456789我是中国人"
+    for c in s:
+        print(format(ord(c),'x'))
+
 # 函数.args.kwargs
 
 #  *args 表示任何多个无名参数，它是一个tuple；
