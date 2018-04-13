@@ -13,3 +13,10 @@
 解释：为了使用figlet命令，
 你还要去安装一个figlet（http://www.figlet.org/）这是一个让你画ASCII图的命令。
 
+字体目录：
+/usr/share/figlet
+
+字体Examples：
+[](http://www.figlet.org/examples.html)
+
+[字体下载](http://www.figlet.org/fontdb.cgi)
