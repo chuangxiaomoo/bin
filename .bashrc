@@ -292,7 +292,7 @@ lsgcc()
     ____________________nvr.265________________
     arm-linux-   
     aarch64-none-elf-   
-    arm-buildroot-linux-uclibcgnueabi-          # app
+    arm-buildroot-linux-uclibcgnueabi-          # main.exe
     arm-none-eabi-                              # 2011.03 Mboot
     arm-none-linux-gnueabi-                     # 2012.09 Mboot
 

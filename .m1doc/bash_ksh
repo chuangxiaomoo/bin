@@ -1,7 +1,7 @@
 # ksh
 
 ```bash
-            ksh                                       bash            
+            pdksh                                     bash            
 function    function fn_main                          兼容ksh，可有可无
                      fn_main()
 
@@ -11,6 +11,9 @@ loop        while [ ${i:=0} -lt ${#list[@]} ]; do     for (( i=0; i<0; i+=1 )); 
                 echo ${list[$i]}
                 let i++
             done
+FUNCNAME    $0 在 function fn_main 格式下有效
+${var// */} 不支持
+${@:2}      不支持
 ```
 
 CPPFLAGS = 
