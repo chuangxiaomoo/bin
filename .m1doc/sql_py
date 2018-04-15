@@ -107,3 +107,33 @@ CREATE TABLE IF NOT EXISTS uni(
     nmc         DECIMAL(12,2) NOT NULL,
     INDEX(code)
 );
+
+DROP TABLE IF EXISTS mz60;
+CREATE TABLE IF NOT EXISTS mz60(
+    date   date            NOT NULL DEFAULT 0,
+    code   INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    hi3    DECIMAL(6, 2)   NOT NULL DEFAULT 0,
+    lo3    DECIMAL(6, 2)   NOT NULL DEFAULT 0,
+    n3     INT             NOT NULL DEFAULT 0,
+    hi2    DECIMAL(6, 2)   NOT NULL DEFAULT 0,
+    lo2    DECIMAL(6, 2)   NOT NULL DEFAULT 0,
+    n2     INT             NOT NULL DEFAULT 0,
+    hi     DECIMAL(6, 2)   NOT NULL DEFAULT 0,
+    lo     DECIMAL(6, 2)   NOT NULL DEFAULT 0,
+    n      INT             NOT NULL DEFAULT 0,
+    cnvg2  DECIMAL(6, 2)   NOT NULL DEFAULT 0,
+    cnvg3  DECIMAL(6, 2)   NOT NULL DEFAULT 0,
+    topx   DECIMAL(6, 2)   NOT NULL DEFAULT 0,
+    rb1    DECIMAL(6, 2)   NOT NULL DEFAULT 0,
+    botx   DECIMAL(6, 2)   NOT NULL DEFAULT 0,
+    bot0   DECIMAL(6, 2)   NOT NULL DEFAULT 0,
+    bot1   DECIMAL(6, 2)   NOT NULL DEFAULT 0,
+    close  DECIMAL(6, 2)   NOT NULL DEFAULT 0,
+    ma20   DECIMAL(6, 2)   NOT NULL DEFAULT 0,
+    mor5   INT             NOT NULL DEFAULT 0,
+    zor5   INT             NOT NULL DEFAULT 0,
+    trade  DECIMAL(6, 2)   NOT NULL DEFAULT 0,
+    INDEX(date, code)
+);
+DROP TABLE IF EXISTS mz30;
+CREATE TABLE IF NOT EXISTS mz30 LIKE mz60;

@@ -176,7 +176,7 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               TIME
                                               FeynmanTechnique
                                               xiaolai_ff 1001.q
-                                              xiaolai_cept
+                                              xiaolai_cept dialog.md
                                               xiaolai_2016_annual
                                               xiaolai_Metacognition meta
                                               xiaolai_Execution_vs_Implementation
