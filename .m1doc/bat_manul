@@ -18,8 +18,10 @@
                 cat         type 
                 clear       cls
                 grep        findstr     :: 正规匹配 . * [class]
+
     :: ---------- builtin var  --------
                 $PWD        %CD% 
+
     :: --------------------------------
     注释        #           rem :: ;
     文件调用    .           call        :: 直接调用批处理文件，相当于bash的exec
@@ -31,6 +33,8 @@
                 $?          %ERRORLEVEL%:: [ $? -eq 0 ] && echo succ 
                                         :: if ERRORLEVEL 0 @echo succ
     重定义      /dev/null   nul         ::
+    多命令同行  ;           &           :: Cmd.exe runs the first cmd, and then the second one.
+    多命令同行  &&          &&          :: run the cmd following && only if the first is successful.
 
 (4) 变量 AND SET
     ::

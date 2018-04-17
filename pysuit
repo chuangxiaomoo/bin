@@ -1,0 +1,84 @@
+#! /usr/bin/python3
+
+import sys
+
+def src_install_python35(argv):
+    print("""
+    cd /opt/src/test/
+    wget https://www.python.org/ftp/python/3.5.0/Python-3.5.0.tgz
+    apt-get install libssl-dev || yum install libssl-dev
+    tar xzvf Python-3.5.0.tgz && cd Python-3.5.0 && ./configure --enable-optimizations && make && make install
+    """)
+
+def apt_install_python3(argv):
+    print("""
+    用源码安装是最快件的。
+    [在 Ubuntu 14.04.3 上安装 Python 3.5](https://plumz.me/archives/2333/)
+    apt-get install python3
+    """)
+
+def sit_getsitepackages(argv):
+    import site
+    print('\n',site.getsitepackages(),'\n')
+
+def pip_usage(argv):
+    print("""
+    # pip 配置文件
+    %APPDATA%\pip\pip.ini
+
+    # 查看已安装
+    pip list --format=columns
+
+    # 常用package
+    pip install numpy
+    pip install matplotlib
+    pip install pymysql
+    pip install lxml
+    pip install requests
+    pip install bs4
+    pip install pandas
+    pip install tushare
+    pip install bokeh
+    """)
+
+def dir_file():
+    print("""
+    os.mkdir()
+    os.makedirs(dir, 0o755, exist_ok=True)  # 
+    os.path.islink(fname)                   # link exist
+    os.path.isfile(fname)                   # file exist
+    os.remove()                             # will remove a file.
+    os.rmdir()                              # will remove an empty directory.
+    shutil.rmtree()                         # will delete a directory and all its contents.
+    """)
+
+usage="""\
+Usage:
+  pysuit id [argv1, argv2, ...]
+"""
+
+def main(argv):
+    cmdlist=(
+    src_install_python35, "src_install_python35     # 源码安装 python3.5"               ,
+    apt_install_python3 , "apt_install_python3      # apt-get安装 python3.5"            ,
+    sit_getsitepackages , "sit_getsitepackages      # 包安装路径，类似 C /usr/include"  ,
+    pip_usage           , "pip_usage                # "                                 ,
+    dir_file            , "dir_file                 # 常用 dir file 处理"               ,
+    )
+    try:
+        if (len(argv) > 1):
+            i = int(argv[1])
+    except Exception as ex:
+        i = 300
+        #print("got non-digital %s" % ex)
+
+    if (len(argv) == 1 or i >= len(cmdlist)/2):
+        print(usage)
+        for i in range(0, len(cmdlist), 2):
+            print("  %-4d%s" % (i/2, cmdlist[i+1]))
+        print()
+        return
+    cmdlist[i*2](argv[2:])
+
+if __name__ == "__main__":
+    main(sys.argv)
