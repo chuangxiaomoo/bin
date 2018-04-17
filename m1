@@ -89,6 +89,7 @@ function fn_regex()                     { cat regex ;}
 function fn_grep()                      { cat grep ;}
 function fn_find()                      { cat find ;}
 
+function fn_alibaba()                   { cat alibaba taobao ;}
 function fn_google()                    { cat google google.faq ;}
 function fn_chrome()                    { cat chrome ;}
 
@@ -1287,7 +1288,6 @@ function fn_goyo()                      { cat jimxl_goyo;}
     fn_print $@
 }
 
-function fn_alibaba()                   { cat alibaba ;}
 function fn_begin()                     { 
 function fn_language()                  { cat begin_language ;}
 function fn_melody()                    { cat begin_melody ;}
@@ -1410,7 +1410,6 @@ function fn_main() {
     local LASTARG=${!#}
     local opts=(
         1Line
-        alibaba                 # taobao
         apt-get
         agile                   # project 做项目，带团队
         adobepdf
