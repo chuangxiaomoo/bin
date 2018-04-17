@@ -41,7 +41,7 @@ def pip_usage(argv):
     pip install bokeh
     """)
 
-def dir_file():
+def os_shutil(argv):
     print("""
     os.mkdir()
     os.makedirs(dir, 0o755, exist_ok=True)  # 
@@ -63,7 +63,7 @@ def main(argv):
     apt_install_python3 , "apt_install_python3      # apt-get安装 python3.5"            ,
     sit_getsitepackages , "sit_getsitepackages      # 包安装路径，类似 C /usr/include"  ,
     pip_usage           , "pip_usage                # "                                 ,
-    dir_file            , "dir_file                 # 常用 dir file 处理"               ,
+    os_shutil           , "os_shutil                # os.file.binutils 常用系统命令"    ,
     )
     try:
         if (len(argv) > 1):
