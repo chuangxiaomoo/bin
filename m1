@@ -49,7 +49,6 @@ function fn_filter()                    { cat wireshark_filter ;}
 
 function fn_python()                    { 
                                           cat python
-                                          cat python_pip
                                           cat pandas tushare tu.py
                                           cat pycharm
 function fn_pydoc()                     { cat python_pydoc ;}

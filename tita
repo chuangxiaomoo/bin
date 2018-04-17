@@ -1,0 +1,73 @@
+#! /usr/bin/python3
+
+import sys
+import tushare as ts
+
+tcode='600000'
+
+def ts_getk_k60(argv):
+    code = argv[0] if len(argv)>0 else tcode
+    df = ts.get_k_data(code, ktype='60')
+    df = df.sort_index(ascending=False)
+    print(df.head(5))
+
+def ts_getk_day(argv):
+    code = argv[0] if len(argv)>0 else tcode
+    df = ts.get_k_data(code)
+    df = df.sort_index(ascending=False)
+    print(df.head(5))
+
+def ts_bar_kline(argv, freq='60min'):
+    code = argv[0] if len(argv)>0 else tcode
+    sock = ts.get_apis()
+    df = ts.bar(code, conn=sock, start_date='2018-01-01', freq=freq)
+    df = df.sort_index(ascending=False)
+    print(df.head(5))
+    ts.close_apis(sock)
+    #cols = ['date', 'open', 'high', 'low', 'close', 'vol']
+    #df.to_csv('/pycharm/data/bar/'+code, header=True, sep='\t', encoding='utf-8', columns=cols)
+    pass
+
+def ts_bar_k60(argv):
+    ts_bar_kline(argv, freq='60min')
+
+def ts_bar_day(argv):
+    ts_bar_kline(argv, freq='D')
+
+def pytdx():
+    print("""
+    因为 tushare.bar() 使用了pytdx，会更加稳定，不会像 get_k_data() 多次调用后被封禁。
+    https://github.com/rainx/pytdx      # pytdx
+    http://discuss.zhikuang.org/        # 智矿
+    """)
+
+usage="""\
+Usage:
+  tita id [argv1, argv2, ...]
+"""
+
+def main(argv):    
+    cmdlist=(
+    ts_getk_day, "ts_getk_day     # get_k_data  日K线，ali-cloud可能被封禁",
+    ts_getk_k60, "ts_getk_k60     # get_k_data  60分钟线"                  ,
+    ts_bar_day , "ts_bar_day      # bar         日K线"                     ,
+    ts_bar_k60 , "ts_bar_k60      # bar         60分钟线"                  ,
+    pytdx      , "pytdx           # pytdx       bar底层引用了pytdx"        ,
+    )
+    try:
+        if (len(argv) > 1):
+            i = int(argv[1])
+    except Exception as ex:
+        i = 300
+        #print("got non-digital %s" % ex)
+
+    if (len(argv) == 1 or i >= len(cmdlist)/2):
+        print(usage)
+        for i in range(0, len(cmdlist), 2):
+            print("  %-4d%s" % (i/2, cmdlist[i+1]))
+        print()
+        return
+    cmdlist[i*2](argv[2:])
+
+if __name__ == "__main__":
+    main(sys.argv)
