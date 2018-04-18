@@ -1,16 +1,29 @@
-/* macro */
+# macro
 
 [3.7.1 Standard Predefined Macros]()
 https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html
 
-__FILE__
-__LINE__
-__DATE__
-__TIME__
+    __FILE__
+    __LINE__
+    __DATE__
+    __TIME__
 
 
 [3.7.2 Common Predefined Macros]()
 https://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html#Common-Predefined-Macros
 
-__COUNTER__   /* uniq serial No. */
+    __COUNTER__   /* uniq serial No. */
 
+
+# 禁优化
+
+```cpp
+#pragma GCC push_options   
+#pragma GCC optimize ("O0")
+
+int func()
+{
+}
+
+#pragma GCC pop_options
+```

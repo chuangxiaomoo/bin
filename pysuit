@@ -26,6 +26,10 @@ def pip_usage(argv):
     # pip 配置文件
     %APPDATA%\pip\pip.ini
 
+    # 安装 & 升级
+    pip3 install pandas
+    pip3 install --upgrade pandas
+
     # 查看已安装
     pip list --format=columns
 
