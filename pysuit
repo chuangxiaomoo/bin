@@ -1,6 +1,7 @@
 #! /usr/bin/python3
 
 import sys
+import datetime as dt
 
 def src_install_python35(argv):
     print("""
@@ -56,6 +57,12 @@ def os_shutil(argv):
     shutil.rmtree()                         # will delete a directory and all its contents.
     """)
 
+def dt_daysago(ymd, N):
+    return (dt.datetime.strptime(ymd,'%Y-%m-%d') - dt.timedelta(days=N)).date()
+
+def dt_seconds(ymd):
+    pass
+
 usage="""\
 Usage:
   pysuit id [argv1, argv2, ...]
@@ -63,11 +70,13 @@ Usage:
 
 def main(argv):
     cmdlist=(
-    src_install_python35, "src_install_python35     # 源码安装 python3.5"               ,
-    apt_install_python3 , "apt_install_python3      # apt-get安装 python3.5"            ,
-    sit_getsitepackages , "sit_getsitepackages      # 包安装路径，类似 C /usr/include"  ,
-    pip_usage           , "pip_usage                # "                                 ,
-    os_shutil           , "os_shutil                # os.file.binutils 常用系统命令"    ,
+    src_install_python35, "src_install_python35         # 源码安装 python3.5"               ,
+    apt_install_python3 , "apt_install_python3          # apt-get安装 python3.5"            ,
+    sit_getsitepackages , "sit_getsitepackages          # 包安装路径，类似 C /usr/include"  ,
+    pip_usage           , "pip_usage                    # "                                 ,
+    os_shutil           , "os_shutil                    # os.file.binutils 常用系统命令"    ,
+    dt_daysago          , "dt_daysago(ymd, N)           # __builtin__"                      ,
+    dt_seconds          , "dt_seconds(ymd)              # __builtin__"                      ,
     )
     try:
         if (len(argv) > 1):
@@ -82,6 +91,11 @@ def main(argv):
             print("  %-4d%s" % (i/2, cmdlist[i+1]))
         print()
         return
+
+    if cmdlist[i*2+1].find('__builtin__') >= 0:
+        print("\n  __builtin__ function, [vim pysuit] to view realization\n")
+        return
+
     cmdlist[i*2](argv[2:])
 
 if __name__ == "__main__":
