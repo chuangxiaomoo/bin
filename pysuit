@@ -60,6 +60,9 @@ def os_shutil(argv):
 def dt_daysago(ymd, N):
     return (dt.datetime.strptime(ymd,'%Y-%m-%d') - dt.timedelta(days=N)).date()
 
+def dt_daysago_str(ymd, N):
+    return (dt.datetime.strptime(ymd,'%Y-%m-%d') - dt.timedelta(days=N)).strftime('%Y-%m-%d')
+
 def dt_seconds(ymd):
     pass
 

@@ -1,0 +1,10 @@
+split -l 600 s1500.txt -d -a 3 sx
+
+sx: 前缀
+
+output:
+    sx000  sx002  sx004 
+    sx001  sx003  sx005
+
+rename(增加后缀):
+    rename 's/$/.txt/' sx*
