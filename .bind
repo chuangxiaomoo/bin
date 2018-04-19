@@ -5,8 +5,9 @@
 # \C = Ctrl
 # 
 
-bind '"\ei": "192.168.2."'          # 
-bind '"\el": "127.0.0.1"'           # Local Loopback
-bind '"\ee": "\C-asudo \C-e"'       # Alt-e 自动输入 sudo
+bind '"\ei": "192.168.2."'                  # 
+bind '"\el": "127.0.0.1"'                   # Local Loopback
+bind '"\ee": "\C-asudo \C-e"'               # Alt-e 自动输入 sudo
+bind '"\C-x\C-x": beginning-of-line'        # any readline-compatible environment like Bash, python and mysql
 
 # ___________ following is SecureCRT bind: .CRT
