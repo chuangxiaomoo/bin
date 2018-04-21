@@ -62,6 +62,7 @@ alias    .s='cd ~/bin'
 alias    .k='cd ~/bin/stk'
 alias    .ki='grep -q "/root/bin/stk:" <<<"$PATH" || export PATH="/root/bin/stk:$PATH"'
 alias    .ko='grep -q "/root/bin/stk:" <<<"$PATH" && export PATH=`sed "s#/root/bin/stk:##g" <<< "$PATH"`'
+alias    .i='export PATH=".:$PATH"'
 alias   .rc='.  ~/.bashrc'
 alias  .irc='vi ~/.bashrc +/bashrc$; . ~/.bashrc'
 alias  .mor='~/bin/stk/up morningcall'
@@ -72,10 +73,6 @@ alias .danalib="cd /winc/1.danale.大拿/lib.video/release/libdanavideo;SRC='/op
 alias .danalgr="cd /winc/1.danale.大拿/lib.grain/release/libdanavideo;SRC='/opt/src/grainPro/fisheyePro/appSrc'"
 alias .de_beep="echo 0 >/tmp/kts/chao.beep"
 alias .en_beep="echo 1 >/tmp/kts/chao.beep"
-
-# nc
-alias  iinc='vim ~/.inc'
-alias  .inc='cat ~/.inc'
 
 alias   cdo='ssh -o ServerAliveInterval=60 47.94.21.194'  # Dong@123
 alias     f='find . -name'
