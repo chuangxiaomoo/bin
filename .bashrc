@@ -1,5 +1,9 @@
 # . ~/bin/.bashrc
 
+# zorm5.py
+alias 3zorm='freq=30 zorm5.py'
+alias dzorm='freq=d  zorm5.py'
+
 # make sure no space b4 the 2nd '
 
 alias       ASC=''

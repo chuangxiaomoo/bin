@@ -820,12 +820,10 @@ function fn_Qi_疾病()                   { cat huawei_Qi_疾病 ;}
 }
 
 function fn_humor()                     {
-function fn_Joe()                       { cat humor_Joe ;}
 function fn_misc()                      { cat humor_misc ;}
 function fn_animals()                   { cat humor_animals ;}
 function fn_duanzi()                    { cat humor_duanzi ;}
     local opts=(
-        Joe
         misc
         animals
         duanzi

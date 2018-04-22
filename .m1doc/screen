@@ -24,7 +24,7 @@ screen -x           # 远程共享
 
 # infoscreen.当局者迷
 
-alias infos='ps -A -o pid,args,lstart | grep `ps -o ppid -p $$ --no-headers`'
+alias .if.screen='ps -A -o pid,args,lstart | grep `ps -o ppid -p $$ --no-headers`'
 
 # meta键 c-a
 
