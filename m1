@@ -764,7 +764,7 @@ function fn_calltree()                  { cat cmd_calltree ;}
 function fn_nc()                        { cat cmd_nc ;}
 function fn_ps()                        { cat cmd_ps
                                           cat cmd_split
-                                          ;}
+                                        }
     local opts=(
         Essential
         arping                  # arp -D 检测IP冲突 iputils
