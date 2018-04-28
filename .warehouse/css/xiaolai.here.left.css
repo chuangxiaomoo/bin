@@ -136,7 +136,7 @@ table {
   font-size: 1em;
   font: inherit;
   border: 0;
-  margin: 0 auto;
+  /* margin: 0 auto; Table不自动居中 */
 }
 
 tbody {
