@@ -27,6 +27,7 @@
 《从黎明到衰落：西方文化生活五百年，1500年至今》
 《Guns, Germs, and Steel: The Fates of Human Societies》
 《Lies My Teacher Told Me》
+  Fooled by Randomness        Nassim Nicholas Taleb
 
 《领导梯队》                  The Leadership Pipeline.是三本社群成员必读书籍之一
 《新生 —— 七年就是一辈子》    在新生大学里

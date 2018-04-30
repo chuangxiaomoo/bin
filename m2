@@ -147,12 +147,12 @@ function fn_f2_海底捞你学不会()         { cat book_f2_海底捞你学不�
 function fn_f3_教父()                   { cat book_f3_教父 ;}
 function fn_66_佛语()                   { cat book_66_佛语 ;}
 
-function fn_000_黄晓捷谈在校学习()      { cat book_000_黄晓捷谈在校学习 ;}
-function fn_010_李笑来谈读书经验()      { cat book_010_李笑来谈读书经验
+function fn_000_黄晓捷谈在校学习()      { cat book_000_黄晓捷谈在校学习
+                                          cat book_001_吴军大学之路
+                                          cat book_010_李笑来谈读书经验
                                           cat book_011_李笑来谈阅读操作系统
                                           cat book_012_张五常谈读书和思考
                                           cat book_013_夜东坡谈读书和思考
-                                          cat book_014_夜东坡谈读书和思考
                                           cat book_015_章亦春抄书的奥秘
                                           cat book_020_如何选书
                                           ;}
@@ -175,6 +175,7 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               problem_present       # 回归问题本身
                                               TIME
                                               FeynmanTechnique
+                                              wujun_gg
                                               xiaolai_ff 1001.q
                                               xiaolai_cept dialog.md
                                               xiaolai_2016_annual
