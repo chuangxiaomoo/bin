@@ -127,7 +127,7 @@ alias  v.fc='vi -R ~/.flowchar/main.i'
 alias vimdiff='vimdiff "+call Diff_enter()"'
 alias      vd='vimdiff "+call Diff_enter()"'
 
-alias w3mdump='/usr/bin/w3m -dump -cols 10000'      # 82时的实际宽度是80
+alias w3mdump='/usr/bin/w3m -dump -cols 9999'      # 82时的实际宽度是80
 
 alias   ltmux='TERM=xterm /usr/local/bin/tmux'
 alias    tmux='TERM=xterm /usr/bin/tmux'

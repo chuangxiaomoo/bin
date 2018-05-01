@@ -17,6 +17,8 @@ xsdx_lesson_2
 writing_1st_principle
 writing_11_suggestion
 
+spenser_五招教你如何迈入写作大门
+
 xiaolai_写作课文字实录01
 xiaolai_写作课文字实录02
 xiaolai_写作课文字实录03

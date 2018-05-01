@@ -997,13 +997,13 @@ function fn_交易与合约()                { cat economic_交易与合约 ;}
 function fn_dream()                     { cat dream ;}
 
 function fn_finance()                   {
-function fn_cept()                      { cat finance_cept ;}
+function fn_cept()                      { cat finance_cept finance_essence ;}
 function fn_leverage()                  { cat finance_leverage ;}
 function fn_fortune()                   { cat finance_fortune ;}
 function fn_behavioral()                { cat finance_behavioral ;}
 function fn_market()                    { cat finance_market ;}
     local opts=(
-        cept                            #
+        cept essense                    # 金融的本质
         leverage                        # 杠杆
         behavioral                      # 行为金融学 behavioral finance
         market                          # Yale.open
@@ -1131,7 +1131,6 @@ function fn_main() {
         driver
         english
         economic
-        finance
         faith
         family                          # 难念的经 家国天下
         girl
