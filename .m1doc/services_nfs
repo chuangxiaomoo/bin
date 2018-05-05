@@ -32,3 +32,6 @@ apt-get install nfs-kernel-server
     -a 查看依然能查看到客户端的挂载信息。但是如果客户端先unmount的话，showmount -a
     就查看不到了。 
 
+*5.4* mount COMMAND -o nolock
+
+    mount -t nfs -o nolock 192.168.43.187:/myshare /tmp/myshare
