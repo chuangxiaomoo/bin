@@ -1,3 +1,7 @@
+# objdump -d elf-file
+
+dis-assemble, 得到汇编源码，最前一列即是 addr，与 backtrace() 的地址是完全一致的。
+
 # objdump
 
   [](http://blog.csdn.net/clozxy/article/details/5716089)
@@ -26,3 +30,8 @@
     dump_stack();
 #endif
 ```
+
+# addr2line + dmesg
+
+[](https://blog.csdn.net/cjfeii/article/details/20386457)
+
