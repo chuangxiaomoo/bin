@@ -1257,16 +1257,6 @@ function fn_markdown()                  { cat markdown
                                           cat typora
                                           cat reStructuredText ;}
 
-function fn_algo()                      {
-function fn_tree()                      { cat algo_tree ;}
-    local opts=(
-        tree
-        link
-        queue
-    )
-    fn_print $@
-}
-
 function fn_report()                    { 
 function fn_球机不能控制()              { cat report_球机不能控制 ;}
 function fn_可观可控可溯设计()          { cat report_可观可控可溯设计 ;}
@@ -1406,6 +1396,22 @@ function fn_tools() {
     )
 }
 
+function fn_algorithm() {
+    local opts=(
+        algorithm               # 总论
+        algo_qsort
+        algo_bsearch
+        algo_array
+        algo_linklist
+        algo_hashtable          # array linklist 的优点结合体
+        algo_queue              # fifo
+        algo_stack
+        algo_tree
+        algo_heap               # 树的数组对象
+        algo_memorypool
+    )
+}
+
 function fn_main() {
     local ARGC=${#}
     local LASTARG=${!#}
@@ -1424,7 +1430,6 @@ function fn_main() {
         cstd
         clang
         cxx
-        algo                    # algorithm: link queue tree
         case
         circuit
         cmd
