@@ -11,4 +11,6 @@ busybox 无法用 sed 's///' 来删除 ，但可以用如下命令完成相同
 > sed -n 1p
 > head -1
 
-# 
+# sed -r
+
+支持 regx 扩展

@@ -195,21 +195,21 @@ function fn_aout()                      { cat linux_aout ;}
 #
 # . busybox_tftp
 function fn_busybox()                   { 
-function fn_man()                       { cat busybox_man ;}
+function fn_man()                       { cat busybox.man ;}
 function fn_arch()                      { cat busybox_arch ;}
-function fn_ftp()                       { cat busybox_ftp ;}
-function fn_tftp()                      {   . busybox_tftp ;}
 function fn_top()                       { cat busybox_top ;}
-function fn_udhcpc()                    { cat busybox_udhcpc ;}
 function fn_sed()                       { cat busybox_sed ;}
     local opts=(
         man
         arch
-        ftp
+        "
+        ftpget  [](+/^ftpget\\> busybox.man)
+        ftpput  [](+/^ftpput\\> busybox.man)
+        tftp    [](+/^tftp\\> busybox.man)
+        udhcpc  [](+/^udhcpc\\> busybox.man)
         sed
-        tftp
         top
-        udhcpc
+        "
     )
     fn_print $@
 }
