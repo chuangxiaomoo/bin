@@ -1,5 +1,8 @@
 /* secureCRT */
 
+. 反空闲
+    SecureCRT -> 会话 -> Terminal -> 反空闲
+
 . 输入中文
 
     更新到6.5版本就可以了

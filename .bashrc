@@ -78,7 +78,7 @@ alias .danalgr="cd /winc/1.danale.大拿/lib.grain/release/libdanavideo;SRC='/op
 alias .de_beep="echo 0 >/tmp/kts/chao.beep"
 alias .en_beep="echo 1 >/tmp/kts/chao.beep"
 
-alias   cdo='ssh -o ServerAliveInterval=60 47.94.21.194'  # Dong@123
+alias   cdo='ssh -o ServerAliveInterval=60 47.94.21.194'  # Duoduo@123 SecureCRT -> Terminal -> 反空闲
 alias     f='find . -name'
 alias     l='ls -CF'
 alias    ls='ls --color=auto'
@@ -377,7 +377,20 @@ gg()
 
 scdo()  { [ -f "${1}" ] && scp $@ cdo:/root/bin     || echo not exit file [${1}] ;}
 scda()  { [ -f "${1}" ] && scp $@ cdo:/pycharm/data || echo not exit file [${1}] ;}
-scmo()  { scp cdo:${1} ~/cdo ;}
+scmo()  { 
+    usage="
+    k   /pycharm/bin/k.sh
+    s   /pycharm/bin/S
+    z   /pycharm/zorm5.py
+    c   /winc/cache/codes.txt
+    "
+    [ -z "${1}" ] && echo "${usage}" && return
+    arr=(${usage})
+    for (( i=0,j=1; i<${#arr[@]}; i+=2,j+=2 )); do
+        [ "${1}" = ${arr[$i]} ] && cmd="scp cdo:~/bin/${arr[$j]##*/} ${arr[$j]}" && { echo ${cmd}; ${cmd}; return ;}
+    done
+    scp cdo:${1} ~/cdo 
+}
 
 cpcom() { mkdir -p /winc/Export/com/; rm -rf /winc/Export/com/*;     cp -a release/com/* /winc/Export/com/ ;}
 cptar() { file=`ls release/tar/*.tgz`;touch  /winc/Export/com/force_dbg.txt
