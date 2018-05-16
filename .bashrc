@@ -383,6 +383,8 @@ scmo()  {
     s   /pycharm/bin/S
     z   /pycharm/zorm5.py
     c   /winc/cache/codes.txt
+    g   /root/bin/stk/gbank
+    rc  /root/bin/common.rc
     "
     [ -z "${1}" ] && echo "${usage}" && return
     arr=(${usage})

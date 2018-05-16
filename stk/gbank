@@ -6,6 +6,12 @@ export PATH=.:~/bin:$PATH
 [ "${DEBUG:-0}" = 1 ] &&
 SUBOUT='/dev/stdout' || SUBOUT='/dev/null'
 
+# ___________________ open high low _______________________
+RIS='ROUND(100*(close-setl)/setl, 2)'
+HIC='ROUND(100*(high-close)/close, 2)'
+RISE='ROUND(100*(_.close-_.setl)/_.setl, 2)'
+HICO='ROUND(100*(_.high-_.close)/_.close, 2)'
+
 # DL tool
 WGET='timeout 34 /usr/bin/wget'
 W3M='timeout  60 /usr/bin/w3m'
@@ -83,7 +89,6 @@ function fn_get_prev()
 {
     sqls="SELECT DISTINCT date FROM d1 WHERE code<=10 and date<'${END}' ORDER by date DESC LIMIT 1"
     mysql -N kts<<<"${sqls}"
-    return
 }
 
 function fn_get_next()
@@ -95,13 +100,8 @@ function fn_get_next()
 function fn_get_date()
 {
     # Usage: fn_get_date offset size
-    local sta=${1:-1}
-    [ "${sta}" -eq 0 ] && fn_echo_fail "fn_get_date sta could not be 0" && exit
-    let sta--           #sta=offset-1
     sqls="
-        SELECT DISTINCT date from d1
-        WHERE code<=10 and date<='${END}'
-        ORDER by date DESC LIMIT ${sta},${2:-1}
+    SELECT DISTINCT date from d1 WHERE code<=10 ORDER by date DESC LIMIT ${sta:-0},${2:-1}
     "
     #echo ${sqls}; exit
     mysql -N kts <<< "${sqls}"
@@ -109,26 +109,14 @@ function fn_get_date()
 
 function fn_set_END()
 {
-    CURR=`fn_maxdate`
-
-    if [ -n "${END}" ]; then
-        END=${END//END/${CURR}}                         # 指定为END
-        PREV=`END=${END//PREV/${CURR}} fn_get_prev`     # 指定为PREV
-        END=${END//PREV/${PREV}}                        # echo P:${PREV} E:${END}; exit
-    elif [ -n "${iEND}" ]; then
-        END=`END=${CURR} fn_get_date ${iEND} 1`         # 使用iEND时，必是从CURR倒数起
-    else
-        END=${END:-${CURR}}                             # 指定为CURR
-    fi
-
-    PREV=`fn_get_prev ${iPASS:-0}`                      # 指定PREV，通常用作比对日期
-
-    #echo iEND:${iEND} END:${END} PREV:${PREV}; exit
+    END=`sta=${iEND} fn_get_date`
+    PREV=`END=${END} fn_get_prev`
+    #CURR=`fn_maxdate`
 }
 
 function fn_list_date()
 {
-    fn_get_date 1 ${1:-10} | cat -n
+    fn_get_date 0 ${1:-10} | cat -n
 }
 
 date_F=`date +%F`
