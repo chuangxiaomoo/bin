@@ -18,9 +18,9 @@ SHMPATH=/dev/shm/${0##*/}
 mkdir -p $SHMPATH
 
 # for multi instance
-_pids_=`ls /dev/shm/${0##*/}/*`
+_pids_=`cd ${SHMPATH}; ls`
 for _pid_ in $_pids_; do
-    test -d /proc/$_pid_ || rm -fr /dev/shm/${0##*/}/$_pid_
+    test -d /proc/$_pid_ || rm -fr ${SHMPATH}/$_pid_
 done
 
 PS8="eval echo \${BASH_SOURCE##*/}\|\$LINENO\|: "
