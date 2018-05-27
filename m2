@@ -75,7 +75,7 @@ function fn_2014_plan()                 { cat annual_2014_plan annual_2014_event
 function fn_2015_plan()                 { cat annual_2015_plan annual_2015_event annual_2015_report ;}
 function fn_2016_plan()                 { cat annual_2016_plan annual_2016_event annual_2016_report annual_2016_ljsw  ;}
 function fn_2017_plan()                 { cat annual_2017_plan annual_2017_event annual_2017_report ;}
-function fn_2018_plan()                 { cat annual_2018_plan ;}
+function fn_2018_plan()                 { cat annual_2018_plan annual_2018_event ;}
     local opts=(
         plan_what                       # 基于`以终为始`的理念
         report_what
@@ -966,7 +966,7 @@ function fn_agile()                     { cat influence_agile ;}
 function fn_sxmm()                      { cat influence_sxmm ;}
 function fn_stock()                     { cat influence_stock ;}
 function fn_app()                       { cat influence_01_推销自己
-                                          cat influence_02_
+                                          cat influence_to_fall_in_love
                                         ;}
     local opts=(
         cept                            # 影响力

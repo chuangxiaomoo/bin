@@ -25,7 +25,7 @@
 *书单| 李笑来推荐历史类书籍，4本书带你了解世界*
 《The Selfish Gene》
 《从黎明到衰落：西方文化生活五百年，1500年至今》
-《Guns, Germs, and Steel: The Fates of Human Societies》
+《Guns, Germs, and Steel: The Fates of Human Societies》  高晓松联名推荐
 《Lies My Teacher Told Me》
   Fooled by Randomness        Nassim Nicholas Taleb
 
