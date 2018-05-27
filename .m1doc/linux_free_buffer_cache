@@ -31,6 +31,7 @@
 
 # Page cache & buffer cache
 
+  [有关cache](https://feichashao.com/dirty_ratio_and_dirty_background_ratio/)
   Page cache实际上是针对文件系统的，是文件的缓存，在文件层面上的数据会缓存到
   page cache。文件的逻辑层需要映射到实际的物理磁盘，这种映射关系由文件系统来
   完成。当page cache的数据需要刷新时，page cache中的数据交给`buffer cache`，

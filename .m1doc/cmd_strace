@@ -11,12 +11,33 @@
     -T Show the time spent in system calls.
     -t Prefix each line of the trace with the time of day.
     -s strsize  Specify the maximum string size to print (default is 32).
+    -o file
+    -p pid  **可多次调用以调试指定线程 /proc/pid/task/LWP**  LWP = syscall(SYS_gettid);
 
 
 # EXAMPLE
 
-1 使用strace踪端口bind()失败，setsockopt(REUSE)是否被调用。
+  [](https://blog.csdn.net/chen8238065/article/details/53338715)
 
-2 内存分配跟踪
+  1.跟踪nginx, 看其启动时都访问了哪些文件
+  strace -tt -T -f -e trace=file -o /data/log/strace.log -s 1024 2>&1 ./nginx
+
+  2.定位程序异常退出
+  strace -ttf -T -p 10893 -o tmp -e trace=process 2>&1
+
+  3.程序启动加载文件
+  strace -e open,acces ./sh 2>&1 | grep fileName
+
+  4.查选程序耗时
+  strace -c -p 11084
+
+  5.查看所有的系统调用
+  trace -T -tt -f -s 3000 -o tmp1.out ./tmp.sh | while read line ; do echo $line | sed ‘/”/,/”/s#x#\\x#g’ |xargs -0 printf ;done
+
+  6.链接服务器失败
+  strace -e poll,select,connect,recvfrom,sendto nc www.baidu.com 80
+
+  7.使用strace踪端口bind()失败，setsockopt(REUSE)是否被调用。
+
+  8.内存分配跟踪
   -e trace=mmap2,munmap,mremap command
-

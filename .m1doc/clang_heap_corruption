@@ -1,0 +1,9 @@
+# clang_heap_corruption
+
+[](http://www.cppblog.com/kerlw/archive/2007/04/12/21700.html)
+
+# 什么是Heap Corruption
+
+当输入超出了预分配的空间大小，就会覆盖该空间之后的一段存储区域，这就叫Heap Corruption。这通常也被用作黑客攻击的一种手段，因为如果在该空间之后的那段存储区域如果是比较重要的数据，就可以利用Heap Corruption来把这些数据修改掉
+
+

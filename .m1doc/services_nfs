@@ -34,4 +34,4 @@ apt-get install nfs-kernel-server
 
 *5.4* mount COMMAND -o nolock
 
-    mount -t nfs -o nolock 192.168.43.187:/myshare /tmp/myshare
+    mount -t nfs -o nolock 192.168.120.237:/opt/nfs /mnt
