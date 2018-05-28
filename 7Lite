@@ -723,6 +723,15 @@ function fn_ff()
     echo 'process to txt.md'
 }
 
+function fn_sum()
+{
+    if [ -n "${*}" ]; then
+        echo ${@} | xargs -n1 | awk '{ sum=sum+$1 } END {print sum}'
+    else
+        cat /dev/stdin | xargs -n1 | awk '{ sum=sum+$1 } END {print sum}'
+    fi
+}
+
 function fn_main() 
 {
     cmdlist=(
@@ -759,6 +768,7 @@ function fn_main()
     "flowchar               # create .flowchar"
     "etc                    # backup etc"
     "pyx                    # pyc extract"
+    "sum                    # sum STDIN or ARGV"
     "txt2markdow            # 给章节打上#"
     "ff {[0]|1}             # xiaolai road to forturn free"
     )
