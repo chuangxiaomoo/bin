@@ -604,6 +604,7 @@ function fn_cept()                      { cat logic_cept ;}
 function fn__essence()                  { cat logic__essence ;}
 function fn__struct()                   { cat logic__struct ;}
 function fn__1st_principle()            { cat logic__1st_principle
+                                          cat 1by1_principles       #林彪的原则
                                           cat book_The_Principle
                                           cat test_The_Principle    #古严：我对《原则》的践行心得
                                           cat test_People
