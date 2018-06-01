@@ -35,3 +35,15 @@ apt-get install nfs-kernel-server
 *5.4* mount COMMAND -o nolock
 
     mount -t nfs -o nolock 192.168.120.237:/opt/nfs /mnt
+    /mnt/strace -o /mnt/main.log -f -t -T -s 1024 ./main.exe
+
+*5.5* C lang nfs
+
+    UtilSystemCmd(
+    // "mount -t nfs -o nolock 192.168.120.237:/opt/nfs /mnt;"
+    "ulimit -c unlimited;"
+    "ulimit -a;"
+    "echo 1 > /proc/sys/kernel/core_uses_pid;"
+    "echo /mnt/core-%e-%p-%t > /proc/sys/kernel/core_pattern;"
+    "cat  /proc/sys/kernel/core_pattern");
+
