@@ -169,7 +169,7 @@ function fn_proc()                      { cat linux_proc ;}
 function fn_free_buffer_cache()         { cat linux_free_buffer_cache ;}
 function fn_udev()                      { cat linux_udev ;}
 function fn_mtd()                       { cat linux_mtd ;}
-function fn_ubifs()                     { cat linux_ubifs ;}
+function fn_ubifs()                     { cat linux_ubifs linux_ntfs ;}
 function fn_lockfile()                  { cat linux_lockfile ;}
 function fn_memory()                    { cat linux_memory ;}
 function fn_aout()                      { cat linux_aout ;}
