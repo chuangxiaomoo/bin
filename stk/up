@@ -310,19 +310,20 @@ function fn_table_to_file()
 
 function fn_xRDdb()
 {
+    path_DL='/dzh2/Download/PWR'
     if [ "$1" = "--up.PWR" ] || [ "$1" = "-u" ]; then
-        wget http://filedown.gw.com.cn/download/PWR/full_sz.PWR -O /dzh2/Download/PWR/full_sz.PWR
-        wget http://filedown.gw.com.cn/download/PWR/full_sh.PWR -O /dzh2/Download/PWR/full_sh.PWR
+        wget http://filedown.gw.com.cn/download/PWR/full_sz.PWR -O ${path_DL}/full_sz.PWR
+        wget http://filedown.gw.com.cn/download/PWR/full_sh.PWR -O ${path_DL}/full_sh.PWR
     fi
 
     [ ! -f "$p_sbin/xRD" ] && echo "xRD not exist" && exit
 
     cd $p_sbin
-    echo ln -sf /dzh2/Download/PWR/full_sh.PWR full.PWR
-         ln -sf /dzh2/Download/PWR/full_sh.PWR full.PWR
+    echo ln -sf ${path_DL}/full_sh.PWR full.PWR
+         ln -sf ${path_DL}/full_sh.PWR full.PWR
          ./xRD | grep -E "(^6)"    | sort -r -k2 >  ${chao}.xRD.list
-    echo ln -sf /dzh2/Download/PWR/full_sz.PWR full.PWR
-         ln -sf /dzh2/Download/PWR/full_sz.PWR full.PWR
+    echo ln -sf ${path_DL}/full_sz.PWR full.PWR
+         ln -sf ${path_DL}/full_sz.PWR full.PWR
          ./xRD | grep -E "(^3|^0)" | sort -r -k2 >> ${chao}.xRD.list
 
     echo "
@@ -1814,7 +1815,7 @@ function fn_main()
     "hexun_day                          # 大盘日线数据 4:00:00 PM"
     "del_hexun_day                      # 删除大盘日线，防止冲突"
     "redo_hexun_day                     # 重做大盘日线数据"
-    "xRDdb [--up.PWR -u]                # --- wget升级除权数据 ---"
+    "xRDdb [--up.PWR|-u]                # --- wget升级除权数据 ---"
     # --------------------              ABOVE IS FIXED SEQUENCE --------------------
     "file_to_table {code...|file}       # 写file到表{TBL:-zxg}，并......ZXG.BLK...."
     "table_to_file {table:-chao}        # 添加表{table:-chao}到/tmp/zxg"

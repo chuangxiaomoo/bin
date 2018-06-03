@@ -11,6 +11,12 @@ def ts_getk_k60(argv):
     df = df.sort_index(ascending=False)
     print(df.head(5))
 
+def ts_geth_day(argv):
+    code = argv[0] if len(argv)>0 else tcode
+    df = ts.get_h_data(code)
+    df = df.sort_index(ascending=False)
+    print(df.head(10))
+
 def ts_getk_day(argv):
     code = argv[0] if len(argv)>0 else tcode
     df = ts.get_k_data(code)
@@ -20,9 +26,9 @@ def ts_getk_day(argv):
 def ts_bar_kline(argv, freq='60min'):
     code = argv[0] if len(argv)>0 else tcode
     sock = ts.get_apis()
-    df = ts.bar(code, conn=sock, start_date='2018-01-01', freq=freq)
+    df = ts.bar(code, conn=sock, start_date='2018-05-01', freq=freq, adj='qfq')
     df = df.sort_index(ascending=False)
-    print(df.head(5))
+    print(df.head(10))
     ts.close_apis(sock)
     #cols = ['date', 'open', 'high', 'low', 'close', 'vol']
     #df.to_csv('/pycharm/data/bar/'+code, header=True, sep='\t', encoding='utf-8', columns=cols)
@@ -48,6 +54,7 @@ Usage:
 
 def main(argv):    
     cmdlist=(
+    ts_geth_day, "ts_geth_day     # get_h_data  60分钟线"                  ,
     ts_getk_day, "ts_getk_day     # get_k_data  日K线，ali-cloud可能被封禁",
     ts_getk_k60, "ts_getk_k60     # get_k_data  60分钟线"                  ,
     ts_bar_day , "ts_bar_day      # bar         日K线"                     ,

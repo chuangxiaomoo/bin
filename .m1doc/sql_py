@@ -129,6 +129,6 @@ CREATE TABLE maxp (
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
     date        date NOT NULL, 
     high        DECIMAL(6,2) NOT NULL,
-    tov         DECIMAL(6,2) NOT NULL,
+    volume      DECIMAL(12,2) NOT NULL DEFAULT 0,
     INDEX(code,date)
 );

@@ -31,6 +31,8 @@ ts.close_apis(cons)
 
 # bar()
 
+[成交量除权.修改为1:6](/usr/local/lib/python3.5/dist-packages/tushare/stock/trading.py +/ct.BAR_E_COLS)
+
 bar支持了主要证券品种（沪深股票、基金、期货、期权、港股、中概股等）的各类k线数据，
 包括1分钟、5分钟、15分钟、30分钟和60分钟，以及日线、周线、季度和月线数据。
 而tick接口是以上品种Level1的成交数据。

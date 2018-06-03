@@ -383,6 +383,7 @@ scmo()  {
     cn  /pycharm/candle.py
     k   /pycharm/bin/k.sh
     s   /pycharm/bin/S
+    v   /pycharm/bin/vpsys.md
     z   /pycharm/zorm5.py
     g   /root/bin/stk/gbank
     rc  /root/bin/common.rc
