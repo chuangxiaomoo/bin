@@ -132,3 +132,12 @@ CREATE TABLE maxp (
     volume      DECIMAL(12,2) NOT NULL DEFAULT 0,
     INDEX(code,date)
 );
+
+DROP TABLE IF EXISTS mvp;
+CREATE TABLE mvp (
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    high        DECIMAL(6,2) NOT NULL,
+    cnt         TINYINT NOT NULL DEFAULT 0,
+    INDEX(code,date)
+);
