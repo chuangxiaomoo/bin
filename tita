@@ -2,6 +2,7 @@
 
 import sys
 import tushare as ts
+import jqdatasdk as jq
 
 tcode='600000'
 
@@ -26,7 +27,7 @@ def ts_getk_day(argv):
 def ts_bar_kline(argv, freq='60min'):
     code = argv[0] if len(argv)>0 else tcode
     sock = ts.get_apis()
-    df = ts.bar(code, conn=sock, start_date='2018-05-01', freq=freq, adj='qfq')
+    df = ts.bar(code, conn=sock, start_date='2018-01-01', freq=freq, adj='qfq')
     df = df.sort_index(ascending=False)
     print(df.head(10))
     ts.close_apis(sock)
@@ -39,6 +40,15 @@ def ts_bar_k60(argv):
 
 def ts_bar_day(argv):
     ts_bar_kline(argv, freq='D')
+
+def jq_getk_day(argv):
+    print('auth is needed')
+    return
+    code = argv[0] if len(argv)>0 else tcode
+    sym = code + ( '.XSHG' if code[:1] == '6' else '.XSHE' )
+    df = jq.get_price(sym, start_date='2018-06-01', end_date='2018-08-01', skip_paused=True)
+    df = df.sort_index(ascending=False)
+    print(df.head(5))
 
 def pytdx():
     print("""
@@ -54,6 +64,7 @@ Usage:
 
 def main(argv):    
     cmdlist=(
+    jq_getk_day, "jq_getk_day     # get_price   日K线，ali-cloud可能被封禁",
     ts_geth_day, "ts_geth_day     # get_h_data  60分钟线"                  ,
     ts_getk_day, "ts_getk_day     # get_k_data  日K线，ali-cloud可能被封禁",
     ts_getk_k60, "ts_getk_k60     # get_k_data  60分钟线"                  ,

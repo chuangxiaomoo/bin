@@ -50,6 +50,7 @@ function fn_filter()                    { cat wireshark_filter ;}
 function fn_python()                    { 
                                           cat python
                                           cat pandas tushare tu.py
+                                          cat jqdata
                                           cat pycharm
 function fn_pydoc()                     { cat python_pydoc ;}
 function fn_huawei()                    { cat python_huawei ;}

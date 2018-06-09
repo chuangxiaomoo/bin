@@ -3,6 +3,7 @@
 
 # OPTION -static
     -static参数是指定使用静态库，编译目标文件
+    -static可以让32bit的ELF在64bit上运行。
 
 
 # GCC初窥
