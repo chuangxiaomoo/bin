@@ -16,11 +16,11 @@
     CC=arm-linux-gcc ./configure --host=arm-linux
     一般来说，指定--host就可以了，CC会自动查找
 
-## e2fsprogs
+# e2fsprogs
 
 LDFLAGS="-Wl,-gc-sections" CFLAGS="-g -O2 -ffunction-sections -fdata-sections" CC=arm-buildroot-linux-uclibcgnueabi-gcc ./configure --host=arm-linux
 
-## parted
+# parted
 
 CC=arm-buildroot-linux-uclibcgnueabi-gcc ./configure --host=arm-linux --disable-device-mapper --without-readline
 
@@ -49,14 +49,14 @@ CC=arm-buildroot-linux-uclibcgnueabi-gcc ./configure \
 **Bug: [sleep 1&]**
 [patch](https://github.com/pld-linux/pdksh/blob/master/pdksh-debian.patch)
 
-## netcat 
+# netcat 
 
-## strace
+# strace
 
 ./configure --host=mips-linux-gnu CC=mips-linux-uclibc-gnu-gcc
 [strace-4.6](http://www.cnblogs.com/wlzxlc/archive/2012/11/20/2779886.html)
 
-## gdb
+# gdb
 
 CFLAGS=-static    \
 
@@ -74,14 +74,40 @@ STRIP=mips-linux-uclibc-gnu-nm-strip \
 --includedir=/winc/Export/so2/termcap-1.3.1 \
 --without-x --disable-gdbtk --disable-tui --without-included-regex --without-included-gettext --disable-option-checking 
 
-## gdb 依赖
+# gdb 依赖
 
 编译termcap-1.3.1   `apt-get install texinfo`
 ./bfd/Makefile 去掉 `-Werror`
 Makefile:370        `CFLAGS = -g -O2 -I/opt/src/Tools/termcap-1.3.1 -L/opt/src/Tools/termcap-1.3.1`
 
-## gdb multi-threaded
+# gdb multi-threaded
 **unable to find libthread_db matching inferior's thread library**
 [](https://stackoverflow.com/questions/11585472/unable-to-debug-multi-threaded-application-with-gdb)
 [](https://groups.google.com/forum/#!topic/beagleboard/X1qnTEGxL7o)
 如果要调试线程，不要构建 static 原生 gdb 
+
+
+# ntfs-3g
+
+CFLAGS="-ffunction-sections -fdata-sections" \
+LDFLAGS="-ldl -Wl,-gc-sections" \
+./configure       \
+--host=arm-linux-gnu       \
+--build=`set | awk  -F'=' '/MACHTYPE/{print $2}'` \
+CC=arm-buildroot-linux-uclibcgnueabi-gcc  \
+AR=arm-buildroot-linux-uclibcgnueabi-ar   \
+AR=arm-buildroot-linux-uclibcgnueabi-ar   \
+AS=arm-buildroot-linux-uclibcgnueabi-as   \
+LD=arm-buildroot-linux-uclibcgnueabi-ld   \
+NM=arm-buildroot-linux-uclibcgnueabi-nm   \
+STRIP=arm-buildroot-linux-uclibcgnueabi-nm-strip \
+--enable-really-static  \
+--disable-library \
+--with-gnu-ld
+
+*src/Makefile*
+CFLAGS  += -ffunction-sections -fdata-sections
+LDFLAGS += -ldl -Wl,-gc-sections
+
+自己修改加 CFLAGS LDFLAGS -ldl 比 CFLAGS LDFLAGS --with-gnu-ld ./configure 要更少的空间
+

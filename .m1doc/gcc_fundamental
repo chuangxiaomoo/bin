@@ -38,3 +38,8 @@
 
   通过将所有需要被链接的静态库放入 `-Xlinker "-("` 与 `-Xlinker "-)"` 之间，
   自动循环链接所有静态库，从而解决了原本的链接顺序问题。
+
+# 降size
+
+CFLAGS  += -ffunction-sections -fdata-sections
+LDFLAGS += -Wl,-gc-sections

@@ -40,6 +40,9 @@ fn_realtime()
     fn_xunner
 }
 
+#
+# https://www.cnblogs.com/phpxuetang/p/4519446.html
+#
 function fn_main() 
 {
     [ -z "$*" ] && echo "Usage: $0 code" && exit 
