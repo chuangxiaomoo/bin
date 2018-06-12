@@ -138,6 +138,23 @@ CREATE TABLE mvp (
     date        date NOT NULL, 
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
     high        DECIMAL(6,2) NOT NULL,
+    xvol        DECIMAL(12,2) NOT NULL DEFAULT 0,
     cnt         TINYINT NOT NULL DEFAULT 0,
     INDEX(code,date)
 );
+
+DROP TABLE IF EXISTS balance;
+CREATE TABLE balance (
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    name        CHAR(16),
+    sell         TINYINT NOT NULL DEFAULT 0,
+    price        DECIMAL(6,2) NOT NULL,
+    vol        DECIMAL(6,2) NOT NULL,
+    INDEX(code,date)
+);
+
+LOAD DATA LOCAL INFILE '/tmp/balance.txt' INTO TABLE balance;
+SELECT * FROM (SELECT code,name, sum(sell*price*vol) as bala FROM balance GROUP by code) as t  ORDER by bala DESC ;
+
+

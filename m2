@@ -108,7 +108,7 @@ function fn_WiMax_meeting()             { cat meeting huawei_WiMax_meeting
                                               health
                                               woop
                                               qipashuo
-                                        ;}
+                                        }
 #
 # Just like BRAIN sort KNOWLEDGE always, we need sort contineuously!
 # a BOOK can append with a reflect
@@ -117,7 +117,7 @@ function fn_book()                      {
 function fn_cept()                      { cat book_cept ;}
 function fn_laozi()                     { cat book_laozi
                                           cat book_zhuangzi;
-                                          ;}
+                                        }
 function fn_sunzi()                     { cat book_sunzi;
                                           cat read_sunzi ;}
 function fn_liutao()                    { cat book_liutao ;}
@@ -125,7 +125,7 @@ function fn_lunyu()                     { cat book_lunyu
                                           cat book_lunyu.full.edition
                                           cat book_mengzi
                                           cat book_mengzi.full.edition
-                                          ;}
+                                        }
 function fn_36ji()                      { cat book_36ji ;}
 
 function fn_shenglvqimeng()             { cat book_shenglvqimeng ;}
@@ -155,7 +155,7 @@ function fn_000_黄晓捷谈在校学习()      { cat book_000_黄晓捷谈在�
                                           cat book_013_夜东坡谈读书和思考
                                           cat book_015_章亦春抄书的奥秘
                                           cat book_020_如何选书
-                                          ;}
+                                        }
 
 function fn_012_李笑来人人都能用英语()  { cat book_012_李笑来人人都能用英语
                                               book_012_李笑来反复通读至少一本语法书
@@ -171,9 +171,8 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               problem_solving
                                               problem_Formula
                                               problem_X-Y           # 问题分类
-                                              problem_ask_question  # sometimes，问题产生源自问问题的方式
+                                              problem_ask_question  # 问题产生源自问问题的方式
                                               problem_present       # 回归问题本身
-                                              TIME
                                               FeynmanTechnique
                                               wujun_gg
                                               xiaolai_ff 1001.q
@@ -187,10 +186,10 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               xiaolai_教给我的59件事
                                               xiaolai_个人商业模式
                                               xiaolai_pressone
-                                        ;}
+                                        }
 
 function fn_014_心法系列()              { cat xinfa_01_知识付费应该怎么做？
-                                        ;}
+                                        }
 
 function fn_100_周鸿祎自述()            { cat book_100_周鸿祎自述 ;}
 function fn_101_livermore()             { cat book_101_livermore ;}
@@ -278,7 +277,7 @@ function fn_misc()                      { cat music_list
                                           cat piano
                                           cat erhu
                                           cat image
-                                          ;}
+                                        }
     local opts=(
         theory
     )
@@ -312,7 +311,7 @@ function fn_03_沟通_communication()     { cat howto_03_沟通
                                           cat howto_relation.20.跨团队协作
                                           cat howto_relation.21.结交到比你厉害的朋友
                                           cat howto_relation.22.让别人支持你
-                                          ;}
+                                        }
     local opts=(
         01_提高逻辑思维能力
         02_训练思维的深度和缜密度
@@ -335,7 +334,7 @@ function fn_clips()                     { cat english_clips ;}
 function fn_Proverbs_in_Alphabet()      { cat english_Proverbs_in_Alphabet
                                               english_liyang_crazy
                                               english_list
-                                              ;}
+                                        }
     local opts=(
         Proverbs_in_Alphabet
         clips                           #
@@ -382,7 +381,7 @@ function fn_20_学习学习再学习()         { cat article_20_学习学习再�
                                           cat article_30_从自我出发做选择的能力 # joc-needed
                                           cat article_31_割断旧的社会关系式成长
                                           cat article_32_什么是朋友？
-                                          ;}
+                                        }
 function fn_tingting()                  {
                                           cat tingting_01_运营——成为能成事的人
 }
@@ -395,7 +394,7 @@ function fn_41_如何成为高品质的勤奋者() { cat article_41_如何成为
                                               article_41_读书的低水平勤奋陷阱
                                               article_41_你的阅读造就了你
                                               article_41_如何写好一封邮件
-                                          ;}
+                                        }
 function fn_42_思考工具及框架()         { cat article_42_思考工具及框架 ;}
 function fn_43_如何科学的思考()         { cat article_43_如何科学的思考 ;}
 function fn_44_学得太慢是一种罪()       { cat article_44_学得太慢是一种罪 ;}
@@ -403,7 +402,7 @@ function fn_45_拷问知识正确和增长遮蔽() { cat article_45_拷问知识
                                           cat article_46_学习金字塔的知识留存率
                                           cat article_47_计算思维
                                           cat article_48_思维定势.查理的25个人生开关
-                                          ;}
+                                        }
 function fn_50_十种好的学习方式()       { cat article_50_十种好的学习方式 ;}
 
 function fn_51_怎样成为一个高手()       { cat article_51_怎样成为一个高手       # 心得+举例
@@ -415,7 +414,7 @@ function fn_51_怎样成为一个高手()       { cat article_51_怎样成为一
                                           cat article_58_十分钟读完元认知
                                           cat article_60_刻意练习清单
                                           cat article_61_不花心方成事
-                                          ;}
+                                        }
 
 function fn_80_emotion_情绪()           {
                                           cat article_80_情绪list
@@ -429,7 +428,7 @@ function fn_71_不自律何自由？()         { cat article_71_不自律何自�
                                           cat article_73_尊重事实是自律的第一原则
                                           cat article_74_自我驱动力是个嘛玩意儿？
                                           cat article_75_为什么要远离那些不深度思考且拼命勤奋的人？
-                                          ;}
+                                        }
 
 function fn_100_人际关系痛苦的根源()    { cat article_100_人际关系痛苦的根源 ;}
 function fn_101_分享与慷他人之慨()      { cat article_101_分享与慷他人之慨 ;}
@@ -437,7 +436,7 @@ function fn_102_同事是你共享生命的战友(){ cat article_102_同事是�
 function fn_103_协作跟进？如何跟进？()  { cat article_103_协作跟进？如何跟进？
                                           cat article_104_节奏：论工作中的博弈
                                           cat article_105_你的话语权从哪里来？
-                                          ;}
+                                        }
 
 function fn_110_中国哲学体系的困惑？()  { cat article_110_中国哲学体系的困惑？ ;}
 function fn_111_喜欢有之或喜欢用之？()  { cat article_111_喜欢有之或喜欢用之？ ;}
@@ -451,7 +450,7 @@ function fn_gsq_房价什么情况下会崩()    { cat article_gsq_房价什么�
                                           cat article_303_怎么应付朋友借钱
                                           cat article_304_贫困限制想象力
                                           cat article_305_25岁听到的经验40岁才懂
-                                          ;}
+                                        }
 
     local opts=(
         01_高铁陆权战略
@@ -497,7 +496,7 @@ function fn_value()                     {
 function fn_01_传统()                   { cat value_01_传统 ;}
 function fn_02_当代()                   { cat value_02_当代
                                           cat value_03_徐小平关于人生格局的问题清单
-                                          ;}
+                                        }
     local opts=(
         01_传统
         02_当代
@@ -597,7 +596,7 @@ function fn_02_一朝天子一朝臣()         { cat why_02_一朝天子一朝�
 
 function fn_films()                     { cat videos movies
                                           cat subscript.yidaizongshi
-                                          ;}
+                                        }
 
 function fn_logic()                     {
 function fn_cept()                      { cat logic_cept ;}
@@ -610,10 +609,9 @@ function fn__1st_principle()            { cat logic__1st_principle
                                           cat test_People
                                           cat love_36_questions
                                           cat list_to_be_taken
-                                          cat list_of_compound_time
                                           cat experiment.u
                                           cat experiment_eg.u
-                                          ;
+                                        }
 function fn_training500()               { cat logic_training500 ;}
 function fn_puzzle()                    { cat logic_puzzle ;}
 function fn_formal()                    { cat logic_formal ;}
@@ -776,8 +774,10 @@ function fn_Du_letter2()                { cat huawei_Du_letter2 ;}
 function fn_Mo_letter1()                { cat huawei_Mo_letter1 ;}
 function fn_Mo_letter2()                { cat huawei_Mo_letter2 ;}
 
-function fn_Zhu_Petimer()               { cat huawei_Zhu_Petimer ;}
-function fn_Zhu_雄辩()                  { cat huawei_Zhu_雄辩 ;}
+function fn_Zhu_雄辩()                  { cat huawei_Zhu_雄辩 huawei_Zhu_Petimer 
+                                          cat list_of_compound_time TIME
+                                          cat time_and_space
+                                        }
 function fn_Qi_领导管理人才()           { cat huawei_Qi_领导管理人才 ;}
 function fn_Qi_疾病()                   { cat huawei_Qi_疾病 ;}
 
@@ -813,7 +813,6 @@ function fn_Qi_疾病()                   { cat huawei_Qi_疾病 ;}
         Dong_优良的笔头表达能力
         Dong_研发要我来喂
 
-        Zhu_Petimer                     # 李国柱
         Zhu_雄辩
         Qi_领导管理人才                 # 翟世琦
         Qi_疾病
@@ -844,7 +843,7 @@ function fn_12_wife()                   { cat girl_12_wife ;}
 function fn_100_手把手教你泡妞()        { cat girl_100_手把手教你泡妞
                                           cat girl_101_如何用产品思维摆脱单身
                                           cat girl_102_罗胖的分享
-                                              ;}
+                                        }
     local opts=(
         misc
         letters
@@ -968,7 +967,7 @@ function fn_sxmm()                      { cat influence_sxmm ;}
 function fn_stock()                     { cat influence_stock ;}
 function fn_app()                       { cat influence_01_推销自己
                                           cat influence_to_fall_in_love
-                                        ;}
+                                        }
     local opts=(
         cept                            # 影响力
         agile
@@ -1092,7 +1091,7 @@ function fn_architecture()              { cat architecture
                                           cat arch_50_框架与系统
                                           cat arch_51_批判思维发展的9个层次
                                           cat arch_52_形式逻辑和辩证逻辑
-                                          ;}
+                                        }
 
 function fn_estate()                    { cat estate ;}
 function fn_driver()                    { cat driver ;}
@@ -1107,7 +1106,7 @@ function fn_btc()                       { cat btc_cept
                                           cat btc_01_螺旋形通缩     # deflatoin_spiral
                                           cat btc_02_反人类
                                           cat btc_10_写在比特币分叉之前
-                                        ;}
+                                        }
 
 
 # 新教与天主教。信则得救，不信则下地狱 vs 助人行善
