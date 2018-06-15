@@ -157,4 +157,11 @@ CREATE TABLE balance (
 LOAD DATA LOCAL INFILE '/tmp/balance.txt' INTO TABLE balance;
 SELECT * FROM (SELECT code,name, sum(sell*price*vol) as bala FROM balance GROUP by code) as t  ORDER by bala DESC ;
 
+DROP TABLE IF EXISTS stamp;
+CREATE TABLE stamp (
+    name        CHAR(16) PRIMARY KEY,   # PRIMARY KEY is compulsive
+    date        date NOT NULL, 
+    INDEX(name)
+);       
+INSERT INTO stamp (name,date) VALUES ('god', '2014-08-08') ON DUPLICATE KEY UPDATE date=VALUES(date);
 
