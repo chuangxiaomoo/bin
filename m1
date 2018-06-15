@@ -196,7 +196,9 @@ function fn_aout()                      { cat linux_aout ;}
 #
 # . busybox_tftp
 function fn_busybox()                   { 
-function fn_man()                       { cat busybox.man ;}
+function fn_man()                       { cat busybox.man
+                                          cat busybox.udhcpc.man
+                                        }
 function fn_arch()                      { cat busybox_arch ;}
 function fn_top()                       { cat busybox_top ;}
 function fn_sed()                       { cat busybox_sed ;}
