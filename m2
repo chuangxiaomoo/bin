@@ -174,6 +174,7 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               problem_ask_question  # 问题产生源自问问题的方式
                                               problem_present       # 回归问题本身
                                               FeynmanTechnique
+                                              ________________
                                               wujun_gg
                                               xiaolai_ff 1001.q
                                               xiaolai_cept dialog.md
@@ -213,6 +214,9 @@ function fn_tiandao()                   { cat book_tiandao book_遥远的救世�
 
 
 function fn_list()                      { cat book_400_PoorCharliesAlmanack_穷查理宝典
+                                              read_400_CharlieMunger_The_Psychology_of_Human_Misjudgment
+                                              read_400_howto_lost_a_friend_失掉一个朋友的几种方法
+                                              read_400_LeEco_读财报的方法
                                               book_401_Antifragile
                                               book_410_The_Sense_of_Style
                                         }
@@ -401,7 +405,6 @@ function fn_44_学得太慢是一种罪()       { cat article_44_学得太慢是
 function fn_45_拷问知识正确和增长遮蔽() { cat article_45_拷问知识正确和增长遮蔽
                                           cat article_46_学习金字塔的知识留存率
                                           cat article_47_计算思维
-                                          cat article_48_思维定势.查理的25个人生开关
                                         }
 function fn_50_十种好的学习方式()       { cat article_50_十种好的学习方式 ;}
 
