@@ -1,11 +1,23 @@
-#! /bin/bash
+# ifconfig
 
 # ip & mask
-ifconfig eth0 192.168.2.44 [netmask 255.255.255.0]
+
+    ifconfig eth0 192.168.2.44 [netmask 255.255.255.0]
 
 # 修改MAC地址, 其不能以非 00: 打头
-ifconfig eth0 hw ether 00:AB:AC:C2:AB:02
+
+    ifconfig eth0 hw ether 00:AB:AC:C2:AB:02
 
 # 换了网卡，删除下面文件中相应eth0的行，udev再自动探测
-/etc/udev/rules.d/70-persistent-net.rules
+
+    /etc/udev/rules.d/70-persistent-net.rules
+
+# 混杂模式
+
+1. ifconfig eth0 promisc   设置网卡eth0为混杂模式
+2. ifconfig eth0 -promisc  取消网卡eth0的混杂模式
+
+# 机房掉电，重启后发现宿主机无法登陆，网络不通
+
+[从混杂模式开始说起](https://ieevee.com/tech/2016/11/24/promisc.html)
 
