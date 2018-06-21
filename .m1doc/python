@@ -1,10 +1,10 @@
 #! /usr/bin/python
 
-# 编码.Unicode.UTF-8
-
-# unicode
-
 ```markdown
+[源码安装 python3 pip3](pysuit)
+
+# Unicode.UTF-8.编码
+
 [](https://www.zhihu.com/question/23374078)
 
 unicode是**定长编码**方案。
