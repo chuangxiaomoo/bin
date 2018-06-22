@@ -56,9 +56,8 @@ svn merge ^/fisheyePro -c5492,5493,5504,5505,5506,5507,5510,5520,5530,5531,5532,
 # Merge跨仓库
 
 1 $PWD 与 $URL 的最后一级目录要在同一级别
-2 domain-name 与 ip 要统一
+domain-name 与 ip 要统一  `isn't in the same repository as 'https://{ip|domainname}/svn/msr620Pro'`
 
-`root@moo:/opt/src/jzzz/t20fisheyePro# svn merge https://jabsco-svn/svn/t20Pro/t20wifiPro -c 1082`
 
 root@moo:/opt/src/grainPro/fisheyePro/_appSrc_ # svn merge https://192.168.2.250/svn/t20Pro/t20fisheyePro/appSrc  -c 1082
 root@moo:/opt/src/jzzz/t20fisheyePro/**appSrc**# svn merge https://192.168.2.250/svn/grainPro/fisheyePro/appSrc -c 6499
