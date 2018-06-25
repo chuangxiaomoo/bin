@@ -15,27 +15,46 @@
                total       used       free     shared    buffers
   -/+ buffers/cache:     187320    `837728`
 
+# 块设备 VS 字符设备
+
+|                       |                                                |
+|      字符设备         |                      块设备                    |
++-----------------------+------------------------------------------------+
+|        1byte          |  块，硬件块各有不同，但是内核都使用512byte描述 |
+|      顺序访问         |                     随机访问                   |
+| 没有缓存，实时操作    |               有缓存，不是实时操作             |
+|一般提供接口给应用层   |           块设备一般提供接口给文件系统         |
+|  是被用户程序调用     |                由文件系统程序调用              |
+|                       |                                                |
+
+因此，大量写串口时，会严重拖慢系统的性能。以及在格式化磁盘时不要刷新进度。
+此外，大多数情况下，磁盘控制器都是直接使用DMA方式进行数据传送。块设备IO调度，使用`电梯算法`。
+
 # Buffer（缓冲）和Cache（缓存）的区别
 
+  [cache](https://feichashao.com/dirty_ratio_and_dirty_background_ratio/)
   [b-c-diff](http://zhumeng8337797.blog.163.com/blog/static/100768914201110244740147/)
+  [浅谈Linux内存管理机制](http://www.linuxeye.com/Linux/1932.html)
 
-  简单来说，buffer是即将要被写入磁盘的，而cache是被从磁盘中读出来的。
+  buffers是用来缓冲[块设备](随机存储+缓冲)做的，它只记录文件系统的元数据（metadata）以及 tracking in-flight pages，
 
+    free
+    find /* -name  *.conf
+    free
 
-  buffer是由各种进程分配的，被用在如输入队列等方面。一个简单的例子如某个进程
-  要求有多个字段读入，在所有字段被读入完整之前，进程把先前读入的字段放在
-  buffer中保存。如read()时一次多读些出来...
+  cached 是用来给文件做缓冲。如果有多个进程都要访问某个文件，于是该文件便被cache`以方便下次快速访问`，提高系统性能。
 
-  cache经常被用在磁盘的I/O请求上，如果有多个进程都要访问某个文件，于是该文件
-  便被做成cache`以方便下次被访问`，这样可提高系统性能。
+    free
+    vi large_file
+    free
 
-# Page cache & buffer cache
+  更通俗一点说：buffers主要用来存放目录里面有什么内容，文件的属性以及权限等等。而cached直接用来记忆我们打开过的文件和程序。
+  用上述命令查看or编辑文件，感受第二次操作的速度。
 
-  [有关cache](https://feichashao.com/dirty_ratio_and_dirty_background_ratio/)
-  Page cache实际上是针对文件系统的，是文件的缓存，在文件层面上的数据会缓存到
-  page cache。文件的逻辑层需要映射到实际的物理磁盘，这种映射关系由文件系统来
-  完成。当page cache的数据需要刷新时，page cache中的数据交给`buffer cache`，
-  但是这种处理在2.6版本的内核之后就变的很简单了，没有真正意义上的cache操作。
+  [Redhat解说](https://stackoverflow.com/questions/6345020/what-is-the-difference-between-buffer-vs-cache-memory-in-linux)
+  Example: When there is a request of any data which is present in the page cache, 
+  first the kernel checks the data in the buffers which contain the metadata which points to the actual files/data contained in the page caches. 
+  Once from the metadata the actual block address of the file is known, it is picked up by the kernel for processing.
 
 # Drop|禁用cache，更多请参考[man proc]
 
