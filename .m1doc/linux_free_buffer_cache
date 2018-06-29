@@ -1,5 +1,9 @@
 # free_buffer_cache
 
+total = free + app + slab + pageTables + buff + cached
+[Linux Used内存到底哪里去了？](http://blog.yufeng.info/archives/2456)
+[Linux下谁在消耗我们的cache](http://blog.yufeng.info/archives/688)
+
 # free
 
   root@Moo64:~# free
@@ -35,18 +39,15 @@
   [cache](https://feichashao.com/dirty_ratio_and_dirty_background_ratio/)
   [b-c-diff](http://zhumeng8337797.blog.163.com/blog/static/100768914201110244740147/)
   [浅谈Linux内存管理机制](http://www.linuxeye.com/Linux/1932.html)
+  [buffer cache与page cache的主要区别 from Robert Love](linux_meminfo_buffer_cache)
 
   buffers是用来缓冲[块设备](随机存储+缓冲)做的，它只记录文件系统的元数据（metadata）以及 tracking in-flight pages，
 
-    free
     find /* -name  *.conf
-    free
 
   cached 是用来给文件做缓冲。如果有多个进程都要访问某个文件，于是该文件便被cache`以方便下次快速访问`，提高系统性能。
 
-    free
     vi large_file
-    free
 
   更通俗一点说：buffers主要用来存放目录里面有什么内容，文件的属性以及权限等等。而cached直接用来记忆我们打开过的文件和程序。
   用上述命令查看or编辑文件，感受第二次操作的速度。

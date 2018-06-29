@@ -1,0 +1,69 @@
+# buffer cache与page cache的主要区别
+
+[**原文有大量英文链接**](https://blog.csdn.net/kisimple/article/details/42559779)
+
+2015年01月09日 20:05:38
+阅读数：2004
+
+最近碰到个问题，弄不清楚Linux中buffer cache和page cache的概念，然后在Quora找到了Linux Kernel Development的作者Robert Love的两个answer，顿时茅厕顿开，决定翻译一下，记录一下。有些感觉翻译不到位的在/****/中给出原文。
+
+# 第一个问题，Linux Kernel: What is the major difference between the buffer cache and the page cache?
+
+buffer cache与page cache的主要区别是什么？
+
+为什么在早期的内核中他们是分开的？为什么后来又合并了？
+
+Robert Love：
+
+page cache缓存了文件页/*pages of file*/，这是为了优化文件I/O。而buffer cache缓存了磁盘块，则是为了优化块I/O。
+
+在Linux内核2.4版本之前，这两个cache是不一样的：文件在page cache，而磁盘块在buffer cache。考虑到大部分文件都是由文件系统表示，并存储在磁盘上，文件数据将会被缓存两份，每一个cache中一份。许多的Unix系统也是采用同样的方式。
+
+这样的方式实现起来简单，但是很明显，不优雅也不高效。从Linux内核2.4版本开始，这两个cache的内容被统一了。VM子系统现在可以驱动I/O，不仅是在page cache/*it does so out of the page cache*/。 如果被缓存的数据即是文件数据又是块数据—大部分数据都是这样—buffer cache只需要指向page cache即可；这样数据就只需要在内存中缓存一份。当你在考虑磁盘缓存的时候，其实就是page cache了：它缓存了磁盘文件数据，这样可以让后续的I/O操作更加快速。
+
+buffer cache仍然存在，因为内核仍然需要执行块I/O。因为大多数块都是用来存储文件数据，所以大部分buffer cache都指向了page cache。但还是有一小部分块并不是文件数据，例如metadata和raw block I/O，因此还是需要单独用buffer cache来缓存。
+
+Jeff Darcy：
+
+很高兴Robert Love给出了一个很优秀的答案。我不打算再用相同的视角来回答这个问题，我将试着回到更早之前，那时甚至都还没有Linux。我知道那看起来是一个奇怪的问题，但Linux开发者也会跟人谈起，因此历史上的事件，围绕其他系统的情况，我觉得还是有必要提一下的/*but Linux developers do talk to others and so on matters of history the context around other systems is IMO still relevant*/。
+
+一开始只有buffer cache。它是一个非常简单的概念：操作它就像操作磁盘，只是最后不会有真正的磁盘请求或者传输。这是一个非常强大的想法，几乎每一个点/*workload*/（除了CPU密集型的，当时还不会碰到网络密集型的问题）上面都能极大的提升性能。谁还会要求更多呢？
+
+后来，有些人觉得将这个cache移到更高的层次会更好。当你只需要维护一个简单的文件加位移的哈希表时，为什么还要在复杂的文件系统代码上面浪费时间呢？而且在文件系统上面实现一个cache意味着可以更紧密的和内存管理子系统结合起来，内存管理子系统的开发在当时也是比较活跃的。因此，你的第一个问题的答案，他们之所以是分开的是因为他们是在不同时期为了满足不同需要而开发的，并且一开始也没有人想要把buffer cache搞乱。
+
+再后来，大家意识到可以将两个cache统一以避免Robert提到的缓存两份的问题。我希望可以找到一个文档的链接让你看下Solaris7和8是怎样来处理这个问题的，因为他们增加的复杂度实在是有点可笑。让buffer cache指向page cache，而不是反过来，原因有两方面：
+
+  • 并不是所有文件系统都是挂载在磁盘上面。有一些是在内存，有一些则是通过网络操作。将page cache拆解成buffer cache和本地处理的并不那么优雅/*Having the page cache split between stuff that points into the buffer cache and stuff that's handled natively is a bit inelegant*/。
+  • page cache被寄予厚望，它的寻址方法和其他语义如果成为首选会更加有意义。
+
+buffer cache仍然存在，因为不是只有文件，但它也只是过去辉煌的一个阴影了。如今一个系统没有了buffer cache只是会变慢，这与没有了page cache会造成的严重后果是无法比拟的。
+
+
+# 第二个问题，What is the difference between Buffers and Cached columns in /proc/meminfo output?
+
+/proc/meminfo输出的Buffers与Cached这两列有什么区别？
+
+cat /proc/meminfo
+MemTotal:      8162388 kB
+MemFree:         86004 kB
+Buffers:         56432 kB
+Cached:        1141924 kB
+SwapCached:     800992 kB
+Active:        6090024 kB
+Inactive:      1857208 kB
+HighTotal:           0 kB
+HighFree:            0 kB
+LowTotal:      8162388 kB
+LowFree:         86004 kB
+SwapTotal:     2096472 kB
+SwapFree:      1048264 kB
+...
+
+Robert Love：
+
+长话短说，Cached是page cache的大小，Buffers是内存中/*in-memory*/块I/O缓冲区的大小。Cached很重要，Buffers无关紧要。
+
+短话长说，Cached等于Linux page cache的大小减去swap cache的大小，swap cache的大小是SwapCached那一列（因此全部page cache的大小就等于Cached+SwapCached）。Linux通过page cache执行所有的I/O操作。写的实现很简单，只要将page cache中相应的页标记为脏页即可；负责刷盘的线程会周期性的将脏页写回磁盘。读就是直接读取page cache的数据，如果数据还没被缓存，就先读进来。在现代的Linux系统中，Cached很容易就会达到几个G，当内存有压力时它才会缩小。只要需要系统就会清理page cache并将数据swap到磁盘以获取更多可用的内存。
+
+Buffers是内存中块I/O的缓冲区。相对来说，它们是比较短暂的。在Linux内核2.4版本之前，page cache跟buffer cache是分开的。从2.4开始，page cache跟buffer cache统一了。Buffers就只缓存raw disk block了，这一部分不在page cache—也就是非文件数据。Buffers这个指标也就不那么重要了。大部分系统中，Buffers经常也就几十M。
+

@@ -235,8 +235,8 @@ function fn_echo_last_cmd()             { cat bash_echo_last_cmd ;}
 function fn_getopts()                   { cat bash_getopts ;}
 function fn_kill_trap()                 { cat bash_kill_trap ;}
 function fn_tcpip()                     { cat bash_tcpip ;}
-function fn_readline()                  { cat bash_readline ;}
-function fn_redirection()               { cat bash_redirection ;}
+function fn_readline()                  { cat bash_readline bash_read ;}
+function fn_redirection()               { cat bash_redirection bash_exec ;}
 function fn_tmo_getopts()               { cat bash_tmo_getopts ;}
 function fn_tmo_trap()                  { cat bash_tmo_trap ;}
 function fn_dialog()                    { cat bash_dialog ;}

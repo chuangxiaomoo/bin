@@ -35,7 +35,7 @@
         >>word 2>&1
 
 
-3. OPEN
+# OPEN
 
   File descriptor 5 is held open often, always we use FD start from 6 
   File descriptor in BASH is like a pointer var as FILE * fp, FILE handler
@@ -55,15 +55,25 @@
     exec [n]<> FILE     read/write, no need close twice except /dev/tcp
     exec {logfd}>g.log  write, var logfd will be a fd >= 10
 
-4. CLOSE
-
+# CLOSE -
 
     exec [n]<&-         close FD ___input and output___
     exec [n]>&-         close FD ___input and output___
     exec [0]<&-         close STDIN
     exec [1]>&-         close STDOUT
 
-5. FD-OPERATE
+# Moving File Descriptors
+
+  moves the file descriptor **digit** to file descriptor n, or the standard input (file descriptor 0) if n is not specified.
+
+    [n]<&digit-
+    [n]>&digit-
+
+# Duplicating File Descriptors
+
+    [n]<&word
+
+# FD-OPERATE
 
   open(file, O_RDWR)        exec fd<> FILe
   read(fd, len)             read -n len <& fd

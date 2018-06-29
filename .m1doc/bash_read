@@ -1,0 +1,15 @@
+#! /bin/bash
+
+# 即便后台执行&，下列代码亦可运行
+# If in a script all descriptor is closed (stdin, stdout, stderr) (e.g. because is called as daemon), then you need find any exists file(串口2) which not produces output:
+# read -t 1 </dev/ttyS1 3<&- 3<&0 <&3
+
+snore()
+{
+    test -t 0 && echo mygod || echo not
+    date
+    read -t 5 </dev/ttyS1              
+    date
+}
+
+snore
