@@ -330,7 +330,7 @@ function git_diff() {
     echo "${nb_2015}" > /tmp/kts/2015
 }
 
-.pyvd()
+.pyd()
 {
     CWD=${PWD}
 
