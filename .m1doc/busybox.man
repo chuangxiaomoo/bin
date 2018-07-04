@@ -3538,6 +3538,10 @@ udhcpc
             -R,--release                Release IP on quit
             -a,--arping                 Use arping to validate offered address
 
+Signals
+    USR1    Renew lease
+    USR2    Release lease
+
 udhcpd
 
     udhcpd [-fS] [configfile]

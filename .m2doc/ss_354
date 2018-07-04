@@ -97,3 +97,15 @@
 [^note:]
 4个季度4321分布，另外，一个分布与群体竞争强度相关。
 
+# 职业发展的坡道
+
+1 CPU
+  thread跟踪
+  event处理
+  task调度
+
+2 memo.内存管理
+  valgrind(malloc free)
+
+3 使用`研究纲领论`剖析北大金融学课
+
