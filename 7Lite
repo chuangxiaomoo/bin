@@ -667,7 +667,7 @@ function fn_rgrep()
     return $?
 }
 
-function fn_flowchar() { ln -sf /root/.flowchar/main${$1}.i .flowchar.i ;}
+function fn_flowchar() { ln -sf /root/.flowchar/main${1}.i .flowchar.i ;}
 function fn_epoch_2_ymdhms() { date -u -d  @${1:-0} +"%F %T %z" ;}
 
 
