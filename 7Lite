@@ -667,7 +667,7 @@ function fn_rgrep()
     return $?
 }
 
-function fn_flowchar() { ln -sf /root/.flowchar/main.i .flowchar.i ;}
+function fn_flowchar() { ln -sf /root/.flowchar/main${$1}.i .flowchar.i ;}
 function fn_epoch_2_ymdhms() { date -u -d  @${1:-0} +"%F %T %z" ;}
 
 
@@ -765,7 +765,7 @@ function fn_main()
     "grep   regExp file     # 换行grep"
     "rgrep  regExp          # 换行grep -r <regExp> *"
     "epoch_2_ymdhms         # 换行时间格式"
-    "flowchar               # create .flowchar"
+    "flowchar [.nvr]        # ln main.\${1}i to \${PWD}/.flowchar"
     "etc                    # backup etc"
     "pyx                    # pyc extract"
     "sum                    # sum STDIN or ARGV"
