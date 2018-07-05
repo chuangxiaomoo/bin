@@ -43,12 +43,22 @@ if { $argc == 0 } {
         interact {
             timeout 30 { send "" }
         }
-    } elseif { [string match *mlogin $argv0] == 1 } {   # Junzheng
+    } elseif { [string match *mlogin $argv0] == 1 } {   # mstar-nvr
         spawn telnet $ip $port
         expect  "login:"
         send    "root\n"
         expect  "Password:"
         send    "jco168168\n"
+
+        interact {
+            timeout 30 { send "" }
+        }
+    } elseif { [string match *ilogin $argv0] == 1 } {   # mstar-ipc
+        spawn telnet $ip $port
+        expect  "login:"
+        send    "root\n"
+        expect  "Password:"
+        send    "jco16888\n"
 
         interact {
             timeout 30 { send "" }
