@@ -726,9 +726,11 @@ function fn_ff()
 function fn_sum()
 {
     if [ -n "${*}" ]; then
-        echo ${@} | xargs -n1 | awk '{ sum=sum+$1 } END {print sum}'
+       #echo ${@} | xargs -n1 | awk '{ sum=sum+$1 } END {print sum}'
+        echo ${@} | xargs -n1 | { while read exp; do let sum=sum+$(($exp)); done; echo ${sum} ;}
     else
-        cat /dev/stdin | xargs -n1 | awk '{ sum=sum+$1 } END {print sum}'
+       #cat /dev/stdin | xargs -n1 | awk '{ sum=sum+$1 } END {print sum}'
+        cat /dev/stdin | xargs -n1 | { while read exp; do let sum=sum+$(($exp)); done; echo ${sum} ;}
     fi
 }
 
