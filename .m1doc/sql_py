@@ -148,9 +148,9 @@ CREATE TABLE balance (
     date        date NOT NULL, 
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
     name        CHAR(16),
-    sell         TINYINT NOT NULL DEFAULT 0,
-    price        DECIMAL(6,2) NOT NULL,
-    vol        DECIMAL(6,2) NOT NULL,
+    sell        TINYINT NOT NULL DEFAULT 0,
+    price       DECIMAL(6,2) NOT NULL,
+    vol         DECIMAL(6,2) NOT NULL,
     INDEX(code,date)
 );
 
@@ -165,3 +165,18 @@ CREATE TABLE stamp (
 );       
 INSERT INTO stamp (name,date) VALUES ('god', '2014-08-08') ON DUPLICATE KEY UPDATE date=VALUES(date);
 
+CREATE TABLE q5 (
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    v5          DECIMAL(12,2) NOT NULL DEFAULT 0,
+    v4          DECIMAL(12,2) NOT NULL DEFAULT 0,
+    v3          DECIMAL(12,2) NOT NULL DEFAULT 0,
+    v2          DECIMAL(12,2) NOT NULL DEFAULT 0,
+    v1          DECIMAL(12,2) NOT NULL DEFAULT 0,
+    q5          TINYINT       NOT NULL DEFAULT 0,
+    q6          TINYINT       NOT NULL DEFAULT 0,
+    vr11        DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 量比
+    nav         TINYINT,                            # 新低
+    p_change    DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    INDEX(code,date)
+};

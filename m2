@@ -139,7 +139,7 @@ function fn_yl_你的灯亮着吗()           { cat book_yl_你的灯亮着吗
 function fn_lf_雷锋日记()               { cat book_lf_雷锋日记 ;}
 function fn_economic_naturalist()       { cat book_economic_naturalist
                                           cat read_economic_naturalist ;}
-function fn_10years()                   { cat book_10years ;}
+function fn_10years()                   { cat book_10years ;}               # 修炼:我的职场十年
 function fn_conservatism()              { cat book_conservatism ;
                                           cat read_conservatism ;}
 function fn_f1_富同学穷同学()           { cat book_f1_富同学穷同学 ;}
@@ -399,7 +399,7 @@ function fn_41_如何成为高品质的勤奋者() { cat article_41_如何成为
                                               article_41_你的阅读造就了你
                                               article_41_如何写好一封邮件
                                         }
-function fn_42_思考工具及框架()         { cat article_42_思考工具及框架 ;}
+function fn_42_思考工具及框架()         { cat article_42_思考工具及框架 ;}      # 思维模型
 function fn_43_如何科学的思考()         { cat article_43_如何科学的思考 ;}
 function fn_44_学得太慢是一种罪()       { cat article_44_学得太慢是一种罪 ;}
 function fn_45_拷问知识正确和增长遮蔽() { cat article_45_拷问知识正确和增长遮蔽
