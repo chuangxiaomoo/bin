@@ -37,13 +37,6 @@
     ldd `which svn` | grep -i neo
 
 
-. configure
-    更换svn diff为vimdiff
-    http://www.ccvita.com/445.html
-    [~/.subversion/config](
-        diff-cmd = /root/bin/svndiff
-    )
-
 . Visual SVN Server on Windows
 
     0. services.msc to Start the service

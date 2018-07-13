@@ -1192,6 +1192,7 @@ function fn_main() {
         Arts_cept
         1111
         TAO                             # 存在的属性
+        ime                             # 输入法
     )
     fn_print $@
 }
