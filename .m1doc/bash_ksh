@@ -11,8 +11,13 @@ loop        while [ ${i:=0} -lt ${#list[@]} ]; do     for (( i=0; i<0; i+=1 )); 
                 echo ${list[$i]}
                 let i++
             done
+
+LINENO      xt_ret $? "|$LINENO|"                     xt_ret 自动获取 caller |${BASH_LINENO[0]}|
+
 FUNCNAME    $0 在 function fn_main 格式下有效
+
 ${var// */} 不支持
+
 ${@:2}      不支持
 ```
 
