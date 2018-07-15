@@ -210,7 +210,11 @@ function fn_320_失控()                  { cat book_320_失控 ;}
 
 function fn_899_权力的游戏()            { cat book_899_权力的游戏 ;}
 function fn_900_平凡的世界()            { cat book_900_平凡的世界 ;}
-function fn_tiandao()                   { cat book_tiandao book_遥远的救世主;}
+function fn_tiandao()                   { cat book_tiandao 
+                                              book_399_遥远的救世主
+                                              read_399_遥远的救世主
+                                              link_399_后发劣势
+                                        }
 
 
 function fn_list()                      { cat book_400_PoorCharliesAlmanack_穷查理宝典
@@ -239,7 +243,6 @@ function fn_list()                      { cat book_400_PoorCharliesAlmanack_穷�
         yl_你的灯亮着吗                 # light question
         PPT演示之道                     # to read
         economic_naturalist             # 牛奶可乐
-        10years                         # 我的职场十年：修炼
         conservatism                    # 保守主义
         think_fast_n_slow
 
@@ -527,7 +530,6 @@ function fn_00_技术分析()               { cat stk_00_技术分析 ;}
 function fn_01_战术()                   { cat stk_01_战术 ;}
 function fn_02_小数据()                 { cat stk_02_小数据 ;}
 function fn_03_大数据()                 { cat stk_03_大数据 ;}
-function fn_07_牛眼投资法()             { cat stk_07_牛眼投资法 ;}
 function fn_11_N_XD_XR_DR()             { cat stk_11_N_XD_XR_DR ;}
 function fn_13_除权后的股票难以上涨()   { cat stk_13_除权后的股票难以上涨 ;}
 function fn_15_逐笔_分笔_分时_逐单()    { cat stk_15_逐笔_分笔_分时_逐单 ;}
@@ -551,7 +553,6 @@ function fn_jc_Golf智慧_快就是慢()      { cat stk_jc_Golf智慧_快就是�
         01_战术                         # tactics
         02_小数据                       # 个股 data
         03_大数据                       # macro data
-        07_牛眼投资法                   # bulleye
 
         tdx                             # 通达信 同花顺(10jqka)
         wenhua                          # 文华财经
