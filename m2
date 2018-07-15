@@ -214,6 +214,7 @@ function fn_tiandao()                   { cat book_tiandao book_遥远的救世�
 
 
 function fn_list()                      { cat book_400_PoorCharliesAlmanack_穷查理宝典
+                                              read_400_PoorCharliesFramework
                                               read_400_CharlieMunger_The_Psychology_of_Human_Misjudgment
                                               read_400_howto_lost_a_friend_失掉一个朋友的几种方法
                                               read_400_LeEco_读财报的方法
@@ -885,12 +886,15 @@ function fn_L0_孤独寂寞朋友()           { cat ljsw_L0_孤独寂寞朋友 ;
 
 function fn_144_什么是好的经济学()      { cat ljsw_144_什么是好的经济学 ;}
 function fn_210_右派为什么这么横()      { cat ljsw_210_右派为什么这么横 ;}
-function fn_215_发现你的太平洋()        { cat ljsw_215_发现你的太平洋 ;}
+function fn_215_发现你的太平洋()        { 
+                                          cat startup
+                                          cat ljsw_215_发现你的太平洋       # 创业
+                                          cat ljsw_0822_南明为什么扛不住    # 八旗制度 去中心化 海尔创业平台
+                                        } 
 
 function fn_0802_他拯救了美国？()       { cat ljsw_0802_他拯救了美国？ ;}
 function fn_0809_改变世界的箱子()       { cat ljsw_0809_改变世界的箱子 ;}
 function fn_0815_费马大定理()           { cat ljsw_0815_费马大定理 ;}
-function fn_0822_南明为什么扛不住()     { cat ljsw_0822_南明为什么扛不住 ;}
 function fn_0907_纳粹的毒瘾()           { cat ljsw_0907_纳粹的毒瘾 ;}
 function fn_0920_3D打印()               { cat ljsw_0920_3D打印 ;}
 function fn_0926_领导，你为啥不信我？() { cat ljsw_0926_领导，你为啥不信我？;}
@@ -914,11 +918,10 @@ function fn_0521_物种战争()             { cat ljsw_0521_物种战争 ;}
 
         144_什么是好的经济学
         210_右派为什么这么横
-        215_发现你的太平洋              # 创业
         0802_他拯救了美国？
         0809_改变世界的箱子
         0815_费马大定理
-        0822_南明为什么扛不住           # 八旗制度 去中心化 海尔创业平台
+        0822_南明为什么扛不住           
         0907_纳粹的毒瘾                 # 希特勒
         0920_3D打印                     #
         0926_领导，你为啥不信我？       # 权力
