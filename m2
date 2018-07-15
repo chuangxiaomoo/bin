@@ -210,7 +210,7 @@ function fn_320_失控()                  { cat book_320_失控 ;}
 
 function fn_899_权力的游戏()            { cat book_899_权力的游戏 ;}
 function fn_900_平凡的世界()            { cat book_900_平凡的世界 ;}
-function fn_tiandao()                   { cat book_tiandao 
+function fn_tiandao()                   { cat book_tiandao
                                               book_399_遥远的救世主
                                               read_399_遥远的救世主
                                               link_399_后发劣势
