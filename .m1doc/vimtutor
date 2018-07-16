@@ -1,0 +1,94 @@
+# vimtutor
+
+当我花时间写下这个 Tutor 时，我发现，Hushuai 需要的不只是 Vim，其需要的是文本处理。
+
+# 目标
+
+打通 Vim 的任督二脉
+
+# 1. 理解文本
+
+## ascii and Unicode
+
+ascii手册
+> man ascii
+
+搜索非ascii字符，比如汉字
+> /[^\x00-\x7f]
+
+查看ascii
+> ga
+
+作业？
+> Shell脚本和二进制都可以执行，内核是如何区分二者的？
+
+## Windows vs. Unix (notepad vs. vim)
+
+常见特殊字符有哪些
+> \t
+> ^M \r
+> \n
+> ^M \E (Esc 033)
+
+彩色打印
+> echo -e "\E[31;40m${TEXT:-mygod}\E[0m"
+> echo -e "^[[31;40m${TEXT:-mygod}^[[0m"
+
+查看特殊字符
+> e ++ff=unix %
+
+输入非可见字符
+> \t  <C-V><Tab>
+> \r  <C-V><C-M>
+> \E  <C-V><Esc>
+
+Windows下编辑的脚本为什么执行失败
+> 因为回车符 ^M
+
+如何删除^M
+> %s/^M//g
+
+# 2. Vim操作
+
+## 模式
+
+              Normal_Mode
+             //  ||     \\
+            //   ||      \\
+           //    ||       \\
+      Insert   Visual --> Command
+
+| 触发键      | 模式名  | Operation                |
+| :------     | :------ | :------                  |
+| <Esc>       | Normal  | 跳转                     |
+| iao         | Insert  | 输入                     |
+| v｜V｜<c-v> | Visual  | (行｜列｜块)局部命令操作 |
+| :           | Command | 命令操作                 |
+
+## Tab, soft Tab and Space
+
+## grep (Regular Expression)
+
+awk
+sed
+grep
+
+*note:*
+find 使用的是路径表达式
+> man bash 
+> /Pathname Expansion$
+
+## 查找 and 替换
+
+## 拼接块
+
+## vimdiff
+
+## 排序
+
+## 查看binary
+
+## 打造IDE(C + Bash)
+
+vim + quickfix + Tlist + Cscope
+
