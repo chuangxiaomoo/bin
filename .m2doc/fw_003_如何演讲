@@ -1,0 +1,61 @@
+# fw_003_如何演讲
+
+要装逼
+要幽默
+要有数据
+要讲故事
+
+# 给newbie的又一堂演讲
+
+你们要学什么？项羽之万人敌。
+
+# 计算思维
+
+1 计算池：Linux(Unix) Window
+2 服务器：smb ssh
+3 服  务：config task
+
+1 init(load config + attach event)
+2 start
+3 stop
+4 event
+
+# 数据结构
+
+*TREE:*
+process tree,
+directory tree,
+decision tree
+
+*TLV:*
+jcp
+config
+TCP/IP
+XML
+pack&update
+
+# 算法
+
+分类
+回归
+
+# UNIX设计哲学
+
+do one thing at a time, and do it well. (xml_shuttle)
+TEXT, no DB
+KISS, keep it simple and smart
+组合, | 胜过1万行代码
+持续改进
+
+# 工程
+
+1. 资源有限
+2. 时间有限
+
+如何在有限的资源和时间之下，做出产出的最大化。
+
+# 心性
+
+Humble(Unknow unknow)
+报恩
+搞事性(双赢)

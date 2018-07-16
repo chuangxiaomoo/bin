@@ -218,8 +218,8 @@ function fn_tiandao()                   { cat book_tiandao
 
 
 function fn_list()                      { cat book_400_PoorCharliesAlmanack_穷查理宝典
-                                              read_400_PoorCharliesFramework
                                               read_400_CharlieMunger_The_Psychology_of_Human_Misjudgment
+                                              read_400_PoorCharliesFramework
                                               read_400_howto_lost_a_friend_失掉一个朋友的几种方法
                                               read_400_LeEco_读财报的方法
                                               book_401_Antifragile
