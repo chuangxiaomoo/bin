@@ -15,8 +15,8 @@
 
 # codingstyle
     format_of_awk() {
-        awk 'BEGIN { cnt=0 } 
-            { if($5 < 0) { cnt++ } } 
+        awk 'BEGIN { cnt=0 }
+            { if($5 < 0) { cnt++ } }
             END { printf("%s\n", cnt) }
         ' $1
     }
@@ -32,19 +32,19 @@
                     print str
                     gsub(/\.c/, "", str2)
                     print str2
-                }' 
+                }'
         `
         echo $strip_srcfile
-    } 
+    }
 
 # for
-    awk '{ 
+    awk '{
         for (i = 2; i <= NF; i++)
                 printf("%s ", $i)
                 printf("\n")
     }' filename
 
-# continue 
+# continue
     BEGIN {
          for (x = 0; x <= 20; x++) {
              if (x == 5)
@@ -60,7 +60,7 @@
         next
     }
 
-# bit and or 
+# bit and or
 
 function fn_calc()
 {
@@ -81,12 +81,12 @@ function fn_calc()
     Tarray[“birth”]=”800927”
 
 # 无序
-awk 'BEGIN{info="it is a test";split(info,tA," ");      
-    for(k in tA){print k,tA[k];}}'    
+awk 'BEGIN{info="it is a test";split(info,tA," ");
+    for(k in tA){print k,tA[k];}}'
 
 # 有序 -- 注意：数组下标是从1开始，与c数组不一样。
-awk 'BEGIN{info="it is a test";tlen=split(info,tA," "); 
-    for(k=1;k<=tlen;k++){print k,tA[k];}}' 
+awk 'BEGIN{info="it is a test";tlen=split(info,tA," ");
+    for(k=1;k<=tlen;k++){print k,tA[k];}}'
 
 
 # next 跳过next指令之后的所有语句，包括next之后的所有Pattern {Actions}
@@ -97,7 +97,7 @@ awk 'BEGIN{info="it is a test";tlen=split(info,tA," ");
     . substr
     # awk中等价于${string:pos:length}的命令是 substr(string,pos,length).
     # 使用一个空的"echo"通过管道给 awk 一个假的输入, 这样可以不用提供一个文件名.
-    echo | awk '{ 
+    echo | awk '{
         print substr("'"${String}"'",3,4) # skid
     }'
 
@@ -120,10 +120,10 @@ awk 'BEGIN{info="it is a test";tlen=split(info,tA," ");
 
 # 正则取反 !
 
-    root@Moo64:~/txt# cat input 
+    root@Moo64:~/txt# cat input
     123
     456
-    root@Moo64:~/txt# cat input | awk '!/123/ {print $1}' 
+    root@Moo64:~/txt# cat input | awk '!/123/ {print $1}'
     456
 
 # gawk中使用位运算和用例
@@ -134,12 +134,12 @@ awk 'BEGIN{info="it is a test";tlen=split(info,tA," ");
 # 格式化汉字
 
     function fn_fmt_hexun() {
-        awk -F',' -v v_data=$DATA -v v_time=$TIME '{ 
+        awk -F',' -v v_data=$DATA -v v_time=$TIME '{
             synlen = " %-12s ";
             if (length($2) < 9) {
-                synlen = " %-10s "; 
-            } else if (length($2) < 12) { 
-                synlen = " %-11s "; 
+                synlen = " %-10s ";
+            } else if (length($2) < 12) {
+                synlen = " %-11s ";
             }
 
             printf "%-6s" synlen "%-6s %-6s %-6s %-6s %-6s %-6s %-12s %-12s %-6s %-6s %-6s\n", \
@@ -147,20 +147,26 @@ awk 'BEGIN{info="it is a test";tlen=split(info,tA," ");
         }' $1
     }
 
+# geek
+
+| skills                     | 说明                                       |
+| :-----------               | :-----------                               |
+| 'END {print addr,$2}'      | 打印最后一行                               |
+| awk '{$1=$2=""; print $0}' | print all columns from the nth to the last |
+
 # [内置变量表](http://www.cnblogs.com/chengmo/archive/2010/10/06/1844818.html)
 
-  | 属性                       | 说明                                       |
-  | :-----------               | :-----------                               |
-  | $0                         | 当前记录（作为单个变量）                   |
-  | awk '{$1=$2=""; print $0}' | print all columns from the nth to the last |
-  | $1~$n                      | 当前记录的第n个字段，字段间由FS分隔        |
-  | FS                         | 输入字段分隔符默认是空格                   |
-  | NF                         | 当前记录中的字段个数，就是有多少列         |
-  | NR                         | 已经读出的记录数，就是行号，从1开始        |
-  | ARGC                       | 命令行参数个数                             |
-  | ARGV                       | 命令行参数数组                             |
-  | FILENAME                   | 当前输入文件的名字                         |
-  | IGNORECASE                 | 如果为真，则进行忽略大小写的匹配           |
-  | CONVFMT                    | 数字转换格式 %.6g                          |
-  | FIELDWIDTHS                | 输入字段宽度的空白分隔字符串               |
-  | FNR                        | 当前记录数                                 |
+| 属性                       | 说明                                       |
+| :-----------               | :-----------                               |
+| $0                         | 当前记录（作为单个变量）                   |
+| $1~$n                      | 当前记录的第n个字段，字段间由FS分隔        |
+| FS                         | 输入字段分隔符默认是空格                   |
+| NF                         | 当前记录中的字段个数，就是有多少列         |
+| NR                         | 已经读出的记录数，就是行号，从1开始        |
+| ARGC                       | 命令行参数个数                             |
+| ARGV                       | 命令行参数数组                             |
+| FILENAME                   | 当前输入文件的名字                         |
+| IGNORECASE                 | 如果为真，则进行忽略大小写的匹配           |
+| CONVFMT                    | 数字转换格式 %.6g                          |
+| FIELDWIDTHS                | 输入字段宽度的空白分隔字符串               |
+| FNR                        | 当前记录数                                 |

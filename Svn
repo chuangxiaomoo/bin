@@ -17,7 +17,7 @@ function fn_usage()
         dl      [filepath]              : equal [Svn S clang]
         h                               : svn help cmd
         l       {5|5 filelist}          : svn log
-        ps      [filelist]              : svn ps svn:executable __chmod +x__
+        ps      [filelist]              : svn ps svn:executable on FILE == chmod +x
         q                               : svn -q status
         r       [filelist]              : revert -R {file|dir}
         s       status

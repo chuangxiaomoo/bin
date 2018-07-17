@@ -22,6 +22,16 @@ ascii手册
 作业？
 > Shell脚本和二进制都可以执行，内核是如何区分二者的？
 
+## UTF8 and cp936(gb2312),gb18030
+
+iconv
+> iconv -f cp936 -t utf-8     // success 
+> iconv -f gbk -t utf-8       // fail 
+
+vim
+> nn <silent> ffp :set fileencoding=cp936<CR>:w<CR>:set fileencoding<CR>
+> nn <silent> ffu :set fileencoding=utf-8<CR>:w<CR>:set fileencoding<CR>
+
 ## Windows vs. Unix (notepad vs. vim)
 
 常见特殊字符有哪些

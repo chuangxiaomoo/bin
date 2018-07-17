@@ -1,0 +1,67 @@
+#!/bin/bash
+
+.  /etc/common.rc
+cd ${CWD}
+
+
+function fn_addr2caller()
+{
+    if [ ! -f "${1}" ]; then
+        echo "file[${1}] not exist"; exit
+    fi
+    tac='/tmp/tac'
+    tac ${1} > ${tac}
+
+    if [ -n "${2}" ]; then
+        echo ${@:2} | xargs -n1 | {
+        while read ADDR; do 
+            sed -n "/^ *${ADDR}/,/>:/p" ${tac} | awk -F'[<>]' -v addr=$ADDR 'END {print addr,$2}'
+        done
+        }
+    else
+        cat /dev/stdin | {
+        while read ADDR; do 
+            sed -n "/^ *${ADDR}/,/>:/p" ${tac} | awk -F'[<>]' -v addr=$ADDR 'END {print addr,$2}'
+        done
+        }
+    fi
+}
+
+function fn_addr2func()
+{
+    if [ ! -f "${1}" ]; then
+        echo "file[${1}] not exist"; exit
+    fi
+    asm="${1}"
+
+    if [ -n "${2}" ]; then
+        echo ${@:2} | xargs -n1 | {
+        while read ADDR; do 
+            grep "^0*$ADDR <" ${asm} |  awk -F'[<>]' '{print $1,$2}'
+        done
+        }
+    else
+        cat /dev/stdin | {
+        while read ADDR; do 
+            grep "^0*$ADDR <" ${asm} |  awk -F'[<>]' '{print $1,$2}'
+        done
+        }
+    fi
+}
+
+function fn_main() 
+{
+    cmdlist=(
+    # fixed sequence
+    "addr2caller            # name -> function name() { cat name ;}"
+    "addr2func              # bakeup files in /root"
+
+    # volatile sequence 
+    )
+
+    fn_execute "$@"
+}
+
+asm='/root/c/thd.wrap/.asm'
+
+fn_main "$@"
