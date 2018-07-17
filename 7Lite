@@ -568,7 +568,7 @@ function fn_svncat()
 
     # svn log -l 50 最近的50条，版本号最大在第一条
     # start_v
-    versions=(`svn log $url | grep '^r[0-9][0-9].*lines$' | awk '{print $1}'`)
+    versions=(`svn log $url | grep '^r[0-9][0-9].*lines*$' | awk '{print $1}'`)     # lines | 1 line
 
     echo "found ${#versions[@]} version"  # && exit
 
