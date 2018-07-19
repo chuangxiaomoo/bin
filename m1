@@ -127,24 +127,15 @@ function fn_macro()                     { cat gcc_macro ;}
     )
     fn_print $@
 }
-function fn_make() {
-function fn_link()                      { cat make_link ;}
-function fn_skeleton()                  { cat make_dependence ;}
-function fn_var_cmdline()               { cat make_var_cmdline ;}
+function make()                         {
+function fn_var_cmdline()               { cat make_cmdline ;}
 function fn_var_debug()                 { cat make_var_debug ;}
 function fn_var_inner()                 { cat make_var_inner ;}
 function fn_lib_dynamic()               { cat make_lib_dynamic ;}
-function fn_lib_static()                { cat make_lib_static ;}
-
-    local opts=(
-        lib_dynamic
-        lib_static
-
-        var_cmdline
-        var_debug
-        var_inner
-    )
-    fn_print $@
+function fn_lib_static()                { cat make_lib_static 
+                                              make_lib_dependence
+                                              make_herderfile_dependence
+                                        }
 }
 
 function fn_virtualbox()                { cat virtualbox vmware ;}
@@ -1472,7 +1463,6 @@ function fn_main() {
         hisi                    # nvr
         nxp
         network
-        make
         pandoc
         markdown                # README.md xianglei
         opera

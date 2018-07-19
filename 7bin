@@ -51,6 +51,8 @@ function fn_addr2func()
 
 function fn_install_info()
 {
+    # stackoverflow
+    # where-are-info-document-files-in-mac-or-in-linux-and-how-can-i-install-some-missing-info-files
     [ -n "${1}" ]
     xt_ret $? "" || return $?
 
