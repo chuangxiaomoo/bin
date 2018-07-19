@@ -174,9 +174,8 @@ CREATE TABLE q5 (
     v2          DECIMAL(12,2) NOT NULL DEFAULT 0,
     v1          DECIMAL(12,2) NOT NULL DEFAULT 0,
     q5          TINYINT       NOT NULL DEFAULT 0,
-    q6          TINYINT       NOT NULL DEFAULT 0,
-    vr11        DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 量比
-    nav         TINYINT,                            # 新低
+    ratio       DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 量比
+    trough      TINYINT,                            # 3日新低
     p_change    DECIMAL(6,2)  NOT NULL DEFAULT 0,
     INDEX(code,date)
 };

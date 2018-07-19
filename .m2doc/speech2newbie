@@ -9,6 +9,12 @@
 
 你们要学什么？项羽之万人敌。
 
+人类社会只有发明了发明的方法之后才能发展，同样的道理，你们只有学习了学习的方法之后才能进步。
+
+Larry Page, 2004 was elected to the National Academy of Engineering.
+
+套路：金字塔原理、敏捷开发
+
 # 计算思维: 任务的递归
 
 1 计算池：Linux(Unix) Window
@@ -57,11 +63,16 @@ pack&update
 
 # UNIX设计哲学
 
-do one thing at a time, and do it well. (xml_shuttle)
 TEXT, no DB
 KISS, keep it simple and smart
-组合, | 胜过1万行代码
 持续改进
+
+do one thing at a time, and do it well. (xml_shuttle)
+Less is more.
+组合, | 胜过1万行代码
+多一分则肥，少一分则瘦
+
+华为产的不是产品，是快速生产工程师。
 
 # 工程
 
