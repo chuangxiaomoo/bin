@@ -1,0 +1,55 @@
+#! /bin/make
+
+| 功能说明                | keyword | example                              | 输出                   |
+| :------                 | :------ | :----------------------------------  | :------                |
+| 变量 = 函数输出         | $()     | INCFLAGS := $(foreach ...)           |                        |
+| shell for dir in ...    | foreach | $(foreach dir, $(dirs), -I$(dir))    |                        |
+| shell dirname           | dir     | $(dir dir/foo dir/bar)               | dir dir                |
+| shell basename          | notdir  | $(notdir dir/foo dir/bar)            | for bar                |
+| 调用shell命令           | shell   | $(shell find -name 'foo'｜sort; ls ) |                        |
+| 引用shell变量           | $$      | $$$$                                 | 当前PID                |
+| $(shell pwd) vs. $(PWD) | make -C | @echo $(PWD) $(shell pwd)            | $(PWD) = make 运行目录 |
+
+# 自动补全
+
+发现有时不能自动补全目标，可能是在vim中执行了 :shell<CR>
+
+source profile后可以了，估计其依赖 /etc/bash_completion
+
+    $ . /etc/profile
+        /etc/bash.bashrc
+
+    # enable bash completion in interactive shells
+    if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
+        . /etc/bash_completion
+    fi
+
+可能编写自己的 bash_completion
+
+# make隐含规则
+
+编译C程序的隐含规则
+
+    “<n>.o”的目标的依赖目标会自动推导为“<n>.c”，并且其生成命令是:
+    $(CC) –c $(CPPFLAGS) $(CFLAGS)
+
+编译C++程序的隐含规则
+
+    “<n>.o”的目标的依赖目标会自动推导为“<n>.cc”或是“<n>.C”，并且其生成命令是
+    $(CXX) –c $(CPPFLAGS) $(CFLAGS)”。
+
+汇编和汇编预处理的隐含规则
+
+    “<n>.o”  的目标的依赖目标会自动推导为“<n>.s”，默认使用编译品“as”，并且其生成
+    命令是：
+    $(AS) $(ASFLAGS)
+    “<n>.s”  的目标的依赖目标会自动推导为“<n>.S”，默认使用C预编译器“cpp”命令是\
+    $(AS) $(ASFLAGS)
+
+ld 链接隐含规则
+
+    “<n>”目标依赖于“<n>.o”，通过运行C的编译器来运行链接程序生成（一般是“ld”），
+    其生成命令是：“$(CC) $(LDFLAGS) <n>.o $(LOADLIBES) $(LDLIBS)”。这个规则对于
+    只有一个源文件的工程有效。
+    若是有多个Object文件（由不同的源文件生成），则依赖关系如： x : y.o z.o
+    要求 “x.c”、“y.c”和“z.c”都存在，不然，隐含规则会报错的。

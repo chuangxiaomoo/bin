@@ -49,6 +49,34 @@ function fn_addr2func()
     fi
 }
 
+function fn_install_info()
+{
+    [ -n "${1}" ]
+    xt_ret $? "" || return $?
+
+    app=$1
+    mkdir -p /root/info
+    cd /root/info
+    wget https://www.gnu.org/software/$app/manual/$app.info.tar.gz
+    xt_ret $? "" || return $?
+
+    tar xf $app.info.tar.gz
+    xt_ret $? "" || return $?
+
+    gzip $app.info
+    chmod 644 $app.info.gz
+    chown root:root $app.info.gz
+
+    mkdir -p /usr/share/info
+    mv $app.info.gz /usr/share/info
+
+    # generate a hypertext link to $app in the info top page:
+    ginstall-info --info-dir=/usr/share/info --info-file=/usr/share/info/$app.info.gz
+
+    #info $app
+    pinfo $app
+}
+
 function fn_main() 
 {
     cmdlist=(
@@ -57,6 +85,7 @@ function fn_main()
     "addr2func              # bakeup files in /root"
 
     # volatile sequence 
+    "install_info"
     )
 
     fn_execute "$@"
