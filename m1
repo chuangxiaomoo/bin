@@ -602,32 +602,20 @@ function fn_source()                    { cat gdb_source ;}
 }
 
 
-function fn_git()                       { 
-function fn_base()                      { cat git_base ;}
-function fn_commit()                    { cat git_commit ;}
+function fn_git()                       { cat git
 function fn_github()                    { cat git_github ;}
 function fn_svndiff()                   { cat git_svndiff ;}
 function fn_diff()                      { cat git_diff ;}
-function fn_add()                       { cat git_add ;}
-function fn_rm()                        { cat git_rm ;}
 function fn_config()                    { cat git_config ;}
 function fn_subconf()                   { cat git_subconf ;}
 function fn_log()                       { cat git_log ;}
-function fn_cat-file()                  { cat git_cat-file ;}
-function fn_merge()                     { cat git_merge ;}
     local opts=(
-        base                    # 入门
-        add
+        github                  # create 或 pull 一个项目 from github.com 
         config                  # ln -sf ~/bin/.m1doc/git_config .gitconfig
         subconf                 # .git/config
-        commit
         diff                    # 
-        rm
         svndiff                 # 与svn比较
-        github                  # create 或 pull 一个项目 from github.com 
         log
-        cat-file
-        merge
     )
     fn_print $@
 }

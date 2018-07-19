@@ -1,5 +1,0 @@
-# 运行命令，git 会提示使用 vimdiff 进行 merge
-
-git mergetool
-
-

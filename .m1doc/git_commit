@@ -1,8 +1,0 @@
-# commit
-
-## git commit -a 可以路过 git add 直接 commit
-  -a, --all
-    Tell the command to automatically stage files that have been modified and deleted, 
-    but new files you have not told git about are not affected.
-
-  `git commit -a -m "commit without add"`
