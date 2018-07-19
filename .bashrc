@@ -379,6 +379,7 @@ scdo()  { [ -f "${1}" ] && scp $@ cdo:/root/bin     || echo not exit file [${1}]
 scda()  { [ -f "${1}" ] && scp $@ cdo:/pycharm/data || echo not exit file [${1}] ;}
 scmo()  { 
     usage="
+    a   ALL .py and .shell
     c   /winc/cache/codes.txt
     cn  /pycharm/candle.py
     k   /pycharm/bin/k.sh
@@ -389,6 +390,13 @@ scmo()  {
     rc  /root/bin/common.rc
     "
     [ -z "${1}" ] && echo "${usage}" && return
+    if [ "${1}" = 'a' ]; then
+        scp cdo:~/bin/{candle.py,dkline.py,my.py,zorm5.py} /pycharm/
+        scp cdo:~/bin/{k.sh,S}      /pycharm/bin/
+        scp cdo:~/bin/{pysuit,tita} /root/bin/
+        return
+    fi
+
     arr=(${usage})
     for (( i=0,j=1; i<${#arr[@]}; i+=2,j+=2 )); do
         [ "${1}" = ${arr[$i]} ] && cmd="scp cdo:~/bin/${arr[$j]##*/} ${arr[$j]}" && { echo ${cmd}; ${cmd}; return ;}

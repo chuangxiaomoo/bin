@@ -15,6 +15,7 @@ function fn_main()
         dp  dprev   file 'PREV'
         ds  .swp    [del .swp] 
         l   log     log -p file
+        ls          ls-files
         p   pull    [origin master]
         P   push    [origin master]
         r   revert  [file or directory]
@@ -53,22 +54,15 @@ function fn_main()
         git commit -m "$REPLY" ${filelist}
         ;;
 
-    d)  git diff ${filelist}
-        ;;
     dl) list=`git status | awk '/modified:/{print $3}'`
         [ -z "${list}" ] && echo "no modified" && return
         git diff ${list}
         ;;
-    log|l)
-        git log -p ${filelist}
-        ;;
-    dp)
-        git diff HEAD^ HEAD ${filelist}
-        ;;
-
-    ds)
-        find -name '*.sw[op]' -exec rm -f {} \;
-        ;;
+    d)  git diff ${filelist}                        ;;
+    ls) git ls-files ${filelist}                    ;;
+ log|l) git log -p ${filelist}                      ;;
+    dp) git diff HEAD^ HEAD ${filelist}             ;;
+    ds) find -name '*.sw[op]' -exec rm -f {} \;     ;;
 
     p*|pull)
         # 解决自动merge
