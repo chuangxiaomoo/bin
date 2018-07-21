@@ -1,0 +1,56 @@
+# how_to_think_like_a_mathematician
+
+
+[](https://zh.wikipedia.org/wiki/虚数)
+
+# 虚数可对应平面上的纵轴，与对应平面上横轴的实数同样真实
+
+| sets                  | denoted               | define                                        |
+| :------               | :------               | :------                                       |
+| Natural numbers       | N                     | {1, 2, 3, 4, . . . }                          |
+| Integers              | Z, German word Zahlen | {. . . , −4, −3, −2, 0, 1, 2, 3, 4, . . . }   |
+| non-negative integers | Z+                    | {0, 1, 2, 3, 4, . . . }                       |
+| Rational numbers      | Q, Quotient(IQ)       | x = p/q where p and q are integers and q ne 0 |
+| Irrational numbers    | 第一次数学危机        | 无限不循环小数, such as sqrt(2), π and e      |
+| Real numbers          | R                     | 对应平面上横轴                                |
+| Complex numbers       | C                     |                                               |
+
+
+# Symbols
+
+| symbol  | define       |                                                              |
+| :------ | :------      | :------                                                      |
+| ｜      | such that    |                                                              |
+| ∩       | intersection |                                                              |
+| ∪       | union        |                                                              |
+| \　     | difference   | x\y is the set of elements that are in X but not in Y        |
+|         | complement   |                                                              |
+| ×       | Product      |                                                              |
+| f(x)    | function/map | X is called source or domain, Y is called target or codomain |
+|         |              |                                                              |
+|         |              |                                                              |
+|         |              |                                                              |
+|         |              |                                                              |
+
+# Chapter 0
+
+As I went through my mathematical career, there were many instances when I thought, ‘**I wish someone had told me that earlier.**’ This is a collection of such advice.
+
+
+# Part I Study Skills For Mathematicians
+
+# Chapter 1 Sets and functions
+
+A set is a well-defined collection of objects.
+The empty set has no elements.
+The cardinality of a finite set is the number of elements in the set.
+The set Y is a subset of X if every element of Y is in X.
+A subset Y of X is a proper subset if it is not equal to X.
+The union of X and Y is the collection of elements that are in X or in Y .
+The intersection of X and Y is the collection of elements that are in X and in Y .
+The product of X and Y is the set of all pairs (x, y) where x ∈ X and y ∈ Y .
+A function assigns elements of one set to another.
+
+# CHAPTER 2 Reading mathematics
+
+

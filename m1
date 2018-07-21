@@ -1483,6 +1483,7 @@ function fn_main() {
         tmux
         uboot
         url
+        latex
         vim
         vlc
         vs

@@ -377,7 +377,6 @@ function fn_article()                   {
 function fn_01_高铁陆权战略()           { cat article_01_高铁陆权战略 ;}
 function fn_03_教育的意义()             { cat article_03_教育的意义 ;}
 function fn_04_周国平：交往的质量()     { cat article_04_周国平：交往的质量 ;}
-function fn_06_哪些知识会让你变蠢？()   { cat article_06_哪些知识会让你变蠢？ ;}
 function fn_07_如何构建经济学思维方式() { cat article_07_如何构建经济学思维方式 ;}
 function fn_08_novel()                  { cat article_08_novel ;}
 
@@ -406,10 +405,12 @@ function fn_41_如何成为高品质的勤奋者() { cat article_41_如何成为
                                         }
 function fn_42_思考工具及框架()         { cat article_42_思考工具及框架 ;}      # 思维模型
 function fn_43_如何科学的思考()         { cat article_43_如何科学的思考 ;}
-function fn_44_学得太慢是一种罪()       { cat article_44_学得太慢是一种罪 ;}
-function fn_45_拷问知识正确和增长遮蔽() { cat article_45_拷问知识正确和增长遮蔽
+function fn_44_学得太慢是一种罪()       { cat article_44_学得太慢是一种罪
+                                          cat article_45_拷问知识正确和增长遮蔽
                                           cat article_46_学习金字塔的知识留存率
                                           cat article_47_计算思维
+                                          cat article_48_哪些知识会让你变蠢？
+                                          cat article_49_孔子到底算不算哲学家？
                                         }
 function fn_50_十种好的学习方式()       { cat article_50_十种好的学习方式 ;}
 
@@ -465,7 +466,6 @@ function fn_gsq_房价什么情况下会崩()    { cat article_gsq_房价什么�
         02_铁道部取消
         03_教育的意义
         04_周国平：交往的质量
-        06_哪些知识会让你变蠢？
         07_如何构建经济学思维方式
         08_novel
 
@@ -476,7 +476,6 @@ function fn_gsq_房价什么情况下会崩()    { cat article_gsq_房价什么�
         42_思考工具及框架
         43_如何科学的思考
         44_学得太慢是一种罪
-        45_拷问知识正确和增长遮蔽
         50_十种好的学习方式
 
         51_怎样成为一个高手
@@ -578,7 +577,7 @@ function fn_cept()                      { cat futures_cept ;}
     fn_print $@
 }
 
-function fn_math()                      {
+function fn_math()                      { how_to_think_like_a_mathematician
 function fn_e_n_log()                   { cat math_e_n_log ;}
 function fn_11_magical_70()             { cat math_11_magical_70 ;}
 function fn_12_fibonacci_sequence()     { cat math_12_fibonacci_sequence ;}
