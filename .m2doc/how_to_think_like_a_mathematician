@@ -5,6 +5,8 @@
 
 # 虚数可对应平面上的纵轴，与对应平面上横轴的实数同样真实
 
+**数系**的发展，缘自数系中数进行“运算”后不能**封闭**，而进行的逐步扩充。
+
 | sets                  | denoted               | define                                        |
 | :------               | :------               | :------                                       |
 | Natural numbers       | N                     | {1, 2, 3, 4, . . . }                          |
@@ -14,6 +16,7 @@
 | Irrational numbers    | 第一次数学危机        | 无限不循环小数, such as sqrt(2), π and e      |
 | Real numbers          | R                     | 对应平面上横轴                                |
 | Complex numbers       | C                     |                                               |
+|                       | e                     | (1+i)^n 如何计算                              |
 
 
 # Symbols
