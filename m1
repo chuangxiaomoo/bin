@@ -1365,7 +1365,8 @@ function fn_xinetd()                    { cat network_xinetd ;}
 
 function fn_tools() {
     local opts=(
-        SVN WBS RDM Valgrind SourceMonitor
+        SVN WBS RDM SourceMonitor
+        valgrind 
     )
 }
 
@@ -1410,6 +1411,7 @@ function fn_main() {
         CC
         codingstyle
         google
+        groogle                 # a collaborative code review tool
         chrome                  # vpn
         coreutils
         curl

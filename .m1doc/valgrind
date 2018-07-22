@@ -1,0 +1,25 @@
+Valgrind 
+
+(1) helgrind posix API 
+
+(2) cashegrind 
+
+valgrind --tool=cachegrind --branch-sim=yes --cache-sim=yes --cachegrind-out-file=cache.out 
+./b.out 
+
+Command2: Cachegrind也生成一个文件，默认名为cachegrind.out.pid，在上面输出则为cache.out，可以通过cg_annotate来读取。输出是一个更详细的列表。
+
+为了排版，下面的数据有删减 cg_annotate ./cache.out --auto=yes ./main.c， 
+
+(3) valgrind --tool=callgrind --toggle-collect=main_pc ./call.out callgrind_annotate --threshold=100 callgrind.out.* --auto=yes ./call.c 
+
+callgrind与opgprof, gprof的比较: opgprof与gprof都可以有图形化输出，而callgrind不可以，但是callgrind的使用更加灵活，其可以统计一段代码的调用次出，在调试算法时很有用处。
+
+callgrind可以查看任何一个函数的调用次数。
+命令callgrind_control -e -b 在valgrind 运行时同目录下运行可以得到一些关于函数调用时的堆栈信息。 
+
+概念： IR is Valgrind's RISC-like intermediate representation via which all instrumentation is done。
+
+5.2 callgrind高级用法 valgrind --tool=callgrind --toggle-collect=main_pc ./call.out --toggle-collect可以统计一段代码中的函数统计，其还可以同时统计几段代码，这就需要借助valgrind源码包里callgrind.h valgrind.h中所定义的几个宏： CALLGRIND_START_INSTRUMENTATION CALLGRIND_STOP_INSTRUMENTATION 
+
+(4) massif valgrind --tool=massif --time-unit=B --max-snapshots=999 --detailed-freq=10 --stacks=yes ./m.out; ms_print ./massif.out.* > mass.log cat mass.log

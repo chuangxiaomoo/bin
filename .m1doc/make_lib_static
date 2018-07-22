@@ -15,6 +15,10 @@ LIB_DEPEND_FILES = lib1.o lib2.o
 
 all: $(OBJLIB)
 
+
+# 在链接静态库时，如果多个静态库之间存在依赖关系，则有依赖关系的静态库之间存在链接顺序问题。这在使用静态库时需要注意，否则会报符号找不到的链接错误。 
+# 例如： lib2.a 依赖于 lib1.a，而最终可执行文件 test 依赖于 lib2.a，则链接选项应为： -llib2.a -llib1.a，而不能反过来
+
 # $?    dependent files Newer than $@, used when $@ is static lib
 $(OBJLIB): $(LIB_DEPEND_FILES)
     $(AR) $(ARFLAGS) $(OBJLIB) $?

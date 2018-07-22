@@ -630,7 +630,7 @@ function fn_TrapsPitfalls()             { cat logic_TrapsPitfalls ;}
     local opts=(
         cept
         training500
-        puzzle                          # 我理解的一些谜
+        puzzle                          # 我理解的一些谜 maze
         formal                          #   形式逻辑(普通逻辑)
         informal                        # 非形式逻辑
         informal_wiki                   # 定义
@@ -749,10 +749,7 @@ function fn_valuetheory()               { cat phi_valuetheory ;}
 }
 
 function fn_huawei()                    {
-function fn_to_sort()                   { cat huawei_to_sort ;}
-function fn_forum()                     { cat huawei_forum ;}
-function fn_cultural()                  { cat huawei_cultural ;}
-function fn_account_临行()              { cat huawei_account_临行 ;}
+function fn_forum()                     { cat huawei_forum  huawei_culture ;}
 function fn_C语言的限定词()             { cat huawei_C语言的限定词 ;}
 
 function fn_Oracle()                    { cat huawei_Oracle ;}
@@ -788,10 +785,7 @@ function fn_Qi_疾病()                   { cat huawei_Qi_疾病 ;}
 
     local opts=(
         WiMax_meeting                   # 唯一一次大会
-        cultural
         misc                            # 一些哲学、师道
-        to_sort                         # 未整理的 ruby valgrind 等
-        account_临行                    # 最后一次上传到csdn评论的账号 cu.h
         forum                           # 论坛里的小伙伴
         C语言的限定词
 
