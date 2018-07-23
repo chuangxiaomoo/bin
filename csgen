@@ -110,7 +110,7 @@ function fn_main()
 
    #     find [path1] [path2] [path3] -name <name>
    #echo find    . $exclude_opt $namepatt 
-    eval find -f . $exclude_opt $namepatt > $csfiles
+    eval find . -type f $exclude_opt $namepatt > $csfiles
     xt_ret $? "" || return $?
 
     while read srcpath; do
@@ -122,8 +122,8 @@ function fn_main()
         [ ! -d "${srcpath%% *}" ] && echo "$srcpath: No such directory" && exit 0
 
         # echo \
-        #    find    ${srcpath} ${exclude_opt} $namepatt >> $csfiles"
-        eval find -f ${srcpath} ${exclude_opt} $namepatt >> $csfiles
+        #    find         ${srcpath} ${exclude_opt} $namepatt >> $csfiles"
+        eval find -type f ${srcpath} ${exclude_opt} $namepatt >> $csfiles
     done < $cspathes
 
     sort -u $csfiles -o $csfiles
