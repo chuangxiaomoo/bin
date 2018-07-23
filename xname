@@ -1,0 +1,31 @@
+#! /bin/bash
+
+
+function fn_main()
+{
+    in='/dev/shm/xm'
+    out='/dev/shm/XM'
+
+    case $1 in
+    untag|u)
+        sed -i 's#</.*$##g' ${in}
+        sed -i 's#^.*>##g' ${in}
+        ;;
+    tag|t)
+        sed -i 's#^  *##g' ${in}
+        sed -i 's#  *$##g' ${in}
+
+        let i=0
+        while read; do
+            echo "    <name${i}>$REPLY</name${i}>"
+            let i++
+        done < ${in} > ${out}
+        ;;
+    *)
+        echo "Usage: xname {untag|tag}"
+        ;;
+    esac
+
+}
+
+fn_main $@
