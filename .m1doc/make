@@ -1,14 +1,15 @@
 #! /bin/make
 
-| 功能说明                | keyword | example                              | 输出                   |
-| :------                 | :------ | :----------------------------------  | :------                |
-| 变量 = 函数输出         | $()     | INCFLAGS := $(foreach ...)           |                        |
-| shell for dir in ...    | foreach | $(foreach dir, $(dirs), -I$(dir))    |                        |
-| shell dirname           | dir     | $(dir dir/foo dir/bar)               | dir dir                |
-| shell basename          | notdir  | $(notdir dir/foo dir/bar)            | for bar                |
-| 调用shell命令           | shell   | $(shell find -name 'foo'｜sort; ls ) |                        |
-| 引用shell变量           | $$      | $$$$                                 | 当前PID                |
-| $(shell pwd) vs. $(PWD) | make -C | @echo $(PWD) $(shell pwd)            | $(PWD) = make 运行目录 |
+| 功能说明                | keyword | example                                        | 输出                   |
+| :------                 | :------ | :----------------------------------            | :------                |
+| 变量 = 函数输出         | $()     | INCFLAGS := $(foreach ...)                     |                        |
+| shell for dir in ...    | foreach | $(foreach dir, $(dirs), -I$(dir))              |                        |
+| shell dirname           | dir     | $(dir dir/foo dir/bar)                         | dir dir                |
+| shell basename          | notdir  | $(notdir dir/foo dir/bar)                      | for bar                |
+| 调用shell命令           | shell   | $(shell find -name 'foo'｜sort; ls )           |                        |
+| 引用shell变量           | $$      | $$$$                                           | 当前PID                |
+| $(shell pwd) vs. $(PWD) | make -C | @echo $(PWD) $(shell pwd)                      | $(PWD) = make 运行目录 |
+| 条件与匹配              | filter  | ifeq ($(GCC_MINOR),$(filter $(GCC_MINOR),4 5)) |                        |
 
 # 自动补全
 
