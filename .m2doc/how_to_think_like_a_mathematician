@@ -39,21 +39,46 @@
 
 As I went through my mathematical career, there were many instances when I thought, ‘**I wish someone had told me that earlier.**’ This is a collection of such advice.
 
-
 # Part I Study Skills For Mathematicians
 
 # Chapter 1 Sets and functions
 
-A set is a well-defined collection of objects.
-The empty set has no elements.
-The cardinality of a finite set is the number of elements in the set.
-The set Y is a subset of X if every element of Y is in X.
-A subset Y of X is a proper subset if it is not equal to X.
-The union of X and Y is the collection of elements that are in X or in Y .
-The intersection of X and Y is the collection of elements that are in X and in Y .
-The product of X and Y is the set of all pairs (x, y) where x ∈ X and y ∈ Y .
-A function assigns elements of one set to another.
+o A set is a well-defined collection of objects.
+o The empty set has no elements.
+o The cardinality of a finite set is the number of elements in the set.
+o The set Y is a subset of X if every element of Y is in X.
+o A subset Y of X is a proper subset if it is not equal to X.
+o The union of X and Y is the collection of elements that are in X or in Y .
+o The intersection of X and Y is the collection of elements that are in X and in Y .
+o The product of X and Y is the set of all pairs (x, y) where x ∈ X and y ∈ Y .
+o A function assigns elements of one set to another.
 
 # CHAPTER 2 Reading mathematics
 
+> It is unlikely that understanding will come from excessive rereading of a difficult passage. 
+> If you are rereading, then it is probably a sign that you are not active – 
+> so do some exercises, ask some questions and so on. 
+
+o Read with a purpose 
+o Read actively.  Have pen and paper with you.
+o You do not have to read in sequence but read systematically.
+o Ask questions.
+o Read the definitions, theorems and examples first.  The proofs can come later.
+o Check the text by applying formulas, etc.
+o Move on if you are stuck.
+o Write a summary.
+o Reflect – What have you learned?
+
+# CHAPTER 3 Writing mathematics 1
+
+o Write in simple, punctuated sentences.
+o Keep it simple.
+o Explain what you are doing.
+o Explain your assertions.
+o Say what you mean.
+o In general, use words rather than symbols.
+o Use equals properly – equals means equals.
+o Don’t draw arrows everywhere – use symbols or numbers to identify equa-tions.
+o Proof read.
+o Reflect. (ask ‘What can I take away?’ and ‘What can I add?’)
 
