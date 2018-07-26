@@ -1,0 +1,93 @@
+# gdb
+
+[按操作顺序理解gdb](https://sourceware.org/gdb/onlinedocs/gdb/Mode-Options.html)
+
+# 临时 .gdbinit
+
+    $ gdb -q -iex "set auto-load safe-path ~/src/" ./app
+
+# 永久性 .gdbinit
+
+https://sourceware.org/gdb/onlinedocs/gdb/Auto_002dloading-safe-path.html
+
+    ~/.gdbinit: ‘add-auto-load-safe-path ~/src/’
+
+# 逆向回退.ReverseDebug
+
+http://sourceware.org/gdb/wiki/ReverseDebug
+
+"reverse debugging" -- meaning that gdb can allow you to "step" or "continue" your program backward in "time", reverting it to an earlier execution state.
+
+# run
+
+(1) start
+   gdb program
+   gdb program core
+   gdb program 1234
+
+   (gdb) attach 1234
+   (gdb) file /app/vs/jco_server    # Reading symbols from 
+                                    # file 指定调试程序(info program查看)
+   (gdb) detach 
+
+
+(2) path
+   (gdb) show path                  # 
+   (gdb) path /app/vs               # PATH=<dir>:$PATH ./program
+
+(3) args
+    show args
+    set args 
+     (1) gdb命令行的                –args 参数
+     (2) gdb环境中                  set args 
+     (3) gdb中，run后加参数，       `run 1 2`(r 1 2)
+
+(4) terminal
+    run  > logfile
+    tty  /dev/tty3
+
+p.s.
+    注意: 变量可能会被优化掉. 如下文的ret
+    int ret;
+    ret = function();
+
+# 源码操作
+
+(1) list
+  set listsize <count>
+  show listsize
+
+  list <first>, <last>
+  <filename:linenum>      哪个文件的哪一行。
+  <function>              函数名。
+  <filename:function>     哪个文件中的哪个函数。
+  <*address>              程序运行时的语句在内存中的地址。
+
+(2) search
+          search <regexp> 
+  forward-search <regexp> 
+  reverse-search <regexp> 
+
+(3) directories
+  show directories
+  dir <dir1:dir2:dir3...>
+
+(4) disassemble
+  disassemble funcname 
+
+# attach
+
+  1. ps 查看 pid
+  2. gdb
+  3. attach pid
+
+  attach命令的效果等同打了一个现形的断点，进程自动被挂起，进入gdb的控制台
+  bt continue b 等命令可用
+
+  continue运行后，Ctrl-C可再将进程挂起
+
+  可以在开发板上attach一个线程（clone的进程）
+
+  4. thread apply all bt
+
+  打印所有进程的调用栈（`多线程死锁调试`时特别有用）
