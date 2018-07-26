@@ -1,3 +1,7 @@
+# google translate
+
+Shadowsocks 不可在`高可用状态`，需要在`香港2(推荐)`时才能及时弹出翻译框。
+
 # google
 
 百度更懂中文 -> SVN实现在更新本地版本库时忽略指定目录

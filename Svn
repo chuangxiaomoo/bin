@@ -16,7 +16,7 @@ function fn_usage()
         dh                              : horizontal-split-diff
         dl      [filepath]              : equal [Svn S clang]
         h                               : svn help cmd
-        l       {5|5 filelist}          : svn log
+        l       {5|5 filelist}          : svn log -v [-r REV] [-l LIMIT]
         ps      [filelist]              : svn ps svn:executable on FILE == chmod +x
         q                               : svn -q status
         r       [filelist]              : revert -R {file|dir}

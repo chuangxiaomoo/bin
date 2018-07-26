@@ -18,8 +18,8 @@ function fn_main()
 
     case $1 in
     a|all)
-        pids=`ps -ef  | grep [e]xpect | awk '{print $2}'`
-        [ -n "$pids" ] && kill -9 $pids
+        ps | awk '/[e]xpect/{print $1}' | while read PID; do kill -9 $PID; done;
+        ps | awk '/[t]elnet/{print $1}' | while read PID; do kill -9 $PID; done;
         ;;
     l|list)
         ps -ef  | grep --color [e]xpect
