@@ -1,0 +1,309 @@
+# 句子分析
+
+**阅读速度很大一部分来于短时间内理解长难句的能力**，阅读的基本单位不应该是词汇，而应该是句子。
+
+1. 演绎法：以动词为树根的树。以广度搜索方式处理。
+2. 归纳法：根据最常见的深度为3，常见方法进行分解分类。找出主干即解决了两层逻辑。
+
+[Grammarly Grammar Checker](https://www.bloggertipstricks.com/online-grammar-checker-tools.html)
+
+# 逻辑英语: 本质是翻译.关键在**中英文修饰限定成分（modifier）的安排习惯不一样**
+
+modifier可以分两类（任何句子都一样）：
+
+1. 名词的modifier，权且记为*M-ADJ*；M-ADJ在空间上要尽可能紧贴其修饰对象；
+2. 其他的modifier，权且记为*M-ADV*：M-ADV则较为灵活，在句中还经常用逗号引导。(整句/形容词/副词...)
+
+eng    (状1)        主 (`定1`) 谓 (`状2`) (宾)  (*定2*|状1)
+chn    (状1|`定1`)  主 (`状2`) 谓 (*定2*) (宾)        (状1)
+
+1. 主干一致，状语1一致，剩下的都是颠倒的
+2. 并列不变序 chn: 1(234)(567) -> eng: (432)(765)1
+
+框架之后，是语法+单词
+
+I love U.
+Last year, I love U.
+
+中文是靠语气虚词改变句型结构的。
+英文定语必靠后，你理解的`在定的定语`应该是 adj.+noun. 组成的名词短语，是一整体。
+
+# 两找两辨，长句化简
+
+一个句子只有一个动词(verb.)，长难句 = 分解() + 简化(去修饰) [](https://www.cnblogs.com/hughdong/p/6992186.html)
+
+找谓语动词: can/will, be, have/do...
+找连接词:   that, wh-, how, if, because...
+辨从句:     每个连接词之后皆有一个从句
+辨语句:     从句之余便是主语
+
+# 001
+
+This trend began during the Second World War, when several governments came to the conclusion that the specific demands that a government wants to make of its scientific establishment cannot generally be foreseen in detail.
+
+1. 分类，
+
+This trend
+began 
+during the Second World War, when
+    several governments
+    came to
+    the conclusion that 
+        the specific demands that 
+            a government 
+            wants to make
+            of its scientific establishment 
+        cannot generally be foreseen 
+        in detail.
+
+这种趋势始于第二次世界大战期间，当时一些国家的政府得出结论：政府向科研机构提出的要求通常是无法详尽预见的。
+
+> 介词短句做状语，修改动词，翻译时将之提前
+
+# 002
+
+The American economic system is organized around a basically private-enterprise, market-oriented economy in which consumers largely determine what shall be produced by spending their money in the marketplace for those goods and services that they want most.
+
+The American economic system
+is organized
+around a basically private-enterprise, market-oriented economy
+    in which
+    consumers
+    largely determine
+        what
+        shall be produced 
+    by spending their money
+    in the marketplace
+    for those goods and services
+        that they 
+        want
+        most.
+
+a economy: 可数时为: 一种经济体制。
+
+美国经济体制是围绕私有企业、在以市场为导向的经济基础上建立起来的。在这种体制下，什么将被生产，在很大程度上，通过消费者到市场上为他们最需要的商品和服务花钱来决定。
+美国经济体制是围绕私有企业、在以市场为导向的经济基础上建立起来的。在这种体制下，消费者通过到市场上为他们最需要的商品和服务花钱，大体上决定什么将被生产。
+
+> 被动句式与主动句式，尽量遵循原句。
+
+# 003 
+
+Behaviorists suggest that the child who is raised in an environment where there are many stimuli which develop his or her capacity for appropriate responses will experience greater intellectual development.
+
+Behaviorists suggest
+    that the child
+        who
+        is raised
+        in an environment 
+            where there
+            are
+            many stimuli 
+                which
+                develop
+                his or her capacity
+                for appropriate responses
+    will experience
+    greater intellectual development.
+
+行为学家认为，如果一个儿童在有许多刺激物的环境里成长，而这些刺激物能够发展其作出适当反应的能力，那么，这个儿童将会有更高的智力发展。
+
+# 004 定从 or 同从
+
+These leaders are living proof that prevention works and that we can manager the health problems that come naturally with age.
+
+These leaders 
+are
+living proof
+    that prevention 
+    works
+    and
+    that we 
+    can manager
+    the health problems
+        that 
+        come naturally
+        with age.
+
+这些领导人就是活生生的证据，其证明对疾病的防治`起作用`，证明我们能够对付随着年龄增长带来的健康问题。
+
+> that come naturally with age. that 缺少主语为`定从`
+> that prevention works.             不缺主语为`同从`
+
+> 同从是解释说明的，有名词的重复。`其`
+> 定从是修饰，要倒装
+
+# 005 定从 or 状从
+
+The day when we stor learning is the day when we die.
+We will die, when we stop learning.
+
+> 定从，如果when的前面有表示时间的名词
+> 状从，反之
+
+# 006 while: 当 or 尽管
+
+While comment and reaction from lawyers may enhance stories, it is preferable for journalists to rely on their own notions of significance and make their own judgments.
+
+While
+comment and reaction
+from lawyers
+may enhance
+stories,
+it
+is
+preferable
+for journalists
+to rely on their own notions of significance
+and
+(to) make their own judgments.
+
+> 不定式当主语
+
+# 007 助动词后有真正的动词
+
+Speaking a language does not necessarily mean that someone understands social and cultural patterns.
+
+# 008 动名词
+
+Creating a "European identity" 
+    that 
+    respects 
+    the different cultures and traditions 
+        which 
+        go to make up 
+        the connecting fabric of the Old Continent 
+is
+no easy task
+and
+demands
+a strategic choice.
+
+不同文化和不同的传统把欧洲大陆编织在一起，要创造出一种尊重这些文化和传统的欧洲品牌(欧洲所独有的东西)绝非易事，需要人们做出战略性选择。
+
+# 009 不定式/形式主语
+
+It
+is 
+hard to imagine
+that many people
+    are 
+    dumb enough
+    to want children
+    just
+    because 
+        Reese and Angelina 
+        make it look
+        so glamorous: most adults understand that a baby is not a haircut. 
+
+glamorous: /glaemourous/ 迷人的 格莱美奖
+
+很难想象: 很多人想要孩子，仅仅是因为...
+
+# 010 做定语: 名词+分词短语
+
+Online culture thinks highly of the notion that the information flowing onto the screen comes there by specific request.
+
+Online culture 
+thinks highly of 
+the notion
+    that the information flowing onto the screen 
+    comes there
+    by specific request.
+
+在线文化会高度评价一个概念: 出现在屏幕上的信息来自特定需求。
+
+# 011 做状语: 分词短语，主谓宾
+
+Being interested in the relationship of language and thought, Whorf developed the idea that the structure of language determines the structure of habitual thought in a society.
+
+Being interested in the relationship of language and thought, 
+Whorf
+developed the idea
+    that the structure of language 
+    determines 
+    the structure of habitual thought in a society. 
+
+> 介词短语从后往前翻译:
+> (A of B in C)       翻译成 C的B的A
+> (A of B of C in D)  翻译成 D的C的B的A
+
+
+Whorf对语言与思维的关系很感兴趣，他逐渐形成了这样一种（观念/观点）：在一个社会里，语言的结构决定了社会习惯性思维的结构。
+
+# 012 做状语: with+逻辑主语+分词短语, 主谓宾  == 独立主格
+
+A little lamp is burning, with its light shining through the darkness.
+
+描述图画: 小油灯在燃烧
+
+A little boat is sailing on the river, with two torists sitting on it.
+
+描述图画: 一条小船
+
+# 040
+
+Currently, China has the capacity to produce 750,000 tons of pesticide and herbicide a year, with an actual output averaging 400,000 tons a year, ranking the second largest in the world.
+
+当前，中国有每年生产 750,000 吨杀虫剂和杀草剂的能力，实际每年生产 400,000 吨，排名世界第二。
+
+# 041
+
+Social science is that branch of intellectual enquiry, which seeks to study humans and their endeavors in the same reasoned, orderly, systematic, and dispassionate manner that natural scientists use for the study of natural phenomena.
+
+社会科学是知识探索的一个分支，其致力于以自然科学家研究自然现象那样的，理性的、有序的、系统的和客观的方式研究人类及其行为。
+
+# 042
+
+Many researchers are working on the ways of reducing the number of animal experiments needed in biostudy and of making those happening to be conducted in a more effective way.
+
+很多研究者正致力于研究，在生物研究中，(降低)所需的动物实验数量的方法，及以更有效的方法，来操作那些正在发生中的实验的方法。
+
+很多研究者正致力于研究，在生物研究中，对所需的动物实验数量进行(削减)的方法，及以更有效的方法，来操作那些正在进行中的实验的方法。
+
+# 043
+
+Science, in practice, depends less on the experiment it prepares than on the preparedness of the minds of the man who watch the experiments.
+
+在实践中，科学，与其说依赖于实验准备，不如说是依赖于观察实验的人的思想准备。
+
+# 044
+
+The man who I loved more than anybody on Earth held a gun to my head and threatened to kill me more times than I can even remember.
+
+那个我最深爱的男人，曾无数次，拿着枪对着我的头，并扬言要杀了我。
+
+# 045 
+
+Such large, impersonal manipulation of capital and industry greatly increased the numbers and importance of shareholders as a class, an element in national life representing irresponsible wealth detached from the land and the duties of the landowners; and almost equally detached from the responsible management of business.
+
+句子语法难点：
+这句话是非限定性定语从句，难点在句子的主语和宾语都有较长的短语和of结构限定，而且是由两个分居and相连的3个部分组成的。
+分句an element…landowners 又带有两个定语从句，一个是(which was) representing… , 另一个是(which was) detached…。
+从以上句子可以知道，定语从句的难点在于经常省略引导词+be的结构，所以在句子理解上容易和分词结构混淆。
+
+对资本和企业的这种大规模的非个人操纵大大增加了股东作为一个阶级的数量和重要性。这个阶层作为国计民生的一部分，代表了非个人责任的财富与土地及土地所有者应尽义务的分离，而且也几乎与责任管理相分离。
+
+
+# TOEFL.001
+
+In order for the structure to achieve the size and strength necessary to meet itspurpose, architecture employs methods of support that, because they are based on physical laws, have changed little since people first discovered them——evenwhile building materials have changed dramatically.(44)
+
+为了使结构达到必要的大小和强度去满足它的目的，建筑学上使用了一些支撑的方法，*因为*这些方法都是基于物理定律，*所以尽管*建筑材料已经发生了巨大变化，这些方法`却`自人们发现它们以来就没有什么变化。
+
+> 使用连词(逻辑提示词)
+
+# TOEFL.002
+
+Fuller devised a type of dance that focused on the shifting play of lights and colors on the voluminous skirts or draperies she wore, which she kept in constant motion principally through movements of her arms, sometimes extended with wands concealed under her costumes. (44, OG)
+
+devise vt. 设计
+voluminous/və'lʊmənəs/adj.(指衣物)用料多的, 宽松的, 肥大的;
+drapery/'drepəri/n.布料
+wand/wɑnd/ n. 棍; 棒; 杖; (尤指小仙子或魔术师用的)魔杖
+costume/'kɑstum/ n. 服装, 服装式样
+
+Fuller设计了一种(专注于灯光的变换和她所穿宽松的裙子或布料颜色)的舞蹈，在舞蹈中，她主要通过手臂的移动使裙子或布料保持连续的移动，有时候手臂由于隐藏在衣服下面的手杖而变长。
+
+1. 这个句子的主要修饰成分就是从句和非谓语动词，大家务必想清楚，**每一个修饰成分修饰的是什么**，才能看清楚这个句子的结构。
+2. 句子的结构在本质上是一棵语法树，我们在阅读时应该使用**广度遍历**算法，而非**深度遍历**。e.g. (draperies she wore)
+3. 概念说明式的宾语从句，可以理解为两棵并列的树，因此翻译到汉语时有object(舞蹈)的重复。

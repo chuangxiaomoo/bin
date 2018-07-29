@@ -329,34 +329,23 @@ function fn_03_沟通_communication()     { cat howto_03_沟通
     fn_print $@
 }
 
-function fn_english()                   {
-function fn_US_TV_series()              { cat english_US_TV_series ;}
-function fn_vocabulary()                { cat english_vocabulary ;}
-function fn_sentence()                  { cat english_sentence ;}
-function fn_speaking()                  { cat english_speaking ;}
-function fn_listening_layers()          { cat english_listening_layers ;}
-function fn_reading()                   { cat english_reading ;}
-function fn_interprete()                { cat english_interprete ;}
-function fn_interpreting()              { cat english_interpreting ;}
-function fn_friends()                   { cat english_friends ;}
-function fn_clips()                     { cat english_clips ;}
-function fn_Proverbs_in_Alphabet()      { cat english_Proverbs_in_Alphabet
-                                              english_liyang_crazy
-                                              english_list
-                                        }
-    local opts=(
-        Proverbs_in_Alphabet
-        clips                           #
-        friends                         # 老友记
-        US_TV_series                    # 美剧
-        vocabulary
-        sentence
-        speaking
-        listening_layers                # 语言的层次
-        reading
-        interpreting                    # 在电脑上用vi补全对照听写
-    )
-    fn_print $@
+function fn_english()
+{
+      english_US_TV_series
+      english_friends
+      english_Keynes_Hayek
+      english_Proverbs_in_Alphabet
+      english_wordlist
+
+      english_listening_layers 
+      english_speaking
+      english_reading
+      english_writing
+
+      english_liyang_crazy
+      english_logic
+      english_grammer
+      english_vocabulary
 }
 
 function fn_zhihu()                     {
