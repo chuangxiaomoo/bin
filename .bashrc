@@ -379,7 +379,7 @@ scdo()  { [ -f "${1}" ] && scp $@ cdo:/root/bin     || echo not exit file [${1}]
 scda()  { [ -f "${1}" ] && scp $@ cdo:/pycharm/data || echo not exit file [${1}] ;}
 scmo()  { 
     usage="
-    a   ALL .py and .shell
+    a   ALL_.py_and_.shell
     c   /winc/cache/codes.txt
     cn  /pycharm/candle.py
     k   /pycharm/bin/k.sh
