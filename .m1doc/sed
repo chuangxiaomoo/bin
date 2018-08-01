@@ -1,166 +1,76 @@
 # sed
 
-## 
+## pinfo sed *->* 3.1 How sed Works
 
-  (0) pinfo sed *->* 3.1 How sed Works
+(1) Sed命令的工作原理,
+http://archive.cnblogs.com/a/2259097/
+http://blog.chinaunix.net/uid-25063573-id-2930586.html
 
-    _cycle_     _pattern_   _hold_ (initialize as null)
-    _cycle_:
-    stream_line > _pattern_ > command > out _pattern_ unless 'n'
+(2) sed关于模式空间与保持空间例子
+http://blog.chinaunix.net/uid-7530389-id-2050047.html
 
-  (1) Sed命令的工作原理, 
-  http://archive.cnblogs.com/a/2259097/
-  http://blog.chinaunix.net/uid-25063573-id-2930586.html
+(3) sed手册
+http://bbs.chinaunix.net/forum.php?mod=attachment&aid=NDIzMzAwfDA4ZDIxMWVmfDEzMzg4MjU5MDZ8MHwxODUwNjYw&fid=24
 
-  (2) sed关于模式空间与保持空间例子
-  http://blog.chinaunix.net/uid-7530389-id-2050047.html
-
-  (3) sed手册
-  http://bbs.chinaunix.net/forum.php?mod=attachment&aid=NDIzMzAwfDA4ZDIxMWVmfDEzMzg4MjU5MDZ8MHwxODUwNjYw&fid=24
-
-  (4) 可以尝试用sedsed来调试
-  http://aurelio.net/sedsed/
-
-## 一个例子
-
-  *例1*
-    root@Ubt:~/sed# cat bar 
-    1
-    2
-    3
-    4
-    root@Ubt:~/sed# sed -n -e 'n' -e 'p' bar 
-    2
-    4
-    root@Ubt:~/sed# sed -n 'n;p' bar
-    2
-    4
-
-  *解1* 想像这里有一个行计数
-    read 1, n to read 2, p print _pattern_ 2; 
-    read 3, n to read 4, p print _pattern_ 4; 
-
-  *例2* tac
-    sed -n '1!G;h;$p'  foo
-
-  *解2*
-    G 将hold space中的内容append到pattern space\n后
-    h 将pattern space中的内容拷贝到hold space中，原来的hold space里的内容被清除
-
-
+(4) 可以尝试用sedsed来调试
+http://aurelio.net/sedsed/
 
 ## 4.1 s
 
-  > [address1[ ,address2]] s/pattern/replacemen/[flag]
-  1           首行
-  $           尾行
-  //          模式匹配到的行，对于地址的概念，大多命令都通用
-  falg:i      不区分大小写（montaVista中sad不区别大小写）
+> [address1[ ,address2]] s/pattern/replacemen/[flag]
+1           首行
+$           尾行
+//          模式匹配到的行，对于地址的概念，大多命令都通用
+falg:i      不区分大小写（montaVista中sad不区别大小写）
 
-  [](https://stackoverflow.com/questions/28825450/how-do-i-match-multiple-addresses-in-sed)
-  > s 逻辑-and
-    sed '50,70{/abc/d;}'
-  > s 逻辑-or
-    sed -e 'cond1' -e 'cond2'
+[](https://stackoverflow.com/questions/28825450/how-do-i-match-multiple-addresses-in-sed)
+
+## s 逻辑-and
+
+sed '50,70{/abc/d;}'
 
 ## 4.2 d
-  > [address1[ ,address2]] d
 
-    cat -n t.sql | sed '1,3d'
+> [address1[ ,address2]] d
 
-## 4.3 D
-  > 只删除第一个匹配
+## 4.3 i
 
-    time cat b.002715 | sed '/15:00:20/D'
+> 插入单行
 
-  > -------------------------------------------------------------------------
+sed -e '/UNIX/i\文章版权属于中央研究院' input.dat
 
-  > -e 的另一种写法
+> 插入多行
 
-    sed '/.*家.*/d; /.*代码.*/d' list
+sed -e '/UNIX/i\
+文章版权属于中央研究院1\
+文章版权属于中央研究院2' input.dat
 
-  > add + at tail of Line except line 1 
+> 追加多行
 
-    sed '$!s/$/+/'
+sed -e '/UNIX/a\
+多任务操作系统1\
+多任务操作系统2' input.dat
 
-  > add + at head of Line except line last
-
-    sed '1,1!s/^/+/'
-
-
-  > 插入单行
-
-    sed -e '/UNIX/i\文章版权属于中央研究院' input.dat
-
-  > 插入多行
-
-    sed -e '/UNIX/i\
-        文章版权属于中央研究院1\
-        文章版权属于中央研究院2' input.dat
-
-  > 追加多行
-
-    sed -e '/UNIX/a\
-        多任务操作系统1\
-        多任务操作系统2' input.dat
-
-  > 删除第一列
-
-    sed 's/^ *[^ ]* *//'	# " *" means the spaces ahead of line;
-
-  > 删除回车
-
-    sed 's///g'
-
-  > 删除换行
-
-    sed ':a;N;s/\n//g;ta'
-    tr -d '\n'
-
-  > 删除空行
-
-    sed '/^$/d'
-    tr -d '\n'
-
-  > 删除只含空白字符的行
-
-    sed -e '/^$/d' -e '/^[[:space:]]*$/d'
-
-  > e.g. 确保所有“小摩”不被断行
-
-    sed  ':a;N;$!ba;s/小\n摩/小摩/g' 
-
-  > 跨行替换. 在命令行上处理时用 ''，而非 ""
-  > 去头行替换, help:  $!ba -> if !EOF  ba
-  >                    N -> put next line in PATTERN SPACE
-
-    sed     ':a;N;$!ba;s/pattern/string/g' a.txt
-
-  > 去头尾行替换
-
-    sed ':a;1,1!N;$!ba;s/pattern/string/g' a.txt
-
-  > 空白符号可读显示 -> l命令
-
-    $ cat height.txt
-    2.79 2.83
-    $ tr ' ' '\11' < height.txt  |sed -n l
-    2.79\t2.83$
-
-  > print 3rd line 第3行
-
-    sed -n '3p'
-
-  > print特定段
-
-    sed -n '/pattern1/,/patt2/p'
-    sed -n '/Stdlib\./,/\.$/p'
-     ┌────────────────────────────────┐
-     │  temp.                         │
-     │    main                        │
-     │  Stdlib.   ->   Stdlib.        │
-     │    free           free         │
-     │  Stdio.         Stdio.         │
-     │    printf                      │
-     │    scanf                       │
-     └────────────────────────────────┘
+## 1 line command
+`
+| DESC                  | cmd                                                               |
+| :------               | :------                                                           |
+| 隔行打印.1            | sed -n -e 'n' -e 'p' bar                                          |
+| 隔行打印.2            | sed -n 'n;p' bar                                                  |
+| tac                   | sed -n '1!G;h;$p'  foo                                            |
+| 删除回车              | sed 's///g'                                                     |
+| 删除换行.1            | sed ':a;N;s/\n//g;ta'                                             |
+| 删除换行.2            | tr -d '\n'                                                        |
+| 删除空行.1            | sed '/^$/d'                                                       |
+| 删除空行.2            | tr -d '\n'                                                        |
+| 删除第一列            | sed 's/^ *[^ ]* *//'  # " *" means the spaces ahead of line;      |
+| 删除只含空白字符的行  | sed -e '/^$/d' -e '/^[[:space:]]*$/d'                             |
+| 打印第3行             | sed -n '3p'                                                       |
+| 打印特定段            | sed -n '/pattern1/,/patt2/p'                                      |
+| 去头尾行替换          | sed ':a;1,1!N;$!ba;s/pattern/string/g' a.txt                      |
+| 跨行替换              | sed  ':a;N;$!ba;s/小\n摩/小摩/g' # 在命令行上处理时用 ''，不能 "" |
+| -e 的另一种写法       | sed '/.*家.*/d; /.*代码.*/d' list                                 |
+| D vs. d               | D 只删除第一个匹配                                                |
+| 地址匹配非尾行        | sed '$!s/pattern/replacemen/'                                     |
+| 地址匹配条件尾行.空行 | sed -i '${/^ *$/d}' a                                             |
+`

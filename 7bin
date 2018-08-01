@@ -83,8 +83,8 @@ function fn_main()
 {
     cmdlist=(
     # fixed sequence
-    "addr2caller            # name -> function name() { cat name ;}"
-    "addr2func              # bakeup files in /root"
+    "addr2caller .ASM       # name -> function name() { cat name ;}"
+    "addr2func   .ASM       # bakeup files in /root"
 
     # volatile sequence 
     "install_info"
