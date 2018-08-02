@@ -1,6 +1,6 @@
-/* */
+/* printf */
 
-. scanf EXAMPLE 1 
+#define scanf EXAMPLE 1 
 
     #include <stdio.h>
 
@@ -22,7 +22,7 @@
     | 123 22 aaaaa 33.500000                           |
     +--------------------------------------------------+
 
-. scanf EXAMPLE 2
+#define scanf EXAMPLE 2
 
     SEARCH * HDS/1.0 LOCALIP=192.168.0.34#LOCALPORT=0#
 
@@ -31,7 +31,7 @@
     // 取=与#之间的内容(即0)
     sscanf(szDstRemain, "%*[^=]=%d#", iDstPort);
 
-. 打印16进制(强转为 unsigned char)
+#define 打印16进制(强转为 unsigned char)
 
     int main(int argc, char *argv[])
     {
@@ -47,3 +47,14 @@
 
         return 0;
     }
+
+#define Format of the format string
+
+% conversion_specifier [flags] [field_width] [precision] [length_modifier] conversion_specifier
+
+// e.g. output: 1,234,567,890,123,456,789.38
+
+    #include <locale.h>
+    setlocale(LC_NUMERIC, "");
+    printf("%'20.2Lf\n", 1234567890123456789.321L);
+

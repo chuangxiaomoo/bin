@@ -4,20 +4,40 @@
 
 测试的本质，即**科学方法**的本质。
 
-The concept of PDCA is based on the scientific method, as developed from the work 
-of Francis Bacon (Novum Organum, 1620). The _scientific method_ can be written as 
-"hypothesis"–"experiment"–"evaluation" or plan, do and check. Shewhart described 
-manufacture under "control"—under statistical control—as a three-step process of 
+The concept of PDCA is based on the scientific method, as developed from the work
+of Francis Bacon (Novum Organum, 1620). The _scientific method_ can be written as
+"hypothesis"–"experiment"–"evaluation" or plan, do and check. Shewhart described
+manufacture under "control"—under statistical control—as a three-step process of
 specification, production, and inspection.
 
 对于改善产品质量，PDCA 循环框架就非常好用。PDCA 循环由美国学者爱德华兹·戴明提出，
-一般用来提高产品品质和改善产品生产过程。其中 
+一般用来提高产品品质和改善产品生产过程。其中
   P 代表 Plan， 即计划；
   D 代表 Do，   即执行计划，并在过程中收集信息；
-  C 代表 Check，即研究上一步收集到的信息，和预期设计进行比较，
-                  并提出修改方案，包括执行后的改善和计划的完善使得计划的可执行性提高；
-  A 代表 Act，  即根据 Check 的结果进行改善，有时候也用Adjust来解释这个 A，
-                  更准确地表达修正改善的意思。
+  C 代表 Check，即研究上一步收集到的信息，和预期设计进行比较，并提出修改方案，包括执行后的改善和计划的完善使得计划的可执行性提高；
+  A 代表 Act，  即根据 Check 的结果进行改善，有时候也用`Adjust`来解释这个 A，更准确地表达修正改善的意思。
+
+# 理解 FSM(finit-state-machine) 5 要素
+
+S   状态集 (初始状态 + 出错状态 + 有效状态)
+∑   输入
+f   转换函数
+
+有了有效的状态(**起点**，与团队一致的有效状态)，出了任何错误，只要将两份打印日志 diff 即可得到错误的输入。
+[svn-stat-table](https://www.jianshu.com/p/5eb45c64f3e3)
+
+# [testcase example](+/测试用例必要元素描述 test_01_用例设计原则)
+
+科学方法:   Plan，          Do，  Check，             Adjust
+关键元素:   前置条件，      输入，实际输出，          期望
+有限状态机: 有效的初始状态，输入，正确状态|错误状态， 正确状态
+
+| 编号    | 模块    | 功能点  | 前置条件 | 输入    | 实际输出 | 期望    | 状态   |
+| :------ | :------ | :------ | :------  | :------ | :------  | :------ | :----  |
+|         |         |         |          |         |          |         | `open` |
+|         |         |         |          |         |          |         |        |
+|         |         |         |          |         |          |         |        |
+
 
 # 测试的第一原则
 
@@ -29,7 +49,11 @@ specification, production, and inspection.
 测试工程师(Test Engineer)，主要职责是**发现问题**，提供权威、全面、及时的报告，项目经理借之对系统状态运筹帷幄。
 更高级的TE，能够理解产品需求，发现问题时，能够提出解决方案。
 
-# 测试的结构
+# 测试的结构与层次(级别)
+
+[](+/合理提高我们的测试效率就是在编写测试用例时进行测试用例优先级的划分 test_03_五个要点)
+
+冒烟测试:
 
 单元测试：特性工程师编写说明。
           界定范围并提供边界参数。

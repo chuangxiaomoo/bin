@@ -1000,7 +1000,7 @@ function fn_dome()                      { cat jco_dome ;}
 
 function fn_ideas()                     { cat ideas ;}
 
-function fn_test()                      {
+function fn_test()                      { 
 function fn_guru()                      { cat test_guru ;}
 function fn_fundamental()               { cat test_fundamental ;}
 function fn_gtest()                     { cat test_gtest ;}
@@ -1013,7 +1013,7 @@ function fn_03_五个要点()               { cat test_03_五个要点 ;}
 function fn_04_集成测试()               { cat test_04_集成测试 ;}
 function fn_11_测试工程师如何提BUG()    { cat test_11_测试工程师如何提BUG ;}
     local opts=(
-        guru
+        guru                            # FSM 有限状态机
         gtest
         fundamental                     # 测试就是写方程
         webpage
