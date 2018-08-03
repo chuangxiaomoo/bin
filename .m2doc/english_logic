@@ -37,6 +37,19 @@ Last year, I love U.
 辨从句:     每个连接词之后皆有一个从句
 辨语句:     从句之余便是主语
 
+# 树形分析法
+
+1 英语句子有七种基本成分(members of the sentence)，分别为:主语、谓语、宾语、定语、状语、表语、宾语补足语。
+2 英语的5种基本句型
+3 广度搜索法则
+
+细节如下:
+1 每个成分为一行
+2 以缩进代表句子级别
+3 类从句功能的`非谓语动词+`，以从句待遇进行缩进
+4 介词短语
+5 多层次连续介词短语
+
 # 001
 
 This trend began during the Second World War, when several governments came to the conclusion that the specific demands that a government wants to make of its scientific establishment cannot generally be foreseen in detail.
@@ -330,6 +343,23 @@ passing aways是现在分词作定语修饰前面的old family business.
 
 带薪管理公司的职业经理人与工人以及他们需要的关系更加直接，但是就连他也不熟悉工人的个人状况，而这种个人了解却常常存在于现在不断消失的古老家族公司的那种家长制制度下。
 
+# 049
+
+Given this optimistic approach to technological innovation, the American worker took readily to that special kind of nonverbal thinking required in mechanical technology.
+
+Given this optimistic approach to technological innovation,
+the American worker
+took readily to 
+that special kind of nonverbal thinking
+    required
+    in mechanical technology.
+
+mechanical technology, 机制工艺学
+
+> v-ed 按从句待遇进行缩进
+
+由于这种鼓励技术创新的积极方法，美国工人很容易就掌握了`机械技术中要求的`那种独特的非语言思维方式。
+
 # TOEFL.001
 
 In order for the structure to achieve the size and strength necessary to meet itspurpose, architecture employs methods of support that, because they are based on physical laws, have changed little since people first discovered them——evenwhile building materials have changed dramatically.(44)
@@ -353,3 +383,4 @@ Fuller设计了一种(专注于灯光的变换和她所穿宽松的裙子或布�
 1. 这个句子的主要修饰成分就是从句和非谓语动词，大家务必想清楚，**每一个修饰成分修饰的是什么**，才能看清楚这个句子的结构。
 2. 句子的结构在本质上是一棵语法树，我们在阅读时应该使用**广度遍历**算法，而非**深度遍历**。e.g. (draperies she wore)
 3. 概念说明式的宾语从句，可以理解为两棵并列的树，因此翻译到汉语时有object(舞蹈)的重复。
+
