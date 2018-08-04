@@ -44,11 +44,16 @@ Last year, I love U.
 3 广度搜索法则
 
 细节如下:
-1 每个成分为一行
-2 以缩进代表句子级别
-3 类从句功能的`非谓语动词+`，以从句待遇进行缩进
-4 介词短语
-5 多层次连续介词短语
+1 以缩进代表句子级别
+2 从句引导词单独一行
+3 连词(并列、递进、转折)单独一行
+4 成分(主、谓、宾、表)独一行
+5 定状不换行
+6 作补: 分词以从句待遇，进行`缩进`；作补: 不定式、形容词不缩进
+7 介词短语
+8 {动词+介词+名词}合为一行
+  be. + noun. + prep.
+  vt. + noun. + prep.
 
 # 001
 
@@ -58,11 +63,14 @@ This trend began during the Second World War, when several governments came to t
 
 This trend
 began 
-during the Second World War, when
+during the Second World War,
+    when
     several governments
     came to
-    the conclusion that 
-        the specific demands that 
+    the conclusion
+        that 
+        the specific demands
+            that 
             a government 
             wants to make
             of its scientific establishment 
@@ -359,6 +367,141 @@ mechanical technology, 机制工艺学
 > v-ed 按从句待遇进行缩进
 
 由于这种鼓励技术创新的积极方法，美国工人很容易就掌握了`机械技术中要求的`那种独特的非语言思维方式。
+
+# 050
+
+The Aswan Dam, for example, stopped the Nile flooding but deprived Egypt of the fertile silt that floods left -- all in return for a giant reservoir of disease which is now so full of silt that it barely generates electricity.
+
+The Aswan Dam, for example,
+stopped the Nile flooding 
+but 
+deprived Egypt of
+the fertile silt 
+    that 
+    floods
+    left
+-- 
+(which
+is) all in return for 
+a giant reservoir of disease 
+    which
+    is 
+    now 
+    so full of silt 
+        that
+        it 
+        barely 
+        generates 
+        electricity.
+
+例如，阿斯旺大坝阻挡了尼罗河的洪水，但埃及也因此失去了洪水退去后留下的肥沃淤泥--这一切换来得是一个，积满了淤泥，基本上无法发电的，疾病丛生的巨大水库。
+
+The deal offers an increase in policy value in return for giving up guarantees.
+作为放弃担保的交换，这笔交易将提高保单价值。
+
+# 051
+
+Meanwhile， in India，the World Bank has given the go-ahead to the even more wrong-headed Narmada Dam.
+
+Meanwhile， 
+in India，
+the World Bank 
+has given the go-ahead to 
+the even more wrong-headed Narmada Dam.
+
+【译文】同时，世界银行已经贷款给印度建造纳尔达玛大坝，简直是错上加错。
+【析句】这句话中两个单词用的很好，一个是go-ahead。give go-ahead to do sth意为"允许、批准做某事"，比起allow sb to do sth更加形象生动。另一个是wrong-headed，意为"固执己见的，坚持错误的"，与go-ahead形似，前后呼应。
+
+> 动词短语
+
+# 052
+
+This week, in the heart of civilized Europe, Slovaks and Hungarians stopped just short of sending in the troops in their contention over a dam on the Danube.
+
+This week,
+in the heart of civilized Europe,
+Slovaks and Hungarians
+stopped just short of sending in the troops 
+in their contention over a dam
+on the Danube.
+
+【译文】本周在文明的欧洲腹地，斯洛伐克人和匈牙利人为了多瑙河上的一处水坝所引起的争端，差一点就派出了部队。
+
+【析句】stop short of 意为"突然停止；未到达"，引申义相当于be close to. 英语中`名词结构`应用十分广泛，可与所对应的的动词互换，使行文简洁生动。如本句中的 in their contention over...就等于contend over(for)"争夺，斗争"。
+
+> 名词结构: I promise vs. U have my words.
+
+# 053
+
+Think of Gallileo's 17th-century trial for his rebelling belief before the Catholic Church or poet William Blake's harsh remarks against the mechanistic worldview of Isaac Newton.
+
+Think of 
+Gallileo's 17th-century trial 
+for his rebelling belief 
+before the Catholic Church 
+or 
+poet William Blake's harsh remarks 
+against the mechanistic worldview of Isaac Newton.
+
+> 介词短语: (介词+名词)，注意多在作文中灵活运用介词替代重复出现的动词会有很不错的效果哦！
+> 英语(vs. 汉语)的名词化表达
+
+# 054
+
+A survey of news stories in 1996 reveals that the anti-science tag has been attached to many other groups as well，from authorities who advocated the elimination of the last remaining stocks of smallpox virus to Republicans who advocated decreased funding for basic research.
+
+A survey of news stories in 1996 
+reveals
+    that
+    the anti-science tag 
+    has been attached to 
+    many other groups as well，
+    from
+    authorities 
+        who 
+        advocated
+        the elimination of the last remaining stocks of smallpox virus
+    to 
+    Republicans
+        who 
+        advocated 
+        decreased funding for basic research.
+
+一项关于1996年的新闻故事的调查显示，很多其他组织也被贴上了反科学的标签，比如提倡消灭最后一批储存的天花病毒的机构和某些提议削减基础研究资金的共和党人。
+
+as well，`并列结构`引导词，解释说明。
+from...to...此处相当于such as...and
+
+# 055
+
+While warnings are often appropriate and necessary -- the dangers of drug interactions， for example -- and many are required by state or federal regulations， it isn't clear that they actually protect the manufacturers and sellers from liability if a customer is injured.
+
+While 
+warnings
+are
+often appropriate and necessary 
+    -- the dangers of drug interactions， for example -- 
+and 
+many 
+are 
+required
+by state or federal regulations， 
+it 
+isn't
+clear
+    that
+    they 
+    actually protect 
+    the manufacturers and sellers 
+    from liability 
+if
+a customer
+is
+injured.
+
+尽管警告往往是恰当且必要的，比如提醒药物反应带来的危险，有些警告也是州法或联邦法律所要求的。但事实上，若使用者受伤，法律条款**并没有明确地**保护生产商或销售者使其不必承担责任。
+while,`转折结构`
+
 
 # TOEFL.001
 
