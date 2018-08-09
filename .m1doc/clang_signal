@@ -52,18 +52,23 @@ int main()
     return 0;
 }
 
+
 /* ------------------------------ core dump ------------------------------ */
+# if man 
 
-. man 7 signal
-
-    Core   Default action is to terminate the process and dump core.
-
-. killall 无core产生
+    man 7 signal    Core Default action is to terminate the process and dump core.
+    man 5 core
 
     killall默认发送 SIGTERM，其行为是 Term 
     可以用 killall -SIGSEGV 或其它产生 Core的信号替代
 
-. 查看及启用coredump
+# if 内核配置
+
+    CONFIG_ELF_CORE=y
+    CONFIG_COREDUMP=y
+    CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS=y
+
+# if 查看及启用coredump
 
     /* /etc/profile 是个好地方，与环境变量相关的都可以在这里设置 */
     /* 是系统环境变量，因此需要在程序运行之前设置 */
@@ -82,7 +87,7 @@ int main()
     kill -s SIGSEGV 931                 //killall didn't gen a core file
     kill -SEGV    931                 //busybox
 
-. GDB coredump
+# if GDB coredump
 
     []("https://www.cnblogs.com/banwhui/p/5192592.html")
     gdb -c corefile elffile
@@ -106,10 +111,8 @@ int main()
     
     set libthread-db-search-path `path of libthread_db.so.1`
 
-
 . Trace    
     gdb                     start GDB, with no debugging les
     gdb program             begin debugging program
     gdb program core        debug coredump core produced by program
-
 
