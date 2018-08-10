@@ -144,6 +144,16 @@ So in this case the cause is 1 and the effect is 2. The more knowledge you want 
 
 [^多维矩阵的一个范式是: 有限状态机(FSM)]
 
+1 恢复出厂时: ssid 保持不变，所以一旦对码过后，便不能再进入 AP 测试模式
+2 AP转态条件: 拔插网线，进入对码模式
+
+| No. | 初态\继态 | AP      | ST      | AP+ST   |
+| :-  | :------   | :------ | :------ | :------ |
+| 0   | init()    | 1       | 2       | 3       |
+| 1   | AP        |         | 4       |         |
+| 2   | ST        |         |         | 5       |
+| 3   | AP+ST     |         | 6       |         |
+
 # 思考框架 
 
 
