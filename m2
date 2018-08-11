@@ -105,7 +105,7 @@ function fn_WiMax_meeting()             { cat meeting huawei_WiMax_meeting
                                               sanxing_2017.fisheye
                                               introspector.2018
                                               introspector
-                                              sleeping
+                                              sleeping DID
                                               health
                                               woop
                                               qipashuo
@@ -567,6 +567,7 @@ function fn_cept()                      { cat futures_cept ;}
 }
 
 function fn_math()                      { how_to_think_like_a_mathematician
+                                          whats_science
 function fn_e_n_log()                   { cat math_e_n_log ;}
 function fn_11_magical_70()             { cat math_11_magical_70 ;}
 function fn_12_fibonacci_sequence()     { cat math_12_fibonacci_sequence ;}
