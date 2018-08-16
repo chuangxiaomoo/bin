@@ -16,7 +16,10 @@ function fn_26_hints()                  { cat agile_26_hints ;}
     fn_print $@
 }
 function fn_adobepdf()                  { cat adobepdf ;}
-function fn_asm()                       { cat asm ;}
+function fn_asm()                       { cat asm 
+                                              asm_arm 
+                                              asm_mips
+                                        }
 function fn_awk()                       { cat awk ;}
 function fn_sed()                       { cat sed expect ;}
 function fn_gprof()                     { cat gprof ;}

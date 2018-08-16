@@ -1,16 +1,66 @@
-/* signal */
+/* clang_coredump */
 
-void sigterm(int dummy)
-{
-	JCO_DBG("caught SIGTERM: shutting down\n");
-    s_watchVariable = 1;
-}
+    man 7 signal    Core Default action is to terminate the process and dump core.
+    man 5 core
 
-void sigint(int dummy)
-{
-	JCO_DBG("caught SIGINT: shutting down\n");
-	s_watchVariable = 1;
-}
+    killall 默认发送 SIGTERM，其行为是 Term 
+    kill -s SIGSEGV $$                  //gen core
+    kill -s SIGSEGV 931                 //killall didn't gen a core file
+    kill -SEGV 931                      //busybox
+
+# if 内核配置
+
+    CONFIG_ELF_CORE=y
+    CONFIG_COREDUMP=y
+    CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS=y
+
+# if 查看及启用coredump
+
+    /* /etc/profile 是个好地方，与环境变量相关的都可以在这里设置 */
+    /* 是系统环境变量，因此需要在程序运行之前设置 */
+    ulimit -c                           //可以查看是否打开此选项，若为0则为关闭；
+    ulimit -c 0                         //可手动关闭
+    ulimit -c 1000                      //为设置core文件大小最大为1000k
+
+    { sleep 45; toggle 7 1 ;}&
+    { sleep 30; feed& ps | awk '/auto_run/{print $1}'| xargs kill -9 ;}&        # //local.rc 助力
+
+    ulimit -c unlimited                                                         # //设置core文件大小为不限制大小
+    echo 1 > /proc/sys/kernel/core_uses_pid                                     # //文件名加pid扩展，添加则1，否则0
+    echo "/opt/media/mmcblk0p1/core-%e-%p-%t" > /proc/sys/kernel/core_pattern   # //core文件保存位置或文件名
+
+# if GDB coredump
+
+    []("https://www.cnblogs.com/banwhui/p/5192592.html")
+    gdb -c corefile elffile
+    gdb                     start GDB, with no debugging les
+    gdb program             begin debugging program
+    gdb program core        debug coredump core produced by program
+
+    This GDB was configured as "armv5tl-montavista-linux-gnueabi"...
+    Using host libthread_db library "/lib/libthread_db.so.1".
+    (gdb) run
+    Starting program: /app/vs/jco_server
+
+    // 文件被破坏了... sometimes: gcc, but not arm_v5t_le-gcc 
+    This GDB was configured as "armv5tl-montavista-linux-gnueabi"...
+    "/app/vs/jco_server": not in executable format: File format not recognized
+    (gdb) q
+
+# if truncate
+
+    1 ulimit -c unlimited
+    2 coredump时，进程会进入D状态: uninterruptible sleep (usually IO)
+    3 使用nfs代替flash以有更快的速度，feedwdt以保证有充足的时间写core
+
+. warning: Unable to find libthread_db matching inferior's thread library, thread debugging will not be available.
+    
+    set libthread-db-search-path `path of libthread_db.so.1`
+
+/* ________________________________________________________________________________________ */
+
+void sigterm(int dummy) { JCO_DBG("caught SIGTERM: shutting down\n"); s_watchVariable = 1; }
+void sigint (int dummy) { JCO_DBG("caught SIGINT: shutting down\n"); s_watchVariable = 1; }
 
 /*
     参考APUE
@@ -24,9 +74,7 @@ void sigint(int dummy)
 
 void init_signal()
 {
-	struct sigaction sa;
-
-	sa.sa_flags = 0;
+	struct sigaction sa = {.sa_flags = 0,};
 
 	sigemptyset(&sa.sa_mask);       /* 清空信号集 */
 	sigaddset(&sa.sa_mask, SIGTERM);
@@ -51,68 +99,3 @@ int main()
     init_signal();
     return 0;
 }
-
-
-/* ------------------------------ core dump ------------------------------ */
-# if man 
-
-    man 7 signal    Core Default action is to terminate the process and dump core.
-    man 5 core
-
-    killall默认发送 SIGTERM，其行为是 Term 
-    可以用 killall -SIGSEGV 或其它产生 Core的信号替代
-
-# if 内核配置
-
-    CONFIG_ELF_CORE=y
-    CONFIG_COREDUMP=y
-    CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS=y
-
-# if 查看及启用coredump
-
-    /* /etc/profile 是个好地方，与环境变量相关的都可以在这里设置 */
-    /* 是系统环境变量，因此需要在程序运行之前设置 */
-    ulimit -c                           //可以查看是否打开此选项，若为0则为关闭；
-    ulimit -c 0                         //可手动关闭
-    ulimit -c 1000                      //为设置core文件大小最大为1000k
-
-    { sleep 45; toggle 7 1 ;}&
-    { sleep 30; feed& ps | awk '/auto_run/{print $1}'| xargs kill -9 ;}&        # //local.rc 助力
-
-    ulimit -c unlimited                                                         # //设置core文件大小为不限制大小
-    echo 1 > /proc/sys/kernel/core_uses_pid                                     # //文件名加pid扩展，添加则1，否则0
-    echo "/opt/media/mmcblk0p1/core-%e-%p-%t" > /proc/sys/kernel/core_pattern   # //core文件保存位置或文件名
-
-    kill -s SIGSEGV $$                  //gen core
-    kill -s SIGSEGV 931                 //killall didn't gen a core file
-    kill -SEGV    931                 //busybox
-
-# if GDB coredump
-
-    []("https://www.cnblogs.com/banwhui/p/5192592.html")
-    gdb -c corefile elffile
-
-    This GDB was configured as "armv5tl-montavista-linux-gnueabi"...
-    Using host libthread_db library "/lib/libthread_db.so.1".
-    (gdb) run
-    Starting program: /app/vs/jco_server
-
-    // 文件被破坏了... sometimes: gcc, but not arm_v5t_le-gcc 
-    This GDB was configured as "armv5tl-montavista-linux-gnueabi"...
-    "/app/vs/jco_server": not in executable format: File format not recognized
-    (gdb) q
-
-# if truncate
-
-    1 ulimit -c unlimited
-    2 使用nfs代替flash以有更快的速度，feedwdt以保证有充足的时间写core
-
-. warning: Unable to find libthread_db matching inferior's thread library, thread debugging will not be available.
-    
-    set libthread-db-search-path `path of libthread_db.so.1`
-
-. Trace    
-    gdb                     start GDB, with no debugging les
-    gdb program             begin debugging program
-    gdb program core        debug coredump core produced by program
-

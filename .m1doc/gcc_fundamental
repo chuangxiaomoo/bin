@@ -41,5 +41,10 @@
 
 # 降size
 
+*option*
 CFLAGS  += -ffunction-sections -fdata-sections
 LDFLAGS += -Wl,-gc-sections
+
+*查看是否多.text*
+objdump -h ./main/uiNew/lib/libz.a | tail -200
+

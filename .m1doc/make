@@ -8,6 +8,7 @@ all: $()内不能有任何空格
 | :------                 | :------    | :----------------------------------            | :------                |
 | 变量 = 函数输出         | $()        | INCFLAGS := $(foreach ...)                     |                        |
 | shell for dir in ...    | foreach    | $(foreach dir, $(dirs), -I$(dir))              |                        |
+| shell test -e           | exist      | ifeq (, $(wildcard valgrind))                  |                        |
 | shell dirname           | dir        | $(dir dir/foo dir/bar)                         | dir dir                |
 | shell basename          | notdir     | $(notdir dir/foo dir/bar)                      | for bar                |
 | 调用shell命令           | shell      | $(shell find -name 'foo'｜sort; ls )           |                        |

@@ -409,6 +409,7 @@ cptar() { file=`ls release/tar/*.tgz`;touch  /winc/Export/com/force_dbg.txt
           mkdir -p /winc/Export/com/ ;rm -rf /winc/Export/com/*.tgz; cp -a $file         /winc/Export/com/ ;}
 cpffw() { file=`ls release/tar/*.ffw`;touch  /winc/Export/com/force_dbg.txt 
           mkdir -p /winc/Export/com/; rm -rf /winc/Export/com/*.ffw; cp -a $file         /winc/Export/com/ 
+          cp .changelog.md /winc/Export/com/changelog.txt
           echo ${file##*/} > /winc/Export/com/ffw.txt                                                      ;}
 cpv2()  { mkdir -p /winc/Export/com/v2; cp /winc/Export/com/*.{ffw,tgz} /winc/Export/com/v2 ;}
 nctar() { file=`ls release/tar/*[^e].tgz`;  nc $1 8006 < $file ;}
