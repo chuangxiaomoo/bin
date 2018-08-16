@@ -1,0 +1,55 @@
+#! /usr/bin/make
+
+# CROSS_COMPILE := arm-hismall-linux-
+CC  = $(CROSS_COMPILE)gcc       # gcc
+AR  = $(CROSS_COMPILE)ar        # ar
+
+DEBUG   = -g -Wall
+CFLAGS  = $(DEBUG) -fPIC        # with -fPIC, for lib*.so obj
+ARFLAGS = rcsv 
+# INC    = -I.. -I./include      
+# LDFLAGS   = -L ./lib/arm -lsqlite3    
+
+OBJLIB  = libxx.a
+LIB_DEPEND_FILES = lib1.o
+
+# 在链接静态库时，如果多个静态库之间存在依赖关系，则有依赖关系的静态库之间存在链接顺序问题。这在使用静态库时需要注意，否则会报符号找不到的链接错误。 
+# 例如： lib2.a 依赖于 lib1.a，而最终可执行文件 test 依赖于 lib2.a，则链接选项应为： -llib2.a -llib1.a，而不能反过来
+
+# $?    dependent files Newer than $@, used when $@ is static lib
+
+# ------------------------
+SOLIB  = liboo.so
+Nickname= $(subst lib,,$(basename $(SOLIB)))
+SO_DEPEND_FILES= 
+SOLIB_VERSION = $(SOLIB).1.0.0
+LINK_4_SONAME= $(SOLIB).1
+
+SO_CFLAGS = $(DEBUG) -shared -Wl,-soname,
+
+all: $(SOLIB) app
+
+app:
+	gcc -c main.c -o main.o
+	#gcc -o ./a.out main.o  -L. -lxx 
+	gcc -o ./b.out main.o  -L. -loo
+
+$(SOLIB): $(OBJLIB)
+	$(CC) $(SO_CFLAGS)$(SOLIB) -o $(SOLIB_VERSION) -Wl,--whole-archive $^ -Wl,--no-whole-archive
+
+
+$(LINK_4_SONAME): $(SOLIB_VERSION)
+	ln -s $(SOLIB_VERSION) $(SOLIB)
+	ln -s $(SOLIB_VERSION) $(LINK_4_SONAME)
+# ------------------------
+
+$(OBJLIB): $(LIB_DEPEND_FILES)
+	$(AR) $(ARFLAGS) $(OBJLIB) $?
+
+c clean:
+	rm -f *.a *.o *.so.1.0.0
+
+%.o : %.c
+	$(CC) $(CFLAGS) $(INC) -o $@ -c $<
+
+.PHONY: all arc lib exe c

@@ -136,6 +136,7 @@ function fn_var_debug()                 { cat make_var_debug ;}
 function fn_var_inner()                 { cat make_var_inner ;}
 function fn_lib_dynamic()               { cat make_lib_dynamic ;}
 function fn_lib_static()                { cat make_lib_static 
+                                              make_ar2so
                                               make_lib_dependence
                                               make_herderfile_dependence
                                         }
