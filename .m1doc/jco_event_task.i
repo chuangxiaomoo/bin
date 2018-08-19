@@ -49,3 +49,8 @@ _坏:
 _灭:
     test_attach_config_ethcfg_cb();
 
+# define task 设计
+
+1 调度: 直接使用 TLV + Domain Socket + Select 定时
+2 执行: 使用双线程 + 队列
+
