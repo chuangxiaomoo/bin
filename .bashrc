@@ -156,7 +156,7 @@ lwd() { wd_file=~/.awd${1}
     [ "${1}" = 'l' ] && (cd ~; ls .awd* | grep --color awd) && return
     cat -n $wd_file 2>/dev/null | grep -E "([0-9]|Export)" || {
         echo "Usage: lwd ${1}" &&
-        echo "  run awd${1} first" && return
+        echo "  run [awd ${1}] first" && return
     }
 
     local path_index
