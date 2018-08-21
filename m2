@@ -105,7 +105,7 @@ function fn_WiMax_meeting()             { cat meeting huawei_WiMax_meeting
                                               sanxing_2017.fisheye
                                               introspector.2018
                                               introspector
-                                              sleeping DID
+                                              sleeping DID TED
                                               health
                                               woop
                                               qipashuo

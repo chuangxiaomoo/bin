@@ -93,7 +93,10 @@ function fn_grep()                      { cat grep ;}
 function fn_find()                      { cat find ;}
 
 function fn_alibaba()                   { cat alibaba taobao ;}
-function fn_google()                    { cat google google.faq ;}
+function fn_google()                    { cat google
+                                              google.translate
+                                              google.faq 
+                                        }
 function fn_chrome()                    { cat chrome ;}
 
 function fn_software()                   {
@@ -1405,7 +1408,6 @@ function fn_main() {
         codetool
         CC
         codingstyle
-        google
         groogle                 # a collaborative code review tool
         chrome                  # vpn
         coreutils

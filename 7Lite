@@ -668,6 +668,23 @@ function fn_rgrep()
 }
 
 function fn_flowchar() { ln -sf /root/.flowchar/main${1}.i .flowchar.i ;}
+
+function fn_flowchar2u64()
+{
+    mountpoint /root/fc && return
+
+    # exportfs
+    # /root *(rw,no_root_squash,sync,no_subtree_check)
+    echo "
+    mount -t nfs -o nolock u32:/root/.flowchar ~/fc
+    "
+
+    mount -t nfs -o nolock u32:/root/.flowchar ~/fc
+    xt_ret $? "mount fail" || return $?
+
+    echo -e "\nu32_tp_u64 succ\n" && ls ~/fc
+}
+
 function fn_epoch_2_ymdhms() { date -u -d  @${1:-0} +"%F %T %z" ;}
 
 
@@ -768,6 +785,7 @@ function fn_main()
     "rgrep  regExp          # 换行grep -r <regExp> *"
     "epoch_2_ymdhms         # 换行时间格式"
     "flowchar [.nvr]        # ln main.\${1}i to \${PWD}/.flowchar"
+    "flowchar2u64           # mount fc.nfs.u32 to u64"
     "etc                    # backup etc"
     "pyx                    # pyc extract"
     "sum                    # sum STDIN or ARGV"
