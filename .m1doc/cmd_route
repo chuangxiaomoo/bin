@@ -1,3 +1,18 @@
+# route table priority
+
+1 different prefix
+  The order in the table doesn't matter; routes with a longer prefix always take priority. 
+  e.g. 123.x.x.128/27 and 123.x.x.151/32, 
+  and the latter – more specific – route will take priority over the former (more generic one).
+
+2 if two interfaces have the same destination, netmask, and gateway of 0.0.0.0,
+  the first one will grab all the traffic for that network.
+
+# clean route
+
+while /bin/route del default gw 0.0.0.0 dev eth0;  do :; done
+while /bin/route del default gw 0.0.0.0 dev wlan0; do :; done
+
 # route 
   双网卡单点转发：route add  192.168.2.49 gw 192.168.1.24
 
@@ -7,12 +22,13 @@
   192.168.3.0  *         255.255.255.0  U     0      0      0 wlan0
 
 # Linux[del时netmask必选]
-  route del -net 192.168.2.0  gw 0.0.0.0      netmask 255.255.255.0
-  route add -net 192.168.2.0  gw 0.0.0.0  netmask 255.255.255.0 
-  route add      default      gw 192.168.2.1
 
-  busybox route add default gw xxx.xxx.xxx.xxx
-  busybox route del default gw xxx.xxx.xxx.xxx
+    route del -net 192.168.2.0  gw 0.0.0.0  netmask 255.255.255.0 [dev eth0]
+    route add -net 192.168.2.0  gw 0.0.0.0  netmask 255.255.255.0 [dev eth0]
+
+            route add default gw 192.168.2.1
+    busybox route add default gw xxx.xxx.xxx.xxx
+    busybox route del default gw xxx.xxx.xxx.xxx
 
 # win7
   net: 

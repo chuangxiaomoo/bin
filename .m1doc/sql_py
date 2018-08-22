@@ -94,27 +94,29 @@ DROP TABLE IF EXISTS 60zm;
 CREATE TABLE IF NOT EXISTS 60zm(
     date   date            NOT NULL DEFAULT 0,
     code   INT(6) ZEROFILL NOT NULL DEFAULT 0,
+
     hi3    DECIMAL(6, 2)   NOT NULL DEFAULT 0,
     lo3    DECIMAL(6, 2)   NOT NULL DEFAULT 0,
     n3     TINYINT         NOT NULL DEFAULT 0,
-    hi2    DECIMAL(6, 2)   NOT NULL DEFAULT 0,
-    lo2    DECIMAL(6, 2)   NOT NULL DEFAULT 0,
-    n2     TINYINT         NOT NULL DEFAULT 0,
+    hi2    DECIMAL(6, 2)   NOT NULL DEFAULT 0,  # 中枢上线
+    lo2    DECIMAL(6, 2)   NOT NULL DEFAULT 0,  # 中枢下线
+    n2     TINYINT         NOT NULL DEFAULT 0,  # count(顶)
     hi     DECIMAL(6, 2)   NOT NULL DEFAULT 0,
     lo     DECIMAL(6, 2)   NOT NULL DEFAULT 0,
     n      TINYINT         NOT NULL DEFAULT 0,
-    top0   DECIMAL(6, 2)   NOT NULL DEFAULT 0,
-    top1   DECIMAL(6, 2)   NOT NULL DEFAULT 0,
-    top2   DECIMAL(6, 2)   NOT NULL DEFAULT 0,
+
+    top0   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  # bi0是上升笔时剔除，最新高点
+    top1   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  #                    次新高点
+    top2   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  #
     cvg3   DECIMAL(6, 2)   NOT NULL DEFAULT 0,
-    bot0   DECIMAL(6, 2)   NOT NULL DEFAULT 0,
-    bot1   DECIMAL(6, 2)   NOT NULL DEFAULT 0,
-    botx   DECIMAL(6, 2)   NOT NULL DEFAULT 0,
+    bot0   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  # bi0是上升笔时剔除，最新低点
+    bot1   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  #                    次新低点
+    botx   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  # botx=bot2, 默认3底以上最3底，后续可优化
     close  DECIMAL(6, 2)   NOT NULL DEFAULT 0,
     ma20   DECIMAL(6, 2)   NOT NULL DEFAULT 0,
-    o      TINYINT         NOT NULL DEFAULT 0,
-    m      TINYINT         NOT NULL DEFAULT 0,
-    z      TINYINT         NOT NULL DEFAULT 0,
+    o      TINYINT         NOT NULL DEFAULT 0,  # osci, 当前笔的振荡数
+    m      TINYINT         NOT NULL DEFAULT 0,  # mor5, 最近5K中＞ma20的K线数
+    z      TINYINT         NOT NULL DEFAULT 0,  # zor5, 最近5K中＞中枢上线的K线数
     INDEX(date, code)
 );
 DROP TABLE IF EXISTS 30zm; CREATE TABLE IF NOT EXISTS 30zm LIKE 60zm;

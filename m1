@@ -186,6 +186,7 @@ function fn_aout()                      { cat linux_aout ;}
 function fn_busybox()                   { 
 function fn_man()                       { cat busybox.man
                                           cat busybox.udhcpc.man
+                                          cat busybox.udhcpd.man
                                         }
 function fn_arch()                      { cat busybox_arch ;}
 function fn_top()                       { cat busybox_top ;}
