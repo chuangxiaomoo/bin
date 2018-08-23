@@ -16,7 +16,7 @@ LINENO      xt_ret $? "|$LINENO|"                     xt_ret 自动获取 caller
 
 FUNCNAME    $0 在 function fn_main 格式下有效
 
-${var// */} 不支持
+${var// */} 不支持 等价替换 sed 's///g'
 ${@:2}      不支持 等价替换 shift;${@} 
 ```
 
@@ -26,15 +26,7 @@ LDSTATIC =
 LDFLAGS = -Wl,-gc-sections
 
 ```bash
-# xt_ret
 fn_echo_clor() { TEXT="$@"; echo "$FG: ${TEXT}" > /dev/stdout ;}
-
-xt_ret()
-{
-    [ "${1}" = "0" ] && return 0
-    echo "${2}"
-    return 1
-}
-
+xt_ret() { [ "${1}" = "0" ] && return 0; echo "${2}"; return 1 ;}
 xt_ret $? "|$LINENO| fail to get wlan0 HWaddr" || return $?
 ```

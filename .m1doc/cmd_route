@@ -1,4 +1,5 @@
-# route table priority
+Route table priority
+-----------------------
 
 1 different prefix
   The order in the table doesn't matter; routes with a longer prefix always take priority. 
@@ -8,29 +9,34 @@
 2 if two interfaces have the same destination, netmask, and gateway of 0.0.0.0,
   the first one will grab all the traffic for that network.
 
-# clean route
+Del
+-----------------------
 
-while /bin/route del default gw 0.0.0.0 dev eth0;  do :; done
-while /bin/route del default gw 0.0.0.0 dev wlan0; do :; done
+  while /bin/route del default gw 0.0.0.0 dev eth0;  do :; done
+  while /bin/route del default gw 0.0.0.0 dev wlan0; do :; done
 
-# route 
-  双网卡单点转发：route add  192.168.2.49 gw 192.168.1.24
+  Linux[del时netmask必选]
 
-  num(route) = num(NIC) + num(IP)
-  内核自动加路由：ifconfig eth0:0 192.168.3.49 
+  route del default gw xxx.xxx.xxx.xxx
+  route del -net 192.168.2.0  gw 0.0.0.0  netmask 255.255.255.0 [dev eth0]
+
+Add
+-----------------------
+
+  单点路由转发: route add  192.168.2.49 gw 192.168.1.24
+  内核auto路由: ifconfig eth0:0 192.168.3.49  
+  路由表总数量: num(route) = num(NIC) + num(IP)
+  网关添加依赖: 网关必须能够ping通，否则报错: `route: SIOCADDRT: Network is unreachable`
+
   Destination  Gateway   Genmask        Flags Metric Ref  Use Iface
   192.168.3.0  *         255.255.255.0  U     0      0      0 wlan0
 
-# Linux[del时netmask必选]
+  route add default gw 192.168.2.1
+  route add -net 192.168.2.0  gw 0.0.0.0  netmask 255.255.255.0 [dev eth0]
 
-    route del -net 192.168.2.0  gw 0.0.0.0  netmask 255.255.255.0 [dev eth0]
-    route add -net 192.168.2.0  gw 0.0.0.0  netmask 255.255.255.0 [dev eth0]
+Windows
+-----------------------
 
-            route add default gw 192.168.2.1
-    busybox route add default gw xxx.xxx.xxx.xxx
-    busybox route del default gw xxx.xxx.xxx.xxx
-
-# win7
   net: 
   route -p add 10.41.0.0 mask 255.255.0.0 10.27.0.1
                       ^                    ^
