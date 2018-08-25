@@ -1,0 +1,50 @@
+flock  
+--------------------------
+
+mode(1) 单行式: 常用于crontab
+--------------------------
+
+flock mylockfile ls
+
+mode(2) 文件描述符
+--------------------------
+
+{
+    flock -n 9 || { echo fail; exit ;}
+    echo $$
+    sleep 10
+} 9<>mylockfile   # mylockfile处必是路径，不可用变量
+
+使用<>打开mylockfile，原因是定向文件描述符是先于命令执行的。
+当{}内的语句执行完，mylockfile会自动关闭，并unlock该文件。
+
+ATTERNTION
+--------------------------
+1 $$    Expands to the PID of the shell. In a () subshell, it expands to the PID of the current shell, not the subshell.
+2 &     exec 和 folk 会继续文件，所以flock后运行Deamon或者是使用&都会导致被锁
+3 fd    shell最多只能打开9个fd
+4 n>&-  shell无法使用fcntl(FD_CLOEXEC)，但可以在命令行执行关闭单个fd防止继承
+
+EXAMPLE
+--------------------------
+
+fn_test() {
+    echo mygod
+    sleep 150 7>&- &    # uncomment 7>&-
+}
+
+lockit() {
+  exec 7<>.lock
+  flock -n 7 || {
+    echo "Waiting for lock to release..."
+    flock 7
+  }
+  echo __sub_shell__
+  lsof .lock
+  fn_test
+
+  sleep 3
+  lsof .lock
+}
+
+lockit
