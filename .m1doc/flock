@@ -1,6 +1,8 @@
 flock  
 --------------------------
 
+https://blog.lilydjwg.me/2013/7/26/flock-file-lock-in-linux.40104.html
+
 mode(1) 单行式: 常用于crontab
 --------------------------
 
