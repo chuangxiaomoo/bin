@@ -112,19 +112,22 @@ CREATE TABLE IF NOT EXISTS 60zm(
     bot0   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  # bi0是上升笔时剔除，最新低点
     bot1   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  #                    次新低点
     botx   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  # botx=bot2, 默认3底以上最3底，后续可优化
+
     close  DECIMAL(6, 2)   NOT NULL DEFAULT 0,
     ma20   DECIMAL(6, 2)   NOT NULL DEFAULT 0,
     o      TINYINT         NOT NULL DEFAULT 0,  # osci, 当前笔的振荡数
-    m      TINYINT         NOT NULL DEFAULT 0,  # mor5, 最近5K中＞ma20的K线数
+                                                # 未成笔K线数，(bi0 is ASC) ? +N : -N
     z      TINYINT         NOT NULL DEFAULT 0,  # zor5, 最近5K中＞中枢上线的K线数
+                                                # 转折点价位
+                                                # (bi0 is DEC) ? bot0
+                                                #              : (o==1)?close:top(bi0)后的low
     INDEX(date, code)
 );
-DROP TABLE IF EXISTS 30zm; CREATE TABLE IF NOT EXISTS 30zm LIKE 60zm;
-DROP TABLE IF EXISTS zmd ; CREATE TABLE IF NOT EXISTS zmd  LIKE 60zm;
 
-RENAME TABLE zm60 TO 60zm;
-RENAME TABLE 3zm TO 30zm;
-RENAME TABLE zmd TO dzm;
+    alter table dzm change z z DECIMAL(6,2) NOT NULL DEFAULT 0;
+
+DROP TABLE IF EXISTS 30zm; CREATE TABLE IF NOT EXISTS 30zm LIKE 60zm;
+DROP TABLE IF EXISTS dzm ; CREATE TABLE IF NOT EXISTS  dzm LIKE 60zm;
 
 DROP TABLE IF EXISTS maxp;
 CREATE TABLE maxp (
@@ -138,10 +141,20 @@ CREATE TABLE maxp (
 DROP TABLE IF EXISTS mvp;
 CREATE TABLE mvp (
     date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,     # | cnt  | note       |
+    high        DECIMAL(6,2) NOT NULL,                  # | :--- | :------    |
+    xvol        DECIMAL(12,2) NOT NULL DEFAULT 0,       # | -1   | 量新高     |
+    cnt         TINYINT NOT NULL DEFAULT 0,             # |  0   | 量价齐新高 |
+    INDEX(code,date)                                    # |  n   | 价新高     |
+);
+
+DROP TABLE IF EXISTS HH34;
+CREATE TABLE HH34 (
+    date        date NOT NULL, 
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
-    high        DECIMAL(6,2) NOT NULL,
-    xvol        DECIMAL(12,2) NOT NULL DEFAULT 0,
-    cnt         TINYINT NOT NULL DEFAULT 0,
+    high        DECIMAL(6,2) NOT NULL,                  # HH(34)
+    cnt         TINYINT NOT NULL DEFAULT 0,             # mvp.cnt
+    lightgo     TINYINT NOT NULL DEFAULT 0,             # count(mvp.cnt>0)
     INDEX(code,date)
 );
 

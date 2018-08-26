@@ -1,25 +1,20 @@
 # screen.增删改查
 
-new
-del
-switch
-info
-
 [](http://man.linuxde.net/screen)
 
 screen              # 不带参数时，以pts自动命名Session
-screen -S mz5       # 新建命名Session
+
+screen -ls          # **list**
+screen -S zm        # **new**
+exit|c-d            # **destroy**
+C-a d               # **detach-bg**
+screen -r zm        # **attach-fg**
 
 screen -d           # Attached唯一时生效，跨 session detach Attached session
 screen -d mz5       # 带参数时，跨 session detach Attached session
-
-exit|c-d            # 退出销毁screen
-
-screen -ls          # 通过 Attached 判断是否在screen之中
-screen -wipe        #
-
-screen -r  mz5      # recover to mz5
 screen -d -r  mz5   # Detach 当前，并切换到mz5
+
+screen -wipe        # -ls && removes destroyed sessions
 screen -x           # 远程共享
 
 # infoscreen.当局者迷
@@ -34,6 +29,4 @@ bind '"\C-x\C-x": beginning-of-line'
 
 c-a :             命令模式
 c-a :sessionname  查看Session
-
-C-a d             detach任务到后台执行
 c-a k             杀自己
