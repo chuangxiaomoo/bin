@@ -57,6 +57,7 @@ sed -e '/UNIX/a\
 | :------               | :------                                                           |
 | 隔行打印.1            | sed -n -e 'n' -e 'p' bar                                          |
 | 隔行打印.2            | sed -n 'n;p' bar                                                  |
+| 每两行合并            | sed 'N;s/\n/,/' file                                              |
 | tac                   | sed -n '1!G;h;$p'  foo                                            |
 | 删除回车              | sed 's///g'                                                     |
 | 删除换行.1            | sed ':a;N;s/\n//g;ta'                                             |
@@ -74,3 +75,4 @@ sed -e '/UNIX/a\
 | 地址匹配非尾行        | sed '$!s/pattern/replacemen/'                                     |
 | 地址匹配条件尾行.空行 | sed -i '${/^ *$/d}' a                                             |
 `
+

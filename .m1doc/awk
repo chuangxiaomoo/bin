@@ -149,10 +149,12 @@ awk 'BEGIN{info="it is a test";tlen=split(info,tA," ");
 
 # geek
 
-| skills                     | 说明                                       |
-| :-----------               | :-----------                               |
-| 'END {print addr,$2}'      | 打印最后一行                               |
-| awk '{$1=$2=""; print $0}' | print all columns from the nth to the last |
+| skills                     | 说明                                  |
+| :-----------               | :-----------                          |
+| 'NR==1 {print $2}'         | 打印首行2nd列                         |
+| 'END   {print $2}'         | 打印尾行2nd列                         |
+| awk '{$1=""; print $0}'    | will print all but very first column  |
+| awk '{$1=$2=""; print $0}' | will print all but two  first columns |
 
 # [内置变量表](http://www.cnblogs.com/chengmo/archive/2010/10/06/1844818.html)
 
