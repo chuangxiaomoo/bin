@@ -34,6 +34,7 @@ apt-get install nfs-kernel-server
 
 *5.4* mount COMMAND -o nolock
 
+    mount -t nfs -o nolock 192.168.2.248:/root/fc /root/fc
     mount -t nfs -o nolock 192.168.120.237:/opt/nfs /mnt
     /mnt/strace -o /mnt/main.log -f -t -T -s 1024 ./main.exe
 
