@@ -194,3 +194,19 @@ CREATE TABLE q5 (
     rock        TINYINT       NOT NULL DEFAULT 0,    # p1>p2 or p1>p3 Diamond-Bottom-Price(rock bottom prices)
     INDEX(date,code)
 );
+
+DROP TABLE IF EXISTS q5;
+CREATE TABLE q5 (
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    p_change    DECIMAL(6,2) NOT NULL DEFAULT 0,
+    L0          DECIMAL(6,2) NOT NULL DEFAULT 0,
+    H0          DECIMAL(6,2) NOT NULL DEFAULT 0,
+    L1          DECIMAL(6,2) NOT NULL DEFAULT 0,
+    H1          DECIMAL(6,2) NOT NULL DEFAULT 0,
+    L2          DECIMAL(6,2) NOT NULL DEFAULT 0,
+    H2          DECIMAL(6,2) NOT NULL DEFAULT 0,
+    L3          DECIMAL(6,2) NOT NULL DEFAULT 0,
+    H3          DECIMAL(6,2) NOT NULL DEFAULT 0,
+    INDEX(date,code)
+);
