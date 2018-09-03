@@ -195,11 +195,10 @@ CREATE TABLE q5 (
     INDEX(date,code)
 );
 
-DROP TABLE IF EXISTS q5;
-CREATE TABLE q5 (
+DROP TABLE IF EXISTS vbot5;
+CREATE TABLE vbot5 (
     date        date NOT NULL, 
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
-    p_change    DECIMAL(6,2) NOT NULL DEFAULT 0,
     L0          DECIMAL(6,2) NOT NULL DEFAULT 0,
     H0          DECIMAL(6,2) NOT NULL DEFAULT 0,
     L1          DECIMAL(6,2) NOT NULL DEFAULT 0,
@@ -208,5 +207,6 @@ CREATE TABLE q5 (
     H2          DECIMAL(6,2) NOT NULL DEFAULT 0,
     L3          DECIMAL(6,2) NOT NULL DEFAULT 0,
     H3          DECIMAL(6,2) NOT NULL DEFAULT 0,
+    flag        TINYINT      NOT NULL DEFAULT 0,
     INDEX(date,code)
 );

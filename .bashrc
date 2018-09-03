@@ -79,6 +79,7 @@ alias .de_beep="echo 0 >/tmp/kts/chao.beep"
 alias .en_beep="echo 1 >/tmp/kts/chao.beep"
 
 alias   cdo='ssh -o ServerAliveInterval=60 47.94.21.194'  # Duoduo@123 SecureCRT -> Terminal -> 反空闲
+alias   sls='screen -ls; ps -A -o pid,args,lstart | grep `ps -o ppid -p $$ --no-headers`'
 alias     f='find . -name'
 alias     l='ls -CF'
 alias    ls='ls --color=auto'

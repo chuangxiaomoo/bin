@@ -14,6 +14,7 @@ function fn_main()
         d   diff    [file] 
         dp  dprev   file 'PREV'
         ds  .swp    [del .swp] 
+        i   info    URL of repository
         l   log     log -p file
         ls          ls-files
         p   pull    [origin master]
@@ -80,15 +81,18 @@ function fn_main()
         [ -z "$filelist" ] && echo "Usage: Git r file..." && exit
         git checkout -- ${filelist%%/}
         ;;
-
-    s*|*)
-        #echo -e "\n#       ---------- ? for Usage ---------\n"
-        git status
-        ;;
     etc)
         ~/bin/bell
         cp /etc/crontab \
            /etc/mysql/my.cnf    ~/bin/.etc/
+        ;;
+    i|info)
+        echo git remote -v
+        git remote -v
+        git config --get remote.origin.url | sed -e 's#:#/#' -e 's#git@#https://#'    
+        ;;
+    s*|*)
+        git status
         ;;
     esac
 }
