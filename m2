@@ -132,7 +132,10 @@ function fn_lunyu()                     { cat book_lunyu
 function fn_36ji()                      { cat book_36ji ;}
 
 function fn_shenglvqimeng()             { cat book_shenglvqimeng ;}
-function fn_think_fast_n_slow()         { cat book_think_fast_n_slow ;}
+function fn_think_fast_n_slow()         { cat book_think_fast_n_slow 
+                                              book_the_psychology_of_finance
+                                              read_the_psychology_of_finance
+                                        }
 
 function fn_01_商君书()                 { cat book_01_商君书 ;}
 function fn_02_韩非子()                 { cat book_02_韩非子 ;}
