@@ -55,3 +55,9 @@
           supported after 1.7+
           set-option -g mouse-select-pane on
           set-option -g mouse-select-window on
+
+# options
+
+set-option status-right %T        # 时间戳显示秒数
+set-option status-interval 1      # 刷新间隔
+

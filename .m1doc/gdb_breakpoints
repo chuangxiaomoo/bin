@@ -55,6 +55,8 @@
     info catch
     info stack          # show where you stopped
 
+    info reg            # 查看寄存器
+
 (6) 查看源程序
 Ref:
     infoPage gdb/Stopping/Breakpoints/ (Breakpoints, Watchpoints, and Catchpoints)

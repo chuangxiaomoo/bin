@@ -14,6 +14,10 @@ commit：      是最后的阶段，只有commit了，我们的代码才真正�
 # git-diff-with-vimdiff
 [git-diff-with-vimdiff](http://blog.longwin.com.tw/2009/11/vimdiff-vs-git-diff-2009/)
 
+git config --global diff.tool vimdiff
+git config --global difftool.prompt false
+git config --global alias.d difftool
+
 function git_diff() {
     git diff --no-ext-diff -w "$@" | vim -R -
 }
