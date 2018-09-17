@@ -1,0 +1,46 @@
+:: windows dual-IP
+::
+:: netsh interface ipv4 show interfaces
+:: 使用命令查看 interface ID, 并替换`本地连接`, 比如我的[id_eth=12]
+::
+:: netsh int ip reset resetlog.txt
+:: 重置网络
+::
+:: set+static 可以清除额外的IP，从而无需要 `netsh del`
+:: netsh interface ipv4 del address %id_eth% 192.168.0.55
+::
+::
+:: route -f 会清路由表，导致`locale loop`路由被清，致vbox连接失败
+::
+
+@echo off
+title IP Setting
+set id_eth=12
+
+:start
+  echo Setting option:
+  echo     0. 192.168.0.1 SVN+RDM
+  echo     2. 192.168.2.1 FISHEYE
+
+  set var=0
+  set /p var="Please input[0]: "
+
+  if %var% == 0 goto setSVN
+  if %var% == 2 goto setFISH
+
+:setSVN
+  netsh interface ipv4 set address %id_eth% static 192.168.0.55  255.255.255.0 192.168.0.1
+  netsh interface ipv4 add address %id_eth%        192.168.2.249 255.255.255.0
+
+  goto end
+
+:setFISH
+  netsh interface ipv4 set address %id_eth% static 192.168.2.249 255.255.255.0 192.168.2.1
+  netsh interface ipv4 add address %id_eth%        192.168.0.55  255.255.255.0 
+
+  goto end 
+
+:end
+  echo "configure [%var%] success"
+  Pause
+

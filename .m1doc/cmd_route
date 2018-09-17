@@ -47,7 +47,9 @@ Windows
         ^        ^                                ^
    persitent    destination                    next hop(getway)
 
-  del:
-  route 192.168.1.0
-                  ^
-                  网段
+
+  删除目标为10.41.0.0，子网掩码为255.255.0.0的路由：
+  route delete 10.41.0.0 mask 255.255.0.0
+
+  删除IP路由表中以10.开始的所有路由：
+  route delete 10.*

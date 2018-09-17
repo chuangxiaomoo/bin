@@ -51,7 +51,7 @@ function fn_filter()                    { cat wireshark_filter ;}
 }
 
 function fn_python()                    { 
-                                          cat python
+                                          cat python bokhe
                                           cat pandas tushare tu.py
                                           cat jqdata
                                           cat pycharm
@@ -711,7 +711,7 @@ function fn_ifconfig()                  { cat cmd_ifconfig ;}
 function fn_ln()                        { cat cmd_ln ;}
 function fn_mount()                     { cat cmd_mount ;}
 function fn_patch()                     { cat cmd_patch ;}
-function fn_route()                     { cat cmd_route ;}
+function fn_route()                     { cat cmd_route cmd_netsh ;}
 function fn_rename()                    { cat cmd_rename ;}
 function fn_strace()                    { cat cmd_strace ;}
 function fn_sort()                      { cat cmd_sort ;}

@@ -1,0 +1,11 @@
+# mode='inline', bokeh 使用本地 .css .js
+
+默认会使用在线 .css .js
+
+<link rel="stylesheet" href="https://cdn.pydata.org/bokeh/release/bokeh-0.12.11.min.css" type="text/css" />
+
+<script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-0.12.11.min.js"></script>
+
+output_file("vg22.html", mode='inline')
+show(p)
+
