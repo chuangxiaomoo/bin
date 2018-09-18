@@ -37,3 +37,8 @@
     CURL的使用 (应用总结，函数库介绍)
     http://wenku.baidu.com/view/0360b3bdf121dd36a32d8242.html
 
+三、GET
+
+    GET方法，curl可以直接处理，例如想获取上面的网页，只要输入：
+
+    curl "http://www.watashinet.com/dns?hostname=jetview.watashinet.com&username=jetview&password=jetview"

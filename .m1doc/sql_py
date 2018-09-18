@@ -210,3 +210,11 @@ CREATE TABLE vbot5 (
     flag        TINYINT      NOT NULL DEFAULT 0,
     INDEX(date,code)
 );
+
+DROP TABLE IF EXISTS ma180;
+CREATE TABLE ma180 (
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    ma180       DECIMAL(6,2) NOT NULL DEFAULT 0,
+    INDEX(date,code)
+);

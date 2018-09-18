@@ -90,7 +90,7 @@ SD卡定制功能，计划需要3周时间，包括3部分：基本框架、语�
 >    M /trunk
 >    M /trunk/appSrc/libs/shm_buf_grain/inc/shm_cache.h
 >    M /trunk/appSrc/main/danale/danale_param_conf.c
-> 
+>
 > Merged /t20fisheyePro:r1813 for 合并1804、1805一定要合并这个
 > ------------------------------------------------------------------------
 > r1805 | luosf | 2017-11-25 15:37:26 +0800 (Sat, 25 Nov 2017) | 1 line
@@ -101,7 +101,7 @@ SD卡定制功能，计划需要3周时间，包括3部分：基本框架、语�
 >    M /trunk/appSrc/libs/jlib/libjlib.a
 >    M /trunk/appSrc/libs/shm_buf_grain/libshm_buf_grain.a
 >    M /trunk/appSrc/main/lib/qrEncode.oo
-> 
+>
 > ulic 编译库
 > ------------------------------------------------------------------------
 > r72 | tianj | 2017-03-16 11:28:18 +0800 (Thu, 16 Mar 2017) | 1 line
@@ -111,7 +111,7 @@ SD卡定制功能，计划需要3周时间，包括3部分：基本框架、语�
 >    A /trunk/appSrc/libs/openssl/libcrypto.a
 >    A /trunk/appSrc/libs/openssl/libssl.a
 >    A /trunk/appSrc/libs/shm_buf_grain/libshm_buf_grain.a
-> 
+>
 > 添加库
 }}}
 
@@ -124,9 +124,9 @@ SD卡定制功能，计划需要3周时间，包括3部分：基本框架、语�
 > Changed paths:
 >    M /t20fisheyePro/appSrc/libs/shm_buf_grain/inc/shm_cache.h
 >    M /t20fisheyePro/appSrc/main/danale/danale_param_conf.c
-> 
+>
 > 与JCP CONFIG 同步: CACHE_MEDIA_TYPE_G711_ALAW  = 1;
-> 
+>
 > ------------------------------------------------------------------------
 > r1806 | zhaoxb | 2017-11-27 08:57:31 +0800 (Mon, 27 Nov 2017) | 1 line
 > Changed paths:
@@ -208,7 +208,7 @@ SD卡定制功能，计划需要3周时间，包括3部分：基本框架、语�
 
 # 2018-03-01 奥卡姆的剃刀 vs. 妞妞
 
-1. 东家之子，增之一分则太长，减之一分则太短；著粉则太白，施朱则太赤。 
+1. 东家之子，增之一分则太长，减之一分则太短；著粉则太白，施朱则太赤。
 2. 奥卡姆剃刀(如无必要，勿增实体)，以至简为原则，和最大熵有很相似(对于未知的就不要妄加评论)。
 3. 在机器学习的场景通常认为能很好的拟合历史数据又简单的模型才是好的模型
 
@@ -369,7 +369,7 @@ busybox.sleep @100% cpu usage 时会出问题。因此，带出了证伪是一�
 2. Nav UI 的设计，应该像CSS一样，内容与表现形式分享
 3. create_thread() 应该使用 Gcc Wrapper 来进行管理
 
-# 2018-06-30 
+# 2018-06-30
 
 <请把我哥带走>，<斗破苍穹>，连续花了一个周的时间追动漫，及相应的漫画。因而错过了股市的大反弹。这此**碎片时间**的欢愉并不带来质量。
 
@@ -387,7 +387,7 @@ busybox.sleep @100% cpu usage 时会出问题。因此，带出了证伪是一�
 3 诉诸权威(相信介绍)，本质上来看就是源自于**人们对确定性的渴求**。面对未知，我们希望有人能够有确定的解答；面对争议，我们希望有谁帮我们一锤定音。
 4 权威还可能居心叵测(常识：无利不起早)
 
-# family.2018-07-09 
+# family.2018-07-09
 
 哥打电话来了，第一句话是“恨死我了”。因为现在娃得了肺炎，需要在洞口住院，一个人根本就忙不过来。
 
@@ -416,4 +416,12 @@ busybox.sleep @100% cpu usage 时会出问题。因此，带出了证伪是一�
 羽毛球中止了一个月，看了一个月的动漫。
 
 为了让生活不那么糟糕，终于决定复出了。为了压制人性之恶，我们必须要借助神性，是所谓**仪式感**。
+
+# 2018-09-17 估算任务时间的3个维度
+
+| Demision | Note                 | vg for EXAMPLE |
+| :------  | :------              | :------        |
+| 天时     | 趁热打铁             | vg 初测是在7月 |
+| 地利     | 物理距离，团队内协作 | 异地两个团队   |
+| 人和     |                      |                |
 
