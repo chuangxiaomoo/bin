@@ -135,6 +135,8 @@ function fn_shenglvqimeng()             { cat book_shenglvqimeng ;}
 function fn_think_fast_n_slow()         { cat book_think_fast_n_slow 
                                               book_the_psychology_of_finance
                                               read_the_psychology_of_finance
+                                              book_the_self_cultivation_a_leek
+                                              read_the_self_cultivation_a_leek
                                         }
 
 function fn_01_商君书()                 { cat book_01_商君书 ;}
@@ -170,6 +172,7 @@ function fn_012_李笑来人人都能用英语()  { cat book_012_李笑来人人
 
 function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从筷子到开挂人生
                                               book_hh_好好学习
+                                              book_jj_精进.如何成为一个很厉害的人   # framework
                                               book_dt_暗时间
                                               book_tf_把时间当作朋友
                                               book_xs_reborn-every-7-years.md
@@ -398,7 +401,7 @@ function fn_41_如何成为高品质的勤奋者() { cat article_41_如何成为
                                               article_41_你的阅读造就了你
                                               article_41_如何写好一封邮件
                                         }
-function fn_42_思考工具及框架()         { cat article_42_思考工具及框架 ;}      # 思维模型
+function fn_42_思考工具及框架()         { cat article_42_思考工具及框架 ;}      # 思维模型 framework
 function fn_43_如何科学的思考()         { cat article_43_如何科学的思考 ;}
 function fn_44_学得太慢是一种罪()       { cat article_44_学得太慢是一种罪
                                           cat article_45_拷问知识正确和增长遮蔽
