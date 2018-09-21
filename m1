@@ -656,7 +656,7 @@ function fn_relocate()                  { cat svn_relocate ;}
 }
 
 function fn_vim() {
-function fn_hex()                       { cat vim_hex vimtutor ;}
+function fn_hex()                       { cat vim_hex vimtutor gvim ;}
 function fn_fundamental()               { cat vim_fundamental vim_ctags ;}
 function fn_align()                     { cat vim_align ;}
 function fn_hotkey()                    { cat vim_hotkey chromVim cvim autohotkey ahk ;}
@@ -718,6 +718,7 @@ function fn_sort()                      { cat cmd_sort ;}
 function fn_rar()                       { cat cmd_tar ;}
 function fn_tar()                       { cat cmd_tar ;}
 function fn_zip()                       { cat cmd_tar ;}
+function fn_xz()                        { cat cmd_xz ;}
 function fn_openssl()                   { cat cmd_openssl ;}
 function fn_xargs()                     { cat cmd_xargs ;}
 function fn_sysv-rc-conf()              { cat cmd_rcconf ;}
@@ -775,6 +776,7 @@ function fn_ps()                        { cat cmd_ps
         openssl
         top
         xargs
+        xz
         zip
         cpio                    # 与tar类似的打包格式cpio，结合压缩命令gzip zcat
         usb-creator-gtk         # startup-disk-creator 制作启动盘

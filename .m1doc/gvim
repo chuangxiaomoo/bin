@@ -1,0 +1,9 @@
+# 解决同一个文件只打开一次
+
+1. 直接进入注册表,在HKEY_CLASSES_ROOT\*\shell下添加项“用 vim 编辑”， 
+2. 再在项“用 vim 编辑”下添加子项“command” [右键-新建-项] ，
+3. 在其右边窗口把其键值设定为 
+   D:\tools\vim\vim73\gvim.exe -p --remote-tab-silent "%1"
+4. Zotepad.3 命名，这样就可以快速打开了。
+   或者是替换 Notepad notepad %1 的位置
+

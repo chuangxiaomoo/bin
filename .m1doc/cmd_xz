@@ -1,0 +1,15 @@
+# xz 
+
+第一种方法可以充分利用 xz 利用丰富的参数。
+第二种方法使用起来更简单容易。
+
+# 使用管道
+
+tar cf -  *.c  | xz --best > src.tar.xz 　# compress 
+xz -d src.tar.xz --stdout | tar -x        # decompress
+
+# 使用 tar 参数 J
+
+tar Jcf src.txz  *.c                      # compress 
+tar Jxf src.txz                           # decompress
+

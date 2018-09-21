@@ -288,7 +288,9 @@ lsgcc()
     grain   arm-unknown-linux-uclibcgnueabi-
     anyka   arm-anykav200-linux-uclibcgnueabi-
     jzzz    mips-linux-uclibc-gnu-
+
     ms-IPC  arm-linux-gnueabihf-
+    ms-ulib arm-buildroot-linux-uclibcgnueabihf-
     ms-NVR  arm-buildroot-linux-uclibcgnueabi-
 
     ____________________nvr.265________________
