@@ -701,6 +701,7 @@ function fn_hotkey()                    { cat w3m_hotkey ;}
 function fn_cmd()                       {
 function fn_Essential()                 { cat cmd_Essential ;}
 function fn_arping()                    { cat cmd_arping ;}
+function fn_chmod()                     { cat cmd_chmod ;}
 function fn_tee()                       { cat cmd_tee ;}
 function fn_fdisk()                     { cat cmd_fdisk ;}
 function fn_date()                      { cat cmd_date cmd_timeout ;}
@@ -743,6 +744,7 @@ function fn_ps()                        { cat cmd_ps
         Essential
         arping                  # arp -D 检测IP冲突 iputils
         calltree
+        chmod
         date
         dd
         dialog
