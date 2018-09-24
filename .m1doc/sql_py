@@ -218,3 +218,10 @@ CREATE TABLE ma180 (
     ma180       DECIMAL(6,2) NOT NULL DEFAULT 0,
     INDEX(date,code)
 );
+
+DROP TABLE IF EXISTS shebao;    # 社保
+CREATE TABLE shebao (
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    pct         DECIMAL(6,2) NOT NULL DEFAULT 0,
+    INDEX(code)
+);

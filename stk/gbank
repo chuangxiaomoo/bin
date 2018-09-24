@@ -107,8 +107,35 @@ function fn_get_date()
     mysql -N kts <<< "${sqls}"
 }
 
+shopt -s expand_aliases
+
+# iproc
+# $WHERE
+#       SELECT z.code
+#       FROM 主表要别名为z
+#       WHERE后一定要带条件
+# oproc
+alias iproc='
+    local WHERE
+    [ -z "${zi}" ] && WHERE=WHERE || WHERE="
+    ,zio WHERE z.code=zio.code and
+    "
+'
+
+alias oproc='
+    [ -n "${zo}" ] && sqls="
+    DELETE FROM zio; INSERT INTO zio SELECT code FROM (${sqls}) as t
+    "
+'
+
 function fn_set_END()
 {
+    case $z in
+    i) zi=1     ;;
+    o) zo=1     ;;
+   io) zi=1 zo=1;;
+    esac
+
     [ -z "${END}" ] && \
     END=`mysql -N kts <<<"SELECT DISTINCT date from d1 WHERE code<=10 ORDER by date DESC LIMIT ${iEND:-0},1"`
     PREV=`fn_get_prev`

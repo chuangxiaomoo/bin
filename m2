@@ -174,6 +174,7 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               book_hh_好好学习
                                               book_jj_精进.如何成为一个很厉害的人   # framework
                                               book_dt_暗时间
+                                              read_dt_暗时间
                                               book_tf_把时间当作朋友
                                               book_xs_reborn-every-7-years.md
                                               book_mao
@@ -254,7 +255,6 @@ function fn_list()                      { cat book_400_PoorCharliesAlmanack_穷�
         PPT演示之道                     # to read
         economic_naturalist             # 牛奶可乐
         conservatism                    # 保守主义
-        think_fast_n_slow
 
         f2_海底捞你学不会
         f1_富同学穷同学
