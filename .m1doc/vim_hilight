@@ -29,4 +29,9 @@ highlight htmlBold  ctermfg=Green gui=bold guifg=#00B800
     syntax match Type "&&"
 
 # ~/.vim/syntax/markdown.vim
+
 HtmlHiLink mkdLink          Operator
+
+# ~/.vim/syntax/c.vim
+
+syn keyword	cStatement	once init thread loop

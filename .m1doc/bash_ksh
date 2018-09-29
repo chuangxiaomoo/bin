@@ -1,26 +1,26 @@
 # ksh
 
 ```bash
-           |pdksh                                  |  bash                                        |   ash
-function   |function fn_main                       |  兼容ksh，可有可无                           |   fn_main()
+           |pdksh                                  |  bash                                        |  ash
+function   |function fn_main                       |  兼容ksh，可有可无                           |  fn_main()
            |         fn_main()                     |                                              |
            |                                       |                                              |
-array      |set -A list m1 m2 m3                   |  list=(m1 m2 m3)                             |   set -- a1 a2 a3 a4 a5
-           |                                       |                                              |   for i; do
-loop       |while [ ${i:=0} -lt ${#list[@]} ]; do  |  for (( i=0; i<0; i+=1 )); do done           |       echo this is $i
-           |    echo ${list[$i]}                   |                                              |   done
+array      |set -A list m1 m2 m3                   |  list=(m1 m2 m3)                             |  set -- a1 a2 a3 a4 a5
+           |                                       |                                              |  for i; do
+loop       |while [ ${i:=0} -lt ${#list[@]} ]; do  |  for (( i=0; i<0; i+=1 )); do done           |      echo this is $i
+           |    echo ${list[$i]}                   |                                              |  done
            |    let i++                            |                                              |
-           |done                                   |                                              |
-           |                                       |                                              |
+           |done                                   |                                              |  i=0
+           |                                       |                                              |  while [ ${i} -lt 32 ]; do
 LINENO     |xt_ret $? "-$LINENO-"                  |  xt_ret 自动获取 caller -${BASH_LINENO[0]}-  |
            |                                       |                                              |
 FUNCNAME   |$0 在 function fn_main 格式下有效      |                                              |
            |                                       |                                              |
            |                                       |                                              |
-${var##}   |                                       |                                              |
+${var##}   |                                       |                                              |  不支持正则，内建`Shell Patterns`
 ${var%%}   |                                       |                                              |
-${var// */}|不支持 等价替换 sed 's///g'            |                                              |   不支持 等价替换 sed 's///g'
-${@:2}     |不支持 等价替换 shift;${@}             |                                              |   $@不是数组，使用 shift;${@}
+${var// */}|不支持 等价替换 sed 's///g'            |                                              |  不支持 等价替换 sed 's///g'
+${@:2}     |不支持 等价替换 shift;${@}             |                                              |  $@不是数组，使用 shift;${@}
 
 # functions
 fn_echo_clor() { TEXT="$@"; echo "$FG: ${TEXT}" > /dev/stdout ;}
