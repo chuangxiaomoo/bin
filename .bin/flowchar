@@ -1,14 +1,14 @@
 #!/bin/sh
 
-touch        ~/.backup/flowchar.2.tgz
-touch        ~/.backup/flowchar.1.tgz
+touch       ~/.backup/flowchar.2.tgz
+touch       ~/.backup/flowchar.1.tgz
 
-cp           ~/.backup/flowchar.2.tgz  ~/.backup/flowchar.3.tgz
+cp          ~/.backup/flowchar.2.tgz  ~/.backup/flowchar.3.tgz
+cp          ~/.backup/flowchar.1.tgz  ~/.backup/flowchar.2.tgz
 
-if [ -e ~/.flowchar/i.am.nvr ]; then
-    cp           ~/.backup/flowchar.n.tgz  ~/.backup/flowchar.2.tgz
-    tar -P -zcvf ~/.backup/flowchar.n.tgz  ~/.flowchar
-else
-    cp           ~/.backup/flowchar.1.tgz  ~/.backup/flowchar.2.tgz
-    tar -P -zcvf ~/.backup/flowchar.1.tgz  ~/.flowchar
-fi
+tar -P -zcf ~/.backup/flowchar.1.tgz  ~/.flowchar
+
+echo "
+tar -P -zcf ~/.backup/flowchar.1.tgz  ~/.flowchar
+done!
+"
