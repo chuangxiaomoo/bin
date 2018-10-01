@@ -173,7 +173,7 @@ function fn_012_李笑来人人都能用英语()  { cat book_012_李笑来人人
 function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从筷子到开挂人生
                                               book_hh_好好学习
                                               book_jj_精进.如何成为一个很厉害的人   # framework
-                                              read_jj_精进.如何成为一个很厉害的人   # framework
+                                              read_jj_精进.如何成为一个很厉害的人
                                               book_dt_暗时间
                                               read_dt_暗时间
                                               book_tf_把时间当作朋友
