@@ -1,0 +1,8 @@
+# gcc_warning
+
+-Wunused-function
+
+# gcc no warning
+
+-Wno-unused-function
+

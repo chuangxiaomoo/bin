@@ -102,7 +102,7 @@ function fn_WiMax_meeting()             { cat meeting huawei_WiMax_meeting
                                               sanxing_2013
                                               sanxing_2013.team
                                               sanxing_2014.nxp
-                                              sanxing_2017.fisheye
+                                              sanxing_2017.fisheye eye
                                               introspector.2018
                                               introspector
                                               sleeping DID 
@@ -753,7 +753,7 @@ function fn_huawei()                    {
 function fn_forum()                     { cat huawei_forum  huawei_culture ;}
 function fn_C语言的限定词()             { cat huawei_C语言的限定词 ;}
 
-function fn_Oracle()                    { cat huawei_Oracle ;}
+function fn_Oracle()                    { cat huawei_Oracle huawei_software_crisis ;}
 function fn_OSMU()                      { cat huawei_OSMU ;}
 function fn_misc()                      { cat huawei_misc ;}
 

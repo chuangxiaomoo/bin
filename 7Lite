@@ -529,7 +529,7 @@ function fn_genheader()
     [ "$#" -ne 1 ] && echo "Usage: genheader header.h" && exit
 
     # name as /usr/include/stdio.h|24|
-    header=$1
+    header=${1##*/}
     header=`echo $header | tr 'a-z' 'A-Z'`
     header=_${header/./_}       
 
