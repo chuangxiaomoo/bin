@@ -172,8 +172,6 @@ function fn_012_李笑来人人都能用英语()  { cat book_012_李笑来人人
 
 function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从筷子到开挂人生
                                               book_hh_好好学习
-                                              book_jj_精进.如何成为一个很厉害的人   # framework
-                                              read_jj_精进.如何成为一个很厉害的人
                                               book_dt_暗时间
                                               read_dt_暗时间
                                               book_tf_把时间当作朋友
@@ -309,7 +307,11 @@ function fn_poet()    	                { cat poet ;}
 function fn_personage()                 { cat personage ;}
 function fn_01_囧_jiong()               { cat 01_囧_jiong ;}
 
-function fn_howto()                     {
+function fn_howto()                     { cat howto_frame
+                                              zhangxiaomoo
+                                              subjects
+                                              book_jj_精进.如何成为一个很厉害的人
+                                              read_jj_精进.如何成为一个很厉害的人
 function fn_01_提高逻辑思维能力()       { cat howto_01_提高逻辑思维能力 ;}
 function fn_02_训练思维的深度和缜密度() { cat howto_02_训练思维的深度和缜密度 ;}
 function fn_03_沟通_communication()     { cat howto_03_沟通
@@ -353,7 +355,7 @@ function fn_english()
       english_writing
 
       english_liyang_crazy
-      english_logic
+      english_LOGIC
       english_grammer
       english_vocabulary
 }
@@ -605,7 +607,10 @@ function fn_films()                     { cat videos movies
                                         }
 
 function fn_logic()                     {
-function fn_cept()                      { cat logic_cept ;}
+function fn_formal()                    { cat logic_formal ;}
+function fn_informal()                  { cat logic_informal ;}
+function fn_informal_wiki()             { cat logic_informal_wiki ;}
+function fn_fallacy()                   { cat logic_fallacy ;}
 function fn__essence()                  { cat logic__essence ;}
 function fn__struct()                   { cat logic__struct ;}
 function fn__1st_principle()            { cat logic__1st_principle
@@ -620,16 +625,11 @@ function fn__1st_principle()            { cat logic__1st_principle
                                         }
 function fn_training500()               { cat logic_training500 ;}
 function fn_puzzle()                    { cat logic_puzzle ;}
-function fn_formal()                    { cat logic_formal ;}
-function fn_informal()                  { cat logic_informal ;}
-function fn_informal_wiki()             { cat logic_informal_wiki ;}
-function fn_fallacy()                   { cat logic_fallacy ;}
 function fn_language()                  { cat logic_language ;}
 function fn_BeingLogical()              { cat logic_BeingLogical ;}
 function fn_CognitiveBiases()           { cat logic_CognitiveBiases ;}
 function fn_TrapsPitfalls()             { cat logic_TrapsPitfalls ;}
     local opts=(
-        cept
         training500
         puzzle                          # 我理解的一些谜 maze
         formal                          #   形式逻辑(普通逻辑)
@@ -698,6 +698,7 @@ function fn_valuetheory()               { cat phi_valuetheory ;}
 
     local opts=(
         phi_cept                        # 哲学 = 形而上学+伦理学+认识论
+        phi_ontology                    # 存在论|本体论
         epistemology                    # 认识论+学习+计算机类比+脑科学+theory of knowledge
         valuetheory
 
