@@ -1,7 +1,5 @@
 /* zhangxiaomoo */
 
-以计算机的方式统筹自己，即 zhangxiaomoo = attribute + method
-
 /* 找出真相
  */
 class logic {
@@ -13,8 +11,8 @@ class logic {
          人生只是一个过程(有结局:插管与不插管)，没有目的，不会把死亡当做目的。
          心存善念，尽力而为。希望Taiwan可以因为我(柯文哲)而变得更美好。
     3 一坨大便的故事
-      荣华富贵都是烟云
-}
+      荣华富贵都是烟云;
+};
 
 class physic {
     2 概率与统计
@@ -24,12 +22,19 @@ class physic {
     1 Hund's rules
         公交车上有两个人坐在一起，期货位置都是空的
         (相同能阶的轨道没有半填满之前，不可全部填满)
-}
+};
+
+class environment {
+    1 当代社会的陷阱与缺陷(抢夺你的注意力)，让你{选择无能+执行无能}
+    2 成就=出身+机遇+天赋+努力，只有最后一个是可以自己把握的
+    3 集体无意识: /* 人类的从众心理 */，死要面子，建房子要建5层高楼;
+};
 
 class human_nature {
     /* 人的行为以物理、化学、经济学为基础
      */
     class physic;
+    class environment;
     class 概率与统计;
     class economic;     // 经济决定一切
 
@@ -86,7 +91,7 @@ int problem_solving()
 {
     problem = confliction = exception - curr_status;
     1 降低exception
-    2 解决confirmation
+    2 解决confliction
         1 便利的替代性活动
             提高逃避的成本: 删除电脑里所有的电影、游戏，剪断网线，把手机换成非智能机等等
         2 just_do_it() + delibrate_practice()
@@ -144,4 +149,13 @@ int decision_making()
     0 human_nature();
     1 human_nurture();
     2 how_we_decide = human_nurture - human_nature;
+}
+
+int timing()
+{
+    1 因为快而痛苦(应该从一味求快的心理惯性中跳出)
+    2 应该走一条自主选择并且可以一往无前的道路
+    3 时间的使用深度
+        时间不能分片
+        减少被动式休闲
 }

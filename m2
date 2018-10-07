@@ -164,6 +164,7 @@ function fn_000_黄晓捷谈在校学习()      { cat book_000_黄晓捷谈在�
                                           cat book_013_夜东坡谈读书和思考
                                           cat book_015_章亦春抄书的奥秘
                                           cat book_020_如何选书
+                                          cat book_how_to_read_a_book.md
                                         }
 
 function fn_012_李笑来人人都能用英语()  { cat book_012_李笑来人人都能用英语
@@ -307,8 +308,7 @@ function fn_poet()    	                { cat poet ;}
 function fn_personage()                 { cat personage ;}
 function fn_01_囧_jiong()               { cat 01_囧_jiong ;}
 
-function fn_howto()                     { cat howto_frame
-                                              zhangxiaomoo
+function fn_howto()                     { cat zhangxiaomoo
                                               subjects
                                               book_jj_精进.如何成为一个很厉害的人
                                               read_jj_精进.如何成为一个很厉害的人

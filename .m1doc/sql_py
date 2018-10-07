@@ -27,6 +27,34 @@ CREATE TABLE d1 (
     INDEX(code,date)
 );
 
+DROP TABLE IF EXISTS td2;
+CREATE TABLE td2 (
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    setl        DECIMAL(6,2)  NOT NULL,
+    open        DECIMAL(6,2)  NOT NULL,
+    high        DECIMAL(6,2)  NOT NULL,
+    low         DECIMAL(6,2)  NOT NULL,
+    close       DECIMAL(6,2)  NOT NULL,
+    volume      DECIMAL(12,2) NOT NULL DEFAULT 0,
+    INDEX(code)
+);
+
+DROP TABLE IF EXISTS nmc2;
+CREATE TABLE nmc2 (
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    pe          DECIMAL(12,2) NOT NULL,
+    tov         DECIMAL(12,2) NOT NULL,
+    pb          DECIMAL(12,2) NOT NULL,
+
+    ps_ratio    DECIMAL(12,2) NOT NULL,
+    pcf_ratio   DECIMAL(12,2) NOT NULL,
+    shares      DECIMAL(12,2) NOT NULL,
+    cap         DECIMAL(12,2) NOT NULL,
+    oing_cap    DECIMAL(12,2) NOT NULL,
+    INDEX(code)
+);
+
           
 CREATE TABLE nmcap (
     date        date NOT NULL, 
@@ -90,8 +118,8 @@ CREATE TABLE IF NOT EXISTS uni(
     INDEX(code)
 );
 
-DROP TABLE IF EXISTS 60zm;
-CREATE TABLE IF NOT EXISTS 60zm(
+DROP TABLE IF EXISTS zmd;
+CREATE TABLE IF NOT EXISTS zmd(
     date   date            NOT NULL DEFAULT 0,
     code   INT(6) ZEROFILL NOT NULL DEFAULT 0,
 
@@ -108,26 +136,23 @@ CREATE TABLE IF NOT EXISTS 60zm(
     top0   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  # bi0是上升笔时剔除，最新高点
     top1   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  #                    次新高点
     top2   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  #
+    topx   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  #
     cvg3   DECIMAL(6, 2)   NOT NULL DEFAULT 0,
     bot0   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  # bi0是上升笔时剔除，最新低点
     bot1   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  #                    次新低点
     botx   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  # botx=bot2, 默认3底以上最3底，后续可优化
 
     close  DECIMAL(6, 2)   NOT NULL DEFAULT 0,
-    ma20   DECIMAL(6, 2)   NOT NULL DEFAULT 0,
-    o      TINYINT         NOT NULL DEFAULT 0,  # osci, 当前笔的振荡数
-                                                # 未成笔K线数，(bi0 is ASC) ? +N : -N
-    z      TINYINT         NOT NULL DEFAULT 0,  # zor5, 最近5K中＞中枢上线的K线数
-                                                # 转折点价位
-                                                # (bi0 is DEC) ? bot0
-                                                #              : (o==1)?close:top(bi0)后的low
+    o      TINYINT         NOT NULL DEFAULT 0,  # 1     ASC创新高，idxmin()=0
+                                                # 2+    ASC形成上升笔后的振荡数(顶后min(low)计为0)
+                                                # -n    DSC形成下降笔后的振荡数
+    z      DECIMAL(6,2)    NOT NULL DEFAULT 0,  # 转折点价位，与o对应
+                                                # 1     close
+                                                # 2+    topx后的min(low)
+                                                # -n    bot0
+
     INDEX(date, code)
 );
-
-    alter table dzm change z z DECIMAL(6,2) NOT NULL DEFAULT 0;
-
-DROP TABLE IF EXISTS 30zm; CREATE TABLE IF NOT EXISTS 30zm LIKE 60zm;
-DROP TABLE IF EXISTS dzm ; CREATE TABLE IF NOT EXISTS  dzm LIKE 60zm;
 
 DROP TABLE IF EXISTS maxp;
 CREATE TABLE maxp (
@@ -195,8 +220,8 @@ CREATE TABLE q5 (
     INDEX(date,code)
 );
 
-DROP TABLE IF EXISTS vbot5;
-CREATE TABLE vbot5 (
+DROP TABLE IF EXISTS vbot;
+CREATE TABLE vbot (
     date        date NOT NULL, 
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
     L0          DECIMAL(6,2) NOT NULL DEFAULT 0,
