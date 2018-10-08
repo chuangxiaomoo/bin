@@ -622,6 +622,7 @@ function fn_log()                       { cat git_log ;}
 
 function fn_svn() {
 function fn_fundamental()               { cat svn_fundamental ;}
+function fn_conflict()                  { cat svn_conflict ;}
 function fn_cleanup()                   { cat svn_cleanup ;}
 function fn_lock()                      { cat svn_lock ;}
 function fn_help()                      { cat svn_help ;}
@@ -641,6 +642,7 @@ function fn_relocate()                  { cat svn_relocate ;}
         add
         lock
         cleanup
+        conflict
         revision
         stat
         diff

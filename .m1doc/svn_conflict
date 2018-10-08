@@ -1,0 +1,15 @@
+# >   local edit, incoming delete upon update
+# >   local delete, incoming delete upon update
+
+touch foo bar
+svn revert foo bar
+rm foo bar
+
+# >   local add, incoming add upon merge
+
+svn revert foo bar
+
+# >   local missing, incoming edit upon merge
+
+svn resolve --accept working ./path_of_file_or_dir
+
