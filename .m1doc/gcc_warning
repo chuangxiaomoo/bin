@@ -1,8 +1,7 @@
 # gcc_warning
 
--Wunused-function
-
-# gcc no warning
-
--Wno-unused-function
+CFLAGS += -Wno-unused
+CFLAGS += -Wno-unused-function
+CFLAGS += -Wno-unused-but-set-variable
+CFLAGS += -Wno-unused-variable
 
