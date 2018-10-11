@@ -8,8 +8,6 @@
 
     ~/bin/stk/.migrate.sh
 
-    mysql <<< "CREATE DATABASE kts"
-
 # 修改字体
 
     vi kts.sql
@@ -17,6 +15,7 @@
 
 # load
 
+    mysql <<< "CREATE DATABASE kts"
     mysql kts < /tmp/kts.sql
 
 # 兼容问题

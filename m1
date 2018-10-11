@@ -149,7 +149,7 @@ function fn_virtualbox()                { cat virtualbox vmware ;}
 
 function fn_linux()                     { 
 function fn_cron()                      { cat linux_cron ;}
-function fn_fundamental()               { cat linux_fundamental ;}
+function fn_release()                   { cat linux_release ;}
 function fn_kernel()                    { cat linux_kernel ;}
 function fn_ldd3()                      { cat linux_ldd3 ;}
 function fn_boot()                      { cat linux_boot ;}
@@ -164,7 +164,7 @@ function fn_memory()                    { cat linux_memory ;}
 function fn_aout()                      { cat linux_aout ;}
     local opts=(
         aout                            # a.out目标文件格式 & 程序员自我修养
-        fundamental
+        release
         kernel
         memory                          # 减少内存使用
         cron
@@ -1115,7 +1115,7 @@ function fn_refactoring()               { cat refactoring ;}
 function fn_postgresql()                { cat postgresql ;}
 
 function fn_mysql()                     { 
-function fn_base()                      { cat mysql_base ;}
+function fn_base()                      { cat mysql_install mysql_base ;}
 function fn_complete()                  { cat mysql_complete ;}
 function fn_migrate()                   { cat mysql_migrate ;}
 function fn_troubleshooting()           { cat mysql_troubleshooting ;}

@@ -1,0 +1,12 @@
+# rpm
+
+$ rpm -qa | grep -i mysql
+mysql-libs-5.1.73-8.el6_8.x86_64
+
+$ rpm -e `rpm -qa | grep -i mysql`
+
+# 删除依赖包
+$ yum remove -y mysql-libs          
+
+
+

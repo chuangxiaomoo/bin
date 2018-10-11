@@ -27,12 +27,18 @@ def pip_usage(argv):
     # pip 配置文件
     %APPDATA%\pip\pip.ini
 
+    # self-upgrade
+    pip3 install --upgrade pip
+
     # 安装 & 升级
     pip3 install pandas
     pip3 install --upgrade pandas
 
+    # 卸载
+    pip3 uninstall pandas
+
     # 查看已安装
-    pip list --format=columns
+    pip3 list --format=columns
 
     # 常用package
     pip install numpy

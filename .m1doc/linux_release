@@ -1,0 +1,9 @@
+# arch
+uname -a
+
+# 通用
+cat /etc/issue
+lsb_release -a
+
+# (针对redhat，Fedora)
+cat /etc/redhat-release
