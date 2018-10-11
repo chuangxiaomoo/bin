@@ -2,4 +2,7 @@
 
 [](https://github.com/JoinQuant/jqdatasdk)
 
-pip install git+https://github.com/JoinQuant/jqdatasdk.git
+pip install     git+https://github.com/JoinQuant/jqdatasdk.git
+
+# Upgrade
+pip install -U  git+https://github.com/JoinQuant/jqdatasdk.git
