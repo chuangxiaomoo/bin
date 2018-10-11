@@ -165,6 +165,7 @@ function fn_000_黄晓捷谈在校学习()      { cat book_000_黄晓捷谈在�
                                           cat book_015_章亦春抄书的奥秘
                                           cat book_020_如何选书
                                           cat book_how_to_read_a_book.md
+                                          cat book_redesign_设计中的设计.md
                                         }
 
 function fn_012_李笑来人人都能用英语()  { cat book_012_李笑来人人都能用英语
@@ -606,7 +607,7 @@ function fn_films()                     { cat videos movies
                                           cat subscript.yidaizongshi
                                         }
 
-function fn_logic()                     {
+function fn_logic()                     { cat logic_simple.md
 function fn_formal()                    { cat logic_formal ;}
 function fn_informal()                  { cat logic_informal ;}
 function fn_informal_wiki()             { cat logic_informal_wiki ;}
