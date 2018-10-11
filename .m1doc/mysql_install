@@ -9,4 +9,85 @@ $ rpm -e `rpm -qa | grep -i mysql`
 $ yum remove -y mysql-libs          
 
 
+# CentOS6.8手动安装MySQL5.6
+
+众所周知，mysql5.7推出后有很多没有填好的坑，对于老的系统和项目兼容性也存在问题，所以现在普遍的web项目还是应该跑在centos6.8+mysql5.6的环境之下，今天主要说一下mysql5.6如何编译安装的具体步骤。
+
+1.安装mysql5.6依存包
+
+2.下载编译包
+
+wget https://dev.mysql.com/get/Downloads/MySQL-5.6/mysql-5.6.35-linux-glibc2.5-x86_64.tar.gz
+tar xf mysql-5.6.35-linux-glibc2.5-x86_64.tar.gz
+
+3.复制到指定目录
+
+mv mysql-5.6.35-linux-glibc2.5-x86_64 /usr/local/mysql
+
+4.创建mysql用户和组
+
+groupadd mysql
+useradd -r -g mysql mysql -d /usr/local/mysql
+passwd mysql
+
+5.修改目录权限
+
+chown -R mysql:mysql /usr/local/mysql
+
+6.安装数据库
+
+su - mysql
+/usr/local/mysql/scripts/mysql_install_db --user=mysql --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data
+exit
+
+7.复制mysql配置文件
+
+cd /usr/local/mysql/support-files
+cp my-default.cnf /etc/my.cnf
+
+8.添加系统服务
+
+cp mysql.server /etc/init.d/mysql
+chkconfig mysql on
+
+9.添加环境变量
+
+vim /etc/profile
+
+在最下面添加
+
+export MYSQL_HOME="/usr/local/mysql"
+export PATH="$PATH:$MYSQL_HOME/bin"
+
+保存退出后，执行生效代码
+
+. /etc/profile
+
+10.启动mysql
+
+service mysql start
+
+11.设置root密码
+
+mysqladmin -u root password '123456'
+
+12.设置默认端口
+
+vim /etc/my.cnf
+
+    [mysqld]
+    basedir=/usr/local/mysql
+    datadir=/usr/local/mysql/data
+    port=3306
+    server_id=1
+    socket=/tmp/mysql.sock
+
+13.允许所有外部链接访问（可选）
+
+mysql -u root -p
+
+mysql命令行输入
+
+    GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '123456' WITH GRANT OPTION;
+    FLUSH PRIVILEGES;
 
