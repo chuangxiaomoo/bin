@@ -407,7 +407,7 @@ scmo()  {
     scp cdo:${1} ~/cdo 
 }
 
-cpcom() { mkdir -p /winc/Export/com/; rm -rf /winc/Export/com/*;     cp -a release/com/* /winc/Export/com/ ;}
+cpcom() { mkdir -p /winc/Export/com/; rm -rf /winc/Export/com/[^b]*;  cp -a release/com/* /winc/Export/com/ ;}
 cptar() { file=`ls release/tar/*.tgz`;touch  /winc/Export/com/force_dbg.txt
           mkdir -p /winc/Export/com/ ;rm -rf /winc/Export/com/*.tgz; cp -a $file         /winc/Export/com/ ;}
 cpffw() { file=`ls release/tar/*.ffw`;touch  /winc/Export/com/force_dbg.txt 
