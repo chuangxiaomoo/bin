@@ -166,6 +166,7 @@ function fn_000_黄晓捷谈在校学习()      { cat book_000_黄晓捷谈在�
                                           cat book_020_如何选书
                                           cat book_how_to_read_a_book.md
                                           cat book_redesign_设计中的设计.md
+                                          cat reed_redesign_设计中的设计.md
                                         }
 
 function fn_012_李笑来人人都能用英语()  { cat book_012_李笑来人人都能用英语
