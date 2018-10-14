@@ -18,7 +18,7 @@ $ yum remove -y mysql-libs
 2.下载编译包
 
 wget https://dev.mysql.com/get/Downloads/MySQL-5.6/mysql-5.6.35-linux-glibc2.5-x86_64.tar.gz
-tar xf mysql-5.6.35-linux-glibc2.5-x86_64.tar.gz
+tar zxf mysql-5.6.35-linux-glibc2.5-x86_64.tar.gz
 
 3.复制到指定目录
 
@@ -62,6 +62,11 @@ export PATH="$PATH:$MYSQL_HOME/bin"
 保存退出后，执行生效代码
 
 . /etc/profile
+
+vim ~/.editrc
+bind "^W" ed-delete-prev-word
+
+[本地使用跳过10~13](+/Access.denied mysql_base)
 
 10.启动mysql
 

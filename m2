@@ -110,7 +110,6 @@ function fn_WiMax_meeting()             { cat meeting huawei_WiMax_meeting
                                               TED
                                               health
                                               woop
-                                              qipashuo
                                         }
 #
 # Just like BRAIN sort KNOWLEDGE always, we need sort contineuously!
@@ -309,6 +308,13 @@ function fn_guang()    	                { cat guang ;}
 function fn_poet()    	                { cat poet ;}
 function fn_personage()                 { cat personage ;}
 function fn_01_囧_jiong()               { cat 01_囧_jiong ;}
+
+function fn_decide()                    { cat decide
+                                              decide_math
+                                              book_Rational_Choice_in_an_Uncertain_World.md
+                                              read_Rational_Choice_in_an_Uncertain_World.md
+                                              qipashuo
+}
 
 function fn_howto()                     { cat zhangxiaomoo
                                               subjects
