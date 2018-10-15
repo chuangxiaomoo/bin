@@ -1,12 +1,12 @@
 .markdown-here-wrapper {
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1.8em;
   letter-spacing: 0.1em;
 }
 
 
 pre, code {
-  font-size: 14px;
+  font-size: 12px;
   font-family: Roboto, 'Courier New', Consolas, Inconsolata, Courier, monospace;
   margin: auto 5px;
 }
@@ -20,7 +20,7 @@ code {
 }
 
 pre {
-  font-size: 15px;
+  font-size: 12px;
   line-height: 1.4em;
   display: block; !important;
 }
@@ -111,21 +111,21 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-  font-size: 24px !important;
+  font-size: 20px !important;
   border-bottom: 1px solid #ddd !important;
 }
 
 h2 {
-  font-size: 20px !important;
+  font-size: 18px !important;
   border-bottom: 1px solid #eee !important;
 }
 
 h3 {
-  font-size: 18px;
+  font-size: 16px;
 }
 
 h4 {
-  font-size: 16px;
+  font-size: 14px;
 }
 
 
@@ -158,7 +158,7 @@ table tr:nth-child(2n) {
 }
 
 table tr th, table tr td {
-  font-size: 16px;
+  font-size: 14px;
   border: 1px solid #CCC;
   margin: 0;
   padding: 5px 10px;
