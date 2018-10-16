@@ -76,6 +76,13 @@ L3  (116/12) = 9 x0.8 = 7.2
 
 人生是由选择构成的，而成功的投与成功的人生一样，都最终属于那些不断打磨且恪守优化策略的人——这毫无疑问。
 
+# 
+
+Best Time to buy a stock in a day
+
+[An Optimal Selling Strategy for Stock Trading Based on Predicting the Maximum Price](http://web.math.ku.dk/~jesper/research/selling.pdf)
+[Optimal selling time in stock market over a Önite time horizon](http://hkumath.hku.hk/~imr/IMRPreprintSeries/2010/IMR2010-13.pdf)
+
 # 透镜模型(线性统计模型) 
 
 另一个惊人的例子来自于Robert Libby（1976）。他让43名银行信贷人员（其中有些人是在资产高达40亿美元的银行中就职的高级信贷人员）预测60家公司中的哪30家在未来三年里即将因为财务报表问题破产。为了方便这些信贷人员做预测，这些公司的各种财务数据（线索）都会提供给他们，比如总资产中固定资产的比率。结果，人工判断的准确率只有75%，而基于同样数据的回归分析，其准确率达到82%。事实上，仅用`资产负债率`一项来进行回归分析，其准确率都能达到80%。

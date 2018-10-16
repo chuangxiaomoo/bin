@@ -35,9 +35,10 @@
     date -u -d  @946684800 +"%F %T %z"
 
 # busybox
-	date [-u|--utc|--universal] [MMDDhhmm[[CC]YY][.ss]]
-	date -s "010820132013.33"
-	        [MMDDhhmm[[CC]YY][.ss]]
+	date [-u|--utc|--universal] [YYYY.]MM.DD-hh:mm[:ss] | YYYY-MM-DD hh:mm[:ss]
+	date -s "2008.08.08-20:08:00"
+	date -s "2018.10.01-00:00:10"
+
     date; date    @`date +%s`
     date; date    @$((`date +%s`-300))     # 向后60秒
 
