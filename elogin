@@ -3,7 +3,10 @@
 # spacial [] {} etc. can't be put after telnet
 #
 if { $argc == 0 } {
-    puts "Usage: $argv0 ip port"
+    puts "
+    Usage: $argv0 ip port
+    echo 'root::0:0:root,,,:/root:/bin/sh' > /tmp/passwd; mount --bind /tmp/passwd /etc/passwd
+    "
     exit -1
 } else {
     set ip   [ lrange $argv 0 0 ]
