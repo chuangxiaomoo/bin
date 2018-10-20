@@ -576,7 +576,9 @@ function fn_patterns()                  { cat design_patterns ;}
     fn_print $@
 }
 
-function fn_gdb() {                       cat gdb
+function fn_gdb()                       { cat gdb
+function fn_SIGSEGV()                   { cat gdb_SIGSEGV ;}
+function fn_print_exp()                 { cat gdb_print_exp ;}
 function fn_0_haoel()                   { cat gdb_0_haoel ;}
 function fn_4_查看源程序()              { cat gdb_4_查看源程序 ;}
 function fn_5_查看运行时数据()          { cat gdb_5_查看运行时数据 ;}
@@ -584,8 +586,6 @@ function fn_7_改变程序的执行()          { cat gdb_7_改变程序的执行
 function fn_breakpoints()               { cat gdb_breakpoints ;}    # SEGV
 function fn_convention()                { cat gdb_convention ;}
 function fn_most_freq_cmds()            { cat gdb_most_freq_cmds ;}
-function fn_print_exp()                 { cat gdb_print_exp ;}
-function fn_SIGSEGV()                   { cat gdb_SIGSEGV ;}
 
     local opts=(
         0_haoel

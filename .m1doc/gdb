@@ -1,4 +1,4 @@
-# gdb
+/* gdb */
 
 [按操作顺序理解gdb](https://sourceware.org/gdb/onlinedocs/gdb/Mode-Options.html)
 
@@ -50,6 +50,11 @@ p.s.
     注意: 变量可能会被优化掉. 如下文的ret
     int ret;
     ret = function();
+
+# SIGSEGV
+
+    bt
+    p *scheduler
 
 # 源码操作
 

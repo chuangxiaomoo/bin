@@ -76,12 +76,42 @@ L3  (116/12) = 9 x0.8 = 7.2
 
 人生是由选择构成的，而成功的投与成功的人生一样，都最终属于那些不断打磨且恪守优化策略的人——这毫无疑问。
 
-# 
-
-Best Time to buy a stock in a day
+# Best Time to buy a stock in a day
 
 [An Optimal Selling Strategy for Stock Trading Based on Predicting the Maximum Price](http://web.math.ku.dk/~jesper/research/selling.pdf)
 [Optimal selling time in stock market over a Önite time horizon](http://hkumath.hku.hk/~imr/IMRPreprintSeries/2010/IMR2010-13.pdf)
+[](https://money.stackexchange.com/questions/69934/best-time-to-buy-a-stock-in-a-day)
+
+One of the biggest laws in economics is that if an opportunity is very profitable and is very easily `exploitable` even by complete beginners, then it will very soon stop being profitable. [^下跌的恐惧让机会变得不那么exploitable]
+
+That's how the market works. If you buy stock when it is at the lowest, then you are making money, but most of the time someone else is losing money. And if there was a magic hour of the day when buying would be the most profitable, then soon everybody would want to buy at that time and no one would want to sell anything, so the scheme would collapse.
+
+4 conditions:
+             /         \                  \                      /            /\             \                         /\                 -\
+           -/           -\                 -\                   /            /  \             -\                      /  \               /  \     -\
+         -/               -\                 -\               -/            /    \              -\                   /    \             /    \   /  \
+       -/                   -\                 -\           -/             /      \               -\          \     /                  /      \ /    \
+     -/                       -\                 \        -/              /        \                -\       / \   /                  /        v      \   /
+   -/                           -\                \     -/               /          \                 \     /   \ /                 -/                 \ /
+ -/                               -\               \  -/                /            \                 \ /-/     v                -/                    v
+/                                   -\              -/                 /              \                 v                        /
+(1)                                 (2)             (3)               (4)                               (5)                     (6)
+
+1 非常时期，个股与大盘存在足够套利空间时，
+  (2) 暴跌当日，没有机会
+  (5) 暴跌次日，大盘稳定，有机会
+2 平常时期，大盘无波动
+  (3)
+  (4)
+  (6)
+
+具体操作时间及线性回归(37.5%):
+1 11点是买到lowest的最大概率时间。
+  exploitable买点出现后稍逊即逝(**大量委托没有成交**)，如果10:30前出现lowest后，再次回归到max(10min)
+2 37.5×30min = 11 是突破max(10min)的买点
+3 最大振幅8%后，5%是回归点，二次回归即是买点
+4 **T出时间**，2点前后15min
+5 根据LVL2行情数据进行判断
 
 # 透镜模型(线性统计模型) 
 
