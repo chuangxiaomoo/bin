@@ -112,6 +112,7 @@ That's how the market works. If you buy stock when it is at the lowest, then you
 1 11点是买到lowest的最大概率时间。
   exploitable买点出现后稍逊即逝(**大量委托没有成交**)，如果10:30前出现lowest后，再次回归到max(10min)
 2 37.5×30min = 11 是突破max(10min)的买点
+  max(10min)也是ma20(min1)的点是高度重合，第一波反弹高点会在上一个ma20(min1) 2018-10-20.分众传媒.海康威视
 3 最大振幅8%后，5%是回归点，二次回归即是买点
 4 **T出时间**，2点前后15min
 5 根据LVL2行情数据进行判断
