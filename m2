@@ -238,7 +238,7 @@ function fn_list()                      { cat book_400_PoorCharliesAlmanack_穷�
                                               book_410_The_Sense_of_Style
                                         }
     local opts=(
-        list
+        list                            # 高兴的事
         cept
         wanna                           # 想读的书
         sunzi                           # 孙子兵法
@@ -311,13 +311,14 @@ function fn_01_囧_jiong()               { cat 01_囧_jiong ;}
 
 function fn_decide()                    { cat decide
                                               decide_math
+                                              decide_probability
                                               book_Rational_Choice_in_an_Uncertain_World.md
                                               read_Rational_Choice_in_an_Uncertain_World.md
                                               qipashuo
+                                              subjects
 }
 
 function fn_howto()                     { cat zhangxiaomoo
-                                              subjects
                                               book_jj_精进.如何成为一个很厉害的人
                                               read_jj_精进.如何成为一个很厉害的人
 function fn_01_提高逻辑思维能力()       { cat howto_01_提高逻辑思维能力 ;}
