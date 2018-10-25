@@ -9,6 +9,7 @@ alias dzorm='freq=d  zorm5.py'
 alias       ASC=''
 alias       BLK=''  # B被BLK独占for其超高频率使用
 alias      COND=''
+alias      Calc='set -f; /root/bin/Calc'
 alias      iASC=''
 alias     iCOND=''
 alias     kCOND=''

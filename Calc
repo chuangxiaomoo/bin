@@ -2,6 +2,8 @@
 
 function fn_main()
 {
+    set -f      # set noglob
+
     case $1 in
     s|sum)
         let sum=0
@@ -19,14 +21,14 @@ function fn_main()
         done
         echo $mul
         ;;
-    h|help)
+    ''|h|help)
         echo -e "\nUsage:"
+        echo -e "    <set -f> to disable \*"
         echo -e "    Calc {sum|mul} dig..."
-        echo -e "    Calc statements # SCALE=3\n"
+        echo -e "    Calc statements # SCALE=10\n"
         ;;
     *)
-        set -f
-        bc -l <<< "scale=${SCALE:-3}; $*"
+        echo "scale=${SCALE:-10}; $*" | bc -l 
         ;;
     esac
 }
