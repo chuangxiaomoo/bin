@@ -5,11 +5,12 @@ alias 3zorm='freq=30 zorm5.py'
 alias dzorm='freq=d  zorm5.py'
 
 # make sure no space b4 the 2nd '
+__noglob_calc() { /root/bin/calc "$@" ; set +f ;}
 
 alias       ASC=''
 alias       BLK=''  # B被BLK独占for其超高频率使用
 alias      COND=''
-alias      Calc='set -f; /root/bin/Calc'
+alias      Calc='set -f; __noglob_calc'
 alias      iASC=''
 alias     iCOND=''
 alias     kCOND=''
