@@ -35,12 +35,14 @@ function fn_main()
     filelist="${@:2}"
 
     case $1 in
-    a)  /usr/bin/find ! -name '.' -a -name '*' | xargs -I{} svn add --force {}  | cat -n    ;;
-    c)  svn ci $filelist                            && svn up                                ;;
-   cc)  fl=`Svn Sc | awk '{print $NF}'` ;svn ci $fl && svn up                                ;;
-    l)  [ -f "${2}" ] && filelist="5 ${@:2}"; svn log -v -l${filelist:-5}                   ;;
-   ll)  [ -f "${2}" ] && filelist="5 ${@:2}"; svn log    -l${filelist:-5}                   ;;
-    i)  svn info ${2:-.} | grep 'URL:' | sed 's/URL: /&\n/g'                                ;;
+    a)  /usr/bin/find ! -name '.' -a -name '*' | xargs -I{} svn add --force {}  | cat -n            ;;
+    c)  svn ci $filelist                            && svn up                                       ;;
+   cc)  fl=`Svn Sc | awk '{print $NF}'` ;svn ci $fl && svn up                                       ;;
+    l)  [ -f "${2}" ] && filelist="5 ${@:2}"; svn log -v -l${filelist:-5}                           ;;
+   ll)  [ -f "${2}" ] && filelist="5 ${@:2}"; svn log    -l${filelist:-5}                           ;;
+    i)  svn info ${2:-.} | grep 'URL:' | sed -e 's/URL: /&\n/g'                                     ;;
+   in)  svn info ${2:-.} | awk '/URL:/{print $2}' | \
+                           sed -e 's/^/svn relocate /g' -e 's/192.168.2.250/jabsco-svn/'            ;;
     U)  for U in ${filelist:-zhangj}; do regex="-e '/${U}/,/--$/p' ${regex}"; done
         eval "sed -n ${regex} < /dev/stdin"
         ;;

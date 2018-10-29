@@ -10,3 +10,8 @@
 6 kill -ABORT (valgrind strace stap)
   [获取Core时函数栈的方法](https://blog.csdn.net/jiang1013nan/article/details/20214705)
 
+# 琅琊榜.2018-10-29
+
+1 一周看完琅琊榜，连续4天凌晨4点才睡。
+2 去大拿调试chromecast(音频时间戳不均匀导致chromecast解码失败)，试验的设计非常重要。
+
