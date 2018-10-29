@@ -22,7 +22,7 @@ tar
 
     高级应用（可以单独抽取压缩包个的某几个文件）
 
-    tar -zxvf <tar filename> <file you want to extract>
+    tar -zxvf <tar filename> <file you want to extract>     # extract a single file
 
     tar [options] a.tar.gz
         filename1 [ filename2, ... filenameN ]
@@ -31,9 +31,9 @@ tar
     -t, --list
         列出存档中文件的目录
     -T, --files-from F
-        从文件中得到要展开或要创建的文件名
+        从指定文件中得到要创建的'文件名列表'
     -X, --exclude-from FILE
-        从指定文件中读入不想包含的文件的列表(做备份时很有用)
+        从指定文件中读入要排除的'文件的列表'(做备份时很有用)
 
     # 不备份 warehouse
     echo warehouse > /dev/shm/.tar.exclude
