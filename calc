@@ -17,9 +17,10 @@ function fn_main()
         done
         echo $mul
         ;;
-    eh|eH)
+    eh|eH|ef)
         min=`bc -l <<< "scale=0; $2 + (240-$2)*0.368/1" `
-        echo ${min} min after  09:30 AM, __buying__ @
+        [ "${1}" = ef ] && tag=fast
+        echo ${min} min after  09:30 AM, ${tag:-__buying__} @
         if [ "${min}" -lt 120 ]; then
             date --date="09:30:00 ${min} minute" +'%T'
         else
@@ -27,9 +28,10 @@ function fn_main()
             date --date="13:00:00 ${min} minute" +'%T'
         fi
         ;;
-    el|eL)
+    el|eL|es)
         min=`bc -l <<< "scale=0; 240 - ($2+(240-$2)*(1-0.368))/1"`
-        echo ${min} min before 03:00 PM, __selling__ @
+        [ "${1}" = es ] && tag=slow
+        echo ${min} min before 03:00 PM, ${tag:-__selling__} @
         if [ "${min}" -lt 120 ]; then
             date --date="15:00:00 ${min} minute ago" +'%T'
         else
@@ -42,8 +44,10 @@ function fn_main()
         echo "\
         Calc +  num...              # sum
         Calc x  num...              # multiple
-        Calc eH num...              # High time to get buy  minutes after  09:30 AM
-        Calc eL math_expression     # Low  time to get sell minutes before 03:00 PM
+        Calc eH min                 # High time to get buy  minutes after  09:30 AM
+        Calc eL min                 # Low  time to get sell minutes before 03:00 PM
+        Calc ef min                 # fast, 10:00 AM 前形成低点
+        Calc es min                 # slow
 
         <set -f> to disable \*
         SCALE=10 to set scale
