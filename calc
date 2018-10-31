@@ -11,19 +11,43 @@ function fn_main()
         echo $sum
         ;;
     x|m|mul)
-        # 取消使用通配符
-        set -f
         let mul=1
         for i in ${@:2}; do
             let mul=mul*$i
         done
         echo $mul
         ;;
+    eh|eH)
+        min=`bc -l <<< "scale=0; $2 + (240-$2)*0.368/1" `
+        echo ${min} min after  09:30 AM, __buying__ @
+        if [ "${min}" -lt 120 ]; then
+            date --date="09:30:00 ${min} minute" +'%T'
+        else
+            let min=min-120
+            date --date="13:00:00 ${min} minute" +'%T'
+        fi
+        ;;
+    el|eL)
+        min=`bc -l <<< "scale=0; 240 - ($2+(240-$2)*(1-0.368))/1"`
+        echo ${min} min before 03:00 PM, __selling__ @
+        if [ "${min}" -lt 120 ]; then
+            date --date="15:00:00 ${min} minute ago" +'%T'
+        else
+            let min=min-120
+            date --date="11:30:00 ${min} minute ago" +'%T'
+        fi
+        ;;
     ''|h|help)
         echo -e "\nUsage:"
-        echo -e "    <set -f> to disable \*"
-        echo -e "    Calc {+|x} num..."
-        echo -e "    Calc statements            # envvar: SCALE=10\n"
+        echo "\
+        Calc +  num...              # sum
+        Calc x  num...              # multiple
+        Calc eH num...              # High time to get buy  minutes after  09:30 AM
+        Calc eL math_expression     # Low  time to get sell minutes before 03:00 PM
+
+        <set -f> to disable \*
+        SCALE=10 to set scale
+        "
         ;;
     *)
         echo "scale=${SCALE:-10}; $*" | bc -l 

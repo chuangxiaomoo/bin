@@ -8,8 +8,9 @@
 
      [root@xm src]# echo scale=10 > ~/.bc
 
-2. /* command line */
-    echo "scale = 10; 0.2 * 0.1" | bc
+2. /使能scale
+    echo 'scale=2; (2.777 - 1.4744)/1' | bc 
+    1.30
 
 3. /* -l, --mathlib 
     * scale 自动被设置为 20，scale(3/2) = 20
