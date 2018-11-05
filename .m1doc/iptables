@@ -1,0 +1,47 @@
+#! /bin/bash
+
+# iptables 数据层次
+
+    #tables
+    filter(防火墙表，默认使用此表)
+    nat
+    mangle
+    raw
+    security
+        #chains
+        INPUT链 ：处理输入数据包。
+        OUTPUT链 ：处理输出数据包。
+        PORWARD链 ：处理转发数据包。
+        PREROUTING链 ：用于目标地址转换（DNAT）。
+        POSTOUTING链 ：用于源地址转换（SNAT）。
+            #rules
+                #target
+
+# operator: tables chains rules 
+
+增删改查
+
+# operator: target
+
+a user-defined chain (other than the one this  rule  is in), 
+    SHADOWSOCK
+one of the special builtin targets which decide the fate of the packet immediately, 
+    ACCEPT
+    DROP
+    QUEUE 
+    RETURN
+or an extension (see EXTENSIONS below).
+    ACCEPT ：接收数据包。
+    DROP ：丢弃数据包。
+    REDIRECT ：重定向、映射、透明代理。
+    SNAT ：源地址转换。
+    DNAT ：目标地址转换。
+    MASQUERADE ：IP伪装（NAT），用于ADSL。
+    LOG ：日志记录。
+
+# 保存规则到配置文件中
+
+cp /etc/sysconfig/iptables /etc/sysconfig/iptables.bak # 任何改动之前先备份，请保持这一优秀的习惯
+iptables-save > /etc/sysconfig/iptables
+cat /etc/sysconfig/iptables
+

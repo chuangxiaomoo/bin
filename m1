@@ -96,6 +96,7 @@ function fn_alibaba()                   { cat alibaba taobao ;}
 function fn_google()                    { cat google
                                               google.translate
                                               google.faq 
+                                              gfw
                                         }
 function fn_chrome()                    { cat chrome ;}
 
@@ -1348,7 +1349,7 @@ function fn_coffee()                    { cat web_coffee ;}
 }
 
 function fn_network()                   { 
-function fn_tcp.ip()                    { cat cat network_OSI七层与TCP.IP五层网络架构详解
+function fn_tcp.ip()                    { cat network_OSI七层与TCP.IP五层网络架构详解
                                           cat network_集线器、交换机、路由器、网桥、网关之间的区别 ;}
 function fn_bonding()                   { cat network_bonding ;}
 function fn_WiFi()                      { cat network_WiFi ;}
@@ -1389,6 +1390,11 @@ function fn_algorithm() {
         algo_heap               # 树的数组对象
         algo_memorypool
     )
+}
+
+function fn_iptables()
+{
+    cat iptables.sh             # iptables
 }
 
 function fn_main() {
@@ -1443,6 +1449,7 @@ function fn_main() {
         hotspot                 # wifi便携热点设置
         ideas                   # innovate 创新
         info
+        iptables
         j2box
         java
         jco
