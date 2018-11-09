@@ -34,8 +34,9 @@ app:
 	#gcc -o ./a.out main.o  -L. -lxx 
 	gcc -o ./b.out main.o  -L. -loo
 
+# man ld 查看更多细节
 $(SOLIB): $(OBJLIB)
-	$(CC) $(SO_CFLAGS)$(SOLIB) -o $(SOLIB_VERSION) -Wl,--whole-archive $^ -Wl,--no-whole-archive
+	$(CC) $(SO_CFLAGS)$(SOLIB) -o $(SOLIB_VERSION) -Wl,-whole-archive $^ -Wl,-no-whole-archive
 
 
 $(LINK_4_SONAME): $(SOLIB_VERSION)
