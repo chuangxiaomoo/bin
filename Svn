@@ -9,7 +9,7 @@ function fn_usage()
         i       [path]                  : svn info .
         c|cc    [filepath]              : svn ci [files...]
         cf                              : show conflict resolving steps
-        D       {?|M}
+        D       {?|M|.o}
         d       [-r9527] [filepath]     : equal diff -r BASE:WORKING
         dp      [filepath]              : equal diff -r PREV:COMMITTED
         dc      r9527 [filepath]        : equal diff -r r9526:r9527
@@ -64,12 +64,16 @@ function fn_main()
         "
         ;;
     D)
-        {
-        echo "Deleting: "
-        exclude="INSTALL|cscope|.make\>"
-        svn status | grep -v -E "${exclude}" | grep "^${filelist:-?}" | tee /dev/stderr |\
-            awk '{print $2}' | xargs -I{} rm -rf {}
-        } 2>&1 | sed 's/^/\t/g'
+        case $2 in
+       .o)  echo "del *.o"; find -name '*.o' | xargs rm -f ;;
+        *)  {
+            echo "Deleting: "
+            exclude="INSTALL|cscope|.make\>"
+            svn status | grep -v -E "${exclude}" | grep "^${filelist:-?}" | tee /dev/stderr |\
+                awk '{print $2}' | xargs -I{} rm -rf {}
+            } 2>&1 | sed 's/^/\t/g'
+            ;;
+        esac
         ;;
     d)  svn diff $filelist ;;
     dc) svn diff -c${filelist} ;;
