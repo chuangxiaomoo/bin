@@ -7,6 +7,7 @@ function fn_usage()
         ----------- Usage --------------
         a       find ! -name '.' -a -name '*' | xargs -I{} svn add --force {}  | cat -n
         i       [path]                  : svn info .
+        in                              : svn relocate ip to HOSTNAME
         c|cc    [filepath]              : svn ci [files...]
         cf                              : show conflict resolving steps
         D       {?|M|.o}
