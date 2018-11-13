@@ -123,6 +123,32 @@ CREATE TABLE IF NOT EXISTS zmd(
     date   date            NOT NULL DEFAULT 0,
     code   INT(6) ZEROFILL NOT NULL DEFAULT 0,
 
+    lo3    DECIMAL(6, 2)   NOT NULL DEFAULT 0,
+    n3     TINYINT         NOT NULL DEFAULT 0,
+    lo2    DECIMAL(6, 2)   NOT NULL DEFAULT 0,  # 中枢下线
+    n2     TINYINT         NOT NULL DEFAULT 0,  # count(顶)
+    hi1    DECIMAL(6, 2)   NOT NULL DEFAULT 0,
+    lo1    DECIMAL(6, 2)   NOT NULL DEFAULT 0,
+    n      TINYINT         NOT NULL DEFAULT 0,
+
+    top0   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  # bi0是上升笔时剔除，最新高点
+    top1   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  #                    次新高点
+    top2   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  #
+    cvg3   DECIMAL(6, 2)   NOT NULL DEFAULT 0,
+    bot0   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  # bi0是上升笔时剔除，最新低点
+    bot1   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  #                    次新低点
+    botx   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  # botx=bot2, 默认3底以上最3底，后续可优化
+
+    hi0    DECIMAL(6,2)    NOT NULL DEFAULT 0,  # 当日high
+    lo0    DECIMAL(6,2)    NOT NULL DEFAULT 0,  # 当日low
+
+    INDEX(date, code)
+);
+
+CREATE TABLE IF NOT EXISTS zmd0(
+    date   date            NOT NULL DEFAULT 0,
+    code   INT(6) ZEROFILL NOT NULL DEFAULT 0,
+
     hi3    DECIMAL(6, 2)   NOT NULL DEFAULT 0,
     lo3    DECIMAL(6, 2)   NOT NULL DEFAULT 0,
     n3     TINYINT         NOT NULL DEFAULT 0,

@@ -30,3 +30,15 @@ bind '"\C-x\C-x": beginning-of-line'
 c-a :             命令模式
 c-a :sessionname  查看Session
 c-a k             杀自己
+
+# put an already-running process under nohup
+
+Ctrl+Z  to stop (pause) the program and get back to the shell.
+bg      to run it in the background.
+jobs
+disown -h <job-spec> where <job-spec> is the job number (like %1 for the first running job)
+
+or
+
+kill -20 PID  # sig stop 
+kill -18 PID  # sig continue
