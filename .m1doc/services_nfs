@@ -48,3 +48,8 @@ apt-get install nfs-kernel-server
     "echo /mnt/core-%e-%p-%t > /proc/sys/kernel/core_pattern;"
     "cat  /proc/sys/kernel/core_pattern");
 
+*5.6* u-boot
+
+setenv nfsroot $(ipaddr):/home/zhanh/mstar/313msPro/313iePro/filesys/filesys_normal,nolock;
+setenv bootargs noinitrd init=/init console=ttyS0,115200n8r root=/dev/nfs rw nfsroot=$(nfsroot) ip=$(ipaddr) ethaddr=$(ethaddr) sensor=SC3035 cpu=MSC318 flash=SF maxheight=1080
+
