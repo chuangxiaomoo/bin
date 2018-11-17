@@ -971,7 +971,7 @@ function fn_04_责任与中年危机()         { cat family_04_责任与中年�
 function fn_ideas()                     { cat ideas ;}
 function fn_idealism()                  { cat idealism ;}
 function fn_rose()                      { cat rose ;}
-function fn_interview()                 { cat career 50_faq tek jd interview ;}
+function fn_interview()                 { cat career 50_faq tek jd job interview ;}
 
 function fn_influence()                 {
 function fn_cept()                      { cat influence_cept ;}
