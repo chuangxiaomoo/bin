@@ -1,4 +1,6 @@
-# SYNOPSIS
+#! /bin/sh
+
+[netfilter工作流程](http://xstarcd.github.io/wiki/Linux/iptables_forward_internetshare.html)
 
 iptables -t 表名 <-A/I/D/R> 规则链名 [规则号] 
          <-i/o 网卡名> -p 协议名 

@@ -3648,6 +3648,7 @@ Zajonc, R.B.(1980).Feeling and thinking: Preferences need no inferences.American
 
 # 第14章　赞美不确定性
 
+[](+/审美的四重境界 note)
 
 教导人们在不确定情境下的生存之道，使人们不至于因犹豫不决而不知所措。
 
