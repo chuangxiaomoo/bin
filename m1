@@ -610,6 +610,7 @@ function fn_diff()                      { cat git_diff ;}
 function fn_config()                    { cat git_config ;}
 function fn_subconf()                   { cat git_subconf ;}
 function fn_log()                       { cat git_log ;}
+function fn_proxy()                     { cat git_proxy ;}
     local opts=(
         github                  # create 或 pull 一个项目 from github.com 
         config                  # ln -sf ~/bin/.m1doc/git_config .gitconfig
@@ -617,6 +618,7 @@ function fn_log()                       { cat git_log ;}
         diff                    # 
         svndiff                 # 与svn比较
         log
+        proxy
     )
     fn_print $@
 }
