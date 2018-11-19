@@ -16,7 +16,6 @@
 # 交易的哲学3     .doc/charlie_munger_invert.md
 # 交易的哲学4     .doc/xiaolai.md
 
-# 量子力学        .doc/quantum_meCHANics.md
 # 行为心理学      .doc/behaviorism.md
 # 想看的书        .doc/books.md                 -- 英文学习上日程
 # 本质论          .doc/essential.md             -- 我是谁？从哪来？到哪去？ 曹山石
