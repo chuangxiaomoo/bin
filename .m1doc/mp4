@@ -1,0 +1,19 @@
+# mp4
+
+[](https://developer.apple.com/library/archive/documentation/QuickTime/QTFF/QTFFChap2/qtff2.html)
+
+Table 2-5  Contents of complete compressed movie [](Sample organization of a one-track video movie)
+
+| Atom type             | Four-character code |
+| :------               | :------             |
+| Movie                 | 'moov'              |
+| Compressed movie      | 'cmov'              |
+| Data compression atom | 'dcom'              |
+| Compressed movie data | 'cmvd'              |
+| 32-bit integer        | Uncompressed size   |
+
+# 解析工具
+
+[MP4文件分析器(MP4INFO)](http://soft.hao123.com/soft/appid/39923.html)
+
+#

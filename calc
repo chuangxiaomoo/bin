@@ -44,10 +44,10 @@ function fn_main()
         echo "\
         Calc +  num...              # sum
         Calc x  num...              # multiple
-        Calc eH min                 # High time to get buy  minutes after  09:30 AM
-        Calc eL min                 # Low  time to get sell minutes before 03:00 PM
-        Calc ef min                 # fast, 10:00 AM 前形成低点
-        Calc es min                 # slow
+
+        Calc {eH|ef} minutes        # fast .367, High time to get buy  minutes after  09:30 AM
+        Calc {eL|es} minutes        # slow .633, Low  time to get sell minutes before 03:00 PM
+                                    # 09:30 低开机率70%, 10:05 11:00 14:00 14:35
 
         <set -f> to disable \*
         SCALE=10 to set scale
