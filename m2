@@ -313,6 +313,7 @@ function fn_decide()                    { cat decide
                                               decide_math
                                               decide_probability
                                               book_Rational_Choice_in_an_Uncertain_World.md
+                                              book_xue_薛兆丰经济学讲义.md
                                               read_Rational_Choice_in_an_Uncertain_World.md
                                               qipashuo
                                               subjects
