@@ -578,7 +578,8 @@ function fn_patterns()                  { cat design_patterns ;}
 }
 
 function fn_gdb()                       { cat gdb
-function fn_SIGSEGV()                   { cat gdb_SIGSEGV ;}
+function fn_SIGSEGV()                   { cat gdb_SIGSEGV
+                                              gdb_SIGBUS ;}
 function fn_print_exp()                 { cat gdb_print_exp ;}
 function fn_0_haoel()                   { cat gdb_0_haoel ;}
 function fn_4_查看源程序()              { cat gdb_4_查看源程序 ;}

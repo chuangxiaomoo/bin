@@ -1,0 +1,35 @@
+/* SIGBUS */
+
+#define MALLOC
+
+https://www.geeksforgeeks.org/segmentation-fault-sigsegv-vs-bus-error-sigbus/
+
+// On most architectures I've used, the distinction is that:
+//   a SEGV is caused when you access memory you're not meant to (e.g., outside of your address space).
+//   a SIGBUS is caused due to alignment issues with the CPU (e.g., trying to read a long from an address which isn't a multiple of 4).
+
+int main(int argc, char **argv)
+{
+    /* malloc() always provides aligned memory */
+    char *cptr = malloc(sizeof(int) + 1); 
+      
+    /* Increment the pointer by one, making it misaligned */
+    int *iptr = (int *) ++cptr; 
+  
+    /* Dereference it as an int pointer, causing an unaligned access */
+    *iptr = 42; 
+}
+
+#define MMAP
+
+SIGBUS will also be raised if you mmap() a file and attempt to access part of the mapped buffer that extends past the end of the file,
+       as well as for error conditions such as out of space.
+       If you register a signal handler using sigaction() and you set SA_SIGINFO, 
+       it may be possible to have your program examine the faulting memory address and handle only memory mapped file errors.
+
+在升级过程中，如有引用文件 libgcc_s.so.1 中的 open() close() 等操作，
+同时又需要更新 libgcc_s.so.1 所在的分区，这时，便出现了矛盾。 
+
+解决方案:
+1 如可完成任务，尽量不使用 libgcc_s.so.1 中的内容
+2 使用 LD_LIBRARY_PATH 重新指向 /tmp/libgcc_s.so.1
