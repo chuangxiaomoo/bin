@@ -210,7 +210,6 @@ function fn_103_雷军的第二个四年()      { cat book_103_雷军的第二�
 function fn_104_罗永浩天生骄傲()        { cat book_104_罗永浩天生骄傲 ;}
 
 function fn_200_逃不开的经济周期()      { cat book_200_逃不开的经济周期 ;}
-function fn_201_经济学通识()            { cat book_201_经济学通识 ;}
 function fn_202_苏黎世投机定律()        { cat book_202_苏黎世投机定律 ;}
 
 function fn_303_论证是一门学问()        { cat book_303_论证是一门学问 ;}
@@ -272,7 +271,6 @@ function fn_list()                      { cat book_400_PoorCharliesAlmanack_穷�
         104_罗永浩天生骄傲              # kaiwu
 
         200_逃不开的经济周期
-        201_经济学通识                  # xuezhaofeng
         202_苏黎世投机定律
 
         303_论证是一门学问
@@ -314,6 +312,7 @@ function fn_decide()                    { cat decide
                                               decide_probability
                                               book_Rational_Choice_in_an_Uncertain_World.md
                                               book_xue_薛兆丰经济学讲义.md
+                                              book_201_经济学通识.md
                                               read_Rational_Choice_in_an_Uncertain_World.md
                                               qipashuo
                                               subjects
