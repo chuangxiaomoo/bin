@@ -1264,12 +1264,10 @@ function fn_begin()                     {
 function fn_language()                  { cat begin_language ;}
 function fn_melody()                    { cat begin_melody ;}
 function fn_tool()                      { cat begin_tool ;}
-function fn_task()                      { cat begin_task ;}
     local opts=(
         language                        # 新编程语言
         melody                          # 新曲子 -- 一架三角钢琴
         tool                            # 新工具
-        task                            # 新任务
     )
     fn_print $@
 }
