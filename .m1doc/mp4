@@ -4,16 +4,28 @@
 
 Table 2-5  Contents of complete compressed movie [](Sample organization of a one-track video movie)
 
-| Atom type             | Four-character code |
-| :------               | :------             |
-| Movie                 | 'moov'              |
-| Compressed movie      | 'cmov'              |
-| Data compression atom | 'dcom'              |
-| Compressed movie data | 'cmvd'              |
-| 32-bit integer        | Uncompressed size   |
+| Atom type             | Four-character code |                                  |
+| :------               | :------             | :------                          |
+| media data atom       | 'mdat'              |                                  |
+| Movie, metadata atom  | 'moov'              | metadata在后，下载完成才可以播放 |
+| Compressed movie      | 'cmov'              |                                  |
+| Data compression atom | 'dcom'              |                                  |
+| Compressed movie data | 'cmvd'              |                                  |
+| 32-bit integer        | Uncompressed size   |                                  |
 
 # 解析工具
 
 [MP4文件分析器(MP4INFO)](http://soft.hao123.com/soft/appid/39923.html)
+[本质是层级树.MP4文件格式分析及分割实现(附源码)](https://blog.csdn.net/u013898698/article/details/77152347)
 
-#
+# 一些问题
+
+解决问题最好的方法是diff，修复后的音频无法播放，diff后就知道问题在哪里了。
+
+[38个问题](http://www.52rd.com/Blog/wqyuwss/559/)
+
+# 0. 如何边下载边播放？
+
+[](https://blog.csdn.net/peckjerry/article/details/43021629)
+使用nginx搭建http mp4/flv流媒体服务器，要求mp4文件moov atom要放置在mdat atom前，才能边下载边播放
+
