@@ -1,5 +1,53 @@
 /* SIGBUS */
 
+// 返回子进程的退出码
+
+int UtilSystemCmd(const char *szCmd)
+{
+    pid_t pid = 0;
+    int ret = SUCCESS;
+    int nRetry = 5;
+
+    if (NULL == szCmd) {
+        return FAILURE;
+    }
+
+    while (0 < nRetry--) {
+        if (0 > (pid = vfork())) {
+            sleep(1);
+        } else {
+            break;
+        }
+    }
+
+    if (0 > pid) {
+        DBG("fork failed retry=%d\n", nRetry);
+        ret = FAILURE;
+    } else if (0 == pid) {
+        int fd;
+
+        for(fd=3; fd < getdtablesize(); fd++)
+            close(fd);
+
+		execl("/bin/sh", "sh", "-c", szCmd, NULL);
+        exit(127);
+    } else {
+        while (0 > waitpid(pid, &ret, 0)) {
+            if (EINTR != errno) {
+                ret = FAILURE;
+                break;
+            }
+        }
+    }
+
+    if (WIFEXITED(ret)) {
+        printf("normal\n");
+        return WEXITSTATUS(ret);
+    } else {
+        return -1;
+    }
+}
+
 #define MALLOC
 
 https://www.geeksforgeeks.org/segmentation-fault-sigsegv-vs-bus-error-sigbus/
@@ -33,3 +81,38 @@ SIGBUS will also be raised if you mmap() a file and attempt to access part of th
 解决方案:
 1 如可完成任务，尽量不使用 libgcc_s.so.1 中的内容
 2 使用 LD_LIBRARY_PATH 重新指向 /tmp/libgcc_s.so.1
+
+#define ELF装载 load_elf_binary
+
+readelf -l elf_binary
+
+在二进制映像中，只有类型为PT_LOAD的段才是需要装入的。当然在装入之前，需要确定装入的地址，只要考虑的就是页面对齐，还有该段的p_vaddr域的值（上面省略这部分内容）。
+确定了装入地址后，就通过elf_map()建立用户空间虚拟地址空间与目标映像文件中某个连续区间之间的映射，其返回值就是实际映射的起始地址。
+--------------------- 
+[ELF文件的加载过程.load_elf_binary函数详解]( https://blog.csdn.net/gatieme/article/details/51628257 )
+
+#define Linux对内存的管理 map().pagefault.swapin.swapout
+
+由MMU把物理内存分割成众多个page，每个page是4KB.然后把page映射到进程的虚拟内存空间.CPU在执行进程中的指令时，以虚拟内存地址为基础，通过map映射，进而找到物理内存中实际存放指令的地址.
+当cpu在执行指令时，如果发现下一条要执行的指令不在实际的物理内存page中时，CPU就会raise_a_pagefault，通知MMU把下面要执行的指令从磁盘加载到物理内存page中.
+当物理内存不够时，把一些物理内存page中的内容写入到磁盘， 以腾出一些空闲的page出来供进程使用, 这就是swap out.
+当CPU要执行的指令被发现已经swap out到了磁盘中， 这时就需要从磁盘把这些指令再swap in到物理内存中，让CPU去执行.
+
+--------------------- 
+https://www.jianshu.com/p/f9b8c139c2ed
+
+#define C库.vs.系统调用 (libgcc_s.so libgcc_s.so.1)
+
+C库实现了 Unix系统的主要 API，包括标准C库函数/*stdlib.h*/和系统调用/*unistd.h*/
+
+#define 升级
+
+核心概念:
+1 mmap
+2 load_elf_binary load_shlib 在执行前完成
+
+#define envrion exex
+
+1 man envrion 查看 exec() 的 EXAMPLE
+2 exec() 系列配合 vfork() 使用，可以保持 pid 不变。
+

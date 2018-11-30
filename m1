@@ -1446,6 +1446,7 @@ function fn_main() {
         grep
         http                    # boa GET POST
         hudson
+        make
         mp4                     # GOOGLE `mp4 sample` to get sample file
         hotspot                 # wifi便携热点设置
         ideas                   # innovate 创新

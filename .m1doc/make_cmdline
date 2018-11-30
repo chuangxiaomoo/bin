@@ -1,10 +1,13 @@
 # cmdline
 
-
 make NEOFLAG=-D__NEO_DESK_DOME__
 
 当变量值为C标识符时，请用引号引起来，否则解析会有问题
 -DCOMPILE_DATE=\"20130104\"
+
+make target FOO=bar
+
+Makefile 内部所有对 FOO 的赋值都将被过滤，也就是说，`命令行的赋值优先级最高`
 
 # 通过命令行设置的变量在整个make作用范围内都是有效的，make -C 进到子Makefile同样生效。
 
