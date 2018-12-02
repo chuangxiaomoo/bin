@@ -1,0 +1,11 @@
+# start or stop
+
+sudo service smbd start   
+
+# To remove it from rc.d file use the command
+
+sudo update-rc.d -f smbd remove
+
+# To restore it to rc.d use the command
+
+sudo update-rc.d smbd defaults

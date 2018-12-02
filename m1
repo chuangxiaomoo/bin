@@ -1098,7 +1098,7 @@ function fn_cppncss()                   { cat CC_cppncss ;}
 
 function fn_apt-get()                   {
 function fn_source()                    { cat apt-get_source ;}
-function fn_command()                   { cat apt-get_command ubuntu centos ;}
+function fn_command()                   { cat apt-get_command ubuntu ubuntu.services centos ;}
     local opts=(
         source
         command

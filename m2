@@ -471,6 +471,7 @@ function fn_gsq_房价什么情况下会崩()    { cat article_gsq_房价什么�
                                           cat article_305_25岁听到的经验40岁才懂
                                           cat article_306_gaoshanwen_shanxi30
                                           cat article_307_社会分层的意义与思考
+                                          cat article_308_十二生肖兽首.md
                                         }
 
     local opts=(
