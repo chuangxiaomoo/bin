@@ -9,6 +9,10 @@
     ALTER TABLE table_name ADD col_name  int(4) not null;
     ALTER TABLE mat_ma1020 ADD vax3      DECIMAL(12,2) NOT NULL DEFAULT 0;
 
+. 添加列 to sepcific location 
+    ALTER TABLE myTable ADD myNewColumn VARCHAR(255) AFTER myOtherColumn;
+    ALTER TABLE d1 ADD avrg DECIMAL(6,2) NOT NULL DEFAULT 0 AFTER close;
+
 . 删除列
     ALTER TABLE table_name DROP COLUMN column_name
 
@@ -24,9 +28,9 @@
     alter table tbl_name change id id1 varchar(10) not null;
     alter table mat_dde change speed speed DECIMAL(8,2) NOT NULL;
 
-. 改变列属性    
+. 改变列属性(NULL 时不可改变属性和type)    
     ALTER TABLE min2 MODIFY code INT(6) ZEROFILL;
-
+    ALTER TABLE d1 MODIFY avrg DECIMAL(6,2) NOT NULL DEFAULT 0;
 
 . 创建索引
     alter table test add index (cn,id);

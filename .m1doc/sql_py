@@ -17,11 +17,11 @@ CREATE TABLE d1 (
     ma20        DECIMAL(6,2)  NOT NULL DEFAULT 0,
     ma60        DECIMAL(6,2)  NOT NULL DEFAULT 0,
 
-    hsl20       DECIMAL(12,2) NOT NULL DEFAULT 0, 
-    v3_10       DECIMAL(12,2) NOT NULL DEFAULT 0,  
-    v5_20       DECIMAL(12,2) NOT NULL DEFAULT 0, 
-    vd_30       DECIMAL(12,2) NOT NULL DEFAULT 0,
-    vt_60       DECIMAL(12,2) NOT NULL DEFAULT 0,
+    hsl20       DECIMAL(6,2)  NOT NULL DEFAULT 0, 
+    v3_10       DECIMAL(6,2)  NOT NULL DEFAULT 0,  
+    v5_20       DECIMAL(6,2)  NOT NULL DEFAULT 0, 
+    vd_30       DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    vt_60       DECIMAL(6,2)  NOT NULL DEFAULT 0,
 
     INDEX(code,date)
 );
@@ -36,8 +36,21 @@ CREATE TABLE td2 (
     low         DECIMAL(6,2)  NOT NULL,
     close       DECIMAL(6,2)  NOT NULL,
     volume      DECIMAL(12,2) NOT NULL DEFAULT 0,
+    avrg        DECIMAL(6,2) NOT NULL DEFAULT 0,
     INDEX(code)
 );
+
+DROP TABLE IF EXISTS avg;
+CREATE TABLE avg (
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    volume      DECIMAL(12,2) NOT NULL DEFAULT 0,
+    avrg        DECIMAL(6,2) NOT NULL DEFAULT 0,
+    INDEX(code)
+);
+LOAD DATA LOCAL INFILE '/pycharm/data/td2.100' INTO TABLE avg;
+UPDATE d1 d, avg v SET d.avrg=v.avrg WHERE d.date=v.date && d.code=v.code;
+
 
 DROP TABLE IF EXISTS nmc2;
 CREATE TABLE nmc2 (
@@ -244,6 +257,30 @@ CREATE TABLE q5 (
     q5          TINYINT       NOT NULL DEFAULT 0,
     rock        TINYINT       NOT NULL DEFAULT 0,    # p1>p2 or p1>p3 Diamond-Bottom-Price(rock bottom prices)
     INDEX(date,code)
+);
+
+DROP TABLE IF EXISTS i5;
+CREATE TABLE i5 (
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    setl        DECIMAL(6,2) NOT NULL DEFAULT 0,
+    open        DECIMAL(6,2) NOT NULL DEFAULT 0,
+    high        DECIMAL(6,2) NOT NULL DEFAULT 0,
+    low         DECIMAL(6,2) NOT NULL DEFAULT 0,
+    close       DECIMAL(6,2) NOT NULL DEFAULT 0,
+    vd_30       DECIMAL(6,2) NOT NULL DEFAULT 0,
+    vt_60       DECIMAL(6,2) NOT NULL DEFAULT 0,
+    hi          DECIMAL(6,2) NOT NULL DEFAULT 0,    # min(high)
+    lo          DECIMAL(6,2) NOT NULL DEFAULT 0,    # min(low)
+    avrg        DECIMAL(6,2) NOT NULL DEFAULT 0,    # min(low) 对应的 min(avrg)
+    i           TINYINT      NOT NULL DEFAULT 0,    # 0, 无包含关系; n in [1,2,3,4], 第 Kn 被 K(n-1...4) 包含
+    INDEX(date,code)
+);
+
+CREATE TEMPORARY TABLE j5 (
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    i           TINYINT      NOT NULL DEFAULT 0, 
+    INDEX(code)
 );
 
 DROP TABLE IF EXISTS vbot;

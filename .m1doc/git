@@ -6,6 +6,8 @@
   vi .gitignore
   Git a
 
+  git rm --cached after_init_append_file_to_.gitignore
+
 # 选择github
 
   [如何高效利用GitHub](http://www.yangzhiping.com/tech/github.html#q7)
