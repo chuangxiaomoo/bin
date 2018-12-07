@@ -463,7 +463,8 @@ function fn_112_我们何需抱怨被误解()    { cat article_112_我们何需�
 
 function fn_201_“非上帝投机者”的自赎()  { cat article_201_“非上帝投机者”的自赎 ;}
 
-function fn_gsq_房价什么情况下会崩()    { cat article_gsq_房价什么情况下会崩
+function fn_gsq_房价什么情况下会崩()    { cat gushequ
+                                          cat article_gsq_房价什么情况下会崩
                                           cat article_301_财富公式之亿万钱财
                                           cat article_302_史上最中肯的投资建议
                                           cat article_303_怎么应付朋友借钱
@@ -506,8 +507,6 @@ function fn_gsq_房价什么情况下会崩()    { cat article_gsq_房价什么�
         112_我们何需抱怨被误解
 
         201_“非上帝投机者”的自赎
-
-        gsq_房价什么情况下会崩          # 股社区
     )
     fn_print $@
 }
