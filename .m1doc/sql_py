@@ -26,6 +26,44 @@ CREATE TABLE d1 (
     INDEX(code,date)
 );
 
+DROP TABLE IF EXISTS f30;
+CREATE TABLE f30 (
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    o1          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    h1          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    l1          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    c1          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    o2          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    h2          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    l2          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    c2          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    o3          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    h3          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    l3          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    c3          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    o4          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    h4          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    l4          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    c4          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    o5          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    h5          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    l5          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    c5          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    o6          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    h6          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    l6          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    c6          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    o7          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    h7          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    l7          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    c7          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    o8          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    h8          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    l8          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    c8          DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    INDEX(code)
+);
+
 DROP TABLE IF EXISTS td2;
 CREATE TABLE td2 (
     date        date NOT NULL, 
