@@ -15,8 +15,10 @@ loop       |while [ ${i:=0} -lt ${#list[@]} ]; do  |  for (( i=0; i<0; i+=1 )); 
 LINENO     |xt_ret $? "-$LINENO-"                  |  xt_ret 自动获取 caller -${BASH_LINENO[0]}-  |
            |                                       |                                              |
 FUNCNAME   |$0 在 function fn_main 格式下有效      |                                              |
+PROMPT     |                                       |                                              |  busybox:CONFIG_FEATURE_EDITING_FANCY_PROMPT=y
            |                                       |                                              |
-           |                                       |                                              |
+${var#}    |                                       |                                              |  支持
+${var%}    |                                       |                                              |  支持
 ${var##}   |                                       |                                              |  不支持正则，内建`Shell Patterns`
 ${var%%}   |                                       |                                              |
 ${var// */}|不支持 等价替换 sed 's///g'            |                                              |  不支持 等价替换 sed 's///g'

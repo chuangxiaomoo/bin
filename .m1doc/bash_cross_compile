@@ -29,6 +29,11 @@ LDFLAGS="-Wl,-gc-sections" CFLAGS="-g -O2 -ffunction-sections -fdata-sections" C
 du -sk parted/parted
 arm-buildroot-linux-uclibcgnueabi-strip parted/parted
 
+# libnl
+
+CC=arm-buildroot-linux-uclibcgnueabihf-gcc ./configure --host=arm-linux
+
+
 # lsof
 
 [lsof-cross-compile](http://blog.csdn.net/orz415678659/article/details/9427385)

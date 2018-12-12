@@ -409,14 +409,15 @@ scmo()  {
     scp cdo:${1} ~/cdo 
 }
 
-cpcom() { mkdir -p /winc/Export/com/; rm -rf /winc/Export/com/[^b]*;  cp -a release/com/* /winc/Export/com/ ;}
-cptar() { file=`ls release/tar/*.tgz`;touch  /winc/Export/com/force_dbg.txt
-          mkdir -p /winc/Export/com/ ;rm -rf /winc/Export/com/*.tgz; cp -a $file         /winc/Export/com/ ;}
-cpffw() { file=`ls release/tar/*.ffw`;touch  /winc/Export/com/force_dbg.txt 
-          mkdir -p /winc/Export/com/; rm -rf /winc/Export/com/*.ffw; cp -a $file         /winc/Export/com/ 
-          cp .changelog.md /winc/Export/com/changelog.txt
-          echo ${file##*/} > /winc/Export/com/ffw.txt                                                      ;}
-cpv2()  { mkdir -p /winc/Export/com/v2; cp /winc/Export/com/*.{ffw,tgz} /winc/Export/com/v2 ;}
-nctar() { file=`ls release/tar/*[^e].tgz`;  nc $1 8006 < ${F:-$file} ;}
-nc1234(){ make i;  nc $1 1234 < main/jco_server ;}
+wEc=/winc/Export/com; 
+cpcom() { mkdir -p $wEc; chmod -R 644 $wEc; rm -rf $wEc/[^b]*; cp -a release/com/* $wEc ;}
+cptar() { file=`ls release/tar/*.tgz`;touch  $wEc/force_dbg.txt
+          mkdir -p $wEc/ ;rm -rf $wEc/*.tgz; cp -a $file         $wEc/  ;}
+cpffw() { file=`ls release/tar/*.ffw`;touch  $wEc/force_dbg.txt 
+          mkdir -p $wEc/; rm -rf $wEc/*.ffw; cp -a $file $wEc/
+          cp .changelog.md $wEc/changelog.txt
+          echo ${file##*/} > $wEc/ffw.txt                               ;}
+cpv2()  { mkdir -p $wEc/v2; cp $wEc/*.{ffw,tgz} $wEc/v2                 ;}
+nctar() { file=`ls release/tar/*[^e].tgz`;  nc $1 8006 < ${F:-$file}    ;}
+nc1234(){ make i;  nc $1 1234 < main/jco_server                         ;}
 
