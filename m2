@@ -100,7 +100,7 @@ function fn_2018_plan()                 { cat annual_2018_plan annual_2018_event
 function fn_WiMax_meeting()             { cat meeting huawei_WiMax_meeting
                                               7habit 8s_habit
                                               sanxing_2013
-                                              sanxing_2013.team
+                                              sanxing_2013.team PDCA.team
                                               sanxing_2014.nxp
                                               sanxing_2017.fisheye eye
                                               introspector.2018

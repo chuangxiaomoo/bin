@@ -16,6 +16,11 @@
     CC=arm-linux-gcc ./configure --host=arm-linux
     一般来说，指定--host就可以了，CC会自动查找
 
+# 如果没有 configure 如 libln.so
+
+    make CC=arm-linux-gcc AR=arm-linux-ar
+    .so 是由 gcc 链接的，但 .a 不是，所以需要同时指定 ar
+
 # e2fsprogs
 
 LDFLAGS="-Wl,-gc-sections" CFLAGS="-g -O2 -ffunction-sections -fdata-sections" CC=arm-buildroot-linux-uclibcgnueabi-gcc ./configure --host=arm-linux
@@ -38,6 +43,11 @@ CC=arm-buildroot-linux-uclibcgnueabihf-gcc ./configure --host=arm-linux
 
 [lsof-cross-compile](http://blog.csdn.net/orz415678659/article/details/9427385)
 LSOF_CC=mips-linux-uclibc-gnu-gcc LSOF_HOST=mips-linux ./Configure  -n linux
+
+# dosfstools
+
+[](https://fossies.org/linux/misc/)
+./configure --host=arm-buildroot-linux-uclibcgnueabihf
 
 # 最小 ksh cross_compile
 

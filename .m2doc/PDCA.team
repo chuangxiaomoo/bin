@@ -1,0 +1,84 @@
+# PDCA.team
+
+一个好的计划者，应该看到那些看不到的东西，以在更长的时间内，更大的范围内，对人的性情，产生的影响。
+
+# 原则
+
+1. 一个任务的复杂度评估(文件个数×文件平均行数)
+   当文件个数较大时，必要经过使用之后才可最终确认
+
+2. 汉德公式(Burden＜PL)
+   潜在的工作到底由谁来做?
+
+3. economic scale(发挥规模经济的优势)
+   要有文档记录和传承
+
+4. 如何处理冲突？
+   [TaoUnixP](+/More.of.the.Unix.philosophy TaoUnixProgramming.md)
+   [设计法则](http://blog.chinaunix.net/uid-26729065-id-3562261.html)
+   1 KISS.不重不漏
+   2 简单功能模块化
+   3 组合 
+
+   三个层次: 单细胞 -> 功能细胞.纵向发展.接口 -> 横向发展.组合 -> 进入轮回
+
+5.
+
+# Case.01 T21.Bash替换Ash
+
+function()全部替换成功，但两个平台版本的ash还是有`差异`:
+    set --                                                                  \
+    "list                        # toggle -act list"                        \
+    "bar            fd           # get and set socket fd SNDBUF RCVBUF"     \
+    "foo            1            # DISABLE truncate audio buffer to .4s"    \
+    "code           1            # debug: info"
+周六多花了2个小时处理。
+
+# Case.02 T21.nfs.ko支持
+
+汉德公式(Burden＜PL)
+因为没有sbuild.sh，导致patch文件夹没有被更新，致命网卡灯不亮。
+重新编写zbuild.sh供后续者使用。
+
+# Case.03 200W变倍热点
+
+nl80211.ko + wpa + hostapd + iwlist
+sd.fat.mkdosfs 
+
+# Case.04 ssid.txt没有设计原则(模块化+组合)
+
+| 模块     | 文件              | 功能                                                                    |
+| :------- | :---------------- | :---------------------------------------                                |
+|          | 1 cid.txt         | 经过 zhangj 授权过的 cid.txt，才可以开启便能 id.db                      |
+|          | 2 id.db           | devid+danale.conf+MAC数据库                                             |
+|          | 3 id_ota.db       | 君正方案数据库                                                          |
+|          | 4 type.txt        | 为了防止和升迈id烧写互串，与id_ota.db一起生成                           |
+|          | 5 ssid.txt        | 使用文件中的 ssid/password 自动连接AP，并且按下**RESET键时**不重启      | `并且二字，违反单一功能原则`
+|          | 6 forcecolor.txt  | 触发强彩(使用场景：调焦时，我司自设计的灯板与外购灯板电压相反)          |
+|          | 7 en_chn_600s.txt | 允许同一批次的中英文包互升，2017-08-02后的版本生效                      |
+|          | 8 force_dbg.txt   | 配合 cid.txt，可强制开启**调试模式(telnet+网页)**2017-09-05后的版本生效 |
+|          | 9 ffw.txt         | 升级模式                                                                |
+
+实际模块抽象:
+1 cid.txt     烧录功能
+2 ffw.txt     升级功能
+3 ssid.txt    研发及测试部日常使用，要求保存到supplicantOK.conf
+              工厂使用
+4 factest.txt 整机测试，要求不保存到supplicantOK.conf
+
+模块3,4在保存ssid方面有冲突，因此
+1 进行隔离，尽管是相同的子功能，但要使用不同的配置
+2 用文件夹对模块进行分类
+
+在冲突的模块上，在 auto_run.sh 中进行`互斥处理`，并使用 g_toggle_set() 进行代码内识别。
+
+# Case.05 
+# Case.06 
+# Case.07 
+# Case.08 
+# Case.09 
+# Case.10
+# Case.11
+# Case.12
+
+

@@ -12,6 +12,7 @@ function fn_usage()
         cf                              : show conflict resolving steps
         D       {?|M|.o}
         d       [-r9527] [filepath]     : equal diff -r BASE:WORKING
+        do                              : del *.o
         dp      [filepath]              : equal diff -r PREV:COMMITTED
         dc      r9527 [filepath]        : equal diff -r r9526:r9527
         dh                              : horizontal-split-diff
@@ -77,6 +78,7 @@ function fn_main()
         esac
         ;;
     d)  svn diff $filelist ;;
+    do) find -type f -name '*.o' | xargs rm -f   ;;
     dc) svn diff -c${filelist} ;;
     dl) svn diff `Svn sc | awk '/^M/{print $2}'` ;;
     dh) HORI=-o \
