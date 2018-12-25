@@ -28,4 +28,28 @@ ${@:2}     |不支持 等价替换 shift;${@}             |                     
 fn_echo_clor() { TEXT="$@"; echo "$FG: ${TEXT}" > /dev/stdout ;}
 xt_ret() { [ "${1}" = "0" ] && return 0; echo "${2}"; return 1 ;}
 xt_ret $? "|$LINENO| fail to get wlan0 HWaddr" || return $?
+
+# ash 支持关联数组
+fn_do_weight() {
+    sum=0
+    cn=0
+    set -- ${_w}
+    for c in ${_c}; do
+        let cn++
+        eval "w=\${$cn}"
+        for i in ${chns}; do
+            if [ ${c} -eq "${i}" ]; then
+                let sum=sum+${w}
+            fi
+        done
+    done
+    echo -e "${freq}\t${sum}"
+}
+
+# 1. 以频道距离为权重weight(距离越近，干扰越大，权重越大)，
+# 2. 为每个通道进行加权计算sum(weight)，
+# 3. sum(weight)最小者，即最佳通道
+_c="1 2 3 4 5"
+_w="5 4 3 2 1"
+freq=1 fn_do_weight  > ${wbcf}
 ```
