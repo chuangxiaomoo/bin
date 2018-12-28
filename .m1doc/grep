@@ -43,3 +43,19 @@
     root@Moo64:~/sh# cat txt | grep -f exclude
      002583
      300132
+
+## The Backslash Character and Special Expressions
+
+The ‘\’ character, when followed by certain ordinary characters, takes a special meaning:
+
+    ‘\b’  Match the empty string at the edge of a word.
+    ‘\B’  Match the empty string provided it’s not at the edge of a word.
+    ‘\<’  Match the empty string at the beginning of word.
+    ‘\>’  Match the empty string at the end of word.
+    ‘\w’  Match word constituent, it is a synonym for ‘[_[:alnum:]]’.
+    ‘\W’  Match non-word constituent, it is a synonym for ‘[^_[:alnum:]]’.
+    ‘\s’  Match whitespace, it is a synonym for ‘[[:space:]]’.
+    ‘\S’  Match non-whitespace, it is a synonym for ‘[^[:space:]]’.
+
+For example, ‘\brat\b’ matches the separate word ‘rat’, ‘\Brat\B’ matches ‘crate’ but not ‘furry rat’.
+

@@ -436,7 +436,7 @@ function fn_51_怎样成为一个高手()       { cat article_51_怎样成为一
                                         }
 
 function fn_80_emotion_情绪()           {
-                                          cat article_80_情绪list
+                                          cat article_80_情绪list EQ
                                           cat article_81_负面情绪管理
                                           cat article_82_有目标你就可以忍受一切
                                           cat article_83_情绪管理misc

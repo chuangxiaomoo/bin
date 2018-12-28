@@ -6,7 +6,7 @@
   vi .gitignore
   Git a
 
-  git rm --cached after_init_append_file_to_.gitignore
+  git rm --cached files_appended_to_.gitignore    # 动态更新ignore列表
 
 # 选择github
 
