@@ -1,24 +1,32 @@
+Detect the physical connected state of a network cable or connector
+-----------------------
+
+carrier 1 denote plugin
+
+/sys/class/net/eth0/carrier:1/0
+/sys/class/net/eth0/operstate:unknown/down/up
+
 Route table priority
 -----------------------
 
-1 different prefix
+1 Find the most specific route (aka the longest prefix match*) (aka: also known as)
   The order in the table doesn't matter; routes with a longer prefix always take priority. 
-  e.g. 123.x.x.128/27 and 123.x.x.151/32, 
+  e.g. 255.255.0.0 and 255.255.255.0
   and the latter – more specific – route will take priority over the former (more generic one).
 
-2 if two interfaces have the same destination, netmask, and gateway of 0.0.0.0,
+2 lowest metric
+  hops always, 0 is closest.
+
+3 if two interfaces have the same destination, netmask, and gateway of 0.0.0.0,
   the first one will grab all the traffic for that network.
 
 Del
 -----------------------
 
-  while /bin/route del default gw 0.0.0.0 dev eth0;  do :; done
-  while /bin/route del default gw 0.0.0.0 dev wlan0; do :; done
-
-  Linux[del时netmask必选]
-
+  while route del default gw 0.0.0.0 dev eth0  2>/dev/null; do :; done
+  while route del default gw 0.0.0.0 dev wlan0 2>/dev/null; do :; done
   route del default gw xxx.xxx.xxx.xxx
-  route del -net 192.168.2.0  gw 0.0.0.0  netmask 255.255.255.0 [dev eth0]
+  route del -net 192.168.2.0  gw 0.0.0.0  netmask 255.255.255.0 [dev eth0]  # netmask必选
 
 Add
 -----------------------
@@ -37,16 +45,9 @@ Add
 Windows
 -----------------------
 
-  net: 
-  route -p add 10.41.0.0 mask 255.255.0.0 10.27.0.1
-                      ^                    ^
-                      destination          next hop(getway)
-
-  host:
-  route -p add 192.168.1.25 mask 255.255.255.255 192.168.1.24
-        ^        ^                                ^
-   persitent    destination                    next hop(getway)
-
+  route -p add 10.41.0.0/192.168.1.25 mask 255.255.255.255 192.168.1.24
+        ^        ^                                          ^
+   persitent    destination net/host                        next hop(getway)
 
   删除目标为10.41.0.0，子网掩码为255.255.0.0的路由：
   route delete 10.41.0.0 mask 255.255.0.0

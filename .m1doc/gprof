@@ -49,6 +49,7 @@ linux 下分析程序运行时间的工具：gprof 和 gcov
 
 二、详细使用
     使用Gnu gprof进行Linux平台下的程序分析
+    https://www.ibm.com/developerworks/cn/linux/l-gnuprof.html
     http://os.51cto.com/art/200703/41426_1.htm
 
     gprof2dot.py
