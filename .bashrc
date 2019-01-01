@@ -396,7 +396,7 @@ scmo()  {
     "
     [ -z "${1}" ] && echo "${usage}" && return
     if [ "${1}" = 'a' ]; then
-        scp cdo:~/bin/{candle.py,dkline.py,my.py,zorm5.py} /pycharm/
+        scp cdo:~/bin/{candle.py,dkline.py,my.py,zorm5.py,f30.py} /pycharm/
         scp cdo:~/bin/{k.sh,S}      /pycharm/bin/
         scp cdo:~/bin/{pysuit,tita} /root/bin/
         return

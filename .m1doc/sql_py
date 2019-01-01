@@ -29,7 +29,7 @@ CREATE TABLE d1 (
 DROP TABLE IF EXISTS f30;
 CREATE TABLE f30 (
     date        date NOT NULL, 
-    i           TINYINT         NOT NULL DEFAULT 0,
+    c           TINYINT         NOT NULL DEFAULT 0, # CZSC买卖点类别
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
     o1          DECIMAL(6,2)    NOT NULL DEFAULT 0,
     h1          DECIMAL(6,2)    NOT NULL DEFAULT 0,
@@ -62,8 +62,8 @@ CREATE TABLE f30 (
     o8          DECIMAL(6,2)    NOT NULL DEFAULT 0,
     h8          DECIMAL(6,2)    NOT NULL DEFAULT 0,
     l8          DECIMAL(6,2)    NOT NULL DEFAULT 0,
-    c8          DECIMAL(6,2)    NOT NULL DEFAULT 0,
-    INDEX(date,code,i)
+    e           DECIMAL(6,1)    NOT NULL DEFAULT 0, # 自然常数3/8
+    INDEX(date,code,c)
 );
 
 DROP TABLE IF EXISTS td2;
@@ -313,10 +313,15 @@ CREATE TABLE i5 (
     x60         DECIMAL(6,2) NOT NULL DEFAULT 0,
     hi          DECIMAL(6,2) NOT NULL DEFAULT 0,    # min(high)
     lo          DECIMAL(6,2) NOT NULL DEFAULT 0,    # mix(low)
+    lo8         DECIMAL(6,2) NOT NULL DEFAULT 0,    # mix(t8.low)
     avrg        DECIMAL(6,2) NOT NULL DEFAULT 0,    # min(low) 对应的 min(avrg)
+    close       DECIMAL(6,2) NOT NULL DEFAULT 0,    # 辅助次日开盘30min的e加权
     i           TINYINT      NOT NULL DEFAULT 0,    # 0, 无包含关系; n in [1,2,3,4], 第 Kn 被 K(n-1...4) 包含
     INDEX(date,code)
 );
+
+ALTER TABLE i5 ADD close DECIMAL(6,2) AFTER avrg;
+UPDATE d1,i5 SET i5.close=d1.close WHERE d1.date=i5.date and d1.code=i5.code;
 
 CREATE TEMPORARY TABLE j5 (
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
