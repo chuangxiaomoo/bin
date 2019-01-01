@@ -461,15 +461,16 @@ function fn_110_中国哲学体系的困惑？()  { cat article_110_中国哲学
 function fn_111_喜欢有之或喜欢用之？()  { cat article_111_喜欢有之或喜欢用之？ ;}
 function fn_112_我们何需抱怨被误解()    { cat article_112_我们何需抱怨被误解 ;}
 
-function fn_201_“非上帝投机者”的自赎()  { cat article_201_“非上帝投机者”的自赎 ;}
 
-function fn_gsq_房价什么情况下会崩()    { cat gushequ
-                                          cat article_gsq_房价什么情况下会崩
+function fn_gsq_房价什么情况下会崩()    { 
+                                          cat yangchizhong
                                           cat article_200_杨赤忠.从投资市场到政府管理.md
                                           cat article_201_杨赤忠.从投资市场到政府管理.md
                                           cat article_202_杨赤忠.从投资市场到政府管理.md
                                           cat article_203_杨赤忠.从投资市场到政府管理.md
                                           cat article_204_杨赤忠.从投资市场到政府管理.md
+                                          cat gushequ
+                                          cat article_gsq_房价什么情况下会崩
                                           cat article_301_财富公式之亿万钱财
                                           cat article_302_史上最中肯的投资建议
                                           cat article_303_怎么应付朋友借钱
@@ -479,8 +480,11 @@ function fn_gsq_房价什么情况下会崩()    { cat gushequ
                                           cat article_307_社会分层的意义与思考
                                           cat article_308_十二生肖兽首.md
                                           cat article_309_为什么房价和人民币汇率只能保一个.md
+                                          cat article_310_并非买套套房子就要住一辈子.md
+                                          cat xuzhe
+                                          cat article_401_“非上帝投机者”的自赎
+                                          cat article_402_这世上哪有什么便宜可占.md
                                         }
-
     local opts=(
         01_高铁陆权战略
         02_铁道部取消
