@@ -800,7 +800,6 @@ function fn_Mo_letter2()                { cat huawei_Mo_letter2 ;}
 
 function fn_Zhu_雄辩()                  { cat huawei_Zhu_雄辩 huawei_Zhu_Petimer 
                                           cat list_of_compound_time TIME
-                                          cat time_and_space
                                         }
 function fn_Qi_领导管理人才()           { cat huawei_Qi_领导管理人才 ;}
 function fn_Qi_疾病()                   { cat huawei_Qi_疾病 ;}

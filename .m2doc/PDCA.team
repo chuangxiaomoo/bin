@@ -4,23 +4,25 @@
 
 # 原则
 
-1. 一个任务的复杂度评估(文件个数×文件平均行数)
-   当文件个数较大时，必要经过使用之后才可最终确认
+1 一个任务的复杂度评估(文件个数×文件平均行数)
+  当文件个数较大时，必要经过使用之后才可最终确认
+  KISS: 一个项目必然需要**时间和空间**上的约束，及时进行崭断，以降低复杂度。
+  FISHEYE-3每次发的包，工厂并不一定使用。
 
-2. 汉德公式(Burden＜PL)
-   潜在的工作到底由谁来做?
+2 汉德公式(Burden＜PL)
+  潜在的工作到底由谁来做?
 
-3. economic scale(发挥规模经济的优势)
-   要有文档记录和传承
+3 economic scale(发挥规模经济的优势)
+  要有文档记录和传承
 
-4. 如何处理冲突？
-   [TaoUnixP](+/More.of.the.Unix.philosophy TaoUnixProgramming.md)
-   [设计法则](http://blog.chinaunix.net/uid-26729065-id-3562261.html)
-   1 KISS.不重不漏
-   2 简单功能模块化
-   3 组合 
+4 如何处理冲突？
+  [TaoUnixP](+/More.of.the.Unix.philosophy TaoUnixProgramming.md)
+  [设计法则](http://blog.chinaunix.net/uid-26729065-id-3562261.html)
+  1 KISS.不重不漏
+  2 简单功能模块化
+  3 组合 
 
-   三个层次: 单细胞 -> 功能细胞.纵向发展.接口 -> 横向发展.组合 -> 进入轮回
+  三个层次: 单细胞 -> 功能细胞.纵向发展.接口 -> 横向发展.组合 -> 进入轮回
 
 5.
 
