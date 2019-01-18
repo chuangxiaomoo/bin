@@ -1,3 +1,13 @@
+# 制作bug跟踪表格
+
+[excel表格如何排序](https://jingyan.baidu.com/article/11c17a2c44cc51f447e39d46.html)
+
+1 冻结首行
+2 选中状态，“数据”—“有效性”-“允许”中选择“序列”-“来源”中输入“Pause,Doing,Delivery,Fail,Done”
+3 状态颜色，开始-条件格式-突出显示单元格规则-文本包含
+4 “数据”—筛选
+5 “数据”—排序
+
 # excel
 
 > EXCEL ~= Vim + Markdown + Dataprocess

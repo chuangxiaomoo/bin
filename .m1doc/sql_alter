@@ -34,6 +34,7 @@
 
 . 创建索引
     alter table test add index (cn,id);
+    alter table d1 add index (date);
 
 . 删除索引
     show INDEX from day;

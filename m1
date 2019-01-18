@@ -1507,6 +1507,7 @@ function fn_main() {
         web                     # WEB W3School
         w3m
         win
+        thinkpad
         wireshark
         xml
         mxml                    # 
