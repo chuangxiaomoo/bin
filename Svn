@@ -9,7 +9,7 @@ function fn_usage()
         i       [path]                  : svn info .
         in                              : svn relocate ip to HOSTNAME
         c|cc    [filepath]              : svn ci [files...]
-        zc      [filepath]              : tar ../bk.tgz list
+        zc                              : tar ../bk.tgz list
         cf                              : show conflict resolving steps
         D       {?|M|.o}
         d       [-r9527] [filepath]     : equal diff -r BASE:WORKING
@@ -42,7 +42,7 @@ function fn_main()
     A)  /usr/bin/find ! -name '.' -a -name '*' | xargs -I{} svn add --force {}  | cat -n            ;;
     c)  svn ci $filelist                            && svn up                                       ;;
    cc)  fl=`Svn Sc | awk '{print $NF}'` ;svn ci $fl && svn up                                       ;;
-   zc)  fl=`Svn Sc | awk '{print $NF}'` ;tar -zcf ../z.tgz $fl                                      ;;
+   zc)  fl=`Svn Sc | awk '{print $NF}'` ;tar -zcvf ../z.tgz $fl                                     ;;
     l)  [ -f "${2}" ] && filelist="5 ${@:2}"; svn log -v -l${filelist:-5}                           ;;
    ll)  [ -f "${2}" ] && filelist="5 ${@:2}"; svn log    -l${filelist:-5}                           ;;
     i)  svn info ${2:-.} | grep 'URL:' | sed -e 's/URL: /&\n/g'                                     ;;
