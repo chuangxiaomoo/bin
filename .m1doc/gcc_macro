@@ -1,4 +1,4 @@
-# macro
+/* macro */
 
 [3.7.1 Standard Predefined Macros]()
 https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html
@@ -15,9 +15,16 @@ https://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html#Common-Predefin
     __COUNTER__   /* uniq serial No. */
 
 
-# 禁优化
+/* define 禁优化.0
+ **/
 
-```cpp
+void __attribute__((optimize("O0"))) foo(unsigned char data) {
+    // unmodifiable compiler code
+}
+
+/* define 禁优化.1
+ **/
+
 #pragma GCC push_options   
 #pragma GCC optimize ("O0")
 
@@ -26,4 +33,3 @@ int func()
 }
 
 #pragma GCC pop_options
-```

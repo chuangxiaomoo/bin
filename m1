@@ -122,7 +122,7 @@ function fn_01_preprocess()             { cat gcc_01_preprocess ;}
 function fn_02_header_file_include()    { cat gcc_02_header_file_include ;}
 function fn_03_ld_wrap()                { cat gcc_03_ld_wrap ;}
 function fn_ec_闭包()                   { cat gcc_ec_闭包 ;}
-function fn_macro()                     { cat gcc_macro ;}
+function fn_macro()                     { cat gcc_macro ;}  # O0
 
     local opts=(
         fundamental
