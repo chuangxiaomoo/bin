@@ -77,7 +77,7 @@ CREATE TABLE td2 (
     low         DECIMAL(6,2)  NOT NULL,
     close       DECIMAL(6,2)  NOT NULL,
     volume      DECIMAL(12,2) NOT NULL DEFAULT 0,
-    avrg        DECIMAL(6,2) NOT NULL DEFAULT 0,
+    avg         DECIMAL(6,2)  NOT NULL DEFAULT 0,
     INDEX(code)
 );
 
@@ -86,11 +86,11 @@ CREATE TABLE avg (
     date        date NOT NULL, 
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
     volume      DECIMAL(12,2) NOT NULL DEFAULT 0,
-    avrg        DECIMAL(6,2) NOT NULL DEFAULT 0,
+    avg         DECIMAL(6,2) NOT NULL DEFAULT 0,
     INDEX(code)
 );
 LOAD DATA LOCAL INFILE '/pycharm/data/td2.100' INTO TABLE avg;
-UPDATE d1 d, avg v SET d.avrg=v.avrg WHERE d.date=v.date && d.code=v.code;
+UPDATE d1 d, avg v SET d.avg=v.avg WHERE d.date=v.date && d.code=v.code;
 
 
 DROP TABLE IF EXISTS nmc2;
@@ -315,13 +315,14 @@ CREATE TABLE i5 (
     hi          DECIMAL(6,2) NOT NULL DEFAULT 0,    # min(high)
     lo          DECIMAL(6,2) NOT NULL DEFAULT 0,    # mix(low)
     lo8         DECIMAL(6,2) NOT NULL DEFAULT 0,    # mix(t8.low)
-    avrg        DECIMAL(6,2) NOT NULL DEFAULT 0,    # min(low) 对应的 min(avrg)
+    avg         DECIMAL(6,2) NOT NULL DEFAULT 0,    # min(5,low) 对应的 min(avg)
+    avg8        DECIMAL(6,2) NOT NULL DEFAULT 0,    # min(8,low) 对应的 min(avg)
     close       DECIMAL(6,2) NOT NULL DEFAULT 0,    # 辅助次日开盘30min的e加权
     i           TINYINT      NOT NULL DEFAULT 0,    # 0, 无包含关系; n in [1,2,3,4], 第 Kn 被 K(n-1...4) 包含
     INDEX(date,code)
 );
 
-ALTER TABLE i5 ADD close DECIMAL(6,2) AFTER avrg;
+ALTER TABLE i5 ADD close DECIMAL(6,2) AFTER avg;
 UPDATE d1,i5 SET i5.close=d1.close WHERE d1.date=i5.date and d1.code=i5.code;
 
 CREATE TEMPORARY TABLE j5 (
