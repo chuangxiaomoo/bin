@@ -22,6 +22,9 @@
             [FIRST|AFTER col_name]
 
     ALTER TABLE tbl_name CHANGE col_old col_new char(4) not null;
+
+    ALTER TABLE  d1 CHANGE avrg avg DECIMAL(6,2) not null DEFAULT 0;
+    ALTER TABLE td2 CHANGE avrg avg DECIMAL(6,2) not null DEFAULT 0;
     -- 曾经把 ALTER 写成了 ALERT，捣鼓了半天。
 
 . 改变列的数据类型

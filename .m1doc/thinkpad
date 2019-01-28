@@ -1,9 +1,28 @@
+# 360chrome
+
+选项 -> 基本设置 -> 继续浏览上次关闭浏览器时在看的网页
+
+这样机器休眠时就可以省很多内存
+
+# win7.x86.64
+
+http://211.162.127.4/files/41150000062668BC/d.xitonghe.com/win7/windows_7_ultimate_with_sp1_x64.iso
+
+# driver
+
 https://think.lenovo.com.cn/support/driver/newdriversdownlist.aspx?categoryid=3019000&CODEName=4349&SearchType=1&wherePage=1&SearchNodeCC=ThinkPad%20T510&osid=26&needmt=4349
 
-首页> 服务与支持 > 驱动下载-选择产品 > 驱动下载-驱动列表
+首页 -> 服务与支持 -> 驱动下载-选择产品 -> 驱动下载-驱动列表
 
 主机名称：ThinkPad T510 主机编号： 4349
 
 操作系统    Windows 7 64-bit
 
 TYPE前4位   4349
+
+# 驱动精灵 
+
+# clink
+
+http://mridgers.github.io/clink
+
