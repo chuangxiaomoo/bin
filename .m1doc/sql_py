@@ -312,8 +312,8 @@ CREATE TABLE i5 (
 
     x30         DECIMAL(6,2) NOT NULL DEFAULT 0,
     x60         DECIMAL(6,2) NOT NULL DEFAULT 0,
-    hi          DECIMAL(6,2) NOT NULL DEFAULT 0,    # min(high)
-    lo          DECIMAL(6,2) NOT NULL DEFAULT 0,    # mix(low)
+    hi          DECIMAL(6,2) NOT NULL DEFAULT 0,    # min(high) = 近期低K日的high
+    lo          DECIMAL(6,2) NOT NULL DEFAULT 0,    # min(low)  = 近期低K日的low
     lo8         DECIMAL(6,2) NOT NULL DEFAULT 0,    # mix(t8.low)
     avg         DECIMAL(6,2) NOT NULL DEFAULT 0,    # min(5,low) 对应的 min(avg)
     avg8        DECIMAL(6,2) NOT NULL DEFAULT 0,    # min(8,low) 对应的 min(avg)

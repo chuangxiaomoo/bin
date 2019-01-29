@@ -112,7 +112,7 @@ function fn_WiMax_meeting()             { cat meeting huawei_WiMax_meeting
                                               woop
                                         }
 #
-# Just like BRAIN sort KNOWLEDGE always, we need sort contineuously!
+# Just like _B_R_A_I_N_ sort KNOWLEDGE always, we need sort contineuously!
 # a BOOK can append with a reflect
 #
 function fn_book()                      {
@@ -328,7 +328,7 @@ function fn_03_沟通_communication()     { cat howto_03_沟通
                                           cat howto_03_沟通.2
                                           cat howto_04_屌丝如何逆袭
                                           cat howto_05_挑选西瓜
-                                          cat howto_07_与AI在职场竞争
+                                          cat howto_07_与AI在职场竞争 AI
                                           cat howto_08_识别有智慧的人
                                           cat howto_09_讲故事
                                           cat howto_09_讲故事.1
