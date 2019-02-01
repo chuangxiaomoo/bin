@@ -210,7 +210,7 @@ function fn_sed()                       { cat busybox_sed ;}
 # bash中以${!name}形式出现的变量替换，就是间接替换。
 # bash首先，计算$name的值，并用它的值来替换中括号里面的值，再作一次变量替换。
 function fn_bash() {
-function fn_fundamental()               { cat bash_fundamental bash_ksh ;}
+function fn_fundamental()               { cat bash_fundamental bash_ksh bash_PS4 ;}
 function fn_cross_compile()             { cat bash_cross_compile ;}
 function fn_00_函数bg时main挂住了()     { cat bash_00_函数bg时main挂住了 ;}
 function fn_01_PIPE会使变量为空()       { cat bash_01_PIPE会使变量为空 ;}
