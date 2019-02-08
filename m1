@@ -1052,6 +1052,7 @@ function fn_codingstyle()               { cat codingstyle_base
                                           cat codingstyle_qt
                                           cat codingstyle_rule      # 关键在映射规则
                                           cat codingstyle_cxx
+                                          cat codingstyle_wangying  # 王垠：编程的智慧
                                           cat tips_4_reading_code
                                           cat tips_4_reading_cxx
 }
