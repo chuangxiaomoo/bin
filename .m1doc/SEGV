@@ -1,0 +1,16 @@
+# SEGV
+
+SEGV不一定是原因，有可能是内存泄漏，或是fd泄漏。比如danale这两个跟踪就是如此:
+
+#0  0x00167062 in _________danale_x131_F3 ()
+#1  0x00160946 in _________danale_x57_F3 ()
+#2  0x001615ee in th_danaretiming ()
+#3  0xb6a9732a in ?? ()
+
+
+#0  0xb6a862d4 in ?? ()
+#1  0x00174eec in _________danale_x67_F190 ()
+#2  0x0015c68c in _________danale_x94_F1 ()
+#3  0x0012cb82 in th_danavideo_util_upload ()
+#4  0xb6aa632a in ?? ()
+

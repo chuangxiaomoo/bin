@@ -855,10 +855,11 @@ function fn_duanzi()                    { cat humor_duanzi ;}
 
 function fn_girl()                      {
 function fn_misc()                      { cat girl_misc ;}
-function fn_letters()                   { cat girl_letters juzi ;}
-function fn_00_jiebao()                 { cat girl_00_jiebao ;}
-function fn_01_tingbao()                { cat girl_01_tingbao ;}
-function fn_02_angelina()               { cat girl_02_angelina ;}
+function fn_letters()                   { cat girl_letters juzi
+                                          cat girl_00_jiebao
+                                          cat girl_01_tingbao
+                                          cat girl_02_angelina
+                                          cat girl_03_jiang
 function fn_11_2013相亲记()             { cat girl_11_2013相亲记 ;}
 function fn_12_wife()                   { cat girl_12_wife ;}
 function fn_100_手把手教你泡妞()        { cat girl_100_手把手教你泡妞

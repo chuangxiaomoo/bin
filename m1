@@ -585,7 +585,7 @@ function fn_0_haoel()                   { cat gdb_0_haoel ;}
 function fn_4_查看源程序()              { cat gdb_4_查看源程序 ;}
 function fn_5_查看运行时数据()          { cat gdb_5_查看运行时数据 ;}
 function fn_7_改变程序的执行()          { cat gdb_7_改变程序的执行 ;}
-function fn_breakpoints()               { cat gdb_breakpoints ;}    # SEGV
+function fn_breakpoints()               { cat gdb_breakpoints SEGV ;}
 function fn_convention()                { cat gdb_convention ;}
 function fn_most_freq_cmds()            { cat gdb_most_freq_cmds ;}
 
@@ -598,7 +598,6 @@ function fn_most_freq_cmds()            { cat gdb_most_freq_cmds ;}
         breakpoints
         most_freq_cmds
         print_exp
-        SIGSEGV
     )
     fn_print $@
 }
