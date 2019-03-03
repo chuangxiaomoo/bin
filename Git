@@ -59,7 +59,7 @@ function fn_main()
         [ -z "${list}" ] && echo "no modified" && return
         git diff ${list}
         ;;
-    d)  git diff ${filelist}                        ;;
+    d)  git difftool ${filelist}                    ;;
     ls) git ls-files ${filelist}                    ;;
  log|l) git log -p ${filelist}                      ;;
     dp) git diff HEAD^ HEAD ${filelist}             ;;

@@ -668,7 +668,8 @@ function fn_TrapsPitfalls()             { cat logic_TrapsPitfalls ;}
     fn_print $@
 }
 
-function fn_phi()                       {
+function fn_phi()                       { cat greek_mythology
+                                              greek_philosophy
 function fn_wdf_01_心安之窄门()         { cat phi_wdf_01_心安之窄门 ;}
 function fn_wdf_02_国民性()             { cat phi_wdf_02_国民性 ;}
 function fn_wdf_03_儒道互补，内方外圆() { cat phi_wdf_03_儒道互补，内方外圆 ;}
