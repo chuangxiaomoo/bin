@@ -1518,6 +1518,7 @@ function fn_main() {
         mindmap
         blockchain
         Programmer-Competency-Matrix.md
+        text2mindmap
     )
     fn_print $@
 }
