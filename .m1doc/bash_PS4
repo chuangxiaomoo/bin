@@ -1,0 +1,11 @@
+#! /bin/bash 秒级timestamp
+
+PS4='\D{%T}+ ' bash -x ./a.sh 2
+
+
+# 调式打印毫秒级timestamp
+
+[](https://stackoverflow.com/questions/18039751/how-to-debug-a-bash-script-and-get-execution-time-per-command)
+
+export PS4='[`date +%T.%09N`]+ '
+

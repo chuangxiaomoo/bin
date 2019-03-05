@@ -210,7 +210,7 @@ function fn_sed()                       { cat busybox_sed ;}
 # bash中以${!name}形式出现的变量替换，就是间接替换。
 # bash首先，计算$name的值，并用它的值来替换中括号里面的值，再作一次变量替换。
 function fn_bash() {
-function fn_fundamental()               { cat bash_fundamental bash_ksh ;}
+function fn_fundamental()               { cat bash_fundamental bash_ksh bash_PS4 ;}
 function fn_cross_compile()             { cat bash_cross_compile ;}
 function fn_00_函数bg时main挂住了()     { cat bash_00_函数bg时main挂住了 ;}
 function fn_01_PIPE会使变量为空()       { cat bash_01_PIPE会使变量为空 ;}
@@ -585,7 +585,7 @@ function fn_0_haoel()                   { cat gdb_0_haoel ;}
 function fn_4_查看源程序()              { cat gdb_4_查看源程序 ;}
 function fn_5_查看运行时数据()          { cat gdb_5_查看运行时数据 ;}
 function fn_7_改变程序的执行()          { cat gdb_7_改变程序的执行 ;}
-function fn_breakpoints()               { cat gdb_breakpoints ;}    # SEGV
+function fn_breakpoints()               { cat gdb_breakpoints SEGV ;}
 function fn_convention()                { cat gdb_convention ;}
 function fn_most_freq_cmds()            { cat gdb_most_freq_cmds ;}
 
@@ -598,7 +598,6 @@ function fn_most_freq_cmds()            { cat gdb_most_freq_cmds ;}
         breakpoints
         most_freq_cmds
         print_exp
-        SIGSEGV
     )
     fn_print $@
 }
@@ -1052,6 +1051,7 @@ function fn_codingstyle()               { cat codingstyle_base
                                           cat codingstyle_qt
                                           cat codingstyle_rule      # 关键在映射规则
                                           cat codingstyle_cxx
+                                          cat codingstyle_wangying  # 王垠：编程的智慧
                                           cat tips_4_reading_code
                                           cat tips_4_reading_cxx
 }

@@ -37,6 +37,9 @@ def pip_usage(argv):
     # 安装指定版本
     pip3 install -Iv setuptools==31.0.0
 
+    # 升级到指定版本
+    pip3 install --upgrade bokeh==0.12.7
+
     # 卸载
     pip3 uninstall pandas
 

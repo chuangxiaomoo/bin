@@ -1,3 +1,12 @@
+# 解决咔擦突然断电
+
+0 安全模式(只加载主板上的驱动)
+1 插拔内存条
+2 显卡驱动是第一怀疑对象
+3 键盘的某个键有问题
+4 禁用所有不用的硬件
+5 禁用不用的服务(特别是显卡相关的OSD)
+
 # 360chrome
 
 选项 -> 基本设置 -> 继续浏览上次关闭浏览器时在看的网页
@@ -22,7 +31,23 @@ TYPE前4位   4349
 
 # 驱动精灵 
 
-# clink
+# tools
 
-http://mridgers.github.io/clink
+[clink/bash/bat](http://mridgers.github.io/clink)
+使能远程
+360极速浏览器
+QQ轻聊
+平安证券
+virtualbox虚拟机
+SecureCRT
+Putty
+D:/bin/添加到path
+AutoHotKey
+ShadowSocks
+gvim
+BeyondCompare
+KmPlayer
+VLC
+SnagIt12
+typora-setup-x64.exe
 

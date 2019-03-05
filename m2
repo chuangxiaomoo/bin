@@ -77,6 +77,7 @@ function fn_2015_plan()                 { cat annual_2015_plan annual_2015_event
 function fn_2016_plan()                 { cat annual_2016_plan annual_2016_event annual_2016_report annual_2016_ljsw  ;}
 function fn_2017_plan()                 { cat annual_2017_plan annual_2017_event annual_2017_report ;}
 function fn_2018_plan()                 { cat annual_2018_plan annual_2018_event annual_2018_report ;}
+function fn_2019_plan()                 { cat annual_2019_plan annual_2019_event annual_2019_report ;}
     local opts=(
         plan_what                       # 基于`以终为始`的理念
         report_what
@@ -112,7 +113,7 @@ function fn_WiMax_meeting()             { cat meeting huawei_WiMax_meeting
                                               woop
                                         }
 #
-# Just like BRAIN sort KNOWLEDGE always, we need sort contineuously!
+# Just like _B_R_A_I_N_ sort KNOWLEDGE always, we need sort contineuously!
 # a BOOK can append with a reflect
 #
 function fn_book()                      {
@@ -144,8 +145,6 @@ function fn_aq_如何提问()               { cat book_aq_如何提问 ;}
 function fn_yl_你的灯亮着吗()           { cat book_yl_你的灯亮着吗
                                           cat read_yl_你的灯亮着吗 ;}
 function fn_lf_雷锋日记()               { cat book_lf_雷锋日记 ;}
-function fn_economic_naturalist()       { cat book_economic_naturalist
-                                          cat read_economic_naturalist ;}
 function fn_10years()                   { cat book_10years ;}               # 修炼:我的职场十年
 function fn_conservatism()              { cat book_conservatism ;
                                           cat read_conservatism ;}
@@ -179,6 +178,7 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               book_tf_把时间当作朋友
                                               book_xs_reborn-every-7-years.md
                                               book_mao
+                                              book_mao_howtoread
                                               Multitask
                                               problem_solving
                                               problem_Formula
@@ -253,7 +253,6 @@ function fn_list()                      { cat book_400_PoorCharliesAlmanack_穷�
         lf_雷锋日记
         yl_你的灯亮着吗                 # light question
         PPT演示之道                     # to read
-        economic_naturalist             # 牛奶可乐
         conservatism                    # 保守主义
 
         f2_海底捞你学不会
@@ -315,6 +314,7 @@ function fn_decide()                    { cat decide
                                               book_201_经济学通识.md
                                               read_Rational_Choice_in_an_Uncertain_World.md
                                               qipashuo
+                                              gaoxiaosong
                                               subjects
 }
 
@@ -328,7 +328,7 @@ function fn_03_沟通_communication()     { cat howto_03_沟通
                                           cat howto_03_沟通.2
                                           cat howto_04_屌丝如何逆袭
                                           cat howto_05_挑选西瓜
-                                          cat howto_07_与AI在职场竞争
+                                          cat howto_07_与AI在职场竞争 AI
                                           cat howto_08_识别有智慧的人
                                           cat howto_09_讲故事
                                           cat howto_09_讲故事.1
@@ -348,25 +348,6 @@ function fn_03_沟通_communication()     { cat howto_03_沟通
         03_沟通_communication
     )
     fn_print $@
-}
-
-function fn_english()
-{
-      english_US_TV_series
-      english_friends
-      english_Keynes_Hayek
-      english_Proverbs_in_Alphabet
-      english_wordlist
-
-      english_listening_layers 
-      english_speaking
-      english_reading
-      english_writing
-
-      english_liyang_crazy
-      english_LOGIC
-      english_grammer
-      english_vocabulary
 }
 
 function fn_zhihu()                     {
@@ -481,9 +462,12 @@ function fn_gsq_房价什么情况下会崩()    {
                                           cat article_308_十二生肖兽首.md
                                           cat article_309_为什么房价和人民币汇率只能保一个.md
                                           cat article_310_并非买套套房子就要住一辈子.md
+                                          cat article_311_一座城市就是一家上市公司.md
+                                          cat moyuxiaozu
+                                          cat article_401_康波里的巨头沉浮.md
                                           cat xuzhe
-                                          cat article_401_“非上帝投机者”的自赎
-                                          cat article_402_这世上哪有什么便宜可占.md
+                                          cat article_501_“非上帝投机者”的自赎
+                                          cat article_502_这世上哪有什么便宜可占.md
                                         }
     local opts=(
         01_高铁陆权战略
@@ -625,6 +609,23 @@ function fn_02_一朝天子一朝臣()         { cat why_02_一朝天子一朝�
 function fn_films()                     { cat videos movies
                                           cat subscript.yidaizongshi
                                         }
+function fn_english() {
+      english_US_TV_series
+      english_friends
+      english_Keynes_Hayek
+      english_Proverbs_in_Alphabet
+      english_wordlist
+
+      english_listening_layers 
+      english_speaking
+      english_reading
+      english_writing
+
+      english_liyang_crazy
+      english_LOGIC
+      english_grammer
+      english_vocabulary
+}
 
 function fn_logic()                     { cat logic_simple.md
 function fn_formal()                    { cat logic_formal ;}
@@ -667,7 +668,8 @@ function fn_TrapsPitfalls()             { cat logic_TrapsPitfalls ;}
     fn_print $@
 }
 
-function fn_phi()                       {
+function fn_phi()                       { cat greek_mythology
+                                              greek_philosophy
 function fn_wdf_01_心安之窄门()         { cat phi_wdf_01_心安之窄门 ;}
 function fn_wdf_02_国民性()             { cat phi_wdf_02_国民性 ;}
 function fn_wdf_03_儒道互补，内方外圆() { cat phi_wdf_03_儒道互补，内方外圆 ;}
@@ -854,10 +856,11 @@ function fn_duanzi()                    { cat humor_duanzi ;}
 
 function fn_girl()                      {
 function fn_misc()                      { cat girl_misc ;}
-function fn_letters()                   { cat girl_letters juzi ;}
-function fn_00_jiebao()                 { cat girl_00_jiebao ;}
-function fn_01_tingbao()                { cat girl_01_tingbao ;}
-function fn_02_angelina()               { cat girl_02_angelina ;}
+function fn_letters()                   { cat girl_letters juzi
+                                          cat girl_00_jiebao
+                                          cat girl_01_tingbao
+                                          cat girl_02_angelina
+                                          cat girl_03_jiang
 function fn_11_2013相亲记()             { cat girl_11_2013相亲记 ;}
 function fn_12_wife()                   { cat girl_12_wife ;}
 function fn_100_手把手教你泡妞()        { cat girl_100_手把手教你泡妞
@@ -1006,6 +1009,8 @@ function fn_currency()                  { cat economic_currency ;}
 function fn_keynesian()                 { cat economic_keynesian ;}
 function fn_fortune()                   { cat economic_fortune ;}
 function fn_交易与合约()                { cat economic_交易与合约 ;}
+function fn_economic_naturalist()       { cat book_economic_naturalist
+                                          cat read_economic_naturalist ;}
     local opts=(
         cept                            # 利率 汇率 基础概念
         currency                        # 货币经济学
@@ -1150,7 +1155,6 @@ function fn_main() {
         dream
         driver
         english
-        economic
         faith
         family                          # 难念的经 家国天下
         girl
