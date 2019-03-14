@@ -1,0 +1,14 @@
+# word frequence counter
+
+词(标识符,identifier)的定义:
+
+```bash
+  cat updateExt.sh | sed 's/[^a-zA-Z_]/ /g' | xargs -n1 > list
+  cat list | sort -f -u > list.u
+
+  while read; do
+      printf "%12s " $REPLY
+      grep -i $REPLY list | wc -l
+  done < list.u
+```
+

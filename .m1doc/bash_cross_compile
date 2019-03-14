@@ -36,8 +36,12 @@ arm-buildroot-linux-uclibcgnueabi-strip parted/parted
 
 # libnl
 
-CC=arm-buildroot-linux-uclibcgnueabihf-gcc ./configure --host=arm-linux
+./configure --help
+CC=arm-linux-gnueabihf-gcc ./configure --host=arm-linux-gnueabihf --prefix=/opt/mstar/313msPro/316v2apPro/drv/iw.nl1
+make
+make install
 
+**如果生成 .a 给 wpa_supplicant 使用时链不过，多半是 AR的问题**
 
 # lsof
 

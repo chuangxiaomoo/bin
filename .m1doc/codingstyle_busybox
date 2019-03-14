@@ -1,0 +1,7 @@
+# 几大开源
+
+uboot
+kernel
+busybox
+glibc       // 前三者的风格基本已经统一
+
