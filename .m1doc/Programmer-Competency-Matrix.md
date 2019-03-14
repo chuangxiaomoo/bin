@@ -1,4 +1,4 @@
-Programmer-Competency-Matrix 
+[Programmer-Competency-Matrix](https://josetomastocino.github.io/mindmapit/)
 	#Computer-Science
 		data-structures		
 			heap

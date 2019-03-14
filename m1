@@ -97,6 +97,7 @@ function fn_google()                    { cat google
                                               google.translate
                                               google.faq 
                                               gfw
+                                              how_google_works.md
                                         }
 function fn_chrome()                    { cat chrome ;}
 
@@ -1052,6 +1053,7 @@ function fn_codingstyle()               { cat codingstyle_base
                                           cat codingstyle_rule      # 关键在映射规则
                                           cat codingstyle_cxx
                                           cat codingstyle_wangying  # 王垠：编程的智慧
+                                          cat codingstyle_busybox   # 最接近内核style
                                           cat tips_4_reading_code
                                           cat tips_4_reading_cxx
 }
@@ -1518,6 +1520,7 @@ function fn_main() {
         mindmap
         blockchain
         Programmer-Competency-Matrix.md
+        text2mindmap
     )
     fn_print $@
 }

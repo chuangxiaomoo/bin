@@ -90,7 +90,13 @@ sudo dpkg-reconfigure dash
 
 # static networking
 
-查看eth.x: /etc/udev/rules.d/70-persistent-net.rules
+修改 eth.x -> eth0 的方法: /etc/udev/rules.d/70-persistent-net.rules
+
+* Open the file /etc/udev/rules.d/70-persistent-net.rules with your favorite editor
+* Find the rule matching your MAC address
+* Change the NAME value from eth1 to eth0 i.e. NAME="eth0"
+* To apply changes without restarting run sudo udevadm trigger
+
 
 [/etc/network/interfaces](
 auto  eth1
