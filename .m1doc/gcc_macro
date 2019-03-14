@@ -9,7 +9,14 @@ https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html
     __TIME__
 
 
-[3.7.2 Common Predefined Macros]()
+[3.7.2 Common Predefined Macros](预定义宏)
+
+#define __GNUC_PATCHLEVEL__ 3
+#define __SIZEOF_INT__      4
+#define __SIZEOF_POINTER__  8
+
+# strace gcc -dM -E - </dev/null
+
 https://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html#Common-Predefined-Macros
 
     __COUNTER__   /* uniq serial No. */
