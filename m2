@@ -615,6 +615,7 @@ function fn_english() {
       english_Keynes_Hayek
       english_Proverbs_in_Alphabet
       english_wordlist
+      english_freq                      # 词频统计器
 
       english_listening_layers 
       english_speaking

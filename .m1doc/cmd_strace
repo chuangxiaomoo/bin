@@ -1,3 +1,11 @@
+
+# define 日志的转储
+
+使用 strace 可以窥探一切 coreutils 的行为
+
+    strace readlink -f /bin/sh
+    ssize_t readlink(const char *path, char *buf, size_t bufsiz);
+
 # strace
 
   strace - trace system calls and signals
