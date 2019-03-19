@@ -71,7 +71,7 @@ function fn_main()
     D)
         case $2 in
        .o)  echo "del *.o"; find -name '*.o' | xargs rm -f ;;
-        *)  {
+    '?'|*)  {
             echo "Deleting: "
             exclude="INSTALL|cscope|.make\>"
             svn status | grep -v -E "${exclude}" | grep "^${filelist:-?}" | tee /dev/stderr |\
