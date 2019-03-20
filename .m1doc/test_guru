@@ -1,4 +1,18 @@
-# guru
+# test_guru
+
+[](https://zh.wikipedia.org/wiki/有限状态机)
+
+系统 -> 子系统 -> 模块(FSM) 
+
+FSM = State + Input + 状态转移函数
+
+**优化**
+
+实现同样的功能
+
+* 使用更少的状态(一种可能是使用真值表或Moore简约过程，另一种可能是无环FSA的自底向上算法)
+* 从源头上减少输入(需求)
+* 模块之间进行隔离
 
 # 测试的本质
 
@@ -25,6 +39,11 @@ f   转换函数
 
 有了有效的状态(**起点**，与团队一致的有效状态)，出了任何错误，只要将两份打印日志 diff 即可得到错误的输入。
 [svn-stat-table](https://www.jianshu.com/p/5eb45c64f3e3)
+
+dhcp.gw 的三种初始状态
+1 静态              = gw
+2 dhcp.on           = gw
+3 dhcp.off          = ""  // 很难被测试到，当路由是 192.168.1.0 时，就出问题了
 
 # [testcase example](+/测试用例必要元素描述 test_01_用例设计原则)
 
