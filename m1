@@ -1510,7 +1510,7 @@ function fn_main() {
         w3m
         win
         thinkpad
-        wireshark
+        wireshark               # tshark - terminal shark
         xml
         mxml                    # 
         json

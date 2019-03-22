@@ -6,6 +6,8 @@
 
 FSM = State + Input + 状态转移函数
 
+[Warning](系统初始状态不可为未定义状态 -> wlan_route=${wlan_route:-${eth0_route}})
+
 **优化**
 
 实现同样的功能
