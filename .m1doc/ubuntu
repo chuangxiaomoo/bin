@@ -9,7 +9,10 @@ apt-get  install  build-essential
 [](http://blog.csdn.net/mtofum/article/details/50296085)
 
 **对于ubuntu 12.04**
-apt-get install ia32-libs
+
+Up to Ubuntu 11.04, install the package ia32-libs.
+   On Ubuntu 11.10, install ia32-libs-multiarch.
+From  Ubuntu 12.04, install ia32-libs-multiarch
 
 **对于ubuntu 13.04以后的版本**
 apt-get install libc6-i386

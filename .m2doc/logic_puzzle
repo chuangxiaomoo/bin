@@ -85,6 +85,13 @@ n阶知识：A3知道“A2知道‘A1知道岛上有蓝眼睛人’”
 
 没有计时开始的日期（`初始化状态如此重要`），则递归的推理没有起点。
 
+```bash
+    eth0_route=$(cat $eth0_gw)
+    wlan_route=$(cat $wlan_gw)
+    wlan_route=${wlan_route:-${eth0_route}}   # 变量一定不能未定义
+    $ROUTE add default gw ${wlan_route} dev wlan0 metric 1
+```
+
 关键不在于游客说的内容，而是公布(广播)这个动作。
 
 共识，对与`投资`的考虑？

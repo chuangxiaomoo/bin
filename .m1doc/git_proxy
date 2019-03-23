@@ -4,16 +4,9 @@
 
 # 一、配置主机的Shadowsocks
 
-1.右键单击 Shadowsocks 应用图标，勾选上 “允许来自局域网的连接”
+1.右键单击 Shadowsocks 应用图标，勾选上 “**允许来自局域网的连接**”
 
-# git代理问题
-
-ps:【git使用】Failed to connect to 127.0.0.1 port 1080: Connection refused
-
-查询是否使用代理：git config --global http.proxy
-取消代理：git config --global --unset http.proxy
-
-虚拟机代理时不能使用127.0.0.1而应该采用主机IP（例如10.0.0.2）
+# 虚拟机代理时不能使用127.0.0.1而应该采用主机IP（例如10.0.0.2）
 
 FTP_PROXY=http://10.0.0.2:1080/
 ftp_proxy=http://10.0.0.2:1080/
@@ -21,3 +14,21 @@ all_proxy=socks://10.0.0.2:1080/
 ALL_PROXY=socks://10.0.0.2:1080/
 HTTPS_PROXY=http://10.0.0.2:1080/
 HTTP_PROXY=http://10.0.0.2:1080/
+
+# git代理问题
+
+全局设置
+git config --global https.proxy 10.0.0.2:1080   **workable**
+
+局部设置(在github clone 仓库内执行)
+git config --local  https.proxy 10.0.0.2:1080
+git config --local   http.proxy 10.0.0.2:1080
+
+查询代理：
+git config --local  http.proxy
+git config --global https.proxy
+
+取消代理：
+
+git config --local  --unset https.proxy
+git config --global --unset https.proxy
