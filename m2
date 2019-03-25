@@ -464,6 +464,8 @@ function fn_gsq_房价什么情况下会崩()    {
                                           cat article_309_为什么房价和人民币汇率只能保一个.md
                                           cat article_310_并非买套套房子就要住一辈子.md
                                           cat article_311_一座城市就是一家上市公司.md
+                                          cat article_312_强势行情跳空低开的锚定心理表征.md
+                                          cat article_320_.md
                                           cat moyuxiaozu
                                           cat article_401_康波里的巨头沉浮.md
                                           cat xuzhe
