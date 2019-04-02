@@ -1,0 +1,6 @@
+# 7z
+
+apt-get install p7zip-full
+
+7z x PACKAGE.7z 
+
