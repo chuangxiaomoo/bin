@@ -387,6 +387,7 @@ scmo()  {
     a   ALL_.py_and_.shell
     c   /winc/cache/codes.txt
     cn  /pycharm/candle.py
+    B   /pycharm/bin/iB.py
     k   /pycharm/bin/k.sh
     s   /pycharm/bin/S
     v   /pycharm/bin/vpsys.md

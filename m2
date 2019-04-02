@@ -317,6 +317,17 @@ function fn_decide()                    { cat decide
                                               qipashuo
                                               gaoxiaosong
                                               subjects
+                                              book_公司01.公司公司.md
+                                              book_公司02.市场无限.md
+                                              book_公司03.猎富时代.md
+                                              book_公司04.进步之痛.md
+                                              book_公司05.危机时刻.md
+                                              book_公司06.谁执权杖.md
+                                              book_公司07.各领风骚.md
+                                              book_公司08.创新先锋.md
+                                              book_公司09.本土雄心.md
+                                              book_公司10.地球无疆.md
+                                              read_ThePowerOfCompany.md
 }
 
 function fn_howto()                     { cat zhangxiaomoo
