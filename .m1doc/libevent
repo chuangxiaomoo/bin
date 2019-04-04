@@ -1,7 +1,17 @@
-/* libevent */
+# libevent
 
 
 大家说说libevent使用的经验吧
 http://bbs.chinaunix.net/thread-1788437-1-1.html
 
+
+# 4大库
+
+jcp, event, timer+epoll, shmcache
+
+# event
+
+ev_signup()   // 新ev入库
+ev_attach()
+ev_detach()
 

@@ -2,6 +2,17 @@
 
 # dd 创建空文件, bs可以有单位，count也可以有单位
 
+# skip 分割文件 if
+
+dd bs=50K skip=0 count=1 if=/ipc/bin/impdbg of=/tmp/0; echo 0; 
+dd bs=50K skip=1 count=1 if=/ipc/bin/impdbg of=/tmp/1; echo 1; 
+dd bs=50K skip=2 count=1 if=/ipc/bin/impdbg of=/tmp/2; echo 2; 
+dd bs=50K skip=3 count=1 if=/ipc/bin/impdbg of=/tmp/3; echo 3; 
+
+# seek 部分覆盖 of
+
+dd bs=50K seek=3 
+
 # 创建20M的文件
 
 dd if=/dev/zero of=FILE_U_WANT bs=1M    count=20

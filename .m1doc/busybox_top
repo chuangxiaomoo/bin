@@ -26,6 +26,7 @@
       N         PID                           Yes
       P         %CPU                          Yes
       T         TIME+                         Yes
+      H         ___thread_name                Yes
 
       
 . montavista top
