@@ -9,6 +9,7 @@ screen -S zm        # **new**
 exit|c-d            # **destroy**
 C-a d               # **detach-bg**
 screen -r zm        # **attach-fg**
+screen -R           # attempts to resume the youngest
 
 screen -d           # Attached唯一时生效，跨 session detach Attached session
 screen -d mz5       # 带参数时，跨 session detach Attached session

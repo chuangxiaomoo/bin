@@ -1127,7 +1127,7 @@ function fn_postgresql()                { cat postgresql ;}
 function fn_mysql()                     { 
 function fn_base()                      { cat mysql_install mysql_base ;}
 function fn_complete()                  { cat mysql_complete ;}
-function fn_migrate()                   { cat mysql_migrate ;}
+function fn_migrate()                   { cat mysql_migrate ;}  # 中文
 function fn_troubleshooting()           { cat mysql_troubleshooting ;}
     local opts=(
         base                # 安装及startup on Linux

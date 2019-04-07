@@ -30,6 +30,7 @@ alias      iHMS=''
 alias       NUM=''
 alias       TBL=''
 alias       TEN=''
+alias      THLD=''
 alias    HAVING=''
 #lias      FINA=''      # S_I_N_A conflict with Svn
 alias      PREV=''

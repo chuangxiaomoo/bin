@@ -148,7 +148,6 @@ CREATE TABLE IF NOT EXISTS top10(
 );
 LOAD DATA LOCAL INFILE '/root/cdo/top10' INTO TABLE top10;
 
-
 DROP TABLE IF EXISTS uni;
 CREATE TABLE IF NOT EXISTS uni(
     date        date NOT NULL, 
@@ -199,41 +198,6 @@ CREATE TABLE IF NOT EXISTS zmd(
     INDEX(date, code)
 );
 
-CREATE TABLE IF NOT EXISTS zmd0(
-    date   date            NOT NULL DEFAULT 0,
-    code   INT(6) ZEROFILL NOT NULL DEFAULT 0,
-
-    hi3    DECIMAL(6, 2)   NOT NULL DEFAULT 0,
-    lo3    DECIMAL(6, 2)   NOT NULL DEFAULT 0,
-    n3     TINYINT         NOT NULL DEFAULT 0,
-    hi2    DECIMAL(6, 2)   NOT NULL DEFAULT 0,  # 中枢上线
-    lo2    DECIMAL(6, 2)   NOT NULL DEFAULT 0,  # 中枢下线
-    n2     TINYINT         NOT NULL DEFAULT 0,  # count(顶)
-    hi     DECIMAL(6, 2)   NOT NULL DEFAULT 0,
-    lo     DECIMAL(6, 2)   NOT NULL DEFAULT 0,
-    n      TINYINT         NOT NULL DEFAULT 0,
-
-    top0   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  # bi0是上升笔时剔除，最新高点
-    top1   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  #                    次新高点
-    top2   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  #
-    topx   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  #
-    cvg3   DECIMAL(6, 2)   NOT NULL DEFAULT 0,
-    bot0   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  # bi0是上升笔时剔除，最新低点
-    bot1   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  #                    次新低点
-    botx   DECIMAL(6, 2)   NOT NULL DEFAULT 0,  # botx=bot2, 默认3底以上最3底，后续可优化
-
-    close  DECIMAL(6, 2)   NOT NULL DEFAULT 0,
-    o      TINYINT         NOT NULL DEFAULT 0,  # 1     ASC创新高，idxmin()=0
-                                                # 2+    ASC形成上升笔后的振荡数(顶后min(low)计为0)
-                                                # -n    DSC形成下降笔后的振荡数
-    z      DECIMAL(6,2)    NOT NULL DEFAULT 0,  # 转折点价位，与o对应
-                                                # 1     close
-                                                # 2+    topx后的min(low)
-                                                # -n    bot0
-
-    INDEX(date, code)
-);
-
 DROP TABLE IF EXISTS maxp;
 CREATE TABLE maxp (
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
@@ -261,6 +225,14 @@ CREATE TABLE HH34 (
     cnt         TINYINT NOT NULL DEFAULT 0,             # mvp.cnt
     lightgo     TINYINT NOT NULL DEFAULT 0,             # count(mvp.cnt>0)
     INDEX(code,date)
+);
+
+DROP TABLE IF EXISTS yu;
+CREATE TABLE yu (
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    YU          TINYINT NOT NULL DEFAULT 0,
+    name        CHAR(16),
+    INDEX(code)
 );
 
 DROP TABLE IF EXISTS balance;
@@ -318,7 +290,22 @@ CREATE TABLE i5 (
     avg         DECIMAL(6,2) NOT NULL DEFAULT 0,    # min(5,low) 对应的 min(avg)
     avg8        DECIMAL(6,2) NOT NULL DEFAULT 0,    # min(8,low) 对应的 min(avg)
     close       DECIMAL(6,2) NOT NULL DEFAULT 0,    # 辅助次日开盘30min的e加权
-    i           TINYINT      NOT NULL DEFAULT 0,    # 0, 无包含关系; n in [1,2,3,4], 第 Kn 被 K(n-1...4) 包含
+
+    NB          TINYINT      NOT NULL DEFAULT 0,    # 寻底不成笔，id of max_high(curr=0)
+    down        DECIMAL(6,2) NOT NULL DEFAULT 0,    # 下降幅度
+    SB          TINYINT      NOT NULL DEFAULT 0,
+    rise        DECIMAL(6,2) NOT NULL DEFAULT 0,
+    INDEX(date,code)
+);
+
+DROP TABLE IF EXISTS iB;
+CREATE TABLE iB (
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    NB          TINYINT      NOT NULL DEFAULT 0,    # 寻底不成笔，id of max_high(curr=0)
+    down        DECIMAL(6,2) NOT NULL DEFAULT 0,    # 下降幅度
+    SB          TINYINT      NOT NULL DEFAULT 0,
+    rise        DECIMAL(6,2) NOT NULL DEFAULT 0,
     INDEX(date,code)
 );
 

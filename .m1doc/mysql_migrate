@@ -2,7 +2,7 @@
 
 [MySQL数据库迁移](http://www.cnblogs.com/advocate/archive/2013/11/19/3431606.html)
 [mysql数据库dump](http://blog.sina.com.cn/s/blog_6b92dc3b0100mhzs.html)
-
+[UTF8](https://stackoverflow.com/questions/5906585/how-to-change-the-default-collation-of-a-database)
 
 # step
 
@@ -33,4 +33,9 @@ auto-rehash	# faster start of mysql but no tab completition
 [mysqld]
 character-set-server=utf8
 `
+
+# 对于 dump 过来的 database
+
+SHOW VARIABLES LIKE 'character_set%';
+ALTER DATABASE <database_name> CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 
