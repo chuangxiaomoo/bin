@@ -998,8 +998,15 @@ function fn_04_责任与中年危机()         { cat family_04_责任与中年�
 function fn_ideas()                     { cat ideas ;}
 function fn_idealism()                  { cat idealism ;}
 function fn_rose()                      { cat rose ;}
-function fn_interview()                 { cat career 50_faq tek jd job interview ;}
+function fn_interview()                 { cat career 
+                                                50_faq 
+                                                tek
+                                                jd
+                                                job
+                                                shakespare2offer.txt
+                                                interview   # 想想自己的价值？企业本质在更高效的内部交易
 
+                                        }
 function fn_influence()                 {
 function fn_cept()                      { cat influence_cept ;}
 function fn_agile()                     { cat influence_agile ;}
@@ -1154,7 +1161,6 @@ function fn_btc()                       { cat btc_cept
 # 一砂一极乐，一方一净土，一笑一尘缘，一念一清静
 function fn_main() {
     local opts=(
-        interview                       # 想想自己的价值？
         01_囧_jiong                     #
         cold                            # 感冒 牙痛 智齿 sick
         advertisement
