@@ -336,6 +336,7 @@ function fn_a2_quote_input_delay()      { cat case_a2_quote_input_delay ;}
 function fn_56_ini写入时间耗时3秒()     { cat case_56_ini写入时间耗时3秒 
                                           cat case_z1_mac地址绑定后也IP冲突
                                           cat case_z2_设备多次出现内存不足导致设备重启.md
+                                          cat case_z3_HOOM卡片机订制项目4发包.md
                                         }
 
     local opts=(
@@ -565,7 +566,9 @@ function fn_design() {
 function fn_Designing_Design()          { cat design_Designing_Design ;}
 function fn_pm()                        { cat design_pm ;}
 function fn_config()                    { cat design_config ;}
-function fn_startup()                   { cat design_startup ;}
+function fn_startup()                   { cat design_startup
+                                          cat design_IPD
+                                        }
 function fn_UI()                        { cat design_UI ;}
 function fn_patterns()                  { cat design_patterns ;}
 
