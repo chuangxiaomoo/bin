@@ -1,6 +1,16 @@
-**Recv** -D to bg
+# 在设备上 -s，在 PC 上 -c
+
+**Listen** -D to bg
 iperf -i1 -b1000M -s -D
 
-**Send** default -t10 
+**clent** default -t10 
 iperf -i1 -b1000M -c 192.168.2.248 
+
+# 测试Wifi热点，只能在手机上-s
+
+**iPerf.APP**
+-s
+
+**clent** default -t10 
+iperf -i1 -b1000M -c 172.25.0.20
 

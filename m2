@@ -104,6 +104,7 @@ function fn_WiMax_meeting()             { cat meeting huawei_WiMax_meeting
                                               sanxing_2013.team PDCA.team
                                               sanxing_2014.nxp
                                               sanxing_2017.fisheye eye
+                                              sanxing_2019.zoomap.md
                                               introspector.2018
                                               introspector
                                               sleeping DID 

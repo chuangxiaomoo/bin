@@ -2,6 +2,7 @@
 
 . fd 不被继承
     O_CLOEXEC (Since Linux 2.6.23)
+    open(filename, O_CLOEXEC);
 
     2.6.18 可以用下面这个
     fd = open(WATCH_DOG_DEVICE, O_WRONLY);
