@@ -1,0 +1,10 @@
+:help i_CTRL-V_digit
+https://unix.stackexchange.com/questions/61118/how-to-enter-non-ascii-characters-using-hex-or-octal-codes-in-vi
+
+CTRL-V  255     -> ÿ
+CTRL-V  65      -> A            # 十进制
+CTRL-V  o101    -> A            # 八进制
+
+CTRL-V  uu0041  -> A            # 4-hexchar Unicode sequence
+
+

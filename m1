@@ -337,6 +337,7 @@ function fn_56_ini写入时间耗时3秒()     { cat case_56_ini写入时间耗�
                                           cat case_z1_mac地址绑定后也IP冲突
                                           cat case_z2_设备多次出现内存不足导致设备重启.md
                                           cat case_z3_HOOM卡片机订制项目4发包.md
+                                          cat case_z4_have_no_buffers_to_output.md
                                         }
 
     local opts=(
@@ -667,7 +668,9 @@ function fn_relocate()                  { cat svn_relocate ;}
 }
 
 function fn_vim() {
-function fn_hex()                       { cat vim_hex vimtutor gvim ;}
+function fn_hex()                       { cat vim_hex 
+                                              vim_CTRL-V
+                                              vimtutor gvim ;}
 function fn_fundamental()               { cat vim_fundamental vim_ctags ;}
 function fn_align()                     { cat vim_align ;}
 function fn_hotkey()                    { cat vim_hotkey chromVim cvim autohotkey ahk ;}
@@ -1026,7 +1029,9 @@ function fn_dome()                      { cat jco_dome ;}
 function fn_ideas()                     { cat ideas ;}
 
 function fn_test()                      { 
-function fn_guru()                      { cat test_guru ;}
+function fn_guru()                      { cat test_guru
+                                              test_suit_case  
+                                        }
 function fn_fundamental()               { cat test_fundamental ;}
 function fn_gtest()                     { cat test_gtest ;}
 function fn_webpage()                   { cat test_webpage ;}

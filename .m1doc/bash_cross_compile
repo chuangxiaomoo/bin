@@ -21,6 +21,10 @@
     make CC=arm-linux-gcc AR=arm-linux-ar
     .so 是由 gcc 链接的，但 .a 不是，所以需要同时指定 ar
 
+# iperf 2.0.9
+
+make --host=arm-buildroot-linux-uclibcgnueabihf
+
 # e2fsprogs
 
 LDFLAGS="-Wl,-gc-sections" CFLAGS="-g -O2 -ffunction-sections -fdata-sections" CC=arm-buildroot-linux-uclibcgnueabi-gcc ./configure --host=arm-linux
