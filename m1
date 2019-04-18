@@ -338,6 +338,7 @@ function fn_56_ini写入时间耗时3秒()     { cat case_56_ini写入时间耗�
                                           cat case_z2_设备多次出现内存不足导致设备重启.md
                                           cat case_z3_HOOM卡片机订制项目4发包.md
                                           cat case_z4_have_no_buffers_to_output.md
+                                          cat case_z7_no_recordings_and_mp4_lost.md
                                         }
 
     local opts=(

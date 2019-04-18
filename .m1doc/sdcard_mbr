@@ -1,10 +1,24 @@
 # cid & serial
 
 root@grain-media:~# cat /sys/block/mmcblk0/device/cid
-12345653440000000000000703010100
+
+035344534336344780616e1248012c3f    // SanDisc 64G
+
+| Name Field            | Width | CID-slice     | e.g.       |
+| Manufacturer ID       | MID   | 8  [^127:120] | 03         | SanDisc
+| OEM/Application ID    | OID   | 16 [^119:104] | 5344       | SD
+| Product name          | PNM   | 40 [^103:64]  | 5343363447 | SC64G
+| Product revision      | PRV   | 8  [^63:56]   | 80         |
+| Product serial number | PSN   | 32 [^55:24]   | 616e1248   | 1,634,603,592
+| reserved              | --    | 4  [^23:20]   | 0          |
+| Manufacturing date    | MDT   | 12 [^19:8]    | 12c        | 2018 Dec
+| CRC7 checksum         | CRC   | 7  [^7:1]     | 3f         |
+| not used, always 1    | -     | 1  [^0:0]     |            |
+
 root@grain-media:~# cat /sys/block/mmcblk0/device/serial
 0x00000703
 
+[SD Association Physical Layer Simplified Specification](https://www.sdcard.org/downloads/pls/index.html)
 [32字节cid详细意义](http://www.cameramemoryspeed.com/sd-memory-card-faq/reading-sd-card-cid-serial-psn-internal-numbers/)
 serial是cid的一部分。
 
@@ -41,12 +55,12 @@ dd if=/dev/mmcblk0 bs=512 count=1 | hexdump
 #include <unistd.h>
 #include <string.h>
 
-# define RESERVE_COL    0x1B0                    
+# define RESERVE_COL    0x1B0
 # define RESERVE_ROW1   0xC
-# define RESERVE_ROW2   0xD                      
+# define RESERVE_ROW2   0xD
 
 int main(int argc, char *argv[])
-{   
+{
     char buf[32] = {0};
     FILE *f = NULL;
 
@@ -60,22 +74,22 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    printf("open.pos is %ld\n", ftell(f));       
+    printf("open.pos is %ld\n", ftell(f));
     printf("pos go 0x%x\n", RESERVE_COL);
 
-    fseek(f, RESERVE_COL, SEEK_CUR);             
-    printf("pos is 0x%lx\n", ftell(f));                                                                                                                                                      
+    fseek(f, RESERVE_COL, SEEK_CUR);
+    printf("pos is 0x%lx\n", ftell(f));
 
     fread(buf, 0x10, 1, f);
     buf[RESERVE_ROW1] = 0x10;
     buf[RESERVE_ROW2] = 0x80;
-    fseek(f, -0x10, SEEK_CUR);                   
+    fseek(f, -0x10, SEEK_CUR);
     fwrite(buf, 1, 0x10, f);
 
     fclose(f);
     sync();
 
     return 0;
-}                                                
+}
 )`
 
