@@ -12,6 +12,26 @@
 
   xxd默认表示方式和UltraEdit最像：以位移开头，然后每两字节一组，行后有相应字符显示
 
+# counterfeit SD card, 找到Cap/2
+
+root@moo:~#  8G x1024M  8192
+root@moo:~# 16G x1024M 16384
+root@moo:~# 32G x1024M 32768
+root@moo:~# 64G x1024M 65536
+
+dd if=/dev/zero of=/dev/mmcblk0p1 bs=1M  count=1 seek=32768   #// seek=bs的个数，改变这个，即是实际大小
+
+hexdump -s 2048m -n 16 /dev/mmcblk0p1 >& /tmp/cde;
+
+hexdump -s 2048m -n 16 /dev/mmcblk0p1
+hexdump: number 2048m is not in 0..2147483647 range           #// 坏卡
+
+echo -e -n '\x55\xff\xaa' > /tmp/raw
+dd if=/dev/zero of=/dev/mmcblk0 seek=16384M bs=16M count=1
+hexdump -s 16384m -n 16 /dev/mmcblk0
+dd if=/tmp/raw of=/dev/mmcblk0 seek=16384M bs=16M count=1
+hexdump -s 16384m -n 16 /dev/mmcblk0
+
 # hexdump
    -n length
       Interpret only length bytes of input.

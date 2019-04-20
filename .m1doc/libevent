@@ -1,3 +1,10 @@
+# aio
+
+[性能调优攻略](https://coolshell.cn/articles/7490.html)
+[使用异步 I/O 大大提高应用程序的性能](https://www.ibm.com/developerworks/cn/linux/l-async/)
+[一个“蝇量级” C 语言协程库](https://coolshell.cn/articles/10975.html)
+[STATE THREADS 回调终结者](https://coolshell.cn/articles/12012.html)
+
 # libevent
 
 

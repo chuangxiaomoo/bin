@@ -59,7 +59,7 @@ slab 使用 buddy 算法: /proc/buddyinfo
   first the kernel checks the data in the buffers which contain the metadata which points to the actual files/data contained in the page caches. 
   Once from the metadata the actual block address of the file is known, it is picked up by the kernel for processing.
 
-# Drop|禁用cache，更多请参考[man proc]
+# Drop|禁用cache，更多请参考[man proc] [Documentation/sysctl/vm.txt]( https://www.kernel.org/doc/Documentation/sysctl/vm.txt )
 
   > sync; echo 3 > /proc/sys/vm/drop_caches
   > arm-linux
