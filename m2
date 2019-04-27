@@ -1148,7 +1148,7 @@ function fn_architecture()              { cat architecture
 function fn_estate()                    { cat estate ;}
 function fn_driver()                    { cat driver ;}
 function fn_cold()                      { cat cold ;}
-function fn_sport()                     { cat sport ;}
+function fn_sport()                     { cat sport pingpang.md ;}
 function fn_stupid_things()             { cat stupid_things ;}
 function fn_subtitle()                  { cat subtitle ;}
 function fn_kindle()                    { cat kindle ;}
