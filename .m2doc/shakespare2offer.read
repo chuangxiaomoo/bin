@@ -1,0 +1,14 @@
+# 边界
+
+```cpp
+        p = strstr(fRecordQuery.record_filename, ".mp4");
+        if(timeLength < 0) {
+            timeLength = 60;
+        }
+
+        if(p != NULL) {
+            timeLength = (abs(timeLength-900) <= 5) ? 900 : timeLength; 
+            if (timeLength > 900) timeLength = 900;       // 不处理，做造成异常时文件名过长删除失败
+            sprintf(p,"-%04d.mp4", timeLength);
+        }
+```

@@ -1125,7 +1125,7 @@ function fn_command()                   { cat apt-get_command ubuntu ubuntu.serv
 function fn_java()                      { cat java ;}
 function fn_scp()                       { cat ssh ;}
 function fn_ssh()                       { cat ssh ;}
-function fn_libevent()                  { cat libevent ;}
+function fn_libevent()                  { cat libevent libuv.md ;}
 function fn_in_event()                  { cat in_event ;}
 function fn_live555()                   { cat live555 ;}
 function fn_hudson()                    { cat hudson ;}

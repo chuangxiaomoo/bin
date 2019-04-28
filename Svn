@@ -28,6 +28,7 @@ function fn_usage()
         u       update
         U       Svn l 20 | Svn U zhangj : svn --user zhangj
 
+        svn cleanup __should__ in TOP dir
         svn relocate svn://sub.someaddress.com.tr/project
         svn help _____more.info_____
     "

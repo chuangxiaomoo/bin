@@ -751,6 +751,19 @@ function fn_sum()
     fi
 }
 
+function fn_txt2mdbrace()
+{
+    if [ ! -e "${1}" ]; then
+        echo "<${1}> is not exist"; exit
+    fi
+
+    # * 不进行替换
+    sed -i -e 's/\<_/＿/g'                  \
+        -e 's/\[/［/g' -e 's/\]/］/g'       \
+        -e 's/</＜/g'  -e 's/>/＞/g'        \
+        $1
+}
+
 function fn_main() 
 {
     cmdlist=(
@@ -790,6 +803,7 @@ function fn_main()
     "pyx                    # pyc extract"
     "sum                    # sum STDIN or ARGV"
     "txt2markdow            # 给章节打上#"
+    "txt2mdbrace            # _[]  ->  ＿［］×"
     "ff {[0]|1}             # xiaolai road to forturn free"
     )
 

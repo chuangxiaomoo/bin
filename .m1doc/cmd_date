@@ -24,16 +24,6 @@
    * To print the date of the day three months and one day hence:
         date --date='3 months 1 day'   
 
-# 转换：把<date-time>转换为<自Epoch的秒数>
-    date --date='1970-01-01 00:02:00 +0000' +%s
-    date --date='1970-01-01 00:02:00 UTC' +%s
-    120
-
-# 转换：把<自Epoch的秒数>转换为<date-time>
-    date    -d  '1970-01-01 UTC 946684800 seconds' +"%F %T %z"
-    date    -d  @946684800 +"%F %T %z"
-    date -u -d  @946684800 +"%F %T %z"
-
 # busybox
 	date [-u|--utc|--universal] [YYYY.]MM.DD-hh:mm[:ss] | YYYY-MM-DD hh:mm[:ss]
 	date -s "2008.08.08-20:08:00"
@@ -69,3 +59,14 @@
     /* $date */ 
     cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 	HERE
+
+# 转换：把<date-time>转换为<自epoch的秒数>
+    date +%s --date='1970-01-01 00:02:00 +0000'
+    date +%s --date='1970-01-01 00:02:00 UTC'
+    120
+
+# 转换：把<自epoch的秒数>转换为<date-time>
+    date     +"%F %T %z" -d  '1970-01-01 UTC 946684800 seconds'
+    date     +"%F %T %z" -d  @946684800 
+    date -u  +"%F %T %z" -d  @946684800 
+
