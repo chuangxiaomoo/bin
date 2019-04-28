@@ -1007,6 +1007,7 @@ function fn_interview()                 { cat career
                                                 jd
                                                 job
                                                 shakespare2offer.txt
+                                                shakespare2offer.read
                                                 interview   # 想想自己的价值？企业本质在更高效的内部交易
 
                                         }
