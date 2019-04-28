@@ -479,6 +479,7 @@ function fn_gsq_房价什么情况下会崩()    {
                                           cat article_312_强势行情跳空低开的锚定心理表征.md
                                           cat article_320_流动性与占便宜.md
                                           cat article_321_漂亮妹纸如何社交有钱人.md
+                                          cat article_399_人性辉煌和幻灭：德扑与风险分层理论.md
                                           cat moyuxiaozu
                                           cat article_401_康波里的巨头沉浮.md
                                           cat xuzhe
@@ -1063,7 +1064,9 @@ function fn_market()                    { cat finance_market ;}
 }
 
 function fn_texaspoker()                {
-function fn_philosophy()                { cat texaspoker_philosophy ;}
+function fn_philosophy()                { cat texaspoker_rules.md
+                                              texaspoker_philosophy
+                                        }
 function fn_life()                      { cat texaspoker_life ;}
 function fn_xiuxing()                   { cat texaspoker_xiuxing ;}
 function fn_loser()                     { cat texaspoker_loser ;}
@@ -1145,7 +1148,7 @@ function fn_architecture()              { cat architecture
 function fn_estate()                    { cat estate ;}
 function fn_driver()                    { cat driver ;}
 function fn_cold()                      { cat cold ;}
-function fn_sport()                     { cat sport ;}
+function fn_sport()                     { cat sport pingpang.md ;}
 function fn_stupid_things()             { cat stupid_things ;}
 function fn_subtitle()                  { cat subtitle ;}
 function fn_kindle()                    { cat kindle ;}
