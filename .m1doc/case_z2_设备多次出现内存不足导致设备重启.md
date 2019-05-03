@@ -2,6 +2,9 @@
 
 ## 真正原因 - True causes
 
+Sensor不出帧导致cpu过高，进而导致内存不足
+与[](case_z4_have_no_buffers_to_output.md)是一个问题
+
 ## 问题描述 - from R&D or Tester
 
 2019-03-20(Sat)

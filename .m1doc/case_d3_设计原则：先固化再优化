@@ -1,0 +1,14 @@
+# T21.Bash替换Ash
+
+function()全部替换成功，但两个平台(T21 313E)的ash还是有`差异`:
+
+    set --                                                                  \
+    "list                        # toggle -act list"                        \
+    "bar            fd           # get and set socket fd SNDBUF RCVBUF"     \
+    "foo            1            # DISABLE truncate audio buffer to .4s"    \
+    "code           1            # debug: info"
+
+周六多花了2个小时处理。
+
+理性，应该凌驾于对技术的执着之上。因为你的目标是创造价值。
+

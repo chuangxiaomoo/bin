@@ -100,8 +100,9 @@ function fn_2019_plan()                 { cat annual_2019_plan annual_2019_event
 
 function fn_WiMax_meeting()             { cat meeting huawei_WiMax_meeting
                                               7habit 8s_habit
+                                              sanxing_2012.罗之超预测
                                               sanxing_2013
-                                              sanxing_2013.team PDCA.team
+                                              sanxing_2013.team PDCA.team MANAGEMENT.team
                                               sanxing_2014.nxp
                                               sanxing_2017.fisheye eye
                                               sanxing_2019.zoomap.md
@@ -479,6 +480,7 @@ function fn_gsq_房价什么情况下会崩()    {
                                           cat article_312_强势行情跳空低开的锚定心理表征.md
                                           cat article_320_流动性与占便宜.md
                                           cat article_321_漂亮妹纸如何社交有钱人.md
+                                          cat article_390_写个文章全是套路和心机.md
                                           cat article_399_人性辉煌和幻灭：德扑与风险分层理论.md
                                           cat moyuxiaozu
                                           cat article_401_康波里的巨头沉浮.md
@@ -1008,6 +1010,7 @@ function fn_interview()                 { cat career
                                                 job
                                                 shakespare2offer.txt
                                                 shakespare2offer.read
+                                                shakespare2offer.tcpip
                                                 interview   # 想想自己的价值？企业本质在更高效的内部交易
 
                                         }

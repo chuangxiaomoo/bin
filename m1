@@ -4,7 +4,7 @@ ARCHIVE=~/bin/.m1doc/
 cd ${ARCHIVE}
  . ${ARCHIVE}.pri.bashrc
 
-function fn_agile()                     { 
+function fn_agile()                     {
 function fn_manifesto()                 { cat agile_manifesto ;}
 function fn_base()                      { cat agile_base rdm ;}
 function fn_26_hints()                  { cat agile_26_hints ;}
@@ -16,8 +16,8 @@ function fn_26_hints()                  { cat agile_26_hints ;}
     fn_print $@
 }
 function fn_adobepdf()                  { cat adobepdf ;}
-function fn_asm()                       { cat asm 
-                                              asm_arm 
+function fn_asm()                       { cat asm
+                                              asm_arm
                                               asm_mips
                                         }
 function fn_awk()                       { cat awk ;}
@@ -50,7 +50,7 @@ function fn_filter()                    { cat wireshark_filter ;}
     fn_print $@
 }
 
-function fn_python()                    { 
+function fn_python()                    {
                                           cat python bokhe
                                           cat pandas tushare tu.py
                                           cat jqdata
@@ -64,7 +64,7 @@ function fn_huawei()                    { cat python_huawei ;}
     fn_print $@
 }
 
-function fn_ruby()                      { 
+function fn_ruby()                      {
 function fn_install()                   { cat ruby_install ;}
 function fn_base()                      { cat ruby_base ;}
 function fn_grammer()                   { cat ruby_grammer ;}
@@ -77,7 +77,7 @@ function fn__dollor()                   { cat ruby__dollor ;}
     local opts=(
         install
         base                # 手册 在Ruby中，解决一个问题会有多种方法
-        operator            # + - * % 
+        operator            # + - * %
         _percent            # %
         _dollor             # $
         grammer             # 语法
@@ -95,7 +95,7 @@ function fn_find()                      { cat find ;}
 function fn_alibaba()                   { cat alibaba taobao ;}
 function fn_google()                    { cat google
                                               google.translate
-                                              google.faq 
+                                              google.faq
                                               gfw
                                               how_google_works.md
                                         }
@@ -140,7 +140,7 @@ function fn_var_cmdline()               { cat make_cmdline ;}
 function fn_var_debug()                 { cat make_var_debug ;}
 function fn_var_inner()                 { cat make_var_inner ;}
 function fn_lib_dynamic()               { cat make_lib_dynamic ;}
-function fn_lib_static()                { cat make_lib_static 
+function fn_lib_static()                { cat make_lib_static
                                               make_ar2so
                                               make_lib_dependence
                                               make_herderfile_dependence
@@ -149,7 +149,7 @@ function fn_lib_static()                { cat make_lib_static
 
 function fn_virtualbox()                { cat virtualbox vmware ;}
 
-function fn_linux()                     { 
+function fn_linux()                     {
 function fn_cron()                      { cat linux_cron ;}
 function fn_release()                   { cat linux_release ;}
 function fn_kernel()                    { cat linux_kernel ;}
@@ -180,14 +180,14 @@ function fn_aout()                      { cat linux_aout ;}
         udev
         lockfile                        # lockfile-progs
         proc                            # sys/vm
-        free_buffer_cache               # 
+        free_buffer_cache               #
     )
     fn_print $@
 }
 
 #
 # . busybox_tftp
-function fn_busybox()                   { 
+function fn_busybox()                   {
 function fn_man()                       { cat busybox.man
                                           cat busybox.udhcpc.man
                                           cat busybox.udhcpd.man
@@ -247,7 +247,7 @@ function fn_pipe()                      { cat bash_pipe ;}
         02_unquoted_star将被扩展        # 不引起来的 * 会被 扩展
         03_unquot_去两边空格
         04_算术运算                     # math
-        05_大括号_冒号_操作符运算       # ${parameter:-word} 操作符都以 : 打头 
+        05_大括号_冒号_操作符运算       # ${parameter:-word} 操作符都以 : 打头
         06_将字符串拆分成数组           # 字串中的单个字符操作
         20_beep                         # echo -e "\a" #如果你的终端会发声的话
         color
@@ -271,141 +271,78 @@ function fn_pipe()                      { cat bash_pipe ;}
     fn_print $@
 }
 
-#
-# ATTENTION: Mark TIME in every case
-#
 function fn_case() {
-function fn_fundamental()               { cat case_fundamental 
-                                          cat case_100_搜索过滤 ;}
-function fn_s1_SSL_CTX_free段错误()     { cat case_s1_SSL_CTX_free段错误 ;}
-function fn_s2_ZXW修改ipcam_cfg段错误() { cat case_s2_ZXW修改ipcam_cfg段错误 ;}
+    cat case_fundamental                        # ATTENTION: Mark TIME in every case
+    cat case_100_搜索过滤
 
-function fn_02_文件不能删除升级失败()   { cat case_02_文件不能删除升级失败 ;}
-function fn_03_FACEBOOK中无ftpclient()  { cat case_03_FACEBOOK中无ftpclient ;}
-function fn_04_红外夜视只有8m()         { cat case_04_红外夜视只有8m ;}
-function fn_05_告警烧加密芯片()         { cat case_05_告警烧加密芯片 ;}
-function fn_06_PROFILE解析失败()        { cat case_06_PROFILE解析失败 ;}
-function fn_07_multidev增加失败()       { cat case_07_multidev增加失败 ;}
-function fn_08_alarm当前状态应该只读()  { cat case_08_alarm当前状态应该只读 ;}
-function fn_09_4358日立机芯无自动聚焦() { cat case_09_4358日立机芯无自动聚焦 ;}
-function fn_10_MAC非00打头网络故障()    { cat case_10_MAC非00打头网络故障 ;}
-function fn_11_mount替换之殇()          { cat case_11_mount替换之殇 ;}
-function fn_12_ini_no_sec()             { cat case_12_ini_no_sec ;}
-function fn_13_No_init_found()          { cat case_13_No_init_found ;}
-function fn_14_web_dont_work()          { cat case_14_web_dont_work ;}
-function fn_15_multi_plt4m_多平台()     { cat case_15_multi_plt4m_多平台 ;}
-function fn_16_WiFi_AP_切换卡顿()       { cat case_16_WiFi_AP_切换卡顿 ;}
-function fn_17_secureCRT_F5_罢工()      { cat case_17_secureCRT_F5_罢工 ;}
-function fn_18_yishi_NFS_boot_fail()    { cat case_18_yishi_NFS_boot_fail ;}
-function fn_19_ssh_Permission_denied()  { cat case_19_ssh_Permission_denied ;}
-function fn_20_svn_passwd_leak()        { cat case_20_svn_passwd_leak ;}
-function fn_21_对讲时_PC端有_echo()     { cat case_21_对讲时_PC端有_echo ;}
-function fn_22_feed_watchdog_fail()     { cat case_22_feed_watchdog_fail ;}
-function fn_23_Tool_connection_fail()   { cat case_23_Tool_connection_fail ;}
-function fn_24_3g_reconnect()           { cat case_24_3g_reconnect ;}
-function fn_25_soap_被回复_http()       { cat case_25_soap_被回复_http ;}
-function fn_26_设备CPU占用率过高()      { cat case_26_设备CPU占用率过高 ;}
-function fn_27_JCP命令IGMP输出乱码()    { cat case_27_JCP命令IGMP输出乱码 ;}
-function fn_28_汉字UTF8串尾乱码()       { cat case_28_汉字UTF8串尾乱码 ;}
-function fn_29_设备到PC单向ping通()     { cat case_29_设备到PC单向ping通 ;}
-function fn_30_ftp_ServerU_文件不完整() { cat case_30_ftp_ServerU_文件不完整 ;}
-function fn_31_REBOOT_LINUX_fail()      { cat case_31_REBOOT_LINUX_fail ;}
-function fn_32_IE吃掉_mousedown_click() { cat case_32_IE吃掉_mousedown_click ;}
-function fn_33_云台运动步长不一致()     { cat case_33_云台运动步长不一致 ;}
-function fn_34_升级中的错误处理()       { cat case_34_升级中的错误处理 ;}
-function fn_35_jcp_blocked_on_conf()    { cat case_35_jcp_blocked_on_conf ;}
-function fn_36_移动侦测时卡顿()         { cat case_36_移动侦测时卡顿 ;}
+    cat case_a0_vobx_tool_filename              # 虚拟机存储映射后WINDOWS文件系统时，filename不区别大小写
+    cat case_a1_fork_locked                     # fork()阻塞了
+    cat case_a2_quote_input_delay               # ------------ 独孤九剑之diff VIM 引号延迟 --------------
+    cat case_s1_SSL_CTX_free段错误
+    cat case_s2_ZXW修改ipcam_cfg段错误
 
-function fn_54_ZXWSDK告警丢失()         { cat case_54_ZXWSDK告警丢失 ;}
-function fn_55_bind_失败_No_such_file() { cat case_55_bind_失败_No_such_file ;}
-function fn_50_前置条件之重启()         { cat case_50_前置条件之重启 ;}
-function fn_51_多行OSD出现UNKNOW()      { cat case_51_多行OSD出现UNKNOW ;}
-function fn_52_TUTK_获取不到配置值()    { cat case_52_TUTK_获取不到配置值 ;}
-function fn_53_平台删除对应用的影响()   { cat case_53_平台删除对应用的影响 ;}
+    cat case_02_文件不能删除升级失败            # also busybox SegmentFault
+    cat case_03_FACEBOOK中无ftpclient
+    cat case_04_红外夜视只有8m
+    cat case_05_告警烧加密芯片
+    cat case_06_PROFILE解析失败
+    cat case_07_multidev增加失败
+    cat case_08_alarm当前状态应该只读
+    cat case_09_4358日立机芯无自动聚焦
+    cat case_10_MAC非00打头网络故障
+    cat case_11_mount替换之殇
+    cat case_12_ini_no_sec
+    cat case_13_No_init_found
+    cat case_14_web_dont_work
+    cat case_15_multi_plt4m_多平台
+    cat case_16_WiFi_AP_切换卡顿
+    cat case_17_secureCRT_F5_罢工
+    cat case_18_yishi_NFS_boot_fail
+    cat case_19_ssh_Permission_denied
+    cat case_20_svn_passwd_leak
+    cat case_21_对讲时_PC端有_echo
+    cat case_22_feed_watchdog_fail
+    cat case_23_Tool_connection_fail
+    cat case_24_3g_reconnect
+    cat case_25_soap_被回复_http
+    cat case_26_设备CPU占用率过高
+    cat case_27_JCP命令IGMP输出乱码
+    cat case_28_汉字UTF8串尾乱码                # UTF-8 编码
+    cat case_29_设备到PC单向ping通
+    cat case_30_ftp_ServerU_文件不完整
+    cat case_31_REBOOT_LINUX_fail
+    cat case_32_IE吃掉_mousedown_click          # 执行力 怀疑精神
+    cat case_33_云台运动步长不一致              # 问题：你如何知道
+    cat case_34_升级中的错误处理                # 错误处理的原则：
+    cat case_35_jcp_blocked_on_conf             # 当jcp通过conf实
+    cat case_36_移动侦测时卡顿                  # 测试方法论：分治
 
-function fn_70_merge_error()            { cat case_70_merge_error ;}
-function fn_71_行淫的女人_小魔的牢骚()  { cat case_71_行淫的女人_小魔的牢骚 ;}
-function fn_72_那些失败的TASK()         { cat case_72_那些失败的TASK ;}
+    cat case_50_前置条件之重启                  # API测试原则：配置文件相关都需要重启
+    cat case_51_多行OSD出现UNKNOW               # API测试原则：条件分支，五大特性之完整性
+    cat case_52_TUTK_获取不到配置值             # API测试原则：No test, no release
+    cat case_53_平台删除对应用的影响            # API测试原则：一个测试套伯至少3个用例:头尾身
+    cat case_54_ZXWSDK告警丢失                  # API设计原则: 进程锁，勿注释代码如何运作
+    cat case_55_bind_失败_No_such_file          # API设计原则: API的生命在于复用
+    cat case_56_ini写入时间耗时3秒              # API设计原则: 性能测试用例
 
-function fn_80_西昌门禁()               { cat case_80_西昌门禁 ;}
-function fn_81_代码实现_从0开始()       { cat case_81_代码实现_从0开始 ;}
-function fn_82_HIK协议实现1个月后傻眼() { cat case_82_HIK协议实现1个月后傻眼 ;}
+    cat case_70_merge_error                     # 朝令夕改 luo
+    cat case_71_行淫的女人_小魔的牢骚           # care你的牢骚 PK产品经理 学会吐槽
+    cat case_72_那些失败的TASK                  # 管理总结
 
-function fn_a0_vobx_tool_filename()     { cat case_a0_vobx_tool_filename ;}
-function fn_a1_fork_locked()            { cat case_a1_fork_locked ;}
-function fn_a2_quote_input_delay()      { cat case_a2_quote_input_delay ;}
+    cat case_80_西昌门禁                        # 软件方法论：先固化，再优化。按契约编程
+    cat case_81_代码实现_从0开始                # 软件方法论：命名考虑应用场景。mxml id 动态扩展时
+    cat case_82_HIK协议实现1个月后傻眼          # 软件方法论：横向考虑设计架构，纵向考虑可用性。
 
-function fn_56_ini写入时间耗时3秒()     { cat case_56_ini写入时间耗时3秒 
-                                          cat case_z1_mac地址绑定后也IP冲突
-                                          cat case_z2_设备多次出现内存不足导致设备重启.md
-                                          cat case_z3_HOOM卡片机订制项目4发包.md
-                                          cat case_z4_have_no_buffers_to_output.md
-                                          cat case_z7_no_recordings_and_mp4_lost.md
-                                        }
-
-    local opts=(
-        fundamental
-        s1_SSL_CTX_free段错误
-        s2_ZXW修改ipcam_cfg段错误
-        02_文件不能删除升级失败         # also busybox SegmentFault
-        03_FACEBOOK中无ftpclient
-        04_红外夜视只有8m
-        05_告警烧加密芯片
-        06_PROFILE解析失败
-        07_multidev增加失败
-        08_alarm当前状态应该只读
-        09_4358日立机芯无自动聚焦
-        10_MAC非00打头网络故障
-        11_mount替换之殇
-        12_ini_no_sec
-        13_No_init_found
-        14_web_dont_work
-        15_multi_plt4m_多平台
-        16_WiFi_AP_切换卡顿
-        17_secureCRT_F5_罢工 
-        18_yishi_NFS_boot_fail
-        19_ssh_Permission_denied
-        20_svn_passwd_leak
-        21_对讲时_PC端有_echo
-        22_feed_watchdog_fail
-        23_Tool_connection_fail
-        24_3g_reconnect
-        25_soap_被回复_http
-        26_设备CPU占用率过高
-        27_JCP命令IGMP输出乱码
-        28_汉字UTF8串尾乱码             # UTF-8 编码
-        29_设备到PC单向ping通
-        30_ftp_ServerU_文件不完整
-        31_REBOOT_LINUX_fail
-        32_IE吃掉_mousedown_click       # 执行力 怀疑精神
-        33_云台运动步长不一致           # 问题：你如何知道->量化数据
-        34_升级中的错误处理             # 错误处理的原则：忠实还原
-        35_jcp_blocked_on_conf          # 当jcp通过conf实现时，阻塞了
-        36_移动侦测时卡顿               # 测试方法论：分治
-
-        a0_vobx_tool_filename           # 虚拟机存储映射后WINDOWS文件系统时，filename不区别大小写
-        a1_fork_locked                  # fork()阻塞了
-
-        a2_quote_input_delay            # ------------ 独孤九剑之diff VIM 引号延迟 --------------
-
-        50_前置条件之重启               # API测试原则：配置文件相关都需要重启
-        51_多行OSD出现UNKNOW            # API测试原则：条件分支，五大特性之完整性
-        52_TUTK_获取不到配置值          # API测试原则：No test, no release
-        53_平台删除对应用的影响         # API测试原则：一个测试套伯至少3个用例:头尾身
-        54_ZXWSDK告警丢失               # API设计原则: 进程锁，勿注释代码如何运作
-        55_bind_失败_No_such_file       # API设计原则: API的生命在于复用
-        56_ini写入时间耗时3秒           # API设计原则: 性能测试用例
-
-        70_merge_error                  # 朝令夕改 luo
-        71_行淫的女人_小魔的牢骚        # care你的牢骚 PK产品经理 学会吐槽
-        72_那些失败的TASK               # 管理总结
-
-        80_西昌门禁                     # 软件方法论：先固化，再优化。按契约编程
-        81_代码实现_从0开始             # 软件方法论：命名考虑应用场景。mxml id 动态扩展时
-        82_HIK协议实现1个月后傻眼       # 软件方法论：横向考虑设计架构，纵向考虑可用性。
-
-    )
-    fn_print $@
+    cat case_d0_设计原则：Unix.philosophy       # 对设计的误解
+    cat case_d1_设计原则：汉德公式
+    cat case_d2_设计原则：路径可跟踪
+    cat case_d3_设计原则：先固化再优化
+    cat case_d4_设计原则：组合而非缠绕
+    cat case_z1_mac地址绑定后也IP冲突
+    cat case_z2_设备多次出现内存不足导致设备重启.md
+    cat case_z3_HOOM卡片机订制项目4发包.md
+    cat case_z4_have_no_buffers_to_output.md
+    cat case_z7_no_recordings_and_mp4_lost.md
 }
 
 function fn_socket()                    {
@@ -485,7 +422,7 @@ function fn_nonblock()                  { cat clang_nonblock ;}
         bit
         dup2
         operator_predcedence
-        pointer                 # 指针 
+        pointer                 # 指针
         callback                # 注册加回调指针实现多态or重载
         linklist                # 注册之链表
         package                 # 头文件封装
@@ -493,14 +430,14 @@ function fn_nonblock()                  { cat clang_nonblock ;}
         string
         struct
         typedef
-        thread_lock             # 
+        thread_lock             #
         thread_confict_malloc   # fork() and malloc() can't run together
         warning
         macro
         # ------ posix ------
-        nonblock                # setjmp,longjmp和sigsetjmp,siglongjmp 
+        nonblock                # setjmp,longjmp和sigsetjmp,siglongjmp
         atoi                    # atou
-        md5                     # 
+        md5                     #
         strtol                  # hex work well
         iconv                   # utf-8 gbk wide-character handling ascii
         syslog
@@ -517,13 +454,13 @@ function fn_nonblock()                  { cat clang_nonblock ;}
         tty                     # serial port
         non_block_func
         non_sig_select
-        getaddrinfo_a           # getaddrinfo asynchronous 
+        getaddrinfo_a           # getaddrinfo asynchronous
         getopt_long
     )
     fn_print $@
 }
 
-function fn_binutils()                  { 
+function fn_binutils()                  {
 function fn_layoutelf()                 { cat binutils_layoutelf ;}
 function fn_readelf()                   { cat binutils_readelf ;}
 function fn_objdump()                   { cat binutils_objdump ;}
@@ -535,7 +472,7 @@ function fn_nm()                        { cat binutils_nm ;}
         nm
         readelf                 # -h|--file-header | grep Mach 查看CPU架构
         ldd                     # 只是一个shell脚本，通过ld-linux.so实现
-        objdump                 # 
+        objdump                 #
         strip                   # 瘦身
     )
     fn_print $@
@@ -622,10 +559,10 @@ function fn_subconf()                   { cat git_subconf ;}
 function fn_log()                       { cat git_log ;}
 function fn_proxy()                     { cat git_proxy ;}
     local opts=(
-        github                  # create 或 pull 一个项目 from github.com 
+        github                  # create 或 pull 一个项目 from github.com
         config                  # ln -sf ~/bin/.m1doc/git_config .gitconfig
         subconf                 # .git/config
-        diff                    # 
+        diff                    #
         svndiff                 # 与svn比较
         log
         proxy
@@ -644,7 +581,7 @@ function fn_visual_svn_server()         { cat svn_visual_svn_server ;}
 function fn_revision()                  { cat svn_revision ;}
 function fn_stat()                      { cat svn_stat ;}
 function fn_diff()                      { cat svn_diff ;}
-function fn_revert()                    { cat svn_revert 
+function fn_revert()                    { cat svn_revert
                                           cat svn_training ;}
 function fn_add()                       { cat svn_add ;}
 function fn_log()                       { cat svn_log ;}
@@ -671,7 +608,7 @@ function fn_relocate()                  { cat svn_relocate ;}
 }
 
 function fn_vim() {
-function fn_hex()                       { cat vim_hex 
+function fn_hex()                       { cat vim_hex
                                               vim_CTRL-V
                                               vimtutor gvim ;}
 function fn_fundamental()               { cat vim_fundamental vim_ctags ;}
@@ -786,7 +723,7 @@ function fn_ps()                        { cat cmd_ps
         route
         sort
         strace
-        head                    # 
+        head                    #
         sleep                   # sleep 1.5h # 1.5 is ok, and m for min, and h for hour
         screen                  # 让任务启动为bg_task，不以终端为父进程
         tail
@@ -822,8 +759,8 @@ function fn_fundamental()               { cat bat_fundamental ;}
 }
 
 function fn_win()                       {
-function fn_win7()                      { cat windows_win7 
-                                          cat foxmail 
+function fn_win7()                      { cat windows_win7
+                                          cat foxmail
                                           cat cooledit ;}
 function fn_syscmd()                    { cat windows_syscmd ;}
 function fn_02_清晰显示()               { cat windows_02_清晰显示 ;}
@@ -849,10 +786,10 @@ function fn_qmacro()                    { cat win_qmacro ;}
         mpp                     # msproject task
         beyondcompare3          # BC3 bc3
         大拿万能老板键          # 大拿软件系列 boss
-        qmacro                  # 按键精灵 
+        qmacro                  # 按键精灵
         Mobi阅读器              # mobipocket_reader
         修复网络链接无法关闭    # 在任务管理器中关闭及重新开启 explorer.exe
-        U盘DOS启动盘制作工具    # MS-DOS DOS 
+        U盘DOS启动盘制作工具    # MS-DOS DOS
         regedit                 # 注册表命令
     )
     fn_print $@
@@ -905,7 +842,7 @@ function fn_vs()                        { cat vs ;}
 function fn_bc()                        { cat bc ;}
 function fn_url()                       { cat url ;} # blog
 
-function fn_perl()                      { 
+function fn_perl()                      {
 function fn_gate_入门()                 { cat perl_gate_入门 ;}
 function fn_pod()                       { cat perl_pod ;}
     local opts=(
@@ -926,7 +863,7 @@ function fn_figlet()                    { cat figlet ;}
 
 function fn_services()                  {
 function fn_nfs()                       { cat services_nfs ;}
-function fn_samba()                     { cat services_samba 
+function fn_samba()                     { cat services_samba
                                           cat services_pppoe ;}
 function fn_ftpd()                      { cat services_ftpd android_ftpput android_simu ;}
 function fn_vsftpd()                    { cat services_vsftpd ;}
@@ -978,7 +915,7 @@ function fn_h264()                      { cat h264_tree
                                           cat h264_ffmpeg
                                         }
 
-function fn_jco()                       { 
+function fn_jco()                       {
 function fn_pcb()                       { cat jco_pcb ;}
 function fn_delay_service()             { cat jco_delay_service ;}
 function fn_msg()                       { cat jco_msg
@@ -1031,9 +968,9 @@ function fn_dome()                      { cat jco_dome ;}
 
 function fn_ideas()                     { cat ideas ;}
 
-function fn_test()                      { 
+function fn_test()                      {
 function fn_guru()                      { cat test_guru
-                                              test_suit_case  
+                                              test_suit_case
                                         }
 function fn_fundamental()               { cat test_fundamental ;}
 function fn_gtest()                     { cat test_gtest ;}
@@ -1055,7 +992,7 @@ function fn_11_测试工程师如何提BUG()    { cat test_11_测试工程师如
         01_用例设计原则
         02_梦想与实现
         03_五个要点                     # 测试的第一原则：思维很混乱时查看
-        04_集成测试                     # 
+        04_集成测试                     #
         11_测试工程师如何提BUG
     )
     fn_print $@
@@ -1063,7 +1000,7 @@ function fn_11_测试工程师如何提BUG()    { cat test_11_测试工程师如
 
 
 function fn_codingstyle()               { cat codingstyle_base
-                                          cat codingstyle_kernel 
+                                          cat codingstyle_kernel
                                           cat codingstyle_qt
                                           cat codingstyle_rule      # 关键在映射规则
                                           cat codingstyle_cxx
@@ -1124,7 +1061,7 @@ function fn_command()                   { cat apt-get_command ubuntu ubuntu.serv
 }
 function fn_java()                      { cat java ;}
 function fn_scp()                       { cat ssh ;}
-function fn_ssh()                       { cat ssh ;}
+function fn_ssh()                       { cat ssh reptyr_Reparent_You_running_program ;}
 function fn_libevent()                  { cat libevent libuv.md ;}
 function fn_in_event()                  { cat in_event ;}
 function fn_live555()                   { cat live555 ;}
@@ -1135,7 +1072,7 @@ function fn_refactoring()               { cat refactoring ;}
 
 function fn_postgresql()                { cat postgresql ;}
 
-function fn_mysql()                     { 
+function fn_mysql()                     {
 function fn_base()                      { cat mysql_install mysql_base ;}
 function fn_complete()                  { cat mysql_complete ;}
 function fn_migrate()                   { cat mysql_migrate ;}  # 中文
@@ -1143,7 +1080,7 @@ function fn_troubleshooting()           { cat mysql_troubleshooting ;}
     local opts=(
         base                # 安装及startup on Linux
         complete            # 语句大全
-        migrate             # 
+        migrate             #
         troubleshooting
     )
     fn_print $@
@@ -1198,7 +1135,7 @@ function fn_reclaim_space()             { cat sql_reclaim_space ;}
         drop                # 删除索引、表和数据库
         delete              # 删除表中的行
         alter               # 修改表结构：添加、修改或删除列
-        insert              # 
+        insert              #
         update
         select
         limit               # 取最后10条记录：tail & head -n
@@ -1211,7 +1148,7 @@ function fn_reclaim_space()             { cat sql_reclaim_space ;}
         condition           # if
         cp                  # 复制表数据or结构(copy)
         dump                # mysqldump
-        group_by_having     # 
+        group_by_having     #
         index               # id与insert的先后顺序有关，与index(key)无关
         execute             # prepare
         join                # 两个或多个表查询连结
@@ -1220,10 +1157,10 @@ function fn_reclaim_space()             { cat sql_reclaim_space ;}
         operator
         optimize            # 优化
         order
-        truncate            # 
+        truncate            #
         array
         tbl_create          # 以表为操作
-        tbl_temp            # 临时表 内存表(HEAP) 
+        tbl_temp            # 临时表 内存表(HEAP)
         reclaim_space       # InnoDB
     )
     fn_print $@
@@ -1238,9 +1175,9 @@ function fn_parser()                    { cat xml_parser ;}
 function fn_xpath()                     { cat xml_xpath ;}
     local opts=(
         base
-        api.c 
+        api.c
         api.h
-        parser              # xpath xslt 
+        parser              # xpath xslt
         xpath               # perl
         xsd                 # XML Schema xml schema
     )
@@ -1251,12 +1188,12 @@ function fn_mxml()                      { fn_xml $@ ;}
 
 function fn_json()                      { cat json ;}
 
-function fn_markdown()                  { cat markdown 
-                                          cat markdown_here 
+function fn_markdown()                  { cat markdown
+                                          cat markdown_here
                                           cat typora
                                           cat reStructuredText ;}
 
-function fn_report()                    { 
+function fn_report()                    {
 function fn_球机不能控制()              { cat report_球机不能控制 ;}
 function fn_可观可控可溯设计()          { cat report_可观可控可溯设计 ;}
     local opts=(
@@ -1278,7 +1215,7 @@ function fn_goyo()                      { cat jimxl_goyo;}
     fn_print $@
 }
 
-function fn_begin()                     { 
+function fn_begin()                     {
 function fn_language()                  { cat begin_language ;}
 function fn_melody()                    { cat begin_melody ;}
 function fn_tool()                      { cat begin_tool ;}
@@ -1293,7 +1230,7 @@ function fn_tool()                      { cat begin_tool ;}
 #
 # ------------------- 你如何Hold住全场？-------------------------
 #
-function fn_nxp()                       { 
+function fn_nxp()                       {
 function fn_requirement_analysis()      { cat nxp_requirement_analysis ;}
 function fn_hold()                      { cat nxp_hold ;}
 function fn_heartbeat()                 { cat nxp_heartbeat ;}
@@ -1366,7 +1303,7 @@ function fn_coffee()                    { cat web_coffee ;}
     fn_print $@
 }
 
-function fn_network()                   { 
+function fn_network()                   {
 function fn_tcp.ip()                    { cat network_OSI七层与TCP.IP五层网络架构详解
                                           cat network_集线器、交换机、路由器、网桥、网关之间的区别 ;}
 function fn_bonding()                   { cat network_bonding ;}
@@ -1390,7 +1327,7 @@ function fn_xinetd()                    { cat network_xinetd ;}
 function fn_tools() {
     local opts=(
         SVN WBS RDM SourceMonitor
-        valgrind 
+        valgrind
     )
 }
 
@@ -1433,7 +1370,6 @@ function fn_main() {
         cstd
         clang
         cxx
-        case
         circuit
         cmd
         codetool
@@ -1476,7 +1412,7 @@ function fn_main() {
         kernel
         lcov
         libevent
-        live555                 # 
+        live555                 #
         minigui
         in_event                # 基于进程内的事件通知
         linux
@@ -1527,7 +1463,7 @@ function fn_main() {
         thinkpad
         wireshark               # tshark - terminal shark
         xml
-        mxml                    # 
+        mxml                    #
         json
         yum
         wbs                     # WBS任务分解，与 RDM 协同办公

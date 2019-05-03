@@ -1,0 +1,38 @@
+# ssid.txt没有设计原则(模块化+组合)
+
+| 模块     | 文件              | 功能                                                                    |
+| :------- | :---------------- | :---------------------------------------                                |
+|          | 1 cid.txt         | 经过 zhangj 授权过的 cid.txt，才可以开启便能 id.db                      |
+|          | 2 id.db           | devid+danale.conf+MAC数据库                                             |
+|          | 3 id_ota.db       | 君正方案数据库                                                          |
+|          | 4 type.txt        | 为了防止和升迈id烧写互串，与id_ota.db一起生成                           |
+|          | 5 ssid.txt        | 使用文件中的 ssid/password 自动连接AP，并且按下**RESET键时**不重启      | `并且二字，违反单一功能原则`
+|          | 6 forcecolor.txt  | 触发强彩(使用场景：调焦时，我司自设计的灯板与外购灯板电压相反)          |
+|          | 7 en_chn_600s.txt | 允许同一批次的中英文包互升，2017-08-02后的版本生效                      |
+|          | 8 force_dbg.txt   | 配合 cid.txt，可强制开启**调试模式(telnet+网页)**2017-09-05后的版本生效 |
+|          | 9 ffw.txt         | 升级模式                                                                |
+
+实际模块抽象:
+1 cid.txt     烧录功能
+2 ffw.txt     升级功能
+3 ssid.txt    研发及测试部日常使用，*要保存*到supplicantOK.conf
+              工厂使用
+4 factest.txt 整机测试，要求*不保存*到supplicantOK.conf
+
+**模块3,4在保存ssid方面有冲突**，因此
+1 进行隔离，尽管是相同的子功能，但要使用不同的配置
+2 用文件夹对模块进行分类
+
+**组合vs.缠绕**
+在冲突模块上，在 auto_run.sh 中进行`互斥处理`，并使用 g_toggle_set() 进行代码内识别。
+更好的方法是：在 auto_run.sh 中进行一次 factest 标记，在下一次启动时 reset2factory 并删除标记。
+
+# 2019-05-02 mp4跨时区查询
+
+*缠绕*
+给函数提供两个入口参数：utc_start, utc_end
+
+*组合*
+底层逻辑都不变，根据 utc_epoch 判断是否与`本地时区`相同，是则 query_list(utc_start)
+不是则调用两次进行组合: query_list(utc_start) query_list(utc_start + SECS_OF_DAY)
+

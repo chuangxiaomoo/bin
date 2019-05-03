@@ -32,3 +32,13 @@ git config --global https.proxy
 
 git config --local  --unset https.proxy
 git config --global --unset https.proxy
+
+# git代理ssh后分分钟
+
+[/etc/ssh/ssh_config](https://gist.github.com/laispace/666dd7b27e9116faece6)
+
+`
+Host github.com
+    ProxyCommand nc -X 5 -x 10.0.2.2:1080 %h %p
+`
+git clone git@github.com:chuangxiaomoo/libuv.git
