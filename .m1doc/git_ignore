@@ -1,0 +1,16 @@
+# local 
+
+.gitignore
+
+# golobal
+
+git config --global core.excludesfile ~/.gitignore_global
+
+# example
+
+    $ cat .gitignore
+    # exclude everything except directory foo/bar
+    /*
+    !/foo
+    /foo/*
+    !/foo/bar

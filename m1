@@ -551,7 +551,10 @@ function fn_most_freq_cmds()            { cat gdb_most_freq_cmds ;}
 
 
 function fn_git()                       { cat git
-function fn_github()                    { cat git_github ;}
+function fn_github()                    { cat git_github
+                                          cat git_ignore
+                                          cat git_stage
+                                        }
 function fn_svndiff()                   { cat git_svndiff ;}
 function fn_diff()                      { cat git_diff ;}
 function fn_config()                    { cat git_config ;}
