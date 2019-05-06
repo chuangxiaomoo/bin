@@ -57,6 +57,20 @@ LSOF_CC=mips-linux-uclibc-gnu-gcc LSOF_HOST=mips-linux ./Configure  -n linux
 [](https://fossies.org/linux/misc/)
 ./configure --host=arm-buildroot-linux-uclibcgnueabihf
 
+# libiconv
+
+./configure --host=arm-buildroot-linux-uclibcgnueabihf
+
+# libiconv mips-uclibc
+
+./configure --host=mips-linux --enable-static CC=mips-linux-uclibc-gnu-gcc LD=mips-linux-uclibc-gnu-ld AR=mips-linux-uclibc-gnu-ar RANLIB=mips-linux-uclibc-gnu-ranlib NM=mips-linux-uclibc-gnu-nm OBJDUMP=mips-linux-uclibc-gnu-objdump
+
+./configure --host=mips-linux-gnu
+xgrep 'mips-linux-gnu' | awk -F: '{print $1}' | sort -u
+xgrep 'mips-linux-gnu' | awk -F: '{print $1}' | sort -u | xargs -I{} sed -i 's/mips-linux-gnu-/mips-linux-uclibc-gnu-/g' {} 
+xgrep 'mips-linux-gnu' | awk -F: '{print $1}' | sort -u | xargs -I{} sed -i 's#mips-linux-gnu/bin/ld#bin/mips-linux-uclibc-gnu-ld#g' {} 
+xgrep 'mips-linux-gnu' | awk -F: '{print $1}' | sort -u | xargs -I{} sed -i '/host_alias/s#mips-linux-gnu#mips-linux-uclibc-gnu#g' {} 
+
 # 最小 ksh cross_compile
 
 CC=arm-buildroot-linux-uclibcgnueabi-gcc ./configure \

@@ -9,6 +9,14 @@ dd bs=50K skip=1 count=1 if=/ipc/bin/impdbg of=/tmp/1; echo 1;
 dd bs=50K skip=2 count=1 if=/ipc/bin/impdbg of=/tmp/2; echo 2; 
 dd bs=50K skip=3 count=1 if=/ipc/bin/impdbg of=/tmp/3; echo 3; 
 
+
+# fake SD card (hexdump do 2G only)
+
+dd bs=1K skip=8M count=1 if=/dev/mmcblk0p1 | hexdump | head
+
+timeout -t 3 dd bs=1K skip=8M count=1 if=/dev/mmcblk0p1 | hexdump | head
+
+
 # seek 部分覆盖 of
 
 dd bs=50K seek=3 
