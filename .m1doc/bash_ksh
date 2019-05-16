@@ -1,5 +1,7 @@
 # ksh
 
+[mksh: successor to pkdsh](https://www.mirbsd.org/mksh.htm)
+
 ```bash
            |pdksh                                  |  bash                                        |  ash
 function   |function fn_main                       |  兼容ksh，可有可无                           |  fn_main()

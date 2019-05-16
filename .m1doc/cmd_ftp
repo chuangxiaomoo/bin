@@ -1,0 +1,43 @@
+# https://uwebweb.com:8083
+
+ftp xiaomoo.uwebweb.com
+> user:
+> passwd:
+> !ls
+> passive
+> put
+> get
+
+# GET dir
+
+wget -r ftp://xiaomoo_ftp:zyff2019@xiaomoo.uwebweb.com/public_html
+
+# PUT dir | ncftp | filezilla
+
+ncftpput -R -v -u "ftp-username" ftp.website.com ftp-upload-path local-path/*
+
+```bash
+find my-dir -exec echo "put /Users/username/"{} {}  \;
+
+#!/bin/bash
+hostname="my-ftp-host"
+username="username"
+password="password"
+ftp -in $hostname <<EOF
+quote USER $username
+quote PASS $password
+
+binary
+cd 123456
+{COPY THE LIST HERE}
+quit
+EOF
+```
+
+# busybox GET & PUT
+
+busybox on Ubt and Embeded system. Then use one line command is portable.
+
+busybox ftpput -u xiaomoo_ftp -p zyff2019 xiaomoo.uwebweb.com Dog
+busybox ftpget -u xiaomoo_ftp -p zyff2019 xiaomoo.uwebweb.com Dog
+

@@ -141,6 +141,7 @@ function fn_var_debug()                 { cat make_var_debug ;}
 function fn_var_inner()                 { cat make_var_inner ;}
 function fn_lib_dynamic()               { cat make_lib_dynamic ;}
 function fn_lib_static()                { cat make_lib_static
+                                              make_ar2ar.mk
                                               make_ar2so
                                               make_lib_dependence
                                               make_herderfile_dependence
@@ -695,6 +696,7 @@ function fn_kill()                      { cat cmd_kill ;}
 function fn_install()                   { cat cmd_install ;}
 function fn_calltree()                  { cat cmd_calltree ;}
 function fn_nc()                        { cat cmd_nc ;}
+function fn_ftp()                       { cat cmd_ftp ;}
 function fn_ps()                        { cat cmd_ps
                                           cat cmd_split
                                         }
@@ -742,6 +744,7 @@ function fn_ps()                        { cat cmd_ps
         cpio                    # 与tar类似的打包格式cpio，结合压缩命令gzip zcat
         usb-creator-gtk         # startup-disk-creator 制作启动盘
         nc
+        ftp                     #
         ps
     )
     # 每天一个linux命令，还有其它非常有价值的东西

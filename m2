@@ -1010,8 +1010,10 @@ function fn_interview()                 { cat career
                                                 job
                                                 shakespare2offer.txt
                                                 shakespare2offer.read
+                                                shakespare2offer.AnQ
                                                 shakespare2offer.tcpip
                                                 shakespare2offer.test
+                                                shakespare2offer.animal
                                                 interview   # 想想自己的价值？企业本质在更高效的内部交易
 
                                         }
