@@ -178,15 +178,17 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               book_dt_暗时间
                                               read_dt_暗时间
                                               book_tf_把时间当作朋友
-                                              book_timefriend.00.animal
+                                              book_timefriend.00.SCQA
                                               book_timefriend.01.自由意志
                                               book_timefriend.02.约束
                                               book_timefriend.03.tasking
                                               book_timefriend.04.学习
                                               book_timefriend.05.思考
                                               book_timefriend.06.tcpip
-                                              book_timefriend.07.
-                                              book_timefriend.08.积累
+                                              book_timefriend.07.闻见学行
+                                              book_timefriend.08.积累.Linux
+                                              book_timefriend.08.积累.TAO
+                                              book_timefriend.08.积累.model
                                               book_xs_reborn-every-7-years.md
                                               book_mao
                                               book_mao_howtoread
@@ -1022,7 +1024,6 @@ function fn_interview()                 { cat career
                                                 shakespare2offer.AnQ
                                                 shakespare2offer.tcpip
                                                 shakespare2offer.test
-                                                shakespare2offer.animal
                                                 interview   # 想想自己的价值？企业本质在更高效的内部交易
 
                                         }
