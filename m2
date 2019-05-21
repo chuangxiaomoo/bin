@@ -188,7 +188,9 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               book_timefriend.07.闻见学行
                                               book_timefriend.08.积累.Linux
                                               book_timefriend.08.积累.TAO
-                                              book_timefriend.08.积累.model
+                                              book_timefriend.08.积累.Phy
+                                              book_timefriend.08.积累.Math
+                                              book_timefriend.08.积累.Model
                                               book_xs_reborn-every-7-years.md
                                               book_mao
                                               book_mao_howtoread
