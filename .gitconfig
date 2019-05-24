@@ -10,3 +10,5 @@
 
 [pager]
     diff =
+[difftool]
+	prompt = false
