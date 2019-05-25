@@ -3,6 +3,7 @@
 function fn_main()
 {
     filelist=${@:2}
+    [ ! -f .iamfork ] && master=master
 
     case $1 in
     '?'|h*)
@@ -39,7 +40,7 @@ function fn_main()
         git add -A
         git commit -m "$REPLY"
 
-        [ "${1}" != 'a' ] && git push origin master
+        [ "${1}" != 'a' ] && git push origin $master
         ;;
 
     c*)
@@ -69,12 +70,12 @@ function fn_main()
         # 解决自动merge
         # git config branch.master.remote origin
         # git config branch.master.merge refs/heads/master
-        git pull origin master
+        git pull origin $master
         ;;
 
     P*|Push)
         # Your branch is ahead of 'origin/master' by 4 commits.
-        git push origin master
+        git push origin $master
         ;;
 
     r|revert)
@@ -90,6 +91,8 @@ function fn_main()
         echo git remote -v
         git remote -v
         git config --get remote.origin.url | sed -e 's#:#/#' -e 's#git@#https://#'    
+        echo git branch -v
+        git branch -v
         ;;
     s*|*)
         git status
