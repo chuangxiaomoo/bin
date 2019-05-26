@@ -267,8 +267,9 @@ psgrep()
     body=${1:1}
 
     # psgrep='ps -ef | grep'
-    echo "ps -ef | /bin/grep -E --color [${head}]${body}"
-    ps -ef | /bin/grep -E --color "[${head}]${body}"
+    echo "ps -ef | /bin/grep -E --color '\<[${head}]${body}'"
+    echo "UID        PID  PPID"
+          ps -ef | /bin/grep -E --color "\<[${head}]${body}"
 }
 
 pskill()

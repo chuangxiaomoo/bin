@@ -1,0 +1,22 @@
+#! /bin/sh
+
+# Usage:
+#       Reptyr              # list vi process
+#       Reptyr <N>          # attach to N-th vi
+#       Reptyr <PID>        # 
+
+case $1 in
+'')
+    echo "UID        PID  PPID";
+    ps -ef | /bin/grep -E --color "\<[v]i"
+    exit
+    ;;
+[1-9])
+    N=$1
+    VI=`ps -ef | /bin/grep -E '\<[v]i' | awk -v line=${N} 'NR==line {print $2}'`
+    ;;
+*)
+    VI=${1}
+esac
+
+reptyr ${VI}

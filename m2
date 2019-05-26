@@ -178,19 +178,21 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               book_dt_暗时间
                                               read_dt_暗时间
                                               book_tf_把时间当作朋友
-                                              book_timefriend.00.SCQA
+                                              book_timefriend.00.5F2E1C
                                               book_timefriend.01.自由意志
                                               book_timefriend.02.约束
                                               book_timefriend.03.tasking
                                               book_timefriend.04.学习
                                               book_timefriend.05.思考
                                               book_timefriend.06.tcpip
+                                              book_timefriend.06.tcpip.human
                                               book_timefriend.07.闻见学行
                                               book_timefriend.08.积累.Linux
                                               book_timefriend.08.积累.TAO
                                               book_timefriend.08.积累.Phy
                                               book_timefriend.08.积累.Math
                                               book_timefriend.08.积累.Model
+                                              book_timefriend.09.upgrade
                                               book_xs_reborn-every-7-years.md
                                               book_mao
                                               book_mao_howtoread
