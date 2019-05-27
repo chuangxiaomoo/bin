@@ -3,7 +3,7 @@
 function fn_main()
 {
     filelist=${@:2}
-    [ ! -f .iamfork ] && master=master
+    [ ! -f .iamafork ] && master=master
 
     case $1 in
     '?'|h*)
