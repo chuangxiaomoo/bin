@@ -1,0 +1,18 @@
+# Methodology 
+
+In the engineering design process, engineers apply mathematics and sciences such as physics to find novel solutions to problems or to improve existing solutions. More than ever, engineers are now required to have a proficient knowledge of relevant sciences for their design projects. As a result, many engineers continue to learn new material throughout their career.
+
+If multiple solutions exist, engineers weigh each design choice based on their merit and choose the solution that best matches the requirements. The crucial and unique task of the engineer is to `identify, understand, and interpret the constraints` on a design in order to yield a successful result. It is generally insufficient to build a technically successful product, rather, it must also `meet further requirements`.
+
+Constraints may include available resources, physical, imaginative or technical limitations, flexibility for future modifications and additions, and other factors, such as requirements for cost, safety, marketability, productivity, and serviceability. By understanding the constraints, engineers derive specifications for the limits within which a viable object or system may be produced and operated.
+
+工程师一般在全面生产过程前，就尝试预测他们的设计如何达到规格。他们使用：`原型、比例模型、模拟、破坏性试验、非破坏性试验、强度测试`。测试保证产品按期望值运行。测试的目的是确保产品能符合预计的要求。工程师作为专业人员会尽量制造符合预计要求的产品，并达到对社会无害。工程师往往需要在设计中考虑安全因素来降低意外的故障。不过，考虑的安全因素越高，设计效率也通常会越低。
+
+# 工程师与科学家的比较
+
+科学家经常要问“是什么”“为什么”，但是科学家的“为什么”往往都能转化成“是什么”，他们关心于了解那些人类尚未确切、完全、详细了解的知识，满足人类的好奇心；工程师则经常要问“如何做”，利用科学家发现的知识，制造对人类有用的物体或工具。
+
+从经济的角度来说，科学家不必关心经济问题，他们想法子获得必要的经费（如政府拨款、企业投资、私人赞助等），然后专心去研究。工程师则相反，他们必须使制造出来的物体，在经济上是可行的，否则没有任何用处。如果一件产品的成本高于其市场价值，使得无人光顾，这种产品就无法生产，所以对工程师来说，经济观念是必备的。例如像科幻小说[^哪个／哪些？]所描写的“按12个按钮，再拉下三个把手，就可以给面包片抹上黄油”一类的机器，在理论上是完全可以制造出来的，但工程师决不会制造这种机器。
+
+从相互包含的角度来说，科学家可能也需要完成某些工程作业（比如设计试验仪器，制造原型），工程师经常也要做研究。从目的的先后顺序来说，可以说科学家为了学习而制造，而工程师为了制造而学习。从工程和科学都要做的研究来说，工程学上的研究与科学研究也有不同之处。它经常涉及到的领域，基本物理化学已经很好的被了解了，而这些问题却很难被精确的解决。工程学的研究便是要寻找可能近似方案。
+
