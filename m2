@@ -119,7 +119,6 @@ function fn_WiMax_meeting()             { cat meeting huawei_WiMax_meeting
 # a BOOK can append with a reflect
 #
 function fn_book()                      {
-function fn_cept()                      { cat book_cept ;}
 function fn_laozi()                     { cat book_laozi
                                           cat book_zhuangzi;
                                         }
@@ -162,6 +161,7 @@ function fn_000_黄晓捷谈在校学习()      { cat book_000_黄晓捷谈在�
                                           cat book_011_李笑来谈阅读操作系统
                                           cat book_012_张五常谈读书和思考
                                           cat book_013_夜东坡谈读书和思考
+                                          cat book_014_阅读是为了填补信息缺口
                                           cat book_015_章亦春抄书的奥秘
                                           cat book_020_如何选书
                                           cat book_how_to_read_a_book.md
@@ -181,6 +181,7 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               book_timefriend.00.5F2E1C
                                               book_timefriend.01.自由意志
                                               book_timefriend.02.约束
+                                              book_timefriend.02.decide
                                               book_timefriend.03.tasking
                                               book_timefriend.04.学习
                                               book_timefriend.05.思考
@@ -257,7 +258,6 @@ function fn_list()                      { cat book_400_PoorCharliesAlmanack_穷�
                                         }
     local opts=(
         list                            # 高兴的事
-        cept
         wanna                           # 想读的书
         sunzi                           # 孙子兵法
         laozi                           # 道德经 daodejing
@@ -348,8 +348,7 @@ function fn_decide()                    { cat decide
                                               read_ThePowerOfCompany.md
 }
 
-function fn_howto()                     { cat zhangxiaomoo
-                                              book_jj_精进.如何成为一个很厉害的人
+function fn_howto()                     { cat book_jj_精进.如何成为一个很厉害的人
                                               read_jj_精进.如何成为一个很厉害的人
 function fn_01_提高逻辑思维能力()       { cat howto_01_提高逻辑思维能力 ;}
 function fn_02_训练思维的深度和缜密度() { cat howto_02_训练思维的深度和缜密度 ;}
