@@ -1,0 +1,51 @@
+# 5 ways to launch Mac apps from the keyboard
+
+| diff    | Win                    | Mac            | note                           | 
+| :------ | :------                | :------        | :------                        | 
+|         | **系统布局**           |                |                                | 
+|         | “我的电脑”资源管理器   | Finder         |                                | 
+|         | 控制面板               | Apple.偏好设置 |                                | 
+|         | 任务栏                 | dock           |                                | 
+|         | {Win-D}                | {Cmd-F3}       | 桌面                           | 
+|         |                        |                |                                | 
+|         | **鼠标手势**           |                |                                | 
+|         | 左键                   | 1指轻点        |                                | 
+|         | 双击                   | 1指双点        |                                | 
+|         | 右键                   | 2指轻点        |                                | 
+|         | 滚轮                   | 2指移动        |                                | 
+|         | 拖动                   | 3指移动        |                                | 
+|         | Winkey                 | 3指翕张        | Launchpad open(pinching)/close | 
+|         | {Alt-Tab}              | 4指下滑        | 快速list已打开应用             | 
+|         |                        |                |                                | 
+|         | **任务切换**           |                |                                | 
+|         | {Winkey} or {Ctrl-Esc} | {Cmd-Space}    | Spotlight/Start Menu           | 
+|         | {WINKEY+#}             | {Ctrl-F3}      | 焦点切换到Dock                 | 
+|         | {Application}          | {Ctrl-Fn-F2}   | 菜单键(summon MenueBar)        | 
+|         | {Shift+WINKEY+#}       |                | new instance                   | 
+|         | {Ctrl +WINKEY+#}       |                | most recently access instance  | 
+|         |                        |                |                                | 
+|         | **应用窗口**           |                |                                | 
+|         | {Alt-Space}x           | {Ctrl-Cmd-F}   | max                            | 
+|         | {Alt-Space}r           |                | restore 还原                   | 
+|         | {Alt-Space}n           | {Cmd-n}        | min                            | 
+|         | {Alt-Space}c           | {Cmd-q}        | close                          | 
+|         | {Alt-Tab}              | {Cmd-Tab}      | 切换应用                       | 
+|         |                        |                |                                | 
+|         | **文本**               |                |                                | 
+|         | Ctrl-A                 | Cmd-A          | 全选                           | 
+|         | Ctrl-S                 | Cmd-S          | Save                           | 
+|         | Ctrl-F                 | Cmd-F          | Find                           | 
+|         | Ctrl-X                 | Cmd-X          |                                | 
+|         | Ctrl-V                 | Cmd-V          |                                | 
+|         | Ctrl-X                 | Cmd-X          |                                | 
+|         | Ctrl-Z                 | Cmd-Z          | 撤销                           | 
+|         | Ctrl-Y                 | Cmd-Shift-Z    | redo 重做                      | 
+|         |                        |                |                                | 
+|         | **文本移动**           |                |                                | 
+|         |                        | fn-上箭头      | 向上滚动一页（Page Up）　      | 
+|         |                        | fn-下箭头      | 向下滚动一页（Page Down）      | 
+|         |                        | fn-左箭头      | 滚动至文稿开头（Home）　       | 
+|         |                        | fn-右箭头      | 滚动至文稿末尾（End）          | 
+|         |                        |                |                                |
+
+

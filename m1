@@ -766,6 +766,7 @@ function fn_fundamental()               { cat bat_fundamental ;}
 
 function fn_win()                       {
 function fn_win7()                      { cat windows_win7
+                                          cat win_mac_keyboard
                                           cat foxmail
                                           cat cooledit ;}
 function fn_syscmd()                    { cat windows_syscmd ;}
