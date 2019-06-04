@@ -99,7 +99,6 @@ function fn_2019_plan()                 { cat annual_2019_plan annual_2019_event
 }
 
 function fn_WiMax_meeting()             { cat meeting huawei_WiMax_meeting
-                                              7habit 8s_habit
                                               sanxing_2012.罗之超预测
                                               sanxing_2013
                                               sanxing_2013.team PDCA.team MANAGEMENT.team
@@ -175,19 +174,24 @@ function fn_012_李笑来人人都能用英语()  { cat book_012_李笑来人人
 
 function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从筷子到开挂人生
                                               book_hh_好好学习
+                                              book_7habits 8s_habit
                                               book_dt_暗时间
                                               read_dt_暗时间
                                               book_tf_把时间当作朋友
                                               book_timefriend.00.5F2E1C
                                               book_timefriend.01.自由意志
+                                              book_timefriend.01.7h.积极主动
                                               book_timefriend.02.约束
-                                              book_timefriend.02.decide
+                                              book_timefriend.02.7h.明辨方向
                                               book_timefriend.03.tasking
+                                              book_timefriend.03.7h.专注要事
                                               book_timefriend.04.学习
                                               book_timefriend.05.思考
                                               book_timefriend.06.tcpip
                                               book_timefriend.06.tcpip.human
+                                              book_timefriend.06.tcpip.7h.互敬互利
                                               book_timefriend.07.闻见学行
+                                              book_timefriend.07.measure
                                               book_timefriend.08.积累.Linux
                                               book_timefriend.08.积累.TAO
                                               book_timefriend.08.积累.Math
