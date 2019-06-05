@@ -356,9 +356,7 @@ function fn_howto()                     { cat book_jj_精进.如何成为一个�
                                               read_jj_精进.如何成为一个很厉害的人
 function fn_01_提高逻辑思维能力()       { cat howto_01_提高逻辑思维能力 ;}
 function fn_02_训练思维的深度和缜密度() { cat howto_02_训练思维的深度和缜密度 ;}
-function fn_03_沟通_communication()     { cat howto_03_沟通
-                                          cat howto_03_沟通.1
-                                          cat howto_03_沟通.2
+function fn_03_沟通_communication()     { cat howto_03_沟通.2
                                           cat howto_04_屌丝如何逆袭
                                           cat howto_05_挑选西瓜
                                           cat howto_07_与AI在职场竞争 AI
@@ -900,6 +898,7 @@ function fn_letters()                   { cat girl_letters juzi
                                           cat girl_01_tingbao
                                           cat girl_02_angelina
                                           cat girl_03_jiang
+                                          cat girl_04_xiaobai
 function fn_11_2013相亲记()             { cat girl_11_2013相亲记 ;}
 function fn_12_wife()                   { cat girl_12_wife ;}
 function fn_100_手把手教你泡妞()        { cat girl_100_手把手教你泡妞
