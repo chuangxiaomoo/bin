@@ -334,7 +334,7 @@ function fn_case() {
     cat case_81_代码实现_从0开始                # 软件方法论：命名考虑应用场景。mxml id 动态扩展时
     cat case_82_HIK协议实现1个月后傻眼          # 软件方法论：横向考虑设计架构，纵向考虑可用性。
 
-    cat case_d0_设计原则：Unix.philosophy       # 对设计的误解
+    cat case_d0_设计原则：Unix.philosophy       # 对设计的误解 & 对产品的理解
     cat case_d1_设计原则：汉德公式
     cat case_d2_设计原则：路径可跟踪
     cat case_d3_设计原则：先固化再优化

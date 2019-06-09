@@ -178,6 +178,7 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               book_dt_暗时间
                                               read_dt_暗时间
                                               book_tf_把时间当作朋友
+                                              book_timefriend.00.语言视界
                                               book_timefriend.00.5F2E1C
                                               book_timefriend.01.自由意志
                                               book_timefriend.01.7h.积极主动
@@ -498,9 +499,12 @@ function fn_gsq_房价什么情况下会崩()    {
                                           cat article_320_流动性与占便宜.md
                                           cat article_321_漂亮妹纸如何社交有钱人.md
                                           cat article_390_写个文章全是套路和心机.md
+                                          cat article_391_为什么现在互联网上那么多杠精.md
                                           cat article_399_人性辉煌和幻灭：德扑与风险分层理论.md
                                           cat moyuxiaozu
                                           cat article_401_康波里的巨头沉浮.md
+                                          cat article_402_人生就是一场康波.md
+                                          cat article_450_为什么少不读水浒.md
                                           cat xuzhe
                                           cat article_501_“非上帝投机者”的自赎
                                           cat article_502_这世上哪有什么便宜可占.md

@@ -131,6 +131,7 @@
 
 # 数学
 
+  How Not To Be Wrong         [-The power of mathematical thinking](https://www.jianshu.com/p/fb694588d52d)
   数学之美                    作者吴军，mindhacks推荐：贝叶斯是机器学习的核心方法之一
   数学的自然原理              牛顿
   古今数学思想                袁老师的微博有“读书笔记”
