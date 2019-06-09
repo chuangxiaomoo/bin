@@ -320,7 +320,7 @@ function fn_case() {
 
     cat case_50_前置条件之重启                  # API测试原则：配置文件相关都需要重启
     cat case_51_多行OSD出现UNKNOW               # API测试原则：条件分支，五大特性之完整性
-    cat case_52_TUTK_获取不到配置值             # API测试原则：No test, no release
+    cat case_52_TUTK_获取不到配置值             # API测试原则：无测试，不发布
     cat case_53_平台删除对应用的影响            # API测试原则：一个测试套伯至少3个用例:头尾身
     cat case_54_ZXWSDK告警丢失                  # API设计原则: 进程锁，勿注释代码如何运作
     cat case_55_bind_失败_No_such_file          # API设计原则: API的生命在于复用
@@ -976,11 +976,12 @@ function fn_dome()                      { cat jco_dome ;}
 function fn_ideas()                     { cat ideas ;}
 
 function fn_test()                      {
-function fn_guru()                      { cat test_guru
+function fn_guru()                      { cat test_guru gtest
+                                              test_framework
                                               test_suit_case
+                                              test_nxp
                                         }
 function fn_fundamental()               { cat test_fundamental ;}
-function fn_gtest()                     { cat test_gtest ;}
 function fn_webpage()                   { cat test_webpage ;}
 function fn_web_howto()                 { cat test_web_howto ;}
 
@@ -991,7 +992,6 @@ function fn_04_集成测试()               { cat test_04_集成测试 ;}
 function fn_11_测试工程师如何提BUG()    { cat test_11_测试工程师如何提BUG ;}
     local opts=(
         guru                            # FSM 有限状态机
-        gtest
         fundamental                     # 测试就是写方程
         webpage
         web_howto                       # WEB测试学习指南
@@ -1252,7 +1252,6 @@ function fn_ipc()                       { cat nxp_ipc ;}
 function fn_log()                       { cat nxp_log ;}
 function fn_config()                    { cat nxp_config ;}
 function fn_upgrade()                   { cat nxp_upgrade ;}
-function fn_testing()                   { cat nxp_testing ;}
 
 function fn_alarm_link()                { cat nxp_alarm_link ;}
 
@@ -1279,7 +1278,6 @@ function fn_svc()                       { cat nxp_svc ;}
         upgrade
         protocol                        # client与server的通信协议
         client                          # browser
-        testing
         # ----- web func delimeter ----
         alarm_link
         # ----- function delimeter ----
@@ -1454,7 +1452,6 @@ function fn_main() {
         svn
         git
         tcpdump
-        test
         tmux
         uboot
         url
