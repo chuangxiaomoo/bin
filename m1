@@ -372,8 +372,7 @@ function fn_bsearch()                   { cat cstd_bsearch ;}
 
 function fn_clang() {
 function fn_C调用C++链接库()            { cat clang_C调用C++链接库 ;}
-function fn_cdecl()                     { cat clang_cdecl
-                                          cat clang_array ;}
+function fn_cdecl()                     { cat clang_cdecl ;}
 function fn_const()                     { cat clang_const ;}
 function fn_dup2()                      { cat clang_dup2 ;}
 function fn_extern()                    { cat clang_extern ;}
