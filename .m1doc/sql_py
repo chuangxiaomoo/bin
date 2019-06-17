@@ -348,3 +348,24 @@ CREATE TABLE shebao (
     pct         DECIMAL(6,2) NOT NULL DEFAULT 0,
     INDEX(code)
 );
+
+DROP TABLE IF EXISTS jine;
+CREATE TABLE jine (
+    date    date NOT NULL, 
+    code    INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    num     INT             NOT NULL DEFAULT 0,
+    touch   SMALLINT        NOT NULL DEFAULT 0,
+    seal    SMALLINT        NOT NULL DEFAULT 0,
+    G10     SMALLINT        NOT NULL DEFAULT 0,
+    up      INT             NOT NULL DEFAULT 0,
+    dw      INT             NOT NULL DEFAULT 0,
+    G05     SMALLINT        NOT NULL DEFAULT 0,
+    up3     INT             NOT NULL DEFAULT 0,
+    dw3     INT             NOT NULL DEFAULT 0,
+    up2     INT             NOT NULL DEFAULT 0,
+    dw2     INT             NOT NULL DEFAULT 0,
+    up1     INT             NOT NULL DEFAULT 0,
+    dw1     INT             NOT NULL DEFAULT 0,
+    INDEX(date,code)
+);
+
