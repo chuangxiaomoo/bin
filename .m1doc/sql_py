@@ -227,14 +227,6 @@ CREATE TABLE HH34 (
     INDEX(code,date)
 );
 
-DROP TABLE IF EXISTS yu;
-CREATE TABLE yu (
-    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
-    YU          TINYINT NOT NULL DEFAULT 0,
-    name        CHAR(16),
-    INDEX(code)
-);
-
 DROP TABLE IF EXISTS balance;
 CREATE TABLE balance (
     date        date NOT NULL, 
@@ -369,3 +361,10 @@ CREATE TABLE jine (
     INDEX(date,code)
 );
 
+DROP TABLE IF EXISTS banz;
+CREATE TABLE banz (
+    code    INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    banz    SMALLINT        NOT NULL DEFAULT 0,
+    name    CHAR(16),
+    INDEX(code)
+);
