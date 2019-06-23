@@ -343,25 +343,25 @@ CREATE TABLE shebao (
 
 DROP TABLE IF EXISTS jine;
 CREATE TABLE jine (
-    date    date NOT NULL, 
+    date    date NOT NULL,
     code    INT(6) ZEROFILL NOT NULL DEFAULT 0,
     num     INT             NOT NULL DEFAULT 0,
-    touch   SMALLINT        NOT NULL DEFAULT 0,
-    seal    SMALLINT        NOT NULL DEFAULT 0,
-    G10     SMALLINT        NOT NULL DEFAULT 0,
-    up      INT             NOT NULL DEFAULT 0,
-    dw      INT             NOT NULL DEFAULT 0,
+    touch   SMALLINT        NOT NULL DEFAULT 0, # 摸板
+    seal    SMALLINT        NOT NULL DEFAULT 0, # 封板
+    G10     SMALLINT        NOT NULL DEFAULT 0, #
+    up      INT             NOT NULL DEFAULT 0, # +5%
+    dw      INT             NOT NULL DEFAULT 0, # -5%
     G05     SMALLINT        NOT NULL DEFAULT 0,
-    up3     INT             NOT NULL DEFAULT 0,
+    up3     INT             NOT NULL DEFAULT 0, # +5% d144
     dw3     INT             NOT NULL DEFAULT 0,
-    up2     INT             NOT NULL DEFAULT 0,
+    up2     INT             NOT NULL DEFAULT 0, # +5% d055
     dw2     INT             NOT NULL DEFAULT 0,
-    up1     INT             NOT NULL DEFAULT 0,
+    up1     INT             NOT NULL DEFAULT 0, # +5% d021
     dw1     INT             NOT NULL DEFAULT 0,
     INDEX(date,code)
 );
 
-DROP TABLE IF EXISTS banz;
+DROP TABLE IF EXISTS banz;      # 搬砖
 CREATE TABLE banz (
     code    INT(6) ZEROFILL NOT NULL DEFAULT 0,
     banz    SMALLINT        NOT NULL DEFAULT 0,

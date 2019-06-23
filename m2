@@ -512,6 +512,7 @@ function fn_gsq_房价什么情况下会崩()    {
                                           cat moyuxiaozu
                                           cat article_401_康波里的巨头沉浮.md
                                           cat article_402_人生就是一场康波.md
+                                          cat article_410_全球金融周期与楼市.md
                                           cat article_450_为什么少不读水浒.md
 
                                           cat xuzhe
