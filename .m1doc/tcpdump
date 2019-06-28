@@ -28,3 +28,7 @@ tcpdump -i wlan0 tcp port 12345
 # ARP
 
 tcpdump -i eth0 arp -c 10000 -w arp.cap
+
+
+tcpdump.msipc -i eth0  -w /tmp/a.cap            # > 重定向会破坏格式
+tcpdump.msipc -i eth0  port 8002  -w /tmp/a.cap            # > 重定向会破坏格式

@@ -955,7 +955,9 @@ function fn_07_大数据()                 { cat ljsw_07_大数据 ;}
 function fn_08_大家都有拖延症()         { cat ljsw_08_大家都有拖延症 ;}
 function fn_L0_孤独寂寞朋友()           { cat ljsw_L0_孤独寂寞朋友 ;}
 
-function fn_144_什么是好的经济学()      { cat ljsw_144_什么是好的经济学 ;}
+function fn_144_什么是好的经济学()      { cat ljsw_144_什么是好的经济学
+                                              ljsw_145_怎样逼自己成为一个上进的人
+                                        }
 function fn_210_右派为什么这么横()      { cat ljsw_210_右派为什么这么横 ;}
 function fn_215_发现你的太平洋()        { 
                                           cat startup
