@@ -260,12 +260,12 @@ CREATE TABLE q5 (
     v2          DECIMAL(12,2) NOT NULL DEFAULT 0,
     v1          DECIMAL(12,2) NOT NULL DEFAULT 0,
     q5          TINYINT       NOT NULL DEFAULT 0,
-    rock        TINYINT       NOT NULL DEFAULT 0,    # p1>p2 or p1>p3 Diamond-Bottom-Price(rock bottom prices)
+    rock        TINYINT       NOT NULL DEFAULT 0,   # p1>p2 or p1>p3 Diamond-Bottom-Price(rock bottom prices)
     INDEX(date,code)
 );
 
 DROP TABLE IF EXISTS i5;
-CREATE TABLE i5 (
+CREATE TABLE i5 (                                   # 数据由 k.sh fn_i5() 集成
     date        date NOT NULL, 
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
 
@@ -274,13 +274,15 @@ CREATE TABLE i5 (
     vd_30       DECIMAL(6,2) NOT NULL DEFAULT 0,
     vt_60       DECIMAL(6,2) NOT NULL DEFAULT 0,
 
-    x30         DECIMAL(6,2) NOT NULL DEFAULT 0,
+    x30         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 最近4日内，min(vd_30)，      __使用4日，是因为预测时用的是昨天的数据
     x60         DECIMAL(6,2) NOT NULL DEFAULT 0,
-    hi          DECIMAL(6,2) NOT NULL DEFAULT 0,    # min(high) = 近期低K日的high
-    lo          DECIMAL(6,2) NOT NULL DEFAULT 0,    # min(low)  = 近期低K日的low
-    lo8         DECIMAL(6,2) NOT NULL DEFAULT 0,    # min(t8.low)
-    avg         DECIMAL(6,2) NOT NULL DEFAULT 0,    # min(5,low) 对应的 min(avg)
-    avg8        DECIMAL(6,2) NOT NULL DEFAULT 0,    # min(8,low) 对应的 min(avg)
+    hi          DECIMAL(6,2) NOT NULL DEFAULT 0,    # 最近4日内，min(high)
+    lo          DECIMAL(6,2) NOT NULL DEFAULT 0,    #
+
+    lo8         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 最近9日内，min(t8.low)
+    avg         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 最近4日内，min(8,avg)
+    avg8        DECIMAL(6,2) NOT NULL DEFAULT 0,    # 最近9日内，min(8,avg)
+
     close       DECIMAL(6,2) NOT NULL DEFAULT 0,    # 辅助次日开盘30min的e加权
 
     NB          TINYINT      NOT NULL DEFAULT 0,    # 寻底不成笔，id of max_high(curr=0)
