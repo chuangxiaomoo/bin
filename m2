@@ -335,6 +335,7 @@ function fn_01_囧_jiong()               { cat 01_囧_jiong ;}
 function fn_decide()                    { cat decide
                                               decide_math
                                               decide_probability
+                                              book_From_Dawn_to_Decadence_500_Years_of_Western_Cul.md
                                               book_Rational_Choice_in_an_Uncertain_World.md
                                               book_xue_薛兆丰经济学讲义.md
                                               book_201_经济学通识.md

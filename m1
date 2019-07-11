@@ -96,6 +96,7 @@ function fn_alibaba()                   { cat alibaba taobao ;}
 function fn_google()                    { cat google
                                               google.translate
                                               google.faq
+                                              google.sheet
                                               gfw
                                               how_google_works.md
                                         }
