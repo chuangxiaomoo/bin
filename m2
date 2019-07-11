@@ -915,6 +915,7 @@ function fn_letters()                   { cat girl_letters juzi
                                           cat girl_02_angelina
                                           cat girl_03_jiang
                                           cat girl_04_xiaobai
+                                          cat girl_05_cloud
 function fn_11_2013相亲记()             { cat girl_11_2013相亲记 ;}
 function fn_12_wife()                   { cat girl_12_wife ;}
 function fn_100_手把手教你泡妞()        { cat girl_100_手把手教你泡妞
