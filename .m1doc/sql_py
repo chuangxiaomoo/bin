@@ -264,8 +264,7 @@ CREATE TABLE q5 (
     INDEX(date,code)
 );
 
-DROP TABLE IF EXISTS i5;
-CREATE TABLE i5 (                                   # 数据由 k.sh fn_i5() 集成
+CREATE TABLE i5_old (                               # 数据由 k.sh fn_i5() 集成
     date        date NOT NULL, 
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
 
@@ -280,7 +279,7 @@ CREATE TABLE i5 (                                   # 数据由 k.sh fn_i5() 集
     lo          DECIMAL(6,2) NOT NULL DEFAULT 0,    #
 
     lo8         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 最近9日内，min(t8.low)
-    avg         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 最近4日内，min(8,avg)
+    avg         DECIMAL(6,2) NOT NULL DEFAULT 0,    # <新版>不再使用avg，因为avg太过于精确复杂，复杂的东西不易传播
     avg8        DECIMAL(6,2) NOT NULL DEFAULT 0,    # 最近9日内，min(8,avg)
 
     close       DECIMAL(6,2) NOT NULL DEFAULT 0,    # 辅助次日开盘30min的e加权
@@ -288,12 +287,41 @@ CREATE TABLE i5 (                                   # 数据由 k.sh fn_i5() 集
     NB          TINYINT      NOT NULL DEFAULT 0,    # 寻底不成笔，id of max_high(curr=0)
     down        DECIMAL(6,2) NOT NULL DEFAULT 0,    # 下降幅度
     SB          TINYINT      NOT NULL DEFAULT 0,
-    rise        DECIMAL(6,2) NOT NULL DEFAULT 0,
+    rise        DECIMAL(6,1) NOT NULL DEFAULT 0,    # cnt_haier_B<4，取13日涨幅，or取8日涨幅
     INDEX(date,code)
 );
 
-DROP TABLE IF EXISTS iB;
-CREATE TABLE iB (
+DROP TABLE IF EXISTS i5;
+CREATE TABLE i5 (                                   # 重构i5，i5需要的是13日内的走势结构
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0, # 考虑到只做图形评估，不再有成交量的相关信息
+
+    hi          DECIMAL(6,2) NOT NULL DEFAULT 0,    # 考虑`负阴抱阳`
+    lo          DECIMAL(6,2) NOT NULL DEFAULT 0,    #
+    co          DECIMAL(6,2) NOT NULL DEFAULT 0,    # 辅助次日开盘30min的e加权
+    coB         DECIMAL(6,2) NOT NULL DEFAULT 0,    # B日最低收盘
+
+    hi8         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 
+    lo8         DECIMAL(6,2) NOT NULL DEFAULT 0,    #
+    hiB         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 
+    loB         DECIMAL(6,2) NOT NULL DEFAULT 0,    #
+
+    i8          TINYINT      NOT NULL DEFAULT 0,    # 8日新高id
+    o8          TINYINT      NOT NULL DEFAULT 0,
+    iB          TINYINT      NOT NULL DEFAULT 0,    # B日新高id
+    oB          TINYINT      NOT NULL DEFAULT 0,    # B日新低id
+
+    N8          TINYINT      NOT NULL DEFAULT 0,    # 8日新高计数
+    S8          TINYINT      NOT NULL DEFAULT 0,
+    NB          TINYINT      NOT NULL DEFAULT 0,    # B日新高计数
+    SB          TINYINT      NOT NULL DEFAULT 0,
+
+    INDEX(date,code)
+);
+    
+CREATE TEMPORARY TABLE iB LIKE i5;
+
+(
     date        date NOT NULL, 
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
     NB          TINYINT      NOT NULL DEFAULT 0,    # 寻底不成笔，id of max_high(curr=0)
@@ -360,8 +388,13 @@ CREATE TABLE jine (
     dw2     INT             NOT NULL DEFAULT 0,
     up1     INT             NOT NULL DEFAULT 0, # +5% d021
     dw1     INT             NOT NULL DEFAULT 0,
+    x20     DECIMAL(6,2)    NOT NULL DEFAULT 0,
+    _20     DECIMAL(6,2)    NOT NULL DEFAULT 0,
     INDEX(date,code)
 );
+
+    ALTER TABLE jine ADD x20     DECIMAL(6,2)    NOT NULL DEFAULT 0;
+    ALTER TABLE jine ADD _20     DECIMAL(6,2)    NOT NULL DEFAULT 0;
 
 DROP TABLE IF EXISTS banz;      # 搬砖
 CREATE TABLE banz (
