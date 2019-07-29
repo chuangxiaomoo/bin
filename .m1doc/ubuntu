@@ -91,7 +91,7 @@ sudo dpkg-reconfigure dash
 
 修改成功！
 
-# static networking
+# static networking(虚拟机移植时，重新添加网卡后，只保留最新的 eth.bridge and eth.nat)
 
 修改 eth.x -> eth0 的方法: /etc/udev/rules.d/70-persistent-net.rules
 

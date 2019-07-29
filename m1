@@ -346,6 +346,9 @@ function fn_case() {
     cat case_z4_have_no_buffers_to_output.md
     cat case_z5_mesh_search_fail.md
     cat case_z7_no_recordings_and_mp4_lost.md
+    cat case_z8_delay_Tongz.md
+    cat case_z9_4G引入高通模块破局.md
+    cat case_za_抓拍不到最新JPG.md
 }
 
 function fn_socket()                    {

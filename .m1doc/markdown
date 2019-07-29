@@ -1,6 +1,8 @@
-# markdown
+# 使用 mermaid 画图，比Markdown内置语法更方便
 
 markdown 的本质是**标记语言**
+
+[](https://mermaidjs.github.io/#/flowchart)
 
 # 参考
 
@@ -72,4 +74,3 @@ c_gotit(no)->fail
 
         8 spaces if 1 blank line
 
-#

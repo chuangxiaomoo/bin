@@ -23,6 +23,8 @@
 
 # 安装增强工具
 
+  VBoxLinuxAdditions.run
+
   uname -r ==> `3.2.0-23-generic-pae`
   apt-get install linux-headers-3.2.0-23-generic-pae
 
