@@ -92,8 +92,9 @@ function fn_main()
     dl) svn diff `Svn sc | awk '/^M/{print $2}'`    ;;
     dh) HORI=-o \
         svn diff $filelist ;;
-    f)  ln -sf ~/.flowchar/main.i .flowchar.i   ;;
-    dp) svn diff -r 'PREV' $filelist            ;;
+    el) vim -p `Svn sc | awk '/^M/{print $2}'`      ;;
+    f)  ln -sf ~/.flowchar/main.i .flowchar.i       ;;
+    dp) svn diff -r 'PREV' $filelist                ;;
     r)
         [ -z "$filelist" ] && echo "Error: file... must be dedicated" && exit
         svn --depth=infinity revert $filelist
