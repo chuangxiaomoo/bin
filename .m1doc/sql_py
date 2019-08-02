@@ -300,6 +300,11 @@ CREATE TABLE i5 (                                   # 重构i5，i5需要的是1
     lo          DECIMAL(6,2) NOT NULL DEFAULT 0,    #
     co          DECIMAL(6,2) NOT NULL DEFAULT 0,    # 辅助次日开盘30min的e加权
     coB         DECIMAL(6,2) NOT NULL DEFAULT 0,    # B日最低收盘
+    co21        DECIMAL(6,2) NOT NULL DEFAULT 0,    # 21日最低收盘
+
+    v3          TINYINT      NOT NULL DEFAULT 0,    # 3日内 tov>hsl20*.95
+    v7          TINYINT      NOT NULL DEFAULT 0,    # 7日内 tov>hsl20*.95
+    siB         DECIMAL(6,1) NOT NULL DEFAULT 0,    # 8日内涨停 +1，9日~B日 +.3
 
     hi8         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 
     lo8         DECIMAL(6,2) NOT NULL DEFAULT 0,    #
@@ -320,16 +325,6 @@ CREATE TABLE i5 (                                   # 重构i5，i5需要的是1
 );
     
 CREATE TEMPORARY TABLE iB LIKE i5;
-
-(
-    date        date NOT NULL, 
-    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
-    NB          TINYINT      NOT NULL DEFAULT 0,    # 寻底不成笔，id of max_high(curr=0)
-    down        DECIMAL(6,2) NOT NULL DEFAULT 0,    # 下降幅度
-    SB          TINYINT      NOT NULL DEFAULT 0,
-    rise        DECIMAL(6,2) NOT NULL DEFAULT 0,
-    INDEX(date,code)
-);
 
 ALTER TABLE i5 ADD close DECIMAL(6,2) AFTER avg;
 UPDATE d1,i5 SET i5.close=d1.close WHERE d1.date=i5.date and d1.code=i5.code;

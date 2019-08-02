@@ -328,7 +328,6 @@ function fn_misc()                      { cat music_list
 
 function fn_mindhacks()                 { cat mindhacks ;}
 function fn_guang()    	                { cat guang ;}
-function fn_poet()    	                { cat poet ;}
 function fn_personage()                 { cat personage ;}
 function fn_01_囧_jiong()               { cat 01_囧_jiong ;}
 
@@ -457,6 +456,7 @@ function fn_80_emotion_情绪()           {
                                           cat article_82_有目标你就可以忍受一切
                                           cat article_83_情绪管理misc
                                           cat article_84_理性与情绪控制
+                                        }
 
 function fn_71_不自律何自由？()         { cat article_71_不自律何自由？
                                           cat article_72_唯有自律方得自由
@@ -473,8 +473,8 @@ function fn_103_协作跟进？如何跟进？()  { cat article_103_协作跟进
                                           cat article_105_你的话语权从哪里来？
                                         }
 
-function fn_110_中国哲学体系的困惑？()  { cat article_110_中国哲学体系的困惑？ ;}
-function fn_111_喜欢有之或喜欢用之？()  { cat article_111_喜欢有之或喜欢用之？ ;}
+function fn_110_中国哲学体系的困惑()    { cat article_110_中国哲学体系的困惑？ ;}
+function fn_111_喜欢有之或喜欢用之()    { cat article_111_喜欢有之或喜欢用之？ ;}
 function fn_112_我们何需抱怨被误解()    { cat article_112_我们何需抱怨被误解 ;}
 
 
@@ -487,7 +487,7 @@ function fn_gsq_房价什么情况下会崩()    {
                                           cat article_204_杨赤忠.从投资市场到政府管理.md
 
                                           cat gushequ
-                                          cat article_gsq_房价什么情况下会崩
+                                          cat article_300_为什么这些有钱人还要用杠杆.md
                                           cat article_301_财富公式之亿万钱财
                                           cat article_302_史上最中肯的投资建议
                                           cat article_303_怎么应付朋友借钱
@@ -496,6 +496,7 @@ function fn_gsq_房价什么情况下会崩()    {
                                           cat article_306_gaoshanwen_shanxi30
                                           cat article_307_社会分层的意义与思考
 
+                                          cat article_gsq_房价什么情况下会崩
                                           cat article_310_并非买套套房子就要住一辈子.md
                                           cat article_311_一座城市就是一家上市公司.md
                                           cat article_312_强势行情跳空低开的锚定心理表征.md
@@ -548,11 +549,9 @@ function fn_gsq_房价什么情况下会崩()    {
         102_同事是你共享生命的战友
         103_协作跟进？如何跟进？
 
-        110_中国哲学体系的困惑？
-        111_喜欢有之或喜欢用之？
+        110_中国哲学体系的困惑
+        111_喜欢有之或喜欢用之
         112_我们何需抱怨被误解
-
-        201_“非上帝投机者”的自赎
     )
     fn_print $@
 }
@@ -909,7 +908,7 @@ function fn_duanzi()                    { cat humor_duanzi ;}
 
 function fn_girl()                      {
 function fn_misc()                      { cat girl_misc ;}
-function fn_letters()                   { cat girl_letters juzi
+function fn_letters()                   { cat girl_letters juzi poet
                                           cat girl_00_jiebao
                                           cat girl_01_tingbao
                                           cat girl_02_angelina
@@ -1235,7 +1234,6 @@ function fn_main() {
         ideas
         idealism                        # 理想主义
         influence                       # 三十而立 30
-        poet
         math                            # 数
         mng
         mindhacks
