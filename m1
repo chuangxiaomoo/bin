@@ -1013,7 +1013,6 @@ function fn_11_测试工程师如何提BUG()    { cat test_11_测试工程师如
 function fn_codingstyle()               { cat codingstyle_base
                                           cat codingstyle_kernel
                                           cat codingstyle_qt
-                                          cat codingstyle_rule      # 关键在映射规则
                                           cat codingstyle_cxx
                                           cat codingstyle_wangying  # 王垠：编程的智慧
                                           cat codingstyle_busybox   # 最接近内核style

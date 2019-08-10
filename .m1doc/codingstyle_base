@@ -1,61 +1,114 @@
-# 编程之道
+# 语法
+
+**规则，源自教训**
+
+Coding-style类似于自然语言的语法。本质上来看，其并不是“规定你应该怎么写”，而是“尽量”“系统地”解释“人们为什么普遍这么写”。
+
+# 编程之道(精确)
 
 编程之道，就是最极致的黑白抽象。
 
-1 不要用中性的(mode, light)，相对的(reverse)名词，作为变量的命名。
-2 要用积极的、正常的语言顺序思考问题。4g.online 比 4g.offline 要好。
+# 不要用中性的(mode, light)，相对的(reverse)名词，作为变量的命名。
 
-## 两大原则
+使用感情色彩强烈的单词命名变量。
+用动词命令函数 numn.+verb.
 
-  **1. KISS**
-  80列
+# 要用积极的、正常的语言顺序思考问题。
 
-  **2. DRY**
-  好的代码肯定是可利用性高的，JCP命令中的3种参数如何进行归一设置，
-  如果老是这样，出错的概率大大增加了，特别是在后续维护时。
+4g.online 比 4g.offline 要好。
+
+# 两大原则
+
+**1. KISS**
+
+80列
+
+**2. DRY**
+
+好的代码肯定是可利用性高的，JCP命令中的3种参数如何进行归一设置，
+如果老是这样，出错的概率大大增加了，特别是在后续维护时。
 
     guobiaocfg -act set -devsysname
     char _devsysname[]
     guobiao:devsysname
 
-## 把好质量关
+# 把好质量关
 
   **1. no-warning**
   gcc -Wall
 
   **2. 检查函数返回值并打印**
+  if (FAIL) {
+    DBG("错误原因");
+  }
 
-## 从总体设计上把握
+# 从总体设计上把握
 
   [server/client架构](nxp_hold)
 
-## misc 
+# 形成映射规则(抽象)
 
-  1. 千万不要把 bool 设计成函数参数, 定义成枚举类型是最好的选择
+  统一命令规范(共5处)
 
-  http://coolshell.cn/articles/5444.html
+      -- JCP命令 （与其它5项分离）
 
-  2. 一些陈皓的文章
+  conf_get_ethcfg
+      --  提交的api接口名（全小写）
+          conf  + get(set) + 配置名cfg，以`_`连接，
+          配置名cfg部分没有下划线
+  "getEthCfg"
+      --  jconfig内部命令
+          get(set) + 配置名cfg，以配置头字母及Cfg组成
 
-  [程序命名的一些提示](http://coolshell.cn/articles/1990.html)
-  [编程命名中的7+1个提示](http://coolshell.cn/articles/1038.html)
+  handleEthCfg
+      --  jconf入口函数
+          把jconfig命令中get(set)换成handle
 
-  3. Readable    
+  SysConfEthCfg
+      --  配置文件访问函数
+          把jconfig命令中get(set)换成SysConf
 
-  don't save ()
+  JEvent_EthCfgChg
+      -- JEventType枚举成员
+          把jconfig命令中get(set)换成 JEvent_，末尾再加Chg
 
-    #define MAX_SCHEDULER_GRANULARITY 10000
-    #define MAX_SCHEDULER_GRANULARITY (10 * 1000)
+## <Linux内核代码风格>
 
-  don't write implicitely code
-        (NULL != ret)
+  其是一篇非常有价值的文章，同时也是一篇非常有争议的地方。我们的口号，求同存异。
 
-    no magic digits and magic strings, espacially in statement return.
-        SUCCESS FAILURE RUNNING STOPPED
+  与当前团队风格差异最大的3个特性
+  8空格缩进
+  { 放在行尾巴上
+  完全小写与下划线命名
 
-  4. 高度抽象
 
-  control global variables(how to package use C)
-  static
-  就是要实现4个函数 （1）申请标志 （2）读取标志 （3）更改标志 （4）删除标志
+# misc 
+
+1. 千万不要把 bool 设计成函数参数, 定义成枚举类型是最好的选择
+
+http://coolshell.cn/articles/5444.html
+
+2. 一些陈皓的文章
+
+[程序命名的一些提示](http://coolshell.cn/articles/1990.html)
+[编程命名中的7+1个提示](http://coolshell.cn/articles/1038.html)
+
+3. Readable    
+
+don't save ()
+
+  #define MAX_SCHEDULER_GRANULARITY 10000
+  #define MAX_SCHEDULER_GRANULARITY (10 * 1000)
+
+don't write implicitely code
+      (NULL != ret)
+
+  no magic digits and magic strings, espacially in statement return.
+      SUCCESS FAILURE RUNNING STOPPED
+
+4. 高度抽象
+
+control global variables(how to package use C)
+static
+就是要实现4个函数 （1）申请标志 （2）读取标志 （3）更改标志 （4）删除标志
 

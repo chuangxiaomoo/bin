@@ -49,7 +49,7 @@
 # 走读mxml
 
   ./configure && make 
-  读README对框架有个大致的了解，无非就就是读写
+  读README对框架有个大致的了解，无非就是读写
   运行testmxml对其有更深认识
   读testmxml.c了解细节
 

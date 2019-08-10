@@ -438,7 +438,7 @@ C
 
   1   public boolean hasBadName(List names) {
   2       boolean result = false;
-  3    
+  3
   4       for (String name: names) {
   5           if (name.contains("bad")) {
   6               result = true;
@@ -607,7 +607,7 @@ catch异常的时候，你不应该使用Exception这么宽泛的类型。你应
   1  try {
   2    foo();
   3  } catch (A e) {...}
-  4   
+  4
   5  try {
   6    bar();
   7  } catch (A e) {...}
