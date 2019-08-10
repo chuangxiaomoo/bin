@@ -323,6 +323,18 @@ CREATE TABLE i5 (                                   # 重构i5，i5需要的是1
 
     INDEX(date,code)
 );
+
+DROP TABLE IF EXISTS f5;
+CREATE TABLE f5 (
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    setl        DECIMAL(6,2) NOT NULL DEFAULT 0,
+    dive        DECIMAL(6,2) NOT NULL DEFAULT 0,
+    dash        DECIMAL(6,2) NOT NULL DEFAULT 0,
+    intv        TINYINT      NOT NULL DEFAULT 0,
+    p_chng      DECIMAL(6,2) NOT NULL DEFAULT 0,
+    INDEX(code)
+);
     
 CREATE TEMPORARY TABLE iB LIKE i5;
 
