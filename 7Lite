@@ -710,6 +710,8 @@ function fn_sortf()
 function fn_txt2markdow()
 {
     # :%s/^\n//g            删除 table 空行
+    book=$1
+    table=$2
 
     [ -e "${book}" ]
     xt_ret $? "book[$book] not exist" || return $?
@@ -717,11 +719,19 @@ function fn_txt2markdow()
     [ -e "${table}" ]
     xt_ret $? "table[$table] not exist" || return $?
 
-    cp ${book} ${book}.bak
+    cp ${table} ${table}.new
+    sed -i -e 's///g' -e 's/  *$//g' -e '/^$/d' ${table}.new
+
+    cp ${book} ${book}.new
+    sed -i -e 's///g' ${book}.new
+
     while read ; do
-        echo "$REPLY"
-        sed -i "s/^${REPLY}/# &/g" ${book}
-    done < ${table}
+        echo "do $REPLY"
+        sed -i "s/^${REPLY}/# &/g" ${book}.new
+    done < ${table}.new
+
+    echo -e '\n\n\n' >> ${book}.new
+    cat ${table}.new >> ${book}.new
 }
 
 function fn_ff()
@@ -802,7 +812,7 @@ function fn_main()
     "etc                    # backup etc"
     "pyx                    # pyc extract"
     "sum                    # sum STDIN or ARGV"
-    "txt2markdow            # 给章节打上#"
+    "txt2markdow book table # 给章节打上#，务必在Linux上执行"
     "txt2mdbrace            # _[]  ->  ＿［］×"
     "ff {[0]|1}             # xiaolai road to forturn free"
     )
