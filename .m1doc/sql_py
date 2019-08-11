@@ -1,5 +1,20 @@
 # tables
 
+DROP TABLE IF EXISTS bias;
+CREATE TABLE bias (
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    date        date NOT NULL, 
+    setl        DECIMAL(6,2)  NOT NULL,
+    open        DECIMAL(6,2)  NOT NULL,
+    close       DECIMAL(6,2)  NOT NULL,
+    high        DECIMAL(6,2)  NOT NULL,
+    low         DECIMAL(6,2)  NOT NULL,
+    volume      DECIMAL(15,1) NOT NULL DEFAULT 0,
+    amount      DECIMAL(15,1) NOT NULL DEFAULT 0,
+    INDEX(code),
+    INDEX(code,date)
+);
+
 DROP TABLE IF EXISTS d1;
 CREATE TABLE d1 (
     date        date NOT NULL, 
