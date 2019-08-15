@@ -40,7 +40,8 @@ function fn_main()
     filelist="${@:2}"
 
     case $1 in
-    a)  svn stat | awk '{print $2}' | xargs -I{} svn add --force {}  | cat -n                       ;;
+    a)  [ -f "${2}" ] && { svn add --force ${filelist} | cat -n ;}
+        svn stat | awk '{print $2}' | xargs -I{} svn add --force {}  | cat -n                       ;;
     A)  /usr/bin/find ! -name '.' -a -name '*' | xargs -I{} svn add --force {}  | cat -n            ;;
     c)  svn ci $filelist                            && svn up                                       ;;
    cc)  fl=`Svn Sc | awk '{print $NF}'` ;svn ci $fl && svn up                                       ;;

@@ -97,6 +97,7 @@ function fn_google()                    { cat google
                                               google.translate
                                               google.faq
                                               google.sheet
+                                              google.dog
                                               gfw
                                               how_google_works.md
                                         }
