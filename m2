@@ -960,6 +960,8 @@ function fn_L0_孤独寂寞朋友()           { cat ljsw_L0_孤独寂寞朋友 ;
 
 function fn_144_什么是好的经济学()      { cat ljsw_144_什么是好的经济学
                                               ljsw_145_怎样逼自己成为一个上进的人
+                                              tao_design                    # 设计之道
+                                              
                                         }
 function fn_210_右派为什么这么横()      { cat ljsw_210_右派为什么这么横 ;}
 function fn_215_发现你的太平洋()        { 
@@ -1171,7 +1173,7 @@ function fn_rhyme200()                  { cat guo_rhyme200 ;}
         term
         compare                         # vs. 羽毛球.期货
         lesson
-        Question
+        Question                        # problem_ask_question
     )
     fn_print $@
 }
@@ -1263,7 +1265,6 @@ function fn_main() {
         stupid_things                   # 哪些年做过的蠢事
         subtitle
         psychology                      # 心理学
-        tao_design                      # 设计之道
         kindle
         chaos
         literature                      # 文学
