@@ -18,3 +18,30 @@
 2. 链接(导航)
 3. 共享编辑
 
+# Skills
+
+| NO. | Operate            | Note                           |
+| :-- | :------            | :------                        |
+| 1   | Help               | Ctrl-/                         |
+| 2   | 快捷键(Fullscreen) | ctrl-;                         |
+| 3   | 插入               | Ctrl-+                         |
+| 4   | 删除               | Ctrl--                         |
+| 5   | 格式清除           | Ctrl-\                         |
+| 6   | Bold               | Ctrl-2                         |
+| 7   | Italy              | Ctrl-3                         |
+| 8   | Underline          | Ctrl-4                         |
+| 9   | 删除线             | Ctrl-5                         |
+| 10  | -------------      | -------------                  |
+| 11  | 格式 Ctrl-1        |                                |
+| 15  | Format-conditional | Ctrl-1,Layout                  |
+| 12  | Word-Auto          | Alt-W                          |
+| 13  | Align-Vert         | Alt-H,A,{Top Mid Bot}          |
+| 14  | Align-Hori         | Ctrl-Shift,{Left Right cEnter} |
+| 16  | Merge              | Alt-H,M,{Merge,Unmerge}        |
+| 17  | -------------      | -------------                  |
+| 18  | 自动填充序列       | 需要选中两个cell才可以操作     |
+| 19  | Freez行列          | 查看->冻结                     |
+| 20  | 下拉               | 数据->数据验证->项列表         |
+| 21  | 数据验证           | To,Doing,Done右键加条件格式    |
+| 22  |                    |                                |
+
