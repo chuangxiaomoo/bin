@@ -155,6 +155,7 @@ alias   gwd='cd `cat ~/.swd`'                       # save pwd  [popd]
 alias  | grep -w -q awd && unalias awd
 alias  | grep -w -q iwd && unalias iwd
 
+fwd() { grep $1 ~/.awd*   ; }
 awd() { pwd >>  ~/.awd${1}; }
 iwd() { vi      ~/.awd${1}; }
 lwd() { wd_file=~/.awd${1}
