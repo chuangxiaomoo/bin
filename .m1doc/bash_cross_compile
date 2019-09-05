@@ -23,7 +23,8 @@
 
 # iperf 2.0.9
 
-make --host=arm-buildroot-linux-uclibcgnueabihf
+./configure --host=arm-buildroot-linux-uclibcgnueabihf
+./configure --host=arm-buildroot-linux-uclibcgnueabi    # nvr.4
 
 # e2fsprogs
 
@@ -60,6 +61,10 @@ LSOF_CC=mips-linux-uclibc-gnu-gcc LSOF_HOST=mips-linux ./Configure  -n linux
 # libiconv
 
 ./configure --host=arm-buildroot-linux-uclibcgnueabihf
+
+# curl
+
+./configure --host=mips-linux CC=mips-linux-uclibc-gnu-gcc LD=mips-linux-uclibc-gnu-ld AR=mips-linux-uclibc-gnu-ar
 
 # libiconv mips-uclibc
 

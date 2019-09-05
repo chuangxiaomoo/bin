@@ -17,6 +17,7 @@ function fn_main()
         ds  .swp    [del .swp] 
         i   info    URL of repository
         l   log     log -p file
+        L   reflog
         ls          ls-files
         p   pull    [origin master]
         P   push    [origin master]
@@ -63,6 +64,7 @@ function fn_main()
     d)  git difftool ${filelist}                    ;;
     ls) git ls-files ${filelist}                    ;;
  log|l) git log -p ${filelist}                      ;;
+refl|L) git reflog ${filelist}                      ;;
     dp) git diff HEAD^ HEAD ${filelist}             ;;
     ds) find -name '*.sw[op]' -exec rm -f {} \;     ;;
 

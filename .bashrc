@@ -65,6 +65,7 @@ alias     .5="let 'TOV5=++TOV5%3'; echo \$TOV5; export TOV5"
 alias  .SINA="let 'SINA=!SINA'; echo \$SINA; export SINA"
 alias .DEBUG="let 'DEBUG=!DEBUG'; echo \$DEBUG; export DEBUG"
 #lias    .n='. /opt/nxpbash'
+alias    .g='cd ~/gitee'
 alias    .s='cd ~/bin'
 alias    .k='cd ~/bin/stk'
 alias    .ki='grep -q "/root/bin/stk:" <<<"$PATH" || export PATH="/root/bin/stk:$PATH"'
