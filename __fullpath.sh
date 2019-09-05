@@ -16,7 +16,7 @@
 function fn_main()
 {
     [ -z "$1" ] && echo "Usage __fullpath.sh filename maxdepth" && exit
-    find $PWD -maxdepth ${2:-2} -name `basename $1`
+    find $PWD -maxdepth ${2:-4} -name `basename $1`
     echo
     echo ${PWD}/${1#./} | grep --color `basename $1` > /dev/stderr
 }

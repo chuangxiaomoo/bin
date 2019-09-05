@@ -46,7 +46,7 @@ if { $argc == 0 } {
         interact {
             timeout 30 { send "" }
         }
-    } elseif { [string match *mlogin $argv0] == 1 } {   # mstar-nvr
+    } elseif { [string match *nlogin $argv0] == 1 } {   # mstar-nvr
         spawn telnet $ip $port
         expect  "login:"
         send    "root\n"
@@ -66,7 +66,7 @@ if { $argc == 0 } {
         interact {
             timeout 30 { send "" }
         }
-    } elseif { [string match *nlogin $argv0] == 1 } {   # nvr
+    } elseif { [string match *Nlogin $argv0] == 1 } {   # old-nvr
         spawn telnet $ip $port
         expect  "login:"
         send    "root\n"
