@@ -23,7 +23,8 @@
 
 # iperf 2.0.9
 
-make --host=arm-buildroot-linux-uclibcgnueabihf
+./configure --host=arm-buildroot-linux-uclibcgnueabihf
+./configure --host=arm-buildroot-linux-uclibcgnueabi    # nvr.4
 
 # e2fsprogs
 
