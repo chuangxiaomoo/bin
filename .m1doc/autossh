@@ -1,0 +1,10 @@
+# Tunnel 
+
+[SSH反向隧道搭建过程](https://cuiqingcai.com/5876.html)
+
+> autossh [-V] [-M port[:echo_port]] [-f] [SSH_OPTIONS]     # SSH_OPTIONS 可以指定远程ssh端口
+
+# /etc/profile
+
+ps -ef | grep -q '[a]utossh' || autossh -M 55555 -NfR 0.0.0.0:22001:localhost:22 root@Tencent_cloud -p ssh_port
+

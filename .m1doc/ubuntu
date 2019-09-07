@@ -29,8 +29,12 @@ lsb_release -a
 
   sudo passwd -u root
   sudo -s
+  sudo passwd root
   echo "greeter-show-manual-login=true" >> /etc/lightdm/lightdm.conf 
   restart
+
+  vi /etc/ssh/sshd_config
+  PermitRootLogin yes
 
 # 下载源码
 
