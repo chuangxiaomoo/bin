@@ -12,11 +12,18 @@
 
 但最终还是选择 google.sheet，因为需要更专业的功能，更广阔的格局。
 
+
 # 基本功能
 
 1. 反馈
 2. 链接(导航)
 3. 共享编辑
+
+*注意事项：禁用cVim防冲突*
+Either click the cVim icon and click the "Disable cVim on the domain" button
+
+*auto-fit*
+Double-click on the border between any two of the selected rows on the row number toolbar (the one on the right)
 
 # Skills
 
