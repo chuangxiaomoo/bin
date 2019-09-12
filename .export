@@ -10,7 +10,7 @@ export LESS_TERMCAP_ue=$'\E[0m'
 export LESS_TERMCAP_us=$'\E[01;32m'
 
 # 
-grep -q "/root/bin:" <<< "${PATH}" || export PATH=/root/bin:$PATH
+grep -q "/root/bin:" <<< "${PATH}" || export PATH=$PATH:/root/bin
 
 export CDPATH=.:~:/home
 export SVN_EDITOR=vim

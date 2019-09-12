@@ -159,7 +159,8 @@ fwd() { grep $1 ~/.awd*   ; }
 awd() { pwd >>  ~/.awd${1}; }
 iwd() { vi      ~/.awd${1}; }
 lwd() { wd_file=~/.awd${1}
-    [ "${1}" = 'l' ] && (cd ~; ls .awd* | grep --color awd) && return
+    [ "${1}" = 'L' ] && (cd ~;  ls .awd* | grep --color awd) && return
+    [ "${1}" = 'l' ] && (cd ~; cat .awdl | grep --color -E '(awd|-|^$|Name)') && return
     cat -n $wd_file 2>/dev/null | grep -E "([0-9]|Export)" || {
         echo "Usage: lwd ${1}" &&
         echo "  run [awd ${1}] first" && return
@@ -296,15 +297,17 @@ lsgcc()
     jzzz    mips-linux-uclibc-gnu-
 
     ms-IPC  arm-linux-gnueabihf-
-    ms-ulib arm-buildroot-linux-uclibcgnueabihf-
+    ms-ulib arm-buildroot-linux-uclibcgnueabihf-        # 650
     ms-NVR  arm-buildroot-linux-uclibcgnueabi-
 
     ____________________nvr.265________________
     arm-linux-   
     aarch64-none-elf-   
-    arm-buildroot-linux-uclibcgnueabi-          # main.exe
-    arm-none-eabi-                              # 2011.03 Mboot
-    arm-none-linux-gnueabi-                     # 2012.09 Mboot
+    arm-buildroot-linux-uclibcgnueabi-                  # main.exe
+    arm-none-eabi-                                      # 2011.03 Mboot
+    arm-none-linux-gnueabi-                             # 2012.09 Mboot
+    arm-buildroot-linux-uclibcgnueabihf-                # 621
+
 
     /home/n/rc.d/mksquashfs
     "

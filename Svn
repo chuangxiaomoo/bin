@@ -28,6 +28,8 @@ function fn_usage()
         S       status | grep PAT
         u       update
         U       Svn l 20 | Svn U zhangj : svn --user zhangj
+        cd                              : cd a /branch path
+        vi                              : vi a /barnch file
 
         svn cleanup __should__ in TOP dir
         svn relocate svn://sub.someaddress.com.tr/project
@@ -38,8 +40,20 @@ function fn_usage()
 function fn_main()
 {
     filelist="${@:2}"
-
     case $1 in
+   vi)
+        dir=${PWD##*/}
+        if ! grep ${dir} <<< "$filelist"; then
+            echo "not a SVN path"; exit
+        fi
+
+        file=${filelist##*${dir}}
+
+        if [ ! -e "${PWD}${file}" ]; then
+            echo "${PWD}${file} not exist"; exit
+        fi
+        vi -R "${PWD}${file}"       # \cd to CD PATH
+        ;;
     a)  [ -f "${2}" ] && { svn add --force ${filelist} | cat -n ;}
         svn stat | awk '{print $2}' | xargs -I{} svn add --force {}  | cat -n                       ;;
     A)  /usr/bin/find ! -name '.' -a -name '*' | xargs -I{} svn add --force {}  | cat -n            ;;

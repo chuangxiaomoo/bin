@@ -42,6 +42,9 @@ tar
     # 可以指定目录层次
     echo kts/warehouse > /dev/shm/.tar.exclude 
 
+    -J
+        tar -xJf file.pkg.tar.xz
+
 -X的3种有效路径
 
  1. 绝对路径：唯一匹配
