@@ -1,3 +1,10 @@
+/* secureCRT-mac */
+
+1. 选项 -> 会话选项 -> ssh2 -> 公钥 -> 属性 -> 创建 -> 通行短语(xmoo) -> 选择openssh格式
+2. /Users/xdpan/.ssh/identity.pub
+3. cat /Users/xdpan/.ssh/identity.pub >> ~/.ssh/authorized_keys
+4. 第一次登陆时输入(xmoo)，其后就不再需要输入了
+
 /* secureCRT */
 
 . 日志追加timestamp
