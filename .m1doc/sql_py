@@ -403,6 +403,7 @@ CREATE TABLE jine (
     G10     SMALLINT        NOT NULL DEFAULT 0, #
     up      TINYINT         NOT NULL DEFAULT 0, # +5%
     dw      TINYINT         NOT NULL DEFAULT 0, # -5%
+    odd     DECIMAL(6,1)    NOT NULL DEFAULT 0,
     G05     SMALLINT        NOT NULL DEFAULT 0,
     up3     TINYINT         NOT NULL DEFAULT 0, # +5% d144
     dw3     TINYINT         NOT NULL DEFAULT 0,
@@ -412,7 +413,9 @@ CREATE TABLE jine (
     dw1     TINYINT         NOT NULL DEFAULT 0,
     x20     DECIMAL(6,2)    NOT NULL DEFAULT 0,
     _20     DECIMAL(6,2)    NOT NULL DEFAULT 0,
-     A8     TINYINT         NOT NULL DEFAULT 0,
+    A8      TINYINT         NOT NULL DEFAULT 0,
+    V8      TINYINT         NOT NULL DEFAULT 0,
+    V6      TINYINT         NOT NULL DEFAULT 0,
     INDEX(date,code)
 );
 
