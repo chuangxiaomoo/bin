@@ -317,9 +317,10 @@ CREATE TABLE i5 (                                   # 重构i5，i5需要的是1
     coB         DECIMAL(6,2) NOT NULL DEFAULT 0,    # B日最低收盘
     co21        DECIMAL(6,2) NOT NULL DEFAULT 0,    # 21日最低收盘
 
-    v3          TINYINT      NOT NULL DEFAULT 0,    # 3日内 tov>hsl20*.95
-    v7          TINYINT      NOT NULL DEFAULT 0,    # 7日内 tov>hsl20*.95
-    siB         DECIMAL(6,1) NOT NULL DEFAULT 0,    # 8日内涨停 +1，9日~B日 +.3
+    x8          TINYINT      NOT NULL DEFAULT 0,    # 8日内 tov>hsl20*.95
+    xj8         TINYINT      NOT NULL DEFAULT 0,    # 7日内 tov>hsl20*.95
+    odx         DECIMAL(6,1) NOT NULL DEFAULT 0,    # avg(xj8)*0.45/avg(tov.0,tov.1)
+    siB         TINYINT      NOT NULL DEFAULT 0,    # B日内涨停 +1
 
     hi8         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 
     lo8         DECIMAL(6,2) NOT NULL DEFAULT 0,    #
