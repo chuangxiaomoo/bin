@@ -319,7 +319,8 @@ CREATE TABLE i5 (                                   # 重构i5，i5需要的是1
 
     x8          TINYINT      NOT NULL DEFAULT 0,    # 8日内 tov>hsl20*.95
     xj8         TINYINT      NOT NULL DEFAULT 0,    # 7日内 tov>hsl20*.95
-    odx         DECIMAL(6,1) NOT NULL DEFAULT 0,    # avg(xj8)*0.45/avg(tov.0,tov.1)
+    tv2         DECIMAL(6,2) NOT NULL DEFAULT 0,    # avg(tov.0,tov.1)
+    odx         DECIMAL(6,1) NOT NULL DEFAULT 0,    # avg(xj8)*0.45/tv2
     siB         TINYINT      NOT NULL DEFAULT 0,    # B日内涨停 +1
 
     hi8         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 
@@ -327,7 +328,7 @@ CREATE TABLE i5 (                                   # 重构i5，i5需要的是1
     hiB         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 
     loB         DECIMAL(6,2) NOT NULL DEFAULT 0,    #
 
-    i8          TINYINT      NOT NULL DEFAULT 0,    # 8日新高id
+    i8          TINYINT      NOT NULL DEFAULT 0,    # 8日新高id, __助记__: in 前进 out 后退
     o8          TINYINT      NOT NULL DEFAULT 0,
     iB          TINYINT      NOT NULL DEFAULT 0,    # B日新高id
     oB          TINYINT      NOT NULL DEFAULT 0,    # B日新低id
@@ -412,6 +413,7 @@ CREATE TABLE jine (
     dw2     TINYINT         NOT NULL DEFAULT 0,
     up1     TINYINT         NOT NULL DEFAULT 0, # +5% d021
     dw1     TINYINT         NOT NULL DEFAULT 0,
+    x60     TINYINT         NOT NULL DEFAULT 0, # sum(ma5<=ma20 || ma5<=ma60)
     x20     DECIMAL(6,2)    NOT NULL DEFAULT 0,
     _20     DECIMAL(6,2)    NOT NULL DEFAULT 0,
     A8      TINYINT         NOT NULL DEFAULT 0,
