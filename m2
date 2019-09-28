@@ -208,7 +208,7 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               problem_solving
                                               problem_Formula
                                               problem_X-Y           # 问题分类
-                                              problem_ask_question  # 问题产生源自问问题的方式
+                                            Q problem_ask_question  # 问题产生源自问问题的方式
                                               problem_present       # 回归问题本身
                                               FeynmanTechnique
                                               how_to_ask_questions_the_smart_way
