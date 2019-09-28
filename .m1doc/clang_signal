@@ -10,9 +10,17 @@
 
 # if 内核配置
 
-    CONFIG_ELF_CORE=y
-    CONFIG_COREDUMP=y
+    CONFIG_BINFMT_ELF=y
+    CONFIG_ELFCORE=y
     CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS=y
+    # CONFIG_BINFMT_FLAT is not set
+    # CONFIG_HAVE_AOUT is not set
+    # CONFIG_BINFMT_MISC is not set
+    CONFIG_COREDUMP=y
+
+# if rcS
+
+    CONFIG_BINFMT_SCRIPT=y
 
 # if 查看及启用coredump
 
