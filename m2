@@ -962,6 +962,7 @@ function fn_144_什么是好的经济学()      { cat ljsw_144_什么是好的�
                                               tao_design                    # 设计之道
                                               MANAGEMENT.team
                                               sanxing_2013.team
+                                              5_bases_of_social_power.md
                                               
                                         }
 function fn_210_右派为什么这么横()      { cat ljsw_210_右派为什么这么横 ;}
