@@ -420,7 +420,8 @@ scmo()  {
 
 wEc=/winc/Export/com; 
 cpcom() { mkdir -p $wEc; chmod -R 644 $wEc; rm -rf $wEc/[^b]*; cp -a release/com/* $wEc ;}
-cptar() { file=`ls release/tar/*.tgz`;touch  $wEc/force_dbg.txt
+cptar() { test -f "${1}" && cp $1 $wEc/ && echo "cp $1 succ" && return
+          file=`ls release/tar/*.tgz`;touch  $wEc/force_dbg.txt
           mkdir -p $wEc/ ;rm -rf $wEc/*.tgz; cp -a $file         $wEc/  ;}
 cpffw() { file=`ls release/tar/*.ffw`;touch  $wEc/force_dbg.txt 
           mkdir -p $wEc/; rm -rf $wEc/*.ffw; cp -a $file $wEc/

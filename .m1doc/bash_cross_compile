@@ -48,6 +48,16 @@ make install
 
 **如果生成 .a 给 wpa_supplicant 使用时链不过，多半是 AR的问题**
 
+# wireless_tools.29
+
+CROSS=mips-linux-uclibc-gnu
+CROSS=arm-buildroot-linux-uclibcgnueabihf
+make CC=$CROSS-gcc \
+	AR=$CROSS-ar \
+	RANLIB=$CROSS-ranlib
+
+$CROSS-ldd iwlist
+
 # lsof
 
 [lsof-cross-compile](http://blog.csdn.net/orz415678659/article/details/9427385)
