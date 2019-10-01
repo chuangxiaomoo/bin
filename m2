@@ -961,6 +961,7 @@ function fn_144_什么是好的经济学()      { cat ljsw_144_什么是好的�
                                               ljsw_145_怎样逼自己成为一个上进的人
                                               tao_design                    # 设计之道
                                               MANAGEMENT.team
+                                              Expectation.team
                                               sanxing_2013.team
                                               5_bases_of_social_power.md
                                               
