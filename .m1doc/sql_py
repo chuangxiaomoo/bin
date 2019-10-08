@@ -318,7 +318,7 @@ CREATE TABLE i5 (                                   # 重构i5，i5需要的是1
     co21        DECIMAL(6,2) NOT NULL DEFAULT 0,    # 21日最低收盘
 
     x8          TINYINT      NOT NULL DEFAULT 0,    # 8日内 tov>hsl20*.95
-    xj8         TINYINT      NOT NULL DEFAULT 0,    # 7日内 tov>hsl20*.95
+    xj8         TINYINT      NOT NULL DEFAULT 0,    # x8的调整版本：2nd.最高成交峰
     tv2         DECIMAL(6,2) NOT NULL DEFAULT 0,    # avg(tov.0,tov.1)
     odx         DECIMAL(6,1) NOT NULL DEFAULT 0,    # avg(xj8)*0.45/tv2
     siB         TINYINT      NOT NULL DEFAULT 0,    # B日内涨停 +1
@@ -413,12 +413,14 @@ CREATE TABLE jine (
     dw2     TINYINT         NOT NULL DEFAULT 0,
     up1     TINYINT         NOT NULL DEFAULT 0, # +5% d021
     dw1     TINYINT         NOT NULL DEFAULT 0,
-    x60     TINYINT         NOT NULL DEFAULT 0, # sum(ma5<=ma20 || ma5<=ma60)
+    x60     TINYINT         NOT NULL DEFAULT 0, # 85日 count(ma5<=ma20 || ma5<=ma60)
     x20     DECIMAL(6,2)    NOT NULL DEFAULT 0,
+    x13     DECIMAL(6,2)    NOT NULL DEFAULT 0, # 13日 max(ma5)
     _20     DECIMAL(6,2)    NOT NULL DEFAULT 0,
-    A8      TINYINT         NOT NULL DEFAULT 0,
-    V8      TINYINT         NOT NULL DEFAULT 0,
-    V6      TINYINT         NOT NULL DEFAULT 0,
+    _21     DECIMAL(6,2)    NOT NULL DEFAULT 0, # 21日 min(ma20)
+    A8      TINYINT         NOT NULL DEFAULT 0, # 13日 count(tov >= hsl20)
+    V8      TINYINT         NOT NULL DEFAULT 0, # 13日 count(tov >= hsl20*2)
+    V6      TINYINT         NOT NULL DEFAULT 0, # 13日 count(tov >= hsl20*1.6)
     INDEX(date,code)
 );
 

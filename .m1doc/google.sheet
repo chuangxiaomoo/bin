@@ -55,5 +55,5 @@ Double-click on the border between any two of the selected rows on the row numbe
 | 24  | Freez行列          | 查看->冻结                     |
 | 25  | 下拉               | 数据->数据验证->项列表         |
 | 26  | 数据验证           | To,Doing,Done右键加条件格式    |
-| 27  |                    |                                |
+| 27  | 调整行高           | 选中行 -> 右键 -> Resize       |
 
