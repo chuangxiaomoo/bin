@@ -289,16 +289,15 @@ lsgcc()
 {
     echo "
     ____________________ipc____________________
-    hisi    arm-hisiv100nptl-linux-
-    nxp     arm-linux-
-    ti      arm_v5t_le-
-    grain   arm-unknown-linux-uclibcgnueabi-
-    anyka   arm-anykav200-linux-uclibcgnueabi-
-    jzzz    mips-linux-uclibc-gnu-
+    arm-hisiv100nptl-linux-                             # hisi
+    arm-linux-                                          # nxp
+    arm_v5t_le-                                         # ti
+    arm-unknown-linux-uclibcgnueabi-                    # grain
+    arm-anykav200-linux-uclibcgnueabi-                  # anyka
+    mips-linux-uclibc-gnu-                              # jzzz
 
-    ms-IPC  arm-linux-gnueabihf-
-    ms-ulib arm-buildroot-linux-uclibcgnueabihf-        # 650
-    ms-NVR  arm-buildroot-linux-uclibcgnueabi-
+    arm-linux-gnueabihf-                                # ms-IPC         
+    arm-buildroot-linux-uclibcgnueabihf-                # **** 650 Repeater, ms-ulib
 
     ____________________nvr.265________________
     arm-linux-   
@@ -306,8 +305,7 @@ lsgcc()
     arm-buildroot-linux-uclibcgnueabi-                  # main.exe
     arm-none-eabi-                                      # 2011.03 Mboot
     arm-none-linux-gnueabi-                             # 2012.09 Mboot
-    arm-buildroot-linux-uclibcgnueabihf-                # 621
-
+    arm-buildroot-linux-uclibcgnueabihf-                # **** 621 NVR, dirty
 
     /home/n/rc.d/mksquashfs
     "
