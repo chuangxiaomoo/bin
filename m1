@@ -932,8 +932,7 @@ function fn_pcb()                       { cat jco_pcb ;}
 function fn_delay_service()             { cat jco_delay_service ;}
 function fn_msg()                       { cat jco_msg
                                               jco_event_task.i
-                                              jco_time
-                                              ;}
+                                              jco_time ;}
 function fn_platform()                  { cat jco_platform ;}
 function fn_alarm_design()              { cat jco_alarm_design ;}
 function fn_alarm_software()            { cat jco_alarm_software ;}
