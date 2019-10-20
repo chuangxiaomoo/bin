@@ -74,3 +74,13 @@ c_gotit(no)->fail
 
         8 spaces if 1 blank line
 
+# 颜色
+
+CSDN 支持颜色
+
+[CSDN-markdown编辑器语法——背景色](http://www.voidcn.com/article/p-firwkkkw-vc.html)
+
+gitee 不支持颜色
+
+[OSC Flavored Markdown](https://gitee.com/oschina/git-osc/wikis/%E5%B8%AE%E5%8A%A9#git-osc-flavored-markdown)
+
