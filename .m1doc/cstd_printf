@@ -10,7 +10,7 @@
         unsigned int j;
         char s[20];
         float f;
-        scanf("%d %x %5[a-z] %*s %f", &i, &j, s, &f);
+        scanf("%d %x %5[a-z] %*s %f", &i, &j, s, &f);           // %*s 忽略
         printf("%d %d %s %f\n", i, j, s, f);
         return 0;
     }

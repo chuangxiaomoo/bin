@@ -14,3 +14,6 @@ iperf -i1 -b1000M -c 192.168.2.248
 **clent** default -t10 
 iperf -i1 -b1000M -c 172.25.0.20
 
+**--window**
+-w  1M // KM, TCP window size (socket buffer size)
+

@@ -6,14 +6,6 @@
 
 # test_guru
 
-[](https://zh.wikipedia.org/wiki/有限状态机)
-
-系统 -> 子系统 -> 模块(FSM) 
-
-FSM = State + Input + 状态转移函数
-
-[Warning](系统初始状态不可为未定义状态 -> wlan_route=${wlan_route:-${eth0_route}})
-
 **优化**
 
 实现同样的功能(**所谓测试，即对input(核心事件)，检查是否得到预期的output**)
@@ -39,20 +31,6 @@ specification, production, and inspection.
   C 代表 Check，即研究上一步收集到的信息，和预期设计进行比较，并提出修改方案，包括执行后的改善和计划的完善使得计划的可执行性提高；
   A 代表 Act，  即根据 Check 的结果进行改善，有时候也用`Adjust`来解释这个 A，更准确地表达修正改善的意思。
 
-# 理解 FSM(finit-state-machine) 5 要素
-
-S   状态集 (初始状态 + 出错状态 + 有效状态)
-∑   输入
-f   转换函数
-
-有了有效的状态(**起点**，与团队一致的有效状态)，出了任何错误，只要将两份打印日志 diff 即可得到错误的输入。
-[svn-stat-table](https://www.jianshu.com/p/5eb45c64f3e3)
-
-dhcp.gw 的三种初始状态
-1 静态              = gw
-2 dhcp.on           = gw
-3 dhcp.off          = ""  // 很难被测试到，当路由是 192.168.1.0 时，就出问题了
-
 # [testcase example](+/测试用例必要元素描述 test_01_用例设计原则)
 
 科学方法:   Plan，          Do，  Check，             Adjust
@@ -64,7 +42,6 @@ dhcp.gw 的三种初始状态
 |         |         |         |          |         |          |         | `open` |
 |         |         |         |          |         |          |         |        |
 |         |         |         |          |         |          |         |        |
-
 
 # 测试的第一原则
 

@@ -12,17 +12,16 @@ zip 加密
     zip -re dir.zip dir
     unzip dir.zip
 
+tar 1 single file                                           # 可以单独抽取压缩包中的某几个文件
+    tar -zxvf <tar filename> <file you want to extract>     # extract a single file
+    tar -zxvf kernel.tar.gz  kernel/net/wireless/reg.c
+
 tar 
     /* Copying an Entire Directory Tree Without GNU cp, 
      * the '-' is stand for the stdin & stdout, or understand to a
      * intermediate file.
      */
     (cd  SRC_DIR  && tar cf - .) | (cd  DEST_DIR  && tar xvf -) 
-
-
-    高级应用（可以单独抽取压缩包个的某几个文件）
-
-    tar -zxvf <tar filename> <file you want to extract>     # extract a single file
 
     tar [options] a.tar.gz
         filename1 [ filename2, ... filenameN ]

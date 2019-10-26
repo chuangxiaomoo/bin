@@ -997,7 +997,8 @@ function fn_03_五个要点()               { cat test_03_五个要点 ;}
 function fn_04_集成测试()               { cat test_04_集成测试 ;}
 function fn_11_测试工程师如何提BUG()    { cat test_11_测试工程师如何提BUG ;}
     local opts=(
-        guru                            # FSM 有限状态机
+        guru
+        FSM                             # 有限状态机
         fundamental                     # 测试就是写方程
         webpage
         web_howto                       # WEB测试学习指南
