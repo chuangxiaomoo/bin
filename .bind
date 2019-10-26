@@ -10,4 +10,7 @@ bind '"\el": "127.0.0.1"'                   # Local Loopback
 bind '"\ee": "\C-asudo \C-e"'               # Alt-e 自动输入 sudo
 bind '"\C-x\C-x": beginning-of-line'        # any readline-compatible environment like Bash, python and mysql
 
+bind '"\C-f":vi-fWord'                      # move forward by whitespace-delimited word
+bind '"\C-b":vi-bWord'
+
 # ___________ following is SecureCRT bind: .CRT
