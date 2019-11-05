@@ -417,6 +417,7 @@ scmo()  {
 }
 
 wEc=/winc/Export/com; 
+.rbin() { mv /winc/Export/com/output_sf_fireware.* /winc/Export/com/output_sf_fireware.bin ;}
 cpcom() { mkdir -p $wEc; chmod -R 644 $wEc; rm -rf $wEc/[^b]*; cp -a release/com/* $wEc ;}
 cptar() { test -f "${1}" && cp $1 $wEc/ && echo "cp $1 succ" && return
           file=`ls release/tar/*.tgz`;touch  $wEc/force_dbg.txt
