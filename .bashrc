@@ -149,15 +149,15 @@ alias fbcache="sync; echo 3 > /proc/sys/vm/drop_caches"
 function M()    { m1 $@ | tail -18; } # M() { m1 $@ | nl -w 3 -s' ' | less -i ;}
 
 alias   cwd='pwd >>  ~/.env;vi ~/.env; .rc'         # curr-pwd
-alias   swd='pwd >   ~/.swd'                        # save pwd, [pushd .]
-alias   gwd='cd `cat ~/.swd`'                       # save pwd  [popd]
 
 alias  | grep -w -q awd && unalias awd
 alias  | grep -w -q iwd && unalias iwd
 
-fwd() { grep $1 ~/.awd*   ; }
-awd() { pwd >>  ~/.awd${1}; }
-iwd() { vi      ~/.awd${1}; }
+fwd() { grep $1 ~/.awd*     ;}      #
+swd() { pwd >   ~/.swd${1}  ;}      # PWD push
+gwd() { cd `cat ~/.swd${1}` ;}      # PWD pop
+awd() { pwd >>  ~/.awd${1}  ;}
+iwd() { vi      ~/.awd${1}  ;}
 lwd() { wd_file=~/.awd${1}
     [ "${1}" = 'L' ] && (cd ~;  ls .awd* | grep --color awd) && return
     [ "${1}" = 'l' ] && (cd ~; cat .awdl | grep --color -E '(awd|-|^$|Name)') && return
