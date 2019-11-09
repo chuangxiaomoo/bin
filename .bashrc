@@ -149,15 +149,15 @@ alias fbcache="sync; echo 3 > /proc/sys/vm/drop_caches"
 function M()    { m1 $@ | tail -18; } # M() { m1 $@ | nl -w 3 -s' ' | less -i ;}
 
 alias   cwd='pwd >>  ~/.env;vi ~/.env; .rc'         # curr-pwd
-alias   swd='pwd >   ~/.swd'                        # save pwd, [pushd .]
-alias   gwd='cd `cat ~/.swd`'                       # save pwd  [popd]
 
 alias  | grep -w -q awd && unalias awd
 alias  | grep -w -q iwd && unalias iwd
 
-fwd() { grep $1 ~/.awd*   ; }
-awd() { pwd >>  ~/.awd${1}; }
-iwd() { vi      ~/.awd${1}; }
+fwd() { grep $1 ~/.awd*     ;}      #
+swd() { pwd >   ~/.swd${1}  ;}      # PWD push
+gwd() { cd `cat ~/.swd${1}` ;}      # PWD pop
+awd() { pwd >>  ~/.awd${1}  ;}
+iwd() { vi      ~/.awd${1}  ;}
 lwd() { wd_file=~/.awd${1}
     [ "${1}" = 'L' ] && (cd ~;  ls .awd* | grep --color awd) && return
     [ "${1}" = 'l' ] && (cd ~; cat .awdl | grep --color -E '(awd|-|^$|Name)') && return
@@ -424,8 +424,10 @@ cptar() { test -f "${1}" && cp $1 $wEc/ && echo "cp $1 succ" && return
 cpffw() { file=`ls release/tar/*.ffw`;touch  $wEc/force_dbg.txt 
           mkdir -p $wEc/; rm -rf $wEc/*.ffw; cp -a $file $wEc/
           cp .changelog.md $wEc/changelog.txt
-          echo ${file##*/} > $wEc/ffw.txt                               ;}
-cpv2()  { mkdir -p $wEc/v2; cp $wEc/*.{ffw,tgz} $wEc/v2                 ;}
-nctar() { file=`ls release/tar/*[^e].tgz`;  nc $1 8006 < ${F:-$file}    ;}
-nc1234(){ make i;  nc $1 1234 < main/jco_server                         ;}
+          echo ${file##*/} > $wEc/ffw.txt                                       ;}
+cp2()   { _d=`cat ~/.swd`; test -d "${_d}" && \
+          cp -a $@ ${_d} && echo -e "Done:\ncp $@ ${_d}" || echo "$_d not dir"  ;}
+cpv2()  { mkdir -p $wEc/v2; cp $wEc/*.{ffw,tgz} $wEc/v2                         ;}
+nctar() { file=`ls release/tar/*[^e].tgz`;  nc $1 8006 < ${F:-$file}            ;}
+nc1234(){ make i;  nc $1 1234 < main/jco_server                                 ;}
 
