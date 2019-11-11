@@ -1,0 +1,3 @@
+
+let blacklists = ["https://docs.google.com/*"]
+
