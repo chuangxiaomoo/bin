@@ -102,14 +102,18 @@ function fn_main()
         esac
         ;;
     d)  svn diff $filelist ;;
-    do) find ${2} -type f -name '*.o' | xargs rm -f ;;
-    dc) svn diff -c${filelist} ;;
-    dl) svn diff `Svn sc | awk '/^M/{print $2}'`    ;;
+    do) find ${2} -type f -name '*.o' | xargs rm -f                 ;;
+    dc) svn diff -c${filelist}                                      ;;
+    dC) dir=${PWD##*/}
+        grep ${dir} <<< "$3" || { echo "$3 not in SVN $2"; exit ;}
+        file=${3##*${dir}/}
+        svn diff -c $2 ${file}                                      ;;
+    dl) svn diff `Svn sc | awk '/^M/{print $2}'`                    ;;
     dh) HORI=-o \
         svn diff $filelist ;;
-    el) vim -p `Svn sc | awk '/^M/{print $2}'`      ;;
-    f)  ln -sf ~/.flowchar/main.i .flowchar.i       ;;
-    dp) svn diff -r 'PREV' $filelist                ;;
+    el) vim -p `Svn sc | awk '/^M/{print $2}'`                      ;;
+    f)  ln -sf ~/.flowchar/main.i .flowchar.i                       ;;
+    dp) svn diff -r 'PREV' $filelist                                ;;
     r)
         [ -z "$filelist" ] && echo "Error: file... must be dedicated" && exit
         svn --depth=infinity revert $filelist

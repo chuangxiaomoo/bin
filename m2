@@ -687,14 +687,15 @@ function fn_fallacy()                   { cat logic_fallacy ;}
 function fn__essence()                  { cat logic__essence ;}
 function fn__struct()                   { cat logic__struct ;}
 function fn__1st_principle()            { cat logic__1st_principle
-                                          cat 1by1_principles       #林彪的原则
+                                          cat 1by1_principles           #林彪的原则
                                           cat book_The_Principle
-                                          cat test_The_Principle    #古严：我对《原则》的践行心得
+                                          cat test_The_Principle        #古严：我对《原则》的践行心得
                                           cat test_People
                                           cat love_36_questions
                                           cat list_to_be_taken
                                           cat experiment.u
                                           cat experiment_eg.u
+                                          cat experiment_Chernobyl.u    #切诺贝利
                                         }
 function fn_training500()               { cat logic_training500 ;}
 function fn_puzzle()                    { cat logic_puzzle ;}
@@ -959,16 +960,16 @@ function fn_L0_孤独寂寞朋友()           { cat ljsw_L0_孤独寂寞朋友 ;
 
 function fn_144_什么是好的经济学()      { cat ljsw_144_什么是好的经济学
                                               ljsw_145_怎样逼自己成为一个上进的人
-                                              tao_design                    # 设计之道
-                                              MANAGEMENT.team
-                                              Target.team
-                                              Select.team
-                                              Driven.team
+                                              tao_design                        # 设计之道
+                                                  MANAGEMENT.team
+                                                  Target.team
+                                                  System.team
                                               Expectation.team
+                                                  Select.team                   # 初始化队伍
+                                                  Driven.team                   # 驱动
+                                                  5_bases_of_social_power.md
                                               CImprovement.team
-                                              sanxing_2013.team
-                                              5_bases_of_social_power.md
-                                              
+                                                  sanxing_2013.team
                                         }
 function fn_210_右派为什么这么横()      { cat ljsw_210_右派为什么这么横 ;}
 function fn_215_发现你的太平洋()        { 
