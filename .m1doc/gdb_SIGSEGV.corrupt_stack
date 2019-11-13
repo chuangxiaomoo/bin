@@ -1,0 +1,50 @@
+# gdb_SIGSEGV.corrupt_stack
+
+SEISEGV 大致可以分为两大类:
+
+**读(非法指针)**
+
+* 空指针、除0错、随意使用指针转换。
+* strcmp, strcasecmp
+
+**写(数组越界)**
+
+* 数组索引
+* strcpy, strcat, sprintf,
+* memcpy, memset
+
+数组越界，解决方法:
+
+1. 收敛前置条件
+2. 加打印
+3. 重点关注 strcpy, strcat, sprintf, memcpy, memset 等
+
+## 数组越界示例
+
+```bash
+(gdb) info sharedlibrary 
+From        To          Syms Read   Shared Object Library
+0xb69b83b0  0xb69c3500  Yes (*)     /lib/libpthread.so.0
+0xb6997424  0xb6998d28  Yes (*)     /lib/libcrypt.so.0
+0xb698be60  0xb698cf40  Yes (*)     /lib/librt.so.0
+0xb6923df0  0xb696a0c4  Yes (*)     /lib/libstdc++.so.6
+0xb68c633c  0xb68d2e10  Yes (*)     /lib/libm.so.0
+0xb68ab010  0xb68bbe10  Yes (*)     /lib/libgcc_s.so.1
+0xb6814900  0xb68583b0  Yes (*)     /lib/libc.so.0
+0xb67fdb48  0xb67feff0  Yes (*)     /lib/libdl.so.0
+0xb69cfe40  0xb69d4c90  Yes (*)     /lib/ld-uClibc.so.0
+0xb67f352c  0xb67f3a98  Yes (*)     /lib/libubacktrace.so.0
+(*): Shared library is missing debugging information.
+(gdb) bt
+#0  0xb6837c64 in strnlen () from /lib/libc.so.0
+#1  0xb68312d8 in ?? () from /lib/libc.so.0
+Cannot access memory at address 0x20                      # 0x20 小地址，多是数组越界
+#2  0xb68312d8 in ?? () from /lib/libc.so.0
+Cannot access memory at address 0x20
+Backtrace stopped: previous frame identical to this frame (corrupt stack?)
+```
+
+* [小地址的提示](https://stackoverflow.com/questions/9809810/gdb-corrupted-stack-frame-how-to-debug)
+
+* [追core笔记之五：如何查看一个corrupt stack的core](https://izualzhy.cn/why-the-code-stack-is-overflow)
+

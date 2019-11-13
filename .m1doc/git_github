@@ -4,7 +4,7 @@
 
   * 在github上create并README.md
 
-  * git clone https://github.com/chuangxiaomoo/bin.git
+  * git clone git@github.com:chuangxiaomoo/bin.git
   `git clone 会自动创建文件夹bin`
 
   * add commit push

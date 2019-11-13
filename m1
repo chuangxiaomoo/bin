@@ -530,6 +530,7 @@ function fn_patterns()                  { cat design_patterns ;}
 
 function fn_gdb()                       { cat gdb
 function fn_SIGSEGV()                   { cat gdb_SIGSEGV
+                                              gdb_SIGSEGV.corrupt_stack
                                               gdb_SIGBUS ;}
 function fn_print_exp()                 { cat gdb_print_exp ;}
 function fn_0_haoel()                   { cat gdb_0_haoel ;}

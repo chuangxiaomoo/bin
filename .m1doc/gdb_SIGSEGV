@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
   end
 
 
-#if gdb反汇编，查看地址对应的symbol
+#if `objdump -S` 反汇编，查看地址对应的symbol
 
   info symbol 0xfde09edc
   [](https://stackoverflow.com/questions/7639309/how-to-use-gdb-to-find-what-function-a-memory-address-corresponds-to)
