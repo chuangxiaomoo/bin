@@ -338,8 +338,6 @@ function fn_case() {
 
     cat case_d0_设计原则：Unix.philosophy       # 对设计的误解 & 对产品的理解
     cat case_d1_设计原则：汉德公式
-    cat case_d2_设计原则：路径可跟踪
-    cat case_d3_设计原则：先固化再优化
     cat case_d4_设计原则：组合而非缠绕
     cat case_z1_mac地址绑定后也IP冲突
     cat case_z2_设备多次出现内存不足导致设备重启.md
