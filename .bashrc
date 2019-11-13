@@ -25,6 +25,7 @@ alias     vDOOR=''
 alias     DEBUG=''
 alias       END=''
 alias     FIELD=''
+alias     FORCE=''
 alias       HMS=''
 alias      iHMS=''
 alias       NUM=''
@@ -425,7 +426,7 @@ cpffw() { file=`ls release/tar/*.ffw`;touch  $wEc/force_dbg.txt
           mkdir -p $wEc/; rm -rf $wEc/*.ffw; cp -a $file $wEc/
           cp .changelog.md $wEc/changelog.txt
           echo ${file##*/} > $wEc/ffw.txt                                       ;}
-cp2()   { _d=`cat ~/.swd`; test -d "${_d}" && \
+cp2()   { _d=`cat ~/.swd2`; test -d "${_d}" && \
           cp -a $@ ${_d} && echo -e "Done:\ncp $@ ${_d}" || echo "$_d not dir"  ;}
 cpv2()  { mkdir -p $wEc/v2; cp $wEc/*.{ffw,tgz} $wEc/v2                         ;}
 nctar() { file=`ls release/tar/*[^e].tgz`;  nc $1 8006 < ${F:-$file}            ;}
