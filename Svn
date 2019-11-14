@@ -61,7 +61,13 @@ function fn_main()
    cc)  fl=`Svn Sc | awk '{print $NF}'` ;svn ci $fl && svn up                                       ;;
    zc)  fl=`Svn Sc | awk '{print $NF}'` ;tar -zcvf ../z.tgz $fl                                     ;;
     l)  [ -f "${2}" ] && filelist="5 ${@:2}"; svn log -v -l${filelist:-5}                           ;;
-   ll)  [ -f "${2}" ] && filelist="5 ${@:2}"; svn log -v -l${filelist:-5} > .log; vi -R .log        ;;
+   ll)  [ -f "${2}" ] && filelist="5 ${@:2}"; 
+        [ "${3}" != U ] && {
+            svn log -v -l${filelist:-5} > .log; vi -R .log
+        } || {
+            #Svn ll NUM U zhangj
+            svn log -v -l${filelist%% U *} | fn_main U ${filelist##* U } > .log; vi -R .log
+        } ;;
     i)  svn info ${2:-.} | grep 'URL:' | sed -e 's/URL: /&\n/g'                                     ;;
    in)  svn info ${2:-.} | awk '/URL:/{print $2}' | \
                            sed -e 's/^/svn relocate /g' -e 's/192.168.2.250/jabsco-svn/'            ;;
@@ -108,6 +114,10 @@ function fn_main()
         grep ${dir} <<< "$3" || { echo "$3 not in SVN $2"; exit ;}
         file=${3##*${dir}/}
         svn diff -c $2 ${file}                                      ;;
+   dCp) dir=${PWD##*/}
+        grep ${dir} <<< "$3" || { echo "$3 not in SVN $2"; exit ;}
+        file=${3##*${dir}/}; let ver=${2#r}-1
+        svn diff -r $ver ${file}                                    ;;
     dl) svn diff `Svn sc | awk '/^M/{print $2}'`                    ;;
     dh) HORI=-o \
         svn diff $filelist ;;
