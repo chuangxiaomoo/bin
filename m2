@@ -155,6 +155,7 @@ function fn_66_佛语()                   { cat book_66_佛语 ;}
 function fn_000_黄晓捷谈在校学习()      { cat book_000_黄晓捷谈在校学习
                                           cat book_001_吴军大学之路
                                           cat book_002_数学之美             # 模型model
+                                          cat book_009_冯柳谈读书
                                           cat book_010_李笑来谈读书经验
                                           cat book_011_李笑来谈阅读操作系统
                                           cat book_012_张五常谈读书和思考
