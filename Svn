@@ -101,7 +101,7 @@ function fn_main()
             echo "Deleting: ${filelist}"
             [ -f "${filelist}" ] && rm -f ${filelist} && return
             exclude="INSTALL|cscope|.make\>"
-            svn status | grep -v -E "${exclude}" | grep "^${filelist:-?}" | tee /dev/stderr |\
+            svn status | grep -v -E "${exclude}" | grep "^?" | tee /dev/stderr |\
                 awk '{print $2}' | xargs -I{} rm -rf {}
             } 2>&1 | sed 's/^/\t/g'
             ;;
