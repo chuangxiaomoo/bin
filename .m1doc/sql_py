@@ -337,6 +337,7 @@ CREATE TABLE i5 (                                   # 重构i5，i5需要的是1
     S8          TINYINT      NOT NULL DEFAULT 0,
     NB          TINYINT      NOT NULL DEFAULT 0,    # B日新高计数
     SB          TINYINT      NOT NULL DEFAULT 0,
+    wk3         TINYINT      NOT NULL DEFAULT 0,    # 3周超mavol(20周)计数
 
     INDEX(date,code)
 );
@@ -416,7 +417,7 @@ CREATE TABLE jine (
     x60     TINYINT         NOT NULL DEFAULT 0, # 85日 count(ma5<=ma20 || ma5<=ma60)
     x20     DECIMAL(6,2)    NOT NULL DEFAULT 0,
     x13     DECIMAL(6,2)    NOT NULL DEFAULT 0, # 13日 max(ma5)
-    _20     DECIMAL(6,2)    NOT NULL DEFAULT 0,
+    _20     DECIMAL(6,2)    NOT NULL DEFAULT 0, #      min(hsl20)
     _21     DECIMAL(6,2)    NOT NULL DEFAULT 0, # 21日 min(ma20)
     A8      TINYINT         NOT NULL DEFAULT 0, # 13日 count(tov >= hsl20)
     V8      TINYINT         NOT NULL DEFAULT 0, # 13日 count(tov >= hsl20*2)
