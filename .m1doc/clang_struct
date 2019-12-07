@@ -1,5 +1,15 @@
-/* struct */
+/* 声明后能够定义指针，但不能定义实体 */
 
+struct abc;
+
+int fun(struct abc *mygod)
+{
+    printf("%d\n", 12);
+
+    return 0;
+}
+
+/* struct */
 
 . 占位符可以在结构体的任意位置
 
