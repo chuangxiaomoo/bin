@@ -24,6 +24,8 @@
 
 # if 查看及启用coredump
 
+    ulimit -c blocksize                 // cat /proc/partitions 查看 blocksize
+
     /* /etc/profile 是个好地方，与环境变量相关的都可以在这里设置 */
     /* 是系统环境变量，因此需要在程序运行之前设置 */
     ulimit -c                           //可以查看是否打开此选项，若为0则为关闭；
