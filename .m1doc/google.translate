@@ -1,0 +1,16 @@
+# google 翻译
+
+可以通过 firebug 抓取 URL
+
+## Life is short, please use Python 
+
+[google translation](https://stackoverflow.com/questions/22587001/best-way-of-using-google-translation-by-python)
+
+https://github.com/mouuff/mtranslate
+
+## Python.2
+
+> py -3 -m pip install googletrans
+
+[](https://www.codeproject.com/Tips/1236705/How-to-Use-Google-Translator-in-Python)
+

@@ -154,7 +154,7 @@ function fn_66_佛语()                   { cat book_66_佛语 ;}
 
 function fn_000_黄晓捷谈在校学习()      { cat book_000_黄晓捷谈在校学习
                                           cat book_001_吴军大学之路
-                                          cat book_002_数学之美             # 模型model
+                                          cat book_002_数学之美
                                           cat book_009_冯柳谈读书
                                           cat book_010_李笑来谈读书经验
                                           cat book_011_李笑来谈阅读操作系统
@@ -429,7 +429,10 @@ function fn_41_如何成为高品质的勤奋者() { cat article_41_如何成为
                                               article_41_你的阅读造就了你
                                               article_41_如何写好一封邮件
                                         }
-function fn_42_思考工具及框架()         { cat article_42_思考工具及框架 ;}      # 思维模型 framework
+function fn_42_思考工具及框架()         { cat article_42_思考工具及框架         # 思维模型 model framework
+                                              book_TheModelThinker.md
+                                              read_TheModelThinker.md
+                                        }
 function fn_43_如何科学的思考()         { cat article_43_如何科学的思考 ;}
 function fn_44_学得太慢是一种罪()       { cat article_44_学得太慢是一种罪
                                           cat article_45_拷问知识正确和增长遮蔽
