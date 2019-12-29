@@ -23,7 +23,7 @@
 
     ALTER TABLE tbl_name CHANGE col_old col_new char(4) not null;
 
-    ALTER TABLE  d1 CHANGE v5 vw DECIMAL(6,2) not null DEFAULT 0;
+    ALTER TABLE  i5 CHANGE iB HB TINYINT not null DEFAULT 0;
     ALTER TABLE  d1 CHANGE avrg avg DECIMAL(6,2) not null DEFAULT 0;
     ALTER TABLE td2 CHANGE avrg avg DECIMAL(6,2) not null DEFAULT 0;
     -- 曾经把 ALTER 写成了 ALERT，捣鼓了半天。

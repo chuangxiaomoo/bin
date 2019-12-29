@@ -78,6 +78,7 @@ function fn_2016_plan()                 { cat annual_2016_plan annual_2016_event
 function fn_2017_plan()                 { cat annual_2017_plan annual_2017_event annual_2017_report ;}
 function fn_2018_plan()                 { cat annual_2018_plan annual_2018_event annual_2018_report ;}
 function fn_2019_plan()                 { cat annual_2019_plan annual_2019_event annual_2019_report ;}
+function fn_2020_plan()                 { cat annual_2020_plan annual_2020_event annual_2020_report ;}
     local opts=(
         plan_what                       # 基于`以终为始`的理念
         report_what
@@ -316,6 +317,7 @@ function fn_list()                      { cat book_400_PoorCharliesAlmanack_穷�
 
 function fn_music()    	                {
 function fn_misc()                      { cat music_list
+                                          cat music_HK
                                           cat music_theory
                                           cat piano
                                           cat erhu
@@ -499,6 +501,7 @@ function fn_gsq_房价什么情况下会崩()    {
                                           cat article_305_25岁听到的经验40岁才懂
                                           cat article_306_gaoshanwen_shanxi30
                                           cat article_307_社会分层的意义与思考
+                                          cat article_308_经济边界_情分_本分
 
                                           cat article_gsq_房价什么情况下会崩
                                           cat article_310_并非买套套房子就要住一辈子.md

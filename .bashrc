@@ -403,10 +403,10 @@ scmo()  {
     "
     [ -z "${1}" ] && echo "${usage}" && return
     if [ "${1}" = 'a' ]; then
-        scp cdo:~/bin/{candle.py,dkline.py,my.py,zorm5.py,f30.py} /pycharm/
-        scp cdo:~/bin/{k.sh,S}          /pycharm/bin/
-        scp cdo:~/bin/.principles.u     /pycharm/bin/
-        scp cdo:~/bin/{pysuit,tita}     /root/bin/
+        scp -P 38888 cdo:~/bin/{candle.py,dkline.py,my.py,zorm5.py,f30.py} /pycharm/
+        scp -P 38888 cdo:~/bin/{k.sh,S}          /pycharm/bin/
+        scp -P 38888 cdo:~/bin/.principles.u     /pycharm/bin/
+        scp -P 38888 cdo:~/bin/{pysuit,tita}     /root/bin/
         return
     fi
 
@@ -414,7 +414,7 @@ scmo()  {
     for (( i=0,j=1; i<${#arr[@]}; i+=2,j+=2 )); do
         [ "${1}" = ${arr[$i]} ] && cmd="scp cdo:~/bin/${arr[$j]##*/} ${arr[$j]}" && { echo ${cmd}; ${cmd}; return ;}
     done
-    scp cdo:${1} ~/cdo 
+    scp -P 38888 cdo:${1} ~/cdo 
 }
 
 wEc=/winc/Export/com; 

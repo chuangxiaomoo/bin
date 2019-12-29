@@ -321,26 +321,31 @@ CREATE TABLE i5 (                                   # 重构i5，i5需要的是1
     xj8         TINYINT      NOT NULL DEFAULT 0,    # 11日内，距离2nd高成交，x8的调整版本
     tv2         DECIMAL(6,2) NOT NULL DEFAULT 0,    # avg(tov.0,tov.1)
     odx         DECIMAL(6,1) NOT NULL DEFAULT 0,    # avg(xj8)*0.45/tv2
-    siB         TINYINT      NOT NULL DEFAULT 0,    # B日内涨停 +1
+    nT          TINYINT      NOT NULL DEFAULT 0,    # B日内涨停 +1
 
-    hi8         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 
-    lo8         DECIMAL(6,2) NOT NULL DEFAULT 0,    #
-    hiB         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 
-    loB         DECIMAL(6,2) NOT NULL DEFAULT 0,    #
+   #hi8         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 
+   #lo8         DECIMAL(6,2) NOT NULL DEFAULT 0,    #
+    HH          DECIMAL(6,2) NOT NULL DEFAULT 0,    # hiB ->
+    LL          DECIMAL(6,2) NOT NULL DEFAULT 0,    # loB ->
 
-    i8          TINYINT      NOT NULL DEFAULT 0,    # 8日新高id, __助记__: in 前进 out 后退
-    o8          TINYINT      NOT NULL DEFAULT 0,
-    iB          TINYINT      NOT NULL DEFAULT 0,    # B日新高id
-    oB          TINYINT      NOT NULL DEFAULT 0,    # B日新低id
+   #i8          TINYINT      NOT NULL DEFAULT 0,    # 8日新高id, __助记__: in 前进 out 后退
+   #o8          TINYINT      NOT NULL DEFAULT 0,    # 
+    iH          TINYINT      NOT NULL DEFAULT 0,    # B日新高id iB-> iH
+    iL          TINYINT      NOT NULL DEFAULT 0,    # B日新低id oB-> iL
+    cH          TINYINT      NOT NULL DEFAULT 0,    # 8日新高计数 N8 -> cH
+    cL          TINYINT      NOT NULL DEFAULT 0,    #             S8 -> cL
+    nH          TINYINT      NOT NULL DEFAULT 0,    # 计数: 8日close>prev(high) NB->nH
+    nL          TINYINT      NOT NULL DEFAULT 0,    # 计数: 8日close<prev(low)  SB->nL
 
-    N8          TINYINT      NOT NULL DEFAULT 0,    # 8日新高计数
-    S8          TINYINT      NOT NULL DEFAULT 0,
-    NB          TINYINT      NOT NULL DEFAULT 0,    # B日新高计数
-    SB          TINYINT      NOT NULL DEFAULT 0,
-    wk3         TINYINT      NOT NULL DEFAULT 0,    # 3周超mavol(20周)计数
+    wk3         DECIMAL(6,1) NOT NULL DEFAULT 0,    # 3周超mavol(20周)计数
 
     INDEX(date,code)
 );
+
+ALTER TABLE jine drop COLUMN V6;
+ALTER TABLE jine CHANGE up1 _61 DECIMAL(6,2) not null DEFAULT 0;
+ALTER TABLE i5   CHANGE hiB HH  DECIMAL(6,2) not null DEFAULT 0;
+ALTER TABLE i5   CHANGE  SB nL  TINYINT not null DEFAULT 0;
 
 DROP TABLE IF EXISTS f5;
 CREATE TABLE f5 (
@@ -421,7 +426,6 @@ CREATE TABLE jine (
     _21     DECIMAL(6,2)    NOT NULL DEFAULT 0, # 21日 min(ma20)
     A8      TINYINT         NOT NULL DEFAULT 0, # 13日 count(tov >= hsl20)
     V8      TINYINT         NOT NULL DEFAULT 0, # 13日 count(tov >= hsl20*2)
-    V6      TINYINT         NOT NULL DEFAULT 0, # 13日 count(tov >= hsl20*1.6)
     INDEX(date,code)
 );
 
