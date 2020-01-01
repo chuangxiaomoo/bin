@@ -332,6 +332,7 @@ CREATE TABLE i5 (                                   # 重构i5，i5需要的是1
    #o8          TINYINT      NOT NULL DEFAULT 0,    # 
     iH          TINYINT      NOT NULL DEFAULT 0,    # B日新高id iB-> iH
     iL          TINYINT      NOT NULL DEFAULT 0,    # B日新低id oB-> iL
+    iV          TINYINT      NOT NULL DEFAULT 0,    # B日新高id tov
     cH          TINYINT      NOT NULL DEFAULT 0,    # 8日新高计数 N8 -> cH
     cL          TINYINT      NOT NULL DEFAULT 0,    #             S8 -> cL
     nH          TINYINT      NOT NULL DEFAULT 0,    # 计数: 8日close>prev(high) NB->nH
@@ -344,7 +345,7 @@ CREATE TABLE i5 (                                   # 重构i5，i5需要的是1
 
 ALTER TABLE jine drop COLUMN V6;
 ALTER TABLE jine CHANGE up1 _61 DECIMAL(6,2) not null DEFAULT 0;
-ALTER TABLE i5   CHANGE hiB HH  DECIMAL(6,2) not null DEFAULT 0;
+ALTER TABLE i5   CHANGE odx vv2 DECIMAL(6,1) not null DEFAULT 0;
 ALTER TABLE i5   CHANGE  SB nL  TINYINT not null DEFAULT 0;
 
 DROP TABLE IF EXISTS f5;
@@ -425,7 +426,7 @@ CREATE TABLE jine (
     _20     DECIMAL(6,2)    NOT NULL DEFAULT 0, #      min(hsl20)
     _21     DECIMAL(6,2)    NOT NULL DEFAULT 0, # 21日 min(ma20)
     A8      TINYINT         NOT NULL DEFAULT 0, # 13日 count(tov >= hsl20)
-    V8      TINYINT         NOT NULL DEFAULT 0, # 13日 count(tov >= hsl20*2)
+    V8      TINYINT         NOT NULL DEFAULT 0, # 13日 count(tov >= hsl20*1.8)
     INDEX(date,code)
 );
 

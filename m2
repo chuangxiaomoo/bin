@@ -1275,7 +1275,6 @@ function fn_main() {
         zhihu
         zhenhuan                        # 甄嬛体
         life_is_a_bus                   # 公交车
-        game_theory
         redwine
         stupid_things                   # 哪些年做过的蠢事
         subtitle
