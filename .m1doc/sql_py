@@ -325,7 +325,7 @@ CREATE TABLE i5 (                                   # 重构i5，i5需要的是1
 
    #hi8         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 
    #lo8         DECIMAL(6,2) NOT NULL DEFAULT 0,    #
-    HH          DECIMAL(6,2) NOT NULL DEFAULT 0,    # hiB ->
+    HH          DECIMAL(6,1) NOT NULL DEFAULT 0,    # hiB ->
     LL          DECIMAL(6,2) NOT NULL DEFAULT 0,    # loB ->
 
    #i8          TINYINT      NOT NULL DEFAULT 0,    # 8日新高id, __助记__: in 前进 out 后退
@@ -344,8 +344,9 @@ CREATE TABLE i5 (                                   # 重构i5，i5需要的是1
 );
 
 ALTER TABLE jine drop COLUMN V6;
-ALTER TABLE jine CHANGE up1 _61 DECIMAL(6,2) not null DEFAULT 0;
-ALTER TABLE i5   CHANGE odx vv2 DECIMAL(6,1) not null DEFAULT 0;
+ALTER TABLE jine CHANGE A8 N1 TINYINT not null DEFAULT 0;
+ALTER TABLE jine CHANGE V8 N8 TINYINT not null DEFAULT 0;
+ALTER TABLE i5   CHANGE HH  HH  DECIMAL(6,1) not null DEFAULT 0;
 ALTER TABLE i5   CHANGE  SB nL  TINYINT not null DEFAULT 0;
 
 DROP TABLE IF EXISTS f5;
@@ -412,7 +413,7 @@ CREATE TABLE jine (
     G10     SMALLINT        NOT NULL DEFAULT 0, #
     up      TINYINT         NOT NULL DEFAULT 0, # +5%
     dw      TINYINT         NOT NULL DEFAULT 0, # -5%
-    odd     DECIMAL(6,1)    NOT NULL DEFAULT 0,
+    odd     DECIMAL(6,1)    NOT NULL DEFAULT 0, # num(up)/num(down)
     G05     SMALLINT        NOT NULL DEFAULT 0,
     up3     TINYINT         NOT NULL DEFAULT 0, # +5% d144
     dw3     TINYINT         NOT NULL DEFAULT 0,
@@ -425,8 +426,8 @@ CREATE TABLE jine (
     x13     DECIMAL(6,2)    NOT NULL DEFAULT 0, # 13日 max(ma5)
     _20     DECIMAL(6,2)    NOT NULL DEFAULT 0, #      min(hsl20)
     _21     DECIMAL(6,2)    NOT NULL DEFAULT 0, # 21日 min(ma20)
-    A8      TINYINT         NOT NULL DEFAULT 0, # 13日 count(tov >= hsl20)
-    V8      TINYINT         NOT NULL DEFAULT 0, # 13日 count(tov >= hsl20*1.8)
+    N1      TINYINT         NOT NULL DEFAULT 0, # 13日 count(tov >= hsl20)
+    N8      TINYINT         NOT NULL DEFAULT 0, # 13日 count(tov >= hsl20*1.8)
     INDEX(date,code)
 );
 

@@ -70,7 +70,7 @@ function fn_2014_jco()                  { cat annual_2014_jco ;}
 function fn_2014_spring_festival()      { cat annual_2014_spring_festival ;}
 function fn_2014_grandpa_inlaw()        { cat annual_2014_grandpa_inlaw ;}
 function fn_2014_national_day()         { cat annual_2014_national_day ;}
-function fn_2012_plan()                 { cat annual_2012_plan                   annual_2012_report ;}
+function fn_2012_plan()                 { cat annual_2012_plan annual_2012_event annual_2012_report ;}
 function fn_2013_plan()                 { cat annual_2013_plan annual_2013_event annual_2013_report ;}
 function fn_2014_plan()                 { cat annual_2014_plan annual_2014_event annual_2014_report ;}
 function fn_2015_plan()                 { cat annual_2015_plan annual_2015_event annual_2015_report ;}
