@@ -317,7 +317,7 @@ function fn_list()                      { cat book_400_PoorCharliesAlmanack_穷�
 
 function fn_music()    	                {
 function fn_misc()                      { cat music_list
-                                          cat music_HK
+                                          cat music_HK lang_HK_yueyu
                                           cat music_theory
                                           cat piano
                                           cat erhu
@@ -1257,7 +1257,6 @@ function fn_main() {
         mindhacks
         ljsw                            # 罗辑思维
         sbfm                            # 上兵伐谋
-        music
         name_children
         personage
         prof                            # professionalism 专业主义 职业化
