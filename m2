@@ -319,6 +319,7 @@ function fn_music()    	                {
 function fn_misc()                      { cat music_list
                                           cat music_HK lang_HK_yueyu
                                           cat music_theory
+                                          cat dance
                                           cat piano
                                           cat erhu
                                           cat image
