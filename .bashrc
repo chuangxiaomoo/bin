@@ -386,8 +386,8 @@ gg()
     esac
 }
 
-scdo()  { [ -f "${1}" ] && scp $@ cdo:/root/bin     || echo not exit file [${1}] ;}
-scda()  { [ -f "${1}" ] && scp $@ cdo:/pycharm/data || echo not exit file [${1}] ;}
+scdo()  { [ -f "${1}" ] && scp -P 38888 $@ cdo:/root/bin     || echo not exit file [${1}] ;}
+scda()  { [ -f "${1}" ] && scp -P 38888 $@ cdo:/pycharm/data || echo not exit file [${1}] ;}
 scmo()  { 
     usage="
     a   ALL_.py_and_.shell

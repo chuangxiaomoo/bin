@@ -313,23 +313,18 @@ CREATE TABLE i5 (                                   # 重构i5，i5需要的是1
 
     hi          DECIMAL(6,2) NOT NULL DEFAULT 0,    # 考虑`负阴抱阳`
     lo          DECIMAL(6,2) NOT NULL DEFAULT 0,    #
-    co          DECIMAL(6,2) NOT NULL DEFAULT 0,    # 辅助次日开盘30min的e加权
+    co5         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 5日最低收盘，用于追高
     coB         DECIMAL(6,2) NOT NULL DEFAULT 0,    # B日最低收盘
-    co21        DECIMAL(6,2) NOT NULL DEFAULT 0,    # 21日最低收盘
 
     x8          TINYINT      NOT NULL DEFAULT 0,    # 10日内，距离2nd高成交
     xj8         TINYINT      NOT NULL DEFAULT 0,    # 11日内，距离2nd高成交，x8的调整版本
     tv2         DECIMAL(6,2) NOT NULL DEFAULT 0,    # avg(tov.0,tov.1)
-    odx         DECIMAL(6,1) NOT NULL DEFAULT 0,    # avg(xj8)*0.45/tv2
+    vv2         DECIMAL(6,1) NOT NULL DEFAULT 0,    # 3*tv2/(mid3) vs. avg(xj8)*0.45/tv2
     nT          TINYINT      NOT NULL DEFAULT 0,    # B日内涨停 +1
 
-   #hi8         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 
-   #lo8         DECIMAL(6,2) NOT NULL DEFAULT 0,    #
     HH          DECIMAL(6,1) NOT NULL DEFAULT 0,    # hiB ->
     LL          DECIMAL(6,2) NOT NULL DEFAULT 0,    # loB ->
 
-   #i8          TINYINT      NOT NULL DEFAULT 0,    # 8日新高id, __助记__: in 前进 out 后退
-   #o8          TINYINT      NOT NULL DEFAULT 0,    # 
     iH          TINYINT      NOT NULL DEFAULT 0,    # B日新高id iB-> iH
     iL          TINYINT      NOT NULL DEFAULT 0,    # B日新低id oB-> iL
     iV          TINYINT      NOT NULL DEFAULT 0,    # B日新高id tov
@@ -337,6 +332,10 @@ CREATE TABLE i5 (                                   # 重构i5，i5需要的是1
     cL          TINYINT      NOT NULL DEFAULT 0,    #             S8 -> cL
     nH          TINYINT      NOT NULL DEFAULT 0,    # 计数: 8日close>prev(high) NB->nH
     nL          TINYINT      NOT NULL DEFAULT 0,    # 计数: 8日close<prev(low)  SB->nL
+
+    u5          TINYINT      NOT NULL DEFAULT 0,    #
+    u8          TINYINT      NOT NULL DEFAULT 0,    #
+    uw          TINYINT      NOT NULL DEFAULT 0,    #
 
     wk3         DECIMAL(6,1) NOT NULL DEFAULT 0,    # 3周超mavol(20周)计数
 
@@ -410,7 +409,7 @@ CREATE TABLE jine (
     num     SMALLINT        NOT NULL DEFAULT 0,
     touch   TINYINT         NOT NULL DEFAULT 0, # 摸板
     seal    TINYINT         NOT NULL DEFAULT 0, # 封板
-    G10     SMALLINT        NOT NULL DEFAULT 0, #
+   #G10     SMALLINT        NOT NULL DEFAULT 0, #
     up      TINYINT         NOT NULL DEFAULT 0, # +5%
     dw      TINYINT         NOT NULL DEFAULT 0, # -5%
     odd     DECIMAL(6,1)    NOT NULL DEFAULT 0, # num(up)/num(down)
@@ -419,8 +418,7 @@ CREATE TABLE jine (
     dw3     TINYINT         NOT NULL DEFAULT 0,
     up2     TINYINT         NOT NULL DEFAULT 0, # +5% d055
     dw2     TINYINT         NOT NULL DEFAULT 0,
-    up1     TINYINT         NOT NULL DEFAULT 0, # +5% d021
-    dw1     TINYINT         NOT NULL DEFAULT 0,
+    _61     DECIMAL(6,2)    NOT NULL DEFAULT 0, # min(ma60) ref(60)
     x60     TINYINT         NOT NULL DEFAULT 0, # 85日 count(ma5<=ma20 || ma5<=ma60)
     x20     DECIMAL(6,2)    NOT NULL DEFAULT 0,
     x13     DECIMAL(6,2)    NOT NULL DEFAULT 0, # 13日 max(ma5)
@@ -430,7 +428,6 @@ CREATE TABLE jine (
     N8      TINYINT         NOT NULL DEFAULT 0, # 13日 count(tov >= hsl20*1.8)
     INDEX(date,code)
 );
-
 
 DROP TABLE IF EXISTS banz;      # 搬砖
 CREATE TABLE banz (

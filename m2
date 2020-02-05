@@ -163,6 +163,7 @@ function fn_000_黄晓捷谈在校学习()      { cat book_000_黄晓捷谈在�
                                           cat book_013_夜东坡谈读书和思考
                                           cat book_014_阅读是为了填补信息缺口
                                           cat book_015_章亦春抄书的奥秘
+                                          cat book_016_股社区谈读书
                                           cat book_020_如何选书
                                           cat book_how_to_read_a_book.md
                                           cat book_redesign_设计中的设计.md
