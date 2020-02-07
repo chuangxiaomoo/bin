@@ -1,5 +1,11 @@
 #! /bin/bash
 
+if [ -f /etc/debian_version ]; then
+    git=git
+else
+    git=/usr/bin/git
+fi
+
 function fn_main()
 {
     filelist=${@:2}
@@ -27,21 +33,21 @@ function fn_main()
         ;;
 
   a|A*|All)
-        # git add -A 递归添加当前目录的变更，要提交所有变更，请切换到项目顶层目录
-        git status | grep -v delete | grep --color "\.swp$" && 
+        # $git add -A 递归添加当前目录的变更，要提交所有变更，请切换到项目顶层目录
+        $git status | grep -v delete | grep --color "\.swp$" && 
         { echo "error: .swp files exist!!!";exit ;}
 
         # skip .soptter.chao
-        # git status | grep -q 'modified.*.soptter.chao' && 
-        # { git status | awk '/modified.*.soptter.chao/{print $3}' | xargs Git r ;}
+        # $git status | grep -q 'modified.*.soptter.chao' && 
+        # { $git status | awk '/modified.*.soptter.chao/{print $3}' | xargs Git r ;}
 
         read -p "Please input comment: "
 
-        # git comment -a  =  [add -A + comment]
-        git add -A .
-        git commit -m "$REPLY" .
+        # $git comment -a  =  [add -A + comment]
+        $git add -A .
+        $git commit -m "$REPLY" .
 
-        [ "${1}" != 'a' ] && git push origin $master
+        [ "${1}" != 'a' ] && $git push origin $master
         ;;
 
     c*)
@@ -53,36 +59,39 @@ function fn_main()
 
         read -p "Please input comment: "
 
-        git add ${filelist:=.}
-        git commit -m "$REPLY" ${filelist}
+        $git add ${filelist:=.}
+        $git commit -m "$REPLY" ${filelist}
         ;;
 
-    dl) list=`git status | awk '/modified:/{print $3}'`
+    dl) list=`$git status | awk '/modified:/{print $3}'`
         [ -z "${list}" ] && echo "no modified" && return
-        git diff ${list}
+        $git diff ${list}
         ;;
-    d)  git difftool ${filelist}                    ;;
-    ls) git ls-files ${filelist}                    ;;
- log|l) git log -p ${filelist}                      ;;
-refl|L) git reflog ${filelist}                      ;;
-    dp) git diff HEAD^ HEAD ${filelist}             ;;
+    d)  $git difftool ${filelist}                    ;;
+    ls) $git ls-files ${filelist}                    ;;
+ log|l) $git log -p ${filelist}                      ;;
+refl|L) $git reflog ${filelist}                      ;;
+    dp) $git diff HEAD^ HEAD ${filelist}             ;;
     ds) find -name '*.sw[op]' -exec rm -f {} \;     ;;
 
     p*|pull)
         # 解决自动merge
-        # git config branch.master.remote origin
-        # git config branch.master.merge refs/heads/master
-        git pull origin $master
+        # $git config branch.master.remote origin
+        # $git config branch.master.merge refs/heads/master
+        $git pull origin $master
         ;;
 
     P*|Push)
         # Your branch is ahead of 'origin/master' by 4 commits.
-        git push origin $master
+        $git push origin $master
+        ;;
+    clone)
+        $git $@ 
         ;;
 
     r|revert)
         [ -z "$filelist" ] && echo "Usage: Git r file..." && exit
-        git checkout -- ${filelist%%/}
+        $git checkout -- ${filelist%%/}
         ;;
     etc)
         ~/bin/bell
@@ -90,14 +99,14 @@ refl|L) git reflog ${filelist}                      ;;
            /etc/mysql/my.cnf    ~/bin/.etc/
         ;;
     i|info)
-        echo git remote -v
-        git remote -v
-        git config --get remote.origin.url | sed -e 's#:#/#' -e 's#git@#https://#'    
-        echo git branch -v
-        git branch -v
+        echo $git remote -v
+        $git remote -v
+        $git config --get remote.origin.url | sed -e 's#:#/#' -e 's#git@#https://#'    
+        echo $git branch -v
+        $git branch -v
         ;;
     s*|*)
-        git status .
+        $git status .
         ;;
     esac
 }
