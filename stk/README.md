@@ -27,7 +27,6 @@
 > 构建体系
 
 # 阴阳            .doc/yinyang.md
-# 笛卡尔的金融    .doc/descartes.md
 
 # 保守主义        .doc/conservatism.md
 # 趋势理论        .doc/trade.md
@@ -49,7 +48,8 @@
 # 心战            .doc/psy.md
 # 张小龙          .doc/zhangxiaolong.md
 # 总结2020        .doc/2013.md            -- 2014 2015 2016
-# 笛卡尔实践      .doc/Descartes.md
+# 笛卡尔实践      .doc/Descartes.do.md
+# 笛卡尔的金融    .doc/descartes.md
 # 目标&策略&纪律  .doc/discipline.md
 
 # 战争            .doc/war.md             -- 认识自已，首先认识作为人的共性
