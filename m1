@@ -559,7 +559,7 @@ function fn_most_freq_cmds()            { cat gdb_most_freq_cmds ;}
 }
 
 
-function fn_git()                       { cat git
+function fn_git()                       { cat git ~/gitee/team/env/git.md
 function fn_github()                    { cat git_github
                                           cat git_ignore
                                           cat git_stage
