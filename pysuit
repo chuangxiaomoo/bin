@@ -78,6 +78,13 @@ def dt_daysago_str(ymd, N):
 def dt_seconds(ymd):
     pass
 
+def selenium_chrome():
+    print("""
+    1. 下载安装 Chrome，并查看版本
+    2. Google `Selenium Chrome chromedriver compatible`
+    3. https://stackoverflow.com/questions/41133391/which-chromedriver-version-is-compatible-with-which-chrome-browser-version
+    4. 下载对应版本
+    """)
 usage="""\
 Usage:
   pysuit id [argv1, argv2, ...]
@@ -92,6 +99,7 @@ def main(argv):
     os_shutil           , "os_shutil                    # os.file.binutils 常用系统命令"    ,
     dt_daysago          , "dt_daysago(ymd, N)           # __builtin__"                      ,
     dt_seconds          , "dt_seconds(ymd)              # __builtin__"                      ,
+    selenium_chrome     , "selenium_chrome              # selenium and chromedriver"        ,
     )
     try:
         if (len(argv) > 1):

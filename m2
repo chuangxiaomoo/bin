@@ -500,6 +500,7 @@ function fn_gsq_房价什么情况下会崩()    {
                                           cat article_302_史上最中肯的投资建议
                                           cat article_303_怎么应付朋友借钱
                                           cat article_304_贫困限制想象力
+                                          cat article_304_思维决定贫富？
                                           cat article_305_25岁听到的经验40岁才懂
                                           cat article_306_gaoshanwen_shanxi30
                                           cat article_307_社会分层的意义与思考
