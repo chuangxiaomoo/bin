@@ -313,8 +313,9 @@ CREATE TABLE i5 (                                   # 重构i5，i5需要的是1
 
     hi          DECIMAL(6,2) NOT NULL DEFAULT 0,    # 考虑`负阴抱阳`
     lo          DECIMAL(6,2) NOT NULL DEFAULT 0,    #
-    co5         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 5日最低收盘，用于追高
-    coB         DECIMAL(6,2) NOT NULL DEFAULT 0,    # B日最低收盘
+
+    iC          TINYINT      not null DEFAULT 0,    # B日最高收盘索引
+    CC          DECIMAL(6,2) not null DEFAULT 0,    # B日最高收盘
 
     x8          TINYINT      NOT NULL DEFAULT 0,    # 10日内，距离2nd高成交
     xj8         TINYINT      NOT NULL DEFAULT 0,    # 11日内，距离2nd高成交，x8的调整版本
@@ -328,10 +329,10 @@ CREATE TABLE i5 (                                   # 重构i5，i5需要的是1
     iH          TINYINT      NOT NULL DEFAULT 0,    # B日新高id iB-> iH
     iL          TINYINT      NOT NULL DEFAULT 0,    # B日新低id oB-> iL
     iV          TINYINT      NOT NULL DEFAULT 0,    # B日新高id tov
-    cH          TINYINT      NOT NULL DEFAULT 0,    # 8日新高计数 N8 -> cH
-    cL          TINYINT      NOT NULL DEFAULT 0,    #             S8 -> cL
-    nH          TINYINT      NOT NULL DEFAULT 0,    # 计数: 8日close>prev(high) NB->nH
-    nL          TINYINT      NOT NULL DEFAULT 0,    # 计数: 8日close<prev(low)  SB->nL
+    cH          TINYINT      NOT NULL DEFAULT 0,    # 计数: 8日close>prev(high)
+    cL          TINYINT      NOT NULL DEFAULT 0,    # 计数: 8日close<prev(low) 
+    nH          TINYINT      NOT NULL DEFAULT 0,    # 8日新高计数 N8
+    nL          TINYINT      NOT NULL DEFAULT 0,    #             S8
 
     u5          TINYINT      NOT NULL DEFAULT 0,    #
     u8          TINYINT      NOT NULL DEFAULT 0,    #
@@ -347,6 +348,8 @@ ALTER TABLE jine CHANGE A8 N1 TINYINT not null DEFAULT 0;
 ALTER TABLE jine CHANGE V8 N8 TINYINT not null DEFAULT 0;
 ALTER TABLE i5   CHANGE HH  HH  DECIMAL(6,1) not null DEFAULT 0;
 ALTER TABLE i5   CHANGE  SB nL  TINYINT not null DEFAULT 0;
+ALTER TABLE i5   CHANGE co5 iC  TINYINT not null DEFAULT 0;
+ALTER TABLE i5   CHANGE coB CC  DECIMAL(6,2) not null DEFAULT 0;
 
 DROP TABLE IF EXISTS f5;
 CREATE TABLE f5 (
