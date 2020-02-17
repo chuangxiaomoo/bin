@@ -11,7 +11,7 @@ function fn_usage()
         c|cc    [filepath]              : svn ci [files...]
         zc                              : tar ../bk.tgz list
         cf                              : show conflict resolving steps
-        D       {?|M|.o}
+        D       {.o | exist_path | ?/^} : any not exist_path, will Delete ?
         d       [-r9527] [filepath]     : equal diff -r BASE:WORKING
         do      [.o path]               : del *.o
         dp      [filepath]              : equal diff -r PREV:COMMITTED
@@ -28,8 +28,7 @@ function fn_usage()
         S       status | grep PAT
         u       update
         U       Svn l 20 | Svn U zhangj : svn --user zhangj
-        cd                              : cd a /branch path
-        vi                              : vi a /barnch file
+        vi                              : vi a /branch file, \$PWD in /branch checkout path
 
         svn cleanup __should__ in TOP dir
         svn relocate svn://sub.someaddress.com.tr/project
@@ -97,7 +96,7 @@ function fn_main()
     D)
         case $2 in
        .o)  echo "del *.o"; find -name '*.o' | xargs rm -f ;;
-    '?'|*)  {
+        *)  {
             echo "Deleting: ${filelist}"
             [ -f "${filelist}" ] && rm -f ${filelist} && return
             exclude="INSTALL|cscope|.make\>"
