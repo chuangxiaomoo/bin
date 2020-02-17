@@ -423,9 +423,9 @@ CREATE TABLE jine (
     dw2     TINYINT         NOT NULL DEFAULT 0,
     _61     DECIMAL(6,2)    NOT NULL DEFAULT 0, # min(ma60) ref(60)
     x60     TINYINT         NOT NULL DEFAULT 0, # 85日 count(ma5<=ma20 || ma5<=ma60)
-    x20     DECIMAL(6,2)    NOT NULL DEFAULT 0,
-    x13     DECIMAL(6,2)    NOT NULL DEFAULT 0, # 13日 max(ma5)
-    _20     DECIMAL(6,2)    NOT NULL DEFAULT 0, #      min(hsl20)
+    x20     DECIMAL(6,2)    NOT NULL DEFAULT 0, #  d.hsl20/_x20.x20
+    x13     DECIMAL(6,2)    NOT NULL DEFAULT 0, #                       13日 max(ma5)
+    _20     DECIMAL(6,2)    NOT NULL DEFAULT 0, # _x20._20/_x20.x20
     _21     DECIMAL(6,2)    NOT NULL DEFAULT 0, # 21日 min(ma20)
     N1      TINYINT         NOT NULL DEFAULT 0, # 13日 count(tov >= hsl20)
     N8      TINYINT         NOT NULL DEFAULT 0, # 13日 count(tov >= hsl20*1.8)
