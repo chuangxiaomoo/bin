@@ -28,8 +28,7 @@ function fn_usage()
         S       status | grep PAT
         u       update
         U       Svn l 20 | Svn U zhangj : svn --user zhangj
-        cd                              : cd a /branch path
-        vi                              : vi a /barnch file
+        vi                              : vi a /branch file, \$PWD in /branch checkout path
 
         svn cleanup __should__ in TOP dir
         svn relocate svn://sub.someaddress.com.tr/project
