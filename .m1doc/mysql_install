@@ -29,6 +29,8 @@ mv mysql-5.6.35-linux-glibc2.5-x86_64 /usr/local/mysql
 groupadd mysql
 useradd -r -g mysql mysql -d /usr/local/mysql
 passwd mysql
+    123456
+    123456
 
 5.修改目录权限
 
@@ -48,7 +50,10 @@ cp my-default.cnf /etc/my.cnf
 8.添加系统服务
 
 cp mysql.server /etc/init.d/mysql
-chkconfig mysql on
+
+* 开机启动
+    centos: chkconfig mysql on
+    ubuntu: update-rc.d mysql defaults      # update-rc.d mysql remove
 
 9.添加环境变量
 
@@ -66,7 +71,7 @@ export PATH="$PATH:$MYSQL_HOME/bin"
 vim ~/.editrc
 bind "^W" ed-delete-prev-word
 
-[本地使用跳过10~13](+/Access.denied mysql_base)
+# [本地使用跳过10~13](+/Access.denied mysql_base)
 
 10.启动mysql
 

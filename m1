@@ -92,7 +92,9 @@ function fn_regex()                     { cat regex ;}
 function fn_grep()                      { cat grep ;}
 function fn_find()                      { cat find ;}
 
-function fn_alibaba()                   { cat alibaba taobao ;}
+function fn_alibaba()                   { cat alibaba taobao 
+                                              aliyun.md
+                                        }
 function fn_google()                    { cat google
                                               google.translate
                                               google.faq
@@ -103,7 +105,7 @@ function fn_google()                    { cat google
                                         }
 function fn_chrome()                    { cat chrome ;}
 
-function fn_software()                   {
+function fn_software()                  {
 function fn_fundamental()               { cat software_fundamental ;}
 function fn_guru()                      { cat software_guru ;}
 function fn_01_社会学()                 { cat software_01_社会学 ;}
