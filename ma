@@ -8,7 +8,7 @@ function fn_main()
 
     # call from vimrc map
     if [ "$MANWIDTH" == 88 ]  ; then
-        f_redirct=/dev/shm/ma
+        f_redirct=/tmp/.ma
     else
         f_redirct=/dev/stdout
     fi
