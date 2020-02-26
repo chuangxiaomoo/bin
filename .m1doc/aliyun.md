@@ -17,6 +17,12 @@ chmod -x /etc/update-motd.d/*
 sudo dpkg-reconfigure dash
 然后选择【否】
 
+# 安装必要的软件
+
+apt install git
+apt-get install reptyr
+apt-get install ctags
+
 # gitee.com 配置 vim
 
 #

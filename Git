@@ -50,7 +50,9 @@ function fn_main()
         [ "${1}" != 'a' ] && $git push origin $master
         ;;
 
-    c*)
+    clone) $git $@ ;;
+
+    c|commit)
         # add commit push 指定文件到本地
         local i=
         for i in ${filelist}; do
@@ -84,9 +86,6 @@ refl|L) $git reflog ${filelist}                      ;;
     P*|Push)
         # Your branch is ahead of 'origin/master' by 4 commits.
         $git push origin $master
-        ;;
-    clone)
-        $git $@ 
         ;;
 
     r|revert)
