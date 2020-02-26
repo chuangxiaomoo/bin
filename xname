@@ -1,6 +1,5 @@
 #! /bin/bash
 
-
 function fn_main()
 {
     in='/dev/shm/xm'
@@ -22,10 +21,13 @@ function fn_main()
         done < ${in} > ${out}
         ;;
     *)
-        echo "Usage: xname {untag|tag}"
+        echo "
+        Usage: xname {untag|tag}
+               # tag  : 给 value 加 xml tag
+               # untag: 去掉 xml tag
+        "
         ;;
     esac
-
 }
 
 fn_main $@
