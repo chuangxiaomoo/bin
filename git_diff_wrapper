@@ -1,18 +1,1 @@
-#! /bin/sh
-
-Usage="
-    # 配置vimdiff
-    git config --global diff.tool vimdiff
-    git config --global difftool.prompt No
-
-    # 使用vimdiff
-    git difftool filelist
-
-    # 若要使用原始命令，请参考链接封装 function git_diff()
-    # [git-vimdiff](https://technotales.wordpress.com/2009/05/17/git-diff-with-vimdiff/)
-
-    # 配置清除：
-    git config --unset
-"
-
-vimdiff "+call Diff_enter()" "$2" "$5"
+/root/gitee/team/env/bin/git_diff_wrapper
