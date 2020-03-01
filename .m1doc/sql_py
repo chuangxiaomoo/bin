@@ -428,7 +428,7 @@ CREATE TABLE jine (
     _20     DECIMAL(6,2)    NOT NULL DEFAULT 0, # _x20._20/_x20.x20
     _21     DECIMAL(6,2)    NOT NULL DEFAULT 0, # 21日 min(ma20)
     N1      TINYINT         NOT NULL DEFAULT 0, # 13日 count(tov >= hsl20)
-    N8      TINYINT         NOT NULL DEFAULT 0, # 13日 count(tov >= hsl20*1.8)
+    N8      TINYINT         NOT NULL DEFAULT 0, # 13日 count(tov >= hsl20*1.7)
     INDEX(date,code)
 );
 

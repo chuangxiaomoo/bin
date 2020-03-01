@@ -28,3 +28,7 @@ enc     - openssl 命令使用加密进行编码
 -d – 用于解密文件
 -C – 提取内容到 test 子目录
 
+# 一对加解密
+
+> tar -P -jcf - ~/pyc/{*.py,bin} | openssl enc -e -aes256 -out ~/.vim/.ch/candle.pyc
+> openssl enc -d -aes256 -in ~/.vim/.ch/candle.pyc | tar jxvfP -
