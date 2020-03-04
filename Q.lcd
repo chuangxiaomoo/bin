@@ -1,6 +1,10 @@
 #! /bin/bash
 
-# 命令输出到副屏
+if [ -z "${1}" ]; then
+    echo "Usage: 命令 STDOUT 重定向到 /dev/pts/0"
+    echo "       场景: 命令输出到副屏"
+    exit
+fi
 
 {
     echo "# $@"
