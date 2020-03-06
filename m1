@@ -107,16 +107,8 @@ function fn_chrome()                    { cat chrome ;}
 
 function fn_software()                  {
 function fn_fundamental()               { cat software_fundamental ;}
-function fn_guru()                      { cat software_guru ;}
-function fn_01_社会学()                 { cat software_01_社会学 ;}
-function fn_02_工程学()                 { cat software_02_工程学 ;}
-function fn_03_软件过程改进建议()       { cat software_03_软件过程改进建议 ;}
     local opts=(
         fundamental
-        01_社会学
-        02_工程学
-        guru                            # 编程大师
-        03_软件过程改进建议
     )
     fn_print $@
 }

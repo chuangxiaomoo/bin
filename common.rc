@@ -268,7 +268,7 @@ function fn_execute()
         echo "$helpmsg"
         local idx
         for (( idx=0; idx<${#cmdlist[@]}; idx+=1 )); do
-            printf "  %-4s%s\n" $idx "${cmdlist[${idx}]}"
+            printf " %-4s%s\n" $idx "${cmdlist[${idx}]}"
         done
         echo
         ;;
