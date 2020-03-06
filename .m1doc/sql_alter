@@ -8,6 +8,7 @@
 . 添加列    
     ALTER TABLE table_name ADD col_name  int(4) not null;
     ALTER TABLE mat_ma1020 ADD vax3      DECIMAL(12,2) NOT NULL DEFAULT 0;
+                           ADD [COLUMN] column_name_1 column_1_definition [FIRST|AFTER existing_column],
 
 . 添加列 to sepcific location 
     ALTER TABLE myTable ADD myNewColumn VARCHAR(255) AFTER myOtherColumn;
