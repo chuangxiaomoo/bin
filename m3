@@ -30,12 +30,23 @@ xiaolai_ask50
 
 # collect
 
-collect_rhyme_压韵
-collect_theory_理论
-collect_analogy_类比
-collect_metaphor_暗喻
-collect_structure_结构
-collect_algorithme_算法
+英语中有19种修辞手法，它们分别是：
+
+* Simile明喻、Metaphor 隐喻，暗喻、Metonymy 借喻，转喻、Synecdoche 提喻、
+* Synaesthesia 通感，联觉，移觉、Personification 拟人、Hyperbole 夸张、Parallelism 排比， 平行、
+* Euphemism 委婉，婉辞法、Allegory 讽喻，比方、Irony 反语、Pun 双关、Parody 仿拟、Rhetorical question 修辞疑问、
+* Antithesis 对照，对比，对偶、Paradox 隽语、Oxymoron 反意法，逆喻、
+* Climax 渐进法，层进法、Anticlimax 渐降法。
+
+列表：
+
+* collect_rhyme_压韵
+* collect_theory_理论
+* collect_analogy_类比
+* collect_metaphor_暗喻
+* collect_structure_结构
+* collect_algorithme_算法
+* collect_parallelism_排比
 
 # write.技巧
 
