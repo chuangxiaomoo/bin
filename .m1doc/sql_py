@@ -311,6 +311,31 @@ CREATE TABLE i5_old (                               # 数据由 k.sh fn_i5() 集
     INDEX(date,code)
 );
 
+# icc_and_baby start
+
+DROP TABLE IF EXISTS cc;
+CREATE TABLE cc (
+    idx         CHAR(8),
+    name        CHAR(48),
+    date        date NOT NULL,
+    INDEX(idx)
+);
+
+CREATE TABLE i1 LIKE cc;
+CREATE TABLE i2 LIKE cc;
+
+DROP TABLE IF EXISTS baby_cc;
+CREATE TABLE baby_cc (
+    idx         CHAR(8),
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    INDEX(idx,code)
+);
+
+CREATE TABLE baby_i1 LIKE baby_cc;
+CREATE TABLE baby_i2 LIKE baby_cc;
+
+# icc_and_baby end
+
 DROP TABLE IF EXISTS i5;
 CREATE TABLE i5 (                                   # 重构i5，i5需要的是13日内的走势结构
     date        date NOT NULL, 
