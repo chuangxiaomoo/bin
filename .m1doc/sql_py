@@ -377,9 +377,6 @@ CREATE TABLE i5 (                                   # 重构i5，i5需要的是1
     INDEX(date,code)
 );
 
-ALTER TABLE jine drop COLUMN V6;
-ALTER TABLE jine CHANGE A8 N1 TINYINT not null DEFAULT 0;
-ALTER TABLE jine CHANGE V8 N8 TINYINT not null DEFAULT 0;
 ALTER TABLE i5   CHANGE HH  HH  DECIMAL(6,1) not null DEFAULT 0;
 ALTER TABLE i5   CHANGE  SB nL  TINYINT not null DEFAULT 0;
 ALTER TABLE i5   CHANGE co5 iC  TINYINT not null DEFAULT 0;
@@ -457,9 +454,9 @@ CREATE TABLE jine (
    _mayr    DECIMAL(6,2)    NOT NULL DEFAULT 0, # min(ma60) ref(60)
    _ma20    DECIMAL(6,2)    NOT NULL DEFAULT 0, # 21日 min(ma20)
     xma5    DECIMAL(6,2)    NOT NULL DEFAULT 0, #                       13日 max(ma5)
-    r20     DECIMAL(6,2)             DEFAULT 0, #  d.hsl20/_x20.x20
-    R       DECIMAL(6,2)             DEFAULT 0, # _x20._ma20/_x20.x20
-    N1      TINYINT         NOT NULL DEFAULT 0, # 13日 count(tov >= hsl20)
+    _R      DECIMAL(6,2)             DEFAULT 0, #  d.hsl20/_x20.x20
+    x80     DECIMAL(6,2)             DEFAULT 0, # max(hsl20,80)
+    x120    DECIMAL(6,2)             DEFAULT 0, # max(hsl20,120)
     N8      TINYINT         NOT NULL DEFAULT 0, # 13日 count(tov >= hsl20*1.7)
     N60     TINYINT         NOT NULL DEFAULT 0, # 85日 count(ma5<=ma20 || ma5<=ma60)
     N80     TINYINT         NOT NULL DEFAULT 0, # ^^^^^^ 因为解禁，tov会不准，N80，NHL也会不准 ^^^^^^^^
@@ -467,9 +464,13 @@ CREATE TABLE jine (
     INDEX(date,code)
 );
 
-ALTER TABLE jine CHANGE x13 xma5    DECIMAL(6,2)  NOT NULL DEFAULT 0;
-ALTER TABLE jine CHANGE x20 r20     DECIMAL(6,2)  NOT NULL DEFAULT 0;
-ALTER TABLE jine CHANGE _r20 R      DECIMAL(6,2)  NOT NULL DEFAULT 0;
+ALTER TABLE jine drop COLUMN V6;
+ALTER TABLE jine CHANGE A8 N1 TINYINT not null DEFAULT 0;
+ALTER TABLE jine CHANGE V8 N8 TINYINT not null DEFAULT 0;
+
+ALTER TABLE jine CHANGE N1  x120    DECIMAL(6,2)  NOT NULL DEFAULT 0;
+ALTER TABLE jine CHANGE r20 _R      DECIMAL(6,2)  NOT NULL DEFAULT 0;
+ALTER TABLE jine CHANGE R   x80     DECIMAL(6,2)  NOT NULL DEFAULT 0;
 ALTER TABLE jine CHANGE _21 _ma20   DECIMAL(6,2)  NOT NULL DEFAULT 0;
 ALTER TABLE jine CHANGE _61 _ma60   DECIMAL(6,2)  NOT NULL DEFAULT 0;
 ALTER TABLE jine CHANGE x60 N60     TINYINT  NOT NULL DEFAULT 0;
