@@ -164,6 +164,7 @@ function fn_000_黄晓捷谈在校学习()      { cat book_000_黄晓捷谈在�
                                           cat book_014_阅读是为了填补信息缺口
                                           cat book_015_章亦春抄书的奥秘
                                           cat book_016_股社区谈读书
+                                          cat book_017_有限次重复博弈
                                           cat book_020_如何选书
                                           cat book_how_to_read_a_book.md
                                           cat book_redesign_设计中的设计.md
@@ -928,7 +929,7 @@ function fn_letters()                   { cat girl_letters juzi poet
                                           cat girl_05_cloud
 function fn_11_2013相亲记()             { cat girl_11_2013相亲记 ;}
 function fn_12_wife()                   { cat girl_12_wife ;}
-function fn_100_手把手教你泡妞()        { cat girl_100_手把手教你泡妞
+function fn_100_手把手教你泡妞()        { cat girl_100_手把手教你泡妞       # 80%找20%追，关键在于同频
                                           cat girl_101_如何用产品思维摆脱单身
                                           cat girl_102_罗胖的分享
                                         }
