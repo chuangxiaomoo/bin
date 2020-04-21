@@ -1321,6 +1321,7 @@ function fn_tools() {
     local opts=(
         SVN WBS RDM SourceMonitor
         valgrind
+        free_download_manager   # 是迅雷吗？我早就不用那辣鸡了，用这个
     )
 }
 
