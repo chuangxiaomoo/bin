@@ -1,1 +1,6 @@
 # <br> 已经支持换行
+
+# 如果文档不长，可以考虑通过下面的代码进行手动分页
+
+<div style="page-break-after:always;"></div>
+

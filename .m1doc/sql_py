@@ -338,6 +338,7 @@ CREATE TABLE baby_i1 LIKE baby_cc;
 CREATE TABLE baby_i2 LIKE baby_cc;
 CREATE TABLE baby_tdx LIKE baby_cc;
 CREATE TABLE baby_fg  LIKE baby_cc;
+CREATE TABLE baby_nhy LIKE baby_cc;
 
 # icc_and_baby end
 
