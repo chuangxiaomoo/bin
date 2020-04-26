@@ -972,7 +972,7 @@ function fn_L0_孤独寂寞朋友()           { cat ljsw_L0_孤独寂寞朋友 ;
 function fn_144_什么是好的经济学()      { cat ljsw_144_什么是好的经济学
                                               ljsw_145_怎样逼自己成为一个上进的人
                                               tao_design                        # 设计之道
-                                                  MANAGEMENT.team
+                                                  MANAGEMENT.team               # manager mng T型人才
                                                   Target.team
                                                   System.team
                                               Expectation.team
