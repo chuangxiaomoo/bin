@@ -58,6 +58,15 @@ def pip_usage(argv):
     pip install bokeh
     """)
 
+def pip_freeze():
+    print("""
+    导出安装模块的文档
+    pip freeze > list
+
+    在另一个环境下，安装该文档里的模块
+    pip install -r list
+    """)
+
 def os_shutil(argv):
     print("""
     os.mkdir()
@@ -96,6 +105,7 @@ def main(argv):
     apt_install_python3 , "apt_install_python3          # apt-get安装 python3.5"            ,
     sit_getsitepackages , "sit_getsitepackages          # 包安装路径，类似 C /usr/include"  ,
     pip_usage           , "pip_usage                    # "                                 ,
+    pip_freeze          , "pip_freeze                   # 使用freeze命令迁移模块"           ,
     os_shutil           , "os_shutil                    # os.file.binutils 常用系统命令"    ,
     dt_daysago          , "dt_daysago(ymd, N)           # __builtin__"                      ,
     dt_seconds          , "dt_seconds(ymd)              # __builtin__"                      ,
