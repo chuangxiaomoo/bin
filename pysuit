@@ -58,7 +58,7 @@ def pip_usage(argv):
     pip install bokeh
     """)
 
-def pip_freeze():
+def pip_freeze(argv):
     print("""
     导出安装模块的文档
     pip freeze > list
