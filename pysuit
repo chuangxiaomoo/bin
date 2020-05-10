@@ -3,6 +3,13 @@
 import sys
 import datetime as dt
 
+def win_install_python35(argv):
+    print("""
+    1. 下载相应版本，不要使用 zip 版本，因为不全，出问题难搞
+    2. 定制安装
+    3. 供所有用户使用(否则会另起一个 shell，出错时无法调试)
+    """)
+
 def src_install_python35(argv):
     print("""
     cd /opt/src/test/
@@ -101,6 +108,7 @@ Usage:
 
 def main(argv):
     cmdlist=(
+    win_install_python35, "win_install_python35         # Win7 python3.5"                   ,
     src_install_python35, "src_install_python35         # 源码安装 python3.5"               ,
     apt_install_python3 , "apt_install_python3          # apt-get安装 python3.5"            ,
     sit_getsitepackages , "sit_getsitepackages          # 包安装路径，类似 C /usr/include"  ,
