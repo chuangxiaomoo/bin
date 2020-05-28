@@ -1,0 +1,27 @@
+/* gcc
+ * wifi配置工具iw源码解析 https://blog.csdn.net/u010503121/article/details/78183666
+ */
+
+# define 对section的巧妙使用
+
+iw程序针对各种类型的命令编写了对应的.c文件，每个命令的.c文件是一个独立模块。与常见的程序结构不同，iw中并没有使用.h头文件声明函数，主文件iw.c也没有显示声明外部函数，那它是怎样实现对其他文件中函数的调用的呢？
+
+static struct cmd 
+__cmd_dump_handle_station_dump_NL80211_CMD_GET_STATION_CIB_NETDEV_0 
+__attribute__((used)) __attribute__((section("__cmd"))) = { 
+        .name = ("dump"),                   
+        .args = ("[-v]"),                   
+        .cmd = (NL80211_CMD_GET_STATION),                   
+        .nl_msg_flags = (NLM_F_DUMP),               
+        .hidden = (0),                  
+        .idby = (CIB_NETDEV),                   
+        .handler = (handle_station_dump),                   
+        .help = ( "List all stations known, e.g. the AP on managed interfaces"),
+        .parent = &(__station_station),                 
+        .selector = (NULL), 
+    }               
+
+可以看到，COMMAND最终声明了一个cmd结构体变量，这个结构体变量使用了gcc编译属性__attribute__。__attribute__((used))指示编译器在对象文件中保留变量为静态变量，不进行任何空间优化；__attribute__((section(“__cmd”)))指示编译器将这个变量的内存空间位置放置在生成文件的”__cmd”这个段中。
+
+这样就明白了，在iw程序的内存空间的静态变量区有一个“__cmd”段，会顺序存储使用COMMAND宏定义的cmd结构体变量。
+

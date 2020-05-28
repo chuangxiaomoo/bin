@@ -27,6 +27,8 @@ ${var##}   |                                       |                            
 ${var%%}   |                                       |                                              |
 ${var// */}|不支持 等价替换 sed 's///g'            |                                              |  不支持 等价替换 sed 's///g'
 ${@:2}     |不支持 等价替换 shift;${@}             |                                              |  $@不是数组，使用 shift;${@}
+           |                                       |                                              |  ${@:2} 把所有变量当成一个字符串处理
+          
 
 # functions
 fn_echo_clor() { TEXT="$@"; echo "$FG: ${TEXT}" > /dev/stdout ;}
