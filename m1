@@ -362,19 +362,7 @@ function fn_multicast多播()             { cat socket_multicast多播 ;}
     fn_print $@
 }
 
-
-function fn_cstd()                      {
-function fn_scanf()                     { cat cstd_scanf ;}
-function fn_printf()                    { cat cstd_printf ;}
-function fn_bsearch()                   { cat cstd_bsearch ;}
-    local opts=(
-        scanf
-        printf
-        bsearch
-        qsort
-    )
-    fn_print $@
-}
+function fn_bsearch()                   { cat cstd_bsearch  cstd_qsort ;}
 
 function fn_clang() {
 function fn_C调用C++链接库()            { cat clang_C调用C++链接库 ;}
@@ -410,7 +398,7 @@ function fn_iconv()                     { cat clang_iconv ;}
 function fn_md5()                       { cat clang_md5 ;}
 function fn_bit()                       { cat clang_bit ;}
 function fn_strncpy()                   { cat clang_strncpy ;}
-function fn_snprintf()                  { cat clang_snprintf ;}
+function fn_snprintf()                  { cat clang_snprintf cstd_printf cstd_scanf ;}
 function fn_thread_lock()               { cat clang_thread_lock ;}
 function fn_fwrite()                    { cat clang_fwrite ;}
 function fn_getaddrinfo_a()             { cat clang_getaddrinfo_a ;}
@@ -563,7 +551,9 @@ function fn_github()                    { cat git_github
                                           cat git_stage
                                         }
 function fn_svndiff()                   { cat git_svndiff ;}
-function fn_diff()                      { cat git_diff ;}
+function fn_diff()                      { cat git_diff
+                                              git_patch
+                                        }
 function fn_config()                    { cat git_config ;}
 function fn_subconf()                   { cat git_subconf ;}
 function fn_log()                       { cat git_log ;}
@@ -675,7 +665,7 @@ function fn_himm()                      { cat cmd_himm ;}
 function fn_ifconfig()                  { cat cmd_ifconfig ;}
 function fn_ln()                        { cat cmd_ln ;}
 function fn_mount()                     { cat cmd_mount ;}
-function fn_patch()                     { cat cmd_patch ;}
+function fn_patch()                     { cat cmd_diff cmd_patch ;}
 function fn_route()                     { cat cmd_route cmd_netsh ;}
 function fn_rename()                    { cat cmd_rename ;}
 function fn_strace()                    { cat cmd_strace ;}

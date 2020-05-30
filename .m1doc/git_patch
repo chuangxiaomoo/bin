@@ -1,0 +1,30 @@
+# Git D = git diff --no-ext-diff
+
+* 普通修改
+
+Git D
+Git D acb8cd15 4ff35d80 > patch
+
+* 如果有新增的文件，并不在 git 管理之内
+
+Git D --cached > feature_a.patch
+
+* 如果还包含二进制文件，例如图片等
+
+Git D --cached --binary > feature_a.patch
+
+# patch
+
+* 先检查patch文件
+
+git apply --stat newpatch.patch
+
+* 检查能否应用成功
+
+git apply --check newpatch.patch
+
+* 应用 patch
+
+git apply feature_a.patch
+git apply --reject feature_a.patch
+
