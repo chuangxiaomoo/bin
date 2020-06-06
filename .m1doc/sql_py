@@ -311,6 +311,19 @@ CREATE TABLE i5_old (                               # 数据由 k.sh fn_i5() 集
     INDEX(date,code)
 );
 
+# rk rk0
+DROP TABLE IF EXISTS rk;
+CREATE TABLE rk (
+    iBlock      CHAR(8),
+    name        CHAR(48),
+    num         TINYINT      not null DEFAULT 0,
+    amo         DECIMAL(6,1) not null DEFAULT 0,
+    avg         DECIMAL(6,1) not null DEFAULT 0,
+    INDEX(iBlock)
+);
+CREATE TABLE rk0 LIKE rk;
+CREATE TABLE rk_ LIKE rk;
+
 # icc_and_baby start
 
 DROP TABLE IF EXISTS cc;
