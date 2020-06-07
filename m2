@@ -119,10 +119,10 @@ function fn_WiMax_meeting()             { cat meeting huawei_WiMax_meeting
 #
 function fn_book()                      {
 function fn_laozi()                     { cat book_laozi
-                                          cat book_zhuangzi;
-                                        }
-function fn_sunzi()                     { cat book_sunzi;
-                                          cat read_sunzi ;}
+                                              read_daodejing            # 道德经
+                                          cat book_zhuangzi 
+                                          cat book_sunzi                # 孙子兵法
+                                              read_sunzi
 function fn_liutao()                    { cat book_liutao ;}
 function fn_lunyu()                     { cat book_lunyu
                                           cat book_lunyu.full.edition
@@ -269,10 +269,6 @@ function fn_list()                      { cat book_400_PoorCharliesAlmanack_穷�
                                               book_410_The_Sense_of_Style
                                         }
     local opts=(
-        list                            # 高兴的事
-        wanna                           # 想读的书
-        sunzi                           # 孙子兵法
-        laozi                           # 道德经 daodejing
         liutao                          # 六韬.太公兵法
         36ji                            # 36计
         lunyu                           # 论语
@@ -691,8 +687,11 @@ function fn_english() {
       english_vocabulary
 }
 
+function fn_game_theory()               { cat game_theory ;}
+function fn_debate_competition()        { cat debate_competition ;}     # 辩论
+
 function fn_logic()                     { cat logic_simple.md
-function fn_formal()                    { cat logic_formal ;}
+function fn_formal()                    { cat logic_formal logic_辩证逻辑 ;}
 function fn_informal()                  { cat logic_informal ;}
 function fn_informal_wiki()             { cat logic_informal_wiki ;}
 function fn_fallacy()                   { cat logic_fallacy ;}
@@ -920,7 +919,9 @@ function fn_duanzi()                    { cat humor_duanzi ;}
 }
 
 function fn_girl()                      {
-function fn_misc()                      { cat girl_misc ;}
+function fn_misc()                      { cat girl_misc
+                                              happythings       # 高兴的事
+                                        }
 function fn_letters()                   { cat girl_letters juzi poet girl_self_introduction
                                           cat girl_00_jiebao
                                           cat girl_01_tingbao
@@ -1198,8 +1199,6 @@ function fn_rhyme200()                  { cat guo_rhyme200 ;}
     fn_print $@
 }
 
-function fn_game_theory()               { cat game_theory ;}
-function fn_debate_competition()        { cat debate_competition ;}
 function fn_advertisement()             { cat advertisement ;}
 function fn_architecture()              { cat architecture
                                           cat arch_00_公理.公设.定理
@@ -1242,7 +1241,6 @@ function fn_main() {
         annual
         article
         book
-        debate_competition
         dream
         driver
         english
