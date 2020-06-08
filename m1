@@ -563,7 +563,6 @@ function fn_proxy()                     { cat git_proxy ;}
         config                  # ln -sf ~/bin/.m1doc/git_config .gitconfig
         subconf                 # .git/config
         diff                    #
-        svndiff                 # 与svn比较
         log
         proxy
     )

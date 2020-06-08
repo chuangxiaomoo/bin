@@ -1,4 +1,16 @@
 # visual_svn_server
 
-Visual SVN Server 0. services.msc to Start the service 1. Repositories -> RightClick -> New -> Repository -> Input Name \ -> Remember tick [Create default structure] 2. After create, RightClick on the Repository Name, you can get URL 3. In a file clip, RightClick on blank, TortoiseSVN-> Import -> \ Input the URL get in Step 2. 4. It's OK 5. In the Visual SVN Server, RightClick on the trunck -> Properties -> you can add a user. 6. If you want to modify the case of a filename, you need to del it modify name and add in the list of svn opration. 
+Visual SVN Server 0. services.msc to Start the service 
 
+1. Repositories -> RightClick -> New -> Repository -> Input Name \ -> Remember tick [^Create default structure] 
+2. After create, RightClick on the Repository Name, you can get URL 
+3. In a file clip, RightClick on blank, TortoiseSVN-> Import -> \ Input the URL get in Step 2. 
+4. It's OK 
+5. In the Visual SVN Server, RightClick on the trunck -> Properties -> you can add a user. 
+6. If you want to modify the case of a filename, you need to del it modify name and add in the list of svn opration. 
+
+## 安装&配置
+
+**参考**
+* https://blog.csdn.net/zengsange/article/details/80618301
+* https://www.linuxidc.com/Linux/2016-08/133961.htm
