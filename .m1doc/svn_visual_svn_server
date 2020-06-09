@@ -9,8 +9,43 @@ Visual SVN Server 0. services.msc to Start the service
 5. In the Visual SVN Server, RightClick on the trunck -> Properties -> you can add a user. 
 6. If you want to modify the case of a filename, you need to del it modify name and add in the list of svn opration. 
 
-## 安装&配置
+# 安装&配置
 
 **参考**
 * https://blog.csdn.net/zengsange/article/details/80618301
 * https://www.linuxidc.com/Linux/2016-08/133961.htm
+
+# 方法
+
+## 切换用户
+
+cd  ~/.subversion
+rm -rf auth
+
+## create
+
+mkdir -p /root/svn/team
+svnadmin create /root/svn/team
+
+## 对db进入权限设置
+
+cd /root/svn/team
+chmod -R 777 db
+
+## git svn 兼容
+
+~/.subversion/config 
+global-ignores = .git  .gitee  .gitignore
+
+## 权限 authz
+
+```txt
+# top
+[/]
+@admin = rw
+*=r
+# 修改权限后用 checkout 才能更新，svn up 不能
+```
+
+
+
