@@ -37,15 +37,27 @@ chmod -R 777 db
 ~/.subversion/config 
 global-ignores = .git  .gitee  .gitignore
 
+## svnserve.conf
+
+```txt
+[general]
+anon-access=none
+auth-access=write
+password-db=passwd
+authz-db=authz
+```
+
 ## 权限 authz
 
 ```txt
 # top
+[groups]
 [/]
 @admin = rw
 *=r
-# 修改权限后用 checkout 才能更新，svn up 不能
 ```
 
+1. 修改权限后用 checkout 才能更新，svn up 不能
+2. [/] 没有的话 会 `Authorization failed`
 
 
