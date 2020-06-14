@@ -373,7 +373,7 @@ function fn_extern()                    { cat clang_extern ;}
 function fn_operator_predcedence()      { cat clang_operator_predcedence ;}
 function fn_string()                    { cat clang_string ;}
 function fn_strtok_r()                  { cat clang_strtok_r ;}
-function fn_struct()                    { cat clang_struct ;}   # 结构体的定义与实现
+function fn_struct()                    { cat clang_struct clang_array  ;}   # 结构体的定义与实现
 function fn_typedef()                   { cat clang_typedef ;}
 function fn_warning()                   { cat clang_warning ;}
 function fn_pointer()                   { cat clang_pointer ;}

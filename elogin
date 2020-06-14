@@ -36,6 +36,16 @@ if { $argc == 0 } {
         interact {
             timeout 30 { send "" }
         }
+    } elseif { [string match *vlogin $argv0] == 1 } {   # v-ipcsdk
+        spawn telnet $ip $port
+        expect  "login:"
+        send    "root\n"
+        expect  "Password:"
+        send    "admin666666\n"
+
+        interact {
+            timeout 30 { send "" }
+        }
     } elseif { [string match *jlogin $argv0] == 1 } {   # Junzheng
         spawn telnet $ip $port
         expect  "login:"
