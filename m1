@@ -601,7 +601,6 @@ function fn_relocate()                  { cat svn_relocate ;}
         help
         log
         merge
-        visual_svn_server               # Visual SVN Server
     )
     fn_print $@
 }

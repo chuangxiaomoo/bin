@@ -690,7 +690,9 @@ function fn_english() {
 }
 
 function fn_game_theory()               { cat game_theory ;}
-function fn_debate_competition()        { cat debate_competition ;}     # 辩论
+function fn_debate_competition()        { cat debate_competition       # 辩论
+                                              debate_teck  
+                                        }
 
 function fn_logic()                     { cat logic_simple.md
 function fn_formal()                    { cat logic_formal logic_辩证逻辑 ;}
