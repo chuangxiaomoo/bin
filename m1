@@ -117,7 +117,7 @@ function fn_gcc()                       {
 function fn_fundamental()               { cat gcc_fundamental
                                               gcc_warning
                                               gcc.__attribute__
-                                              ;}
+                                        }
 function fn_01_preprocess()             { cat gcc_01_preprocess ;}
 function fn_02_header_file_include()    { cat gcc_02_header_file_include ;}
 function fn_03_ld_wrap()                { cat gcc_03_ld_wrap ;}
