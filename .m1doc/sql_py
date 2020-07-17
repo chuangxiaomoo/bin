@@ -502,3 +502,12 @@ CREATE TABLE banz (
     name    CHAR(16),
     INDEX(code)
 );
+
+CREATE TABLE dd0 (
+    iend    TINYINT         NOT NULL DEFAULT 0,
+    code    INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    high    DECIMAL(6,2)    NOT NULL DEFAULT 0,
+    close   DECIMAL(6,2)    NOT NULL DEFAULT 0,
+    INDEX(code)
+);
+CREATE TABLE ddn LIKE dd0;
