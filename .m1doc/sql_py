@@ -510,4 +510,19 @@ CREATE TABLE dd0 (
     close   DECIMAL(6,2)    NOT NULL DEFAULT 0,
     INDEX(code)
 );
+
 CREATE TABLE ddn LIKE dd0;
+
+# 1. cnt = 0，一律可选，只在 dd0 中存在
+# 1. i1st = 0，在最后进行一次 update，在 dd0 与 ddn 同时存在
+DROP TABLE IF EXISTS ddx;
+CREATE TABLE ddx (
+    i1st    TINYINT         NOT NULL DEFAULT 0,     # 第一次新高, 0代表今天
+    cnt     TINYINT         NOT NULL DEFAULT 0,
+    code    INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    cmin    DECIMAL(6,2)    NOT NULL DEFAULT 0,
+    hmin    DECIMAL(6,2)    NOT NULL DEFAULT 0,
+    close   DECIMAL(6,2)    NOT NULL DEFAULT 0,
+    high    DECIMAL(6,2)    NOT NULL DEFAULT 0,
+    INDEX(code)
+);
