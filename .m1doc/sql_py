@@ -120,13 +120,13 @@ CREATE TABLE nmc2 (
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
     pe          DECIMAL(12,2) NOT NULL,
     tov         DECIMAL(12,2) NOT NULL,
-    pb          DECIMAL(12,2) NOT NULL,
+    pb          DECIMAL(12,2) NOT NULL, # 每股股价与每股净资产的比率
 
-    ps_ratio    DECIMAL(12,2) NOT NULL,
-    pcf_ratio   DECIMAL(12,2) NOT NULL,
-    shares      DECIMAL(12,2) NOT NULL,
-    cap         DECIMAL(12,2) NOT NULL,
-    oing_cap    DECIMAL(12,2) NOT NULL,
+    ps_ratio    DECIMAL(12,2) NOT NULL, # 市销率为股票价格与每股销售收入之比，市销率越小，通常被认为投资价值越高。
+    pcf_ratio   DECIMAL(12,2) NOT NULL, # 每股市价为每股现金净流量的倍数
+    shares      DECIMAL(12,2) NOT NULL, # 总股本，单位(万)
+    cap         DECIMAL(12,2) NOT NULL, # 总市值
+    oing_cap    DECIMAL(12,2) NOT NULL, # 流通股本
     INDEX(code)
 );
 
@@ -318,7 +318,7 @@ DROP TABLE IF EXISTS rk;
 CREATE TABLE rk (
     iBlock      CHAR(8),
     name        CHAR(48),
-    num         TINYINT      not null DEFAULT 0,
+    num         SMALLINT     not null DEFAULT 0,
     amo         DECIMAL(6,1) not null DEFAULT 0,
     avg         DECIMAL(6,1) not null DEFAULT 0,
     INDEX(iBlock)
