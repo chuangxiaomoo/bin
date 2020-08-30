@@ -1078,24 +1078,15 @@ function fn_interview()                 { cat career
                                                 shakespare2offer.tcpip
                                                 shakespare2offer.test
                                                 interview   # 想想自己的价值？企业本质在更高效的内部交易
+                                        }
 
-                                        }
-function fn_influence()                 {
-function fn_cept()                      { cat influence_cept ;}
-function fn_agile()                     { cat influence_agile ;}
-function fn_sxmm()                      { cat influence_sxmm ;}
-function fn_stock()                     { cat influence_stock ;}
-function fn_app()                       { cat influence_01_推销自己
+function fn_influence()                 { cat influence_cept            # 影响力
+                                          cat influence_agile
+                                          cat influence_sxmm
+                                          cat influence_stock
+                                          cat influence_01_推销自己
                                           cat influence_to_fall_in_love
-                                        }
-    local opts=(
-        cept                            # 影响力
-        agile
-        sxmm
-        stock
-        app
-    )
-    fn_print $@
+                                          cat influence_谈判决策
 }
 
 function fn_economic()                  {
