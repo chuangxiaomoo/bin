@@ -525,5 +525,7 @@ CREATE TABLE ddx (
     hmin    DECIMAL(6,2)    NOT NULL DEFAULT 0,
     close   DECIMAL(6,2)    NOT NULL DEFAULT 0,
     high    DECIMAL(6,2)    NOT NULL DEFAULT 0,
+    cmax    DECIMAL(6,2)    NOT NULL DEFAULT 0,
+    hmax    DECIMAL(6,2)    NOT NULL DEFAULT 0,
     INDEX(code)
 );
