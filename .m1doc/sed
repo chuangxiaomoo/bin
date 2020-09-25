@@ -51,6 +51,15 @@ sed -e '/UNIX/a\
 多任务操作系统1\
 多任务操作系统2' input.dat
 
+> date_pack= 前插入文件 /tmp/__insert_file__
+sed -e '/insert/{h;s/.*/cat __insert_file__/e;G}' file
+sed -i -e '/date_pack=/{h;s/.*/cat \/tmp\/__insert_file__/e;G}' *.sh
+sed -i '/make clean.*install/s/make install/& || exit 1/g' *.sh
+
+> insert 后插入文件
+
+sed '/insert/r __insert_file__' data
+
 ## 1 line command
 `
 | DESC                  | cmd                                                               |

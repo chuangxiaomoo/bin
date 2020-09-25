@@ -120,13 +120,13 @@ CREATE TABLE nmc2 (
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
     pe          DECIMAL(12,2) NOT NULL,
     tov         DECIMAL(12,2) NOT NULL,
-    pb          DECIMAL(12,2) NOT NULL,
+    pb          DECIMAL(12,2) NOT NULL, # 每股股价与每股净资产的比率
 
-    ps_ratio    DECIMAL(12,2) NOT NULL,
-    pcf_ratio   DECIMAL(12,2) NOT NULL,
-    shares      DECIMAL(12,2) NOT NULL,
-    cap         DECIMAL(12,2) NOT NULL,
-    oing_cap    DECIMAL(12,2) NOT NULL,
+    ps_ratio    DECIMAL(12,2) NOT NULL, # 市销率为股票价格与每股销售收入之比，市销率越小，通常被认为投资价值越高。
+    pcf_ratio   DECIMAL(12,2) NOT NULL, # 每股市价为每股现金净流量的倍数
+    shares      DECIMAL(12,2) NOT NULL, # 总股本，单位(万)
+    cap         DECIMAL(12,2) NOT NULL, # 总市值
+    oing_cap    DECIMAL(12,2) NOT NULL, # 流通股本
     INDEX(code)
 );
 
@@ -318,7 +318,7 @@ DROP TABLE IF EXISTS rk;
 CREATE TABLE rk (
     iBlock      CHAR(8),
     name        CHAR(48),
-    num         TINYINT      not null DEFAULT 0,
+    num         SMALLINT     not null DEFAULT 0,
     amo         DECIMAL(6,1) not null DEFAULT 0,
     avg         DECIMAL(6,1) not null DEFAULT 0,
     INDEX(iBlock)
@@ -500,5 +500,32 @@ CREATE TABLE banz (
     code    INT(6) ZEROFILL NOT NULL DEFAULT 0,
     banz    SMALLINT        NOT NULL DEFAULT 0,
     name    CHAR(16),
+    INDEX(code)
+);
+
+DROP TABLE IF EXISTS dd0;
+CREATE TABLE dd0 (
+    iend    SMALLINT        NOT NULL DEFAULT 0,
+    code    INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    high    DECIMAL(6,2)    NOT NULL DEFAULT 0,
+    close   DECIMAL(6,2)    NOT NULL DEFAULT 0,
+    INDEX(code)
+);
+
+DROP TABLE IF EXISTS ddn; CREATE TABLE ddn LIKE dd0;
+
+# 1. cnt = 0，一律可选，只在 dd0 中存在
+# 1. i1st = 0，在最后进行一次 update，在 dd0 与 ddn 同时存在
+DROP TABLE IF EXISTS ddx;
+CREATE TABLE ddx (
+    i1st    SMALLINT        NOT NULL DEFAULT 0,     # 第一次新高, 0代表今天
+    cnt     SMALLINT        NOT NULL DEFAULT 0,
+    code    INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    cmin    DECIMAL(6,2)    NOT NULL DEFAULT 0,
+    hmin    DECIMAL(6,2)    NOT NULL DEFAULT 0,
+    close   DECIMAL(6,2)    NOT NULL DEFAULT 0,
+    high    DECIMAL(6,2)    NOT NULL DEFAULT 0,
+    cmax    DECIMAL(6,2)    NOT NULL DEFAULT 0,
+    hmax    DECIMAL(6,2)    NOT NULL DEFAULT 0,
     INDEX(code)
 );
