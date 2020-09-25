@@ -570,7 +570,7 @@ function fn_proxy()                     { cat git_proxy ;}
 }
 
 function fn_svn() {
-function fn_fundamental()               { cat svn_fundamental ;}
+function fn_fundamental()               { cat svn_fundamental hosts ;}
 function fn_conflict()                  { cat svn_conflict ;}
 function fn_cleanup()                   { cat svn_cleanup ;}
 function fn_lock()                      { cat svn_lock ;}

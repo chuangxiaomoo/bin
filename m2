@@ -217,6 +217,7 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               problem_present       # 回归问题本身
                                               FeynmanTechnique
                                               how_to_ask_questions_the_smart_way
+                                              answer_big_questions
                                               ________________
                                               wujun_gg
                                               wujun_GoogleMethodology

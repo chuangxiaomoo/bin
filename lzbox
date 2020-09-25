@@ -8,7 +8,7 @@ cd ${CWD}
 
 function fn_ipctool()
 {
-    MYIP='192.168.2.248'
+    MYIP='192.168.2.247'
     key="SEARCH * HDS/1.0 LOCALIP=${MYIP}#LOCALPORT=8788#i_am_nc"
     grp='230.230.230.230'
     port=8002
