@@ -514,6 +514,9 @@ CREATE TABLE dd0 (
 
 DROP TABLE IF EXISTS ddn; CREATE TABLE ddn LIKE dd0;
 
+CREATE TABLE IF NOT EXISTS dqq_h LIKE d1;
+CREATE TABLE IF NOT EXISTS dqq_l LIKE d1;
+
 # 1. cnt = 0，一律可选，只在 dd0 中存在
 # 1. i1st = 0，在最后进行一次 update，在 dd0 与 ddn 同时存在
 DROP TABLE IF EXISTS ddx;
