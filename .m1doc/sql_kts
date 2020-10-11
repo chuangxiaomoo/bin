@@ -260,3 +260,12 @@ CREATE TABLE codes (
     #id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0
 );
+
+DROP TABLE IF EXISTS vpeak;
+CREATE TABLE vpeak(
+    date        date NOT NULL,
+    code INT(6) ZEROFILL NOT NULL, 
+    amox        DECIMAL(12,2) NOT NULL,     # amo max
+    vp          DECIMAL(12,2) NOT NULL,     # amo/amox
+    INDEX(date,code)
+);

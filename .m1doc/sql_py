@@ -468,7 +468,7 @@ CREATE TABLE jine (
     dw3     TINYINT         NOT NULL DEFAULT 0,
     up2     TINYINT         NOT NULL DEFAULT 0, # +5% d055
     dw2     TINYINT         NOT NULL DEFAULT 0,
-   _mayr    DECIMAL(6,2)    NOT NULL DEFAULT 0, # min(ma60) ref(60)
+    mi60    DECIMAL(6,2)    NOT NULL DEFAULT 0, # LLV(ma60, 60)
    _ma20    DECIMAL(6,2)    NOT NULL DEFAULT 0, # 21日 min(ma20)
     xma5    DECIMAL(6,2)    NOT NULL DEFAULT 0, #                       13日 max(ma5)
     _R      DECIMAL(6,2)             DEFAULT 0, #  d.hsl20/_x20.x20
