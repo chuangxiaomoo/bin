@@ -2,56 +2,27 @@
 
 # 野蛮团队
 
-U1: papa + son
-U2: mama + dau
-U3: hunter + dog
+U1: papa(A) + son(a a)
+U2: mama(B) + daughter(b a)
+U3: hunter(C) + dog(c)
 
 From side A to side B.
 
 * 约束：
 
-without papa, mama bat son
-without mama, papa bat dau
+without papa, mama kill son
+without mama, papa kill dau
 without hunter, dog bite all
 
 boat load 2 people at most
 only papa, mama, hunter can row(paddle) the boat
 
-* 分析
+**分析**
 
-without U3, U1 and U2 can not get to side B.
+* 分治:     Aaa Bb Ccb
+* 分治条件: 两边都有大人时，(猎人+狗)，可以在自由行走一次
+* 倒逼法:   最后一个划船过去的一定是猎人
 
-
-* 解决方案(倒推法)：
-
-Who is rowing man 1st from the END? [](papa is the same as mama)
-1 exclude _hunter+dog_, left _papa+son_ only
-2 boat problem?
-
-If papa+son:
-    who bring the boat back?
-
-If papa+mama:
-    who bring the boat back?
-
-If hunter+dog:
-    who bring the boat back?
-
-          A                                 B
-1 papa son mama dau hunter dog
-
-2 papa son mama dau                       hunter dog
-3 papa son mama dau hunter                       dog
-4 papa son mama                       dau hunter dog
-5 papa son mama hunter dog            dau 
-6      son      hunter dog            dau mama papa
-7 papa son      hunter dog            dau mama
-
-8 papa son                            dau mama hunter dog
-9 papa son mama                       dau      hunter dog
-a      son                            dau mama hunter dog papa
-b papa son                            dau mama hunter dog
-c                                     papa son mama dau hunter dog
 
 # 脏脸博弈
 

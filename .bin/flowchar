@@ -6,9 +6,9 @@ touch       ~/.backup/flowchar.1.tgz
 cp          ~/.backup/flowchar.2.tgz  ~/.backup/flowchar.3.tgz
 cp          ~/.backup/flowchar.1.tgz  ~/.backup/flowchar.2.tgz
 
-tar -P -zcf ~/.backup/flowchar.1.tgz  ~/.flowchar
+tar -P -zcf ~/.backup/flowchar.1.tgz  ~/fc
 
 echo "
-tar -P -zcf ~/.backup/flowchar.1.tgz  ~/.flowchar
+tar -P -zcf ~/.backup/flowchar.1.tgz  ~/fc
 done!
 "
