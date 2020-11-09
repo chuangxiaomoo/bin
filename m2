@@ -316,7 +316,7 @@ function fn_list()                      { cat book_400_PoorCharliesAlmanack_穷�
 }
 
 function fn_music()    	                {
-function fn_misc()                      { cat music_list
+                                          cat music_list
                                           cat music_english
                                           cat music_HK lang_HK_yueyu
                                           cat music_theory
@@ -324,11 +324,8 @@ function fn_misc()                      { cat music_list
                                           cat piano
                                           cat erhu
                                           cat image
+                                          cat food
                                         }
-    local opts=(
-        theory
-    )
-    fn_print $@
 }
 
 function fn_mindhacks()                 { cat mindhacks ;}
@@ -1080,6 +1077,7 @@ function fn_interview()                 { cat career
                                                 shakespare2offer.AnQ
                                                 shakespare2offer.tcpip
                                                 shakespare2offer.test
+                                                interview.q.md
                                                 interview   # 想想自己的价值？企业本质在更高效的内部交易
                                         }
 
