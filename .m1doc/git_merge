@@ -1,0 +1,26 @@
+# conflict
+
+`error: You have not concluded your merge (MERGE_HEAD exists).` 的原因可能是在以前pull下来的代码自动合并失败
+
+## pull vs. fetch
+
+1. Git fetch:   只是从远程获取最新版本到本地,不会merge(合并)
+2. Git pull:    从远程获取最新版本并merge(合并)到本地
+
+## merge 的方法1
+
+```bash
+git merge --abort       # 终止合并
+git reset --merge       # 重新合并
+```
+
+## merge 的方法2
+
+```bash
+Svn tar ...                             # 备份本地代码
+git fetch --all
+git reset --hard origin/master          # 远端版本覆盖本地版本(慎重)
+git fetch
+tar -zxvf ../a.tgz -C .                 # redo
+```
+
