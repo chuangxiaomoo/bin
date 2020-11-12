@@ -32,3 +32,53 @@ TCP协议可以对上层网络提供接口，使上层网络数据的传输建�
 三、从堆上分配，亦称动态内存分配。程序在运行的时候用malloc或new申请任意多少的内存，程序员自己负责在何时用free或delete释放内存。动态内存的生存期由我们决定，使用非常灵活，但问题也最多。
 
  
+# 1. 输出结果
+
+```cpp
+  int arr[]={5,6,7,8,9,10};
+  int *ptr=arr;
+  *(ptr++)+=123;
+  printf(＂%d,%d＂,*ptr,*(++ptr));
+```
+
+# 2. 输出结果
+
+```cpp
+void footprint(int first_run, int count)
+{
+    if ((!first_run) || (++count)) {
+        printf("%d\n", count);
+    }
+}
+
+
+int main(int argc, char *argv[])
+{
+    footprint(0, 4);
+    return 0;
+}
+```
+
+# 3. 编写 helloworld.c
+
+1. 简述预处理(preprocess)、汇编(assemble)、编译(compile)、链接(link)、执行(run)对源文件或可执行文件都做了什么？
+2. 编写 helloworld.c，实现打印输出 "Hello World!"
+3. 写出 gcc 进行上述操作的命令。
+
+# 4. 编写标准宏 MIN()，这个宏输入两个参数并返回较小的一个
+
+# 5. 编写标准宏 DBG(fmt, args...)，将文件与行号同时打印到 stdout 和 stderr
+
+# 6. 如何避免头文件被重复包含？
+
+# 7. 函数定义时，数组名和指针指针作为参数，有什么区别？
+
+    int func(char *p)
+    int func(char p[])
+
+# 8. 定义一个指向函数的指针，一个指向二维数组类型的指针？
+
+# 9. 实现冒泡算法
+
+# 10. 不使用库函数，实现函数 atoi()，将字串转换为整形？
+
