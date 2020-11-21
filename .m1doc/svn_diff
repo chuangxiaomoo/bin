@@ -3,7 +3,7 @@
 ~/.subversion/config
 
 diff-cmd = /root/bin/svndiff
-diff-cmd3 = /root/bin/svndiff3
+diff3-cmd = /root/bin/svndiff3
 merge-tool-cmd = /root/bin/svndiff3
 
 # diff
