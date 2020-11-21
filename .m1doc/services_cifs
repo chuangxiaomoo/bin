@@ -1,0 +1,8 @@
+# windows 共享 
+
+[cifs](https://blog.csdn.net/fuyuande/article/details/82915800)
+
+apt-get install cifs-utils
+
+mount -t cifs -o username=Administrator,password=xxx //10.0.4.2/winc /winc
+
