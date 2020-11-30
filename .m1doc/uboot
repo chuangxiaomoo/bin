@@ -19,15 +19,6 @@
 
   检查坏块
 
-## spi.tftp.write
-
-**上面是downuboot**
-tftp 0x2000000 u-boot.bin;            sf probe 0:0;sf erase 0x40000 0x8000; sf write 0x2000000 0x40000 0x8000
-**下面是down整个8M镜像**
-tftp 0x2000000 output_sf_fireware.bin;sf probe 0:0;sf erase 0x000 0x800000; sf write 0x2000000 0x00000 0x800000
-
-tftp 0x2000000 output_sf_fireware.bin;sf probe 0:0;sf erase 0x000 0x1000000; sf write 0x2000000 0x00000 0x1000000
-
 ## 查找 CONFIG_BOOTCOMMAND 确定 bootm 起始内存地址
 
   ? nand
