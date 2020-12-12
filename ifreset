@@ -22,6 +22,10 @@ function fn_main()
         /etc/init.d/networking stop
         /etc/init.d/networking restart
         ifconfig
+        route del default gw 192.168.9.1
+        route del default gw 10.0.2.2
+        route add default gw 192.168.9.1
+        route add default gw 10.0.2.2
         ;;
     bri)
         # win7 use below

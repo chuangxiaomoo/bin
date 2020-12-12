@@ -52,8 +52,8 @@ Example:
     se serverip 192.168.2.45;se ipaddr 192.168.2.44
     set bootargs 从nfs启动
 
-    tftp 0x80700000 uImage
-    bootm 0x80700000
+    tftp 0x80700000 uImage;        bootm 0x80700000
+    tftp 0x80700000 uImage.unlock; bootm 0x80700000
 
   把文件上传到设备/root/
 
