@@ -577,7 +577,9 @@ function fn_cleanup()                   { cat svn_cleanup ;}
 function fn_lock()                      { cat svn_lock ;}
 function fn_help()                      { cat svn_help ;}
 function fn_merge()                     { cat svn_merge ;}
-function fn_visual_svn_server()         { cat svn_visual_svn_server ;}
+function fn_visual_svn_server()         { cat svn_visual_svn_server
+                                              svn_auth
+                                        }
 function fn_revision()                  { cat svn_revision ;}
 function fn_stat()                      { cat svn_stat ;}
 function fn_diff()                      { cat svn_diff ;}
