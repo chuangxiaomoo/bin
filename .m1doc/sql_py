@@ -532,3 +532,19 @@ CREATE TABLE ddx (
     hmax    DECIMAL(6,2)    NOT NULL DEFAULT 0,
     INDEX(code)
 );
+
+# vpeak hhv 的数据都是昨天的，会更好进行数据处理
+DROP TABLE IF EXISTS vpeak;
+CREATE TABLE vpeak(
+    date    date NOT NULL, 
+    code    INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    a200    DECIMAL(12,2)   NOT NULL DEFAULT 0,     # hhv(amo, 200)
+    p200    DECIMAL(6,2)    NOT NULL DEFAULT 0,     # hhv(C, 200)
+    amox    DECIMAL(12,2)   NOT NULL DEFAULT 0,     # hhv(amo, 55)
+    prix    DECIMAL(6,2)    NOT NULL DEFAULT 0,     # hhv(C, 55)
+    r_a     DECIMAL(6,2)    NOT NULL DEFAULT 0,
+    r_p     DECIMAL(6,2)    NOT NULL DEFAULT 0,     # 100*(d.close-vpeak55.prix) /vpeak55.prix
+    INDEX(date),
+    INDEX(date, code)
+);
+
