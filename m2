@@ -1069,8 +1069,8 @@ function fn_04_责任与中年危机()         { cat family_04_责任与中年�
 function fn_ideas()                     { cat ideas ;}
 function fn_idealism()                  { cat idealism ;}
 function fn_rose()                      { cat rose ;}
-function fn_interview()                 { cat career 
-                                                50_faq 
+function fn_interview()                 { cat career
+                                                50_faq
                                                 tek
                                                 jd
                                                 job
@@ -1080,6 +1080,8 @@ function fn_interview()                 { cat career
                                                 shakespare2offer.tcpip
                                                 shakespare2offer.test
                                                 interview.q.md
+                                                interview.q201111.md     # 11.11
+                                                interview.q201200.md     # 初次考核
                                                 interview.horizon
                                                 interview   # 想想自己的价值？企业本质在更高效的内部交易
                                         }

@@ -6,5 +6,12 @@
 
 # /etc/profile
 
+```bash
 ps -ef | grep -q '[a]utossh' || autossh -M 55555 -NfR 0.0.0.0:22001:localhost:22 root@Tencent_cloud -p ssh_port
+
+55555
+22001
+ssh_port      # 3 个端口都要在控制台中打开
+```
+
 

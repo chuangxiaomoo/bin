@@ -5,11 +5,15 @@
 
 # 使用管道
 
+```bash
 tar cf -  *.c  | xz --best > src.tar.xz 　# compress 
 xz -d src.tar.xz --stdout | tar -x        # decompress
+```
 
 # 使用 tar 参数 J
 
+```bash
 tar Jcf src.txz  *.c                      # compress 
 tar Jxf src.txz                           # decompress
+```
 
