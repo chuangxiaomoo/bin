@@ -3396,7 +3396,8 @@ tftp
             -b SIZE Transfer blocks of SIZE octets
 
     EXAMPLE:
-    tftp -gr feed.sh -l /tmp/feed.sh ${ubt:-192.168.2.248}
+    tftp -gr feed.sh  -l /tmp/feed.sh ${ubt:-192.168.2.248}
+    tftp -pl /tmp/abc -r RNAEE 192.168.9.249                # 当 -r RNAEE 不指定时，服务端必须有同名文件
 
 tftpd
 

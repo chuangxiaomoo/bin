@@ -19,14 +19,11 @@
 #define FALSE   0
 #define FAILURE (-1)
 #define SUCCESS 0
-#define RETVOID func_return_void()
+#define RETVOID free(NULL)
 
 #define CONSOLE stdout
 
 #define ARRAY_SIZE(array) ((int)(sizeof(array) / sizeof(array[0])))
-
-static inline void func_return_void() {}
-
 
 /* 
  * to replace basename((char *)__FILE__)

@@ -762,7 +762,7 @@ function fn_fundamental()               { cat bat_fundamental ;}
 }
 
 function fn_win()                       {
-function fn_win7()                      { cat windows_win7
+function fn_win7()                      { cat windows_win7 mstsc
                                           cat win_mac_keyboard  # apple 1680*1050
                                           cat foxmail
                                           cat cooledit ;}

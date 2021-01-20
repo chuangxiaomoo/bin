@@ -1,0 +1,12 @@
+# mstsc 远程操作
+
+* [操作步骤](https://jingyan.baidu.com/article/63f23628177e6d0209ab3d60.html)
+
+`允许远程协助连接这台计算机也要勾选`
+
+`用户选择Administrator`
+
+* 连接方式
+* win + r
+* mstsc /v 192.168.9.xx
+* 输入账号密码

@@ -10,6 +10,7 @@
 
 # if 内核配置
 
+    CONFIG_ELF_CORE=y                   //  General setup > Configure standard kernel features
     CONFIG_BINFMT_ELF=y
     CONFIG_ELFCORE=y
     CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS=y
@@ -17,6 +18,8 @@
     # CONFIG_HAVE_AOUT is not set
     # CONFIG_BINFMT_MISC is not set
     CONFIG_COREDUMP=y
+
+coredump 会导致喂狗失败。需要做好喂狗的工作。
 
 # if rcS
 
