@@ -1,0 +1,8 @@
+# vim82
+
+[比较高的版本](https://codeload.github.com/vim/vim/tar.gz/v8.2.2444)
+
+[参考](https://www.cnblogs.com/jackytang/p/9016062.html)
+
+./configure --prefix=/usr/local --with-features=huge --enable-pythoninterp=yes --enable-multibyte --enable-cscope --with-vim-name=vim --with-python-config-dir=/usr/lib/python2.7/config
+

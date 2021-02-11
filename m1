@@ -364,6 +364,31 @@ function fn_multicast多播()             { cat socket_multicast多播 ;}
 
 function fn_bsearch()                   { cat cstd_bsearch  cstd_qsort ;}
 
+function golang() {
+    golang/mac.md                       # goland
+    golang/name.md
+    golang/type.md
+    golang/interface.md                 # 接口：usb接口，一个接口搞定所有设备
+    golang/oop_struct.md                # 继承、封闭、多态
+    golang/func_method.md               # difference
+    golang/map.md
+    golang/loop_for_while.md            # bubble 冒泡算法
+    golang/var_and_const.md
+    golang/func.md
+    golang/operator.md
+    golang/package.md                   # 包
+    golang/closure.md                   # 闭包
+    golang/defer.md
+    golang/recover.md                   # defer panic recover
+    golang/strings.md
+    golang/datetime.md
+    golang/builtin.md
+    golang/array_slice.md
+    golang/json.md                      # Marshal 序列化及反序列化
+    golang/reflect.md
+    golang/testing.md
+    golang/goroutine_chan.md            # 协程
+}
 function fn_clang() {
 function fn_C调用C++链接库()            { cat clang_C调用C++链接库 ;}
 function fn_cdecl()                     { cat clang_cdecl ;}
@@ -615,7 +640,7 @@ function fn_hex()                       { cat vim_hex
 function fn_fundamental()               { cat vim_fundamental vim_ctags ;}
 function fn_align()                     { cat vim_align ;}
 function fn_hotkey()                    { cat vim_hotkey chromVim cvim autohotkey ahk ;}
-function fn_install()                   { cat vim_install ;}
+function fn_install()                   { cat vim_install vim_80 ;}
 function fn_plugin()                    { cat vim_plugin ;}
 function fn_drawit()                    { cat vim_drawit ;}
 function fn_clang_complete()            { cat vim_clang_complete ;}
