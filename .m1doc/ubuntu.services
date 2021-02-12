@@ -1,3 +1,17 @@
+# mysql @ startup
+
+[install](https://yq.aliyun.com/articles/47237)
+
+```bash
+systemctl enable    mysqld  # 创建 /etc 链接
+systemctl restart   mysqld
+systemctl start     mysqld
+systemctl status    mysqld
+systemctl stop      mysqld
+```
+
+
+```bash
 # start or stop
 
 sudo service smbd start   
@@ -9,3 +23,4 @@ sudo update-rc.d -f smbd remove
 # To restore it to rc.d use the command
 
 sudo update-rc.d smbd defaults
+```

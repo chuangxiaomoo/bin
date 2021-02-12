@@ -364,6 +364,13 @@ function fn_multicast多播()             { cat socket_multicast多播 ;}
 
 function fn_bsearch()                   { cat cstd_bsearch  cstd_qsort ;}
 
+function cloud() {
+    cloud/hadoop_vs_openstack
+    cloud/docker
+    cloud/k8s
+    
+}
+
 function golang() {
     golang/mac.md                       # goland
     golang/name.md
@@ -1065,9 +1072,15 @@ function fn_cppncss()                   { cat CC_cppncss ;}
     fn_print $@
 }
 
-function fn_apt-get()                   {
-function fn_source()                    { cat apt-get_source ;}
-function fn_command()                   { cat apt-get_command ubuntu ubuntu.services centos ;}
+
+function ubuntu() {
+    ubuntu
+    ubuntu.services         # systemctl
+    apt-get_source
+    apt-get_command
+}
+
+function fn_command()                   { cat   centos ;}
     local opts=(
         source
         command

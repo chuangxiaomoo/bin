@@ -1,4 +1,8 @@
-# ssh
+# sshd
+
+[2小时超时](/etc/ssh/sshd_config)
+ClientAliveInterval 7200
+ClientAliveCountMax 5
 
 ## install
 
