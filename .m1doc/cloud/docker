@@ -1,18 +1,60 @@
 # docker
 
-简单的说一个场景吧,假如你想在一台服务器上同时跑 tomcat 的 6,7,8,9,10 版,那你最好用 Docker 来部署.
+# Docker 中的三个概念：镜像，容器，仓库
 
-环境：借助镜像可以快速进行项目部署，重要的是官方会提供很多可以支持项目程序部署环境的镜像，轻轻一拉便可运行。
+1、镜像（image）：Docker 镜像就是一个只读的模板，镜像可以用来创建 Docker 容器。Docker 提供了一个很简单的机制来创建镜像或者更新现有的镜像，用户甚至可以直接从其他人那里下载一个已经做好的镜像来直接使用。
 
-资源：每个运行的**容器**都是基本最小的虚拟机环境，可以简单理解为阉割版的虚拟机。不要问为什么，因为资源有限。
+2、容器（ Container）：**容器是从镜像创建的运行实例**。它可以被启动、开始、停止、删除。每个容器都是相互隔离的、保证安全的平台。可以把容器看做是一个简易版的 Linux 环境，Docker 利用容器来运行应用。镜像是只读的，容器在启动的时候创建一层可写层作为最上层。
 
-伸缩扩容：在服务资源升级和回滚上，借助升级扩容，一键能完成成千上百的服务集群的快速部署。
+3、仓库：仓库是集中存放镜像文件的场所，仓库注册服务器（Registry）上往往存放着多个仓库，每个仓库中又包含了多个镜像，每个镜像有不同的标签（tag）。目前，最大的公开仓库是 Docker Hub，存放了数量庞大的镜像供用户下载。
 
-网络：内部也有自己的一套网络管理，省时省力。
+4、**网络**：内部也有自己的一套网络管理，省时省力。
+
 
 # install
 
 ```bash
-curl -sSL https://get.docker.com | bash
+# 默认安装的就是 docker-ce 版本
+cd ~/docker/; curl -sSL https://get.docker.com | bash
+# uninstall
+dpkg -l | grep docker
+```
+
+# Management Commands & Commands
+
+| NO. | 命令                           |                   |
+| :-- | :------                        | :------           |
+| 1   | docker                         | docker help 入口  |
+| 2   | docker COMMAND --help          | 单命令 help  入口 |
+| 3   | docker help COMMAND            |                   |
+| 4   | man docker run                 |                   |
+| 5   | man docker-run                 |                   |
+| -   | ------------------------------ | ----------------- |
+| 6   | docker cp                      |                   |
+| 7   | docker inspect container/image | 端口绑定、映射等  |
+|     |                                |                   |
+
+```bash
+docker  search centos                                       #搜索容器
+docker  pull centos                                         #下载容器
+docker  images                                              #查看当前存在的镜像
+docker  run centos /bin/echo 'hello world'                  #运行一条命令后直接退出
+docker  run --name mydocker -it centos /bin/bash            #进入docker容器
+        -t 选项让Docker分配一个伪终端（pseudo-tty）并绑定到容器的标准输入上，
+        -i 则让容器的标准输入保持打开。
+        –name 使用一个自定义的名字
+
+docker run -d --name mynginx nginx                          #启动nginx镜像，没有会自动pull
+
+docker stop bfd094233f96                                    #停止一个容器，根据容器 id 进行删除
+docker rm   bfd094233f96                                    #删除一个容器
+
+docker attach d20f3dc6cd92                                  #进入一个正在运行的容器
+
+# attach 命令不太好用，建议使用以下命令进入容器：
+docker inspect --format "{{.State.Pid}}" mynginx            #获取容器pid ==> 19769
+nsenter --target 19769 --mount --uts --ipc --net --pid      #进入容器(推荐方法)
+
+docker run -d -p 91:80 --name mynginx2 nginx                # -p 指定端口映射，将80映射为host的91
 ```
 
