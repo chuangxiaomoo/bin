@@ -372,6 +372,7 @@ function cloud() {
 }
 
 function golang() {
+    golang/unbuntu.md                   # vim-go
     golang/mac.md                       # goland
     golang/name.md
     golang/type.md
