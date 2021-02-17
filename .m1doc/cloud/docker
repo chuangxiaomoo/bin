@@ -1,4 +1,21 @@
-# docker
+# docker install
+
+```bash
+# 默认安装的就是 docker-ce 版本
+cd ~/docker/; curl -sSL https://get.docker.com | bash
+# uninstall
+dpkg -l | grep docker
+```
+
+**Management Commands & Commands**
+
+| NO. | 命令                           |                   |
+| :-- | :------                        | :------           |
+| 1   | docker                         | docker help 入口  |
+| 2   | docker COMMAND --help          | 单命令 help  入口 |
+| 3   | docker help COMMAND            |                   |
+| 4   | man docker run                 |                   |
+| 5   | man docker-run                 |                   |
 
 # Docker 中的三个概念：镜像，容器，仓库
 
@@ -10,51 +27,54 @@
 
 4、**网络**：内部也有自己的一套网络管理，省时省力。
 
+# docker 节点级
 
-# install
+docker 一级命令的很多内容，都与 `docker container` 相同功用
+
+| NO. | Operate                        |                    |
+| :-- | :------                        | :------            |
+| 1   | docker images                  | 查看当前存在的镜像 |
+| 2   | docker ps                      |                    |
+| 3   | docker inspect container/image | 端口绑定、映射等   |
+|     |                                |                    |
+
+* docker inspect dfa44b48f039  | grep -w -A5 -E -i '(IPAddress|PortBindings)'
+
+# docker 内容级 nginx: 使用的最多的就是容器的操作
+
+docker container 子命令
+
+| NO. | cmd                                    | Operate                      |
+| :-- | :------                                | :------                      |
+| 1   | docker run                             | create                       |
+| 2   | rm                                     | del                          |
+| 3   | start stop restart                     |                              |
+| 4   | ls / ls -all                           | 同 docker ps                 |
+| 5   | docker exec -it 7c5a2350c4cb /bin/bash | 也可以实现 attach            |
+| 6   | cp                                     | 详见 man docker-container-cp |
+|     |                                        |                              |
 
 ```bash
-# 默认安装的就是 docker-ce 版本
-cd ~/docker/; curl -sSL https://get.docker.com | bash
-# uninstall
-dpkg -l | grep docker
+docker  search centos                                         #搜索容器
+docker  pull centos                                           #下载容器
+docker  run centos /bin/echo 'hello world'                    #运行一条命令后直接退出
+
+docker  run --name mydocker -it centos /bin/bash              #进入docker容器
+docker  run -d --name mynginx --rm -p 8080:80 nginx           #启动nginx镜像，没有会自动pull
+        -t    选项让Docker分配一个伪终端（pseudo-tty）并绑定到容器的标准输入上，
+        -i    则让容器的标准输入保持打开。
+       --name 使用一个自定义的名字
+       --rm   退出时删除容器
+        -d    后台运行
+        -p    将 HOST 本地 8080 端口映射到容器内部的 80 端口
+
+docker  stop    bfd094233f96                                  #停止一个容器，根据容器 id 进行删除
+docker  rm      bfd094233f96                                  #删除一个容器
+docker  attach  d20f3dc6cd92                                  #进入一个正在运行的容器
+
+# attach 命令不太好用，建议使用 fn_attach NAME 以下命令进入容器：
+fn_attach() {
+  PID=`docker inspect --format "{{.State.Pid}}" ${1:-mynginx}`
+  nsenter --target $PID --mount --uts --ipc --net --pid
+}
 ```
-
-# Management Commands & Commands
-
-| NO. | 命令                           |                   |
-| :-- | :------                        | :------           |
-| 1   | docker                         | docker help 入口  |
-| 2   | docker COMMAND --help          | 单命令 help  入口 |
-| 3   | docker help COMMAND            |                   |
-| 4   | man docker run                 |                   |
-| 5   | man docker-run                 |                   |
-| -   | ------------------------------ | ----------------- |
-| 6   | docker cp                      |                   |
-| 7   | docker inspect container/image | 端口绑定、映射等  |
-|     |                                |                   |
-
-```bash
-docker  search centos                                       #搜索容器
-docker  pull centos                                         #下载容器
-docker  images                                              #查看当前存在的镜像
-docker  run centos /bin/echo 'hello world'                  #运行一条命令后直接退出
-docker  run --name mydocker -it centos /bin/bash            #进入docker容器
-        -t 选项让Docker分配一个伪终端（pseudo-tty）并绑定到容器的标准输入上，
-        -i 则让容器的标准输入保持打开。
-        –name 使用一个自定义的名字
-
-docker run -d --name mynginx nginx                          #启动nginx镜像，没有会自动pull
-
-docker stop bfd094233f96                                    #停止一个容器，根据容器 id 进行删除
-docker rm   bfd094233f96                                    #删除一个容器
-
-docker attach d20f3dc6cd92                                  #进入一个正在运行的容器
-
-# attach 命令不太好用，建议使用以下命令进入容器：
-docker inspect --format "{{.State.Pid}}" mynginx            #获取容器pid ==> 19769
-nsenter --target 19769 --mount --uts --ipc --net --pid      #进入容器(推荐方法)
-
-docker run -d -p 91:80 --name mynginx2 nginx                # -p 指定端口映射，将80映射为host的91
-```
-

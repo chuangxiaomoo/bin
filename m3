@@ -1,6 +1,7 @@
-# brain-circle
+# brain-circle 收集
 
-outlooks
+* collect_analogy_类比
+* outlooks
 
 # speech
 

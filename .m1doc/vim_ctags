@@ -1,3 +1,8 @@
+# gotags
+
+gotags -R . > .tags
+gotags –L .filelist > .tags
+
 # ctags
 
 [ctags小记](https://www.cnblogs.com/napoleon_liu/archive/2011/01/23/1942738.html)
@@ -8,3 +13,13 @@
 find . /usr/local/lib/python3.5/dist-packages/tushare -name '*.py' > .ctfile
 ctags -L .ctfile  -o .tags --language-force=python
 ```
+
+# vim gotags
+
+set tags=.tags
+
+tags 文件之包含了函数，类或变量的定义的信息，而没有`引用信息`。可以有以下两个方案
+
+* cscope 的 go 版本: gogen
+* :GoCallers
+

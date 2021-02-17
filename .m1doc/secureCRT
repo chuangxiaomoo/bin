@@ -68,3 +68,9 @@ localhost:~/.ssh # vi /etc/ssh/sshd_config
      AE       VK_UP                       "export HISTFILESIZE=100; export HISTSIZE=100;clear\n"
 
 
+/* 使用自己的 color */
+
+http://www.iamlintao.com/6547.html
+
+进去第一步先将use global ANSI color settings的勾去掉，否则无法编辑这些颜色。
+

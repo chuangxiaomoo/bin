@@ -372,8 +372,8 @@ function cloud() {
 }
 
 function golang() {
-    golang/unbuntu.md                   # vim-go
-    golang/mac.md                       # goland
+    golang/unbuntu.md                   #
+    golang/mac.md                       # vim-go, goland
     golang/name.md
     golang/type.md
     golang/interface.md                 # 接口：usb接口，一个接口搞定所有设备
