@@ -1095,7 +1095,7 @@ function fn_libevent()                  { cat libevent libuv.md ;}
 function fn_in_event()                  { cat in_event ;}
 function fn_live555()                   { cat live555 ;}
 function fn_hudson()                    { cat hudson ;}
-function fn_vlc()                       { cat vlc ;}
+function fn_vlc()                       { cat vlc vlc_play_no_stream ;}
 function fn_framework()                 { cat framework ;}
 function fn_refactoring()               { cat refactoring ;}
 

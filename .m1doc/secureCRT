@@ -1,4 +1,4 @@
-/* secureCRT-mac */
+# secureCRT-mac
 
 1. 选项 -> 会话选项 -> ssh2 -> 公钥 -> 属性 -> 创建 -> 通行短语(xmoo) -> 选择openssh格式
 2. 生成本地公钥 /Users/xdpan/.ssh/identity.pub
@@ -8,15 +8,16 @@
    cat ~/identity.pub >> ~/.ssh/authorized_keys
 5. 第一次登陆时输入(xmoo)，其后就不再需要输入了
 
-// 如果采用的格式不是openssh的话，就需要执行ssh-keygen -i -f identity.pub >> authorized_keys 命令进行格式转换
+如果采用的格式不是openssh的话，就需要执行ssh-keygen -i -f identity.pub >> authorized_keys 命令进行格式转换
 
-/* 相关配置 */
+相关配置
+
 localhost:~/.ssh # vi /etc/ssh/sshd_config 
 41 RSAAuthentication yes 
 42 PubkeyAuthentication yes 
 43 AuthorizedKeysFile ~/.ssh/authorized_keys 
 
-/* secureCRT */
+# secureCRT
 
 . 日志追加timestamp
 
@@ -52,7 +53,7 @@ localhost:~/.ssh # vi /etc/ssh/sshd_config
 . map
     sort can't process the strings after sed and awk, sort -n
     # how can I get the ascii of Alt (033), I use ga
-    secureCRT key
+
      A        VK_A                        "/|[0-9]*|\n"
      A        VK_B                        "\033b"
      A        VK_D                        "\033d"
@@ -67,10 +68,8 @@ localhost:~/.ssh # vi /etc/ssh/sshd_config
      A        VK_X                        "export p_s=/opt/osmu/script;export p_sa=/opt/osmu_agent/script;\n cd $p_s"
      AE       VK_UP                       "export HISTFILESIZE=100; export HISTSIZE=100;clear\n"
 
+# 选中即粘贴
 
-/* 使用自己的 color */
+Options->Global Options ...->Terminal -> Mouse的选项块
 
-http://www.iamlintao.com/6547.html
-
-进去第一步先将use global ANSI color settings的勾去掉，否则无法编辑这些颜色。
 
