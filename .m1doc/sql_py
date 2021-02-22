@@ -470,11 +470,11 @@ CREATE TABLE jine (
     dw2     TINYINT         NOT NULL DEFAULT 0,
     mi60    DECIMAL(6,2)    NOT NULL DEFAULT 0, # LLV(ma60, 60)
    _ma20    DECIMAL(6,2)    NOT NULL DEFAULT 0, # 21日 min(ma20)
-    xma5    DECIMAL(6,2)    NOT NULL DEFAULT 0, #                       13日 max(ma5)
-    _R      DECIMAL(6,2)             DEFAULT 0, #  d.hsl20/_x20.x20
-    x80     DECIMAL(6,2)             DEFAULT 0, # max(hsl20,80)
-    x120    DECIMAL(6,2)             DEFAULT 0, # max(hsl20,120)
-    N8      TINYINT         NOT NULL DEFAULT 0, # 13日 count(tov >= hsl20*1.7)
+    xma5    DECIMAL(6,2)    NOT NULL DEFAULT 0, # 13日 max(ma5)
+    _R      DECIMAL(6,2)             DEFAULT 0, # LLV(HSL20,60)/HHV(HSL20,120)
+    x80     DECIMAL(6,2)             DEFAULT 0, #         HSL20/HHV(HSL20,80)   这个指标通常会滞后，因为 20 天平均的平滑作用
+    x120    DECIMAL(6,2)             DEFAULT 0, # max(HSL20,120)
+    N8      TINYINT         NOT NULL DEFAULT 0, # 13日 count(tov >= HSL20*1.7)
     N60     TINYINT         NOT NULL DEFAULT 0, # 85日 count(ma5<=ma20 || ma5<=ma60)
     N80     TINYINT         NOT NULL DEFAULT 0, # ^^^^^^ 因为解禁，tov会不准，N80，NHL也会不准 ^^^^^^^^
     NHL     TINYINT         NOT NULL DEFAULT 0, # COUNT(HSL > HHV(HSL20,120))
@@ -542,9 +542,29 @@ CREATE TABLE vpeak(
     p200    DECIMAL(6,2)    NOT NULL DEFAULT 0,     # hhv(C, 200)
     amox    DECIMAL(12,2)   NOT NULL DEFAULT 0,     # hhv(amo, 55)
     prix    DECIMAL(6,2)    NOT NULL DEFAULT 0,     # hhv(C, 55)
-    r_a     DECIMAL(6,2)    NOT NULL DEFAULT 0,
+    r_a     DECIMAL(6,2)    NOT NULL DEFAULT 0,     # d.amo/vpeak.amox
     r_p     DECIMAL(6,2)    NOT NULL DEFAULT 0,     # 100*(d.close-vpeak55.prix) /vpeak55.prix
     INDEX(date),
     INDEX(date, code)
 );
 
+# vpeak 重构，220 似乎是更好的
+
+CREATE TABLE apeak(
+    date    date NOT NULL, 
+    code    INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    a220    DECIMAL(12,2)   NOT NULL DEFAULT 0,     # hhv(amo, 220)
+    c220    DECIMAL(6,2)    NOT NULL DEFAULT 0,     # hhv(C, 220)
+    i220    SMALLINT        NOT NULL DEFAULT 0,     # c220 对应的 idx
+    a144    DECIMAL(12,2)   NOT NULL DEFAULT 0,     # hhv(amo, 144)
+    c144    DECIMAL(6,2)    NOT NULL DEFAULT 0,     # hhv(C, 144)
+    i144    SMALLINT        NOT NULL DEFAULT 0,     # c144 对应的 idx
+    a55     DECIMAL(12,2)   NOT NULL DEFAULT 0,     # hhv(amo, 55)
+    c55     DECIMAL(6,2)    NOT NULL DEFAULT 0,     # hhv(C, 55)
+    i55     SMALLINT        NOT NULL DEFAULT 0,     # c55  对应的 idx
+    a       DECIMAL(12,2)   NOT NULL DEFAULT 0,     # amount
+    c       DECIMAL(6,2)    NOT NULL DEFAULT 0,     # close
+    o       DECIMAL(6,2)    NOT NULL DEFAULT 0,     # 
+    INDEX(date),
+    INDEX(date, code)
+);
