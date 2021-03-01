@@ -116,6 +116,7 @@ function fn_fundamental()               { cat software_fundamental ;}
 function fn_gcc()                       {
 function fn_fundamental()               { cat gcc_fundamental
                                               gcc_warning
+                                              gcc.color
                                               gcc.__attribute__
                                         }
 function fn_01_preprocess()             { cat gcc_01_preprocess ;}

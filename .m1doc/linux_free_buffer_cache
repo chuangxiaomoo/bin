@@ -36,7 +36,16 @@ slab 使用 buddy 算法: /proc/buddyinfo
 因此，大量写串口时，会严重拖慢系统的性能。以及在格式化磁盘时不要刷新进度。
 此外，大多数情况下，磁盘控制器都是直接使用DMA方式进行数据传送。块设备IO调度，使用`电梯算法`。
 
-# flash SD dirty 页缓存回写
+# pc 服务器卡死，重启报错： INFO: task blocked for more than 120 seconds
+
+> https://www.cnblogs.com/yangliheng/p/5756615.html
+
+echo 200    > /proc/sys/vm/dirty_writeback_centisecs
+echo 5      > /proc/sys/vm/dirty_background_ratio
+echo 10     > /proc/sys/vm/dirty_ratio
+echo 800    > /proc/sys/vm/dirty_expire_centisecs
+
+# flash SD dirty 页缓存回写()
 
   [page cache](http://backend.blog.163.com/blog/static/2022941262013111781643200/)
   [pdflush进程详解](http://www.2cto.com/os/201304/206490.html)

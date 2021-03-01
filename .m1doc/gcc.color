@@ -1,0 +1,9 @@
+# gcc编译时的输出如何带上颜色
+
+把下面这句话加到.bash_profile中：
+
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
+然后在编译时加上下面的内容(man gcc 无此内容)：
+
+-fdiagnostics-color=auto
