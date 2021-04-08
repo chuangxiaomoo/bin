@@ -1,7 +1,26 @@
-/* printf */
+# The format string of printf
 
-#define scanf EXAMPLE 1 
+% conversion_specifier [flags] [field_width]  [precision] [length_modifier]  conversion_specifier
+%                       -       8              .2          l                 f
+%                       左对齐  8位宽空格填充  精确小数位  long              float
 
+| fmt | type              | note    |
+| :-- | :------           | :------ |
+| %.2lf    |                   |         |
+| %ld | long int          |         |
+| %lu | long unsigned int |         |
+| %hu | unsigned short    |         |
+| %p  | pointer           |         |
+
+# e.g. output: 1,234,567,890,123,456,789.38
+
+    #include <locale.h>
+    setlocale(LC_NUMERIC, "");
+    printf("%'20.2Lf\n", 1234567890123456789.321L);
+
+# scanf EXAMPLE 1
+
+```cpp
     #include <stdio.h>
 
     int main(int argc, char *argv[])
@@ -21,18 +40,22 @@
     | 123 0x16 aaaaaaabcdd 33.5                        |
     | 123 22 aaaaa 33.500000                           |
     +--------------------------------------------------+
+```
 
-#define scanf EXAMPLE 2
+# scanf EXAMPLE 2
 
+```cpp
     SEARCH * HDS/1.0 LOCALIP=192.168.0.34#LOCALPORT=0#
 
     // 取=与#之间的内容(即192.168.0.34)
     sscanf(bufRecv, "%*[^=]=%[^#]#%s", szDstIP, szDstRemain);
     // 取=与#之间的内容(即0)
     sscanf(szDstRemain, "%*[^=]=%d#", iDstPort);
+```
 
 #define 打印16进制(强转为 unsigned char)
 
+```cpp
     int main(int argc, char *argv[])
     {
         // char zh[] = "\u7403";
@@ -47,14 +70,4 @@
 
         return 0;
     }
-
-#define Format of the format string
-
-% conversion_specifier [flags] [field_width] [precision] [length_modifier] conversion_specifier
-
-// e.g. output: 1,234,567,890,123,456,789.38
-
-    #include <locale.h>
-    setlocale(LC_NUMERIC, "");
-    printf("%'20.2Lf\n", 1234567890123456789.321L);
-
+```

@@ -148,7 +148,10 @@ function fn_lib_static()                { cat make_lib_static
                                         }
 }
 
-function fn_virtualbox()                { cat virtualbox vmware ;}
+function fn_virtualbox()                { cat virtualbox
+                                              vmware
+                                              indent
+                                        }
 
 function fn_linux()                     {
 function fn_cron()                      { cat linux_cron ;}
@@ -1082,13 +1085,14 @@ function ubuntu() {
     apt-get_command
 }
 
-function fn_command()                   { cat   centos ;}
+function fn_command() {                 { cat   centos ;}
     local opts=(
         source
         command
     )
     fn_print $@
 }
+
 function fn_java()                      { cat java ;}
 function fn_scp()                       { cat ssh ;}
 function fn_ssh()                       { cat ssh autossh reptyr_Reparent_You_running_program ;}
@@ -1498,6 +1502,7 @@ function fn_main() {
         blockchain
         Programmer-Competency-Matrix.md
         text2mindmap
+        fourier                 # Fourier 傅里叶变换
     )
     fn_print $@
 }

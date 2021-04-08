@@ -41,7 +41,7 @@ apt-get install nfs-kernel-server
 *5.5* C lang nfs
 
     UtilSystemCmd(
-    // "mount -t nfs -o nolock 192.168.120.237:/opt/nfs /mnt;"
+    // "mount -t nfs -o nolock,proto=tcp 192.168.120.237:/opt/nfs /mnt;"
     "ulimit -c unlimited;"
     "ulimit -a;"
     "echo 1 > /proc/sys/kernel/core_uses_pid;"
