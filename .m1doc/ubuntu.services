@@ -3,13 +3,13 @@
 [install](https://yq.aliyun.com/articles/47237)
 
 ```bash
+systemctl disable   lightdm # 禁用 lightdm
 systemctl enable    mysqld  # 创建 /etc 链接
 systemctl restart   mysqld
 systemctl start     mysqld
 systemctl status    mysqld
 systemctl stop      mysqld
 ```
-
 
 ```bash
 # start or stop
