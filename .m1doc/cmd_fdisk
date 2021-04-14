@@ -45,10 +45,11 @@ fi
 # 
 #  fstab
 # 
-
-# /etc/fstab: static file system information.
+# /etc/fstab: static file system information with uuid.
 #
-# Use 'blkid -o value -s UUID' to print the universally unique identifier
+# > blkid -o value -s UUID /dev/sdc1
+#
+# to print the universally unique identifier
 # for a device; this may be used with UUID= as a more robust way to name
 # devices that works even if disks are added and removed. See fstab(5).
 #
@@ -56,5 +57,4 @@ fi
 
 # mdata
 UUID=5405139b-9085-4d5f-a6a3-931ff85b5856 /opt0/mdata/     ext4    errors=remount-ro 0       1
-
 
