@@ -14,4 +14,23 @@ ps -ef | grep -q '[a]utossh' || autossh -M 55555 -NfR 0.0.0.0:22001:localhost:22
 ssh_port      # 3 个端口都要在控制台中打开
 ```
 
+# 清空两边的 /root/.ssh/known_hosts 可以解决下列问题
 
+```txt
+root@moo3:~/.ssh# t64 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+Someone could be eavesdropping on you right now (man-in-the-middle attack)!
+It is also possible that a host key has just been changed.
+The fingerprint for the ECDSA key sent by the remote host is
+SHA256:s8Aj2oTh8O1XFSVXuUXtgRId0YDKtzqCc3Msy5g6UNk.
+Please contact your system administrator.
+Add correct host key in /root/.ssh/known_hosts to get rid of this message.
+Offending ECDSA key in /root/.ssh/known_hosts:7
+  remove with:
+    ssh-keygen -f "/root/.ssh/known_hosts" -R [47.112.230.17]:22001
+    ECDSA host key for [47.112.230.17]:22001 has changed and you have requested strict checking.
+    Host key verification failed.
+```
