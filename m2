@@ -211,6 +211,10 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               book_xs_reborn-every-7-years.md
                                               book_mao
                                               book_mao_howtoread
+                                              ________________
+                                              book_dxqa3168.md      # 洞穴奇案
+                                              book_xcdl3166.md      # 血筹定律
+                                              book_qgz3185.md       # 潜规则
                                               Multitask
                                               problem_solving
                                               problem_Formula
@@ -220,6 +224,7 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               FeynmanTechnique
                                               how_to_ask_questions_the_smart_way
                                               answer_big_questions
+                                              ________________
                                               ________________
                                               wujun_gg
                                               wujun_GoogleMethodology
