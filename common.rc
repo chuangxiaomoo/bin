@@ -15,6 +15,7 @@ _2backslash='\\'        # double backslash
 
 CWD=${PWD}
 SHMPATH=/dev/shm/${0##*/}
+test -d /Users/xdpan/ && SHMPATH=/tmp/${0##*/}
 mkdir -p $SHMPATH
 
 # for multi instance
