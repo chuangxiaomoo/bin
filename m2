@@ -133,7 +133,7 @@ function fn_lunyu()                     { cat book_lunyu
 function fn_36ji()                      { cat book_36ji ;}
 
 function fn_shenglvqimeng()             { cat book_shenglvqimeng ;}
-function fn_think_fast_n_slow()         { cat book_think_fast_n_slow 
+function fn_think_fast_n_slow()         { cat book_think_fast_n_slow.md
                                               book_the_psychology_of_finance
                                               read_the_psychology_of_finance
                                               book_the_self_cultivation_a_leek
