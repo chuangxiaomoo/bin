@@ -566,5 +566,5 @@ CREATE TABLE apeak(
     c       DECIMAL(6,2)    NOT NULL DEFAULT 0,     # close
     o       DECIMAL(6,2)    NOT NULL DEFAULT 0,     # 
     INDEX(date),
-    INDEX(date, code)
+    INDEX(code,date)
 );

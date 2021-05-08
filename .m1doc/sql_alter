@@ -44,3 +44,9 @@
 . 删除索引
     show INDEX from day;
     alter table test drop index Key_name;   -- Key_name is index_name，复合索引也只对应一个Key_name
+
+. 重建索引，要先删除
+    SHOW INDEX FROM vpeak;
+    ALTER TABLE vpeak DROP INDEX date_2;
+    CREATE INDEX code on vpeak (code,date);
+

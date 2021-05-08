@@ -332,6 +332,7 @@ function fn_music()    	                {
                                           cat erhu
                                           cat image
                                           cat food
+                                          cat paint.md
                                         }
 }
 
