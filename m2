@@ -1298,6 +1298,7 @@ function fn_main() {
         education_cept                  # 教育
         practice_cept                   # 直接成一个文本
         science_cept                    # 科学之哲学
+        book_phi_of_science.md          #
         wangzeq_cept
         fertile_cept                    # 有繁殖能力的知识
         analogy_cept
