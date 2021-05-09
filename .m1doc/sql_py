@@ -562,6 +562,9 @@ CREATE TABLE apeak(
     a55     DECIMAL(12,2)   NOT NULL DEFAULT 0,     # hhv(amo, 55)
     c55     DECIMAL(6,2)    NOT NULL DEFAULT 0,     # hhv(C, 55)
     i55     SMALLINT        NOT NULL DEFAULT 0,     # c55  对应的 idx
+    a34     DECIMAL(12,2)   NOT NULL DEFAULT 0,     # hhv(amo, 34)
+    c34     DECIMAL(6,2)    NOT NULL DEFAULT 0,     # hhv(C, 34)
+    i34     SMALLINT        NOT NULL DEFAULT 0,     # c34  对应的 idx
     a       DECIMAL(12,2)   NOT NULL DEFAULT 0,     # amount
     c       DECIMAL(6,2)    NOT NULL DEFAULT 0,     # close
     o       DECIMAL(6,2)    NOT NULL DEFAULT 0,     # 

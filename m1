@@ -1120,8 +1120,8 @@ function fn_troubleshooting()           { cat mysql_troubleshooting ;}
     fn_print $@
 }
 
-function fn_sql()                       { cat sql_kts
-                                              sql_py
+function fn_sql()                       { cat sql_kts   #
+                                              sql_py    # moo3
 function fn_min()                       { cat sql_min ;}
 function fn_base()                      { cat sql_base ;}
 function fn_misc()                      { cat sql_misc ;}       # 重要技巧
@@ -1159,7 +1159,6 @@ function fn_variable()                  { cat sql_variable ;}
 function fn_truncate()                  { cat sql_truncate ;}
 function fn_reclaim_space()             { cat sql_reclaim_space ;}
     local opts=(
-        kts
         min
         base
         datatype            # int char date
