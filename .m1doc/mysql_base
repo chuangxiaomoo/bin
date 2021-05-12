@@ -47,41 +47,6 @@
 
     -- 修改结束 */
 
-. Access denied
-    /* 如 -u root不指定mysql，系统亦默认为mysql 
-     * 下面这条命令等同于什么参数也不加的命令： mysql 
-     * */
-    mysql -u root mysql
-    Access denied for user 'mysql'@'localhost' (using password: NO)
-
-    /* 1. start mysqld_safe */
-    service mysql stop
-    mysqld_safe --user=mysql --skip-grant-tables --skip-networking&
-    mysql -u root mysql
-
-    /* 2. 访问表mysql.user，只留一个用户，其它的都删除，防止为空NULL的出现 */
-    mysql> DELETE FROM mysql.user WHERE host = '127.0.0.1';
-    mysql> update mysql.user set password='' where user='root';
-    mysql> SELECT USER, HOST, PASSWORD FROM mysql.user;
-    +------+-----------+----------+
-    | USER | HOST      | PASSWORD |
-    +------+-----------+----------+
-    | root | localhost |          |
-    +------+-----------+----------+
-
-    FLUSH PRIVILEGES;
-    quit
-
-    /* 3. restart */
-
-    // ps -ef  | grep mysqld | awk '{print $2}' | xargs kill -9
-    ps -ef  | grep mysqld_safe | awk '{print $2}' | xargs kill -9
-
-    service mysql start
-
-    // 因为密码是空，直接登陆。否则需要 -p passwd
-    mysql -u root
-
 . 两种重定向方式：
     root@Ubt:~/bin# mysql -u root <<-HERE
     > SELECT USER, HOST, PASSWORD FROM mysql.user;

@@ -1111,8 +1111,8 @@ function fn_postgresql()                { cat postgresql ;}
 
 function fn_mysql()                     {
 function fn_base()                      { cat mysql_install
+                                              m_y_s_q_l_troubleshooting.md
                                               mysql_base
-                                              mysql_troubleshooting
                                         }
 function fn_complete()                  { cat mysql_complete ;}
 function fn_migrate()                   { cat mysql_migrate ;}  # 中文
