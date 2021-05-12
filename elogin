@@ -56,12 +56,12 @@ if { $argc == 0 } {
         interact {
             timeout 30 { send "" }
         }
-    } elseif { [string match *nlogin $argv0] == 1 } {   # mstar-nvr
+    } elseif { [string match *nlogin $argv0] == 1 } {   # new-ipc-passwd
         spawn telnet $ip $port
         expect  "login:"
         send    "root\n"
         expect  "Password:"
-        send    "jco168168\n"
+        send    "AeC08j%2\n"
 
         interact {
             timeout 30 { send "" }

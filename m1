@@ -38,7 +38,10 @@ function fn_tmux()                      { cat tmux ;}
 function fn_uboot()                     { cat uboot ;}
 function fn_vmware()                    { cat vmware ;}
 function fn_yum()                       { cat yum ;}
-function fn_tcpdump()                   { cat tcpdump ;}
+function fn_tcpdump()                   { 
+                                          cat tcpdump
+                                          cat nping
+                                        }
 
 function fn_wireshark()                 {
 function fn_base()                      { cat wireshark_base ;}
@@ -1107,15 +1110,16 @@ function fn_refactoring()               { cat refactoring ;}
 function fn_postgresql()                { cat postgresql ;}
 
 function fn_mysql()                     {
-function fn_base()                      { cat mysql_install mysql_base ;}
+function fn_base()                      { cat mysql_install
+                                              mysql_base
+                                              mysql_troubleshooting
+                                        }
 function fn_complete()                  { cat mysql_complete ;}
 function fn_migrate()                   { cat mysql_migrate ;}  # 中文
-function fn_troubleshooting()           { cat mysql_troubleshooting ;}
     local opts=(
         base                # 安装及startup on Linux
         complete            # 语句大全
         migrate             #
-        troubleshooting
     )
     fn_print $@
 }
@@ -1149,7 +1153,7 @@ function fn_tbl_create()                { cat sql_tbl_create ;}
 function fn_tbl_temp()                  { cat sql_tbl_temp ;}
 function fn_index()                     { cat sql_index ;}
 function fn_order()                     { cat sql_order ;}
-function fn_dump()                      { cat sql_dump ;}
+function fn_dump()                      { cat sql_dump ;}       # mysqldump
 function fn_condition()                 { cat sql_condition ;}
 function fn_group_by_having()           { cat sql_group_by_having ;}
 function fn_cp()                        { cat sql_cp ;}
@@ -1180,7 +1184,6 @@ function fn_reclaim_space()             { cat sql_reclaim_space ;}
         variable
         condition           # if
         cp                  # 复制表数据or结构(copy)
-        dump                # mysqldump
         group_by_having     #
         index               # id与insert的先后顺序有关，与index(key)无关
         execute             # prepare
@@ -1471,7 +1474,6 @@ function fn_main() {
         sql
         socket
         postgresql              # PostgreSQL
-        mysql
         ssh
         surveil
         svn

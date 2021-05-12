@@ -1,0 +1,17 @@
+# Linux下使用nping测试TCP\UDP延迟
+
+
+# configure
+
+./configure \
+--host=arm-fullhanv3-linux-uclibcgnueabi  \
+--without-ncat --without-liblua --without-libssh2 --without-ndiff --without-zenmap
+
+# server
+
+nping --no-crypto --es --nc --ep 12345 -e enp0s8
+
+# client
+
+nping --no-crypto 192.168.9.246
+
