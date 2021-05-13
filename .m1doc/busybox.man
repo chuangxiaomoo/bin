@@ -2514,6 +2514,7 @@ ps
 
             -o col1,col2=header     Select columns for display
             -T                      Show threads
+            -l list
 
 pscan
 
@@ -3235,6 +3236,9 @@ sysctl
             -p FILE Load sysctl settings from FILE (default /etc/sysctl.conf)
             -a      Display all values
             -A      Display all values in table form
+    Example:
+
+    sysctl -w net.ipv4.tcp_timestamps=0
 
 syslogd
 
