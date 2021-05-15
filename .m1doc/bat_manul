@@ -23,6 +23,7 @@
                 $PWD        %CD% 
     :: --------------------------------
     重定向      a=`cat AA`  set/p a=<AA :: 命令行可行，但 .cmd 脚本中失效，是否要 .bat
+                                        :: 使用 for() 变通 
     :: --------------------------------
     注释        #           rem :: ;
     文件调用    .           call        :: 直接调用批处理文件，相当于bash的exec
@@ -36,6 +37,19 @@
     重定义      /dev/null   nul         ::
     多命令同行  ;           &           :: Cmd.exe runs the first cmd, and then the second one.
     多命令同行  &&          &&          :: run the cmd following && only if the first is successful.
+
+(3.1) for()命令实现重定向
+
+在linux系统下，只需要执行下面的命令：
+
+　　commitid=`git rev-parse --short HEAD` 
+　　echo commitid=$commitid
+
+
+但是在windows系统下，却不能直接使用反引号，要使用for变通下，命令如下：　　
+
+    for /F %%i in ('git rev-parse --short HEAD') do (set commitid=%%i)
+    echo commitid=%commitid%
 
 (4) 变量 AND SET
     ::
