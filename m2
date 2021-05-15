@@ -501,6 +501,7 @@ function fn_gsq_房价什么情况下会崩()    {
 
                                           cat gushequ
                                           cat article_300_为什么这些有钱人还要用杠杆.md
+                                          cat article_299_财富公式之共识与流动性.md
                                           cat article_301_财富公式之亿万钱财
                                           cat article_302_史上最中肯的投资建议
                                           cat article_303_怎么应付朋友借钱
