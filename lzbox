@@ -3,7 +3,7 @@
 # 2017-01-03
 #
 
-.  /etc/common.rc
+.  ~/bin/common.rc
 cd ${CWD}
 
 function fn_ipctool()

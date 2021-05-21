@@ -67,3 +67,10 @@ tar
     b/b/
     t.tgz
     X
+
+# tar 部分文件
+# 1. -C outpath 一定要在 -zxf 前
+# 2. SDK_release/linux/ 会保持 SDK_release 目录
+
+tar -C /opt/ipc/df/trunk/kernel -zxf sdk_release_jpl-r3.2.0-rc2_1703.tgz SDK_release/linux/
+

@@ -1,0 +1,17 @@
+# fakeroot 可以改变文件的 owner
+
+fakeroot tar -zcf a.tgz abcd
+
+```txt
+test@u16:~$ ll
+total 40
+-rw-r--r-- 1 test test    0 5月  20 15:34 abcd
+```
+
+tar -zxf a.tgz
+
+```txt
+test@u16:~$ ll
+total 40
+-rw-r--r-- 1 root root    0 5月  20 15:34 abcd
+```

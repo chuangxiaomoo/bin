@@ -105,7 +105,10 @@ mysql命令行输入
 
 [client]
 host="localhost"
-password="123456"
+password="!@#xdpan"
 user="root"
 port=3306
 socket=/tmp/mysql.sock
+
+15.测试远程访问
+

@@ -2,7 +2,12 @@
 
 #timeout 30 ntpdate cn.pool.ntp.org
 
-ps  -ef | grep -q [s]mbd     && stop smbd
-ps  -ef | grep -q [w]hoopsie && stop whoopsie
-free -m | grep Mem | awk '{ if ($4 < 128) { printf("3") > "/proc/sys/vm/drop_caches"} }';
+ps  -ef | grep -q [s]mbd     && service smbd     stop
+ps  -ef | grep -q [w]hoopsie && service whoopsie stop
+
+if [ -n "$1" ]; then
+    echo 3 > /proc/sys/vm/drop_caches
+else
+    free -m | grep Mem | awk '{ if ($4 < 128) { printf("3") > "/proc/sys/vm/drop_caches"} }';
+fi
 

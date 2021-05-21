@@ -63,3 +63,104 @@ ifeq ($(KERNELRELEASE), )
     PWD := $(shell pwd)
 endif
 
+# http://www.gnu.org/software/make/manual/make.html
+
+$@
+The file name of the target.
+
+$%
+The target member name, when the target is an archive member.
+
+$<
+The name of the first prerequisite.
+
+$?
+The names of all the prerequisites that are newer than the target, with spaces between them. For prerequisites which are archive members, only the named member is used (see Archives).
+
+$^
+$+
+The names of all the prerequisites, with spaces between them. For prerequisites which are archive members, only the named member is used (see Archives). The value of $^ omits duplicate prerequisites, while $+ retains them and preserves their order.
+
+$*
+The stem with which an implicit rule matches (see How Patterns Match).
+
+$(@D)
+$(@F)
+The directory part and the file-within-directory part of $@.
+
+$(*D)
+$(*F)
+The directory part and the file-within-directory part of $*.
+
+$(%D)
+$(%F)
+The directory part and the file-within-directory part of $%.
+
+$(<D)
+$(<F)
+The directory part and the file-within-directory part of $<.
+
+$(^D)
+$(^F)
+The directory part and the file-within-directory part of $^.
+
+$(+D)
+$(+F)
+The directory part and the file-within-directory part of $+.
+
+$(?D)
+$(?F)
+The directory part and the file-within-directory part of $?.
+
+These variables are used specially by GNU make:
+
+$(MAKEFILES)
+Makefiles to be read on every invocation of make.
+See The Variable MAKEFILES.
+
+$(VPATH)
+Directory search path for files not found in the current directory.
+See VPATH Search Path for All Prerequisites.
+
+$(SHELL)
+The name of the system default command interpreter, usually /bin/sh. You can set SHELL in the makefile to change the shell used to run recipes. See Recipe Execution. The SHELL variable is handled specially when importing from and exporting to the environment. See Choosing the Shell.
+
+$(MAKESHELL)
+On MS-DOS only, the name of the command interpreter that is to be used by make. This value takes precedence over the value of SHELL. See MAKESHELL variable.
+
+$(MAKE)
+The name with which make was invoked. Using this variable in recipes has special meaning. See How the MAKE Variable Works.
+
+$(MAKE_VERSION)
+The built-in variable ‘MAKE_VERSION’ expands to the version number of the GNU make program.
+
+$(MAKE_HOST)
+The built-in variable ‘MAKE_HOST’ expands to a string representing the host that GNU make was built to run on.
+
+$(MAKELEVEL)
+The number of levels of recursion (sub-makes).
+See Variables/Recursion.
+
+$(MAKEFLAGS)
+The flags given to make. You can set this in the environment or a makefile to set flags.
+See Communicating Options to a Sub-make.
+
+    It is never appropriate to use MAKEFLAGS directly in a recipe line: its contents may not be quoted correctly for use in the shell. Always allow recursive make’s to obtain these values through the environment from its parent.
+
+$(GNUMAKEFLAGS)
+Other flags parsed by make. You can set this in the environment or a makefile to set make command-line flags. GNU make never sets this variable itself. This variable is only needed if you’d like to set GNU make-specific flags in a POSIX-compliant makefile. This variable will be seen by GNU make and ignored by other make implementations. It’s not needed if you only use GNU make; just use MAKEFLAGS directly. See Communicating Options to a Sub-make.
+
+$(MAKECMDGOALS)
+The targets given to make on the command line. Setting this variable has no effect on the operation of make.
+See Arguments to Specify the Goals.
+
+$(CURDIR)
+Set to the absolute pathname of the current working directory (after all -C options are processed, if any). Setting this variable has no effect on the operation of make.
+See Recursive Use of make.
+
+$(SUFFIXES)
+The default list of suffixes before make reads any makefiles.
+
+$(.LIBPATTERNS)
+Defines the naming of the libraries make searches for, and their order.
+See Directory Search for Link Libraries.
