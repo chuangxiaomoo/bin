@@ -694,6 +694,7 @@ function fn_hotkey()                    { cat w3m_hotkey ;}
 }
 
 function fn_cmd()                       {
+function fn_scp()                       { cat cmd_scp ;}        # more to ssh
 function fn_Essential()                 { cat cmd_Essential ;}
 function fn_arping()                    { cat cmd_arping ;}
 function fn_chmod()                     { cat cmd_chmod ;}
@@ -740,6 +741,7 @@ function fn_ps()                        { cat cmd_ps
                                           cat cmd_fakeroot
                                         }
     local opts=(
+        scp
         Essential
         arping                  # arp -D 检测IP冲突 iputils
         calltree
@@ -1099,7 +1101,6 @@ function fn_command() {                 { cat   centos ;}
 }
 
 function fn_java()                      { cat java ;}
-function fn_scp()                       { cat ssh ;}
 function fn_ssh()                       { cat ssh autossh reptyr_Reparent_You_running_program ;}
 function fn_libevent()                  { cat libevent libuv.md ;}
 function fn_in_event()                  { cat in_event ;}
