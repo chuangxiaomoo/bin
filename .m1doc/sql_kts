@@ -255,12 +255,6 @@ CREATE TABLE carbon(
 );
 INSERT INTO carbon(errno) VALUES(0);
 
-DROP TABLE IF EXISTS codes;
-CREATE TABLE codes (
-    #id          INT PRIMARY key AUTO_INCREMENT NOT NULL,
-    code        INT(6) ZEROFILL NOT NULL DEFAULT 0
-);
-
 DROP TABLE IF EXISTS vpeak;
 CREATE TABLE vpeak(
     date        date NOT NULL,

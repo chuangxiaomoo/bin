@@ -1,0 +1,190 @@
+# show variables like '%storage_engine%';
+
+MySql 默认引擎是 InnoDB
+
+apeak
+banz
+codes
+d1
+i5
+jine
+nmc2
+td2
+
+# list
+
+CREATE TABLE apeak(
+    date    date NOT NULL, 
+    code    INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    a220    DECIMAL(12,2)   NOT NULL DEFAULT 0,     # hhv(amo, 220)
+    c220    DECIMAL(6,2)    NOT NULL DEFAULT 0,     # hhv(C, 220)
+    i220    SMALLINT        NOT NULL DEFAULT 0,     # c220 对应的 idx
+    a144    DECIMAL(12,2)   NOT NULL DEFAULT 0,     # hhv(amo, 144)
+    c144    DECIMAL(6,2)    NOT NULL DEFAULT 0,     # hhv(C, 144)
+    i144    SMALLINT        NOT NULL DEFAULT 0,     # c144 对应的 idx
+    a55     DECIMAL(12,2)   NOT NULL DEFAULT 0,     # hhv(amo, 55)
+    c55     DECIMAL(6,2)    NOT NULL DEFAULT 0,     # hhv(C, 55)
+    i55     SMALLINT        NOT NULL DEFAULT 0,     # c55  对应的 idx
+    a34     DECIMAL(12,2)   NOT NULL DEFAULT 0,     # hhv(amo, 34)
+    c34     DECIMAL(6,2)    NOT NULL DEFAULT 0,     # hhv(C, 34)
+    i34     SMALLINT        NOT NULL DEFAULT 0,     # c34  对应的 idx
+    a       DECIMAL(12,2)   NOT NULL DEFAULT 0,     # amount
+    c       DECIMAL(6,2)    NOT NULL DEFAULT 0,     # close
+    o       DECIMAL(6,2)    NOT NULL DEFAULT 0,     # 
+    INDEX(date),
+    INDEX(code,date)
+);
+
+DROP TABLE IF EXISTS banz;      # 搬砖
+CREATE TABLE banz (
+    code    INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    banz    SMALLINT        NOT NULL DEFAULT 0,
+    name    CHAR(16),
+    INDEX(code)
+);
+
+DROP TABLE IF EXISTS codes;
+CREATE TABLE codes (
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    INDEX(code)
+);
+
+CREATE TABLE ST LIKE codes;
+CREATE TABLE zxg LIKE codes;
+
+DROP TABLE IF EXISTS d1;
+CREATE TABLE d1 (
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0, # 代码
+    setl        DECIMAL(6,2)  NOT NULL,             # 昨收
+    open        DECIMAL(6,2)  NOT NULL,             # 开
+    high        DECIMAL(6,2)  NOT NULL,             # 高
+    low         DECIMAL(6,2)  NOT NULL,             # 低
+    close       DECIMAL(6,2)  NOT NULL,             # 收
+    avg         DECIMAL(6,2)  NOT NULL,             # 均价
+                                                    
+    volume      DECIMAL(12,2) NOT NULL DEFAULT 0,   # 成交量
+    tov         DECIMAL(12,2) NOT NULL DEFAULT 0,   # 换手率
+
+    ma5         DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 5日收盘均价
+    ma20        DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 20日收盘均价
+    ma60        DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 60日收盘均价
+
+    hsl20       DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 20日平均换手率
+    vw          DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 量比: 周成交/前19周平均成交量
+    x3          DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 量比: 3日/4~12日
+    x5          DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 量比: 5日/6~20日
+    x10         DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 量比: 10日/11~40日
+    x20         DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 量比: 20日/21~60日
+
+    INDEX(date),
+    INDEX(code,date)
+);
+
+DROP TABLE IF EXISTS i5;
+CREATE TABLE i5 (                                   # 重构i5，i5需要的是13日内的走势结构
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0, # 考虑到只做图形评估，不再有成交量的相关信息
+
+    hi          DECIMAL(6,2) NOT NULL DEFAULT 0,    # 考虑`负阴抱阳`
+    lo          DECIMAL(6,2) NOT NULL DEFAULT 0,    #
+
+    iC          TINYINT      not null DEFAULT 0,    # B日最高收盘索引
+    CC          DECIMAL(6,2) not null DEFAULT 0,    # B日最高收盘
+
+    x8          TINYINT      NOT NULL DEFAULT 0,    # 10日内，距离2nd高成交
+    xj8         TINYINT      NOT NULL DEFAULT 0,    # 11日内，距离2nd高成交，x8的调整版本
+    tv2         DECIMAL(6,2) NOT NULL DEFAULT 0,    # avg(tov.0,tov.1)
+    vv2         DECIMAL(6,1) NOT NULL DEFAULT 0,    # 3*tv2/(mid3) vs. avg(xj8)*0.45/tv2
+    nT          TINYINT      NOT NULL DEFAULT 0,    # B日内涨停 +1
+
+    HH          DECIMAL(6,1) NOT NULL DEFAULT 0,    # hiB ->
+    LL          DECIMAL(6,2) NOT NULL DEFAULT 0,    # loB ->
+
+    iH          TINYINT      NOT NULL DEFAULT 0,    # B日新高id iB-> iH
+    iL          TINYINT      NOT NULL DEFAULT 0,    # B日新低id oB-> iL
+    iV          TINYINT      NOT NULL DEFAULT 0,    # B日新高id tov
+    cH          TINYINT      NOT NULL DEFAULT 0,    # 计数: 8日close>prev(high)
+    cL          TINYINT      NOT NULL DEFAULT 0,    # 计数: 8日close<prev(low) 
+    nH          TINYINT      NOT NULL DEFAULT 0,    # 8日新高计数 N8
+    nL          TINYINT      NOT NULL DEFAULT 0,    #             S8
+
+    u5          TINYINT      NOT NULL DEFAULT 0,    #
+    u8          TINYINT      NOT NULL DEFAULT 0,    #
+    uw          TINYINT      NOT NULL DEFAULT 0,    #
+
+    wk3         DECIMAL(6,1) NOT NULL DEFAULT 0,    # 3周超mavol(20周)计数
+
+    INDEX(date),
+    INDEX(code,date)
+);
+
+DROP TABLE IF EXISTS jine;
+CREATE TABLE jine (
+    date    date NOT NULL,
+    code    INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    num     SMALLINT        NOT NULL DEFAULT 0,
+    Tq      TINYINT         NOT NULL DEFAULT 0, # 摸板
+    sil     TINYINT         NOT NULL DEFAULT 0, # 封板
+    up      TINYINT         NOT NULL DEFAULT 0, # +5%
+    dw      TINYINT         NOT NULL DEFAULT 0, # -5%
+    odd     DECIMAL(6,1)    NOT NULL DEFAULT 0, # num(up)/num(down)
+    G05     SMALLINT        NOT NULL DEFAULT 0,
+    up3     TINYINT         NOT NULL DEFAULT 0, # +5% d144
+    dw3     TINYINT         NOT NULL DEFAULT 0,
+    up2     TINYINT         NOT NULL DEFAULT 0, # +5% d055
+    dw2     TINYINT         NOT NULL DEFAULT 0,
+#   mi60    DECIMAL(6,2)    NOT NULL DEFAULT 0, # LLV(ma60, 220)，因为引用到前置数据，倒序重构数据时无法生成
+   _ma20    DECIMAL(6,2)    NOT NULL DEFAULT 0, # 21日 min(ma20)
+    xma5    DECIMAL(6,2)    NOT NULL DEFAULT 0, # 13日 max(ma5)
+    _R      DECIMAL(6,2)             DEFAULT 0, # LLV(HSL20,60)/HHV(HSL20,120)
+    x80     DECIMAL(6,2)             DEFAULT 0, #         HSL20/HHV(HSL20,80)   这个指标通常会滞后，因为 20 天平均的平滑作用
+    x120    DECIMAL(6,2)             DEFAULT 0, # max(HSL20,120)
+    N8      TINYINT         NOT NULL DEFAULT 0, # 13日 count(tov >= HSL20*1.7)
+    N60     TINYINT         NOT NULL DEFAULT 0, # 85日 count(ma5<=ma20 || ma5<=ma60)，感觉无用，舍弃不更新
+    N80     TINYINT         NOT NULL DEFAULT 0, # ^^^^^^ 因为解禁，tov会不准，N80，NHL也会不准 ^^^^^^^^
+    NHL     TINYINT         NOT NULL DEFAULT 0, # COUNT(HSL > HHV(HSL20,120))
+
+    INDEX(date),
+    INDEX(code,date)
+);
+
+ALTER TABLE jine DROP COLUMN mi60;
+
+DROP TABLE IF EXISTS nmc2;
+CREATE TABLE nmc2 (
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    pe          DECIMAL(12,2) NOT NULL,
+    tov         DECIMAL(12,2) NOT NULL,
+    pb          DECIMAL(12,2) NOT NULL, # 每股股价与每股净资产的比率
+
+    ps_ratio    DECIMAL(12,2) NOT NULL, # 市销率为股票价格与每股销售收入之比，市销率越小，通常被认为投资价值越高。
+    pcf_ratio   DECIMAL(12,2) NOT NULL, # 每股市价为每股现金净流量的倍数
+    shares      DECIMAL(12,2) NOT NULL, # 总股本，单位(万)
+    cap         DECIMAL(12,2) NOT NULL, # 总市值
+    oing_cap    DECIMAL(12,2) NOT NULL, # 流通股本
+    INDEX(code)
+);
+
+DROP TABLE IF EXISTS td2;
+CREATE TABLE td2 (
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    setl        DECIMAL(6,2)  NOT NULL,
+    open        DECIMAL(6,2)  NOT NULL,
+    high        DECIMAL(6,2)  NOT NULL,
+    low         DECIMAL(6,2)  NOT NULL,
+    close       DECIMAL(6,2)  NOT NULL,
+    volume      DECIMAL(12,2) NOT NULL DEFAULT 0,
+    avg         DECIMAL(6,2)  NOT NULL DEFAULT 0,
+
+    INDEX(date),
+    INDEX(code,date)
+);
+
+xRD
+
+show INDEX from td2;
+alter table td2 drop index date;
+CREATE INDEX date on td2 (date); CREATE INDEX code on td2 (code,date);
+
