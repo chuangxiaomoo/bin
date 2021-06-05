@@ -675,7 +675,9 @@ function fn_02_一朝天子一朝臣()         { cat why_02_一朝天子一朝�
     fn_print $@
 }
 
-function fn_films()                     { cat videos movies
+function fn_films()                     { cat videos 
+                                              movies
+                                              movies.what.md
                                           cat subscript.yidaizongshi
                                         }
 function fn_english() {
