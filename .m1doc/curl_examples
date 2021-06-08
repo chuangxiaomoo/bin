@@ -42,3 +42,8 @@
     GET方法，curl可以直接处理，例如想获取上面的网页，只要输入：
 
     curl "http://www.watashinet.com/dns?hostname=jetview.watashinet.com&username=jetview&password=jetview"
+
+四、cookie 模拟登陆认证
+
+    curl 'http://192.168.9.7/?jcpcmd=alarmtest%20-act%20set%20-alarmtype%2013%20-filter%200' -b loginflag_192.168.9.7=1
+
