@@ -7,7 +7,6 @@ screen              # 不带参数时，以pts自动命名Session
 screen -ls          # **list**
 screen -S zm        # **new**
 exit|c-d            # **destroy**
-C-a d               # **detach-bg**
 screen -r zm        # **attach-fg**
 screen -R           # attempts to resume the youngest
 
@@ -28,9 +27,12 @@ bind '"\C-x\C-x": beginning-of-line'
 
 # 命令模式：
 
-c-a :             命令模式
-c-a :sessionname  查看Session
-c-a k             杀自己
+C-a :             命令模式
+C-a :sessionname  查看Session
+C-a k             杀自己
+C-a d             **detach-bg**
+C-a a             行首
+C-a Esc           Vi 回滚日志模式
 
 # put an already-running process under nohup
 
