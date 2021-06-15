@@ -120,6 +120,33 @@ CREATE TABLE i5 (                                   # 重构i5，i5需要的是1
     INDEX(code,date)
 );
 
+DROP TABLE IF EXISTS v5;
+CREATE TABLE v5 (                                   # 重构i34，i34需要的是13日内的走势结构
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0, # 考虑到只做图形评估，不再有成交量的相关信息
+
+    hi          DECIMAL(6,2) NOT NULL DEFAULT 0,    # 考虑`负阴抱阳`
+    lo          DECIMAL(6,2) NOT NULL DEFAULT 0,    #
+
+    ic          TINYINT      not null DEFAULT 0,    # 排名
+    iv1         TINYINT      not null DEFAULT 0,    # 排名 13
+    iv3         TINYINT      not null DEFAULT 0,    # 排名 34
+    n10         TINYINT      NOT NULL DEFAULT 0,    # 涨停数
+
+    hhc         DECIMAL(6,2) not null DEFAULT 0,    # 13日最高收盘
+    hhh         DECIMAL(6,2) NOT NULL DEFAULT 0,    # hiB ->
+    lll         DECIMAL(6,2) NOT NULL DEFAULT 0,    # loB ->
+
+    v0          DECIMAL(6,2) not null DEFAULT 0,    # 
+    v1          DECIMAL(6,2) not null DEFAULT 0,    # 
+    v2          DECIMAL(6,2) not null DEFAULT 0,    # 
+    v3          DECIMAL(6,2) not null DEFAULT 0,    # 
+    v4          DECIMAL(6,2) not null DEFAULT 0,    # 
+
+    INDEX(date),
+    INDEX(code,date)
+);
+
 DROP TABLE IF EXISTS jine;
 CREATE TABLE jine (
     date    date NOT NULL,
