@@ -1,5 +1,24 @@
 # readelf
 
+## readelf -d a.out 
+
+功能同 ldd
+
+## readelf -l a.out 
+
+> 解释器信息，uclibc glibc
+
+Elf file type is EXEC (Executable file)
+Entry point 0x102f5
+There are 8 program headers, starting at offset 52
+
+Program Headers:
+  Type           Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align
+  EXIDX          0x0004cc 0x000104cc 0x000104cc 0x00008 0x00008 R   0x4
+  PHDR           0x000034 0x00010034 0x00010034 0x00100 0x00100 R E 0x4
+  INTERP         0x000134 0x00010134 0x00010134 0x00019 0x00019 R   0x1
+     `[Requesting program interpreter: /lib/ld-linux-armhf.so.3]`
+
 ## readelf -h jco_server
   ELF Header:
     Magic:   7f 45 4c 46 01 01 01 00 00 00 00 00 00 00 00 00
