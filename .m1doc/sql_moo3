@@ -134,8 +134,8 @@ CREATE TABLE v5 (                                   # 重构i34，i34需要的�
     n10         TINYINT      NOT NULL DEFAULT 0,    # 涨停数
 
     hhc         DECIMAL(6,2) not null DEFAULT 0,    # 13日最高收盘
-    hhh         DECIMAL(6,2) NOT NULL DEFAULT 0,    # hiB ->
-    lll         DECIMAL(6,2) NOT NULL DEFAULT 0,    # loB ->
+    hhh         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 13日最高high
+    lll         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 13日最高low
 
     v0          DECIMAL(6,2) not null DEFAULT 0,    # 
     v1          DECIMAL(6,2) not null DEFAULT 0,    # 
