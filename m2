@@ -936,8 +936,9 @@ function fn_girl()                      {
 function fn_misc()                      { cat girl_misc
                                               happythings                   # 高兴的事
                                               girl_decide_to_buy_a_house.md
+                                              auto_car.md
                                         }
-function fn_letters()                   { cat girl_letters juzi poet girl_self_introduction
+function fn_letters()                   { cat girl_letters juzi poet sweet_words girl_self_introduction
                                           cat girl_00_jiebao
                                           cat girl_01_tingbao
                                           cat girl_02_angelina

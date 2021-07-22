@@ -13,6 +13,17 @@ td2
 
 # list
 
+DROP TABLE IF EXISTS balance;
+CREATE TABLE balance (
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    name        CHAR(16),
+    sell        TINYINT NOT NULL DEFAULT 0,
+    price       DECIMAL(6,2) NOT NULL,
+    vol         DECIMAL(6,2) NOT NULL,
+    INDEX(code,date)
+);
+
 CREATE TABLE apeak(
     date    date NOT NULL, 
     code    INT(6) ZEROFILL NOT NULL DEFAULT 0,
