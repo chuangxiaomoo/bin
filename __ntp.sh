@@ -20,7 +20,7 @@ function fn_main()
     /etc/init.d/ntp stop
     server=`grep -m1 "^server\>" /etc/ntp.conf | awk '{print $2}'`
     echo ntpdate $server
-    ntpdate $server
+    ntpdate ${server:-time.windows.com}
     /etc/init.d/ntp start
 }
 
