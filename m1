@@ -706,7 +706,7 @@ function fn_iperf()                     { cat cmd_iperf ;}
 function fn_himm()                      { cat cmd_himm ;}
 function fn_ifconfig()                  { cat cmd_ifconfig ;}
 function fn_ln()                        { cat cmd_ln ;}
-function fn_mount()                     { cat cmd_mount ;}
+function fn_mount()                     { cat cmd_mount filesystem ;}   # sqashfs
 function fn_patch()                     { cat cmd_diff cmd_patch ;}
 function fn_route()                     { cat cmd_route cmd_netsh ;}
 function fn_rename()                    { cat cmd_rename ;}

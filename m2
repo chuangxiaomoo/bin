@@ -937,6 +937,7 @@ function fn_misc()                      { cat girl_misc
                                               happythings                   # 高兴的事
                                               girl_decide_to_buy_a_house.md
                                               auto_car.md
+                                              intimate_relationships.md     # 亲密关系
                                         }
 function fn_letters()                   { cat girl_letters juzi poet sweet_words girl_self_introduction
                                           cat girl_00_jiebao
