@@ -54,6 +54,7 @@ function fn_filter()                    { cat wireshark_filter ;}
 }
 
 function fn_python()                    {
+                                          cat python2.7
                                           cat python bokhe
                                           cat pandas tushare tu.py
                                           cat jqdata
@@ -167,9 +168,6 @@ function fn_proc()                      { cat linux_proc ;}
 function fn_free_buffer_cache()         { cat linux_free_buffer_cache
                                               linux_tuning_optimize
                                         }
-function fn_udev()                      { cat linux_udev ;}
-function fn_mtd()                       { cat linux_mtd ;}
-function fn_ubifs()                     { cat linux_ubifs linux_ntfs ;}
 function fn_lockfile()                  { cat linux_lockfile flock ;}
 function fn_memory()                    { cat linux_memory ;}
 function fn_aout()                      { cat linux_aout ;}
@@ -182,9 +180,6 @@ function fn_aout()                      { cat linux_aout ;}
         ldd3                            # Linux Device Driver Edition3
         IPC
         boot
-        mtd                             # ubi
-        ubifs
-        udev
         lockfile                        # lockfile-progs
         proc                            # sys/vm
         free_buffer_cache               #
@@ -693,6 +688,15 @@ function fn_hotkey()                    { cat w3m_hotkey ;}
     fn_print $@
 }
 
+function fn_mount()                     { cat cmd_mount
+                                              filesystem/udev
+                                              filesystem/mtd.md
+                                              filesystem/squashfs.md
+                                              filesystem/ubi/README.md
+                                              filesystem/ubi/ubi-reader-install-and-usage.md
+                                              filesystem/ntfs.md
+                                        }
+
 function fn_cmd()                       {
 function fn_scp()                       { cat cmd_scp ;}        # more to ssh
 function fn_Essential()                 { cat cmd_Essential ;}
@@ -706,7 +710,6 @@ function fn_iperf()                     { cat cmd_iperf ;}
 function fn_himm()                      { cat cmd_himm ;}
 function fn_ifconfig()                  { cat cmd_ifconfig ;}
 function fn_ln()                        { cat cmd_ln ;}
-function fn_mount()                     { cat cmd_mount filesystem ;}   # sqashfs
 function fn_patch()                     { cat cmd_diff cmd_patch ;}
 function fn_route()                     { cat cmd_route cmd_netsh ;}
 function fn_rename()                    { cat cmd_rename ;}
