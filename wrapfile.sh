@@ -2,15 +2,7 @@
 #---------------------------------------------------------------------------
 #          FILE: wrapfile.sh
 #         USAGE: ./wrapfile.sh 
-#   DESCRIPTION: 
-#       OPTIONS: -
-#  REQUIREMENTS: -
-#          BUGS: -
-#         NOTES: -
-#        AUTHOR: zhangjian () 
-#  ORGANIZATION: 
-#       CREATED: 2021-05-18 20时46分40秒
-#      REVISION: 1.0 
+#   DESCRIPTION: 将参数指向的文件，进行一次类似头文件的 #ifdef #endif
 #---------------------------------------------------------------------------
 
 fn_main()

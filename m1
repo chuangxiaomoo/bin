@@ -715,7 +715,7 @@ function fn_route()                     { cat cmd_route cmd_netsh ;}
 function fn_rename()                    { cat cmd_rename ;}
 function fn_strace()                    { cat cmd_strace ;}
 function fn_sort()                      { cat cmd_sort ;}
-function fn_rar()                       { cat cmd_tar ;}
+function fn_rar()                       { cat cmd_tar unrar ;}
 function fn_tar()                       { cat cmd_tar ;}
 function fn_zip()                       { cat cmd_tar ;}
 function fn_xz()                        { cat cmd_xz  ;}
