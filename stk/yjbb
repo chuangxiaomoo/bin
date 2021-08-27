@@ -1,7 +1,7 @@
 #! /bin/bash -
 
 . `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
-. /etc/common.rc
+. ~/bin/common.rc
 
 function fn_bb_load()
 {
