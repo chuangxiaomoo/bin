@@ -1,0 +1,9 @@
+
+| NO. | make       | scons      |
+| :-- | :------    | :------    |
+| 1   | Makefile   | SConstruct |
+| 2   | make clean | scons -c   |
+| 3   |            |            |
+| 4   |            |            |
+| 5   |            |            |
+

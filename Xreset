@@ -1,0 +1,14 @@
+#! /bin/sh
+
+pskill ()
+{
+    test -n "$1" || {
+        echo "Usage: pskill name" && return 1
+    };
+    head=${1:0:1};
+    body=${1:1};
+    ps -ef | grep --color=auto -E "[${head}]${body}\>" | awk '{print $2}' | xargs kill -9
+}
+
+pskill Xorg
+startx&
