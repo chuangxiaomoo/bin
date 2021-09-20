@@ -1,0 +1,23 @@
+# 12.04关闭图形界面
+
+* 法1
+
+vi /boot/grub/grub.cfg 
+改 "splash" ===＞  "splash text"
+reboot
+
+* 法2
+
+vi /etc/default/grub
+改 "splash" ===＞  "splash text"
+update-grub
+reboot
+
+# 12.04下字符界面启动图形界面
+
+startx
+
+# 动态关闭 xwindow
+
+pskill Xorg
+

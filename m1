@@ -106,6 +106,7 @@ function fn_google()                    { cat google
                                               google.dog
                                               gfw
                                               how_google_works.md
+                                              kdoc.md
                                         }
 function fn_chrome()                    { cat chrome ;}
 
@@ -149,6 +150,7 @@ function fn_lib_static()                { cat make_lib_static
                                               make_ar2so
                                               make_lib_dependence
                                               make_herderfile_dependence
+                                              scons
                                         }
 }
 
@@ -1090,6 +1092,7 @@ function fn_cppncss()                   { cat CC_cppncss ;}
 
 function ubuntu() {
     ubuntu
+    ubuntu.xwindow
     ubuntu.services         # systemctl
     apt-get_source
     apt-get_command
