@@ -150,6 +150,7 @@ function fn_lib_static()                { cat make_lib_static
                                               make_ar2so
                                               make_lib_dependence
                                               make_herderfile_dependence
+                                              awtk
                                               scons
                                         }
 }
@@ -695,6 +696,7 @@ function fn_mount()                     { cat cmd_mount
                                               filesystem/mtd.md
                                               filesystem/squashfs.md
                                               filesystem/ubi/README.md
+                                              filesystem/ubi/ubinize_and_mkfs.ubifs.md
                                               filesystem/ubi/ubi-reader-install-and-usage.md
                                               filesystem/ntfs.md
                                         }

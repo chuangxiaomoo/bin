@@ -1,0 +1,15 @@
+# awtk on Ubuntu
+
+https://blog.csdn.net/qq_42810361/article/details/109114813
+
+# 安装
+
+默认安装在 C:\AWTK
+
+# Q1 Windows下执行scons命令提示：Windows找不到文件powershell.exe
+
+1. 进入 designer, 就会提示。
+2. 更好的做法，应该是要在命令行中操作，如此会更加精确地定位到问题
+   cd C:\AWTK\SDK\awtk
+   scons
+

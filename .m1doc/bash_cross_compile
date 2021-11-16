@@ -105,7 +105,7 @@ CC=arm-buildroot-linux-uclibcgnueabi-gcc ./configure \
 
 # strace
 
-./configure --host=mips-linux-gnu CC=mips-linux-uclibc-gnu-gcc
+./configure --host=mips-linux-gnu CC=mips-linux-gnu-gcc
 [strace-4.6](http://www.cnblogs.com/wlzxlc/archive/2012/11/20/2779886.html)
 
 # gdb

@@ -28,6 +28,11 @@
 	date [-u|--utc|--universal] [YYYY.]MM.DD-hh:mm[:ss] | YYYY-MM-DD hh:mm[:ss]
 	date -s "2008.08.08-20:08:00"
 	date -s "2018.10.01-00:00:10"
+	date -s "2018.11.30-23:59:40"
+
+	date -s "2018.11.20-23:59:55"; hwclock -w -f /dev/rtc0
+	date -s "2018.12.31-23:59:55"; hwclock -w -f /dev/rtc0; hwclock -r -f /dev/rtc0
+
 
     date; date    @`date +%s`
     date; date    @$((`date +%s`-300))     # 向后60秒

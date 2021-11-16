@@ -3,7 +3,7 @@
 | :-- | :------    | :------    |
 | 1   | Makefile   | SConstruct |
 | 2   | make clean | scons -c   |
-| 3   |            |            |
-| 4   |            |            |
-| 5   |            |            |
+| 3   | make       | scons      |
+| 4   | make -j3   | scons -j3  |
+| 5   | make K=V   | scons K=V  |
 

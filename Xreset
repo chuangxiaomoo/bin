@@ -11,4 +11,5 @@ pskill ()
 }
 
 pskill Xorg
+sleep 5
 startx&

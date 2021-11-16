@@ -378,6 +378,7 @@ function fn_03_沟通_communication()     { cat howto_03_沟通.2
                                           cat howto_09_讲故事.1
                                           cat howto_10_谈判
                                           cat howto_11_论证
+                                          cat howto_12_sayno_refuse_elegantly
                                           cat howto_relation.04.从朋友里选出做大事儿的人
                                           cat howto_relation.10.在职场核心业务上突破
                                           cat howto_relation.11.受同事欢迎
@@ -1002,6 +1003,7 @@ function fn_144_什么是好的经济学()      { cat ljsw_144_什么是好的�
                                                   5_bases_of_social_power.md
                                               CImprovement.team
                                                   sanxing_2013.team
+                                                  sanxing_2020.team
                                         }
 function fn_210_右派为什么这么横()      { cat ljsw_210_右派为什么这么横 ;}
 function fn_215_发现你的太平洋()        { 
