@@ -2,7 +2,7 @@
 
   objdump -x hello.o 查看相应 .section
 
-  strip -S 
+# strip -S 
 
     [.ko 不可strip](http://blog.csdn.net/bitsjx/article/details/7454805)
 

@@ -34,3 +34,8 @@ tcpdump.msipc -i eth0  -w /tmp/a.cap            # > 重定向会破坏格式
 tcpdump.msipc -i eth0  port 8002  -w /tmp/a.cap            # > 重定向会破坏格式
 
 ./tcpdump -i wlan0  -w /tmp/a.cap
+
+# expression 复合表达式
+
+tcpdump 'gateway snup and (port ftp or ftp-data)'
+
