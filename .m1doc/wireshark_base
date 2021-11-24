@@ -56,9 +56,11 @@
 
   例子：
 
+    ip.addr == 172.25.123.2                         # src && dst
     ip.src == 172.25.123.2 and not tcp.port == 554  # not 有最高优先级
     ip.src != 10.1.2.3 or ip.dst != 10.4.5.6
     ip.src != 10.1.2.3 and ip.dst != 10.4.5.6
+
     tcp.port == 25 
     tcp.dstport == 25 
     tcp.flags                                       # 显示包含TCP标志的封包。

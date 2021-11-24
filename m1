@@ -1438,6 +1438,7 @@ function fn_main() {
         gdb
         glibc
         gprof
+        gperftools              # 逐渐替代 gprof
         oprofile
         graphviz
         gnuplot                 # 线状 IBM stock chart
