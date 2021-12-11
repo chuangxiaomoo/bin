@@ -4,13 +4,13 @@
 %                       -       8              .2          l                 f
 %                       左对齐  8位宽空格填充  精确小数位  long              float
 
-| fmt | type              | note    |
-| :-- | :------           | :------ |
-| %.2lf    |                   |         |
-| %ld | long int          |         |
-| %lu | long unsigned int |         |
-| %hu | unsigned short    |         |
-| %p  | pointer           |         |
+| fmt   | type              | note    |
+| :--   | :------           | :------ |
+| %.2lf |                   |         |
+| %ld   | long int          |         |
+| %lu   | long unsigned int |         |
+| %hu   | unsigned short    |         |
+| %p    | pointer           |         |
 
 # e.g. output: 1,234,567,890,123,456,789.38
 
