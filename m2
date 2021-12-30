@@ -941,7 +941,8 @@ function fn_misc()                      { cat girl_misc
                                               auto_car.md
                                               intimate_relationships.md
                                         }
-function fn_letters()                   { cat girl_letters juzi poet sweet_words xianxian girl_self_introduction
+function fn_letters()                   { cat girl_letters juzi poet sweet_words girl_self_introduction
+                                              ~/gitee/social/priv/lixianxian.md
                                           cat girl_00_jiebao
                                           cat girl_01_tingbao
                                           cat girl_02_angelina
