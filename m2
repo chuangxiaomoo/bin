@@ -216,6 +216,7 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               book_dxqa3168.md      # 洞穴奇案
                                               book_xcdl3166.md      # 血酬定律
                                               book_qgz3185.md       # 潜规则
+                                              book_dclj.md          # 底层逻辑
                                               Multitask
                                               problem_solving
                                               problem_Formula

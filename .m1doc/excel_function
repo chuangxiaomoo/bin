@@ -1,0 +1,19 @@
+# function 自动提醒功能
+
+```sql
+IF(J4="done",
+    IF(AND(TRUNC($T$1)>TRUNC(M4),0<>TRUNC(M4)),
+    IF(O4<>"done","延迟",""),
+    IF(AND(TRUNC($T$1)=TRUNC(M4),O4<>"done"),"交付日",""))
+,"")
+```
+
+
+# 虽然是日期，但有些在格式上是带`时分秒`，因此比对时需要用 TRUNC 处理
+
+* TRUNC 直接截取，ROUND 四舍五入
+
+# 引用静态单元格 $T$1
+
+# 引用动态单元格，在复制时，会自增
+

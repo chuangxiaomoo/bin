@@ -813,29 +813,31 @@ function fn_fundamental()               { cat bat_fundamental ;}
 }
 
 function fn_win()                       {
-function fn_win7()                      { cat windows_win7 mstsc
-                                          cat win_mac_keyboard  # apple 1680*1050
-                                          cat foxmail
-                                          cat cooledit ;}
-function fn_syscmd()                    { cat windows_syscmd ;}
-function fn_02_清晰显示()               { cat windows_02_清晰显示 ;}
-function fn_03_看雪()                   { cat windows_03_看雪 ;}
-function fn_excel()                     { cat windows_excel ;}
-function fn_word()                      { cat windows_word ;}
-function fn_visio()                     { cat win_visio ;}
-function fn_mpp()                       { cat windows_mpp ;}
-function fn_beyondcompare3()            { cat windows_beyondcompare3 ;}
-function fn_rightclick()                { cat windows_rightclick ;}
-function fn_U盘DOS启动盘制作工具()      { cat windows_U盘DOS启动盘制作工具 ;}
-function fn_regedit()                   { cat win_regedit ;}
-function fn_qmacro()                    { cat win_qmacro ;}
+function fn_win7()                      { cat   windows_win7 mstsc
+                                          cat   win_mac_keyboard  # apple 1680*1050
+                                          cat   foxmail
+                                          cat   cooledit ;}
+function fn_syscmd()                    { cat   windows_syscmd ;}
+function fn_02_清晰显示()               { cat   windows_02_清晰显示 ;}
+function fn_03_看雪()                   { cat   windows_03_看雪 ;}
+function fn_excel()                     { cat   windows_excel
+                                                excel_function   # 公式
+                                                excel2txt        # 转换工具
+                                        ;}
+function fn_word()                      { cat   windows_word ;}
+function fn_visio()                     { cat   win_visio ;}
+function fn_mpp()                       { cat   windows_mpp ;}
+function fn_beyondcompare3()            { cat   windows_beyondcompare3 ;}
+function fn_rightclick()                { cat   windows_rightclick ;}
+function fn_U盘DOS启动盘制作工具()      { cat   windows_U盘DOS启动盘制作工具 ;}
+function fn_regedit()                   { cat   win_regedit ;}
+function fn_qmacro()                    { cat   win_qmacro ;}
     local opts=(
         syscmd                  # usb systeminfo printer viso
         02_清晰显示
         03_看雪                 # encrypt 加密解密
         win7                    # 快捷键
         rightclick              # 添加右键编辑 GVIM bc3
-        excel
         word                    # office
         visio
         mpp                     # msproject task
@@ -903,7 +905,6 @@ function fn_pod()                       { cat perl_pod ;}
     local opts=(
         gate_入门
         pod
-        excel2txt                       # 转换工具，很棒 GOOGLE安装这
     )
     fn_print $@
 }
