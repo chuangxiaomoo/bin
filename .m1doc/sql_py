@@ -353,8 +353,9 @@ CREATE TABLE IF NOT EXISTS dualtrade (
     close_x DECIMAL(6,2)    NOT NULL DEFAULT 0,           
     ma20_x  DECIMAL(6,2)    NOT NULL DEFAULT 0, # 明天-ma20
     oc_ma20 DECIMAL(6,2)    NOT NULL DEFAULT 0, # 34天-ma20，用来确认创 34 日转折点
-    yr_ma20 DECIMAL(6,2)    NOT NULL DEFAULT 0, #   年-ma20, 联合 yr_mx20 确定年涨幅，共同富裕是主题
-    yr_mx20 DECIMAL(6,2)    NOT NULL DEFAULT 0, #   年-ma20
+    yr_ma20 DECIMAL(6,2)    NOT NULL DEFAULT 0, # 半年-ma20, 联合 yr_mx20 确定年涨幅，共同富裕是主题
+    yr_mx20 DECIMAL(6,2)    NOT NULL DEFAULT 0, # 半年-ma20
+    yr_yx20 DECIMAL(6,2)    NOT NULL DEFAULT 0, #   年-ma20
     INDEX(date),
     INDEX(date,code)
 );

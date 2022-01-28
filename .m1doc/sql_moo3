@@ -24,6 +24,7 @@ CREATE TABLE balance (
     INDEX(code,date)
 );
 
+DROP TABLE IF EXISTS apeak;
 CREATE TABLE apeak(
     date    date NOT NULL, 
     code    INT(6) ZEROFILL NOT NULL DEFAULT 0,
@@ -39,6 +40,8 @@ CREATE TABLE apeak(
     a34     DECIMAL(12,2)   NOT NULL DEFAULT 0,     # hhv(amo, 34)
     c34     DECIMAL(6,2)    NOT NULL DEFAULT 0,     # hhv(C, 34)
     i34     SMALLINT        NOT NULL DEFAULT 0,     # c34  对应的 idx
+    a13     DECIMAL(12,2)   NOT NULL DEFAULT 0,     # hhv(amo, 13)
+    i13     SMALLINT        NOT NULL DEFAULT 0,     # c13  对应的 idx
     a       DECIMAL(12,2)   NOT NULL DEFAULT 0,     # amount
     c       DECIMAL(6,2)    NOT NULL DEFAULT 0,     # close
     o       DECIMAL(6,2)    NOT NULL DEFAULT 0,     # 
