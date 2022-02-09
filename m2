@@ -946,6 +946,9 @@ function fn_misc()                      { cat girl_misc
 function fn_letters()                   { cat girl_letters juzi poet sweet_words girl_self_introduction
                                               ~/gitee/social/priv/lixianxian.md
                                               ~/gitee/social/priv/wedding/dress.md  # 选择
+
+                                              kid.md
+
                                           cat girl_00_jiebao
                                           cat girl_01_tingbao
                                           cat girl_02_angelina
