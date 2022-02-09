@@ -472,6 +472,7 @@ function fn_80_emotion_情绪()           {
                                           cat article_82_有目标你就可以忍受一切
                                           cat article_83_情绪管理misc
                                           cat article_84_理性与情绪控制
+                                          cat article_85_多巴胺、内啡肽、催产素、苯基乙胺、血清素
                                         }
 
 function fn_71_不自律何自由？()         { cat article_71_不自律何自由？
@@ -944,6 +945,7 @@ function fn_misc()                      { cat girl_misc
                                         }
 function fn_letters()                   { cat girl_letters juzi poet sweet_words girl_self_introduction
                                               ~/gitee/social/priv/lixianxian.md
+                                              ~/gitee/social/priv/wedding/dress.md  # 选择
                                           cat girl_00_jiebao
                                           cat girl_01_tingbao
                                           cat girl_02_angelina
