@@ -8,11 +8,11 @@
 
 路由，route -n （外网时，删除NAT的默认网关，网关=IP&MASK，否则add会失败）
 
-IP丢失或冲突，ifconfig
+IP 丢失或冲突，ifconfig
 
-MAC丢失或冲突(MAC地址冲突，导致telnet操作很慢) ARP缓存MAC  -> arp -d
+MAC 丢失或冲突(MAC地址冲突，导致 telnet 操作很慢) ARP 缓存 MAC  -> arp -d
 
-MAC以00打头，是单播地址，01打头，是多播MAC地址。
+MAC 以 00 打头，是单播地址，01 打头，是多播 MAC 地址。
 
 ping
 

@@ -1,0 +1,134 @@
+#! /bin/bash
+
+. /root/bin/common.rc
+
+maps=(
+    GOD     https://47.119.185.73/svn/consumer.release
+    IPC     https://47.119.185.73/svn/ipc.release     
+    NVR     https://47.119.185.73/svn/nvr.release     
+    LOWP    https://47.119.185.73/svn/lowp.release    
+    COM     https://47.119.185.73/svn/carrier.release 
+)
+
+function fn_usage()
+{
+    echo "
+    Usage:
+        lzrel  st  [REPO-id]    # stat
+        lzrel  co  [REPO-id]    # checkout All with no id
+        lzrel  d   [REPO-id]    # 列出所有文件夹
+        lzrel  f   [REPO-id]    # 列出所有文件
+    "
+
+    local i j k
+    for (( i=0,j=1,k=0; i<${#maps[@]}; j+=2,i+=2,k++ )); do
+        grp=${maps[${i}]}
+        url=${maps[${j}]}
+        printf "    $k   %-11s%s\n" $grp $url
+    done
+}
+
+function fn_main()
+{
+    case $1 in
+    co)
+       case $2 in
+       [0-9])
+            let i_url=$2*2
+            if [ "${i_url}" -lt ${#maps[@]} ]; then
+                svn co ${maps[$i_url]}
+                return
+            fi
+            echo "
+            out of scope
+            "
+            return
+            ;;
+        esac
+
+        local i j
+        for (( i=0,j=1; i<${#maps[@]}; j+=2,i+=2 )); do
+            grp=${maps[${i}]}
+            url=${maps[${j}]}
+            svn co $url
+        done
+        ;;
+    st)
+       case $2 in
+       [0-9])
+            let i_url=$1*2+1
+            if [ "${i_url}" -lt ${#maps[@]} ]; then
+                url=${maps[${i_url}]}
+                svn st ${url##*/}
+                return
+            fi
+            echo "
+            out of scope
+            "
+            return
+            ;;
+        esac
+
+        local i j
+        for (( i=0,j=1; i<${#maps[@]}; j+=2,i+=2 )); do
+            grp=${maps[${i}]}
+            url=${maps[${j}]}
+            fn_echo_succ ${grp}
+            svn st ${url##*/}
+        done
+        ;;
+    d)
+       case $2 in
+       [0-9])
+            let i_url=$1*2+1
+            if [ "${i_url}" -lt ${#maps[@]} ]; then
+                url=${maps[${i_url}]}
+                find ${url##*/} -name '*' -type d | grep -v '\.svn'
+                return
+            fi
+            echo "
+            out of scope
+            "
+            return
+            ;;
+        esac
+
+        local i j
+        for (( i=0,j=1; i<${#maps[@]}; j+=2,i+=2 )); do
+            grp=${maps[${i}]}
+            url=${maps[${j}]}
+            fn_echo_succ ${grp}
+            find ${url##*/} -name '*' -type d | grep -v '\.svn'
+        done
+        ;;
+    f)
+       case $2 in
+       [0-9])
+            let i_url=$1*2+1
+            if [ "${i_url}" -lt ${#maps[@]} ]; then
+                url=${maps[${i_url}]}
+                find ${url##*/} -name '*.tgz' -type f | grep -v '\.svn'
+                return
+            fi
+            echo "
+            out of scope
+            "
+            return
+            ;;
+        esac
+
+        local i j
+        for (( i=0,j=1; i<${#maps[@]}; j+=2,i+=2 )); do
+            grp=${maps[${i}]}
+            url=${maps[${j}]}
+            fn_echo_succ ${grp}
+            find ${url##*/} -name '*.tgz' -type f | grep -v '\.svn'
+        done
+        ;;
+    *)
+        fn_usage; exit
+        ;;
+    esac
+}
+
+fn_main $@

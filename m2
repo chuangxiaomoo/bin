@@ -439,7 +439,7 @@ function fn_41_如何成为高品质的勤奋者() { cat article_41_如何成为
                                           cat article_41_如何成为高品质的勤奋者2
                                               article_41_读书的低水平勤奋陷阱
                                               article_41_你的阅读造就了你
-                                              article_41_如何写好一封邮件
+                                              article_41_如何写好一封邮件       # email
                                         }
 function fn_42_思考工具及框架()         { cat article_42_思考工具及框架         # 思维模型 model framework
                                               book_TheModelThinker.md
