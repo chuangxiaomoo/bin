@@ -1107,6 +1107,7 @@ function fn_interview()                 { cat career
                                                 interview.q201200.md     # 初次考核
                                                 interview.horizon
                                                 interview   # 想想自己的价值？企业本质在更高效的内部交易
+                                                interview_tester.md
                                         }
 
 function fn_influence()                 { cat influence_cept            # 影响力
