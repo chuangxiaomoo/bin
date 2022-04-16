@@ -1,0 +1,129 @@
+#! /bin/bash
+
+. /root/bin/common.rc
+
+usage="
+    cisvn   XXX.release/pUpgrade/A/B    rar/XXX.rar
+            # list to use [lzrel d ID]
+                                        # better to has only 1 .rar
+"
+
+#echo $path
+
+fn_rar()
+{
+    cd rar/
+    f_rar=${p_rar##*/}
+    d_rar=${f_rar%%??????}
+
+    [ -d release ] && rm -rf release
+    unrar x "${f_rar}"
+
+    # FH88XX
+    if [ -d release ]; then
+        cd release
+        DIR_RAR=${PWD}
+        rm -f ${DIR_RAR}/tar/*.force.tgz
+        F_TAR=`find $PWD -name *.tgz`
+        F_FFW=`find $PWD -name *.ffw`
+        rm -f ${DIR_RAR}/com/u-boot.bin
+        F_BIN=`find $PWD -name *.bin`
+    # T31X
+    else
+        cd ${d_rar}*
+        DIR_RAR=${PWD}
+        rm -f "${DIR_RAR}/*.force.tgz"
+        F_TAR=`find $PWD -name *.tgz`
+        F_FFW=`find $PWD -name *.ffw`
+        rm -f ${DIR_RAR}/comgencn/*boot*
+        F_BIN=`find ${DIR_RAR}/comgencn -name *.bin`
+    fi
+
+    echo $F_TAR $F_FFW _____
+
+
+    test -f "${F_TAR}"
+    xt_ret $? "not exist ${F_TAR}" || return $?
+    test -f "${F_FFW}"
+    xt_ret $? "not exist ${F_FFW}" || return $?
+    test -f "${F_BIN}"
+    xt_ret $? "not exist ${F_BIN}" || return $?
+}
+
+fn_main()
+{
+    p_tar=$1
+    p_bin=${1//pUpgrade/pBurn/}
+    p_rar=$2
+
+    test -d "${p_tar}"
+    xt_ret $? "${p_tar} not exist\n${usage}" || return $?
+
+    grep -q pUpgrade <<< "$p_tar"
+    xt_ret $? "pUpgrade needed: $p_tar" || return $?
+
+    test -d "${p_bin}"
+    xt_ret $? "${p_bin} not exist\n${usage}" || return $?
+
+    test -f "${p_rar}"
+    xt_ret $? "${p_rar} not exist\n${usage}" || return $?
+
+    fn_rar
+    xt_ret $? "" || return $?
+
+    # tar
+    cd "$CWD"
+    cd "$p_tar"
+
+    if [ ! -d history  ]; then
+        mkdir history; svn add history
+        xt_ret $? "" || return $?
+    fi
+
+    if [ -f *.tgz ]; then
+        echo do svn mv
+        svn mv *.tgz *.ffw history
+        xt_ret $? "" || return $?
+    fi
+
+    cp "$F_TAR" "${F_FFW}" .
+    xt_ret $? "" || return $?
+
+    svn add *.ffw *.tgz
+    xt_ret $? "" || return $?
+
+    # bin
+    cd "$CWD"
+    cd "$p_bin"
+
+    if [ ! -d history  ]; then
+        mkdir history; svn add history
+        xt_ret $? "" || return $?
+    fi
+
+    if [ -f *.bin ]; then
+        svn mv *.bin history
+        xt_ret $? "" || return $?
+    fi
+
+    echo cp "$F_BIN" .
+    cp "$F_BIN" .
+    xt_ret $? "" || return $?
+
+    svn add *.bin
+    xt_ret $? "" || return $?
+
+
+    URL=https://47.119.185.73/svn
+    echo "
+    软件版本号: 
+    tar包文件: ${F_TAR##*/}
+    tar包路径: ${URL}/$p_tar
+    bin包文件: ${F_BIN##*/}
+    bin包路径: ${URL}/$p_bin
+    "
+
+    echo $p_tar $p_bin
+}
+
+fn_main $@

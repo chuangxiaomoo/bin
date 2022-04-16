@@ -83,7 +83,7 @@ function fn_main()
             let i_url=$1*2+1
             if [ "${i_url}" -lt ${#maps[@]} ]; then
                 url=${maps[${i_url}]}
-                find ${url##*/} -name '*' -type d | grep -v '\.svn'
+                find ${url##*/} -name '*' -type d | grep -v '\.svn' | grep -v history
                 return
             fi
             echo "
@@ -98,7 +98,7 @@ function fn_main()
             grp=${maps[${i}]}
             url=${maps[${j}]}
             fn_echo_succ ${grp}
-            find ${url##*/} -name '*' -type d | grep -v '\.svn'
+            find ${url##*/} -name '*' -type d | grep -v '\.svn' | grep -v history
         done
         ;;
     f)
