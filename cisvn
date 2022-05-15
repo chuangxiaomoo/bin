@@ -116,6 +116,7 @@ fn_main()
 
     URL=https://47.119.185.73/svn
     echo "
+    ========== 
     软件版本号: 
     tar包文件: ${F_TAR##*/}
     tar包路径: ${URL}/$p_tar

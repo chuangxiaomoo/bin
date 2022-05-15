@@ -1106,8 +1106,10 @@ function fn_interview()                 { cat career
                                                 interview.q201111.md     # 11.11
                                                 interview.q201200.md     # 初次考核
                                                 interview.horizon
-                                                interview   # 想想自己的价值？企业本质在更高效的内部交易
-                                                interview_tester.md
+                                                interview               # 想想自己的价值？企业本质在更高效的内部交易
+                                                interview_tester.md     # 类  : 责任感、皮实、靠谱执行力、追求极致
+                                                freshman__tester.md     # 实例: 
+                                                6condition.md
                                         }
 
 function fn_influence()                 { cat influence_cept            # 影响力

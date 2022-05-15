@@ -24,11 +24,18 @@ function fn_ipctool()
     done
 }
 
+
+function fn_update_force()
+{
+    echo -n "$1" > update_force.txt
+}
+
 function fn_main() 
 {
     cmdlist=(
     "ipctool                # search-ipc"
     "nvrtool                # search-nvr"
+    "update_force           # 生成 ffw 文件"
     )
 
     fn_execute "$@"

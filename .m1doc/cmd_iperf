@@ -3,7 +3,7 @@
 **Listen** -D to bg
 iperf -i1 -b1000M -s -D
 
-**clent** default -t10 
+**client** default -t10 
 iperf -i1 -b1000M -c 192.168.2.248 
 
 # 测试Wifi热点，只能在手机上-s

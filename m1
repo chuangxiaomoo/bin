@@ -707,9 +707,9 @@ function fn_Essential()                 { cat cmd_Essential ;}
 function fn_arping()                    { cat cmd_arping ;}
 function fn_chmod()                     { cat cmd_chmod ;}
 function fn_tee()                       { cat cmd_tee ;}
-function fn_fdisk()                     { cat cmd_fdisk ;}     # uuid
+function fn_fdisk()                     { cat cmd_fdisk ;}      # uuid
 function fn_date()                      { cat cmd_date cmd_timeout ;}
-function fn_dd()                        { cat cmd_dd ;}
+function fn_dd()                        { cat cmd_dd ;}         # dd emulate iperf
 function fn_iperf()                     { cat cmd_iperf ;}
 function fn_himm()                      { cat cmd_himm ;}
 function fn_ifconfig()                  { cat cmd_ifconfig ;}
