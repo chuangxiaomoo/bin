@@ -28,6 +28,9 @@ DROP TABLE IF EXISTS apeak;
 CREATE TABLE apeak(
     date    date NOT NULL, 
     code    INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    a220    DECIMAL(12,2)   NOT NULL DEFAULT 0,     # hhv(amo, 220)
+    c220    DECIMAL(6,2)    NOT NULL DEFAULT 0,     # hhv(C, 220)
+    i220    SMALLINT        NOT NULL DEFAULT 0,     # c220 对应的 idx
     a144    DECIMAL(12,2)   NOT NULL DEFAULT 0,     # hhv(amo, 144)
     c144    DECIMAL(6,2)    NOT NULL DEFAULT 0,     # hhv(C, 144)
     i144    SMALLINT        NOT NULL DEFAULT 0,     # c144 对应的 idx
