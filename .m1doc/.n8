@@ -1,0 +1,17 @@
+#! /bin/bash
+
+# HOST=121.40.104.39
+# kill 58888 @2022-06-08.21:56:44
+# listen do-start 58888 @2022-06-08.21:57:12
+
+fn_main()
+{
+    port=5888${1:-8}
+    while :; do
+        echo listen do-start $port @`date +%F.%T` | tee -a .log
+        busybox nc -lp $port > /dev/null || break
+        sleep .5
+    done
+}
+
+fn_main $@

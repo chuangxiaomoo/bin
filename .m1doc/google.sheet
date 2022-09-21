@@ -43,6 +43,7 @@ Double-click on the border between any two of the selected rows on the row numbe
 | 12  | 普通 Ctrl-1        |                                |
 | 13  | 选中 Ctrl-1        | 会出现`sub-shortcut-key`       |
 | 14  | 选中  Shift        | 进行矩形选中                   |
+| 14  | 反选 Ctrl-Alt-左键 |                                |
 | 15  | -------------      | -------------                  |
 | 16  | Format-conditional | Ctrl-1,Layout                  |
 | 17  | Word-Auto          | Alt-H,W                        |

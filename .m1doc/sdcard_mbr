@@ -3,6 +3,7 @@
 root@grain-media:~# cat /sys/block/mmcblk0/device/cid
 
 035344534336344780616e1248012c3f    // SanDisc 64G
+8903034e43617264101930291201653f
 
 | Name Field            | Width | CID-slice     | e.g.       |
 | Manufacturer ID       | MID   | 8  [^127:120] | 03         | SanDisc
@@ -20,6 +21,9 @@ root@grain-media:~# cat /sys/block/mmcblk0/device/serial
 
 [SD Association Physical Layer Simplified Specification](https://www.sdcard.org/downloads/pls/index.html)
 [32字节cid详细意义](http://www.cameramemoryspeed.com/sd-memory-card-faq/reading-sd-card-cid-serial-psn-internal-numbers/)
+
+https://www.cameramemoryspeed.com/sd-memory-card-faq/reading-sd-card-cid-serial-psn-internal-numbers
+
 serial是cid的一部分。
 
 # MBR分区结构

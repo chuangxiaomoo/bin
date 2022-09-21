@@ -8,7 +8,7 @@ cd ${CWD}
 
 function fn_ipctool()
 {
-    MYIP='192.168.2.247'
+    MYIP='192.168.9.246'
     key="SEARCH * HDS/1.0 LOCALIP=${MYIP}#LOCALPORT=8788#i_am_nc"
     grp='230.230.230.230'
     port=8002
@@ -25,8 +25,19 @@ function fn_ipctool()
 }
 
 
+function fn_ffw_force()
+{
+    grep -q ffw <<< "$1"
+    xt_ret $? "ffw needed" || return $?
+
+    echo -n "$1" > ffw.txt
+}
+
 function fn_update_force()
 {
+    grep -q tgz <<< "$1"
+    xt_ret $? "ffw needed" || return $?
+
     echo -n "$1" > update_force.txt
 }
 
@@ -35,7 +46,8 @@ function fn_main()
     cmdlist=(
     "ipctool                # search-ipc"
     "nvrtool                # search-nvr"
-    "update_force           # 生成 ffw 文件"
+    "update_force           # 生成 update_force.txt 文件"
+    "ffw_force              # 生成 ffw.txt 文件"
     )
 
     fn_execute "$@"

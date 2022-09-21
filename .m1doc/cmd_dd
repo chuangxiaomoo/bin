@@ -45,7 +45,7 @@ nc -lp 1234 > /dev/null
 NR=100 IF=/dev/zero HOST=192.168.2.102       # Send on IPC
 NR=100 IF=/dev/zero HOST=192.168.9.246       # Send to Ubt
 
-ps -ef >& /dev/null && export OPT=ax
+ps -ef >& /dev/null && export OPT=ax;
 
 dd if=$IF  bs=400K count=$NR | nc ${HOST} 1234 &            \
 pid=`ps $OPT | awk '/[d]d if/{printf ("%s", $1); exit}'`;   \

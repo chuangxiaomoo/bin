@@ -39,7 +39,7 @@ Add
   Destination  Gateway   Genmask        Flags Metric Ref  Use Iface
   192.168.3.0  *         255.255.255.0  U     0      0      0 wlan0
 
-  route add default gw 192.168.2.1
+  route add default gw 192.168.9.1
   route add -net 192.168.2.0  gw 0.0.0.0  netmask 255.255.255.0 [dev eth0]
 
 Windows

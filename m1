@@ -102,6 +102,7 @@ function fn_alibaba()                   { cat alibaba taobao
 function fn_google()                    { cat google
                                               google.translate
                                               google.faq
+                                              # dingtalk
                                               google.sheet
                                               google.dog
                                               gfw
@@ -710,6 +711,7 @@ function fn_tee()                       { cat cmd_tee ;}
 function fn_fdisk()                     { cat cmd_fdisk ;}      # uuid
 function fn_date()                      { cat cmd_date cmd_timeout ;}
 function fn_dd()                        { cat cmd_dd ;}         # dd emulate iperf
+function fn_dd()                        { cat cmd_dd_4g .n8 ;}      # dd 4g bandwidth
 function fn_iperf()                     { cat cmd_iperf ;}
 function fn_himm()                      { cat cmd_himm ;}
 function fn_ifconfig()                  { cat cmd_ifconfig ;}

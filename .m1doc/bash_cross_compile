@@ -207,3 +207,21 @@ CC=arm-fullhanv3-linux-uclibcgnueabi-gcc ac_cv_linux_vers=4.9 ./configure --host
 make
 arm-fullhanv3-linux-uclibcgnueabi-strip -S tcpdump
 
+# zbar 编译与使用
+参考[ ta是一个搬运工 使用zbar识别二维码](https://blog.csdn.net/li_huaqingfeng/article/details/118195587)
+
+```bash
+wget http://downloads.sourceforge.net/project/zbar/zbar/0.10/zbar-0.10.tar.gz
+tar -zvxf zbar-0.10.tar.gz
+export CFLAGS=""  # 防止编译出错
+./configure --enable-shared --enable-static --without-imagemagick --without-jpeg --without-python --without-gtk --without-qt --disable-video
+./configure --prefix=$PWD/output/ --enable-shared --disable-video --without-python --without-imagemagick --without-gtk --without-qt --enable-static 
+./configure --prefix=$PWD/output/ --enable-shared --disable-video --without-python --without-imagemagick --without-gtk --without-qt --enable-static CFLAGS=""
+make
+make intsall
+
+
+# 使用：GB2312(7,000) 比 GB18030(70,000) 匹配更准确
+apt-get install zbar-tools
+LD_LIBRARY_PATH=/root/github/zbar-0.10/output/lib/ zbarimg --raw -q 粤B8888.png
+```
