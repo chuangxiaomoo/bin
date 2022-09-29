@@ -1,0 +1,19 @@
+#! /bin/sh
+
+if [ ${1:-8} = k ]; then
+    ps | grep "[5]888" | awk '{print $1}' | xargs kill -9 2>/dev/null
+    return
+fi  
+
+port=${1:-8}; [ $port = 8 ] || port=9
+NR=60 IF=/dev/zero HOST=121.40.104.39
+
+ps -ef >& /dev/null && export OPT=ax;
+dd if=$IF  bs=512K count=$NR | nc ${HOST} 5888${port} &     \
+pid=`ps $OPT | awk '/[d]d if/{printf ("%s", $1); exit}'`;   \
+i=0; test -n "$pid" &&                                      \
+while :; do kill -0 $pid 2>/dev/null || { echo __done__; break; };  \
+    let i=i+1; echo $i; sleep 1;                            \
+    kill -USR1 $pid 2>/dev/null;                            \
+done
+

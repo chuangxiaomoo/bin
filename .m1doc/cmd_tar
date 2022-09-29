@@ -1,7 +1,9 @@
 #! /bin/bash
 
 rar
-    rar
+    rar a archive.rar FILE...
+
+unrar
     unrar x archive.rar .
 
 zip
