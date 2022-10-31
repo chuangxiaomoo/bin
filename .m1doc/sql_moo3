@@ -146,20 +146,17 @@ CREATE TABLE v5 (                                   # 重构i34，i34需要的�
     hi          DECIMAL(6,2) NOT NULL DEFAULT 0,    # 考虑`负阴抱阳`
     lo          DECIMAL(6,2) NOT NULL DEFAULT 0,    #
 
-    ic          TINYINT      not null DEFAULT 0,    # 排名
-    iv1         TINYINT      not null DEFAULT 0,    # 排名 13
-    iv3         TINYINT      not null DEFAULT 0,    # 排名 34
+    ic          TINYINT      NOT NULL DEFAULT 0,    # index 13 日收盘
+    iv1         TINYINT      NOT NULL DEFAULT 0,    # index 13
+    iv3         TINYINT      NOT NULL DEFAULT 0,    # index 34
     n10         TINYINT      NOT NULL DEFAULT 0,    # 涨停数
 
-    hhc         DECIMAL(6,2) not null DEFAULT 0,    # 13日最高收盘
-    hhh         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 13日最高high
-    lll         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 13日最高low
+    hhc         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 13日收盘>ma20
+    lll         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 13日low <ma20
 
-    v0          DECIMAL(6,2) not null DEFAULT 0,    # 
-    v1          DECIMAL(6,2) not null DEFAULT 0,    # 
-    v2          DECIMAL(6,2) not null DEFAULT 0,    # 
-    v3          DECIMAL(6,2) not null DEFAULT 0,    # 
-    v4          DECIMAL(6,2) not null DEFAULT 0,    # 
+    kv3         TINYINT      NOT NULL DEFAULT 0,    # 
+    kv2         TINYINT      NOT NULL DEFAULT 0,    # 
+    kv1         TINYINT      NOT NULL DEFAULT 0,    # 缩量新高
 
     INDEX(date),
     INDEX(code,date)
