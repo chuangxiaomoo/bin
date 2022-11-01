@@ -41,6 +41,32 @@ function fn_update_force()
     echo -n "$1" > update_force.txt
 }
 
+
+function fn_drop()
+{
+    sync; echo 3 > /proc/sys/vm/drop_caches
+    top -n1 | sed -n '1,5p'; free;
+    echo -n "free+buffer+cache: "
+    cat /proc/meminfo | sed -n '2,4p' | awk '{sum=sum+$2} END{print sum}'
+}
+
+function fn_pskill()
+{
+    test -n "$1" || {
+        echo "Usage: pskill name" && return 1
+    };
+    head=${1:0:1};
+    body=${1:1};
+    ps -ef | grep --color=auto -E "[${head}]${body}\>" | awk '{print $2}' | xargs kill -9
+}
+
+
+function fn_autossh()
+{
+    fn_pskill autossh
+    autossh -M 55555 -NfR 0.0.0.0:22001:localhost:22 root@47.112.230.17 -p 48367
+}
+
 function fn_main() 
 {
     cmdlist=(
@@ -48,6 +74,8 @@ function fn_main()
     "nvrtool                # search-nvr"
     "update_force           # 生成 update_force.txt 文件"
     "ffw_force              # 生成 ffw.txt 文件"
+    "drop                   # vmm drop"
+    "autossh                # restart"
     )
 
     fn_execute "$@"

@@ -80,3 +80,20 @@
   write(fd)                 echo -n "Hello world!" >& fd
   close(fd)                 exec fd>&-
                             exec fd<&-
+
+# 4G 
+
+exec 7<> /dev/ttyUSB0;
+echo -ne "AT+CCID\r\n" >& 7;
+echo -ne "AT+COCSIM=0\r\n" >& 7;
+read line <& 7; echo $line
+exec 7<&-                  
+
+# NORMAL file
+
+exec 7<> /tmp/abc
+echo -ne "AT+CCID\r\n" >& 7;
+echo -ne "AT+COCSIM=0\r\n" >& 7;
+read line <& 7; echo $line
+exec 7<&-                  
+

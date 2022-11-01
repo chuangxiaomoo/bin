@@ -5,9 +5,11 @@
 # \C = Ctrl
 # 
 
-bind '"\ei": "192.168.9."'                  # 
-bind '"\el": "127.0.0.1"'                   # Local Loopback
+bind '"\ei": "192.168.9."'                  # 子网
+bind '"\eo": "chmod o-w"'                   # o-w
 bind '"\ee": "\C-asudo \C-e"'               # Alt-e 自动输入 sudo
+bind '"\el": "127.0.0.1"'                   # Local Loopback
+bind '"\ev": "XsE58d%7"'                    # 消费类密码
 bind '"\C-x\C-x": beginning-of-line'        # any readline-compatible environment like Bash, python and mysql
 
 bind '"\C-f":vi-fWord'                      # move forward by whitespace-delimited word

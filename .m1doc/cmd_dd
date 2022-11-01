@@ -54,3 +54,15 @@ while :; do kill -0 $pid || { echo __done__; break; };      \
     let i=i+1; echo $i;                                     \
     sleep 1; kill -USR1 $pid;                               \
 done
+
+# create files 1 2 3 ...
+i=0; while [ ${i:=0} -lt 100 ]; do
+    let i++; echo ____ $i
+    dd if=/dev/zero of=${i:-0} bs=1M count=100 || { echo __exit; break ;}
+done &
+
+# read
+i=0; while [ ${i:=0} -lt 100 ]; do
+    let i++                          
+    cat $i > /dev/null
+done &                                

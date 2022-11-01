@@ -47,6 +47,8 @@
 
 Example:
 
+## fulhan define LINUX_INIT_ADDR   0xa1000000
+
   拔掉外网网线，保证下列命令运行成功
 
     se serverip 192.168.2.45;se ipaddr 192.168.2.44

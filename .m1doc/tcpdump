@@ -34,6 +34,7 @@ tcpdump.msipc -i eth0  -w /tmp/a.cap            # > 重定向会破坏格式
 tcpdump.msipc -i eth0  port 8002  -w /tmp/a.cap            # > 重定向会破坏格式
 
 ./tcpdump -i wlan0  -w /tmp/a.cap
+./tcpdump -i usb0   -w ./a.cap
 
 # expression 复合表达式
 
