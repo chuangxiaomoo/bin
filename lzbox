@@ -65,6 +65,9 @@ function fn_autossh()
 {
     fn_pskill autossh
     autossh -M 55555 -NfR 0.0.0.0:22001:localhost:22 root@47.112.230.17 -p 48367
+    echo "
+    autossh reset succ
+    "
 }
 
 function fn_main() 
