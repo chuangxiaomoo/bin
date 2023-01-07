@@ -1,0 +1,15 @@
+# svn co
+
+关键参数控制：--depth
+
+--depth ARG : limit operation by depth ARG ('empty', 'files','immediates', or 'infinity')
+--set-depth ARG : set new working copy depth to ARG ('exclude','empty', 'files', 'immediates', or 'infinity')
+
+empty       ：不检出项目的任何文件；
+files       ；没用过
+immediates  ：目录的第一级；
+infinity    ：整个目录所有文件
+
+svn co --depth immediates
+svn up --set-depth infinity __EXCLUDE_kernel__
+

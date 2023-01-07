@@ -150,6 +150,7 @@ function fn_lib_static()                { cat make_lib_static
                                               make_ar2ar.mk
                                               make_ar2so
                                               make_lib_dependence
+                                              make_lib_i386_x64
                                               make_herderfile_dependence
                                               awtk
                                               scons
@@ -222,6 +223,7 @@ function fn_bash() {
 function fn_fundamental()               { cat bash_fundamental
                                               bash_position_parameter
                                               bash_ksh
+                                              bash_loop_read_while
                                               bash_PS4
                                               bash_tempfile
                                         }
@@ -249,7 +251,8 @@ function fn_array()                     { cat bash_array ;}
 function fn_PIPESTATUS()                { cat bash_PIPESTATUS ;}
 function fn_export()                    { cat bash_export ;}
 function fn_pathname_expansion()        { cat bash_pathname_expansion ;}
-function fn_pipe()                      { cat bash_pipe ;}
+function fn_pipe()                      { cat bash_pipe
+                                        }
     local opts=(
         fundamental
         cross_compile
@@ -445,6 +448,7 @@ function fn_sync()                      { cat clang_sync ;}
 function fn_getopt_long()               { cat clang_getopt_long ;}
 function fn_strtol()                    { cat clang_strtol ;}
 function fn_atoi()                      { cat clang_atoi ;}
+function fn_atoi()                      { cat clang_itoa10 ;}
 function fn_nonblock()                  { cat clang_nonblock ;}
 
     local opts=(
@@ -618,6 +622,7 @@ function fn_help()                      { cat svn_help ;}
 function fn_merge()                     { cat svn_merge ;}
 function fn_visual_svn_server()         { cat svn_visual_svn_server
                                               svn_auth
+                                              svn_checkout svn_co
                                         }
 function fn_revision()                  { cat svn_revision ;}
 function fn_stat()                      { cat svn_stat ;}
@@ -878,7 +883,11 @@ function fn_examples()                  { cat curl_examples ;}
 function fn_http()                      {
 function fn_base()                      { cat http_base ;}
 function fn_method()                    { cat http_method ;}
-function fn_boa()                       { cat http_boa ;}
+function fn_boa()                       { cat http_boa
+                                              http_apache2
+                                              sudo apt-get update
+                                              sudo apt-get install apache2
+                                        }
     local opts=(
         base                            # URL特殊字符 REST
         method                          # get post put del cgi-bin

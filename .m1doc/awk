@@ -21,6 +21,18 @@
         ' $1
     }
 
+# Hex OR
+
+OR() {
+  awk -v v1=$1 -v v2=$2 'BEGIN{ s=or(v1,v2);printf "0x%x", s}'
+}
+
+old=`devmem 0x10060030`
+new=`OR $old 0x7`           ## usb 总是使能预加强功能，增加压摆率
+devmem 0x10060030  32  $new  
+echo old:$old new:$new
+devmem 0x10060030
+
 # 传递参数
 
     pass_para2awk() {

@@ -5,8 +5,8 @@
 # *3.1* add_a_new_disc_sh()
 
 
-dev_disc="/dev/sdc"
-mount_path="/b_disc"
+dev_disc="/dev/sde"
+mount_path="/mnt"
 
 fdisk $dev_disc
 
@@ -37,7 +37,7 @@ sleep 2
 
 dev_not_in_conf=`grep "$dev_disc"  /etc/fstab`
 if [ -z $dev_not_in_conf ]; then
-    echo "$dev_disc     $mount_path     ext3    defaults    1 2" >> "/etc/fstab"
+    echo "$dev_disc     $mount_path     ext4    defaults    1 2" >> "/etc/fstab"
 fi
 
 

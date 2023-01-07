@@ -17,6 +17,9 @@ From  Ubuntu 12.04, install ia32-libs-multiarch
 **对于ubuntu 13.04以后的版本**
 apt-get install libc6-i386
 
+**libncurse**
+see: make_lib_i386_x64
+
 # version and bit
 
 getconf LONG_BIT

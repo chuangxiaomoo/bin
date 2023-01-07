@@ -64,6 +64,8 @@ function fn_pskill()
 function fn_autossh()
 {
     fn_pskill autossh
+    sleep .5
+    netstat -nat | grep -w 22
     autossh -M 55555 -NfR 0.0.0.0:22001:localhost:22 root@47.112.230.17 -p 48367
     echo "
     autossh reset succ

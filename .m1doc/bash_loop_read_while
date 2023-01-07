@@ -1,0 +1,10 @@
+#! /bin/sh
+
+fn_main()
+{
+    while read file; do
+        echo rm -f $file
+        test -f $file
+        echo $file >> /opt/etc/rec_blacklist
+    done < /tmp/reclist
+}
