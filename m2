@@ -82,6 +82,7 @@ function fn_2019_plan()                 { cat annual_2019_plan annual_2019_event
 function fn_2020_plan()                 { cat annual_2020_plan annual_2020_event annual_2020_report ;}
 function fn_2021_plan()                 { cat annual_2021_plan annual_2021_event annual_2021_report ;}
 function fn_2022_plan()                 { cat annual_2022_plan annual_2022_event annual_2022_report ;}
+function fn_2023_plan()                 { cat annual_2023_plan annual_2023_event annual_2023_report ;}
     local opts=(
         plan_what                       # 基于`以终为始`的理念
         report_what
