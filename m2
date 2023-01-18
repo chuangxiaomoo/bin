@@ -70,19 +70,20 @@ function fn_2011_investment_report()    { cat annual_2011_investment_report ;}
 function fn_2014_jco()                  { cat annual_2014_jco ;}
 function fn_2014_spring_festival()      { cat annual_2014_spring_festival ;}
 function fn_2014_grandpa_inlaw()        { cat annual_2014_grandpa_inlaw ;}
-function fn_2014_national_day()         { cat annual_2014_national_day ;}
-function fn_2012_plan()                 { cat annual_2012_plan annual_2012_event annual_2012_report ;}
-function fn_2013_plan()                 { cat annual_2013_plan annual_2013_event annual_2013_report ;}
-function fn_2014_plan()                 { cat annual_2014_plan annual_2014_event annual_2014_report ;}
-function fn_2015_plan()                 { cat annual_2015_plan annual_2015_event annual_2015_report ;}
-function fn_2016_plan()                 { cat annual_2016_plan annual_2016_event annual_2016_report annual_2016_ljsw  ;}
-function fn_2017_plan()                 { cat annual_2017_plan annual_2017_event annual_2017_report ;}
-function fn_2018_plan()                 { cat annual_2018_plan annual_2018_event annual_2018_report ;}
-function fn_2019_plan()                 { cat annual_2019_plan annual_2019_event annual_2019_report annual_2019_grandpa annual_2019_yi ;}
-function fn_2020_plan()                 { cat annual_2020_plan annual_2020_event annual_2020_report ;}
-function fn_2021_plan()                 { cat annual_2021_plan annual_2021_event annual_2021_report ;}
-function fn_2022_plan()                 { cat annual_2022_plan annual_2022_event annual_2022_report ;}
-function fn_2023_plan()                 { cat annual_2023_plan annual_2023_event annual_2023_report ;}
+function fn_2014_national_day()         { cat annual_2014_national_day
+                                              annual_2012_plan annual_2012_event annual_2012_report
+                                              annual_2013_plan annual_2013_event annual_2013_report
+                                              annual_2014_plan annual_2014_event annual_2014_report
+                                              annual_2015_plan annual_2015_event annual_2015_report
+                                              annual_2016_plan annual_2016_event annual_2016_report annual_2016_ljsw
+                                              annual_2017_plan annual_2017_event annual_2017_report
+                                              annual_2018_plan annual_2018_event annual_2018_report
+                                              annual_2019_plan annual_2019_event annual_2019_report annual_2019_grandpa annual_2019_yi
+                                              annual_2020_plan annual_2020_event annual_2020_report
+                                              annual_2021_plan annual_2021_event annual_2021_report
+                                              annual_2022_plan annual_2022_event annual_2022_report
+                                              annual_2023_plan annual_2023_event annual_2023_report
+                                        }
     local opts=(
         plan_what                       # 基于`以终为始`的理念
         report_what
