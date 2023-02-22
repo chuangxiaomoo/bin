@@ -18,9 +18,10 @@ tar 1 single file                                           # 可以单独抽取
     tar -zxvf <tar filename> <file you want to extract>     # extract a single file
     tar -zxvf kernel.tar.gz  kernel/net/wireless/reg.c
 
-tar 不能处理无名文件
+tar 不能处理无名文件，`但 zip 可以`
 
     dmesg | tar 会失败，只能先用临时文件保留，再 tar ，再删除
+    cat /proc/$$/fd/0 | /ipc/bin/gzip > ${DUMP_DIR}/core.gz
 
 tar 
     /* Copying an Entire Directory Tree Without GNU cp, 

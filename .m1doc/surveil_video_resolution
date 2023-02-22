@@ -10,12 +10,33 @@ UVGA        1600 * 1200
 ```cpp
 int width[] = {176, 352, 720, 1280, 1920};
 int height[] = {144, 288, 576, 720, 1080};
+typedef enum {
+    VencSizeE_BEGIN    = -1,
+    VencSizeE_QCIF     = 0,    // QCIF
+    VencSizeE_CIF      = 1,      // CIF
+    VencSizeE_D1       = 2,      // D1
+    VencSizeE_720P     = 3 ,    // 720P
+    VencSizeE_UVGA     = 4,     // UVGA
+    VencSizeE_1080P    = 5,    // 1080P
+    VencSizeE_QVGA     = 6,    // QVGA
+    VencSizeE_VGA      = 7,      // VGA
+    VencSizeE_960P     = 8,     // 960P
+    VencSizeE_3M       = 9,
+    VencSizeE_180P     = 10,    // 180P
+    VencSizeE_360P     = 11,    // Q720P
+    VencSizeE_4M       = 12,
+    VencSizeE_5M       = 13,
+    vencSizeE_4M_Dahua = 14,
+    VencSizeE_2M_3M    = 14,
+    VencSizeE_8M       = 15,
+    VencSizeE_END
+} VencSizeE;
 ```
 
 | NO. | p       | pixel     | resolution  |
 | :-- | :------ | :------   | :---        |
 | 3   | QVGA    | 77K       | 320  * 240  |
-| 2   | 360P    | 225K      | 640  * 360  |
+| 2   | 360P    | 225K      | 640  * 360  | 16:9
 | 2   | VGA     | 307K      | 640  * 480  |
 | 1   | D1      | 414K      | 720  * 576  |
 | 2   | 720P    | 100W      | 1280 * 720  |

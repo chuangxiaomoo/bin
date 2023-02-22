@@ -698,6 +698,8 @@ function fn_hotkey()                    { cat w3m_hotkey ;}
 }
 
 function fn_mount()                     { cat cmd_mount
+                                              filesystem/loop       # losetup
+                                              filesystem/mkfs.fat
                                               filesystem/udev
                                               filesystem/mtd.md
                                               filesystem/squashfs.md
