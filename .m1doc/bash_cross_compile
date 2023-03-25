@@ -68,6 +68,12 @@ LSOF_CC=mips-linux-uclibc-gnu-gcc LSOF_HOST=mips-linux ./Configure  -n linux
 [](https://fossies.org/linux/misc/)
 ./configure --host=arm-buildroot-linux-uclibcgnueabihf
 
+# exfat mkfs fsck jzmmc
+
+https://github.com/relan/exfat
+FUSE2_CFLAGS='ls' FUSE2_LIBS='ls' ./configure --host=mips-linux CC=mips-linux-uclibc-gnu-gcc LD=mips-linux-uclibc-gnu-ld AR=mips-linux-uclibc-gnu-ar
+SUBDIRS 去掉 fuse
+
 # libiconv
 
 ./configure --host=arm-buildroot-linux-uclibcgnueabihf

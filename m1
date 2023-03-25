@@ -222,7 +222,7 @@ function fn_sed()                       { cat busybox_sed ;}
 function fn_bash() {
 function fn_fundamental()               { cat bash_fundamental
                                               bash_position_parameter
-                                              bash_ksh
+                                              bash_ksh box
                                               bash_loop_read_while
                                               bash_PS4
                                               bash_tempfile
@@ -406,6 +406,11 @@ function golang() {
     golang/testing.md
     golang/goroutine_chan.md            # 协程
 }
+
+function fn_clang_diff() {
+    clang_diff/sleep_usleep_nanosleep.i    
+}
+
 function fn_clang() {
 function fn_C调用C++链接库()            { cat clang_C调用C++链接库 ;}
 function fn_cdecl()                     { cat clang_cdecl ;}
@@ -424,7 +429,9 @@ function fn_linklist()                  { cat clang_linklist ;}
 function fn_package()                   { cat clang_package ;}
 function fn_macro()                     { cat clang_macro ;}
 function fn_memorylayout()              { cat clang_memorylayout ;}
+
 # ----- posix -------
+
 function fn_error()                     { cat clang_error ;}
 function fn_errno()                     { cat clang_errno ;}
 function fn_open()                      { cat clang_open ;}
@@ -590,6 +597,7 @@ function fn_most_freq_cmds()            { cat gdb_most_freq_cmds ;}
 
 function fn_git()                       { cat git ~/gitee/team/env/git.md
 function fn_github()                    { cat git_github
+                                              git_checkout # branch
                                           cat git_ignore
                                           cat git_merge
                                           cat git_stage

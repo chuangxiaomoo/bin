@@ -1,0 +1,9 @@
+
+1. 克隆 master  git clone
+2. 查看远程分支 git branch -a
+3. 克隆远程分支 git checkout -b
+
+git branch -a
+git checkout remotes/origin/old
+git checkout -b remotes/origin/old
+
