@@ -15,6 +15,20 @@ http://man.linuxde.net/sed
 (4) 可以尝试用sedsed来调试
 http://aurelio.net/sedsed/
 
+## 4.0 addr
+
+busybox ash 不支持 I, 使用 grep -A | grep B 替代
+```txt
+sed -n '/enum Runs/I,/RunSim/Ip'  g_run.h 
+typedef enum runsim4g {
+    RUN_DBM_WEAK    = 1<<0,
+    RUN_WWW_FAIL    = 1<<1,
+    RUN_PAUSE_4G    = 1<<2,
+    RUN_PRINT_4G    = 1<<3,
+    RUN_RESTART_ALI = 1<<4,
+} eRunSim4g;
+```
+
 ## 4.1 s
 
 > [address1[ ,address2]] s/pattern/replacemen/[flag]

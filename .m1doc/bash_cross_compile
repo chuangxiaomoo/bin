@@ -232,3 +232,11 @@ make intsall
 apt-get install zbar-tools
 LD_LIBRARY_PATH=/root/github/zbar-0.10/output/lib/ zbarimg --raw -q 粤B8888.png
 ```
+
+# mtr
+git clone https://github.com/traviscross/mtr.git
+./bootstrap.sh
+CROSS=arm-fullhanv3-linux-uclibcgnueabi
+./configure --prefix=$PWD/install CC=$CROSS-gcc --host=arm-linux-uclibcgnueabi --without-gtk
+make
+make install
