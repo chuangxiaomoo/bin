@@ -12,6 +12,8 @@ root@grain-media:~# cat /sys/block/mmcblk0/device/cid
 fe343253443136472000000b4501689f    // MJ 点序 64G
 6f0303434241445310aa0005a70164e1    // MJ 32G
 
+fe343253443136472000001cde0169f9
+
 | Name Field            | Width | CID-slice     | e.g.       |
 | Manufacturer ID       | MID   | 8  [^127:120] | 03         | SanDisc
 | OEM/Application ID    | OID   | 16 [^119:104] | 5344       | SD
