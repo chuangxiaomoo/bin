@@ -1,0 +1,17 @@
+# /proc/meminfo
+
+grep -e Dirty: -e Writeback: /proc/meminfo
+
+    Dirty %lu
+           Memory which is waiting to get written back to the disk.
+    Writeback %lu
+           Memory which is actively being written back to the disk.
+
+# /sys/block/<device>/stat
+
+You can look at the /sys/block/<device>/stat file for the appropriate device while you're syncing. The 9th column will indicate the number of in-flight requests on the device, which should go down to zero when the sync is done.
+
+Don't know of a way to translate that to a number of bytes, but it should give you a rough idea of how much "stuff" is still pending.
+
+See the stat.txt file in the kernel documentation for a bit more information. (There's also an inflight file in that directory on my system which looks like it could contain read and write in-flight requests, but I can't find docs for that.)
+

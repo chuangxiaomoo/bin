@@ -171,6 +171,7 @@ function fn_boot()                      { cat linux_boot ;}
 function fn_IPC()                       { cat linux_IPC ;}
 function fn_proc()                      { cat linux_proc ;}
 function fn_free_buffer_cache()         { cat linux_free_buffer_cache
+                                              linux_sync_buffer_cache
                                               linux_tuning_optimize
                                         }
 function fn_lockfile()                  { cat linux_lockfile flock ;}
@@ -241,7 +242,7 @@ function fn_echo_last_cmd()             { cat bash_echo_last_cmd ;}
 function fn_getopts()                   { cat bash_getopts ;}
 function fn_kill_trap()                 { cat bash_kill_trap ;}
 function fn_tcpip()                     { cat bash_tcpip ;}
-function fn_readline()                  { cat bash_readline bash_read ;}
+function fn_readline()                  { cat bash_readline bash_read bash_builtin ;}
 function fn_redirection()               { cat bash_redirection bash_exec ;}
 function fn_tmo_getopts()               { cat bash_tmo_getopts ;}
 function fn_tmo_trap()                  { cat bash_tmo_trap ;}
@@ -443,7 +444,10 @@ function fn_signal()                    { cat clang_signal ;}
 function fn_coredump()                  { cat clang_coredump
                                               clang_heap_corruption  ;}
 function fn_tty()                       { cat clang_tty ;}
-function fn_iconv()                     { cat clang_iconv ;}
+function fn_iconv()                     { cat clang_iconv
+                                                    iconv  # utf-8 gbk wide-character handling ascii
+                                                    enca
+                                        }
 function fn_md5()                       { cat clang_md5 ;}
 function fn_bit()                       { cat clang_bit ;}
 function fn_strncpy()                   { cat clang_strncpy ;}
@@ -483,7 +487,6 @@ function fn_nonblock()                  { cat clang_nonblock ;}
         atoi                    # atou
         md5                     #
         strtol                  # hex work well
-        iconv                   # utf-8 gbk wide-character handling ascii
         syslog
         error                   # 编译错误信息
         errno
@@ -832,6 +835,8 @@ function fn_fundamental()               { cat bat_fundamental ;}
 function fn_win()                       {
 function fn_win7()                      { cat   windows_win7 mstsc
                                           cat   win_mac_keyboard  # apple 1680*1050
+                                                macbook
+                                                obsidian
                                           cat   foxmail
                                           cat   cooledit ;}
 function fn_syscmd()                    { cat   windows_syscmd ;}
@@ -1131,7 +1136,9 @@ function fn_command() {                 { cat   centos ;}
 }
 
 function fn_java()                      { cat java ;}
-function fn_ssh()                       { cat ssh autossh reptyr_Reparent_You_running_program ;}
+function fn_ssh()                       { cat ssh autossh reptyr_Reparent_You_running_program
+                                              rsync
+    ;}
 function fn_libevent()                  { cat libevent libuv.md ;}
 function fn_in_event()                  { cat in_event ;}
 function fn_live555()                   { cat live555 ;}

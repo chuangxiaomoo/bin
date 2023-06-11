@@ -1,5 +1,8 @@
 # hexdump
 
+hexdump -vC -n 256 /dev/mmcblk0p1 -s 1024
+hexdump -vC -n 128 /dev/cpu/15/cpuid
+
 # 前言
   我使用过的Linux命令之hexdump
   http://codingstandards.iteye.com/blog/805778

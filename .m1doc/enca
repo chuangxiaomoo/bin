@@ -1,0 +1,15 @@
+# check
+
+enca -L zh_CN   filename
+enca -L chinese filename
+
+# e.g.
+
+    Simplified Chinese National Standard; GB2312
+    CRLF line terminators
+
+# xslt
+
+enca -L chinese -x UTF-8 filename
+enca -L chinese -x GB2312 filename
+

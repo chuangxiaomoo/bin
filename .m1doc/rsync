@@ -1,0 +1,41 @@
+# man rsync Daemon 模式非常难用
+
+```bash
+    Access via remote shell:
+      Pull: rsync [OPTION...] [USER@]HOST:SRC... [DEST]
+      Push: rsync [OPTION...] SRC... [USER@]HOST:DEST
+```
+
+# rsync over SSH
+
+1. 少一个 port
+2. 完全不用配置
+3. 可以完成相同的功能
+
+
+-a  归档模式，递归并保留对象属性，等同于-rlptgoD, 类似 `cp -a`
+-v  显示同步过程的详细信息
+-z  在传输文件时进行压缩
+
+# SRC/ == SRC/*
+
+rsync -avz  test4g@121.40.104.39:/home/test4g  /home/test4g   #`cp -a /home/test4g   /home/test4g`
+
+# Pull 推荐使用 DIR/
+
+rsync -avz  test4g@121.40.104.39:/home/test4g/ /home/test4g   #`cp -a /home/test4g/* /home/test4g`
+
+# Pull --dry-run & --delete 删除本地
+
+只是检查，而非实际执行 `sh -n` ， 在使用 --delete 时有用
+
+rsync -avz --delete --dry-run test4g@121.40.104.39:/home/test4g/ /home/test4g
+
+# 过滤器 --filter=
+
+rsync -avz --delete --filter='P .git' test4g@121.40.104.39:/home/test4g/ $@
+
+# Push
+
+rsync -avz  /home/test4g/zj/ test4g@121.40.104.39:/home/test4g/zj 
+

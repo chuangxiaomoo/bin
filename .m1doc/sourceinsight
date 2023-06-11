@@ -45,3 +45,7 @@
     │            │  [C-Alt-F] grep search                                     │
     └────────────┴────────────────────────────────────────────────────────────┘
 
+# 自动补全
+
+1. Options -> Preferences ->Typoptions ->Typing -> Auto completion 一栏里的 Use automatic symbol completion window
+2. Options -> Document Options ->Editing Options 一栏里的 Allow auto-complete（好不容易找到的）

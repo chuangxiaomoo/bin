@@ -17,6 +17,10 @@ dd bs=50K skip=3 count=1 if=/ipc/bin/impdbg of=/tmp/3; echo 3;
 timeout -t 3 dd bs=1K skip=8M count=1 if=/dev/mmcblk0p1 | hexdump | head
 
 
+# skip 是 N, 分多次发送一个文件
+
+let i=0; while [ ${i:=0} -lt 120 ]; do  dd bs=40K skip=$i count=1 if=/ipc/app/jco_server || break; echo ___ $i > /dev/console; let i++; sleep .1; done | nc s 8006
+
 # seek 部分覆盖 of
 
 dd bs=50K seek=3 

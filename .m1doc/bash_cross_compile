@@ -52,11 +52,12 @@ make install
 
 CROSS=mips-linux-uclibc-gnu
 CROSS=arm-buildroot-linux-uclibcgnueabihf
+CROSS=arm-augentix-linux-uclibcgnueabihf
 make CC=$CROSS-gcc \
 	AR=$CROSS-ar \
 	RANLIB=$CROSS-ranlib
 
-$CROSS-ldd iwlist
+$CROSS-ldd --root $FILESYS iwlist
 
 # lsof
 

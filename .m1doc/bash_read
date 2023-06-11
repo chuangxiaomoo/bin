@@ -13,3 +13,15 @@ snore()
 }
 
 snore
+
+# STDIN 重定向
+
+fn_main()
+{
+    
+    local i=
+    while read; do
+        echo $REPLY
+        exit
+    done < .cscope.files
+}
