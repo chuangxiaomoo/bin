@@ -17,6 +17,10 @@
 -v  显示同步过程的详细信息
 -z  在传输文件时进行压缩
 
+# DST 为空时打印全部文件列表
+
+rsync -avz  test4g@121.40.104.39:/home/test4g
+
 # SRC/ == SRC/*
 
 rsync -avz  test4g@121.40.104.39:/home/test4g  /home/test4g   #`cp -a /home/test4g   /home/test4g`

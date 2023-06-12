@@ -1138,6 +1138,7 @@ function fn_command() {                 { cat   centos ;}
 function fn_java()                      { cat java ;}
 function fn_ssh()                       { cat ssh autossh reptyr_Reparent_You_running_program
                                               rsync
+                                              frp
     ;}
 function fn_libevent()                  { cat libevent libuv.md ;}
 function fn_in_event()                  { cat in_event ;}

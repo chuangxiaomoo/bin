@@ -1,0 +1,24 @@
+
+cd $HOME
+ls
+mkdir frp
+ls
+cd frp/
+ls
+wget https://github.com/fatedier/frp/releases/download/v0.49.0/frp_0.49.0_linux_amd64.tar.gz
+busybox nc -lp 58887 > frp_0.49.0_linux_amd64.tar.gz
+ls
+tar -zxvf frp_0.49.0_linux_amd64.tar.gz 
+ls
+cd frp_0.49.0_linux_amd64
+ls
+./frps 
+ls
+vi frps.ini
+ls
+frps -c frps.ini
+./frps -c frps.ini
+vi frps.ini
+ks
+ls
+./frps -c frps.ini
