@@ -1,0 +1,64 @@
+#! /bin/sh
+
+. ~/bin/common.rc
+
+array=(
+    SHOW_This_usage                     NULL
+    mips-gcc540-glibc222-64bit-r3.3.0   T31
+    mips-gcc720-glibc226                T40
+    mips-gcc720-uclibc0.9.33.2-r5.1.4   T41
+)
+
+help_show()
+{
+    echo -e "\n   Usage:"
+    local i
+    for (( i=0; i<${#array[@]}; i+=2 )); do
+        compile=${array[$i]}
+        let j=i+1
+        let No=i/2
+        printf "\t%-4d%-40s\t# %s\n" $No $compile ${array[$j]}
+    done
+    return;
+}
+
+fn_main()
+{
+    ingn_cc='/opt/ingen.cc'
+    link_cc='/opt/ingen.cc/gcc/bin'
+
+    case ${1:-0} in
+    0)
+        help_show
+
+        [ -e "${link_cc}" ] && {
+            local i
+            for (( i=2; i<${#array[@]}; i+=2 )); do
+                let j=i+1
+                ls -l ${link_cc} | grep -q ${array[$i]} && { curr=${array[$j]}; break ;}
+            done
+        } || curr=NONE
+        echo "
+        curr: ${curr:-____not_match_any____}
+        "
+        return
+        ;;
+    [1-9])
+        rm -f ${link_cc}
+        No=$1*2
+        [ -e "${ingn_cc}/${array[$No]}/bin" ]
+        xt_ret $? "Not exist: ${ingn_cc}/${array[$No]}/bin" || return $?
+        ln -sf ${ingn_cc}/${array[$No]}/bin ${link_cc}
+        let No++
+        echo "
+        link ${array[$No]} succ
+        "
+        ;;                         
+    *)
+        help_show
+        return
+        ;;
+    esac
+}
+
+fn_main $@
