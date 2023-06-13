@@ -1,0 +1,10 @@
+#!/usr/bin/expect -f
+
+spawn ssh -o ServerAliveInterval=60 test4g@121.40.104.39 -p 22
+
+expect  "password:"
+send    "zj12345\n"
+
+interact { timeout 30 { send "" } }   # no interact
+
+puts "end"
