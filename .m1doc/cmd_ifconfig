@@ -1,5 +1,25 @@
 # ifconfig
 
+```txt
+$ ifconfig
+eth0      Link encap:Ethernet  HWaddr 08:00:27:0c:49:47  
+          inet addr:192.168.0.121  Bcast:192.168.0.255  Mask:255.255.255.0
+          inet6 addr: fe80::a00:27ff:fe0c:4947/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:3461 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:3686 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:1778710 (1.7 MB)  TX bytes:821363 (821.3 KB)
+          Interrupt:10 Base address:0xd020 
+```
+
+RX errors   : 表示总的收包的错误数量，这包括 too-long-frames 错误，Ring Buffer 溢出错误，`crc 校验错误`，帧同步错误，fifo overruns 以及 missed pkg 等等。`如硬件错误 DCDC 不稳`
+RX dropped  : 表示数据包已经进入了 Ring Buffer，但是由于`内存不够`等系统原因，导致在拷贝到内存的过程中被丢弃。
+RX overruns : 表示了 fifo 的 overruns，这是由于 Ring Buffer(aka Driver Queue) 传输的 IO 大于 kernel 能够处理的 IO 导致的，而 Ring Buffer 则是指在发起 IRQ 请求之前的那块 buffer。
+              很明显，overruns 的增大意味着数据包没到 Ring Buffer 就被网卡物理层给丢弃了，而 CPU 无法即时的处理中断是造成 Ring Buffer 满的原因之一，
+              上面那台有问题的机器就是因为 interruprs 分布的不均匀(都压在 core0)，没有做 affinity 而造成的丢包。
+RX frame    : 表示 misaligned 的 frames。
+
 # ip & mask
 
     ifconfig eth0 192.168.2.44 [netmask 255.255.255.0]

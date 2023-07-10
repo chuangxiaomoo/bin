@@ -9,6 +9,9 @@ dd bs=50K skip=1 count=1 if=/ipc/bin/impdbg of=/tmp/1; echo 1;
 dd bs=50K skip=2 count=1 if=/ipc/bin/impdbg of=/tmp/2; echo 2; 
 dd bs=50K skip=3 count=1 if=/ipc/bin/impdbg of=/tmp/3; echo 3; 
 
+# 清分区
+dd bs=1 seek=2 count=508 if=/dev/zero of=/dev/mmcblk0;
+
 
 # fake SD card (hexdump do 2G only)
 

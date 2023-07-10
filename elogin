@@ -51,7 +51,9 @@ if { $argc == 0 } {
         expect  "login:"
         send    "root\n"
         expect  "Password:"
-        send    "jco666888\n"
+        send    "XsE58d%7\n"
+        expect  "root"
+        send    "ls /\n"
 
         interact {
             timeout 30 { send "" }

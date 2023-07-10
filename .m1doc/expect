@@ -8,3 +8,10 @@
 { [string match *elogin $argv0] == 1 } 
 `
 
+# WINDOWS expect
+
+先去如下地方下载expect:
+http://expect.nist.gov/#windows
+ftp://bmrc.berkeley.edu/pub/winnt/tcltk/expect
+
+[](https://blog.csdn.net/qq_43746825/article/details/87707798)

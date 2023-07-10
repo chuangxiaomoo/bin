@@ -1,5 +1,6 @@
 #! /bin/bash
 
+
 -k, --key=POS1[,POS2]
       start a key at POS1 (origin 1), end it at POS2 (default end of line)
 
@@ -27,3 +28,17 @@
 
 -t, --field-separator=SEP
 
+# ~/bin/.m1doc/busybox.man  sort
+
+ls | sort -t- -k2
+
+S-190212-0899.mp4
+S-191711-0900.mp4
+S-193211-0899.mp4
+S-194711-0899.mp4
+S-200210-0900.mp4
+S-201710-0841.mp4
+A-203111-0420.mp4
+A-203811-0800.mp4
+S-205132-0118.mp4
+A-205330.mp4.tmp
