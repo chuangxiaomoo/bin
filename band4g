@@ -1,0 +1,37 @@
+#! /bin/sh
+
+if [ ${1:-8} = h ]; then
+    echo "
+    band4g srv_ip port  # srv_ip=ip replace to test4g
+    band4g k
+
+    Env variable:
+      BS: ${BS:-512K}   # bolck size
+      NR: ${NR:-40}     # package num
+    "
+    exit
+fi  
+
+if [ ${1:-8} = k ]; then
+    ps | grep "[5]888" | awk '{print $1}' | xargs kill -9 2>/dev/null
+    exit
+fi  
+
+s_start=`awk -F. '{print $1}' /proc/uptime`
+
+host=${1//ip/121.40.104.39}
+port=${2:-8};
+NR=${NR:-40} BS=${BS:-512K} IF=/dev/zero HOST=${host:-121.40.104.39}
+
+dd if=$IF  bs=${BS} count=$NR | nc ${HOST} 5888${port} & \
+pid_nc=$!; let pid_dd=pid_nc-1; \
+i=0; test -n "$pid_dd" &&                                \
+while :; do kill -0 $pid_dd 2>/dev/null || { echo __done__; break; };  \
+    let i=i+1; echo $i; sleep 1;                            \
+    kill -USR1 $pid_dd 2>/dev/null;                         \
+done
+
+s_end=`awk -F. '{print $1}' /proc/uptime`
+let s_take=s_end-s_start
+
+echo "${BS}*${NR} spend ${s_take}s"
