@@ -41,8 +41,9 @@ arm-buildroot-linux-uclibcgnueabi-strip parted/parted
 
 # libnl
 
+cd /opt/suit/t21wifiPro.6032.f23.ourmesh/tools/wifi/libnl-1.1.4
 ./configure --help
-CC=arm-linux-gnueabihf-gcc ./configure --host=arm-linux-gnueabihf --prefix=/opt/mstar/313msPro/316v2apPro/drv/iw.nl1
+CC=arm-linux-gnueabihf-gcc ./configure --host=arm-linux-gnueabihf --prefix=/opt/suit/t21wifiPro.6032.f23.ourmesh/tools/wifi/libnl_complete
 make
 make install
 
@@ -190,6 +191,7 @@ LDFLAGS += -ldl -Wl,-gc-sections
 * 要修改 lib include 路径
 * export PKG_CONFIG_PATH=/opt/suit/t21wifiPro.6032.f23.ourmesh/tools/wifi/libnl_complete/lib/pkgconfig
 * make CC=mips-linux-uclibc-gnu-gcc
+* make CC=arm-linux-gnueabihf-gcc  # duofang
 
 1. /opt/suit/t21wifiPro.6032.f23.ourmesh/tools/wifi/iw-5.4
 2. [参考](https://www.veryarm.com/114825.html)

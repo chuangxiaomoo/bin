@@ -836,6 +836,7 @@ function fn_win()                       {
 function fn_win7()                      { cat   windows_win7 mstsc
                                           cat   win_mac_keyboard  # apple 1680*1050
                                                 macbook
+                                                iterm2
                                                 obsidian
                                           cat   foxmail
                                           cat   cooledit ;}

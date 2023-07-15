@@ -1,0 +1,10 @@
+# key mapping
+
+preferences
+    Profiles
+        Keys
+            KeyMappings
+                +
+                    Click to Set # 点击后录入快捷键
+                    Action       # 选择 Send Keystokes -> Send Text
+
