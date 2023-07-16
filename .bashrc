@@ -1,1 +1,1 @@
-/root/gitee/team/env/.bashrc
+. /root/gitee/team/env/.bashrc
