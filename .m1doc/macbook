@@ -1,3 +1,15 @@
-# 16进制利器
+# 0. 16进制利器
 
 Synalyze It! Pro
+
+# 1. 安装百度五笔
+
+# 2. 安装 iterm2
+
+# 3. 修改 shell 为 bash
+
+从命令行更改
+在“终端”中，输入 $ chsh -s path，其中的 path 是 /etc/shells 中列出的某个 Shell 路径，例如 /bin/zsh、/bin/bash、/bin/csh、/bin/dash、/bin/ksh、/bin/sh 或 /bin/tcsh。
+
+# 4. 安装 git
+

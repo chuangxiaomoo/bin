@@ -289,4 +289,45 @@ CREATE TABLE icc_date (
 );
 
 # icc_and_baby end
+# 159001.XSHE 货币ETF BZJ 2014-10-20  2200-01-01  etf
+
+DROP TABLE IF EXISTS etf;
+CREATE TABLE etf (
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0, # 代码
+    sym         CHAR(6),
+    d_sta       date NOT NULL, 
+    d_end       date NOT NULL, 
+    name        CHAR(32),
+    INDEX(code)
+);
+
+DROP TABLE IF EXISTS e1;
+CREATE TABLE e1 (
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0, # 代码
+    setl        DECIMAL(6,2)  NOT NULL,             # 昨收
+    open        DECIMAL(6,2)  NOT NULL,             # 开
+    high        DECIMAL(6,2)  NOT NULL,             # 高
+    low         DECIMAL(6,2)  NOT NULL,             # 低
+    close       DECIMAL(6,2)  NOT NULL,             # 收
+    avg         DECIMAL(6,2)  NOT NULL,             # 均价
+                                                    
+    volume      DECIMAL(12,2) NOT NULL DEFAULT 0,   # 成交量
+    tov         DECIMAL(12,2) NOT NULL DEFAULT 0,   # 换手率
+
+    ma5         DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 5日收盘均价
+    ma20        DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 20日收盘均价
+    ma60        DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 60日收盘均价
+
+    hsl20       DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 20日平均换手率
+    vw          DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 量比: 周成交/前19周平均成交量
+    x3          DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 量比: 3日/4~12日
+    x5          DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 量比: 5日/6~20日
+    x10         DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 量比: 10日/11~40日
+    x20         DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 量比: 20日/21~60日
+
+    INDEX(date),
+    INDEX(code,date)
+);
+
 
