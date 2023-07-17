@@ -4,7 +4,7 @@
 
 array=(
     SHOW_This_usage                     NULL
-    mips-gcc720-uclibc0.9.33.2-r5.1.4   T41
+    mips-gcc720-uclibc0.9.33.2-r5.1.7   T41
     mips-gcc472-glibc216-32bit          _472_
     mips-gcc540-glibc222-64bit-r3.3.0   T31
     mips-gcc720-glibc226                T40
@@ -42,6 +42,7 @@ fn_main()
         echo "
         curr: ${curr:-____not_match_any____}
         "
+        ls -l ${link_cc}; echo
         return
         ;;
     [1-9])
@@ -54,6 +55,7 @@ fn_main()
         echo "
         link ${array[$No]} succ
         "
+        ls -l ${link_cc}; echo
         ;;                         
     *)
         help_show
