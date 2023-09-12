@@ -2,12 +2,14 @@
 
 . ~/bin/common.rc
 
+#   mips-gcc720-uclibc0.9.33.2-r5.1.7   T41
+
 array=(
-    SHOW_This_usage                     NULL
-    mips-gcc720-uclibc0.9.33.2-r5.1.7   T41
-    mips-gcc472-glibc216-32bit          _472_
-    mips-gcc540-glibc222-64bit-r3.3.0   T31
-    mips-gcc720-glibc226                T40
+    SHOW_This_usage                                                         NULL
+    mips-linux-gnu-ingenic-gcc7.2.0-uclibc0.9.33.2-fp64-r5.1.7.smaller2.3   T41
+    mips-gcc472-glibc216-32bit                                              _472_
+    mips-gcc540-glibc222-64bit-r3.3.0                                       T31
+    mips-gcc720-glibc226                                                    T40
 )
 
 help_show()

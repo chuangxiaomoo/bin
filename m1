@@ -143,7 +143,8 @@ function fn_macro()                     { cat gcc_macro clang_macro.h ;}  # O0
 }
 function make()                         { #   http://www.gnu.org/software/make/manual/make.html
 function fn_var_cmdline()               { cat make_cmdline ;}
-function fn_var_debug()                 { cat make_var_debug ;}
+function fn_var_debug()                 { cat make_var_debug
+                                              make_debug ;}
 function fn_var_inner()                 { cat make_var_inner ;}
 function fn_lib_dynamic()               { cat make_lib_dynamic ;}
 function fn_lib_static()                { cat make_lib_static

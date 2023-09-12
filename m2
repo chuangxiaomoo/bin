@@ -728,6 +728,7 @@ function fn__1st_principle()            { cat logic__1st_principle
                                           cat experiment.u
                                           cat experiment_eg.u
                                           cat experiment_Chernobyl.u    #切诺贝利
+                                          cat bayes.md                  #贝叶斯
                                         }
 function fn_training500()               { cat logic_training500 ;}
 function fn_puzzle()                    { cat logic_puzzle ;}

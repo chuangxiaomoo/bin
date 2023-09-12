@@ -1,0 +1,21 @@
+#! /bin/sh
+
+fn_ipctool()
+{
+    MYIP='127.0.0.1'
+    devid=`cat /proc/cmdline | xargs -n1 | grep device_id | awk -F= '{print $2}'`
+    key="JCPMETHOD * HDS/1.0\r\n"
+    key="${key}ID=${devid}#JcpCmd=$@#"
+    grp='230.230.230.230'
+    port=8002
+    ps -ef | awk '/[n]c....8788/{print $2}' | xargs kill -9 2>/dev/null
+    nc -u -l 8788&
+    
+    # 组播时必须指定源地址[-s172.25.100.44]，单播则不然
+    echo "${key}" | nc -w0 -s ${MYIP} -p8002 -u ${grp} ${port}
+
+    sleep 2
+    kill $!
+}
+
+fn_ipctool $@

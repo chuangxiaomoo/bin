@@ -1,1 +1,9 @@
+/* array */
 ~/fc/clang/2d-array.c  // 多维数组 && 数组指针
+
+int sensor_reverse[10][6] = {
+    // sensor类型     寄存器地址       正常   水平镜像 垂直镜像 对角镜像
+    {SENSOR_JXF53   , 0x12  ,   0x0 ,  0x20,    0x10,   0x30},
+    {SENSOR_GC2063  , 0x17  ,   0x0 ,  0x01,    0x02,   0x03},
+    {SENSOR_SC223A  , 0x3221,   0x66,  0x06,    0x60,   0x0 }
+};
