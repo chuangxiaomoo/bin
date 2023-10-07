@@ -17,11 +17,11 @@ function fn_main()
 {
     # ntpdate 192.168.2.43 && return 0;
 
-    /etc/init.d/ntp stop
-    server=`grep -m1 "^server\>" /etc/ntp.conf | awk '{print $2}'`
-    echo ntpdate $server
-    ntpdate ${server:-time.windows.com}
-    /etc/init.d/ntp start
+    #/etc/init.d/ntp stop
+    #server=`grep -m1 "^server\>" /etc/ntp.conf | awk '{print $2}'`
+    echo ntpdate ${server:=ntp.aliyun.com}
+    ntpdate ${server}
+    #/etc/init.d/ntp start
 }
 
 fn_main $@
