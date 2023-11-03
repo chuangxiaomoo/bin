@@ -22,6 +22,14 @@ INC_LIB := $(foreach dir, $(INC_LIB), -I$(dir))
 %.o:%.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
+
+# .d 的内容如下:
+main.o main.d : main.c defs.h
+
+# 通过 include 将 .d 包含进行，可以完成自动依赖
+sources = foo.c bar.c
+include $(sources:.c=.d)
+
 #
 # 老式的 .c.o: 相当于上面的 %.o:%.c 
 # (后缀规则会被模式规则逐步地取代。其更强更清晰)

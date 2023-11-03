@@ -35,3 +35,15 @@ file 要与循环设备相关联的文件名，这个往往是一个磁盘镜象
 
           $ losetup -d /dev/loop1
 
+
+# 限制文件夹大小
+
+```bash
+cd /tmp
+dd if=/dev/zero of=floppy.img bs=1024 count=1024
+losetup -f # get loop0
+losetup /dev/loop0 floppy.img
+mkfs.ext4 /dev/loop0 
+mount /dev/loop0 /mnt/
+cp /bin/busybox .
+```

@@ -239,7 +239,7 @@ function fn_color()                     { cat bash_color ;}
 function fn_common_sense_常识()         { cat bash_common_sense_常识 ;}
 function fn_echo_last_cmd()             { cat bash_echo_last_cmd ;}
 function fn_getopts()                   { cat bash_getopts ;}
-function fn_kill_trap()                 { cat bash_kill_trap ;}
+function fn_kill_trap()                 { cat bash_kill_trap ;} #  捕捉信号
 function fn_tcpip()                     { cat bash_tcpip ;}
 function fn_readline()                  { cat bash_readline bash_read bash_builtin ;}
 function fn_redirection()               { cat bash_redirection bash_exec ;}
@@ -710,7 +710,7 @@ function fn_hotkey()                    { cat w3m_hotkey ;}
 }
 
 function fn_mount()                     { cat cmd_mount
-                                              filesystem/loop       # losetup
+                                              filesystem/loop       # losetup 限制文件夹大小
                                               filesystem/mkfs.fat
                                               filesystem/udev
                                               filesystem/mtd.md
@@ -1381,6 +1381,7 @@ function fn_coffee()                    { cat web_coffee ;}
 
 function fn_network()                   {
 function fn_tcp.ip()                    { cat network_OSI七层与TCP.IP五层网络架构详解
+                                          cat network_p2p   # 网络穿透、打洞
                                           cat network_集线器、交换机、路由器、网桥、网关之间的区别 ;}
 function fn_bonding()                   { cat network_bonding ;}
 function fn_WiFi()                      { cat network_WiFi ;}

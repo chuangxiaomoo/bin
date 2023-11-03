@@ -1,3 +1,7 @@
+#! /bin/bash
+#  捕捉信号
+
+help="
     1. U can't trap SIGKILL and SIGSTOP
     2. Kill -l  or trap -l to show all SIG
     3. run a <.sh> file or <.elf> file in a mother.sh, if mother.sh was killed,
@@ -7,3 +11,12 @@
         only the threads share the SIGNALS. 
 
         Just like 'auto_run.sh &'
+"
+
+# ---------
+
+trap 'cap_ctrl_c' INT
+cap_ctrl_c() {
+    echo 'Ctrl+C is captured'
+    kill -9 $pid
+}

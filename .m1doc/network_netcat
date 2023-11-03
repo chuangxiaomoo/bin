@@ -44,7 +44,22 @@ nc创建socket_fd，connect(dest=230.230.230.230)，并通过send(package)，而
 因此，不能再收到IPC回的单播包
 lzbox
 
-7. nc模拟wget
+7. nc模拟wget, 可参考 sim4g sim4g_get_trip_devid_from_cloud_server()
 
 [wget with netcat](https://unix.stackexchange.com/questions/15799/how-do-i-get-a-url-over-http-with-netcat)
 
+echo -e "GET /?jcpcmd=keepalive%20-act%20live HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n" | nc 127.0.0.1 80
+
+```txt
+HTTP/1.1 200 OK
+Accept-Ranges: bytes
+Cache-Control: max-age=1
+Connection: close
+Content-Length: 25
+Content-Type: text/javascript
+Date: Wed, 18 Oct 2023 11:05:18 GMT
+Last-Modified: Wed, 18 Oct 2023 11:05:18 GMT
+Server: thttpd/2.25b 29dec2003
+
+szJcpResult="[Success];";
+```
