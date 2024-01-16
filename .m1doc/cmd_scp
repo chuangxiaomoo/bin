@@ -1,3 +1,7 @@
+# auto-scp
+
+sshpass -p 'mypassword' scp -r el@myserv.com:/home/a/moo.txt /home/b/bar.txt
+
 # scp tunnel
 
 2u16      # mac to ubt

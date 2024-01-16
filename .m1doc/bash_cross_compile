@@ -21,10 +21,16 @@
     make CC=arm-linux-gcc AR=arm-linux-ar
     .so 是由 gcc 链接的，但 .a 不是，所以需要同时指定 ar
 
+# freetype
+
+./configure --host=mips-linux-uclibc --without-zlib --without-png --prefix=/opt/22/JCommonPro/openlibs/freetype/output
+
 # iperf 2.0.9
 
 ./configure --host=arm-buildroot-linux-uclibcgnueabihf
 ./configure --host=arm-buildroot-linux-uclibcgnueabi    # nvr.4
+./configure --host=mips-linux-uclibc
+./configure --host=arm  CC=aarch64-none-linux-gnu-gcc  CXX=aarch64-none-linux-gnu-g++  --prefix=$PWD/__install    # AiXin
 
 # e2fsprogs
 

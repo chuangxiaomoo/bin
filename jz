@@ -4,23 +4,31 @@
 
 #   mips-gcc720-uclibc0.9.33.2-r5.1.7   T41
 
+
+
 array=(
     SHOW_This_usage                                                         NULL
     mips-linux-gnu-ingenic-gcc7.2.0-uclibc0.9.33.2-fp64-r5.1.7.smaller2.3   T41
     mips-gcc472-glibc216-32bit                                              _472_
     mips-gcc540-glibc222-64bit-r3.3.0                                       T31
     mips-gcc720-glibc226                                                    T40
+    mips-gcc540-uclibc0.9.33.2-64bit-r3.3.0.smaller                         T23-uclibc
+    mips-gcc540-glibc222-64bit-r3.3.0.smaller                               T23-glibc
+    ______________                                                          Occ
+    ______________                                                          Occ
+    ______________                                                          Occ
+    gcc-arm-9.2-2023.12-x86_64-aarch64-none-linux-gnu                       ax-2023
 )
 
 help_show()
 {
-    echo -e "\n   Usage:"
+    echo -e "\nUsage:"
     local i
     for (( i=0; i<${#array[@]}; i+=2 )); do
         compile=${array[$i]}
         let j=i+1
         let No=i/2
-        printf "\t%-4d%-40s\t# %s\n" $No $compile ${array[$j]}
+        printf "  %-3d%-70s  # %s\n" $No $compile ${array[$j]}
     done
     return;
 }
@@ -29,6 +37,10 @@ fn_main()
 {
     ingn_cc='/opt/ingen.cc'
     link_cc='/opt/ingen.cc/gcc/bin'
+
+    if [ "${1:-0}" -ge 10 ]; then
+        ingn_cc='/opt/ax.cc'
+    fi
 
     case ${1:-0} in
     0)
@@ -47,7 +59,7 @@ fn_main()
         ls -l ${link_cc}; echo
         return
         ;;
-    [1-9])
+    [0-9]*)
         rm -f ${link_cc}
         No=$1*2
         [ -e "${ingn_cc}/${array[$No]}/bin" ]
