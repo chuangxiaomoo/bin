@@ -1,0 +1,94 @@
+# git 
+
+git://sourceware.org/git/elfutils.git
+
+# PC 安装
+
+exit login, to clean PKG_CONFIG_PATH 等环境变量
+
+autoreconf -i -f 
+./configure --enable-maintainer-mode --disable-debuginfod --prefix=$PWD/output; make; make install
+ls output
+
+```txt
+root@u16:~/github/elfutils/src# ldd stack
+        linux-vdso.so.1 =>  (0x00007ffda28d5000)
+        libelf.so.1 => /usr/lib/x86_64-linux-gnu/libelf.so.1 (0x00007f2df24fe000)
+        libdw.so.1 => /usr/lib/x86_64-linux-gnu/libdw.so.1 (0x00007f2df22b5000)
+        libstdc++.so.6 => /usr/lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f2df1f33000)
+        libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f2df1b69000)
+        libz.so.1 => /lib/x86_64-linux-gnu/libz.so.1 (0x00007f2df194f000)
+        /lib64/ld-linux-x86-64.so.2 (0x00007f2df2716000)
+        libdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f2df174b000)
+        liblzma.so.5 => /lib/x86_64-linux-gnu/liblzma.so.5 (0x00007f2df1529000)
+        libbz2.so.1.0 => /lib/x86_64-linux-gnu/libbz2.so.1.0 (0x00007f2df1319000)
+        libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f2df1010000)
+        libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f2df0dfa000)
+```
+
+# uclibc gettext 使用旧版本 .20
+
+https://blog.csdn.net/zhuyunier/article/details/103123376
+
+./configure --host=mips-linux-uclibc --prefix=$PWD/output
+
+./configure --prefix=${PWD}/output --host=mips-linux-uclibc CC=mips-linux-uclibc-gcc CXX=mips-linux-uclibc-g++ CFLAGS="-fPIC"
+
+
+# 依赖 zlib
+
+git clone https://gitee.com/bt-server/zlib.git
+cd zlib/
+CFLAGS=-fPIC CC=mips-linux-uclibc-gcc ./configure  --prefix=$PWD/output
+ls
+make
+make install
+export PKG_CONFIG_PATH=/root/github/zlib/output/lib/pkgconfig
+export LD_LIBRARY_PATH=/root/github/zlib/output/lib/
+
+# Compile
+
+vi README
+autoreconf -i -f 
+./configure --enable-maintainer-mode --disable-debuginfod --host=mips-linux-uclibc
+
+# 编译出错打桩
+
+```cpp
+lib/color.c
+char *program_invocation_short_name = 0;
+
+libcpu/i386_parse.y
+int obstack_printf(struct obstack *obs, const char *format, ...)
+{
+    return printf("fake-ob %p %s\n", obs, format);
+}
+```
+
+# 交叉编译 libcpu/i386_gendis, 使用两份 elfutils，避开无法执行的问题
+
+```make
+libcpu/Makefile
+$(srcdir)/%_dis.h: %_defs i386_gendis$(EXEEXT)
+	#(AM_V_GEN) $(GENDIS_ENV) ./i386_gendis$(EXEEXT) $< > $@T
+	$(AM_V_GEN) $(GENDIS_ENV) /root/github/eu86/elfutils/libcpu/i386_gendis $< > $@T
+	$(AM_V_at)mv -f $@T $@
+```
+
+# 跳过不相关
+
+make V=1
+make -C src/ stack
+
+# Mips 不支持 Unwinding
+
+```cpp
+../stack: dwfl_thread_getframes tid 1051: Unwinding not supported for this architecture
+TID 1052:
+../stack: dwfl_thread_getframes tid 1052: Unwinding not supported for this architecture
+TID 1053:
+../stack: dwfl_thread_getframes tid 1053: Unwinding not supported for this architecture
+TID 1054:
+../stack: dwfl_thread_getframes tid 1054: Unwinding not supported for this architecture
+```
+

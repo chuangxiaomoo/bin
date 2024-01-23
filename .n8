@@ -1,0 +1,24 @@
+#! /bin/bash
+
+HOST="
+busybox nc -lp58888
+tar -cf /tmp/log.tar  /tmp/messages /opt/conf /opt/log
+nc 121.40.104.39 58888 < /tmp/log.tar
+
+nc 121.40.104.39 58888 < /tmp/log.tgz
+"
+# mkdir -p /home/test4g/www/; ./thttpd -l /home/test4g/tlog -d /home/test4g/www/ -p 58889
+# kill 58888 @2022-06-08.21:56:44
+# listen do-start 58888 @2022-06-08.21:57:12
+
+fn_main()
+{
+    port=5888${1:-8}
+    while :; do
+        echo listen do-start $port @`date +%F.%T` | tee -a .log.${port}
+        busybox nc -w3600 -lp $port > /dev/null || break
+        sleep .5
+    done
+}
+
+fn_main $@

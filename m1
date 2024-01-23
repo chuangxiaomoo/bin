@@ -22,7 +22,12 @@ function fn_asm()                       { cat asm
                                         }
 function fn_awk()                       { cat awk ;}
 function fn_sed()                       { cat sed expect ;}
-function fn_gprof()                     { cat gprof ;}
+function fn_gprof()                     { cat gprof
+                                              gperftools        # 逐渐替代 gprof
+                                              ftrace
+                                              uftrace           # https://gitee.com/mirrors/uftrace/tree/master
+                                              eu-stack
+    ;}
 function fn_oprofile()                  { cat oprofile ;}
 function fn_gcov()                      { cat gcov ;}
 function fn_glibc()                     { cat glibc ;}
@@ -227,7 +232,9 @@ function fn_fundamental()               { cat bash_fundamental
                                               bash_PS4
                                               bash_tempfile
                                         }
-function fn_cross_compile()             { cat bash_cross_compile ;}
+function fn_cross_compile()             { cat bash_cross_compile
+                                              eu-stack      
+                                        }
 function fn_00_函数bg时main挂住了()     { cat bash_00_函数bg时main挂住了 ;}
 function fn_01_PIPE会使变量为空()       { cat bash_01_PIPE会使变量为空 ;}
 function fn_02_unquoted_star将被扩展()  { cat bash_02_unquoted_star将被扩展 ;}
@@ -1468,8 +1475,6 @@ function fn_main() {
         gcov
         gdb
         glibc
-        gprof
-        gperftools              # 逐渐替代 gprof
         oprofile
         graphviz
         gnuplot                 # 线状 IBM stock chart
