@@ -148,7 +148,8 @@ function fn_01_商君书()                 { cat book_01_商君书 ;}
 function fn_02_韩非子()                 { cat book_02_韩非子 ;}
 function fn_aq_如何提问()               { cat book_aq_如何提问 ;}
 function fn_yl_你的灯亮着吗()           { cat book_yl_你的灯亮着吗
-                                          cat read_yl_你的灯亮着吗 ;}
+                                          cat read_yl_你的灯亮着吗
+                                        }
 function fn_lf_雷锋日记()               { cat book_lf_雷锋日记 ;}
 function fn_10years()                   { cat book_10years ;}               # 修炼:我的职场十年
 function fn_conservatism()              { cat book_conservatism ;
@@ -221,14 +222,18 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               book_qgz3185.md       # 潜规则
                                               book_dclj.md          # 底层逻辑
                                               Multitask
+                                              FeynmanTechnique
                                               problem_solving
                                               problem_Formula
                                               problem_X-Y           # 问题分类
                                             Q problem_ask_question  # 问题产生源自问问题的方式
                                               problem_present       # 回归问题本身
-                                              FeynmanTechnique
                                               how_to_ask_questions_the_smart_way
                                               answer_big_questions
+                                              guo_Question          #
+                                              good_question         # 好问题
+                                              book_yl_你的灯亮着吗  # light question
+                                              read_yl_你的灯亮着吗
                                               ________________
                                               linzhenggang
                                               wujun_gg
@@ -291,7 +296,7 @@ function fn_list()                      { cat book_400_PoorCharliesAlmanack_穷�
         02_韩非子
         aq_如何提问                     # reading
         lf_雷锋日记
-        yl_你的灯亮着吗                 # light question
+        yl_你的灯亮着吗                 
         PPT演示之道                     # to read
         conservatism                    # 保守主义
 
@@ -1209,7 +1214,6 @@ function fn_guo() {                     # guo
 function fn_term()                      { cat guo_term ;}
 function fn_think()                     { cat guo_think ;}
 function fn_compare()                   { cat guo_compare ;}
-function fn_Question()                  { cat guo_Question ;}
 function fn_lesson()                    { cat guo_lesson ;}
 function fn_rhymeA()                    { cat guo_rhymeA ;}
 function fn_rhyme3()                    { cat guo_rhyme3 ;}
@@ -1227,7 +1231,6 @@ function fn_rhyme200()                  { cat guo_rhyme200 ;}
         term
         compare                         # vs. 羽毛球.期货
         lesson
-        Question                        # problem_ask_question
     )
     fn_print $@
 }
