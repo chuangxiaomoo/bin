@@ -119,6 +119,10 @@ CC=arm-buildroot-linux-uclibcgnueabi-gcc ./configure \
 
 # strace
 
+# ARM64
+./configure --host=aarch64-linux-gnu CC=aarch64-none-linux-gnu-gcc --enable-mpers=mx32
+aarch64-none-linux-gnu-strip src/strace
+
 ./configure --host=mips-linux-gnu CC=mips-linux-uclibc-gnu-gcc
 ./configure --host=mips-linux-gnu CC=mips-linux-gnu-gcc
 ./configure --host=arm-linux-gnu  CC=arm-fullhanv3-linux-uclibcgnueabi-gcc
