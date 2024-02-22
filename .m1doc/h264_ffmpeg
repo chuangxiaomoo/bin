@@ -9,3 +9,15 @@
 使用FFMPEG作为内核视频播放器：
 Mplayer，ffplay，射手播放器，暴风影音，KMPlayer，QQ影音...
 
+# mp3 转 pcm
+
+ffmpeg.exe -i 01.mp3 -f s16le -ar 8000 -acodec pcm_s16le -ac 1 01.pcm
+
+# pcm 转 amr
+
+ffmpeg.exe -f s16le -ar 8000 -ac 1 -i 01.pcm -ab 12.2k 01.amr
+
+# amr 转 pcm
+
+ffmpeg.exe -i input.amr -acodec pcm_s16le -f s16le -ar 8000 -ac 1 output.pcm
+
