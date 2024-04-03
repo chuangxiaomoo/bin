@@ -59,7 +59,7 @@ function fn_filter()                    { cat wireshark_filter ;}
 }
 
 function fn_python()                    {
-                                          cat python2.7
+                                          cat python2.7 pip3
                                           cat python bokhe
                                           cat pandas tushare tu.py
                                           cat jqdata
