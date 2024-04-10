@@ -1175,6 +1175,7 @@ function fn_migrate()                   { cat mysql_migrate ;}  # 中文
 function fn_sql()                       { cat sql_kts   #
                                               sql_py
                                               sql_moo3
+                                              sql_ts
 function fn_min()                       { cat sql_min ;}
 function fn_base()                      { cat sql_base ;}
 function fn_misc()                      { cat sql_misc ;}       # 重要技巧

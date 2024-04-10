@@ -1,0 +1,48 @@
+# 7 is List
+DROP TABLE IF EXISTS i7;
+CREATE TABLE i7 (
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    name        CHAR(24),
+    INDEX(code)
+);
+
+CREATE TABLE e7 LIKE i7;
+CREATE TABLE t7 LIKE i7;
+
+# 8 is mB
+DROP TABLE IF EXISTS e8;
+CREATE TABLE e8 (
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    mber        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    INDEX(code)
+);
+CREATE TABLE t8 LIKE e8;
+
+# d is day: d_idx d_etf d_ths
+
+DROP TABLE IF EXISTS d_idx;
+CREATE TABLE d_idx (
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0, # 代码
+    setl        DECIMAL(6,2)  NOT NULL,             # 昨收
+    open        DECIMAL(6,2)  NOT NULL,             # 开
+    high        DECIMAL(6,2)  NOT NULL,             # 高
+    low         DECIMAL(6,2)  NOT NULL,             # 低
+    close       DECIMAL(6,2)  NOT NULL,             # 收
+    avg         DECIMAL(6,2)  NOT NULL,             # 均价
+                                                    
+    volume      DECIMAL(12,2) NOT NULL DEFAULT 0,   # 成交量
+    amount      DECIMAL(12,2) NOT NULL DEFAULT 0,   # 成交额
+
+    ma5         DECIMAL(6,2)  NOT NULL DEFAULT 0,   # score: 5
+    ma20        DECIMAL(6,2)  NOT NULL DEFAULT 0,   # score: 35
+    ma60        DECIMAL(6,2)  NOT NULL DEFAULT 0,   # score: 30
+    ma240       DECIMAL(6,2)  NOT NULL DEFAULT 0,   # score: 30
+
+    INDEX(date),
+    INDEX(code,date)
+);
+CREATE TABLE d_etf LIKE d_idx;
+CREATE TABLE d_ths LIKE d_idx;
+
+# fn_v5
