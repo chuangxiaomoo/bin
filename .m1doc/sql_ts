@@ -1,13 +1,13 @@
-# 7 is List
-DROP TABLE IF EXISTS idx7;
-CREATE TABLE idx7 (
+# L is List
+DROP TABLE IF EXISTS idxL;
+CREATE TABLE idxL (
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
     name        CHAR(24),
     INDEX(code)
 );
 
-CREATE TABLE etf7 LIKE idx7;
-CREATE TABLE ths7 LIKE idx7;
+CREATE TABLE etfL LIKE idxL;
+CREATE TABLE thsL LIKE idxL;
 
 # 8 is mB
 DROP TABLE IF EXISTS etf8;
