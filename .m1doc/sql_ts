@@ -1,22 +1,22 @@
 # 7 is List
-DROP TABLE IF EXISTS i7;
-CREATE TABLE i7 (
+DROP TABLE IF EXISTS idx7;
+CREATE TABLE idx7 (
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
     name        CHAR(24),
     INDEX(code)
 );
 
-CREATE TABLE e7 LIKE i7;
-CREATE TABLE t7 LIKE i7;
+CREATE TABLE etf7 LIKE idx7;
+CREATE TABLE ths7 LIKE idx7;
 
 # 8 is mB
-DROP TABLE IF EXISTS e8;
-CREATE TABLE e8 (
+DROP TABLE IF EXISTS etf8;
+CREATE TABLE etf8 (
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
     mber        INT(6) ZEROFILL NOT NULL DEFAULT 0,
     INDEX(code)
 );
-CREATE TABLE t8 LIKE e8;
+CREATE TABLE ths8 LIKE etf8;
 
 # d is day: d_idx d_etf d_ths
 
@@ -29,7 +29,6 @@ CREATE TABLE d_idx (
     high        DECIMAL(6,2)  NOT NULL,             # 高
     low         DECIMAL(6,2)  NOT NULL,             # 低
     close       DECIMAL(6,2)  NOT NULL,             # 收
-    avg         DECIMAL(6,2)  NOT NULL,             # 均价
                                                     
     volume      DECIMAL(12,2) NOT NULL DEFAULT 0,   # 成交量
     amount      DECIMAL(12,2) NOT NULL DEFAULT 0,   # 成交额
