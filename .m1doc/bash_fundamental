@@ -10,6 +10,11 @@
         let i=i+1   \
     done
 
+while IFS= read -r line; do
+    echo "Line: $line"
+    # 在这里执行你想要的操作，比如处理每一行的内容
+done < "$input_file"
+
 # 写出健壮的 Bash 脚本
     http://www.oschina.net/news/26744/build-robust-bash-script
     使用set -u

@@ -442,7 +442,7 @@ function fn_memorylayout()              { cat clang_memorylayout ;}
 function fn_error()                     { cat clang_error ;}
 function fn_errno()                     { cat clang_errno ;}
 function fn_open()                      { cat clang_open ;}
-function fn_syslog()                    { cat clang_syslog ;}
+function fn_syslog()                    { cat clang_syslog kmsg logger ;}
 function fn_time()                      { cat clang_time linux_time管理 ;}
 function fn_non_block_func()            { cat clang_non_block_func ;}
 function fn_non_sig_select()            { cat clang_non_sig_select ;}

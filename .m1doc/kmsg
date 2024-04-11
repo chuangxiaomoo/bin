@@ -1,0 +1,4 @@
+# 不是 /proc/kmsg
+
+echo "Your message here" > /dev/kmsg
+

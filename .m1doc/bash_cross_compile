@@ -25,6 +25,11 @@
 
 ./configure --host=mips-linux-uclibc --without-zlib --without-png --prefix=/opt/22/JCommonPro/openlibs/freetype/output
 
+# iptables-1.6.1
+
+./configure --host=mips-linux CC=mips-linux-uclibc-gnu-gcc --disable-nftables --enable-static --disable-shared
+mips-linux-uclibc-gnu-strip iptables/xtables-multi
+
 # iperf 2.0.9
 
 ./configure --host=arm-buildroot-linux-uclibcgnueabihf
@@ -254,3 +259,8 @@ CROSS=arm-fullhanv3-linux-uclibcgnueabi
 ./configure --prefix=$PWD/install CC=$CROSS-gcc --host=arm-linux-uclibcgnueabi --without-gtk
 make
 make install
+
+CROSS=mips-linux-uclibc-gnu
+./configure --prefix=$PWD/install CC=$CROSS-gcc --host=mips-linux --without-gtk
+
+

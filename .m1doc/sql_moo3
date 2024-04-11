@@ -197,6 +197,7 @@ ALTER TABLE jine DROP COLUMN mi60;
 DROP TABLE IF EXISTS nmc2;
 CREATE TABLE nmc2 (
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    name        CHAR(16),       # 自 tushare 加上，jq 是没有的
     pe          DECIMAL(12,2) NOT NULL,
     tov         DECIMAL(12,2) NOT NULL,
     pb          DECIMAL(12,2) NOT NULL, # 每股股价与每股净资产的比率
@@ -208,6 +209,8 @@ CREATE TABLE nmc2 (
     oing_cap    DECIMAL(12,2) NOT NULL, # 流通股本
     INDEX(code)
 );
+
+# code   | pe     | tov  | pb   | ps_ratio | pcf_ratio | shares    | cap    | oing_cap
 
 DROP TABLE IF EXISTS td2;
 CREATE TABLE td2 (
