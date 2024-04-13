@@ -7,7 +7,23 @@ CREATE TABLE idxL (
 );
 
 CREATE TABLE etfL LIKE idxL;
-CREATE TABLE thsL LIKE idxL;
+
+DROP TABLE IF EXISTS thsL;
+CREATE TABLE thsL (
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    name        CHAR(24),
+    cnt         TINYINT NOT NULL DEFAULT 0,
+    type        CHAR(4),
+    INDEX(code)
+);
+
+DROP TABLE IF EXISTS thsB;
+CREATE TABLE thsB (
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    cmbr        CHAR(8),
+    sym         CHAR(24),
+    INDEX(code)
+);
 
 # 8 is mB
 DROP TABLE IF EXISTS etf8;
