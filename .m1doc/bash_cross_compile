@@ -263,4 +263,8 @@ make install
 CROSS=mips-linux-uclibc-gnu
 ./configure --prefix=$PWD/install CC=$CROSS-gcc --host=mips-linux --without-gtk
 
+# thttpd T31.540
+
+make distclean; ./configure CC=mips-linux-uclibc-gnu-gcc
+make CC=mips-linux-uclibc-gnu-gcc
 
