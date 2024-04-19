@@ -143,20 +143,13 @@ CREATE TABLE v5 (                                   # 重构i34，i34需要的�
     date        date NOT NULL, 
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0, # 考虑到只做图形评估，不再有成交量的相关信息
 
-    hi          DECIMAL(6,2) NOT NULL DEFAULT 0,    # 考虑`负阴抱阳`
-    lo          DECIMAL(6,2) NOT NULL DEFAULT 0,    #
-
     ic          TINYINT      NOT NULL DEFAULT 0,    # index 13 日收盘
     iv1         TINYINT      NOT NULL DEFAULT 0,    # index 13
     iv3         TINYINT      NOT NULL DEFAULT 0,    # index 34
     n10         TINYINT      NOT NULL DEFAULT 0,    # 涨停数
 
-    hhc         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 13日收盘>ma20
-    lll         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 13日low <ma20
-
-    kv3         TINYINT      NOT NULL DEFAULT 0,    # 
-    kv2         TINYINT      NOT NULL DEFAULT 0,    # 
-    kv1         TINYINT      NOT NULL DEFAULT 0,    # 缩量新高
+    L_H21       DECIMAL(6,2) NOT NULL DEFAULT 0,    # 13日最低HH(c,21)
+    L_H34       DECIMAL(6,2) NOT NULL DEFAULT 0,    # 13日最低HH(c,34)
 
     INDEX(date),
     INDEX(code,date)

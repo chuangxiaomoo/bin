@@ -60,4 +60,21 @@ CREATE TABLE d_idx (
 CREATE TABLE d_etf LIKE d_idx;
 CREATE TABLE d_ths LIKE d_idx;
 
-# fn_v5
+# v34
+DROP TABLE IF EXISTS v4idx;
+CREATE TABLE v4idx ( 
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0, # 
+    L_H21       DECIMAL(6,2) NOT NULL DEFAULT 0,    # 13日最低HH(c,21)
+    L_H34       DECIMAL(6,2) NOT NULL DEFAULT 0,    # 13日最低HH(c,34)
+    ic          TINYINT      NOT NULL DEFAULT 0,    # index of HH(c,21)
+    iv1         TINYINT      NOT NULL DEFAULT 0,    # index of HH(tov,21)
+    iv3         TINYINT      NOT NULL DEFAULT 0,    # index of HH(tov,34)
+
+    INDEX(date),
+    INDEX(code,date)
+);
+
+DROP TABLE IF EXISTS v4etf; CREATE TABLE v4etf LIKE v4idx;
+DROP TABLE IF EXISTS v4ths; CREATE TABLE v4ths LIKE v4idx;
+

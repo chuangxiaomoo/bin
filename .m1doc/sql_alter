@@ -16,6 +16,7 @@
 
 . 删除列
     ALTER TABLE table_name DROP COLUMN column_name
+    ALTER TABLE v5 CHANGE hhc L_H21;
 
 . 改变列名
     ALTER TABLE table_name 
