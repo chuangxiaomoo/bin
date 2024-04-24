@@ -90,7 +90,6 @@ CREATE TABLE d1 (
     ma60        DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 60日收盘均价
 
     hsl20       DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 20日平均换手率
-    vw          DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 量比: 周成交/前19周平均成交量
     x3          DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 量比: 3日/4~12日
     x5          DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 量比: 5日/6~20日
     x10         DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 量比: 10日/11~40日
