@@ -1,0 +1,72 @@
+#! /bin/sh
+#
+# 解压: 相比 gzip bzip, 7z.exe 会根据压缩头部 MAGIC 自动识别文件类型并进行解压。
+# 压缩: gzip 与 tar 结合，更简单
+#
+
+function xt_ret()
+{
+    [ "${1}" = "0" ] && return 0
+    printf "${BASH_SOURCE[1]##*/}%-6s" "|${BASH_LINENO[0]}|"    # no FUNCNAME print
+    FG=31 BG=40
+    echo -e "\E[${FG};${BG}m${@:2}"
+    echo -ne "\E[0m"
+    return 1
+}
+
+# $1 input-file
+# $2 output-dir
+x_bzip_gzip()
+{
+    d=${2:-.}
+    f_tar=${1%.*}
+    f_tar=${f_tar##*/}
+    7z -y x $1              >/dev/null; xt_ret $? "" || exit
+    7z -y x ${f_tar} -o${d} >/dev/null; xt_ret $? "" || exit
+    rm -rf $f_tar
+}
+
+fn_main()
+{
+    [ -n  "${1}" ] && rm -rf algo base output tmp b_list *.tar && echo clean done && exit
+
+    [ -f algo_license.tar.gz ]
+    xt_ret $? "algo_license.tar.gz not exist" || return $?
+    [ -f 底座license.tar.gz ]
+    xt_ret $? "底座license.tar.gz not exist" || return $?
+
+    rm -rf algo base output tmp
+    mkdir -p algo base output tmp bak
+    ls
+
+    cp -f algo_license.tar.gz 底座license.tar.gz bak
+
+    x_bzip_gzip algo_license.tar.gz algo
+    xt_ret $? "" || return $?
+
+    x_bzip_gzip 底座license.tar.gz base
+    xt_ret $? "" || return $?
+
+    b_list='b_list'
+    find base -maxdepth 2 -type f -name '[0-9a-f]*.tar.gz' > ${b_list}
+    test -s $b_list
+    xt_ret $? "" || return $?
+
+    for f in algo/[0-9a-f]*; do
+        mac=${f##algo/}
+        mac=${mac%%.tar.gz}
+        echo $mac
+        f_base=`grep ${mac} $b_list`
+        echo _do_ $f $f_base
+        mkdir -p tmp/${mac}
+
+        x_bzip_gzip ${f_base} tmp/${mac}
+        x_bzip_gzip ${f} tmp/${mac}
+
+        ( cd tmp/${mac} && tar -cf ../../output/${mac}.tar run && cd ../../output/ && gzip ${mac}.tar )
+        xt_ret $? "" || return $?
+    done
+}
+
+fn_main $@
+

@@ -751,7 +751,9 @@ function fn_rar()                       { cat cmd_tar unrar ;}
 function fn_tar()                       { cat cmd_tar ;}
 function fn_zip()                       { cat cmd_tar ;}
 function fn_xz()                        { cat cmd_xz  ;}
-function fn_7z()                        { cat cmd_7z ;}
+function fn_7z()                        { cat cmd_7z 
+                                              cmd_7z_windows
+                                        }
 function fn_openssl()                   { cat cmd_openssl ;}
 function fn_xargs()                     { cat cmd_xargs ;}
 function fn_sysv-rc-conf()              { cat cmd_rcconf ;}
