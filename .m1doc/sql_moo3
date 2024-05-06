@@ -142,15 +142,17 @@ CREATE TABLE v5 (                                   # 重构i34，i34需要的�
     date        date NOT NULL, 
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0, # 考虑到只做图形评估，不再有成交量的相关信息
 
-    ic          TINYINT      NOT NULL DEFAULT 0,    # index 13 日收盘
-    iv1         TINYINT      NOT NULL DEFAULT 0,    # index 13
-    iv3         TINYINT      NOT NULL DEFAULT 0,    # index 34
-    n10         TINYINT      NOT NULL DEFAULT 0,    # 涨停数
+    ic          TINYINT      NOT NULL DEFAULT 0,    # rk 13 日收盘
+    iv1         TINYINT      NOT NULL DEFAULT 0,    # rk 13
+    iv3         TINYINT      NOT NULL DEFAULT 0,    # rk 34
+    iv5         TINYINT      NOT NULL DEFAULT 0,    # rk 5
+    n10         TINYINT      NOT NULL DEFAULT 0,    # vheap数量
+    rio         DECIMAL(6,1) NOT NULL DEFAULT 0,    # vheap量比
 
-    HH21        DECIMAL(6,2) NOT NULL DEFAULT 0,    #         HH(c,21)
-    L_H13       DECIMAL(6,2) NOT NULL DEFAULT 0,    # 13日最低HH(c,21)
-    L_H34       DECIMAL(6,2) NOT NULL DEFAULT 0,    # 13日最低HH(c,34)
-    L_H61       DECIMAL(6,2) NOT NULL DEFAULT 0,    # 13日最低HH(c,34)
+    HH21        DECIMAL(6,2) NOT NULL DEFAULT 0,    # HH(c,21)
+    L_H13       DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(H21,21)
+    L_H34       DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(H21,34)
+    L_H61       DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(H21,61)
 
     INDEX(date),
     INDEX(code,date)
