@@ -1105,6 +1105,7 @@ function fn_idealism()                  { cat idealism ;}
 function fn_rose()                      { cat rose ;}
 function fn_interview()                 { cat career
                                                 50_faq
+                                                6q.c
                                                 tek
                                                 jd
                                                 job
