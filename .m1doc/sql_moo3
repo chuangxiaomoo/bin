@@ -28,27 +28,12 @@ DROP TABLE IF EXISTS apeak;
 CREATE TABLE apeak(
     date    date NOT NULL, 
     code    INT(6) ZEROFILL NOT NULL DEFAULT 0,
-    a220    DECIMAL(12,2)   NOT NULL DEFAULT 0,     # hhv(amo, 220), 只算上涨日，不算下跌日
-    c220    DECIMAL(6,2)    NOT NULL DEFAULT 0,     # hhv(C, 220)
-    i220    SMALLINT        NOT NULL DEFAULT 0,     # c220 对应的 idx
-    a144    DECIMAL(12,2)   NOT NULL DEFAULT 0,     # hhv(amo, 144)
-    c144    DECIMAL(6,2)    NOT NULL DEFAULT 0,     # hhv(C, 144)
-    i144    SMALLINT        NOT NULL DEFAULT 0,     # c144 对应的 idx
-    a55     DECIMAL(12,2)   NOT NULL DEFAULT 0,     # hhv(amo, 55)
-    c55     DECIMAL(6,2)    NOT NULL DEFAULT 0,     # hhv(C, 55)
-    i55     SMALLINT        NOT NULL DEFAULT 0,     # c55  对应的 idx
-    a34     DECIMAL(12,2)   NOT NULL DEFAULT 0,     # hhv(amo, 34)
-    c34     DECIMAL(6,2)    NOT NULL DEFAULT 0,     # hhv(C, 34)
-    i34     SMALLINT        NOT NULL DEFAULT 0,     # c34  对应的 idx
-    a21     DECIMAL(12,2)   NOT NULL DEFAULT 0,     # hhv(amo, 21)
-    c21     DECIMAL(6,2)    NOT NULL DEFAULT 0,     # hhv(C, 21)
-    i21     SMALLINT        NOT NULL DEFAULT 0,     # c21  对应的 idx
-    a13     DECIMAL(12,2)   NOT NULL DEFAULT 0,     # hhv(amo, 13)
-    c13     DECIMAL(6,2)    NOT NULL DEFAULT 0,     # hhv(C, 13)
-    i13     SMALLINT        NOT NULL DEFAULT 0,     # c13  对应的 idx
-    a       DECIMAL(12,2)   NOT NULL DEFAULT 0,     # amount
-    c       DECIMAL(6,2)    NOT NULL DEFAULT 0,     # close
-    o       DECIMAL(6,2)    NOT NULL DEFAULT 0,     # 
+    c240    DECIMAL(6,2)    NOT NULL DEFAULT 0,
+    iq4     SMALLINT        NOT NULL DEFAULT 0,
+    rio2    DECIMAL(6,2)    NOT NULL DEFAULT 0,
+    n2      SMALLINT        NOT NULL DEFAULT 0,
+    rio4    DECIMAL(6,2)    NOT NULL DEFAULT 0,
+    n4      SMALLINT        NOT NULL DEFAULT 0,
     INDEX(date),
     INDEX(code,date)
 );
