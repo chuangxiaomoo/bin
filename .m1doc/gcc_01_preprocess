@@ -1,3 +1,13 @@
+/* #error 测试宏是否定义 */
+
+#ifdef YUJUNSHI
+    int white_gpio = 49;
+    gpio_direction_output(white_gpio, 1);
+#else
+#error "YUJ mustdef"
+#endif
+
+
 /* gcc */
 
 一、调试宏，得到更准确的Error位置信息
