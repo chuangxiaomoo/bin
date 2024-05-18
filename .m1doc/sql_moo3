@@ -30,9 +30,9 @@ CREATE TABLE apeak(
     code    INT(6) ZEROFILL NOT NULL DEFAULT 0,
     c240    DECIMAL(6,2)    NOT NULL DEFAULT 0,
     iq4     SMALLINT        NOT NULL DEFAULT 0,
-    rio2    DECIMAL(6,2)    NOT NULL DEFAULT 0,
+    rio2    DECIMAL(6,1)    NOT NULL DEFAULT 0,
     n2      SMALLINT        NOT NULL DEFAULT 0,
-    rio4    DECIMAL(6,2)    NOT NULL DEFAULT 0,
+    rio4    DECIMAL(6,1)    NOT NULL DEFAULT 0,
     n4      SMALLINT        NOT NULL DEFAULT 0,
     INDEX(date),
     INDEX(code,date)
