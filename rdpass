@@ -1,0 +1,7 @@
+#! /bin/bash
+
+part1=`date +%s | md5sum | base64 | head -c4`
+part3=`date +%F.%T | md5sum | base64 | head -c4`
+part5=`date +%s | tail -c2`
+
+echo ${part1}@${part3}%${part5}

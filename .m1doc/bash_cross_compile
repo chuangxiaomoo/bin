@@ -21,6 +21,10 @@
     make CC=arm-linux-gcc AR=arm-linux-ar
     .so 是由 gcc 链接的，但 .a 不是，所以需要同时指定 ar
 
+# netcat
+
+    configure --prefix=$PWD/_install --host=mips-linux CC=mips-linux-uclibc-gnu-gcc
+
 # freetype
 
 ./configure --host=mips-linux-uclibc --without-zlib --without-png --prefix=/opt/22/JCommonPro/openlibs/freetype/output
