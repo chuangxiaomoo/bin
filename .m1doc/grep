@@ -14,6 +14,7 @@
 ## 抑制内容输出
 
    -l, --files-with-matches
+   grep -l -w -E "(js_create_timer|js_delete_timer|js_create_reader|js_delete_reader)" `cat .cscope.files`
 
 ## filter grep
 
