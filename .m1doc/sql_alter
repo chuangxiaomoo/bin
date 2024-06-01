@@ -14,6 +14,8 @@
     ALTER TABLE myTable ADD myNewColumn VARCHAR(255) AFTER myOtherColumn;
     ALTER TABLE d1 ADD avrg DECIMAL(6,2) NOT NULL DEFAULT 0 AFTER close;
 
+    ALTER TABLE v5 ADD vv DECIMAL(6,2) NOT NULL DEFAULT 0 AFTER rio;
+
 . 删除列
     ALTER TABLE table_name DROP COLUMN column_name
     ALTER TABLE vpeak DROP COLUMN ;

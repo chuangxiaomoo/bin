@@ -133,6 +133,8 @@ CREATE TABLE v5 (                                   # 重构i34，i34需要的�
     iv5         TINYINT      NOT NULL DEFAULT 0,    # rk 5
     n10         TINYINT      NOT NULL DEFAULT 0,    # vheap数量
     rio         DECIMAL(6,1) NOT NULL DEFAULT 0,    # vheap量比
+    rio         DECIMAL(6,1) NOT NULL DEFAULT 0,    # vheap量比
+    vv          DECIMAL(6,2) NOT NULL DEFAULT 0,    #
 
     HH21        DECIMAL(6,2) NOT NULL DEFAULT 0,    # HH(c,21)
     L_H13       DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,21)
