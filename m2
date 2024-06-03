@@ -1106,6 +1106,7 @@ function fn_rose()                      { cat rose ;}
 function fn_interview()                 { cat career
                                                 50_faq
                                                 6q.c
+                                                tek_non.md
                                                 tek
                                                 jd
                                                 job

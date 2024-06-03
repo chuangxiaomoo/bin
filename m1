@@ -49,8 +49,8 @@ function fn_tcpdump()                   {
                                         }
 
 function fn_wireshark()                 {
-function fn_base()                      { cat wireshark_base ;}
-function fn_filter()                    { cat wireshark_filter ;}
+function fn_base()                      { cat wireshark_base ;}     # 显示过滤器
+function fn_filter()                    { cat wireshark_filter ;}   # 捕捉过滤器
     local opts=(
         base
         filter              # 规则类似 tcpdump
