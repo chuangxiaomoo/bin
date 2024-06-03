@@ -40,25 +40,26 @@ DROP TABLE IF EXISTS d_idx;
 CREATE TABLE d_idx (
     date        date NOT NULL, 
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0, # 代码
-    setl        DECIMAL(6,2)  NOT NULL,             # 昨收
-    open        DECIMAL(6,2)  NOT NULL,             # 开
-    high        DECIMAL(6,2)  NOT NULL,             # 高
-    low         DECIMAL(6,2)  NOT NULL,             # 低
-    close       DECIMAL(6,2)  NOT NULL,             # 收
+    setl        DECIMAL(6,3)  NOT NULL,             # 昨收
+    open        DECIMAL(6,3)  NOT NULL,             # 开
+    high        DECIMAL(6,3)  NOT NULL,             # 高
+    low         DECIMAL(6,3)  NOT NULL,             # 低
+    close       DECIMAL(6,3)  NOT NULL,             # 收
                                                     
     volume      DECIMAL(12,2) NOT NULL DEFAULT 0,   # 成交量
     amount      DECIMAL(12,2) NOT NULL DEFAULT 0,   # 成交额
 
-    ma5         DECIMAL(6,2)  NOT NULL DEFAULT 0,   # score: 5
-    ma20        DECIMAL(6,2)  NOT NULL DEFAULT 0,   # score: 35
-    ma60        DECIMAL(6,2)  NOT NULL DEFAULT 0,   # score: 30
-    ma240       DECIMAL(6,2)  NOT NULL DEFAULT 0,   # score: 30
+    ma5         DECIMAL(6,3)  NOT NULL DEFAULT 0,   # score: 5
+    ma20        DECIMAL(6,3)  NOT NULL DEFAULT 0,   # score: 35
+    ma60        DECIMAL(6,3)  NOT NULL DEFAULT 0,   # score: 30
+    ma240       DECIMAL(6,3)  NOT NULL DEFAULT 0,   # score: 30
 
     INDEX(date),
     INDEX(code,date)
 );
-CREATE TABLE d_etf LIKE d_idx;
-CREATE TABLE d_ths LIKE d_idx;
+
+DROP TABLE IF EXISTS d_etf; CREATE TABLE d_etf LIKE d_idx;
+DROP TABLE IF EXISTS d_ths; CREATE TABLE d_ths LIKE d_idx;
 
 # v34
 DROP TABLE IF EXISTS v4idx;

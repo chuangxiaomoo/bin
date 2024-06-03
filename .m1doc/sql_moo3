@@ -133,6 +133,32 @@ CREATE TABLE v5 (                                   # 重构i34，i34需要的�
     iv5         TINYINT      NOT NULL DEFAULT 0,    # rk 5
     n10         TINYINT      NOT NULL DEFAULT 0,    # vheap数量
     rio         DECIMAL(6,1) NOT NULL DEFAULT 0,    # vheap量比
+    vv          DECIMAL(6,2) NOT NULL DEFAULT 0,    #
+
+    HH21        DECIMAL(6,2) NOT NULL DEFAULT 0,    # HH(c,21)
+    L_H13       DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,21)
+    L_H34       DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,34)
+    L_H61       DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,61)
+
+    INDEX(date),
+    INDEX(code,date)
+);
+
+DROP TABLE IF EXISTS e5;
+CREATE TABLE e5 (                                   # 重构i34，i34需要的是13日内的走势结构
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0, # 考虑到只做图形评估，不再有成交量的相关信息
+
+    x3          DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 量比: 3日/4~12日
+    x5          DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 量比: 5日/6~20日
+    x10         DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 量比: 10日/11~40日
+    x20         DECIMAL(6,2)  NOT NULL DEFAULT 0,   # 量比: 20日/21~60日
+
+    ic          TINYINT      NOT NULL DEFAULT 0,    # rk 13 日收盘
+    iv1         TINYINT      NOT NULL DEFAULT 0,    # rk 13
+    iv3         TINYINT      NOT NULL DEFAULT 0,    # rk 34
+    iv5         TINYINT      NOT NULL DEFAULT 0,    # rk 5
+    n10         TINYINT      NOT NULL DEFAULT 0,    # vheap数量
     rio         DECIMAL(6,1) NOT NULL DEFAULT 0,    # vheap量比
     vv          DECIMAL(6,2) NOT NULL DEFAULT 0,    #
 

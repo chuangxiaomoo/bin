@@ -257,7 +257,6 @@ CREATE TABLE f5 (
 CREATE TEMPORARY TABLE iB LIKE i5;
 
 ALTER TABLE i5 ADD close DECIMAL(6,2) AFTER avg;
-UPDATE d1,i5 SET i5.close=d1.close WHERE d1.date=i5.date and d1.code=i5.code;
 
 CREATE TEMPORARY TABLE j5 (
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
