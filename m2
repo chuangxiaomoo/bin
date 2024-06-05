@@ -290,7 +290,7 @@ function fn_list()                      { cat book_400_PoorCharliesAlmanack_穷�
     local opts=(
         liutao                          # 六韬.太公兵法
         36ji                            # 36计
-        lunyu                           # 论语
+        lunyu                           # 缠解论语
         shenglvqimeng                   # 声律启蒙
         tiandao                         # 天道.遥远的救世主
         01_商君书

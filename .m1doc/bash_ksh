@@ -7,7 +7,7 @@
 function   | function fn_main                      |  兼容ksh，可有可无                           |  fn_main()
            |          fn_main()                    |                                              |
            |                                       |                                              |
-1-line-cmd | { ls; date ;}                         |  { ls; date ;}                               |  { ls; date ;} 会报错
+1-line-cmd | { ls; date ;}                         |  { ls; date ;}                               |  { ls; date ;}
 array      | set -A list m1 m2 m3                  |  list=(m1 m2 m3)                             |  set -- a1 a2 a3 a4 a5
            |                                       |                                              |  for i; do
 loop       | while [ ${i:=0} -lt ${#list[@]} ]; do |  for (( i=0; i<0; i+=1 )); do done           |      echo this is $i
