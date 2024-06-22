@@ -672,7 +672,9 @@ function fn_relocate()                  { cat svn_relocate ;}
 function fn_vim() {
 function fn_hex()                       { cat vim_hex
                                               vim_CTRL-V
-                                              vimtutor gvim ;}
+                                              vimtutor gvim
+                                              coc.nvim
+                                        }
 function fn_fundamental()               { cat vim_fundamental vim_ctags ;}
 function fn_align()                     { cat vim_align ;}
 function fn_hotkey()                    { cat vim_hotkey chromVim cvim autohotkey ahk
@@ -1134,6 +1136,7 @@ function ubuntu() {
     ubuntu.services         # systemctl
     apt-get_source
     apt-get_command
+    apt-get_list
 }
 
 function fn_command() {                 { cat   centos ;}

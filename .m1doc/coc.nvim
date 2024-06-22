@@ -1,0 +1,20 @@
+# vim
+
+手动源码更新 vim 到 vim8.2
+
+# nvm & node
+
+安装 nvm
+通过 nvm 安装 node v16.18.0， 目前 1804 是 glibc-2.27，v16.18.0 是最好的选择。
+node 加 path 要手动进行
+
+# c++ 依赖 clangd
+
+`[coc.nvim] clangd was not found on your PATH.`
+对于C++，coc.nvim支持clangd和ccls两种方案，优先使用 clangd
+安装 clangd
+
+# 插件
+
+:CocInstall coc-clangd  # C++环境插件
+
