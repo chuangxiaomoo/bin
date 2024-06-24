@@ -673,7 +673,7 @@ function fn_vim() {
 function fn_hex()                       { cat vim_hex
                                               vim_CTRL-V
                                               vimtutor gvim
-                                              coc.nvim
+                                              coc.nvim lsp
                                         }
 function fn_fundamental()               { cat vim_fundamental vim_ctags ;}
 function fn_align()                     { cat vim_align ;}

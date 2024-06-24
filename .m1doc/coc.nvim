@@ -2,6 +2,15 @@
 
 手动源码更新 vim 到 vim8.2
 
+# gtags
+
+cp /usr/local/share/gtags/gtags.vim /root/.vim/plugin
+https://www.gnu.org/software/global/globaldoc_toc.html#Vim-editor
+
+不但能查定义，还能查引用
+原生支持 6 种语言（C，C++，Java，PHP4，Yacc，汇编）
+扩展支持 50+ 种语言（包括 go/rust/scala 等，基本覆盖所有主流语言）
+
 # nvm & node
 
 安装 nvm
@@ -18,3 +27,10 @@ node 加 path 要手动进行
 
 :CocInstall coc-clangd  # C++环境插件
 
+# 使用 nvim, 参考这个大神
+
+https://martins3.github.io/My-Linux-Config/docs/nvim.html#language-server-protocal
+
+Language Server Protocal
+Async
+Treesitter
