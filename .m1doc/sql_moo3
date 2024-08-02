@@ -132,8 +132,7 @@ CREATE TABLE v5 (                                   # 重构i34，i34需要的�
     iv3         TINYINT      NOT NULL DEFAULT 0,    # rk 34
     iv5         TINYINT      NOT NULL DEFAULT 0,    # rk 5
     n10         TINYINT      NOT NULL DEFAULT 0,    # vheap数量
-    rio         DECIMAL(6,1) NOT NULL DEFAULT 0,    # vheap量比
-    iq2         TINYINT      NOT NULL DEFAULT 0,    #
+    flut        DECIMAL(6,1) NOT NULL DEFAULT 0,    # 波动系数
     s80         DECIMAL(6,2) NOT NULL DEFAULT 0,    #
     sq2         DECIMAL(6,2) NOT NULL DEFAULT 0,    #
    #vv          DECIMAL(6,2) NOT NULL DEFAULT 0,    #

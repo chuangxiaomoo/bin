@@ -1018,7 +1018,7 @@ function fn_msg()                       { cat jco_msg
 function fn_platform()                  { cat jco_platform ;}
 function fn_alarm_design()              { cat jco_alarm_design ;}
 function fn_alarm_software()            { cat jco_alarm_software ;}
-function fn_alarm_hardware()            { cat jco_alarm_hardware sdcard_mbr ;}
+function fn_alarm_hardware()            { cat jco_alarm_hardware sdcard_mbr cid ;}
 function fn_alarm_motion_detc()         { cat jco_alarm_motion_detc ;}
 function fn_capture()                   { cat jco_capture ;}
 function fn_jcp()                       { cat jco_jcp ;}
