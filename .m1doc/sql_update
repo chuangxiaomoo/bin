@@ -18,6 +18,8 @@
         SET col_name1={expr1|DEFAULT} [, col_name2={expr2|DEFAULT}] ...
         [WHERE where_condition]
 
+    UPDATE d3, top10 tp SET d3.volume=hsl20*100/(100-if(top10<=75, top10, 75)) WHERE d3.code=tp.code;
+
 . 存在更新，不存在插入（根据主键或者唯一索引判断）
 
     replace into t(id, update_time) select 1, now();

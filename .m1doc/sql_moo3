@@ -134,7 +134,8 @@ CREATE TABLE v5 (                                   # 重构i34，i34需要的�
     n10         TINYINT      NOT NULL DEFAULT 0,    # vheap数量
     rio         DECIMAL(6,1) NOT NULL DEFAULT 0,    # vheap量比
     iq2         TINYINT      NOT NULL DEFAULT 0,    #
-    vq2         DECIMAL(6,1) NOT NULL DEFAULT 0,    # v/HHV(v,3)
+    s80         DECIMAL(6,2) NOT NULL DEFAULT 0,    #
+    sq2         DECIMAL(6,2) NOT NULL DEFAULT 0,    #
    #vv          DECIMAL(6,2) NOT NULL DEFAULT 0,    #
    #vp3         DECIMAL(6,2) NOT NULL DEFAULT 0,    # v/HHV(v,3)
 
@@ -142,6 +143,19 @@ CREATE TABLE v5 (                                   # 重构i34，i34需要的�
     L_H13       DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,21)
     L_H34       DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,34)
     L_H61       DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,61)
+
+    INDEX(date),
+    INDEX(code,date)
+);
+
+DROP TABLE IF EXISTS hw;
+CREATE TABLE hw (                                   # 重构i34，i34需要的是13日内的走势结构
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0, # 考虑到只做图形评估，不再有成交量的相关信息
+
+    N           TINYINT      NOT NULL DEFAULT 0,    # 
+    N8          TINYINT      NOT NULL DEFAULT 0,    # 
+    N13         TINYINT      NOT NULL DEFAULT 0,    # 
 
     INDEX(date),
     INDEX(code,date)
