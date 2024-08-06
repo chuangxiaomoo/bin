@@ -70,7 +70,7 @@ mod_mi5=100
 info='/tmp/kts/info'
 chao='/tmp/kts/chao'
 patt='/tmp/kts/patt'
-error='/tmp/kts/error'
+error='/dev/stderr'
 cache='/tmp/kts/cache'
 flash='/tmp/kts/flash'
 buffer='/tmp/kts/buffer'
@@ -510,9 +510,8 @@ function fn_carbon()
 
 function fn_timestamp_market()
 {
-    DATETIME=(`$W3M -dump ${url_sh000001} | awk -F',' '{print $(NF-2), $(NF-1)}'`)
-    OPENDATE=${DATETIME[0]}
-    OPENTIME=${DATETIME[1]}
+    #DATETIME=(`$W3M -dump ${url_sh000001} | awk -F',' '{print $(NF-2), $(NF-1)}'`)
+    OPENDATE=`date +%Y-%m-%d`
     if [ -z "$OPENDATE" ]; then
         fn_echo_fail "
         FINA UNREACHABLE!

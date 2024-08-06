@@ -30,7 +30,8 @@
     ALTER TABLE tbl_name CHANGE col_old col_new char(4) not null;
 
     ALTER TABLE apeak CHANGE i240 iq4 SMALLINT not null DEFAULT 0;
-    ALTER TABLE  i5 CHANGE iB HB TINYINT not null DEFAULT 0;
+    ALTER TABLE  v5 CHANGE rio flut DECIMAL(6,1) not null DEFAULT 0;
+
     ALTER TABLE  d1 CHANGE avrg avg DECIMAL(6,2) not null DEFAULT 0;
     ALTER TABLE td2 CHANGE avrg avg DECIMAL(6,2) not null DEFAULT 0;
     -- 曾经把 ALTER 写成了 ALERT，捣鼓了半天。

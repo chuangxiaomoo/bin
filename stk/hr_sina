@@ -45,13 +45,20 @@ function fn_sina() {
 
     local url='http://vip.stock.finance.sina.com.cn'
     local page='/quotes_service/api/json_v2.php/Market_Center.getHQNodeData'
-    local  sh='?page=1&num=1200&sort=symbol&asc=1&node=sh_a&_s_r_a=page'
-    local sz1='?page=1&num=1000&sort=symbol&asc=1&node=sz_a&_s_r_a=page'
-    local sz2='?page=2&num=1000&sort=symbol&asc=1&node=sz_a&_s_r_a=page'
+    local sh='?page=%s&num=6000&sort=symbol&asc=1&node=sh_a&_s_r_a=page'
+    local sz='?page=%s&num=6000&sort=symbol&asc=1&node=sz_a&_s_r_a=page'
 
     # 代码   名称     最新价 涨跌额 涨跌幅 买入   卖出   昨收   今开   最高   最低   成交量/手 成交额/万
 
-    for link in $url$page$sh $url$page$sz1 $url$page$sz2; do
+    let i_page=0
+    let i_sec=0
+    sec=${sh}
+
+    #for link in $url$page$sh $url$page$sz; do
+    #echo ${link}; exit
+    while :; do
+        let i_page++
+        link=`printf ${url}${page}${sec} ${i_page}`
         echo       $link > /dev/stderr
         $W3M -dump $link > ${cache}.sn 2>${error}
         xt_ret $? "NETWORK" || return $?
@@ -78,9 +85,21 @@ function fn_sina() {
                 printf "%s\t%s\t%.2f\t%.0f\t%.0f\t%s\n", $2,v_date,v_close, $17,$18, $3;
             }' >> ${flash}.cap
 
+        nr=`wc -l < ${buffer}.sn`
+        if [ ${nr} -lt 100 ] || [ ${i_page} -gt 100 ]; then
+            echo done ${nr} ${i_page} >${error}
+            if [ $i_sec = 0 ]; then
+                let i_sec=1
+                sec=${sz}
+                i_page=0
+            else
+                break
+            fi
+        fi
     done > ${flash}.sn
     sort -k3 -g ${flash}.cap -o ${flash}.cap
     echo "
+    ${buffer}.sn
     ${flash}.sn
     ${flash}.cap
     "

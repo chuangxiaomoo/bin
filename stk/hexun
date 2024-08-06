@@ -1,7 +1,7 @@
 #! /bin/bash -
 
 . `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
-. /etc/common.rc
+. ~/bin/common.rc
 
 function fn_fmt_hexun() {
     awk -F',' -v v_date=$DATE -v v_time=$TIME '{
@@ -27,6 +27,7 @@ function fn_hexun() {
             sed -e 's/\],/\n/g' -e '$s/]];//g'> $buffer
         fn_fmt_hexun $buffer
     done > $flash
+    echo ${flash} done
 }
 
 function fn_main() {

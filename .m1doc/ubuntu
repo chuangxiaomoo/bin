@@ -1,5 +1,9 @@
 # ubuntu
 
+# libz.so
+
+apt-get install zlib1g-dev:i386
+
 # gcc
 
 apt-get  install  build-essential

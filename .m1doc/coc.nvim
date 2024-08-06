@@ -27,7 +27,7 @@ node 加 path 要手动进行
 
 :CocInstall coc-clangd  # C++环境插件
 
-# 使用 nvim, 参考这个大神
+# 使用 nvim, 参考这个大神，优先 ccls
 
 https://martins3.github.io/My-Linux-Config/docs/nvim.html#language-server-protocal
 
