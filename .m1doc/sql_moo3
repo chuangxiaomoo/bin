@@ -161,6 +161,17 @@ CREATE TABLE hw (                                   # 重构i34，i34需要的�
     INDEX(code,date)
 );
 
+DROP TABLE IF EXISTS hh29;
+CREATE TABLE hh29 (
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0, #
+    N           TINYINT      NOT NULL DEFAULT 0,    #
+    HH29        DECIMAL(6,2) NOT NULL DEFAULT 0,    # 
+
+    INDEX(date),
+    INDEX(code,date)
+);
+
 DROP TABLE IF EXISTS e5;
 CREATE TABLE e5 (                                   # 重构i34，i34需要的是13日内的走势结构
     date        date NOT NULL, 
