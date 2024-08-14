@@ -23,7 +23,7 @@ array=(
     ______________                                                          Occ
     ______________                                                          Occ
     arm-fullhanv3-linux-uclibcgnueabi-b6                                    Fulhan-8852
-    arm-fullhanv2-eabi-b3                                                   Fulhan-8652
+    arm-fullhanv3-linux-uclibcgnueabi-b6                                    Fulhan-8652-16
 )
 
 help_show()
@@ -50,9 +50,11 @@ fn_main()
 
     case ${1:-0} in
     10|11|12)
-        ingn_cc='/opt/ax.cc'    ;;
-    15|16)
+        ingn_cc='/opt/ax.cc'                ;;
+    15)
         ingn_cc='/opt/fullhan/toolchain'    ;;
+    16)
+        ingn_cc='/opt/fullhan/865x'         ;;
     esac
 
     case ${1:-0} in
