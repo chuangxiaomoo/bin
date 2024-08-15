@@ -7,6 +7,9 @@
 #error "YUJ mustdef"
 #endif
 
+/* warning */
+
+#pragma message("Warning: 3")
 
 /* gcc */
 
