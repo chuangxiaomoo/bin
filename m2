@@ -1109,6 +1109,8 @@ function fn_interview()                 { cat career
                                                 tek_non.md
                                                 tek
                                                 jd
+                                                jd_media_swe.md
+                                                jd_chip.md
                                                 job
                                                 shakespare2offer.txt
                                                 shakespare2offer.read

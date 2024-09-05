@@ -9,6 +9,7 @@ obase=A
 
      echo 'ibase=obase=16;180000+16*10000' | bc -l
 
+     hbc  obase=16 一定要使用大写
 
 # set the bc variable such as scale permanently 
 

@@ -1,0 +1,9 @@
+#! /bin/bash
+
+s=`tr 'a-z' 'A-Z' <<< "$*" | sed 's/0X//g'`
+
+echo -n 'hex_output: '
+echo "ibase=obase=16; $s" | bc -l
+
+echo -n 'dec_output: '
+echo "ibase=16; $s" | bc -l
