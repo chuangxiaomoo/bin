@@ -2,4 +2,4 @@
 
 dump=`cat ~/.cross`
 set -x
-${dump}objdump $*
+${dump}gcc $*
