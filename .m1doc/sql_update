@@ -20,6 +20,8 @@
 
     UPDATE d3, top10 tp SET d3.volume=hsl20*100/(100-if(top10<=75, top10, 75)) WHERE d3.code=tp.code;
 
+    UPDATE v5, hw SET v5.S1=hw.N, v5.SB=hw.N13 WHERE v5.code=hw.code && v5.date='$END'&& hw.date='$END' ;
+
 . 存在更新，不存在插入（根据主键或者唯一索引判断）
 
     replace into t(id, update_time) select 1, now();

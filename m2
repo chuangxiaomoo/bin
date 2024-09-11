@@ -1104,11 +1104,13 @@ function fn_ideas()                     { cat ideas ;}
 function fn_idealism()                  { cat idealism ;}
 function fn_rose()                      { cat rose ;}
 function fn_interview()                 { cat career
-                                                50_faq
+                                                50_faq QT_faq.md
                                                 6q.c
                                                 tek_non.md
                                                 tek
                                                 jd
+                                                jd_media_swe.md
+                                                jd_chip.md
                                                 job
                                                 shakespare2offer.txt
                                                 shakespare2offer.read

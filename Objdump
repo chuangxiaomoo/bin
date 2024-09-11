@@ -1,0 +1,5 @@
+#! /bin/bash
+
+dump=`cat ~/.cross`
+set -x
+${dump}objdump $*

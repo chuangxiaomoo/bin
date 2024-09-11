@@ -7,34 +7,35 @@
 
 
 array=(
-    SHOW_This_usage                                                         NULL
-    mips-linux-gnu-ingenic-gcc7.2.0-uclibc0.9.33.2-fp64-r5.1.7.smaller2.3   T41
-    mips-gcc472-glibc216-32bit                                              _472_运营商
-    mips-gcc540-glibc222-64bit-r3.3.0                                       T31
-    mips-gcc720-glibc226                                                    T40
-    mips-gcc540-uclibc0.9.33.2-64bit-r3.3.0.smaller                         T23-uclibc
-    mips-gcc540-glibc222-64bit-r3.3.0.smaller                               T23-glibc
-    ______________                                                          Occ
-    ______________                                                          Occ
-    ______________                                                          Occ
-    gcc-arm-9.2-2023.12-x86_64-aarch64-none-linux-gnu                       ax-2023
-    ______________                                                          Occ
-    ______________                                                          Occ
-    ______________                                                          Occ
-    ______________                                                          Occ
-    arm-fullhanv3-linux-uclibcgnueabi-b6                                    Fulhan-8852
-    arm-fullhanv2-eabi-b3                                                   Fulhan-8652
+    SHOW_This_usage                                      NULL            NULL
+    mips-linux-gnu-ingenic-gcc7.2.0-uclibc0.9.33.2-fp64  T41             mips-linux-uclibc-
+    mips-gcc472-glibc216-32bit                           _472_yyShang    mips-linux-uclibc-gnu-
+    mips-gcc540-glibc222-64bit-r3.3.0                    T31             mips-linux-uclibc-gnu-
+    mips-gcc720-glibc226                                 T40             mips-linux-uclibc-gnu-
+    mips-gcc720-uclibc0.9.33.2-r5.1.11                   T40-315Pro      mips-linux-uclibc-gnu-
+    mips-gcc540-uclibc0.9.33.2-64bit-r3.3.0.smaller      T23-uclibc      mips-linux-uclibc-
+    mips-gcc540-glibc222-64bit-r3.3.0.smaller            T23-glibc       mips-linux-gnu-
+    ______________                                       Occ             NULL
+    ______________                                       Occ             NULL
+    gcc-arm-9.2-2023.12-x86_64-aarch64-none-linux-gnu    ax-2023         NULL
+    ______________                                       Occ             NULL
+    ______________                                       Occ             NULL
+    ______________                                       Occ             NULL
+    ______________                                       Occ             NULL
+    arm-fullhanv3-linux-uclibcgnueabi-b6                 Fulhan-8852     NULL
+    arm-fullhanv3-linux-uclibcgnueabi-b6                 Fulhan-8652-16  NULL
 )
 
 help_show()
 {
     echo -e "\nUsage:"
     local i
-    for (( i=0; i<${#array[@]}; i+=2 )); do
+    for (( i=0; i<${#array[@]}; i+=3 )); do
         compile=${array[$i]}
         let j=i+1
-        let No=i/2
-        printf "  %-3d%-70s  # %s\n" $No $compile ${array[$j]}
+        let k=i+2
+        let No=i/3
+        printf "  %-3d%-54s  # %-14s %s\n" $No $compile ${array[$j]} ${array[$k]}
     done
     return;
 }
@@ -50,9 +51,11 @@ fn_main()
 
     case ${1:-0} in
     10|11|12)
-        ingn_cc='/opt/ax.cc'    ;;
-    15|16)
+        ingn_cc='/opt/ax.cc'                ;;
+    15)
         ingn_cc='/opt/fullhan/toolchain'    ;;
+    16)
+        ingn_cc='/opt/fullhan/865x'         ;;
     esac
 
     case ${1:-0} in
@@ -61,7 +64,7 @@ fn_main()
 
         [ -e "${link_cc}" ] && {
             local i
-            for (( i=2; i<${#array[@]}; i+=2 )); do
+            for (( i=3; i<${#array[@]}; i+=3 )); do
                 let j=i+1
                 ls -l ${link_cc} | grep -q ${array[$i]} && { curr=${array[$j]}; break ;}
             done
@@ -74,15 +77,18 @@ fn_main()
         ;;
     [0-9]*)
         rm -f ${link_cc}
-        No=$1*2
+        No=$1*3
+        let j=No+2
         [ -e "${ingn_cc}/${array[$No]}/bin" ]
         xt_ret $? "Not exist: ${ingn_cc}/${array[$No]}/bin" || return $?
         ln -sf ${ingn_cc}/${array[$No]}/bin ${link_cc}
         let No++
         echo "
-        link ${array[$No]} succ
+        link ${array[$No]} ${array[$j]} succ
         "
+        echo ${array[$j]} > ~/.cross
         ls -l ${link_cc}; echo
+        echo 
         ;;                         
     *)
         help_show
