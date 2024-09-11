@@ -127,16 +127,16 @@ CREATE TABLE v5 (                                   # 重构i34，i34需要的�
     date        date NOT NULL, 
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0, # 考虑到只做图形评估，不再有成交量的相关信息
 
-    ic          TINYINT      NOT NULL DEFAULT 0,    # rk 13 日收盘
-    iv1         TINYINT      NOT NULL DEFAULT 0,    # rk 13
-    iv3         TINYINT      NOT NULL DEFAULT 0,    # rk 34
-    iv5         TINYINT      NOT NULL DEFAULT 0,    # rk 5
+    ic          TINYINT      NOT NULL DEFAULT 0,    # rc 21 close
+    iv          TINYINT      NOT NULL DEFAULT 0,    # rk 21
+    rm          DECIMAL(6,1) NOT NULL DEFAULT 0,
+    k           TINYINT      NOT NULL DEFAULT 0,    # rk 5
+    k3          TINYINT      NOT NULL DEFAULT 0,    # 
     n10         TINYINT      NOT NULL DEFAULT 0,    # vheap数量
     flut        DECIMAL(6,1) NOT NULL DEFAULT 0,    # 波动系数
+    hmx         DECIMAL(6,1) NOT NULL DEFAULT 0,    # 波动系数
     s80         DECIMAL(6,2) NOT NULL DEFAULT 0,    #
     sq2         DECIMAL(6,2) NOT NULL DEFAULT 0,    #
-   #vv          DECIMAL(6,2) NOT NULL DEFAULT 0,    #
-   #vp3         DECIMAL(6,2) NOT NULL DEFAULT 0,    # v/HHV(v,3)
 
     HH21        DECIMAL(6,2) NOT NULL DEFAULT 0,    # HH(c,21)
     L_H13       DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,21)
@@ -147,12 +147,25 @@ CREATE TABLE v5 (                                   # 重构i34，i34需要的�
     INDEX(code,date)
 );
 
+DROP TABLE IF EXISTS h3;
+CREATE TABLE h3 (                                   #
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0, #
+
+    M           TINYINT      NOT NULL DEFAULT 0,    # 
+    D           TINYINT      NOT NULL DEFAULT 0,    # 
+    N           TINYINT      NOT NULL DEFAULT 0,    # 
+
+    INDEX(date),
+    INDEX(code,date)
+);
+
 DROP TABLE IF EXISTS hw;
 CREATE TABLE hw (                                   # 重构i34，i34需要的是13日内的走势结构
     date        date NOT NULL, 
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0, # 考虑到只做图形评估，不再有成交量的相关信息
 
-    N           TINYINT      NOT NULL DEFAULT 0,    # 
+    H           TINYINT      NOT NULL DEFAULT 0,    # 
     N8          TINYINT      NOT NULL DEFAULT 0,    # 
     N13         TINYINT      NOT NULL DEFAULT 0,    # 
 
@@ -164,7 +177,7 @@ DROP TABLE IF EXISTS hh29;
 CREATE TABLE hh29 (
     date        date NOT NULL, 
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0, #
-    N           TINYINT      NOT NULL DEFAULT 0,    #
+    H           TINYINT      NOT NULL DEFAULT 0,    #
     HH29        DECIMAL(6,2) NOT NULL DEFAULT 0,    # 
 
     INDEX(date),
