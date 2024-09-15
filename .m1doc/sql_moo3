@@ -166,8 +166,8 @@ CREATE TABLE hw (                                   # 重构i34，i34需要的�
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0, # 考虑到只做图形评估，不再有成交量的相关信息
 
     H           TINYINT      NOT NULL DEFAULT 0,    # 
-    N8          TINYINT      NOT NULL DEFAULT 0,    # 
-    N13         TINYINT      NOT NULL DEFAULT 0,    # 
+    N           TINYINT      NOT NULL DEFAULT 0,    # 
+    NB          TINYINT      NOT NULL DEFAULT 0,    # 
 
     INDEX(date),
     INDEX(code,date)
