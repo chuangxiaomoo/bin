@@ -11,6 +11,7 @@
 | %lu   | long unsigned int |         |
 | %hu   | unsigned short    |         |
 | %p    | pointer           |         |
+| %02hhx| unsigned char     |         |
 
 # e.g. output: 1,234,567,890,123,456,789.38
 

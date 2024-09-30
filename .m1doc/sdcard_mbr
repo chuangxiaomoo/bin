@@ -13,18 +13,20 @@ fe343253443136472000000b4501689f    // MJ 点序 64G
 
 fe343253443136472000001cde0169f9
 
+05000c6173646667220000001201883f    // jinsudun 祥富同学
+
 # 例子 035344534336344780616e1248012c3f    // SanDisc 64G
 
-| Name Field            | Width | CID-slice     | e.g.       |
-| Manufacturer ID       | MID   | 8  [^127:120] | 03         | SanDisc
-| OEM/Application ID    | OID   | 16 [^119:104] | 5344       | SD
-| Product name          | PNM   | 40 [^103:64]  | 5343363447 | SC64G
-| Product revision      | PRV   | 8  [^63:56]   | 80         |
-| Product serial number | PSN   | 32 [^55:24]   | 616e1248   | 1,634,603,592
-| reserved              | --    | 4  [^23:20]   | 0          |
-| Manufacturing date    | MDT   | 12 [^19:8]    | 12c        | 2018 Dec
-| CRC7 checksum         | CRC   | 7  [^7:1]     | 3f         |
-| not used, always 1    | -     | 1  [^0:0]     |            |
+| Name Field            | Width | BCD  | CID-slice     | e.g.       |
+| Manufacturer ID       | MID   | 0:2  | 8  [^127:120] | 03         | SanDisc
+| OEM/Application ID    | OID   | 2:4  | 16 [^119:104] | 5344       | SD
+| Product name          | PNM   | 6:10 | 40 [^103:64]  | 5343363447 | SC64G
+| Product revision      | PRV   | 16:2 | 8  [^63:56]   | 80         |
+| Product serial number | PSN   | 18:8 | 32 [^55:24]   | 616e1248   | 1,634,603,592
+| reserved              | --    | 26:1 | 4  [^23:20]   | 0          |
+| Manufacturing date    | MDT   | 27:3 | 12 [^19:8]    | 12c        | 2018 Dec
+| CRC7 checksum         | CRC   | 30:2 | 7  [^7:1]     | 3f         |
+| not used, always 1    | -     |      | 1  [^0:0]     |            |
 
 root@grain-media:~# cat /sys/block/mmcblk0/device/serial
 0x00000703
