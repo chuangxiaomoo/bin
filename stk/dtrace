@@ -1,7 +1,7 @@
 #! /bin/bash
 
 . `dirname ${0}`/'dbank' || { echo "dbank err" && exit; }
-. /etc/common.rc
+. /root/bin/common.rc
 
 function fn_xunner()
 {
@@ -33,6 +33,7 @@ fn_realtime()
                 -e 's/*//g'  -e 's/ST//g'  > ${buffer}
 
         [ -n "`head -c2 ${buffer}`" ] && break
+        echo "${url}"
         echo "w3m fail, try again!"
         sleep .5
     done

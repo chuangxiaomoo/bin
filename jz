@@ -8,14 +8,14 @@
 
 array=(
     SHOW_This_usage                                      NULL            NULL
-    mips-linux-gnu-ingenic-gcc7.2.0-uclibc0.9.33.2-fp64  T41             mips-linux-uclibc-
-    mips-gcc472-glibc216-32bit                           _472_yyShang    mips-linux-uclibc-gnu-
     mips-gcc540-glibc222-64bit-r3.3.0                    T31             mips-linux-uclibc-gnu-
-    mips-gcc720-glibc226                                 T40             mips-linux-uclibc-gnu-
-    mips-gcc720-uclibc0.9.33.2-r5.1.11                   T40-315Pro      mips-linux-uclibc-gnu-
+    mips-gcc540-glibc222-r3.3.5                          T32-33333333    mips-linux-uclibc-gnu-
+    mips-linux-gnu-ingenic-gcc7.2.0-uclibc0.9.33.2-fp64  T41             mips-linux-uclibc-
     mips-gcc540-uclibc0.9.33.2-64bit-r3.3.0.smaller      T23-uclibc      mips-linux-uclibc-
     mips-gcc540-glibc222-64bit-r3.3.0.smaller            T23-glibc       mips-linux-gnu-
-    mips-gcc540-glibc222-r3.3.5                          T32-33333333    mips-linux-uclibc-gnu-
+    mips-gcc472-glibc216-32bit                           _472_yyShang    mips-linux-uclibc-gnu-
+    mips-gcc720-glibc226                                 T40             mips-linux-uclibc-gnu-
+    mips-gcc720-uclibc0.9.33.2-r5.1.11                   T40-315Pro      mips-linux-uclibc-gnu-
     ______________                                       Occ             NULL
     gcc-arm-9.2-2023.12-x86_64-aarch64-none-linux-gnu    ax-2023         NULL
     ______________                                       Occ             NULL

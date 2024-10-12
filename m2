@@ -724,7 +724,7 @@ function fn_informal_wiki()             { cat logic_informal_wiki ;}
 function fn_fallacy()                   { cat logic_fallacy ;}
 function fn__essence()                  { cat logic__essence ;}
 function fn__struct()                   { cat logic__struct ;}
-function fn__1st_principle()            { cat logic__1st_principle
+function fn__1st_principle()            { cat logic__1st_principle      # 第一原则 yz
                                           cat 1by1_principles           #林彪的原则
                                           cat book_The_Principle
                                           cat test_The_Principle        #古严：我对《原则》的践行心得
@@ -750,7 +750,6 @@ function fn_TrapsPitfalls()             { cat logic_TrapsPitfalls ;}
         informal_wiki                   # 定义
         _essence                        # 本质
         _struct                         # 结构
-        _1st_principle                  # 第一原则
         fallacy                         #                      二十四条逻辑谬误
         TrapsPitfalls                   # 逻辑坑
         language                        # 英语逻辑实现

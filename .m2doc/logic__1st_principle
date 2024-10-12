@@ -1,5 +1,19 @@
 # _1st_principle
 
+| NO. | Region         | Principles                                      |
+| :-- | :------        | :------                                         |
+| 1   | 总则           | 生存第一、发展第二                              |
+| 2   | 职场           | 盯着多收益，少感情                              |
+| 3   | 敏捷开发       | 可工作的软件                                    |
+| 4   | 组织           | 可发展，打造自组织、自学习的组织                |
+| 5   | 能力与愿望     | 能再许2个愿望，能获得能力的能力                 |
+| 6   | 羽毛球生命     | 高远球                                          |
+| 7   | 比赛           | 赢第一、友谊第二                                |
+| 8   | 军人           | 完成使命第一，服从第二                          |
+| 9   | 科学           | 可证伪性 不可证伪的理论全都是耍流氓             |
+| 10  | 跨部门团队协作 | [,p](article_103_协作跟进？如何跟进？#互不信任) |
+| 11  | 老人的幸福     | 接受晚辈的安排，而不是去安排晚辈                |
+
 # 什么是第一性原理？
 
 这个词常常当作形容词来用，因为它是描述一个理论的特性的词。它也不具体跟什么量子力学相关，它是一个一般性的逻辑概念。
@@ -8,54 +22,45 @@ Wikipedia 有词条 First principle，第一句话就很清楚：
 
     A first principle is a basic, foundational, self-evident proposition or assumption that _cannot be deduced_ from any other proposition or assumption.
 
-The classic example is that of Euclid's (see Euclid's Elements) geometry; 
+The classic example is that of Euclid's (see Euclid's Elements) geometry;
 its hundreds of propositions can be deduced from a set of definitions, postulates, and common notions: all three types constitute first principles.
 
 In philosophy, first principles are taught by Aristotelians and a nuanced version of first principles are referred to as postulates by Kantians.
 
 In mathematics, first principles are referred to as axioms and postulates.
 
-In physics and other sciences, theoretical work is said to be from first principles, or ab initio, 
+In physics and other sciences, theoretical work is said to be from first principles, or ab initio,
 if it starts directly at the level of established science and does not make assumptions such as empirical model and fitting parameters.
 
-In a formal logical system, that is, a set of propositions that are consistent with one another, 
-it is probable that some of the statements can be deduced from one another. For example, in the syllogism, 
+In a formal logical system, that is, a set of propositions that are consistent with one another,
+it is probable that some of the statements can be deduced from one another. For example, in the syllogism,
 "All men are mortal; Socrates is a man; Socrates is mortal" the last claim can be deduced from the first two.
 
 
-# What are principles? 
+# What are principles?
 
 * 连接: U - Principles - Reality(true)
 
-1) what you want, 
-2) what is true and 
-3) what to do about it. 
+1) what you want,
+2) what is true and
+3) what to do about it.
 
-I want you to do that in a clear-headed thoughtful way, so that you get what you want. 
+I want you to do that in a clear-headed thoughtful way, so that you get what you want.
 I wrote this book to help you do that. I am going to ask only two things of you—
 
-1) that you be open-minded and 
+1) that you be open-minded and
 2) that you honestly answer some questions about what you want, what is true and what you want to do about it.
 
 * 原则是什么？
 
-Your values are what you consider important, literally what you “value.” Principles are what allow you to live a life consistent with those values. Principles connect your values to your actions; they are beacons that guide your actions, and help you successfully deal with the laws of reality. It is to your principles that you turn when you face hard choices. 
+Your values are what you consider important, literally what you “value.” Principles are what allow you to live a life consistent with those values. Principles connect your values to your actions; they are beacons that guide your actions, and help you successfully deal with the laws of reality. It is to your principles that you turn when you face hard choices.
 
 
 价值观是你认为重要的、“有价值”的东西，而在生活中若想顺从自己的价值观，我们需要的就是原则。原则连接价值观与行动，它如指引行动的灯塔，帮你成功应对现实生活中的条条框框。当面临两难抉择之时，遵循原则就能迎刃而解。
 
-How well do you think they will work, and why? 
+How well do you think they will work, and why?
 
 这些原则你认为行之有效么，为什么？<反思，是人区别于其它动物的关键特征>
-
-
-# 总则：生存第一、发展第二
-
-不为良相、便为良医
-
-职业经理人：不能忽视公司的利益
-敏捷开发  ：可工作的软件          <组织之目标=打造自组织、自学习的组织和代码>
-羽毛球生命：高远球
 
 
 # 经济决策的第一原则
@@ -67,9 +72,6 @@ How well do you think they will work, and why?
 有一个很不错的概念叫做“Unknown Unknown”，大意是如果你不知道一个东西的话，你也不会知道你自己不知道它。很多时候新知识就有这个特性——掌握了之后觉得很明白，掌握之前却觉得“不可能啊”、“这简直没有解嘛”。在这样的认知之下，你自然会高估前方的困难、风险和不确定性，因为你不知道什么样的知识才能解决你的困惑。然而事实上呢？只要智商没有根本的差别，别人的大脑能够掌握的知识，你的大脑也能掌握，你所感觉到的巨大困难只不过是因为Unknown Unknown，你所需要的只是耐心地踏遍这块知识版图，当你掌握了那些你该掌握的知识之后自然会柳暗花明。
 
 <认知陷阱=把未知当已知，高估或是低做，评估风险时，当下决策是最好的>
-
-# 比赛第一原则：赢、友谊第二
-
 
 # 人类简史
 
@@ -102,22 +104,12 @@ g 文化演化之路，超大规模社会性合作
 而是派生出了更多的新概念，这些概念再次映射到文字生成新的逻辑单元（对象）就像细胞分裂一样新的概念知识在那个时代
 爆炸性的涌现，人类变的越来越聪明了。
 
-# 科学
-
-可证伪性 不可证伪的理论全都是耍流氓
-
-# 团队协作
-
-完全根据科学来做。
-团队协作，特别是跨部门协作，一个最大的原则是：_互不信任！_
-[](+/互不信任 article_103_协作跟进？如何跟进？)
-
 # 决策
 
 总结人生事务只需要两句话：要不要做？怎么做？
 Your conduct of personal affairs will all depend on your ability to solve problems and make decisions.
 
-最大的原则是：A必有其反面B。    [A和B](+/ article_110_中国哲学体系的困惑？)
+最大的原则是：A必有其反面B。    [A和B](article_110_中国哲学体系的困惑？)
 比决策更困难的是评估&识别伪装。 [](article_111_喜欢有之或喜欢用之？)
 
 # 科技袁人(传递价值观)
