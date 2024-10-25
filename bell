@@ -5,4 +5,5 @@
 # 3 在 VLC 中准备 msg.wav，并勾选 [媒体 -> 播放列表末端退出]
 # 4 在 Linux 运行 bell，即可在 win 端收到消息
 
-timeout 3 nc 10.0.2.2 1234 <<< "${*:-msg.wav}"
+[ -f ~/.windows ] && WIN=`cat ~/.windows` || WIN='10.0.2.2'
+timeout 3 nc ${WIN} 12346 <<< "${*:-msg.wav}"

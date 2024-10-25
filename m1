@@ -201,7 +201,7 @@ function fn_aout()                      { cat linux_aout ;}
 
 #
 # . busybox_tftp
-function fn_busybox()                   {
+function fn_busybox()                   { cat busybox.squeeze
 function fn_man()                       { cat busybox.man
                                           cat busybox.udhcpc.man
                                           cat busybox.udhcpd.man

@@ -1,0 +1,9 @@
+# squeeze
+
+## mktemp
+
+cp -a /var/ /tmp/
+mount -t tmpfs tmpfs /var
+cp -a /tmp/var/* /var/
+rm -rf /tmp/var/
+
