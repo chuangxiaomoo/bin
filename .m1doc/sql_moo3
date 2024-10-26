@@ -180,6 +180,17 @@ CREATE TABLE h3 (                                   #
     INDEX(code,date)
 );
 
+DROP TABLE IF EXISTS x3;
+CREATE TABLE x3 (                                   #
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0, #
+
+    X           TINYINT      NOT NULL DEFAULT 0,    # 
+
+    INDEX(date),
+    INDEX(code,date)
+);
+
 DROP TABLE IF EXISTS hw;
 CREATE TABLE hw (                                   # 重构i34，i34需要的是13日内的走势结构
     date        date NOT NULL, 
