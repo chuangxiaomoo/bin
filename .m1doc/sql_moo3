@@ -130,19 +130,25 @@ CREATE TABLE v5 (                                   # 重构i34，i34需要的�
     h           DECIMAL(6,2) NOT NULL DEFAULT 0,    #
     ic          TINYINT      NOT NULL DEFAULT 0,    # rc 21 close
     iv          TINYINT      NOT NULL DEFAULT 0,    # rk 21
-    rm          DECIMAL(6,1) NOT NULL DEFAULT 0,
-    k           TINYINT      NOT NULL DEFAULT 0,    # rk 5
-    k3          TINYINT      NOT NULL DEFAULT 0,    # 
-    n10         TINYINT      NOT NULL DEFAULT 0,    # vheap数量
+    r5w         DECIMAL(6,1) NOT NULL DEFAULT 0,
+    k           TINYINT      NOT NULL DEFAULT 0,    # 放量123连阳
     flut        DECIMAL(6,1) NOT NULL DEFAULT 0,    # 波动系数
     hmx         TINYINT      NOT NULL DEFAULT 0,    # 波动系数
     s80         DECIMAL(6,2) NOT NULL DEFAULT 0,    #
     sq2         DECIMAL(6,2) NOT NULL DEFAULT 0,    #
 
+    H55         DECIMAL(6,2) NOT NULL DEFAULT 0,
     HH21        DECIMAL(6,2) NOT NULL DEFAULT 0,    # HH(c,21)
     B55         DECIMAL(6,1) NOT NULL DEFAULT 0,    #
     L_H34       DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,34)
-    L_H61       DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,61)
+    L_H5        DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,5)  牛市使用
+
+    S1          TINYINT      NOT NULL DEFAULT 0,    # 
+    SB          TINYINT      NOT NULL DEFAULT 0,    # 
+    M           TINYINT      NOT NULL DEFAULT 0,    # 
+    D           TINYINT      NOT NULL DEFAULT 0,    # 
+    N           TINYINT      NOT NULL DEFAULT 0,    # 
+    X           TINYINT      NOT NULL DEFAULT 0,    # 21day_max_high 是出现在下午
 
     INDEX(date),
     INDEX(code,date)
