@@ -180,6 +180,26 @@ CREATE TABLE h3 (                                   #
     INDEX(code,date)
 );
 
+DROP TABLE IF EXISTS h21;
+CREATE TABLE h21 (
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0, #
+    H21         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 
+
+    INDEX(date),
+    INDEX(code,date)
+);
+
+DROP TABLE IF EXISTS lh5;
+CREATE TABLE lh5 (
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0, #
+    LH5         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 
+
+    INDEX(date),
+    INDEX(code,date)
+);
+
 DROP TABLE IF EXISTS x3;
 CREATE TABLE x3 (                                   #
     date        date NOT NULL, 

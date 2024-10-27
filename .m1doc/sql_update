@@ -25,3 +25,5 @@
 . 存在更新，不存在插入（根据主键或者唯一索引判断）
 
     replace into t(id, update_time) select 1, now();
+
+    UPDATE v5, h21 SET v5.H21=h21.H21 WHERE v5.date=h21.date && v5.code=h21.code;
