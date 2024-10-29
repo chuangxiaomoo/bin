@@ -850,6 +850,7 @@ function fn_win7()                      { cat   windows_win7 mstsc
                                                 macbook
                                                 iterm2
                                                 obsidian
+                                                win_ctrl_windows_swap
                                           cat   foxmail
                                           cat   cooledit ;}
 function fn_syscmd()                    { cat   windows_syscmd ;}

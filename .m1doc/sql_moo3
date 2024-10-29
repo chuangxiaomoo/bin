@@ -172,9 +172,8 @@ CREATE TABLE h3 (                                   #
     date        date NOT NULL, 
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0, #
 
+    F           TINYINT      NOT NULL DEFAULT 0,    # 
     M           TINYINT      NOT NULL DEFAULT 0,    # 
-    D           TINYINT      NOT NULL DEFAULT 0,    # 
-    N           TINYINT      NOT NULL DEFAULT 0,    # 
 
     INDEX(date),
     INDEX(code,date)

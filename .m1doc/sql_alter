@@ -27,6 +27,10 @@
     ALTER TABLE hw DROP COLUMN N8;
     ALTER TABLE v5 CHANGE hhc L_H21;
 
+    ALTER TABLE v5 DROP COLUMN D;
+    ALTER TABLE v5 DROP COLUMN N;
+    ALTER TABLE v5 ADD F TINYINT NOT NULL DEFAULT 0 AFTER SB;
+
 . 改变列名
     ALTER TABLE table_name 
         CHANGE [COLUMN] old_col_name new_col_name column_definition

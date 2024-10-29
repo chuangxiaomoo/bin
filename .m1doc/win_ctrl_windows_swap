@@ -1,0 +1,20 @@
+# 操作系统笔记：windows 替换ctrl和alt键功能
+
+https://blog.csdn.net/joshho/article/details/119863960
+
+## 亲测有效
+
+保存下面内容到一个.reg结尾的文件中，然后双击导入，重启系统生效。
+
+```txt
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Keyboard Layout]
+"Scancode Map"=hex:00,00,00,00,00,00,00,00,03,00,00,00,5B,E0,1D,00,1D,00,5B,E0,00,00,00,00
+```
+
+## 问题
+
+当 ctrl 不在最左侧时，Ctrl-Alt-A 这样的组合键就会出不好用。因此先放弃，尽量`使用左手拇指，而不是掌际`
+
+
