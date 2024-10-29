@@ -1,0 +1,67 @@
+#! /bin/bash
+
+. ~/bin/common.rc
+
+#   mips-gcc720-uclibc0.9.33.2-r5.1.7   T41
+
+#media/zh/samples/libimp-samples
+
+array=(
+    SHOW_This_usage                                           NULL        NOTE
+    /winc/s.SDK/T32/Tassadar-T32-1.0.3-20241022/software/     t32.1.0.3   T32最新
+)
+
+help_show()
+{
+    echo -e "\nUsage:"
+    local i
+    for (( i=0; i<${#array[@]}; i+=3 )); do
+        compile=${array[$i]}
+        let j=i+1
+        let k=i+2
+        let No=i/3
+        printf "  %-3d%-56s  # %-10s %s\n" $No $compile ${array[$j]} ${array[$k]}
+    done
+    return;
+}
+
+fn_main()
+{
+    link_cc='/sdk'
+
+    case ${1:-0} in
+    0)
+        help_show
+
+        [ -e "${link_cc}" ] && {
+            local i
+            for (( i=3; i<${#array[@]}; i+=3 )); do
+                let j=i+1
+                ls -l ${link_cc} | grep -q ${array[$i]} && { curr=${array[$j]}; break ;}
+            done
+        } || curr=NONE
+        echo -e "\n     curr: ${curr:-____not_match_any____}
+        "
+        [ -e "${link_cc}" ] && ls -l ${link_cc} && echo
+        return
+        ;;
+    [0-9]*)
+        rm -f ${link_cc}
+        No=$1*3
+        let j=No+2
+        ln -sf ${array[$No]} ${link_cc}
+        let No++
+        echo "
+        link ${array[$No]} ${array[$j]} succ
+        "
+        ls -l ${link_cc}; echo
+        echo 
+        ;;                         
+    *)
+        help_show
+        return
+        ;;
+    esac
+}
+
+fn_main $@
