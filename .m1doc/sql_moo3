@@ -256,6 +256,9 @@ CREATE TABLE e5 (                                   # 重构i34，i34需要的�
     HH21        DECIMAL(6,2) NOT NULL DEFAULT 0,    # HH(c,21)
     L_H13       DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,21)
     L_H34       DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,34)
+    L_H34       DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,34)
+    LH9         DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,34)
+    LH5         DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,34)
     L_H61       DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,61)
 
     INDEX(date),
