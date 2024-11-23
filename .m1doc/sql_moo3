@@ -145,9 +145,9 @@ CREATE TABLE v5 (                                   # 重构i34，i34需要的�
 
     S1          TINYINT      NOT NULL DEFAULT 0,    # 
     SB          TINYINT      NOT NULL DEFAULT 0,    # 
-    M           TINYINT      NOT NULL DEFAULT 0,    # 
-    D           TINYINT      NOT NULL DEFAULT 0,    # 
-    N           TINYINT      NOT NULL DEFAULT 0,    # 
+    M           TINYINT      NOT NULL DEFAULT 0,    #      突破带星
+    D           TINYINT      NOT NULL DEFAULT 0,    # 分母 HSL4一星+
+    N           TINYINT      NOT NULL DEFAULT 0,    # 分子 HSL4一星
     X           TINYINT      NOT NULL DEFAULT 0,    # 21day_max_high 是出现在下午
 
     INDEX(date),
@@ -205,6 +205,7 @@ CREATE TABLE x3 (                                   #
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0, #
 
     X           TINYINT      NOT NULL DEFAULT 0,    # 
+    U           TINYINT      NOT NULL DEFAULT 0,    # 
 
     INDEX(date),
     INDEX(code,date)
@@ -255,6 +256,9 @@ CREATE TABLE e5 (                                   # 重构i34，i34需要的�
     HH21        DECIMAL(6,2) NOT NULL DEFAULT 0,    # HH(c,21)
     L_H13       DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,21)
     L_H34       DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,34)
+    L_H34       DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,34)
+    LH9         DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,34)
+    LH5         DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,34)
     L_H61       DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,61)
 
     INDEX(date),
