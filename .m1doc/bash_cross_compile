@@ -275,3 +275,8 @@ make CC=mips-linux-uclibc-gnu-gcc
 # i2c-tools
 
 make CC=mips-linux-uclibc-gcc USE_STATIC_LIB=1
+
+# ~/github/mtd-utils-ss/mtd-utils
+
+./configure --without-ubifs
+

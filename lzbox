@@ -13,13 +13,13 @@ function fn_ipctool()
     grp='230.230.230.230'
     port=8002
     ps -ef | awk '/[n]c....8788/{print $2}' | xargs kill -9 2>/dev/null
-    nc -u -l 8788&
+    netcat -u -l 8788&
     
     while :; do
         echo "[Ctrl-C] to exit, or Type [Enter] to shoot a SEARCH" && read line
         # 组播时必须指定源地址[-s172.25.100.44]，单播则不然
-        nc -w0 -s ${MYIP} -p8002 -u ${grp}        ${port} <<< "$key"
-       #nc -w0                         -u 172.25.100.10 ${port} <<< "$key"
+        netcat -w0 -s ${MYIP} -p8002 -u ${grp}        ${port} <<< "$key"
+       #netcat -w0                         -u 172.25.100.10 ${port} <<< "$key"
         sleep .5
     done
 }
