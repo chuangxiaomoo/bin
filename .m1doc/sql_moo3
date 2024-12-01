@@ -310,6 +310,7 @@ CREATE TABLE nmc2 (
     shares      DECIMAL(12,2) NOT NULL, # 总股本，单位(万)
     cap         DECIMAL(12,2) NOT NULL, # 总市值
     oing_cap    DECIMAL(12,2) NOT NULL, # 流通股本
+    c10         DECIMAL(12,2) NOT NULL, # top10 占总流通股本的比例
     INDEX(code)
 );
 
