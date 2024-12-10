@@ -133,11 +133,12 @@ CREATE TABLE v5 (                                   # 重构i34，i34需要的�
     r5w         DECIMAL(6,1) NOT NULL DEFAULT 0,
     k           TINYINT      NOT NULL DEFAULT 0,    # 放量123连阳
     flut        DECIMAL(6,1) NOT NULL DEFAULT 0,    # 波动系数
-    hmx         TINYINT      NOT NULL DEFAULT 0,    # 波动系数
+    hmx         TINYINT      NOT NULL DEFAULT 0,    # hsl20 最大日
     s80         DECIMAL(6,2) NOT NULL DEFAULT 0,    #
     sq2         DECIMAL(6,2) NOT NULL DEFAULT 0,    #
 
-    H55         DECIMAL(6,2) NOT NULL DEFAULT 0,
+    D27         DECIMAL(6,1) not null DEFAULT 0,
+    F27         DECIMAL(6,2) NOT NULL DEFAULT 0,
     HH21        DECIMAL(6,2) NOT NULL DEFAULT 0,    # HH(c,21)
     B55         DECIMAL(6,1) NOT NULL DEFAULT 0,    #
     L_H34       DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,34)
@@ -206,6 +207,8 @@ CREATE TABLE x3 (                                   #
 
     X           TINYINT      NOT NULL DEFAULT 0,    # 
     U           TINYINT      NOT NULL DEFAULT 0,    # 
+    D27         DECIMAL(6,1) not null DEFAULT 0,
+    F27         DECIMAL(6,2) NOT NULL DEFAULT 0,
 
     INDEX(date),
     INDEX(code,date)
@@ -361,6 +364,8 @@ CREATE TABLE cc (
     date        date NOT NULL,
     INDEX(idx)
 );
+
+CREATE TABLE vv5 LIKE v5;
 
 CREATE TABLE i1 LIKE cc;
 CREATE TABLE i2 LIKE cc;
