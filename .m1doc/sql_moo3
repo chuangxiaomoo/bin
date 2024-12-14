@@ -145,7 +145,8 @@ CREATE TABLE v5 (                                   # 重构i34，i34需要的�
     L_H5        DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,5)  牛市使用
 
     S1          TINYINT      NOT NULL DEFAULT 0,    # 
-    SB          TINYINT      NOT NULL DEFAULT 0,    # 
+    B           TINYINT      NOT NULL DEFAULT 0,    # 
+    E           TINYINT      NOT NULL DEFAULT 0,    # 
     M           TINYINT      NOT NULL DEFAULT 0,    #      突破带星
     D           TINYINT      NOT NULL DEFAULT 0,    # 分母 HSL4一星+
     N           TINYINT      NOT NULL DEFAULT 0,    # 分子 HSL4一星
@@ -207,6 +208,7 @@ CREATE TABLE x3 (                                   #
 
     X           TINYINT      NOT NULL DEFAULT 0,    # 
     U           TINYINT      NOT NULL DEFAULT 0,    # 
+    E           TINYINT      NOT NULL DEFAULT 0,    # 
     D27         DECIMAL(6,1) not null DEFAULT 0,
     F27         DECIMAL(6,2) NOT NULL DEFAULT 0,
 
