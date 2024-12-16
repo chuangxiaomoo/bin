@@ -207,7 +207,7 @@ CREATE TABLE x3 (                                   #
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0, #
 
     X           TINYINT      NOT NULL DEFAULT 0,    # 
-    U           TINYINT      NOT NULL DEFAULT 0,    # 
+    Z           TINYINT      NOT NULL DEFAULT 0,    # 
     E           TINYINT      NOT NULL DEFAULT 0,    # 
     D27         DECIMAL(6,1) not null DEFAULT 0,
     F27         DECIMAL(6,2) NOT NULL DEFAULT 0,
@@ -444,4 +444,9 @@ CREATE TABLE e1 (
     INDEX(code,date)
 );
 
-
+DROP TABLE IF EXISTS c10;
+CREATE TABLE c10 (
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    c10         DECIMAL(6,2)  NOT NULL DEFAULT 0,  
+    INDEX(code)
+);

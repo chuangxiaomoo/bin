@@ -4,11 +4,12 @@
 
 #   mips-gcc720-uclibc0.9.33.2-r5.1.7   T41
 #   mips-gcc540-glibc222-r3.3.7                          T32-33333333    mips-linux-uclibc-gnu-
+#   mips-gcc540-glibc222-r3.3.5                          T32-33555555    mips-linux-uclibc-gnu-
 
 array=(
     SHOW_This_usage                                      NULL            NULL
     mips-gcc540-glibc222-64bit-r3.3.0                    T31             mips-linux-uclibc-gnu-
-    mips-gcc540-glibc222-r3.3.5                          T32-33555555    mips-linux-uclibc-gnu-
+    mips-gcc540-glibc222-r3.3.7                          T32-33777777    mips-linux-uclibc-gnu-
     mips-linux-gnu-ingenic-gcc7.2.0-uclibc0.9.33.2-fp64  T41             mips-linux-uclibc-
     mips-gcc540-uclibc0.9.33.2-64bit-r3.3.0.smaller      T23-uclibc      mips-linux-uclibc-
     mips-gcc540-glibc222-64bit-r3.3.0.smaller            T23-glibc       mips-linux-gnu-

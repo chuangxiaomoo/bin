@@ -1,5 +1,7 @@
 #! /bin/sh
 
+set -x
+
 IPC=${IPC:-192.168.9.111}
 
 if [ -z "$1" ]; then
@@ -8,6 +10,6 @@ if [ -z "$1" ]; then
     Usage: IPC=xxx ccli cmd...
     "
 else
-    timeout 5 nc  ${IPC} 9999 <<< "$*" | sed -e 's/;/\n/g' -e 's/ccess]/&\n/g' 
+    echo "$*" | timeout 5 nc ${IPC} 9999 | sed -e 's/;/\n/g' -e 's/ccess]/&\n/g'
 fi
 
