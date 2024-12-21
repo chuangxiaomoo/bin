@@ -72,9 +72,27 @@ function fn_autossh()
     "
 }
 
+function fn_epoch2str()
+{
+    echo CST
+    date     +"%F %T %z" -d  @$1
+    echo UTC
+    date -u  +"%F %T %z" -d  @$1
+}
+
+function fn_str2epoch()
+{
+    echo CST
+    date +%s -d "$@"
+    echo UTC
+    date +%s -d "$@ +0000"
+}
+
 function fn_main() 
 {
     cmdlist=(
+    "epoch2str              # 秒数转 y m d h m s"
+    "str2epoch              #"
     "ipctool                # search-ipc"
     "nvrtool                # search-nvr"
     "update_force           # 生成 update_force.txt 文件"

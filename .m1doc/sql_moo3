@@ -127,29 +127,34 @@ CREATE TABLE v5 (                                   # 重构i34，i34需要的�
     date        date NOT NULL, 
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0, # 考虑到只做图形评估，不再有成交量的相关信息
 
-    h           DECIMAL(6,2) NOT NULL DEFAULT 0,    #
+    high        DECIMAL(6,2) NOT NULL DEFAULT 0,    #
     ic          TINYINT      NOT NULL DEFAULT 0,    # rc 21 close
     iv          TINYINT      NOT NULL DEFAULT 0,    # rk 21
-    r5w         DECIMAL(6,1) NOT NULL DEFAULT 0,
-    k           TINYINT      NOT NULL DEFAULT 0,    # 放量123连阳
+    r25         DECIMAL(6,1) NOT NULL DEFAULT 0,    # v/HHV(v,25) 的比值, .55 是重要标志
+    k           TINYINT      NOT NULL DEFAULT 0,    # 放量 123连阳=3, 1324=4, 1423=2
     flut        DECIMAL(6,1) NOT NULL DEFAULT 0,    # 波动系数
-    hmx         TINYINT      NOT NULL DEFAULT 0,    # hsl20 最大日
-    s80         DECIMAL(6,2) NOT NULL DEFAULT 0,    #
-    sq2         DECIMAL(6,2) NOT NULL DEFAULT 0,    #
+    hmx         TINYINT      NOT NULL DEFAULT 0,    # 120日内，hsl20 最大日
+    s80         DECIMAL(6,2) NOT NULL DEFAULT 0,    # hsl20/hhv(hsl20, 80) + 2.5日预测
+    sq2         DECIMAL(6,2) NOT NULL DEFAULT 0,    # hsl20/hhv(hsl20,120)
+                                                    # 
 
-    D27         DECIMAL(6,1) not null DEFAULT 0,
-    F27         DECIMAL(6,2) NOT NULL DEFAULT 0,
-    HH21        DECIMAL(6,2) NOT NULL DEFAULT 0,    # HH(c,21)
-    B55         DECIMAL(6,1) NOT NULL DEFAULT 0,    #
+    D27         DECIMAL(6,1) not null DEFAULT 0,    # 27日内最大下跌%，max(c)/min(c)-1
+    F27         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 27日内  已反弹%，close /min(c)-1
+                                                    # 价格新高时 D27=0, 
+                                                    # 价格新高时 F27=1, 为了防止除0错
+
+    HH21        DECIMAL(6,2) NOT NULL DEFAULT 0,    # HHV(c,21)
+    B55         DECIMAL(6,1) NOT NULL DEFAULT 0,    # 55日内 high/L_H34
     L_H34       DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,34)
-    L_H5        DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,5)  牛市使用
+    L_H9        DECIMAL(6,2) NOT NULL DEFAULT 0,    # 涨幅(HH21, 9)
+    L_H5        DECIMAL(6,2) NOT NULL DEFAULT 0,    # 涨幅(HH21, 5)
 
-    H           TINYINT      NOT NULL DEFAULT 0,    # 不是 10:30, 3 2 1
-    B           TINYINT      NOT NULL DEFAULT 0,    # 
-    E           TINYINT      NOT NULL DEFAULT 0,    # 
-    F           TINYINT      NOT NULL DEFAULT 0,    #      突破带星
-    M           TINYINT      NOT NULL DEFAULT 0,    #      突破带星
-    X           TINYINT      NOT NULL DEFAULT 0,    # 21day_max V H C 不是 10:30, 4 3 2
+    H           TINYINT      NOT NULL DEFAULT 0,    # high 在日内 N/4 小时，不是 10:30, 3 2 1
+    B           TINYINT      NOT NULL DEFAULT 0,    # 13 日内，成交量 > (hsl20*.91) 的总数
+    E           TINYINT      NOT NULL DEFAULT 0,    # 13 日内，H-L-K  有公共区域的总数
+    F           TINYINT      NOT NULL DEFAULT 0,    # 量突破 HHV(V,9) 的数量 
+    M           TINYINT      NOT NULL DEFAULT 0,    # 量突破 HHV(V,9)，且价冲击 H21
+    X           TINYINT      NOT NULL DEFAULT 0,    # 21日最高(V H C) 在10:30之后, 4 3 2
     Z           TINYINT      NOT NULL DEFAULT 0,    # 计数缩量 .66 .5 .34
 
     INDEX(date),
