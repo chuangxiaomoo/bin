@@ -144,13 +144,13 @@ CREATE TABLE v5 (                                   # 重构i34，i34需要的�
     L_H34       DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,34)
     L_H5        DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,5)  牛市使用
 
-    S1          TINYINT      NOT NULL DEFAULT 0,    # 
+    H           TINYINT      NOT NULL DEFAULT 0,    # 不是 10:30, 3 2 1
     B           TINYINT      NOT NULL DEFAULT 0,    # 
     E           TINYINT      NOT NULL DEFAULT 0,    # 
+    F           TINYINT      NOT NULL DEFAULT 0,    #      突破带星
     M           TINYINT      NOT NULL DEFAULT 0,    #      突破带星
-    D           TINYINT      NOT NULL DEFAULT 0,    # 分母 HSL4一星+
-    N           TINYINT      NOT NULL DEFAULT 0,    # 分子 HSL4一星
-    X           TINYINT      NOT NULL DEFAULT 0,    # 21day_max_high 是出现在下午
+    X           TINYINT      NOT NULL DEFAULT 0,    # 21day_max V H C 不是 10:30, 4 3 2
+    Z           TINYINT      NOT NULL DEFAULT 0,    # 计数缩量 .66 .5 .34
 
     INDEX(date),
     INDEX(code,date)
@@ -207,7 +207,7 @@ CREATE TABLE x3 (                                   #
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0, #
 
     X           TINYINT      NOT NULL DEFAULT 0,    # 
-    Z           TINYINT      NOT NULL DEFAULT 0,    # 
+    U           TINYINT      NOT NULL DEFAULT 0,    # 
     E           TINYINT      NOT NULL DEFAULT 0,    # 
     D27         DECIMAL(6,1) not null DEFAULT 0,
     F27         DECIMAL(6,2) NOT NULL DEFAULT 0,
