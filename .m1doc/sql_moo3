@@ -455,3 +455,12 @@ CREATE TABLE c10 (
     c10         DECIMAL(6,2)  NOT NULL DEFAULT 0,  
     INDEX(code)
 );
+
+DROP TABLE IF EXISTS h256;
+CREATE TABLE h256 (
+    date        DATE NOT NULL,
+    code        INT(6)  ZEROFILL,
+    H           TINYINT NOT NULL,
+    INDEX(date, code)
+);
+
