@@ -464,3 +464,13 @@ CREATE TABLE h256 (
     INDEX(date, code)
 );
 
+# id   | 2024-12-20 | code   | N
+
+DROP TABLE IF EXISTS d3b4;
+CREATE TABLE d3b4 (
+    id TINYINT NOT NULL AUTO_INCREMENT,
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0, # 代码
+    N TINYINT NOT NULL DEFAULT 0,
+  PRIMARY KEY (id)
+);

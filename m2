@@ -250,6 +250,7 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               xiaolai_教给我的59件事
                                               xiaolai_个人商业模式
                                               xiaolai_pressone
+                                              xiaolai_leadship.md
                                         }
 
 function fn_014_心法系列()              { cat xinfa_01_知识付费应该怎么做？

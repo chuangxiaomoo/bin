@@ -8,7 +8,9 @@
 
 array=(
     SHOW_This_usage                                           NULL        NOTE
-    /winc/s.SDK/T32/Tassadar-T32-1.0.3-20241022/software/     t32.1.0.3   T32最新
+    /winc/s.SDK/T32/Tassadar-T32-1.0.4-20241122/software/     t32.1.0.4   T32最新
+    /winc/s.SDK/T32/Tassadar-T32-1.0.3-20241022/software/     t32.1.0.3   T32
+    /winc/s.SDK/T32/Tassadar-T32-1.0.2-20240921/software/     t32.1.0.2   T32
 )
 
 help_show()
