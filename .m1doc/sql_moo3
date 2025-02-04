@@ -144,11 +144,13 @@ CREATE TABLE v5 (                                   # 重构i34，i34需要的�
                                                     # 价格新高时 F27=1, 为了防止除0错
 
     HH21        DECIMAL(6,2) NOT NULL DEFAULT 0,    # HHV(c,21)
-    B55         DECIMAL(6,1) NOT NULL DEFAULT 0,    # 55日内 high/L_H34
+    B55         SMALLINT     NOT NULL DEFAULT 0,    # 55日内 high/L_H34
     L_H34       DECIMAL(6,2) NOT NULL DEFAULT 0,    # LL(HH21,34)
     L_H9        DECIMAL(6,2) NOT NULL DEFAULT 0,    # 涨幅(HH21, 9)
-    L_H5        DECIMAL(6,2) NOT NULL DEFAULT 0,    # 涨幅(HH21, 5)
 
+    H8          TINYINT      NOT NULL DEFAULT 0,
+    B13         SMALLINT     NOT NULL DEFAULT 0,    # 
+    B21         SMALLINT     NOT NULL DEFAULT 0,    # 
     H           TINYINT      NOT NULL DEFAULT 0,    # high 在日内 N/4 小时，不是 10:30, 3 2 1
     B           TINYINT      NOT NULL DEFAULT 0,    # 13 日内，成交量 > (hsl20*.91) 的总数
     E           TINYINT      NOT NULL DEFAULT 0,    # 13 日内，H-L-K  有公共区域的总数
@@ -449,6 +451,14 @@ CREATE TABLE e1 (
     INDEX(code,date)
 );
 
+DROP TABLE IF EXISTS x88;
+CREATE TABLE x88 (
+    date        date NOT NULL, 
+    x10         DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    x20         DECIMAL(6,2)  NOT NULL DEFAULT 0,
+    INDEX(date)
+);
+
 DROP TABLE IF EXISTS c10;
 CREATE TABLE c10 (
     code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
@@ -463,6 +473,8 @@ CREATE TABLE h256 (
     H           TINYINT NOT NULL,
     INDEX(date, code)
 );
+
+CREATE TABLE h4 LIKE h256;
 
 # id   | 2024-12-20 | code   | N
 

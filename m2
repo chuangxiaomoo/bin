@@ -6,6 +6,7 @@ ARCHIVE=~/bin/.m2doc/
 cd ${ARCHIVE}
 
 function fn_herb()                      {
+function fn_3问()                       { cat herb_3问 ;} # 李可第三代弟子，游走于ICU的中医，致力于中医教学的通俗与逻辑化
 function fn_5邪()                       { cat herb_5邪 ;}
 function fn_中医学理论体系()            { cat herb_中医学理论体系 ;}
 function fn_medicine()                  { cat herb_medicine ;}
@@ -1292,7 +1293,6 @@ function fn_main() {
         guo                             # 碁
         huawei
         humor                           # 幽默
-        herb                            # 中医
         ideas
         idealism                        # 理想主义
         influence                       # 三十而立 30
