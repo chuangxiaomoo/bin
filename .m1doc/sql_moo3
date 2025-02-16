@@ -323,6 +323,7 @@ CREATE TABLE nmc2 (
     cap         DECIMAL(12,2) NOT NULL, # 总市值
     oing_cap    DECIMAL(12,2) NOT NULL, # 流通股本
     c10         DECIMAL(12,2) NOT NULL, # top10 占总流通股本的比例
+    c3          SMALLINT      NOT NULL DEFAULT 0, # COUNT(HSL > HHV(HSL20,120))
     INDEX(code)
 );
 

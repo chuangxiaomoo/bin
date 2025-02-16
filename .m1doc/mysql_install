@@ -101,6 +101,11 @@ mysql命令行输入
     GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '123456' WITH GRANT OPTION;
     FLUSH PRIVILEGES;
 
+USE mysql;
+UPDATE user SET authentication_string=PASSWORD('123456') WHERE User='root';
+FLUSH PRIVILEGES;
+
+
 14.本地无密码登陆，修改 /etc/my.cnf
 
 [client]
