@@ -29,8 +29,8 @@ mv mysql-5.6.35-linux-glibc2.5-x86_64 /usr/local/mysql
 groupadd mysql
 useradd -r -g mysql mysql -d /usr/local/mysql
 passwd mysql
-    123456
-    123456
+    !@#dont_use_123456  会有感染病毒的风险, 通过 ssh 可以执行 wget 并执行命令
+    !@#dont_use_123456
 
 5.修改目录权限
 
@@ -79,7 +79,7 @@ service mysql start
 
 11.设置root密码
 
-mysqladmin -u root password '123456'
+mysqladmin -u root password 'dont123456'
 
 12.设置默认端口
 
@@ -98,11 +98,11 @@ mysql -u root -p
 
 mysql命令行输入
 
-    GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '123456' WITH GRANT OPTION;
+    GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'dont123456' WITH GRANT OPTION;
     FLUSH PRIVILEGES;
 
 USE mysql;
-UPDATE user SET authentication_string=PASSWORD('123456') WHERE User='root';
+UPDATE user SET authentication_string=PASSWORD('dont123456') WHERE User='root';
 FLUSH PRIVILEGES;
 
 
@@ -110,10 +110,11 @@ FLUSH PRIVILEGES;
 
 [client]
 host="localhost"
-password="!@#xdpan"
+password="dont123456"
 user="root"
 port=3306
 socket=/tmp/mysql.sock
 
 15.测试远程访问
+
 
