@@ -24,6 +24,15 @@ CREATE TABLE balance (
     INDEX(code,date)
 );
 
+DROP TABLE IF EXISTS av20;
+CREATE TABLE av20 (
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    ma20        DECIMAL(6,2) NOT NULL,
+    mv20        DECIMAL(6,2) NOT NULL,
+    INDEX(code,date)
+);
+
 DROP TABLE IF EXISTS apeak;
 CREATE TABLE apeak(
     date    date NOT NULL, 
@@ -34,9 +43,19 @@ CREATE TABLE apeak(
     n2      SMALLINT        NOT NULL DEFAULT 0,
     rio4    DECIMAL(6,1)    NOT NULL DEFAULT 0,
     n4      SMALLINT        NOT NULL DEFAULT 0,
+
+    a10     DECIMAL(6,1)    NOT NULL DEFAULT 0,
+    a20     DECIMAL(6,1)    NOT NULL DEFAULT 0,
+    v10     DECIMAL(6,1)    NOT NULL DEFAULT 0,
+    v20     DECIMAL(6,1)    NOT NULL DEFAULT 0,
     INDEX(date),
     INDEX(code,date)
 );
+
+ALTER TABLE apeak ADD v20 DECIMAL(6,1) NOT NULL DEFAULT 0 AFTER n4;
+ALTER TABLE apeak ADD v10 DECIMAL(6,1) NOT NULL DEFAULT 0 AFTER n4;
+ALTER TABLE apeak ADD a20 DECIMAL(6,1) NOT NULL DEFAULT 0 AFTER n4;
+ALTER TABLE apeak ADD a10 DECIMAL(6,1) NOT NULL DEFAULT 0 AFTER n4;
 
 DROP TABLE IF EXISTS banz;      # 搬砖
 CREATE TABLE banz (
