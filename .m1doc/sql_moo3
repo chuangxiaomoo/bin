@@ -48,6 +48,7 @@ CREATE TABLE apeak(
     a20     DECIMAL(6,1)    NOT NULL DEFAULT 0,
     v10     DECIMAL(6,1)    NOT NULL DEFAULT 0,
     v20     DECIMAL(6,1)    NOT NULL DEFAULT 0,
+    vq4     SMALLINT        NOT NULL DEFAULT 0,
     INDEX(date),
     INDEX(code,date)
 );
