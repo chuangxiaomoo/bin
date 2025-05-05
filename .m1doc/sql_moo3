@@ -33,6 +33,15 @@ CREATE TABLE av20 (
     INDEX(code,date)
 );
 
+DROP TABLE IF EXISTS df9;
+CREATE TABLE df9 (
+    date        date NOT NULL, 
+    code        INT(6) ZEROFILL NOT NULL DEFAULT 0,
+    D9          SMALLINT NOT NULL,
+    F9          SMALLINT NOT NULL,
+    INDEX(code,date)
+);
+
 DROP TABLE IF EXISTS apeak;
 CREATE TABLE apeak(
     date    date NOT NULL, 
@@ -161,8 +170,8 @@ CREATE TABLE v5 (                                   # 重构i34，i34需要的�
     sq2         DECIMAL(6,2) NOT NULL DEFAULT 0,    # hsl20/hhv(hsl20,120)
                                                     # 
 
-    D27         DECIMAL(6,1) not null DEFAULT 0,    # 27日内最大下跌%，max(c)/min(c)-1
-    F27         DECIMAL(6,2) NOT NULL DEFAULT 0,    # 27日内  已反弹%，close /min(c)-1
+    D9          SMALLINT     not null DEFAULT 0,    # 27日内最大下跌%，max(c)/min(c)-1
+    F9          SMALLINT     NOT NULL DEFAULT 0,    # 27日内  已反弹%，close /min(c)-1
                                                     # 价格新高时 D27=0, 
                                                     # 价格新高时 F27=1, 为了防止除0错
 
