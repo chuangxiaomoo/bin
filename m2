@@ -85,6 +85,7 @@ function fn_2014_national_day()         { cat annual_2014_national_day
                                               annual_2022_plan annual_2022_event annual_2022_report
                                               priv/annual/2023/plan priv/annual/2023/event priv/annual/2023/report
                                               priv/annual/2024/plan priv/annual/2024/event priv/annual/2024/report
+                                              priv/annual/2025/plan priv/annual/2025/event priv/annual/2025/report
                                         }
     local opts=(
         plan_what                       # 基于`以终为始`的理念
