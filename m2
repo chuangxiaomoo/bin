@@ -239,6 +239,9 @@ function fn_013_李笑来从筷子到开挂人生(){ cat book_013_李笑来从�
                                               read_yl_你的灯亮着吗
                                               ________________
                                               linzhenggang
+                                              antifragile.md        # 反脆弱
+                                              longtermism.md        # 长期主义
+                                              longfragile.md        # 长期与脆弱共生
                                               wujun_gg
                                               wujun_GoogleMethodology
                                               xiaolai_ff 1001.q
