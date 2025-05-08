@@ -57,6 +57,8 @@
     ALTER TABLE tbl_name CHANGE col_old col_new char(4) not null;
 
     ALTER TABLE apeak CHANGE i240 iq4 SMALLINT not null DEFAULT 0;
+    ALTER TABLE apeak CHANGE a10 a10 DECIMAL(6,2) not null DEFAULT 0;
+    ALTER TABLE apeak CHANGE v10 v10 DECIMAL(6,2) not null DEFAULT 0;
 
     ALTER TABLE  v5 CHANGE D27 D9 SMALLINT not null DEFAULT 0; 
     ALTER TABLE  v5 CHANGE F27 F9 SMALLINT not null DEFAULT 0; 
