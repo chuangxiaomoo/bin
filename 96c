@@ -1,0 +1,5 @@
+#! /bin/sh
+
+for f in $@; do
+    awk '{if (length>96) printf "%s:%-4d %d\n", FILENAME, NR, length}' $f
+done

@@ -9,6 +9,8 @@
   strace -f -t -T -s 1024 command
   strace -f -t -T -s 1024 -e trace=mmap2,munmap,mremap,brk,sbrk command
   strace -f -t -T -s 1024 -p yourpid  2>&1 | tee /tmp/sshd_debug 
+  strace    -t -T -s 1024 -p 1252   > /tmp/sshd_debug 2>&1    # single-thread
+
     -f  Trace child processes from fork()
     -T  Show the time spent in system calls.
     -t  Prefix each line of the trace with the time of day.

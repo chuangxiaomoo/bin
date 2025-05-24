@@ -3,15 +3,17 @@
 % conversion_specifier [flags] [field_width]  [precision] [length_modifier]  conversion_specifier
 %                       -       8              .2          l                 f
 %                       左对齐  8位宽空格填充  精确小数位  long              float
+%                       右补空
 
-| fmt   | type              | note    |
-| :--   | :------           | :------ |
-| %.2lf |                   |         |
-| %ld   | long int          |         |
-| %lu   | long unsigned int |         |
-| %hu   | unsigned short    |         |
-| %p    | pointer           |         |
-| %02hhx| unsigned char     |         |
+| fmt    | type              | note                   |
+| :--    | :------           | :------                |
+| %m.nf  | float             | m=整数部分+.+小数部分) | printf("%6.2f\n", 123.456) -> 123.45
+| %lf    | double            |                        |
+| %ld    | long int          |                        |
+| %lu    | long unsigned int |                        |
+| %hu    | unsigned short    |                        |
+| %p     | pointer           |                        |
+| %02hhx | unsigned char     |                        |
 
 # e.g. output: 1,234,567,890,123,456,789.38
 
